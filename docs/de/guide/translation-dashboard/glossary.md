@@ -13,6 +13,7 @@ Die Registerkarte ist ausgeblendet, wenn `glossary.userGlossary` nicht konfiguri
 | **Originalsprachen-String** | Quellbegriff oder -phrase |
 | **locale** | Ziel-Locale oder `*` für alle Locales |
 | **Übersetzung** | Bevorzugte Übersetzung |
+| **Kontext** | Optionale Erklärung der beabsichtigten Bedeutung oder Verwendung in der Ausgangssprache. Wird nur gesendet, wenn dieser Begriff mit dem aktuellen Stapel übereinstimmt. |
 | **Erzwingen** | Wenn aktiviert, muss der Begriff genau wie angegeben übersetzt werden |
 
 <a id="add-a-row"></a>
@@ -20,8 +21,8 @@ Die Registerkarte ist ausgeblendet, wenn `glossary.userGlossary` nicht konfiguri
 
 Verwenden Sie das Formular oben auf der Registerkarte:
 
-1. Geben Sie **Original**, **Locale** (`*` oder einen Ziel-Locale-Code) und **Übersetzung** ein.
-2. Aktivieren Sie optional **Erzwingen**.
+1. Geben Sie **Original**, **Gebietsschema** (`*` oder einen Zielgebietsschema-Code) und **Übersetzung** ein.
+2. Fügen Sie optional **Kontext** (Nutzungshinweise) hinzu und aktivieren Sie **Erzwingen**.
 3. Klicken Sie auf **Hinzufügen**.
 
 Die CSV-Datei wird beim ersten Hinzufügen erstellt, falls sie noch nicht existiert.
@@ -32,12 +33,14 @@ Die CSV-Datei wird beim ersten Hinzufügen erstellt, falls sie noch nicht existi
 - **Inline-Bearbeitung** – Ändern Sie Felder direkt in der Tabelle und klicken Sie auf **Speichern** in dieser Zeile.
 - **Löschen** – Entfernen Sie eine Zeile mit der Löschfunktion.
 
-Änderungen werden beim nächsten `translate-ui`-, `proofread-ui`-, `translate-docs`- oder `sync`-Lauf wirksam.
+Änderungen werden beim nächsten Ausführen von `translate-ui`, `proofread-ui`, `translate-docs` oder `sync` wirksam. Das Bearbeiten einer **Kontext**-Notiz (oder `glossary.contextFiles` in der Konfiguration) aktualisiert automatisch die zwischengespeicherten Übersetzungen für das betroffene Gebietsschema – Sie benötigen `--force` nicht.
+
+Halten Sie Kontextdateien als kompakte Markdown- oder Klartext-Kurzbeschreibungen außerhalb übersetzter `docs[]`-Bäume. Der Text wird bei jeder passenden Anfrage an das LLM gesendet; fügen Sie keine Geheimnisse oder personenbezogenen Daten hinzu. Wie diese Dateien und die CSV erstellt werden, wird im [Glossar](/de/guide/glossary) beschrieben.
 
 <a id="filters"></a>
 ## Filter
 
-Filtern Sie nach **Originaltext**, **Locale** (einschließlich `*`) oder **Übersetzungstext**-Teilstring und klicken Sie dann auf **Anwenden**.
+Filtern Sie nach **Originaltext**, **Gebietsschema** (einschließlich `*`), **Übersetzungstext** oder **Kontext**-Teilzeichenfolge und klicken Sie dann auf **Anwenden**.
 
 <a id="dashboard-edits-and-glossary-auto-add"></a>
 ## Dashboard-Bearbeitungen und Glossar-Auto-Hinzufügen

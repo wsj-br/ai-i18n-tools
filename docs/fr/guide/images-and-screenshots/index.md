@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# Concevoir pour l'i18n dès le départ
+## Concevoir pour l'i18n dès le départ
 
 Le choix de la structure de répertoire avant même la création des captures d'écran est le facteur le plus déterminant pour la facilité de gestion des ressources spécifiques à chaque langue. Adapter la structure après avoir ajouté des dizaines de captures d'écran implique de restructurer les chemins et de mettre à jour chaque référence dans les fichiers markdown.
 
@@ -105,7 +105,7 @@ Activez `forceLowercase: true` dans le bloc de configuration `svg` pour éviter 
 ---
 
 <a id="decision-guide"></a>
-# Guide de décision
+## Guide de décision
 
 **L'actif est-il un SVG avec du texte ou des étiquettes traduisibles ?**
   - **Oui** → [Application Web SVG](/fr/guide/svg-translation/translated-svg-web-app) ou [SVG Colocalisé](/fr/guide/svg-translation/translated-svg-colocated)

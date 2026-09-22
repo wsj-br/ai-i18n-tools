@@ -47,7 +47,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `splitTranslatableIntoBatches` | セグメントを LLM 向けのバッチサイズにグループ化します。 |
 | `validateTranslation` | 変換後の構造チェック（**async** — 待機する必要があります）。 |
 | `resolveDocumentationOutputPath` | 翻訳済みドキュメントの出力ファイルパスを解決します。 |
-| `Glossary` / `GlossaryMatcher` | 翻訳用語集を読み込み、適用します。 |
+| `Glossary` / `GlossaryMatcher` | 翻訳用語集を読み込んで適用します。これにはオプションの用語 `Context` メモが含まれます。 |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | キャッシュ無効化のための `glossary.contextFiles` およびフィンガープリントのガイダンスを読み込みます。 |
 | `runTranslateUI` | プログラムによる翻訳UIのエントリポイントです。 |
 | `writeInitConfigFile` | スターター設定JSONを書き出す (`template`、オプションの`providerKey`はデフォルトで`openrouter`)。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`が使用する組み込みプリセットごとのスターター`translationModels`。 |

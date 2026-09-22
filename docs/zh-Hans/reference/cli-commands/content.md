@@ -1,5 +1,5 @@
-<a id="cli--other-content"></a>
-# CLI — 其他内容
+<a id="cli--json--svg"></a>
+# 命令行 — JSON 和 SVG
 
 <a id="translate-json"></a>
 ### `translate-json`

@@ -13,6 +13,10 @@ import { collectFilesByExtension } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
+import {
+  loadTranslationContextFromConfig,
+  translationContextClientOpts,
+} from "../glossary/translation-context.js";
 import { LlmClient } from "../api/llm-client.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import {
@@ -22,6 +26,7 @@ import {
   matchesPathFilter,
 } from "./doc-translate.js";
 import { llmClientDebugFailedOpts } from "./translation-failure-log.js";
+import { usageRecorderForCache } from "../core/usage-recorder.js";
 import { runMapWithConcurrency, AsyncMutex } from "../utils/concurrency.js";
 import {
   bindRunInterruptScope,
@@ -115,6 +120,7 @@ async function runTranslateSvgBody(
     ? path.join(opts.cwd, config.glossary.userGlossary)
     : undefined;
   const glossary = new Glossary(glossaryUi, glossaryUser, locales);
+  const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
   const noopHitKeys = new Set<string>();
 
   const totalFileCount = files.length;
@@ -186,6 +192,8 @@ async function runTranslateSvgBody(
     ...opts,
     batchConcurrency: batchConcurrencyEffective,
     cacheMutex,
+    translationContextText: translationContext.text,
+    translationContextFingerprint: translationContext.fingerprint,
   };
 
   const recordFileTotals = async (skipped: boolean, totals: TranslateTotals): Promise<void> => {
@@ -229,6 +237,8 @@ async function runTranslateSvgBody(
     if (needsApi) {
       client = await createFilteredLlmClient(config, locale, {
         ...llmClientDebugFailedOpts(opts, config.cacheDir),
+        ...translationContextClientOpts(translationContext.text),
+        onApiCall: usageRecorderForCache(cache, "translate-svg", locale),
       });
     }
 

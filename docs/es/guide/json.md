@@ -104,6 +104,32 @@ Cuando `translateJson` está activado, `status` imprime una sección `json[]` (�
 | Etiquetas `_meta.ts` de Nextra y diccionario de temas `.ts` | Documentos — `translate-docs` (`_meta` automático cuando `style: "nextra"`, `nextraDictionaryPath` opcional); **no** use `json[]` — consulte [Integración de Nextra](/es/guide/integrations/nextra) |
 | Etiquetas `meta.json` de Fumadocs y catálogo de anulaciones de UI | Documentos — `translate-docs` (`meta.json` automático cuando `style: "fumadocs"`, `fumadocsUiCatalog` opcional); **no** use `json[]` — consulte [Integración de Fumadocs](/es/guide/integrations/fumadocs) |
 | JSON de configuración regional anidada independiente (árboles `translation.json` estilo ZenBrowser) | JSON — `json[]` + `translate-json` |
+| Archivos de espacio de nombres de i18next (`public/locales/en/common.json`, tokens <code v-pre>{{name}}</code>, sufijos `key_one` / `key_other`) | JSON — `json[]` + `translate-json` (ver [archivos de espacio de nombres de i18next](#i18next-namespace-files)) |
+| Diccionarios de Intlayer `*.content.ts` + `useIntlayer` | [Migración desde Intlayer](/es/guide/migrating-from-intlayer) — `migrate-intlayer`, luego cadenas de interfaz de usuario |
 | Archivos `.svg` ilustrados con `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/es/reference/configuration#svg) + `translate-svg` (opcional; no es una de las tres tuberías principales) |
 
 Referencia de campo: [`json`](#json) en [Referencia de configuración](/es/reference/configuration#json). Las claves de caché para la limpieza usan `json-block:{blockIndex}:{projectRelPath}` en `file_tracking`.
+
+<a id="i18next-namespace-files"></a>
+### Archivos de espacio de nombres de i18next
+
+La canalización JSON cubre los archivos de configuración regional clave/valor típicos de i18next: objetos anidados, matrices de cadenas, interpolación <code v-pre>{{name}}</code> en valores y claves de sufijo plural independientes (`welcome_one`, `welcome_other`). **No** reescribe los sitios de llamada `t("some.key")`; estos permanecen basados en claves. Para mover un proyecto al esquema `t()` de cadena de origen en inglés de ai-i18n-tools, cambie los sitios de llamada a `t("English text")` (o ejecute `migrate-intlayer` cuando el origen sea Intlayer `.content.ts`).
+
+Ejemplo (espacios de nombres de origen en inglés en `public/locales/en/`):
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero` (y otros sufijos CLDR) se traducen como hojas separadas. Eso es suficiente para que i18next siga resolviendo los plurales por sufijo; la canalización no los reagrupa en una sola fila del catálogo.

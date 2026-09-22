@@ -217,7 +217,7 @@ Add `ai-i18n-tools` as a **devDependency** in the VitePress project (see `exampl
 **Authoring rules**
 
 - Cross-page doc links: use **site routes** (`/guide/…`, `/reference/…`) in English markdown under `docs/`, or `docs/guide/…` paths when authoring a README that will be synced into `docs/index.md` in another project.
-- Runnable demos, `LICENSE`, and other repo files: use **full GitHub URLs** in `README.md` and in docs (see [README and the docs homepage](#readme-as-the-docs-homepage)).
+- Runnable demos, `LICENSE`, and other repo files: use **full GitHub URLs** in `README.md` and in docs (see [README and the docs homepage](#readme-and-the-docs-homepage)).
 - Do **not** hand-edit links in `docs/<locale>/` — regenerate with `sync` / `translate-docs`.
 
 See also [Link rewriting](/guide/images-and-screenshots/link-rewriting) (flat vs VitePress) and [Configuration — `docsOutput`](/reference/configuration#docsoutput).

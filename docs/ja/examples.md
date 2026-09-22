@@ -29,6 +29,7 @@ pnpm install
 <a id="fumadocs-docs"></a>
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
+<a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
 
 | 例 | 最適な用途 | degit でコピー | 実行 |
@@ -44,5 +45,6 @@ pnpm install
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | プレーン HTML + `data-i18n*` マーカー; 静的ロケール JSON (ダッシュボード形式の UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
+| [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, リセット + AIエージェントレポート) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。

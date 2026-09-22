@@ -11,7 +11,7 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-ai-i18n-tools 包含自己的字串提取器。如果您先前使用 `i18next-scanner`、`babel-plugin-i18next-extract` 或類似工具，遷移後可以移除這些開發相依性。
+ai-i18n-tools 內建其專用的字串擷取器。如果您先前使用過 `i18next-scanner`、`babel-plugin-i18next-extract` 或類似工具，可以在遷移後移除這些開發依賴項。現有的 i18next **namespace JSON** 檔案可以繼續使用 [JSON 管線](/zh-Hant/guide/json#i18next-namespace-files)。Intlayer `.content.ts` 字典可以使用 `migrate-intlayer` 匯入 — 請參閱[從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)。
 
 <a id="using-the-cli"></a>
 ### 使用 CLI
@@ -71,7 +71,7 @@ pnpm add -g ai-i18n-tools
 **替代方案** — 若您不願調整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。若要在沒有 `package.json` 項目的情況下進行零安裝的一次性執行：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
-### 已複製的 ai-i18n-tools monorepo
+### 已複製 ai-i18n-tools 單一儲存庫
 
 在從 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整複本開發套件或執行工作區 **examples** 時：
 

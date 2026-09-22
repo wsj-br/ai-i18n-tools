@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## Bootstrap típico
+
+Um `src/i18n.ts` mínimo compõe os helpers do i18next. `SOURCE_LOCALE` deve corresponder a `sourceLocale` em `ai-i18n-tools.config.json`. Os caminhos de importação abaixo assumem que este arquivo está ao lado de `locales/`.
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+Ao alterar o idioma, chame `await loadLocale(next)` e depois `await i18n.changeLanguage(next)`. React (`initReactI18next`), plurais do locale de origem (`sourcePluralFlatBundle`) e `applyDirection` são abordados em [Integrar o i18next](/pt-BR/guide/ui-strings/i18next-runtime).
+
 <a id="quick-reference"></a>
 ## Referência rápida
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-Use `setupKeyAsDefaultT` como ponto de entrada habitual do aplicativo (chave recortada + plural `wrapT` + opcional `translate-ui` `{sourceLocale}.json`). Chamar apenas `wrapI18nWithKeyTrim` é **obsoleto** para configuração de aplicativos.
+O [bootstrap típico](#typical-bootstrap) mostra como essas fábricas se compõem. Use `setupKeyAsDefaultT` como o ponto de entrada usual do aplicativo (key-trim + plural `wrapT` + `translate-ui` `{sourceLocale}.json` opcional). Chamar apenas `wrapI18nWithKeyTrim` é **obsoleto** para a integração do aplicativo.
 
 `sourcePluralFlatBundle` requer uma instância i18next com `addResourceBundle()`. O campo `lng` deve corresponder a `SOURCE_LOCALE` no seu arquivo de inicialização e a `sourceLocale` em `ai-i18n-tools.config.json`.
 

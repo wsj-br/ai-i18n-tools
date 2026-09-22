@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.8.12",
+  "version": "1.9.0",
   "packageManager": "pnpm@12.5.1",
   "description": "Unified internationalization toolkit for Node.js apps and documentation with AI translation",
   "type": "module",
@@ -62,6 +62,7 @@
     "i18n:dashboard": "node bin/ai-i18n-tools.mjs dashboard",
     "i18n:cleanup": "node bin/ai-i18n-tools.mjs cleanup",
     "analyze:translation-failures": "node dev/scripts/analyze-translation-failures.mjs",
+    "seed:usage": "node dev/scripts/seed-usage-history.mjs",
     "update-all": "bash scripts/update-all.sh",
     "clean-temp": "node bin/ai-i18n-tools.mjs clean-temp",
     "release:github": "node scripts/release.mjs",
@@ -126,7 +127,7 @@
     "prettier": "^3.9.8",
     "semver": "^7.8.5",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.70.0",
+    "typescript-eslint": "^8.70.1",
     "vitepress": "2.0.0-alpha.19",
     "vitest": "^5.0.1"
   },

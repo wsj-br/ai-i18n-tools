@@ -21,7 +21,7 @@ README या दस्तावेज़ों में एक वैकल्
 
 एक दस्तावेज़ फ्रेमवर्क के शेल/थीम स्ट्रिंग से असंबंधित मनमानी नेस्टेड UI JSON बंडल [JSON](/hi/guide/json) पाइपलाइन में होते हैं, न कि `docs[]` में।
 
-UI और दस्तावेज़ों के बीच **शब्दावली की निरंतरता** के लिए, `glossary.uiGlossary` को अपने `strings.json` पाथ पर सेट करें — `translate-docs` मौजूदा UI अनुवादों को LLM प्रॉम्प्ट में संकेत के रूप में पुन: उपयोग करता है जब सेगमेंट में मिलान करने वाले शब्द दिखाई देते हैं। वैकल्पिक `glossary.userGlossary` उत्पाद शब्दों के लिए CSV ओवरराइड जोड़ता है (जो `translate-ui` और `proofread-ui` के साथ साझा किए जाते हैं)। संकीर्ण कॉलम में फिट होने के लिए उपयोग किए जाने वाले कॉम्पैक्ट UI-लेबल संक्षिप्ताक्षर (उदाहरण के लिए `Size` → `Tam`) UI अनुवाद के लिए उपलब्ध रहते हैं लेकिन दस्तावेज़ शब्दावली संकेतों से हटा दिए जाते हैं। `glossary-generate` के साथ एक स्टार्टर CSV जनरेट करें, ट्रांसलेशन डैशबोर्ड **शब्दावली** टैब में पंक्तियों को संपादित करें, या [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary) और [शब्दावली](/hi/guide/translation-dashboard/glossary) देखें।
+यूआई और दस्तावेज़ों के बीच **शब्दावली सुसंगतता** के लिए, `glossary.uiGlossary` को अपने `strings.json` पथ पर सेट करें — `translate-docs` मौजूदा यूआई अनुवादों को एलएलएम प्रॉम्प्ट में संकेतों के रूप में पुन: उपयोग करता है जब किसी सेगमेंट में मेल खाने वाले शब्द दिखाई देते हैं। वैकल्पिक `glossary.userGlossary` उत्पाद शब्दों के लिए सीएसवी ओवरराइड जोड़ता है (`translate-ui` और `proofread-ui` के साथ साझा किया गया)। संकीर्ण कॉलम में फिट होने के लिए उपयोग किए जाने वाले संक्षिप्त यूआई लेबल रूप (उदाहरण के लिए `Size` → `Tam`) यूआई अनुवाद के लिए उपलब्ध रहते हैं लेकिन दस्तावेज़ शब्दावली संकेतों से हटा दिए जाते हैं। `glossary-generate` के साथ एक प्रारंभिक सीएसवी जनरेट करें, अनुवाद डैशबोर्ड [शब्दावली](/hi/guide/translation-dashboard/glossary) टैब में पंक्तियाँ संपादित करें, या [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary) और [शब्दावली](/hi/guide/glossary) देखें।
 
 <a id="per-locale-model-overrides"></a>
 ### प्रति-स्थानीय मॉडल ओवरराइड
@@ -43,7 +43,7 @@ UI और दस्तावेज़ों के बीच **शब्दा�
 | क्रॉस-पेज `#anchor` लिंक | [एंकर लिंक](/hi/guide/documents/anchor-links) |
 | लिंक और एसेट URL रीराइटिंग (`regexAdjustments`) | [लिंक रीराइटिंग](/hi/guide/documents/link-rewriting) |
 | दस्तावेज़ों में स्क्रीनशॉट | [छवियाँ और स्क्रीनशॉट](/hi/guide/images-and-screenshots/) |
-| उत्पाद शब्दावली और UI/दस्तावेज़ संगति | [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary), [शब्दावली](/hi/guide/translation-dashboard/glossary) |
+| उत्पाद शब्दावली और यूआई/दस्तावेज़ सुसंगतता | [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary), [शब्दावली](/hi/guide/glossary) |
 | `translate-docs` फ़्लैग और कैश | [CLI विकल्प](/hi/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

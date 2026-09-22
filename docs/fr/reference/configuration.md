@@ -97,6 +97,13 @@ Traitement par lots des segments pour **translate-docs**, **translate-svg** et *
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs` (facultatif)
+
+Délai maximal d'attente pour chaque requête LLM, pour chaque fournisseur. `requestTimeout` correspond à des secondes entières ; `requestTimeoutMs` correspond à des millisecondes. Par défaut : **45** secondes lorsque les deux sont omis. Ne définissez qu'un seul des deux. Un fournisseur qui définit l'un ou l'autre champ utilise cette valeur à la place, pour ce fournisseur uniquement.
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` et `providers`
 
@@ -122,8 +129,14 @@ Chaque bloc `providers.<name>` accepte :
   Nombre maximal de jetons de complétion par requête. Par défaut : `8192`.
 - `temperature`
   Température d'échantillonnage. Par défaut : `0.2`.
+- `requestTimeout`
+  Délai d'attente maximum en secondes pour chaque requête vers ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `45` secondes. Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
 - `requestTimeoutMs`
-  Temps maximal en millisecondes à attendre pour chaque requête. Par défaut : `30000` (30 secondes).
+  Délai d'attente maximum en millisecondes pour chaque requête vers ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `45000` (45 secondes). Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
+- `pricing` (facultatif)
+  Tarif global du fournisseur en USD pour 1 000 000 de jetons : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé ne comporte pas de `usage.cost` signalé par le fournisseur (la plupart des fournisseurs autres qu'OpenRouter), ce tarif est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de la traduction et stocké sur la ligne `api_calls`. Une entrée `modelPricing` correspondante remplace cette valeur par défaut. Un coût signalé par le fournisseur n'est jamais remplacé. Les lignes qui ont été stockées sans coût peuvent tout de même être estimées ultérieurement par [`usage`](/fr/reference/cli-commands/workflows#usage) et [Utilisation et coûts](/fr/guide/translation-dashboard/usage).
+- `modelPricing` (facultatif)
+  Tarif par modèle en USD pour 1 000 000 de jetons : `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Remplace `pricing` pour cet identifiant de modèle. Appliqué au moment de l'appel lorsque le fournisseur a omis `usage.cost`, et stocké avec l'appel.
 
 Préréglages de fournisseurs intégrés (clé — URL de base — variable d'environnement de la clé API) :
 
@@ -143,9 +156,9 @@ Préréglages de fournisseurs intégrés (clé — URL de base — variable d'en
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (aucun) |
 
-Un bloc `openrouter` hérité de niveau supérieur (avec `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs`) est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement ; `defaultModel` / `fallbackModel` sont intégrés dans `translationModels`.
+Un bloc `openrouter` de niveau supérieur hérité (avec `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement ; `defaultModel` / `fallbackModel` se replient dans `translationModels`.
 
-Pour un exemple exécutable qui configure plusieurs fournisseurs dans une seule configuration et bascule entre eux avec `-P`, voir [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `nvidia` et `deepseek` sur le même document).
+Pour un exemple exécutable qui configure plusieurs fournisseurs dans une seule configuration et bascule entre eux avec `-P`, voir [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` et `deepseek` sur le même document).
 
 **Pourquoi utiliser plusieurs modèles :** Différents fournisseurs et modèles ont des coûts variables et offrent différents niveaux de qualité selon les langues et les locales. Configurez `translationModels` **comme une chaîne de repli ordonnée** (plutôt qu'un seul modèle) afin que la CLI puisse tenter le modèle suivant si une requête échoue.
 
@@ -342,13 +355,13 @@ Lorsque `true`, les mises en page de sortie intégrées (`nested`, `flat`, `doc-
 - `docsOutput.flatPreserveRelativeDir`
 Lorsque `docsOutput.style = "flat"`, conserve les sous-répertoires source afin que les fichiers avec le même nom de base n'entrent pas en collision. Par défaut `false`.
 - `docsOutput.rewriteRelativeLinks`
-Réécrire les liens relatifs après la traduction (activé automatiquement lorsque `docsOutput.style = "flat"` et aucun `pathTemplate` personnalisé).
+Réécrire les liens relatifs après la traduction (activé automatiquement lorsque `docsOutput.style = "flat"` et qu'aucun `pathTemplate` personnalisé n'est défini).
 - `docsOutput.linkRewriteDocsRoot`
-Racine du dépôt utilisée lors du calcul des préfixes de réécriture de liens plats. Laissez généralement cette valeur à `"."`, sauf si vos documents traduits se trouvent sous une racine de projet différente.
+Racine du dépôt utilisée lors du calcul des préfixes de réécriture des liens à plat. Laissez généralement cette valeur sur `"."`, à moins que votre documentation traduite ne se trouve sous une racine de projet différente.
 - `docsOutput.rewriteVitepressLinks`
-Lorsque `true`, exécutez le normalisateur de liens VitePress après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"vitepress"`. À utiliser avec toute disposition `doc-system` où les dossiers de locale se trouvent à côté de l'anglais sous `docsRoot`. Réécrit les chemins `docs/guide/…` de style README vers les routes du site (`/guide/…`) et les liens `../guide/…` relatifs à la locale. Pour les liens vers des fichiers de dépôt en dehors de l'arborescence VitePress (`LICENSE`, `examples/`), utilisez des URL complètes dans la source anglaise — voir [Intégration VitePress — README comme page d'accueil des documents](/fr/guide/integrations/vitepress#readme-as-homepage).
+Lorsque `true`, exécutez le normalisateur de liens VitePress après la traduction. Activé par défaut lorsque `docsOutput.style` est `"vitepress"`. À utiliser avec toute structure `doc-system` où les dossiers de langue se trouvent à côté de l'anglais sous `docsRoot`. Réécrit les chemins `docs/guide/…` de type README vers les routes du site (`/guide/…`) et les liens `../guide/…` relatifs à la langue. Pour les liens vers des fichiers du dépôt en dehors de l'arborescence VitePress (`LICENSE`, `examples/`), utilisez des URL complètes dans la source en anglais — consultez [Intégration VitePress — README comme page d'accueil de la documentation](/fr/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Lorsque `true`, exécutez le normalisateur de liens Nextra après la traduction. Par défaut, activé lorsque `docsOutput.style` est `"nextra"`. Réécrit les chemins `content/en/…` et les chemins `.mdx` relatifs vers des routes de site neutres en locale (`/guide/…`) pour Next.js `i18n`. Voir [Intégration Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
+Lorsque `true`, exécutez le normalisateur de liens Nextra après la traduction. Activé par défaut lorsque `docsOutput.style` est `"nextra"`. Réécrit les chemins `content/en/…` et les chemins `.mdx` relatifs vers des routes du site indépendantes de la langue (`/guide/…`) pour Next.js `i18n`. Consultez [Intégration Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
 `"dot"` (par défaut) ou `"dir"`. Dot écrit `stem.{locale}.mdx` à côté des sources anglaises ; dir écrit les dossiers de locale comme Nextra. Voir [Intégration Fumadocs — Disposition de la page](/fr/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ Tableau de premier niveau de pipelines de traduction JSON imbriqués. Utilisé u
 | Champ | Description |
 |-------|-------------|
 | `description` | Note facultative pour CLI / `status` (non traduite). |
-| `contentPaths` | Fichiers, répertoires ou motifs `.json` sources situés sous la racine du projet. |
+| `contentPaths` | Fichiers, répertoires ou globs `.json` source sous la racine du projet. Les fichiers d'espace de noms i18next typiques (`public/locales/en/*.json`) sont pris en charge : objets imbriqués, tableaux, interpolation <code v-pre>{{var}}</code> dans les valeurs de chaîne, et clés de suffixe pluriel indépendantes (`key_one`, `key_other`). |
 | `outputPathTemplate` | Chemin de sortie requis par langue cible. Espaces réservés : `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
 | `targetLocales` | Sous-ensemble facultatif pour ce bloc ; sinon racine `targetLocales`. |
 | `keyPolicy.mode` | `allowlist`, `denylist` ou `both`. |
@@ -474,13 +487,31 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 | Champ          | Description                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | Chemin vers `strings.json` - génère automatiquement un glossaire à partir des traductions existantes.                                                                                                 |
-| `userGlossary` | Chemin vers un fichier CSV avec les colonnes `Original language string` (ou `en`), `locale`, `Translation` - une ligne par terme source et langue cible (`locale` peut être `*` pour toutes les cibles). |
+| `userGlossary` | Chemin vers un CSV avec les colonnes `Original language string` (ou `en`), `locale`, `Translation`, `Force` facultatif et `Context` facultatif - une ligne par terme source et par locale cible (`locale` peut être `*` pour toutes les cibles). |
 | `autoAddUserEditedToGlossary` | Lorsque `true`, les modifications du tableau de bord apportées aux chaînes de l'interface utilisateur peuvent être automatiquement ajoutées au glossaire de l'utilisateur. |
+| `contextFiles` | Fichiers Markdown ou texte brut (`.md`, `.markdown`, `.txt`) relatifs au répertoire de travail, facultatifs, avec des explications sur le produit ou les fonctionnalités. Chargés au démarrage de la commande et injectés dans l'interface utilisateur, la documentation, le JSON, le SVG et les invites de relecture. Ne placez pas ces fichiers dans `docs[].contentPaths` à moins que vous ne souhaitiez également les traduire. Les URL sont rejetées. Le texte intégral est envoyé au fournisseur LLM configuré et peut apparaître dans les journaux `--debug-failed` — n'incluez pas de secrets ou d'informations personnelles identifiables. |
+| `contextMaxChars` | Nombre maximal de caractères de texte de fichier de contexte concaténé envoyé au modèle (par défaut `12000`, limite stricte `100000`). L'excès de texte est tronqué avec un avertissement. |
 
 `translate-docs` utilise le même glossaire pour les suggestions terminologiques, mais ignore les abréviations compactes des étiquettes d'interface utilisateur (formes avec point final telles que `Alm.`, ou compressions courtes à jeton unique telles que `Size` → `Tam`) afin que les invites de document ne soient pas orientées vers des jetons <code v-pre>{{…}}</code> inventés. Les termes complets du produit et les traductions non abrégées de l'interface utilisateur sont toujours suggérés.
+
+La colonne CSV `Context` facultative est une directive d'utilisation en langue source pour ce terme (définition, usage grammatical, signification du produit). Elle n'est incluse que lorsque le terme correspond au lot actuel. La modification de la note `Context` d'un terme ou de tout contenu `contextFiles` invalide les segments mis en cache de la locale correspondante et les lignes de suivi de fichier lors de la prochaine exécution, de sorte que les traductions se rafraîchissent automatiquement. La modification d'un seul `Translation` préféré utilise toujours le cache existant, sauf si vous passez `--force` / `--force-update`. Les lignes de cache modifiées par l'utilisateur du tableau de bord sont conservées.
+
+Exemple :
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **Générer un fichier CSV de glossaire vide :**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+Pour ébaucher `contextFiles` à partir du dépôt, utilisez l'invite à copier-coller de l'agent dans [Générer un fichier de contexte avec un agent IA](/fr/guide/glossary#generate-a-context-file-with-an-ai-agent). Consultez le [Glossaire](/fr/guide/glossary) pour savoir comment les lignes de termes et les fichiers de contexte sont appliqués.

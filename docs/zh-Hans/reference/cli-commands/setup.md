@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI — 设置
+<a id="cli--getting-started"></a>
+# CLI — 快速入门
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@
 | `ui-json-bundles` | JSON（仅 `json[]`） |
 
 `--with-translate-ignore` 创建一个初始 `.translate-ignore`。
+
+---
+
+<a id="help"></a>
+### `help`
+
+**概要：** `ai-i18n-tools help [command]`
+
+显示子命令的帮助信息（输出与 `ai-i18n-tools <command> --help` 相同）。

@@ -1,6 +1,7 @@
 import fs from "fs";
-import type { GlossaryTerm } from "../core/types.js";
+import type { GlossaryTerm, GlossaryTermHint } from "../core/types.js";
 import { parseGlossaryCsv } from "./parse-glossary-csv.js";
+import { sanitizePromptSupplementaryText } from "./translation-context.js";
 
 function looksLikeStringsJson(filepath: string): boolean {
   if (filepath.toLowerCase().endsWith(".json")) {
@@ -43,6 +44,18 @@ function pickForce(row: Record<string, string>): boolean {
   const n = normalizeRow(row);
   const v = n["force"]?.trim().toLowerCase();
   return v === "true" || v === "yes" || v === "1";
+}
+
+function pickContext(row: Record<string, string>): string {
+  const n = normalizeRow(row);
+  return n["context"]?.trim() || n["notes"]?.trim() || "";
+}
+
+function ensureContextMap(term: GlossaryTerm): Record<string, string> {
+  if (!term.contextByLocale) {
+    term.contextByLocale = {};
+  }
+  return term.contextByLocale;
 }
 
 /**
@@ -184,18 +197,25 @@ export class Glossary {
 
   /**
    * User CSV: `Original language string` / `en`, `locale`, `Translation` / `translation`.
+   * Optional `Context` / `Notes` is source-language usage guidance.
    * `locale` `*` applies to all `targetLocales`. Exact locale wins over `*` (applied first * then overwrite).
    */
   private loadUserCsv(filepath: string, targetLocales: string[]): void {
     const content = fs.readFileSync(filepath, "utf8");
     const rows = parseGlossaryCsv(filepath, content);
 
-    const starRows: Array<{ english: string; translation: string; force: boolean }> = [];
+    const starRows: Array<{
+      english: string;
+      translation: string;
+      force: boolean;
+      context: string;
+    }> = [];
     const exactRows: Array<{
       english: string;
       locale: string;
       translation: string;
       force: boolean;
+      context: string;
     }> = [];
 
     for (const row of rows) {
@@ -206,10 +226,11 @@ export class Glossary {
         continue;
       }
       const force = pickForce(row);
+      const context = pickContext(row);
       if (locale === "*") {
-        starRows.push({ english, translation, force });
+        starRows.push({ english, translation, force, context });
       } else {
-        exactRows.push({ english, locale, translation, force });
+        exactRows.push({ english, locale, translation, force, context });
       }
     }
 
@@ -222,7 +243,7 @@ export class Glossary {
       return term.forcedByLocale;
     };
 
-    for (const { english, translation, force } of starRows) {
+    for (const { english, translation, force, context } of starRows) {
       if (targetLocales.length === 0) {
         continue;
       }
@@ -233,16 +254,20 @@ export class Glossary {
         this.terms.set(key, term);
       }
       const fm = ensureForced(term);
+      const cm = ensureContextMap(term);
       for (const loc of targetLocales) {
         if (!term.translations[loc]) {
           term.translations[loc] = translation;
           fm[loc] = force;
         }
+        if (context && !cm[loc]) {
+          cm[loc] = context;
+        }
       }
       userOverrideRowCount++;
     }
 
-    for (const { english, locale, translation, force } of exactRows) {
+    for (const { english, locale, translation, force, context } of exactRows) {
       const key = english.toLowerCase();
       let term = this.terms.get(key);
       if (!term) {
@@ -251,6 +276,9 @@ export class Glossary {
       }
       term.translations[locale] = translation;
       ensureForced(term)[locale] = force;
+      if (context) {
+        ensureContextMap(term)[locale] = context;
+      }
       userOverrideRowCount++;
     }
 
@@ -259,12 +287,12 @@ export class Glossary {
     }
   }
 
-  findTermsInText(
+  findTermHintsInText(
     text: string,
     locale: string,
     opts?: { skipUiAbbreviations?: boolean }
-  ): string[] {
-    const hints: string[] = [];
+  ): GlossaryTermHint[] {
+    const hints: GlossaryTermHint[] = [];
     const textLower = text.toLowerCase();
     const skipUiAbbreviations = opts?.skipUiAbbreviations === true;
 
@@ -296,7 +324,12 @@ export class Glossary {
         const hasOverlap = positions.some((pos) => matchedPositions.has(pos));
 
         if (!hasOverlap) {
-          hints.push(`- "${term.english}" → "${translation}"`);
+          const context = term.contextByLocale?.[locale]?.trim();
+          hints.push({
+            english: term.english,
+            translation,
+            ...(context ? { context } : {}),
+          });
           positions.forEach((pos) => matchedPositions.add(pos));
           break;
         }
@@ -306,6 +339,35 @@ export class Glossary {
     }
 
     return hints;
+  }
+
+  findTermsInText(
+    text: string,
+    locale: string,
+    opts?: { skipUiAbbreviations?: boolean }
+  ): string[] {
+    return this.findTermHintsInText(text, locale, opts).map(formatGlossaryHint);
+  }
+
+  /**
+   * Stable payload of term-level Context notes for `locale` (empty when none).
+   * Used by {@link computeGuidanceFingerprint}.
+   */
+  termContextFingerprintPayload(locale: string): string {
+    const lines: string[] = [];
+    const sorted = Array.from(this.terms.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [, term] of sorted) {
+      const ctx = term.contextByLocale?.[locale]?.trim();
+      if (ctx) {
+        lines.push(`${term.english}\0${ctx}`);
+      }
+    }
+    return lines.join("\n");
+  }
+
+  getContext(englishTerm: string, locale: string): string | undefined {
+    const ctx = this.terms.get(englishTerm.toLowerCase())?.contextByLocale?.[locale]?.trim();
+    return ctx || undefined;
   }
 
   getTranslation(englishTerm: string, locale: string): string | undefined {
@@ -338,4 +400,18 @@ export class Glossary {
   get size(): number {
     return this.terms.size;
   }
+}
+
+/** Format one matched glossary term for the `<glossary>` prompt block. */
+export function formatGlossaryHint(hint: GlossaryTermHint): string {
+  const head = `- "${hint.english}" → "${hint.translation}"`;
+  const ctx = hint.context?.trim();
+  if (!ctx) {
+    return head;
+  }
+  const safe = sanitizePromptSupplementaryText(ctx).replace(/\s+/g, " ").trim();
+  if (!safe) {
+    return head;
+  }
+  return `${head}\n  Context: ${safe}`;
 }

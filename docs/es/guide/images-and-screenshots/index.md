@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# Diseñar para i18n desde el principio
+## Diseñar para i18n desde el principio
 
 Elegir la estructura de directorios adecuada antes de que existan capturas de pantalla es el factor más importante para facilitar más adelante el manejo de recursos específicos por configuración regional. Adaptar la estructura después de haber incluido docenas de capturas implica reorganizar rutas y actualizar todas las referencias en el markdown.
 
@@ -105,7 +105,7 @@ Habilite `forceLowercase: true` en el bloque de configuración `svg` para evitar
 ---
 
 <a id="decision-guide"></a>
-# Guía de decisiones
+## Guía de decisiones
 
 **¿El recurso es un SVG con texto o etiquetas traducibles!**
   - **Sí** → [Aplicación web SVG](/es/guide/svg-translation/translated-svg-web-app) o [SVG Colocado](/es/guide/svg-translation/translated-svg-colocated)

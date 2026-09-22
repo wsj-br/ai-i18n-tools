@@ -1,0 +1,36 @@
+{
+  "name": "intlayer-migration-example",
+  "version": "1.0.0",
+  "description": "Example Intlayer app for practicing migrate-intlayer",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "reset": "node scripts/reset.mjs",
+    "dev": "vite --port 3091",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 3091",
+    "migrate:dry": "ai-i18n-tools migrate-intlayer src --report ./migrate-intlayer-report.md",
+    "migrate:write": "ai-i18n-tools migrate-intlayer src --write --report ./migrate-intlayer-report.md",
+    "i18n:extract": "ai-i18n-tools extract",
+    "i18n:translate-ui": "ai-i18n-tools translate-ui",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:locales": "ai-i18n-tools generate-ui-languages"
+  },
+  "dependencies": {
+    "ai-i18n-tools": "^1.9.0",
+    "i18next": "^26.4.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.0.3",
+    "typescript": "^7.0.2",
+    "vite": "^7.1.7"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "license": "MIT"
+}

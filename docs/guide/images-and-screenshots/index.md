@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# Design for i18n from the start
+## Design for i18n from the start
 
 Choosing the right directory layout before any screenshots exist is the single biggest factor in how painless locale-specific assets are later. Retrofitting the layout after dozens of screenshots are committed means restructuring paths and updating every markdown reference.
 
@@ -105,7 +105,7 @@ Enable `forceLowercase: true` in the `svg` config block to avoid case-sensitivit
 ---
 
 <a id="decision-guide"></a>
-# Decision guide
+## Decision guide
 
 
   **Is the asset an SVG with translatable text or labels?**

@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI — Flujos de trabajo y estado
+<a id="cli--workflows--reporting"></a>
+# CLI — Flujos de trabajo e informes
 
 <a id="sync"></a>
 ### `sync`
@@ -34,4 +34,17 @@ Imprime las estadísticas de la caché de documentación y `strings.json` (los m
 
 **Opciones clave:** `--max-columns`
 
-**Ver también:** [Estadísticas del panel](/es/guide/translation-dashboard/statistics)
+**Véase también:** [Estadísticas del panel](/es/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**Sinopsis:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+Imprime las estadísticas registradas de llamadas a la API del modelo (llamadas, tokens y un único coste en USD). El coste es el `usage.cost` del proveedor cuando está presente; de lo contrario, es la cantidad de `providers.<name>.modelPricing` o el `providers.<name>.pricing` predeterminado de todo el proveedor (almacenado en llamadas nuevas; aplicado en el momento del informe para filas antiguas que no tienen un coste almacenado). Los mismos agregados que en Panel de traducción → Uso y costes. Las filas de detalles con más de siete días naturales UTC se acumulan en `api_totals` mensuales; los informes combinan ambas tablas. `--since` acepta `YYYY-MM-DD`, una duración (`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`) o un período de mes natural (`1mo`, `2mo`, `3mo`). `--clear` elimina las filas de detalles y los totales mensuales (`--older-than` es `1mo`, `2mo`, `3mo`, `6mo`, `1y` o `all`; `--dry-run` informa el recuento sin eliminar).
+
+**Opciones clave:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**Véase también:** [Uso y costos del panel](/es/guide/translation-dashboard/usage)

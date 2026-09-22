@@ -40,7 +40,7 @@
 | `../guide/foo.md` (एक लोकेल फ़ाइल से) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | अपरिवर्तित (रेपो पाथ के लिए पूर्ण यूआरएल का उपयोग करें) |
 
-उन परियोजनाओं के लिए जो `README.md` → `docs/index.md` को सिंक करते हैं, `README.md` में `LICENSE`, `examples/`, और वाइटप्रेस ट्री के बाहर की अन्य फ़ाइलों के लिए पूर्ण GitHub यूआरएल का उपयोग करें। [वाइटप्रेस एकीकरण — डॉक्स होमपेज के रूप में README](/hi/guide/integrations/vitepress#readme-as-homepage) देखें।
+उन प्रोजेक्ट्स के लिए जो `README.md` → `docs/index.md` को सिंक करते हैं, `LICENSE`, `examples/`, और VitePress ट्री के बाहर की अन्य फ़ाइलों के लिए `README.md` में पूर्ण GitHub URLs का उपयोग करें। [VitePress एकीकरण — डॉक्स होमपेज के रूप में README](/hi/guide/integrations/vitepress#readme-and-the-docs-homepage) देखें।
 
 फ़्लैट रीराइटर और वाइटप्रेस नॉर्मलाइज़र प्रति `docs[]` ब्लॉक परस्पर अनन्य हैं — `regexAdjustments` से पहले केवल एक चलता है। [वाइटप्रेस एकीकरण — लिंक कन्वेंशन](/hi/guide/integrations/vitepress#link-conventions) देखें।
 

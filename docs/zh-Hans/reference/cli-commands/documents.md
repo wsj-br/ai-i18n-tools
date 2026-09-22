@@ -25,6 +25,8 @@
 
 更新源文件后，该命令还会遍历每个区域设置的现有已翻译 markdown（与 `translate-docs` 的 `docsOutput` 路径映射相同）。它将 **英文** 标题 ID 按文档顺序复制到匹配的 ATX 标题上——它从不对翻译后的标题进行 slug 处理——并将标题中间的 `{#id}` / `{/* #id */}`（或游离的 HTML `<a id>`）移回 Docusaurus / 所选样式期望的形式。缺失的已翻译文件会被跳过。`--remove` 也会从这些已翻译文件中剥离标题 ID，包括位置不当的行内标记。
 
+当已翻译文件的标题 ID 被重新定位或修复时，如果英文源文本与新旧翻译内容包含相同数量的分段，匹配的缓存翻译分段（以英文源哈希值为键）也会同步更新。若分段数量不匹配，则会跳过该文件和语言区域。随后，`sync --force-update` 会根据更新后的缓存行重新组装该文件。
+
 **关键选项：** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--remove`、`--dry-run`
 
 `--slug-style`：`github`（默认；doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}` 后缀）。使用 `pymdown`，可选 `--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--remove` 不能与 `--pymdown-*` 组合使用。

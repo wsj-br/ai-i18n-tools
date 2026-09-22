@@ -47,7 +47,8 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `splitTranslatableIntoBatches` | Group segments into LLM-sized batches. |
 | `validateTranslation` | Structural checks after translation (**async** — must be awaited). |
 | `resolveDocumentationOutputPath` | Resolve output file path for a translated document. |
-| `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries. |
+| `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries, including optional term `Context` notes. |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | Load `glossary.contextFiles` and fingerprint guidance for cache invalidation. |
 | `runTranslateUI` | Programmatic translate-UI entry point. |
 | `writeInitConfigFile` | Write a starter config JSON (`template`, optional `providerKey` defaulting to `openrouter`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |

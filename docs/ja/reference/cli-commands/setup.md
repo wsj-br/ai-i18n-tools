@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI — セットアップ
+<a id="cli--getting-started"></a>
+# CLI — はじめに
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 | `ui-json-bundles` | JSON (`json[]` のみ) |
 
 `--with-translate-ignore` は初期設定の `.translate-ignore` を作成します。
+
+---
+
+<a id="help"></a>
+### `help`
+
+**概要:** `ai-i18n-tools help [command]`
+
+サブコマンドのヘルプを表示します（`ai-i18n-tools <command> --help`と同じ出力です）。

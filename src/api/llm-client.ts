@@ -6,7 +6,7 @@ import {
   type MetadataExtractor,
   type OpenAICompatibleProvider,
 } from "@ai-sdk/openai-compatible";
-import type { CldrPluralForm, I18nConfig } from "../core/types.js";
+import type { CldrPluralForm, I18nConfig, LlmApiCallEvent } from "../core/types.js";
 import {
   type BatchTranslationResult,
   type ChatResponse,
@@ -32,6 +32,11 @@ import {
   resolveProviderSettings,
   type ResolvedProviderSettings,
 } from "../core/llm-providers.js";
+import {
+  collectProviderPricing,
+  estimateCostUsd,
+  type ProviderPricingTable,
+} from "../core/usage-stats.js";
 import {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
@@ -69,7 +74,7 @@ interface LlmMessage {
 /**
  * Running total of tokens/cost spent on billed responses that were ultimately discarded (empty
  * content, parse failure, or wrong-script output) before a model in the fallback chain succeeded.
- * `cost` stays `undefined` until at least one provider cost is reported (non-cost providers).
+ * `cost` stays `undefined` until a billed attempt has a provider-reported or configured-pricing cost.
  */
 interface DiscardedUsage {
   inputTokens: number;
@@ -122,7 +127,7 @@ export interface LlmAllModelsFailedDetails {
   lastRawAssistantContent?: string;
   /** Tokens spent across billed-but-discarded attempts before every model failed. */
   wastedUsage?: LlmUsageStats;
-  /** USD cost spent across billed-but-discarded attempts (undefined when no cost was reported). */
+  /** USD cost spent across billed-but-discarded attempts (undefined when no cost was known). */
   wastedCost?: number;
 }
 
@@ -183,6 +188,14 @@ export interface LlmClientOptions {
    * only when the enclosing batch/file completes. Must be synchronous and must not throw.
    */
   onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
+  /**
+   * Fires once per billed API response after the outcome is known (`accepted` vs `discarded`).
+   * Unlike {@link onApiUsage}, this is not called for transport failures that never produced a
+   * billed body. Must be synchronous and must not throw.
+   */
+  onApiCall?: (event: LlmApiCallEvent) => void;
+  /** Project/feature context from `glossary.contextFiles` injected into translation prompts. */
+  translationContext?: string;
 }
 
 /** @deprecated Use {@link LlmClientOptions}. */
@@ -191,7 +204,9 @@ export type OpenRouterClientOptions = LlmClientOptions;
 /**
  * Provider-agnostic chat client (Vercel AI SDK, OpenAI-compatible transport) with an ordered
  * `translationModels` fallback chain. The active provider is chosen from config; OpenRouter-specific
- * routing/headers/cost are applied only when the active provider is `openrouter`.
+ * routing/headers are applied only when the active provider is `openrouter`. USD cost is the
+ * provider-reported `usage.cost` when present; otherwise it is calculated from
+ * `providers.<name>.modelPricing` or `pricing` and reported on the same cost field.
  */
 export class LlmClient {
   private readonly provider: string;
@@ -210,7 +225,10 @@ export class LlmClient {
   private readonly httpReferer: string;
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
+  private readonly pricing: ProviderPricingTable;
   private readonly onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
+  private readonly onApiCall?: (event: LlmApiCallEvent) => void;
+  private readonly translationContext: string;
   /** Dedupes identical API/call-failure console lines per (model, error message). */
   private readonly warnedCallFailures = new Set<string>();
 
@@ -263,6 +281,9 @@ export class LlmClient {
     this.httpReferer = opts.httpReferer ?? "https://github.com/wsj-br/ai-i18n-tools";
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
     this.onApiUsage = opts.onApiUsage;
+    this.onApiCall = opts.onApiCall;
+    this.translationContext = opts.translationContext?.trim() ?? "";
+    this.pricing = collectProviderPricing(opts.config.providers);
     this.providerInstance = this.buildProvider(settings);
   }
 
@@ -538,12 +559,68 @@ export class LlmClient {
     return { usage: mergedUsage, cost: mergedCost };
   }
 
+  private emitApiCall(
+    model: string,
+    usage: LlmUsageStats,
+    cost: number | undefined,
+    outcome: LlmApiCallEvent["outcome"]
+  ): void {
+    try {
+      this.onApiCall?.({
+        provider: this.provider,
+        model,
+        usage,
+        cost,
+        outcome,
+      });
+    } catch {
+      // Callers must not throw; swallow so accounting cannot abort translation.
+    }
+  }
+
+  private accountDiscarded(
+    acc: DiscardedUsage,
+    model: string,
+    usage: LlmUsageStats,
+    cost: number | undefined
+  ): void {
+    LlmClient.addDiscarded(acc, usage, cost);
+    this.emitApiCall(model, usage, cost, "discarded");
+  }
+
+  private accountAccepted(model: string, usage: LlmUsageStats, cost: number | undefined): void {
+    this.emitApiCall(model, usage, cost, "accepted");
+  }
+
   /** Read OpenRouter's exact USD cost from `providerMetadata` (other providers: undefined). */
   private extractCost(
     providerMetadata: Record<string, Record<string, unknown>> | undefined
   ): number | undefined {
     const raw = providerMetadata?.[OPENROUTER_PROVIDER_KEY]?.cost;
     return typeof raw === "number" ? raw : undefined;
+  }
+
+  /**
+   * Provider-reported USD cost when the response includes it. Otherwise the amount from
+   * configured `modelPricing` / `pricing` for this model, or `undefined` when neither applies.
+   * A reported cost (including `0`) is never replaced by configured rates.
+   */
+  private resolveBilledCost(
+    model: string,
+    usage: LlmUsageStats,
+    providerMetadata: Record<string, Record<string, unknown>> | undefined
+  ): number | undefined {
+    const reported = this.extractCost(providerMetadata);
+    if (typeof reported === "number") {
+      return reported;
+    }
+    return estimateCostUsd(
+      this.provider,
+      model,
+      usage.inputTokens,
+      usage.outputTokens,
+      this.pricing
+    );
   }
 
   /** Single chat-completions call for one model via the active provider (AI SDK transport). */
@@ -596,7 +673,7 @@ export class LlmClient {
       outputTokens: result.usage.outputTokens ?? 0,
       totalTokens: result.usage.totalTokens ?? 0,
     };
-    const cost = this.extractCost(result.providerMetadata);
+    const cost = this.resolveBilledCost(model, usage, result.providerMetadata);
 
     // Report every billed response immediately so a live run total survives interrupts/errors,
     // even for responses that are later rejected (empty content, parse/script failure) below.
@@ -662,7 +739,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
-          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+          this.accountDiscarded(discarded, model, e.usage, e.cost);
         }
         recordFailure(e);
         continue;
@@ -672,11 +749,12 @@ export class LlmClient {
         options?.validateResponse?.(completion.content);
       } catch (e) {
         lastError = e;
-        LlmClient.addDiscarded(discarded, completion.usage, completion.cost);
+        this.accountDiscarded(discarded, model, completion.usage, completion.cost);
         recordFailure(e, completion.content);
         continue;
       }
 
+      this.accountAccepted(completion.model, completion.usage, completion.cost);
       const folded = LlmClient.foldDiscarded(completion.usage, completion.cost, discarded);
       return { ...completion, usage: folded.usage, cost: folded.cost };
     }
@@ -711,6 +789,7 @@ export class LlmClient {
         targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
         glossaryHints,
         targetLocale,
+        translationContext: this.translationContext || undefined,
       },
       contentType
     );
@@ -767,6 +846,7 @@ export class LlmClient {
         targetLanguageLabel: this.languageLabelForPrompt(locale),
         glossaryHints,
         targetLocale: locale,
+        translationContext: this.translationContext || undefined,
       },
       contentType,
       responseFormat
@@ -798,7 +878,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
-          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+          this.accountDiscarded(discarded, model, e.usage, e.cost);
         }
         lastFailureDetails = {
           systemPrompt,
@@ -851,6 +931,7 @@ export class LlmClient {
           batchSources.push(segments[i]?.content ?? "");
         }
         this.assertBatchExpectedScript(batchOutputs, batchSources, locale);
+        this.accountAccepted(completion.model, completion.usage, completion.cost);
         const folded = LlmClient.foldDiscarded(completion.usage, completion.cost, discarded);
         return {
           translations,
@@ -862,7 +943,7 @@ export class LlmClient {
         };
       } catch (e) {
         lastError = e;
-        LlmClient.addDiscarded(discarded, completion.usage, completion.cost);
+        this.accountDiscarded(discarded, model, completion.usage, completion.cost);
         lastFailureDetails = {
           systemPrompt,
           userContent,
@@ -935,6 +1016,7 @@ export class LlmClient {
       targetLanguageLabel: this.languageLabelForPrompt(targetLocale),
       glossaryHints: options?.glossaryHints,
       targetLocale,
+      translationContext: this.translationContext || undefined,
     });
 
     const openRouterMessages = this.toOpenRouterMessages([
@@ -955,7 +1037,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
-          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+          this.accountDiscarded(discarded, model, e.usage, e.cost);
         }
         lastFailureDetails = {
           systemPrompt,
@@ -982,6 +1064,7 @@ export class LlmClient {
           this.assertExpectedScript(translations[i]!, targetLocale, texts[i]);
         }
         this.assertBatchExpectedScript(translations, texts, targetLocale);
+        this.accountAccepted(result.model, result.usage, result.cost);
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           translations,
@@ -991,7 +1074,7 @@ export class LlmClient {
         };
       } catch (e) {
         lastError = e;
-        LlmClient.addDiscarded(discarded, result.usage, result.cost);
+        this.accountDiscarded(discarded, model, result.usage, result.cost);
         lastFailureDetails = {
           systemPrompt,
           userContent,
@@ -1051,6 +1134,7 @@ export class LlmClient {
     const { systemPrompt, userContent } = buildProofreadUIPromptMessages(texts, {
       languageLabel,
       glossaryHints: options?.glossaryHints,
+      translationContext: this.translationContext || undefined,
     });
 
     const openRouterMessages = this.toOpenRouterMessages([
@@ -1070,7 +1154,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
-          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+          this.accountDiscarded(discarded, model, e.usage, e.cost);
         }
         this.recordDiscardedAttempt({
           locale: languageLabel,
@@ -1090,6 +1174,7 @@ export class LlmClient {
           result.content,
           texts.length
         );
+        this.accountAccepted(result.model, result.usage, result.cost);
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           slots,
@@ -1100,7 +1185,7 @@ export class LlmClient {
         };
       } catch (e) {
         lastError = e;
-        LlmClient.addDiscarded(discarded, result.usage, result.cost);
+        this.accountDiscarded(discarded, model, result.usage, result.cost);
         this.recordDiscardedAttempt({
           locale: languageLabel,
           relativePath: this.debugFailedRelativePath,
@@ -1168,7 +1253,7 @@ export class LlmClient {
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
-          LlmClient.addDiscarded(discarded, e.usage, e.cost);
+          this.accountDiscarded(discarded, model, e.usage, e.cost);
         }
         lastFailureDetails = {
           systemPrompt: messages.systemPrompt,
@@ -1202,6 +1287,7 @@ export class LlmClient {
             this.assertExpectedScript(value, options.targetLocale, options.originalLiteral);
           }
         }
+        this.accountAccepted(result.model, result.usage, result.cost);
         const folded = LlmClient.foldDiscarded(result.usage, result.cost, discarded);
         return {
           forms,
@@ -1212,7 +1298,7 @@ export class LlmClient {
         };
       } catch (e) {
         lastError = e;
-        LlmClient.addDiscarded(discarded, result.usage, result.cost);
+        this.accountDiscarded(discarded, model, result.usage, result.cost);
         lastFailureDetails = {
           systemPrompt: messages.systemPrompt,
           userContent: messages.userContent,

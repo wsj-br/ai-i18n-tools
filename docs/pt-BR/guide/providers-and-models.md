@@ -50,9 +50,9 @@ Diferentes provedores e modelos variam em custo, velocidade e qualidade entre os
 
 **Strings de UI:** o `uiModels` opcional permite rotear `translate-ui`, geração plural e `proofread-ui` por meio de modelos premium antes da cadeia global de `translationModels` — útil porque o texto da UI é curto, mas voltado para o usuário.
 
-**Localidades asiáticas:** entradas opcionais de `localeModels` para `ja`, `ko`, `zh-Hans` e `zh-Hant` são tentadas primeiro em cada pipeline; modelos como `z-ai/glm-5.2` e `minimax/minimax-m2.7` geralmente têm melhor desempenho em scripts CJK do que em substitutos de uso geral.
+**Localidades asiáticas:** entradas opcionais de `localeModels` para `ja`, `ko`, `zh-Hans` e `zh-Hant` são testadas primeiro em cada pipeline; modelos como `z-ai/glm-5.3` e `minimax/minimax-m2.7` geralmente apresentam melhor desempenho em scripts CJK do que os fallbacks de uso geral.
 
-Exemplo de configuração (OpenRouter):
+Configuração de exemplo (OpenRouter). `translationModels` e `uiModels` são as listas que este repositório usa em `ai-i18n-tools.config.json`. `localeModels` é um complemento opcional recomendado para localidades CJK; este repositório não o define.
 
 ```json
 {
@@ -60,24 +60,25 @@ Exemplo de configuração (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Cada bloco de provedor pode definir seu próprio `translationModels`, `uiModels` e `localeModels` opcionais, `maxTokens`, `temperature` e `requestTimeoutMs`. Um bloco `openrouter` legado de nível superior ainda é aceito e migrado automaticamente para `providers.openrouter` ao carregar.
+Cada bloco de provedor pode definir seu próprio `translationModels`, `uiModels` e `localeModels` opcionais, `maxTokens`, `temperature` e `requestTimeout` (segundos) ou `requestTimeoutMs`. Um tempo limite no provedor substitui o `requestTimeout` / `requestTimeoutMs` de nível superior. Um bloco `openrouter` de nível superior legado ainda é aceito e migrado automaticamente para `providers.openrouter` no carregamento.
 
-Exemplo executável com quatro provedores no mesmo documento: [`examples/multi-provider`](/pt-BR/examples#multi-provider).
+`pricing` e `modelPricing` opcionais definem o valor em USD por 1.000.000 de tokens (`inputPerMTokens` e `outputPerMTokens`) quando o provedor omite `usage.cost`. `pricing` é o padrão para todo o provedor; uma entrada `modelPricing` o substitui para um ID de modelo. O OpenRouter já retorna um custo por chamada, portanto, deixe ambos indefinidos nesse provedor. Um custo informado pelo provedor é mantido exatamente como retornado. O valor é incluído no resumo da tradução, em [`usage`](/pt-BR/reference/cli-commands/workflows#usage) e em [Uso e custos](/pt-BR/guide/translation-dashboard/usage).
+
+Exemplo executável com quatro provedores no mesmo documento, incluindo taxas de exemplo: [`examples/multi-provider`](/pt-BR/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Referência adicional
 
-- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela predefinida, endpoints personalizados, tempos limite de solicitação, comportamento específico do OpenRouter.
-- [Arquitetura — cliente LLM](/pt-BR/reference/architecture) — como o fallback do modelo, o agrupamento e o relatório de custos funcionam internamente.
+- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela de predefinições, endpoints personalizados, tempos limite de requisição, taxas de custo, comportamento específico do OpenRouter.
+- [Arquitetura — Cliente LLM](/pt-BR/reference/architecture) — como o fallback de modelo, o processamento em lote e o relatório de custos funcionam internamente.
 - [Variáveis de ambiente](/pt-BR/reference/environment-variables) — variáveis de ambiente de chave de API e substituições de URL base.

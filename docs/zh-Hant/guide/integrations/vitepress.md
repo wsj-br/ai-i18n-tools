@@ -216,8 +216,8 @@ themeConfig: themeConfigFor(theme, code)
 
 **撰寫規則**
 
-- 跨頁文件連結：在 `docs/` 下的英文 Markdown 中使用**站點路由**（`/guide/…`、`/reference/…`），或在撰寫將同步至另一個專案 `docs/index.md` 的 README 時使用 `docs/guide/…` 路徑。
-- 可執行的範例、`LICENSE` 及其他存放庫檔案：在 `README.md` 與文件中使用**完整 GitHub URL**（參見 [README 與文件首頁](#readme-as-the-docs-homepage)）。
-- **不要**手動編輯 `docs/<locale>/` 中的連結 — 請用 `sync` / `translate-docs` 重新產生。
+- 跨頁文件連結：在 `docs/` 下的英文 Markdown 中使用**網站路由**（`/guide/…`、`/reference/…`），或在撰寫將同步至其他專案中 `docs/index.md` 的 README 時使用 `docs/guide/…` 路徑。
+- 可執行範例、`LICENSE` 及其他儲存庫檔案：在 `README.md` 及文件中使用**完整 GitHub URL**（請參閱 [README 與文件首頁](#readme-and-the-docs-homepage)）。
+- **請勿**手動編輯 `docs/<locale>/` 中的連結——請使用 `sync` / `translate-docs` 重新產生。
 
 另見[連結重寫](/zh-Hant/guide/images-and-screenshots/link-rewriting)（扁平 vs VitePress）與[設定 — `docsOutput`](/zh-Hant/reference/configuration#docsoutput)。

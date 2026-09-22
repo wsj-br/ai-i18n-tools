@@ -75,10 +75,10 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 **エイリアス** (同じ `doc-system` エンジン、プリセット `localeSubpath` およびデフォルト):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` のデフォルトは `docusaurus-plugin-content-docs/current` (Docusaurus i18nプラグインレイアウト) です。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` のデフォルトは `""` です; `localePathLowercase` のデフォルトは `true` です。`{outputDir}/{locale}/` の下にある翻訳ページは、英語がコンテンツルートにあり、`outputDir` が `docsRoot` と等しい場合に [Starlight](https://starlight.astro.build/guides/i18n/) に一致します。プレーンなAstroロケールページ (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) にも使用されます — [Astroウェブサイトページ](/ja/guide/ui-strings/astro-website#pages-parse-and-replace) を参照してください。
-- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトですが、`localeSubpath` は空です; BCP-47ロケールフォルダ名が保持されます (`localePathLowercase` のデフォルトは `false` です)。[VitePress統合](/ja/guide/integrations/vitepress) を参照してください。
-- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトですが、`localeSubpath` は空です; 英語ソースはロケールフォルダの下にあります (例: `content/en/`)。[Nextra統合](/ja/guide/integrations/nextra) を参照してください。
+- `docsOutput.style = "docusaurus"` — `localeSubpath`のデフォルトは`docusaurus-plugin-content-docs/current`です（Docusaurus i18nプラグインのレイアウト）。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath`のデフォルトは`""`、`localePathLowercase`のデフォルトは`true`です。翻訳済みページは`{outputDir}/{locale}/`配下に配置され、英語コンテンツがコンテンツルートにあり、`outputDir`が`docsRoot`と等しい場合の[Starlight](https://starlight.astro.build/guides/i18n/)と一致します。通常のAstroロケールページ（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）にも使用されます。詳細は[Astroウェブサイトのページ](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照してください。
+- `docsOutput.style = "vitepress"` — `localeSubpath`が空の`doc-system`と同じレイアウトです。BCP-47ロケールフォルダ名は保持されます（`localePathLowercase`のデフォルトは`false`）。[VitePressの統合](/ja/guide/integrations/vitepress)を参照してください。
+- `docsOutput.style = "nextra"` — `localeSubpath`が空の`doc-system`と同じレイアウトです。英語のソースはロケールフォルダ配下に配置されます（例：`content/en/`）。[Nextraの統合](/ja/guide/integrations/nextra)を参照してください。
 
 Docusaurus プリセット（主なドキュメントページ）：
 

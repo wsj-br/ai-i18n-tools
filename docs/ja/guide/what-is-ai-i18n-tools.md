@@ -40,8 +40,10 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 | [vitepress-docs](/ja/examples#vitepress-docs) | VitePressドキュメントとテーマカタログ |
 | [nextra-docs](/ja/examples#nextra-docs) | Nextraドキュメントと`_meta.ts`サイドバーラベルおよびテーマ辞書 |
 | [fumadocs-docs](/ja/examples#fumadocs-docs) | Fumadocsドキュメントと`meta.json`サイドバーラベルおよびUIカタログ |
+| [plain-html](/ja/examples#plain-html) | `data-i18n*` マーカーとロケール JSON を含む静的 HTML |
 | [multi-provider](/ja/examples#multi-provider) | 同じドキュメントで LLM プロバイダーを比較 |
 | [test-markdown](/ja/examples#test-markdown) | Markdown パイプラインのストレステスト (CJK、デーヴァナーガリー、エッジケース) |
+| [intlayer-migration](/ja/examples#intlayer-migration) | `migrate-intlayer` を介した Intlayer `.content.ts` → `t()` |
 
 [例](/ja/examples) で `npx degit` コピーコマンドと選択ガイドを参照してください。
 

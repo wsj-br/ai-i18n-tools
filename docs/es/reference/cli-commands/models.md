@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI — Modelos y catálogo
+<a id="cli--models--languages"></a>
+# CLI — Modelos e idiomas
 
 <a id="check-models"></a>
 ### `check-models`
 
 **Resumen:** `ai-i18n-tools check-models`
 
-Valida cada id de modelo configurado contra la lista `GET /models` del proveedor activo (miembros y `expiration_date`). Requiere la clave de API del proveedor (ninguna para proveedores sin clave como Ollama). Sale con un código de salida distinto de cero cuando algún id configurado esté ausente o haya expirado, y respeta las `requestTimeoutMs` del proveedor. Cuando el proveedor devuelve precios (por ejemplo, OpenRouter), también muestra el precio en USD por 1 millón de tokens para el prompt/completado.
+Valide cada ID de modelo configurado con la lista `GET /models` del proveedor activo (pertenencia y `expiration_date`). Requiere la clave API de ese proveedor (ninguna para proveedores sin clave como Ollama). Sale con un valor distinto de cero cuando falta o ha caducado algún ID configurado, y respeta el tiempo de espera de la solicitud resuelto (`requestTimeout` o `requestTimeoutMs` en el proveedor, de lo contrario el valor de nivel superior). Cuando el proveedor devuelve precios (por ejemplo, OpenRouter), también muestra USD por 1M de tokens para la solicitud/finalización.
 
 **Véase también:** [Proveedores de LLM](/es/guide/providers-and-models)
 

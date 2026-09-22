@@ -1,5 +1,5 @@
-<a id="cli--cache--maintenance"></a>
-# CLI — 快取與維護
+<a id="cli--cache-maintenance"></a>
+# CLI — 快取維護
 
 <a id="cleanup"></a>
 ### `cleanup`

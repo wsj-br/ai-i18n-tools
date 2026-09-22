@@ -146,7 +146,7 @@ Aktivieren Sie alle Funktionen in einer einzigen Konfiguration, um UI-Strings un
 
 <br />
 
-`glossary.uiGlossary` verweist die Dokumentenübersetzung auf denselben `strings.json`-Katalog wie die UI, sodass die Terminologie konsistent bleibt; `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu.
+`glossary.uiGlossary` verweist die Dokumentübersetzung auf denselben `strings.json`-Katalog wie die Benutzeroberfläche, damit die Terminologie konsistent bleibt; `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu. Siehe [Glossar](/de/guide/glossary).
 
 Führen Sie `ai-i18n-tools sync` aus, um eine Pipeline auszuführen: Wenn `features.translateUIStrings` aktiviert ist, werden UI-Strings **extrahiert** und dann **übersetzt**; optional **SVG übersetzen** (`features.translateSVG` + `svg`-Block); **Dokumentation übersetzen** (`docs[]` wie konfiguriert); dann optional **JSON übersetzen** (`features.translateJson` + `json[]`). Überspringen Sie Teile mit `--no-ui`, `--no-svg`, `--no-docs` oder `--no-json`. Die Schritte für Dokumentation und `json[]` akzeptieren `--dry-run`, `-p` / `--path`, `--force`, `--force-update` und `--check-cache` (nur für Dokumente geltende Flags werden ignoriert, wenn `--no-docs`; JSON verwendet dieselben Cache-Flags, wenn `--no-json` nicht festgelegt ist).
 

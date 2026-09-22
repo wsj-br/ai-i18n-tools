@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## Typical bootstrap
+
+A minimal `src/i18n.ts` composes the i18next helpers. `SOURCE_LOCALE` must match `sourceLocale` in `ai-i18n-tools.config.json`. Import paths below assume this file sits beside `locales/`.
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+On language change, call `await loadLocale(next)` then `await i18n.changeLanguage(next)`. React (`initReactI18next`), source-locale plurals (`sourcePluralFlatBundle`), and `applyDirection` are covered in [Wire i18next](/guide/ui-strings/i18next-runtime).
+
 <a id="quick-reference"></a>
 ## Quick reference
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-Use `setupKeyAsDefaultT` as the usual app entry point (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Calling `wrapI18nWithKeyTrim` alone is **deprecated** for application wiring.
+The [typical bootstrap](#typical-bootstrap) shows how these factories compose. Use `setupKeyAsDefaultT` as the usual app entry point (key-trim + plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Calling `wrapI18nWithKeyTrim` alone is **deprecated** for application wiring.
 
 `sourcePluralFlatBundle` requires an i18next instance with `addResourceBundle()`. The `lng` field must match `SOURCE_LOCALE` in your bootstrap file and `sourceLocale` in `ai-i18n-tools.config.json`.
 

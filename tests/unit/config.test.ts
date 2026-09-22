@@ -239,6 +239,74 @@ describe("parseI18nConfig", () => {
     expect(c.uiBatchConcurrency).toBe(3);
   });
 
+  it("accepts providers.<name>.pricing and modelPricing", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        provider: "openai",
+        providers: {
+          openai: {
+            translationModels: ["gpt-4o-mini", "gpt-4o"],
+            pricing: { inputPerMTokens: 0.15, outputPerMTokens: 0.6 },
+            modelPricing: {
+              "gpt-4o": { inputPerMTokens: 2.5, outputPerMTokens: 10 },
+            },
+          },
+        },
+      })
+    );
+    expect(c.providers.openai?.pricing).toEqual({
+      inputPerMTokens: 0.15,
+      outputPerMTokens: 0.6,
+    });
+    expect(c.providers.openai?.modelPricing?.["gpt-4o"]).toEqual({
+      inputPerMTokens: 2.5,
+      outputPerMTokens: 10,
+    });
+  });
+
+  it("rejects negative providers.<name>.pricing rates", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+          provider: "openai",
+          providers: {
+            openai: {
+              translationModels: ["gpt-4o-mini"],
+              pricing: { inputPerMTokens: -0.1, outputPerMTokens: 0.6 },
+            },
+          },
+        })
+      )
+    ).toThrow(/Invalid ai-i18n-tools config/);
+  });
+
+  it("rejects extra keys on providers.<name>.modelPricing rates", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+          provider: "openai",
+          providers: {
+            openai: {
+              translationModels: ["gpt-4o"],
+              modelPricing: {
+                "gpt-4o": { inputPerMTokens: 2.5, outputPerMTokens: 10, extra: 1 },
+              },
+            },
+          },
+        })
+      )
+    ).toThrow(/Invalid ai-i18n-tools config/);
+  });
+
   it("rejects unknown top-level keys", () => {
     expect(() =>
       parseI18nConfig(
@@ -988,6 +1056,34 @@ describe("parseI18nConfig glossary legacy field", () => {
     );
     expect(c.glossary?.uiGlossary).toBe("strings.json");
   });
+
+  it("accepts glossary.contextFiles and contextMaxChars", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        cacheDir: ".translation-cache",
+        docs: [{ contentPaths: [], outputDir: "./out" }],
+        ui: uiDefaults,
+        glossary: {
+          contextFiles: ["i18n/product-context.md"],
+          contextMaxChars: 8000,
+        },
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: {
+          translateUIStrings: true,
+          translateDocs: false,
+        },
+      })
+    );
+    expect(c.glossary?.contextFiles).toEqual(["i18n/product-context.md"]);
+    expect(c.glossary?.contextMaxChars).toBe(8000);
+  });
 });
 
 describe("parseI18nConfig targetLocales", () => {
@@ -1222,5 +1318,54 @@ describe("languagesManifestPath migration", () => {
     expect(onDisk.languagesManifestPath).toBe("locales/ui-languages.json");
     expect(onDisk.uiLanguagesPath).toBeUndefined();
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("request timeout config", () => {
+  it("accepts a top-level requestTimeout in seconds", () => {
+    const c = parseI18nConfig({
+      sourceLocale: "en",
+      requestTimeout: 90,
+      providers: { openrouter: {} },
+    });
+    expect(c.requestTimeout).toBe(90);
+    expect(c.requestTimeoutMs).toBeUndefined();
+  });
+
+  it("accepts a top-level requestTimeoutMs", () => {
+    const c = parseI18nConfig({
+      sourceLocale: "en",
+      requestTimeoutMs: 12_000,
+    });
+    expect(c.requestTimeoutMs).toBe(12_000);
+  });
+
+  it("rejects both top-level timeout fields", () => {
+    expect(() =>
+      parseI18nConfig({
+        sourceLocale: "en",
+        requestTimeout: 90,
+        requestTimeoutMs: 1000,
+      })
+    ).toThrow(/requestTimeout: set only one of requestTimeout/);
+  });
+
+  it("rejects both timeout fields on one provider", () => {
+    expect(() =>
+      parseI18nConfig({
+        sourceLocale: "en",
+        providers: { openrouter: { requestTimeout: 30, requestTimeoutMs: 1000 } },
+      })
+    ).toThrow(/providers\.openrouter\.requestTimeout: set only one of requestTimeout/);
+  });
+
+  it("allows a provider timeout together with a different top-level timeout", () => {
+    const c = parseI18nConfig({
+      sourceLocale: "en",
+      requestTimeout: 90,
+      providers: { openrouter: { requestTimeoutMs: 5000 } },
+    });
+    expect(c.requestTimeout).toBe(90);
+    expect(c.providers.openrouter?.requestTimeoutMs).toBe(5000);
   });
 });

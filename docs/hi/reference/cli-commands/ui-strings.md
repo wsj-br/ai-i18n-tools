@@ -12,6 +12,21 @@
 
 ---
 
+<a id="migrate-intlayer"></a>
+### `migrate-intlayer`
+
+**सारांश:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
+
+इंटलेयर `*.content.ts` डिक्शनरी को `strings.json` और फ्लैट लोकेल फ़ाइलों में आयात करें, और साधारण `useIntlayer` / `getIntlayer` कॉल साइटों को `t('English source')` में फिर से लिखें। डिफ़ॉल्ट रूप से ड्राई रन (रिपोर्ट अभी भी लिखी जाती है)। `--write` कैटलॉग को सीड करता है और सुरक्षित रीराइट लागू करता है। LLM को कॉल नहीं करता है।
+
+रिपोर्ट `--write` द्वारा छोड़ी गई हर चीज़ के हैंडऑफ़ के रूप में कार्य करती है, और यह एक **चरण-दर-चरण TODO** के साथ समाप्त होती है जो बाकी कार्य को क्रमबद्ध करता है: प्रत्येक मैन्युअल साइट के लिए एक ठोस `t()` या JSX कॉल, `import { t }` लाइन, डिक्शनरी फ़ाइलें और बाद में हटाने के लिए `IntlayerProvider` के अवशेष, स्रोत स्ट्रिंग्स जिन्हें पहले `extract` और फिर `translate-ui` की आवश्यकता होती है, और ऐप के i18n मॉड्यूल पर पेस्ट करने के लिए एक i18next रनटाइम बूटस्ट्रैप। लोकेल नियंत्रण को `i18n.changeLanguage` के साथ-साथ `loadLocale` को भी कॉल करना होगा। `extract` `ui-languages.json` लिखता है, जिसे वह बूटस्ट्रैप इम्पोर्ट करता है। `strings.json`, फ्लैट लोकेल फ़ाइलों, या `ui-languages.json` को मैन्युअल रूप से संपादित न करें।
+
+**मुख्य विकल्प:** `--write`, `--report`, `--content-glob` (डिफ़ॉल्ट `**/*.content.ts`), `--t-import`
+
+**यह भी देखें:** [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

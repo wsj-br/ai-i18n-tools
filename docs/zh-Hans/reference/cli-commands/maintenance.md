@@ -1,5 +1,5 @@
-<a id="cli--cache--maintenance"></a>
-# CLI — 缓存与维护
+<a id="cli--cache-maintenance"></a>
+# CLI — 缓存维护
 
 <a id="cleanup"></a>
 ### `cleanup`

@@ -25,6 +25,8 @@ Requiere al menos un bloque `docs[]`. Recopila `.md` / `.mdx` bajo el `contentPa
 
 Después de actualizar los archivos de origen, el comando también recorre el markdown traducido existente de cada configuración regional (la misma asignación de ruta `docsOutput` que `translate-docs`). Copia los ID de encabezado en **inglés** en los encabezados ATX coincidentes en orden de documento (nunca crea un slug del título traducido) y mueve un `{#id}` / `{/* #id */}` a mitad de encabezado (o un `<a id>` HTML extraviado) de nuevo a la forma que Docusaurus / el estilo elegido espera. Los archivos traducidos que faltan se omiten. `--remove` también elimina los ID de encabezado de esos archivos traducidos, incluidos los tokens mal ubicados a mitad de línea.
 
+Cuando los ID de encabezado de un archivo traducido se reubican o corrigen, el segmento traducido en caché correspondiente (indexado por el hash de origen en inglés) también se actualiza, siempre que el texto fuente en inglés y el contenido traducido anterior y nuevo tengan el mismo número de segmentos. Una discrepancia en el recuento hace que se omita dicho archivo y configuración regional. Posteriormente, un `sync --force-update` vuelve a ensamblar el archivo a partir de la fila de caché actualizada.
+
 **Opciones clave:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
 `--slug-style`: `github` (predeterminado; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (sufijo Docusaurus `{/* #… */}`). Con `pymdown`, opcional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove` no se puede combinar con `--pymdown-*`.

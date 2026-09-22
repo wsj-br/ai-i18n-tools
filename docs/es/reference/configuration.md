@@ -97,6 +97,13 @@ Agrupación de segmentos para **translate-docs**, **translate-svg** y **translat
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs` (opcional)
+
+Tiempo máximo de espera para cada solicitud de LLM, para cada proveedor. `requestTimeout` son segundos completos; `requestTimeoutMs` son milisegundos. Predeterminado: **45** segundos cuando ambos se omiten. Establezca solo uno de los dos. Un proveedor que establece cualquiera de los campos usa ese valor en su lugar, solo para ese proveedor.
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` y `providers`
 
@@ -122,8 +129,14 @@ Cada bloque de `providers.<name>` acepta:
   Máximo de tokens de finalización por solicitud. Predeterminado: `8192`.
 - `temperature`
   Temperatura de muestreo. Predeterminado: `0.2`.
+- `requestTimeout`
+  Tiempo máximo en segundos de espera para cada solicitud a este proveedor. Anula el `requestTimeout` / `requestTimeoutMs` de nivel superior. Cuando ni este proveedor ni la configuración de nivel superior establecen un tiempo de espera, el valor predeterminado es `45` segundos. Configure solo uno de `requestTimeout` y `requestTimeoutMs` en el mismo objeto.
 - `requestTimeoutMs`
-  Tiempo máximo en milisegundos para esperar cada solicitud. Predeterminado: `30000` (30 segundos).
+  Tiempo máximo en milisegundos de espera para cada solicitud a este proveedor. Anula el `requestTimeout` / `requestTimeoutMs` de nivel superior. Cuando ni este proveedor ni la configuración de nivel superior establecen un tiempo de espera, el valor predeterminado es `45000` (45 segundos). Configure solo uno de `requestTimeout` y `requestTimeoutMs` en el mismo objeto.
+- `pricing` (opcional)
+  USD por 1.000.000 de tokens a nivel de proveedor: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Cuando una llamada facturada no tiene `usage.cost` reportado por el proveedor (la mayoría de los proveedores además de OpenRouter), esta tarifa se aplica a los tokens de entrada y salida de dicha llamada. El importe se incluye en el resumen de traducción y se almacena en la fila `api_calls`. Una entrada `modelPricing` coincidente anula este valor predeterminado. Un coste reportado por el proveedor nunca se reemplaza. Las filas que se almacenaron sin coste aún pueden estimarse más tarde mediante [`usage`](/es/reference/cli-commands/workflows#usage) y [Uso y costes](/es/guide/translation-dashboard/usage).
+- `modelPricing` (opcional)
+  USD por 1.000.000 de tokens por modelo: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Anula `pricing` para ese ID de modelo. Se aplica en el momento de la llamada cuando el proveedor omitió `usage.cost`, y se almacena con la llamada.
 
 Presets de proveedores integrados (clave — URL base — variable de entorno de clave API):
 
@@ -143,9 +156,9 @@ Presets de proveedores integrados (clave — URL base — variable de entorno de
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (ninguno) |
 
-Todavía se acepta un bloque `openrouter` de nivel superior heredado (con `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs`) y se migra automáticamente a `providers.openrouter` (con `provider: "openrouter"`) al cargarlo; `defaultModel` / `fallbackModel` se pliegan en `translationModels`.
+Un bloque `openrouter` de nivel superior heredado (con `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) todavía se acepta y se migra automáticamente a `providers.openrouter` (con `provider: "openrouter"`) al cargar; `defaultModel` / `fallbackModel` se pliegan en `translationModels`.
 
-Para ver un ejemplo ejecutable que configura varios proveedores en una configuración y cambia entre ellos con `-P`, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `nvidia` y `deepseek` en el mismo documento).
+Para un ejemplo ejecutable que configura varios proveedores en una configuración y cambia entre ellos con `-P`, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` y `deepseek` en el mismo documento).
 
 **Por qué usar múltiples modelos:** Diferentes proveedores y modelos tienen costos variables y ofrecen diferentes niveles de calidad entre idiomas y locales. Configura `translationModels` **como una cadena de respaldo ordenada** (en lugar de un solo modelo) para que la CLI pueda intentar el siguiente modelo si una solicitud falla.
 
@@ -342,13 +355,13 @@ Cuando `true`, los diseños de salida integrados (`nested`, `flat`, `doc-system`
 - `docsOutput.flatPreserveRelativeDir`
 Cuando `docsOutput.style = "flat"`, mantenga los subdirectorios de origen para que los archivos con el mismo nombre base no colisionen. Predeterminado `false`.
 - `docsOutput.rewriteRelativeLinks`
-Reescribe los enlaces relativos después de la traducción (habilitado automáticamente cuando `docsOutput.style = "flat"` y no hay `pathTemplate` personalizado).
+Reescribir enlaces relativos después de la traducción (se habilita automáticamente cuando `docsOutput.style = "flat"` y no hay un `pathTemplate` personalizado).
 - `docsOutput.linkRewriteDocsRoot`
-Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Normalmente, déjelo como `"."` a menos que su documentación traducida se encuentre bajo una raíz de proyecto diferente.
+Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Por lo general, deje esto como `"."` a menos que su documentación traducida se encuentre en una raíz de proyecto diferente.
 - `docsOutput.rewriteVitepressLinks`
-Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño `doc-system` donde las carpetas de localización se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` de estilo README a rutas del sitio (`/guide/…`) y enlaces `../guide/…` relativos a la localización. Para enlaces a archivos del repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en la fuente en inglés — consulte [Integración de VitePress — README como la página de inicio de la documentación](/es/guide/integrations/vitepress#readme-as-homepage).
+Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Está habilitado de forma predeterminada cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño de `doc-system` donde las carpetas de configuración regional se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` al estilo README a las rutas del sitio (`/guide/…`) y los enlaces `../guide/…` relativos a la configuración regional. Para los enlaces a archivos del repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en el texto fuente en inglés; consulte [Integración de VitePress — README como página de inicio de la documentación](/es/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"nextra"`. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas de sitio neutrales a la localización (`/guide/…`) para Next.js `i18n`. Consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
+Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Está habilitado de forma predeterminada cuando `docsOutput.style` es `"nextra"`. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas del sitio neutrales respecto a la configuración regional (`/guide/…`) para `i18n` de Next.js. Consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
 `"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a las fuentes en inglés; dir escribe carpetas de localización como Nextra. Consulte [Integración de Fumadocs — Diseño de página](/es/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ Matriz de nivel superior de canalizaciones de traducción JSON anidadas. Se usa 
 | Campo | Descripción |
 |-------|-------------|
 | `description` | Nota opcional para CLI / `status` (no se traduce). |
-| `contentPaths` | Archivos, directorios o patrones `.json` de origen bajo la raíz del proyecto. |
+| `contentPaths` | Archivos, directorios o globs de `.json` de origen bajo la raíz del proyecto. Se admiten los archivos de espacio de nombres i18next típicos (`public/locales/en/*.json`): objetos anidados, matrices, interpolación <code v-pre>{{var}}</code> en valores de cadena y claves de sufijo plural independientes (`key_one`, `key_other`). |
 | `outputPathTemplate` | Ruta de salida requerida por configuración regional de destino. Marcadores de posición: `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
 | `targetLocales` | Subconjunto opcional para este bloque; en caso contrario, raíz `targetLocales`. |
 | `keyPolicy.mode` | `allowlist`, `denylist` o `both`. |
@@ -474,13 +487,31 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 | Campo          | Descripción                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | Ruta a `strings.json` - crea automáticamente un glosario a partir de traducciones existentes.                                                                                                 |
-| `userGlossary` | Ruta a un archivo CSV con columnas `Original language string` (o `en`), `locale`, `Translation` - una fila por término fuente y configuración regional objetivo (`locale` puede ser `*` para todos los destinos). |
+| `userGlossary` | Ruta a un CSV con columnas `Original language string` (o `en`), `locale`, `Translation`, `Force` opcional y `Context` opcional, una fila por término de origen y configuración regional de destino (`locale` puede ser `*` para todos los destinos). |
 | `autoAddUserEditedToGlossary` | Cuando `true`, las ediciones del panel de control a las cadenas de la interfaz de usuario se pueden añadir automáticamente al glosario del usuario. |
+| `contextFiles` | Archivos Markdown o de texto sin formato (`.md`, `.markdown`, `.txt`) opcionales relativos al directorio de trabajo actual con explicaciones de productos o características. Se cargan al inicio del comando y se inyectan en la interfaz de usuario, documentos, JSON, SVG y avisos de revisión. No coloque estos archivos en `docs[].contentPaths` a menos que también desee que se traduzcan. Las URL son rechazadas. El texto completo se envía al proveedor de LLM configurado y puede aparecer en los registros de `--debug-failed`; no incluya secretos ni PII. |
+| `contextMaxChars` | Caracteres máximos de texto de archivo de contexto concatenado enviado al modelo (predeterminado `12000`, límite estricto `100000`). El texto en exceso se trunca con una advertencia. |
 
 `translate-docs` utiliza el mismo glosario para las sugerencias de terminología, pero omite las abreviaturas compactas de etiquetas de interfaz de usuario (formas con puntos finales como `Alm.`, o compresiones cortas de un solo token como `Size` → `Tam`) para que las indicaciones del documento no se dirijan a tokens <code v-pre>{{…}}</code> inventados. Los términos completos del producto y las traducciones de la interfaz de usuario no abreviadas todavía se sugieren.
+
+La columna CSV opcional `Context` es una guía de uso en el idioma de origen para ese término (definición, uso gramatical, significado del producto). Se incluye solo cuando el término coincide con el lote actual. Cambiar la nota `Context` de un término o cualquier contenido de `contextFiles` invalida los segmentos en caché de la configuración regional coincidente y las filas de seguimiento de archivos en la siguiente ejecución, por lo que las traducciones se actualizan automáticamente. Cambiar solo un `Translation` preferido aún usa la caché existente a menos que pase `--force` / `--force-update`. Las filas de caché editadas por el usuario del panel se mantienen.
+
+Ejemplo:
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **Genere un archivo CSV de glosario vacío:**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+Para redactar `contextFiles` desde el repositorio, utilice el prompt de copiar y pegar del agente en [Generar un archivo de contexto con un agente de IA](/es/guide/glossary#generate-a-context-file-with-an-ai-agent). Consulte el [Glosario](/es/guide/glossary) para saber cómo se aplican las filas de términos y los archivos de contexto.

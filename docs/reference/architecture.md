@@ -31,7 +31,7 @@ Every pipeline follows the same core loop: **extract segments → protect syntax
 | | `src/processors/` | Placeholder protection, batching, validation, link rewriting |
 | **Shared** | `src/core/` | Config, types, SQLite cache, prompts, output paths, locale utilities |
 | | `src/api/` | `LlmClient` — provider-agnostic chat client (Vercel AI SDK) with model fallback |
-| | `src/glossary/` | Glossary loading and term hints for prompts |
+| | `src/glossary/` | Glossary loading, term hints, and optional project-context files for prompts |
 | | `src/utils/` | Logger, hashing, ignore parser, display-width tables, `.env` loader |
 | **Your app runtime** | `src/runtime/` | i18next helpers and display utilities — exported as `'ai-i18n-tools/runtime'` ([Runtime helpers](/guide/runtime-helpers)) |
 | **Tool UI** *(dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Localizes this package's own CLI and Translation Dashboard — separate from your project content ([Self-localization](#self-localization-tool-ui)) |
@@ -203,6 +203,10 @@ SQLite database (via `node:sqlite`) stores rows keyed by `(source_hash, locale)`
 
 On each run, segments are looked up by hash × locale. Only cache misses go to the LLM. After translation, `last_hit_at` is reset for segment rows in the current translate scope that were not hit. Successful cache hits during doc translation clear stale `translation_failures` rows for that segment. `cleanup` runs `sync --force-update` first, then removes stale segment rows (null `last_hit_at` / empty filepath), prunes `file_tracking` keys when the resolved source path is missing on disk (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), removes translation rows whose metadata filepath points at a missing file, prunes orphaned `translation_failures` rows, prunes orphaned `markdown_source_issues` rows whose resolved source path is missing on disk, and drops cache rows for locales absent from config (`sourceLocale`, root `targetLocales`, and any per-block `docs[]` / `json[]` `targetLocales`; SQLite only — use `purge-locale` to delete generated files); it does not back up `cache.db` unless `--backup <path>` is passed, which writes a backup to that path first.
 
+Billed model calls (accepted translations and discarded retries) are stored in `api_calls`. After a command that recorded calls, detail rows older than seven UTC calendar days roll into monthly `api_totals`. `usage` and the dashboard Usage & costs view combine both tables. See [Usage & costs](/guide/translation-dashboard/usage).
+
+Glossary `Context` notes and `glossary.contextFiles` are fingerprinted (`prompt_context_hash`) and injected into UI, docs, JSON, SVG, and proofread prompts. Changing that guidance invalidates matching cached segments and file-tracking rows on the next run. Dashboard `user-edited` cache rows are kept. Changing only a preferred glossary translation leaves the existing cache in place until `--force` / `--force-update`.
+
 The `translate-docs` command also uses **file tracking** so unchanged sources with existing, up-to-date outputs can skip work entirely. `--check-cache` re-opens locales with an expected writing system so cached segments are re-validated; `--force-update` re-runs file processing for every locale while still using segment cache; `--force` clears file tracking and bypasses segment cache reads for API translation. When every configured model fails AST validation on a markdown segment, `translate-docs` can progressively split the segment and retry smaller parts (`docs[].segmentSplitting.qualityRetrySplit`, default on). See [Documents — cache behaviour and flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags) for the full flag table.
 
 **Batch prompt format:** `translate-docs --prompt-format` selects XML (`<seg>` / `<t>`) or JSON array/object shapes for `LlmClient.translateDocumentBatch` only; extraction, placeholders, and validation are unchanged. See [Batch prompt format](/guide/documents/cli-options#batch-prompt-format).
@@ -253,8 +257,8 @@ When `docsOutput.style === "flat"`, translated markdown files are placed alongsi
 Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`). It resolves the active provider from `provider` / `providers`, builds one OpenAI-compatible client (`createOpenAICompatible`) for that provider's `baseUrl` + API key, and routes all calls through `generateText`. `OpenRouterClient` is kept as a deprecated alias. Key behaviours:
 
 - **Model fallback**: tries each model in the resolved list in order; falls back on request or parse failures. Each target locale gets its own resolved chain: `localeModels(locale)` first when configured, then `uiModels` (UI pipelines only), then `translationModels`. Document, JSON, and SVG translation create a per-locale client with the non-UI chain. The `bench-models` command instead builds one single-model client per configured id (union of `translationModels`, `uiModels`, and `localeModels`; `translationModels: [id]`, no fallback) so it can time and price each model independently.
-- **Request timeout**: the active provider's `requestTimeoutMs` (default 30 seconds) aborts each request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads a provider's model list for `check-models` (any provider). The optional pre-flight filter that drops unknown model ids runs only when the active provider is OpenRouter.
-- **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field, `HTTP-Referer` / `X-Title` headers, and exact USD cost read from `usage.cost`. Token usage is reported for every provider; exact cost only when the provider returns it.
+- **Request timeout**: `requestTimeout` (seconds) or `requestTimeoutMs` on the active provider, otherwise the same keys at the top of the config (default 45 seconds), aborts each request via `AbortSignal.timeout`. The same value applies to `GET /models` when the CLI loads a provider's model list for `check-models` (any provider). The optional pre-flight filter that drops unknown model ids runs only when the active provider is OpenRouter.
+- **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field, `HTTP-Referer` / `X-Title` headers, and exact USD cost read from `usage.cost`. Token usage is reported for every provider. When the provider omits `usage.cost`, USD cost is calculated from `providers.<name>.modelPricing` or the provider-wide `pricing` default and stored on the `api_calls` row. A provider-reported cost is never replaced.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file (programmatic). CLI `--debug-failed` writes `FAILED-TRANSLATION` files under `cacheDir` with the system/user prompt, raw assistant reply, and validation errors for failed UI, docs, JSON, and SVG translation-check attempts. Provider API / empty-body failures print on the console instead of dumping a prompt-only file.
 
 <a id="config-loading"></a>
@@ -424,7 +428,8 @@ src/
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
-│   └── matcher.ts                  Term hint extraction for prompts
+│   ├── matcher.ts                  Term hint extraction for prompts
+│   └── translation-context.ts      contextFiles loader and guidance fingerprints
 │
 ├── runtime/
 │   ├── index.ts                    Runtime re-exports

@@ -11,11 +11,17 @@ import { LlmClient } from "../api/llm-client.js";
 import { englishLanguageNameForLocale, normalizeLocale } from "../core/config.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
 import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filter.js";
+import { TranslationCache } from "../core/cache.js";
+import { createUsageRecorder } from "../core/usage-recorder.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
 import { extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
 import { Glossary } from "../glossary/glossary.js";
+import {
+  loadTranslationContextFromConfig,
+  translationContextClientOpts,
+} from "../glossary/translation-context.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { t } from "../i18n/index.js";
 
@@ -424,10 +430,27 @@ export async function runProofreadUI(
     return { report, logFilePath };
   }
 
+  const usageCache = new TranslationCache(cacheDir);
+  let translationContext;
+  try {
+    translationContext = loadTranslationContextFromConfig(config, cwd);
+  } catch (e) {
+    usageCache.close();
+    return {
+      report: emptyReport(config, cwd, stringsPath, units.length),
+      logFilePath,
+      exitWithError: e instanceof Error ? e.message : String(e),
+    };
+  }
   let client: LlmClient;
   try {
-    client = await createFilteredLlmClient(config, localeNorm, { ui: true });
+    client = await createFilteredLlmClient(config, localeNorm, {
+      ui: true,
+      ...translationContextClientOpts(translationContext.text),
+      onApiCall: createUsageRecorder(usageCache, "proofread-ui", localeNorm),
+    });
   } catch (e) {
+    usageCache.close();
     const msg = e instanceof Error ? e.message : String(e);
     if (msg === MODELS_ALL_UNKNOWN_AFTER_FILTER) {
       return {
@@ -445,269 +468,277 @@ export async function runProofreadUI(
     };
   }
 
-  /** Same as `translate-ui`: user glossary CSV only — do not load `strings.json` / `uiGlossary` or we may reinforce bad copy as terminology. */
-  const glossaryUser = config.glossary?.userGlossary
-    ? path.join(cwd, config.glossary.userGlossary)
-    : undefined;
-  const glossary = new Glossary(undefined, glossaryUser, [localeNorm]);
+  try {
+    const glossaryUser = config.glossary?.userGlossary
+      ? path.join(cwd, config.glossary.userGlossary)
+      : undefined;
+    const glossary = new Glossary(undefined, glossaryUser, [localeNorm]);
 
-  const chunks: ProofreadUIUnit[][] = [];
-  for (let i = 0; i < units.length; i += chunkSize) {
-    chunks.push(units.slice(i, i + chunkSize));
-  }
+    const chunks: ProofreadUIUnit[][] = [];
+    for (let i = 0; i < units.length; i += chunkSize) {
+      chunks.push(units.slice(i, i + chunkSize));
+    }
 
-  type BatchOk = {
-    kind: "ok";
-    batchIndex: number;
-    pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }>;
-    lengthWarning: string | null;
-    model: string;
-    costUsd: number;
-  };
-  type BatchErr = { kind: "err"; batchIndex: number; message: string };
+    type BatchOk = {
+      kind: "ok";
+      batchIndex: number;
+      pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }>;
+      lengthWarning: string | null;
+      model: string;
+      costUsd: number;
+    };
+    type BatchErr = { kind: "err"; batchIndex: number; message: string };
 
-  const batchErrors: Array<{ batchIndex: number; message: string }> = [];
-  const unitIssues = new Map<
-    string,
-    Array<{
-      severity: "error" | "warning";
-      message: string;
-      suggestedText?: string;
-      suggestionDroppedPlaceholderMismatch?: boolean;
-    }>
-  >();
+    const batchErrors: Array<{ batchIndex: number; message: string }> = [];
+    const unitIssues = new Map<
+      string,
+      Array<{
+        severity: "error" | "warning";
+        message: string;
+        suggestedText?: string;
+        suggestionDroppedPlaceholderMismatch?: boolean;
+      }>
+    >();
 
-  const results = await runMapWithConcurrency(chunks, concurrency, async (chunk, batchIndex) => {
-    const texts = chunk.map((u) => u.text);
-    const hints = glossary.findTermsInText(texts.join("\n"), localeNorm);
-    try {
-      const batch = await client.proofreadUISourceBatch(texts, languageLabel, {
-        glossaryHints: hints,
-      });
-      if (opts.verbose && batch.lengthWarning) {
+    const results = await runMapWithConcurrency(chunks, concurrency, async (chunk, batchIndex) => {
+      const texts = chunk.map((u) => u.text);
+      const hints = glossary.findTermsInText(texts.join("\n"), localeNorm);
+      try {
+        const batch = await client.proofreadUISourceBatch(texts, languageLabel, {
+          glossaryHints: hints,
+        });
+        if (opts.verbose && batch.lengthWarning) {
+          console.error(
+            chalk.yellow(
+              t("[proofread-ui] batch {{batch}}: {{warning}}", {
+                batch: batchIndex + 1,
+                warning: batch.lengthWarning,
+              })
+            )
+          );
+        }
+        const pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }> = [];
+        for (let i = 0; i < chunk.length; i++) {
+          const unit = chunk[i]!;
+          const slot = batch.slots[i];
+          const rawIssues = slot?.issues ?? [];
+          const cleaned: ProofreadUIIssue[] = [];
+          for (const iss of rawIssues) {
+            const st = iss.suggestedText?.trim();
+            if (
+              st &&
+              st !== unit.text &&
+              !proofreadSuggestionPreservesPlaceholders(unit.text, st)
+            ) {
+              cleaned.push({
+                severity: iss.severity,
+                message: `${iss.message} (Suggested rewrite omitted: would break placeholders.)`,
+                suggestionDroppedPlaceholderMismatch: true,
+              });
+            } else {
+              cleaned.push({
+                severity: iss.severity,
+                message: iss.message,
+                suggestedText: st && st !== unit.text ? st : undefined,
+              });
+            }
+          }
+          pairs.push({ unit, issues: cleaned });
+        }
+        const ok: BatchOk = {
+          kind: "ok",
+          batchIndex,
+          pairs,
+          lengthWarning: batch.lengthWarning,
+          model: batch.model,
+          costUsd: batch.cost ?? 0,
+        };
+        return ok;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        return { kind: "err", batchIndex, message: msg } satisfies BatchErr;
+      }
+    });
+
+    let totalCostUsd = 0;
+    for (const r of results) {
+      if (r.kind === "err") {
+        batchErrors.push({ batchIndex: r.batchIndex, message: r.message });
+        console.error(
+          chalk.red(
+            t("❌ [proofread-ui] batch {{batch}} failed: {{error}}", {
+              batch: r.batchIndex + 1,
+              error: r.message,
+            })
+          )
+        );
+        continue;
+      }
+      totalCostUsd += r.costUsd;
+      if (opts.verbose && r.lengthWarning) {
         console.error(
           chalk.yellow(
             t("[proofread-ui] batch {{batch}}: {{warning}}", {
-              batch: batchIndex + 1,
-              warning: batch.lengthWarning,
+              batch: r.batchIndex + 1,
+              warning: r.lengthWarning,
             })
           )
         );
       }
-      const pairs: Array<{ unit: ProofreadUIUnit; issues: ProofreadUIIssue[] }> = [];
-      for (let i = 0; i < chunk.length; i++) {
-        const unit = chunk[i]!;
-        const slot = batch.slots[i];
-        const rawIssues = slot?.issues ?? [];
-        const cleaned: ProofreadUIIssue[] = [];
-        for (const iss of rawIssues) {
-          const st = iss.suggestedText?.trim();
-          if (st && st !== unit.text && !proofreadSuggestionPreservesPlaceholders(unit.text, st)) {
-            cleaned.push({
-              severity: iss.severity,
-              message: `${iss.message} (Suggested rewrite omitted: would break placeholders.)`,
-              suggestionDroppedPlaceholderMismatch: true,
-            });
-          } else {
-            cleaned.push({
-              severity: iss.severity,
-              message: iss.message,
-              suggestedText: st && st !== unit.text ? st : undefined,
-            });
-          }
-        }
-        pairs.push({ unit, issues: cleaned });
-      }
-      const ok: BatchOk = {
-        kind: "ok",
-        batchIndex,
-        pairs,
-        lengthWarning: batch.lengthWarning,
-        model: batch.model,
-        costUsd: batch.cost ?? 0,
-      };
-      return ok;
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      return { kind: "err", batchIndex, message: msg } satisfies BatchErr;
-    }
-  });
-
-  let totalCostUsd = 0;
-  for (const r of results) {
-    if (r.kind === "err") {
-      batchErrors.push({ batchIndex: r.batchIndex, message: r.message });
-      console.error(
-        chalk.red(
-          t("❌ [proofread-ui] batch {{batch}} failed: {{error}}", {
-            batch: r.batchIndex + 1,
-            error: r.message,
-          })
-        )
-      );
-      continue;
-    }
-    totalCostUsd += r.costUsd;
-    if (opts.verbose && r.lengthWarning) {
-      console.error(
-        chalk.yellow(
-          t("[proofread-ui] batch {{batch}}: {{warning}}", {
-            batch: r.batchIndex + 1,
-            warning: r.lengthWarning,
-          })
-        )
-      );
-    }
-    if (opts.verbose) {
-      console.error(
-        chalk.gray(
-          t("[proofread-ui] batch {{batch}}/{{total}} complete ({{model}})", {
-            batch: r.batchIndex + 1,
-            total: chunks.length,
-            model: r.model,
-          })
-        )
-      );
-    }
-    for (const { unit, issues } of r.pairs) {
-      if (issues.length === 0) {
-        continue;
-      }
-      const prev = unitIssues.get(unit.segmentId) ?? [];
-      prev.push(...issues);
-      unitIssues.set(unit.segmentId, prev);
-    }
-  }
-
-  const reportUnits: ProofreadUIReportUnit[] = units.map((u) => ({
-    segmentId: u.segmentId,
-    field: "source",
-    originalText: u.text,
-    locations: u.locations,
-    issues: unitIssues.get(u.segmentId) ?? [],
-  }));
-
-  let unitsWithIssues = 0;
-  let issueCount = 0;
-  for (const ru of reportUnits) {
-    if (ru.issues.length > 0) {
-      unitsWithIssues++;
-      issueCount += ru.issues.length;
-    }
-  }
-  const unitsOk = units.length - unitsWithIssues;
-
-  const report: ProofreadUIReport = {
-    schemaVersion: 1,
-    sourceLocale: localeNorm,
-    stringsPath,
-    projectRoot: cwd,
-    units: reportUnits,
-    batchErrors,
-    summary: {
-      totalUnits: units.length,
-      unitsWithIssues,
-      unitsOk,
-      issueCount,
-      totalCostUsd,
-    },
-  };
-
-  fs.writeFileSync(logFilePath, formatProofreadUIHumanLogText(report, cwd), "utf8");
-
-  const humanFn = opts.json ? console.error : console.log;
-  const logBase = path.basename(logFilePath);
-
-  humanFn(
-    chalk.bold(
-      t(
-        "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{issues}} issue(s)",
-        {
-          count: units.length,
-          withIssues: unitsWithIssues,
-          ok: unitsOk,
-          issues: issueCount,
-        }
-      )
-    )
-  );
-  humanFn("");
-
-  for (const ru of reportUnits) {
-    if (ru.issues.length === 0) {
-      continue;
-    }
-    const quoted = JSON.stringify(ru.originalText);
-    for (const iss of ru.issues) {
-      const tag = iss.severity === "error" ? chalk.red(t("[error]")) : chalk.yellow(t("[warning]"));
-      humanFn(`${tag} ${quoted}`);
-      if (iss.suggestedText !== undefined && iss.suggestedText !== "") {
-        humanFn(
-          t("  {{arrow}} Suggested: {{suggested}}", {
-            arrow: chalk.green("→"),
-            suggested: JSON.stringify(iss.suggestedText),
-          })
+      if (opts.verbose) {
+        console.error(
+          chalk.gray(
+            t("[proofread-ui] batch {{batch}}/{{total}} complete ({{model}})", {
+              batch: r.batchIndex + 1,
+              total: chunks.length,
+              model: r.model,
+            })
+          )
         );
       }
-      humanFn(`  ${chalk.gray("→")} ${iss.message}`);
-      for (const loc of ru.locations) {
-        const disp = resolveLocationDisplayPath(cwd, loc.file);
-        humanFn(`  ${chalk.cyan(`${disp}:${loc.line}`)}`);
+      for (const { unit, issues } of r.pairs) {
+        if (issues.length === 0) {
+          continue;
+        }
+        const prev = unitIssues.get(unit.segmentId) ?? [];
+        prev.push(...issues);
+        unitIssues.set(unit.segmentId, prev);
       }
-      if (ru.locations.length === 0) {
-        humanFn(`  ${chalk.gray(t("(no call-site locations in catalog)"))}`);
-      }
-      humanFn("");
     }
-  }
 
-  if (opts.json) {
-    console.log(JSON.stringify(report, null, 2));
-  }
+    const reportUnits: ProofreadUIReportUnit[] = units.map((u) => ({
+      segmentId: u.segmentId,
+      field: "source",
+      originalText: u.text,
+      locations: u.locations,
+      issues: unitIssues.get(u.segmentId) ?? [],
+    }));
 
-  if (issueCount === 0) {
+    let unitsWithIssues = 0;
+    let issueCount = 0;
+    for (const ru of reportUnits) {
+      if (ru.issues.length > 0) {
+        unitsWithIssues++;
+        issueCount += ru.issues.length;
+      }
+    }
+    const unitsOk = units.length - unitsWithIssues;
+
+    const report: ProofreadUIReport = {
+      schemaVersion: 1,
+      sourceLocale: localeNorm,
+      stringsPath,
+      projectRoot: cwd,
+      units: reportUnits,
+      batchErrors,
+      summary: {
+        totalUnits: units.length,
+        unitsWithIssues,
+        unitsOk,
+        issueCount,
+        totalCostUsd,
+      },
+    };
+
+    fs.writeFileSync(logFilePath, formatProofreadUIHumanLogText(report, cwd), "utf8");
+
+    const humanFn = opts.json ? console.error : console.log;
+    const logBase = path.basename(logFilePath);
+
     humanFn(
-      chalk.green(
+      chalk.bold(
         t(
-          "✔  {{count}} strings checked — all OK ({{ok}} of {{total}}). Results written to {{logBase}}",
+          "Summary: {{count}} string(s) — {{withIssues}} with issues, {{ok}} OK, {{issues}} issue(s)",
           {
             count: units.length,
-            ok: unitsOk,
-            total: units.length,
-            logBase,
-          }
-        )
-      )
-    );
-  } else {
-    humanFn(
-      chalk.yellow(
-        t(
-          "⚠  {{issues}} issue(s) in {{withIssues}} string(s); {{ok}} OK of {{total}} total. Results written to {{logBase}}",
-          {
-            issues: issueCount,
             withIssues: unitsWithIssues,
             ok: unitsOk,
-            total: units.length,
-            logBase,
+            issues: issueCount,
           }
         )
       )
     );
-  }
-  humanFn(
-    chalk.green(t("   💵 Total OpenRouter cost: ${{cost}}", { cost: totalCostUsd.toFixed(6) }))
-  );
+    humanFn("");
 
-  if (batchErrors.length === chunks.length && chunks.length > 0) {
-    return {
-      report,
-      logFilePath,
-      exitWithError: t("All proofread-ui batches failed (see batchErrors in log file)."),
-    };
-  }
+    for (const ru of reportUnits) {
+      if (ru.issues.length === 0) {
+        continue;
+      }
+      const quoted = JSON.stringify(ru.originalText);
+      for (const iss of ru.issues) {
+        const tag =
+          iss.severity === "error" ? chalk.red(t("[error]")) : chalk.yellow(t("[warning]"));
+        humanFn(`${tag} ${quoted}`);
+        if (iss.suggestedText !== undefined && iss.suggestedText !== "") {
+          humanFn(
+            t("  {{arrow}} Suggested: {{suggested}}", {
+              arrow: chalk.green("→"),
+              suggested: JSON.stringify(iss.suggestedText),
+            })
+          );
+        }
+        humanFn(`  ${chalk.gray("→")} ${iss.message}`);
+        for (const loc of ru.locations) {
+          const disp = resolveLocationDisplayPath(cwd, loc.file);
+          humanFn(`  ${chalk.cyan(`${disp}:${loc.line}`)}`);
+        }
+        if (ru.locations.length === 0) {
+          humanFn(`  ${chalk.gray(t("(no call-site locations in catalog)"))}`);
+        }
+        humanFn("");
+      }
+    }
 
-  return { report, logFilePath };
+    if (opts.json) {
+      console.log(JSON.stringify(report, null, 2));
+    }
+
+    if (issueCount === 0) {
+      humanFn(
+        chalk.green(
+          t(
+            "✔  {{count}} strings checked — all OK ({{ok}} of {{total}}). Results written to {{logBase}}",
+            {
+              count: units.length,
+              ok: unitsOk,
+              total: units.length,
+              logBase,
+            }
+          )
+        )
+      );
+    } else {
+      humanFn(
+        chalk.yellow(
+          t(
+            "⚠  {{issues}} issue(s) in {{withIssues}} string(s); {{ok}} OK of {{total}} total. Results written to {{logBase}}",
+            {
+              issues: issueCount,
+              withIssues: unitsWithIssues,
+              ok: unitsOk,
+              total: units.length,
+              logBase,
+            }
+          )
+        )
+      );
+    }
+    humanFn(
+      chalk.green(t("   💵 Total OpenRouter cost: ${{cost}}", { cost: totalCostUsd.toFixed(6) }))
+    );
+
+    if (batchErrors.length === chunks.length && chunks.length > 0) {
+      return {
+        report,
+        logFilePath,
+        exitWithError: t("All proofread-ui batches failed (see batchErrors in log file)."),
+      };
+    }
+
+    return { report, logFilePath };
+  } finally {
+    usageCache.close();
+  }
 }
 
 function emptyReport(

@@ -3,7 +3,7 @@
 
 The Translation Dashboard is a local web UI for inspecting and editing your project's translation data. It reads from three stores:
 
-- **SQLite cache** (`cacheDir`) — documentation segment translations, failure records, markdown issue scans
+- SQLite cache (`cacheDir`) — documentation segment translations, failure records, markdown issue scans, billed API-call usage
 - **`strings.json`** — UI string catalog (plain strings and plural groups)
 - **User glossary CSV** (`glossary.userGlossary`) — terminology hints for `translate-ui` and `proofread-ui`
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-The default listen port is **8675**. If that port is unavailable, the server tries the next port (up to 1000 attempts) and logs the port it chose. The deprecated alias `editor` still works but prints a warning — prefer `dashboard`.
+The default listen port is **8675**. If that port is unavailable, the server tries the next port (up to 1000 attempts) and logs the port it chose. `dash` is an equivalent alias. The deprecated alias `editor` still works but prints a warning — prefer `dashboard` or `dash`.
 
 The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. See [Tool UI language](/guide/tool-ui-language).
 
@@ -36,6 +36,7 @@ The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` 
 | Fix a plural form (`one`, `other`, …) | **UI plurals** | [UI strings & plurals](/guide/translation-dashboard/ui-strings) |
 | Lock terminology for UI translation | **Glossary** | [Glossary](/guide/translation-dashboard/glossary) |
 | See cache coverage and model usage | **Statistics** | [Statistics](/guide/translation-dashboard/statistics) |
+| See API-call tokens and cost | **Usage & costs** | [Usage & costs](/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## After you edit

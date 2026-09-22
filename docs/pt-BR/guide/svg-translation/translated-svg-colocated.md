@@ -4,7 +4,7 @@
 Use para sites de sistema de documentação onde ilustrações SVG traduzidas devem aparecer junto com documentos traduzidos no diretório de conteúdo de cada localidade — o mesmo local das [capturas de tela colocalizadas](/pt-BR/guide/images-and-screenshots/colocated-screenshots). O preset Docusaurus é o principal exemplo.
 
 <a id="config"></a>
-### Configuração
+## Configuração
 
 ```json
 "features": {
@@ -29,7 +29,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 ```
 
 <a id="source-markdown"></a>
-### Markdown de origem
+## Markdown de origem
 
 Todos os documentos em todas as localidades usam o mesmo caminho relativo:
 
@@ -42,12 +42,12 @@ Para a localidade em inglês, o link simbólico `docs/assets → ../static/asset
 Nenhuma regra `regexAdjustments` é necessária porque os documentos de origem em inglês e os documentos de saída traduzidos usam caminhos idênticos.
 
 <a id="svg-source-location"></a>
-### Localização do código-fonte SVG
+## Localização da origem do SVG
 
 Recomendado: armazenar os SVGs de origem em `documentation/static/assets/` ao lado dos PNGs em en-GB. Isso mantém todos os ativos da documentação em um único local, e o mesmo link simbólico `docs/assets` cobre ambos. As entradas `svg.sourcePath` apontam então para `documentation/static/assets/name.svg`.
 
 <a id="pathtemplate-placeholders"></a>
-### Espaços reservados `pathTemplate`
+## Placeholders `pathTemplate`
 
 | Substituto               | Valor                                                  |
 |--------------------------|--------------------------------------------------------|
@@ -63,7 +63,7 @@ Recomendado: armazenar os SVGs de origem em `documentation/static/assets/` ao la
 Referência completa na [tabela de configuração svg](/pt-BR/reference/configuration#svg).
 
 <a id="implementation-example"></a>
-### Exemplo de implementação
+## Exemplo de implementação
 
 [duplistatus](https://github.com/wsj-br/duplistatus) — bloco `svg` aninhado com `pathTemplate` em [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json); SVGs de origem em `documentation/static/assets/` (por exemplo, [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)); `translate-svg` grava arquivos por localidade em `documentation/i18n/<locale>/…/current/assets/` ao lado de PNGs colocalizados; a documentação os incorpora via caminhos `../assets/` (por exemplo, [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)) sem a necessidade de ponte `regexAdjustments`.
 

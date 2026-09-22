@@ -1,0 +1,261 @@
+# Intlayer → ai-i18n-tools migration report
+
+## Agent instructions
+
+You are finishing a migration from Intlayer `.content.ts` dictionaries to ai-i18n-tools `t("English source")` calls (key-as-default).
+
+Work the **Step-by-step TODO** at the end of this report in order. Each box points at the section that has the exact text to write. Do not invent English copy. Do not edit `strings.json`, flat locale bundles, or `ui-languages.json` by hand.
+
+This report was generated with `--write`: catalog/flat bundles were seeded and safe call sites were rewritten.
+
+## Summary
+
+- Dictionaries scanned: 6
+- Leaves imported into `src/locales/strings.json`: 16
+- Flat locale dir: `src/locales`
+- Usage files scanned: 10
+- Files auto-rewritten: 2
+- Safe rewrites: 10
+- Manual-review sites: 3
+- Unsupported dictionary leaves: 0
+
+## Extracted dictionaries
+
+### `src/content/app-header.content.ts` (`app-header`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `title` | Status console | en, de, fr, es, pt-BR |
+| `subtitle` | Intlayer migration demo | en, de, fr, es, pt-BR |
+
+### `src/content/common.content.ts` (`common`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `ui.save` | Save | en, de, fr, es, pt-BR |
+| `ui.cancel` | Cancel | en, de, fr, es, pt-BR |
+| `ui.back` | Back | en, de, fr, es, pt-BR |
+| `navigation.dashboard` | Dashboard | en, de, fr, es, pt-BR |
+| `navigation.helpFor` | Help for {{pageName}} | en, de, fr, es, pt-BR |
+
+### `src/content/dashboard.content.ts` (`dashboard`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `heading` | Overview | en, de, fr, es, pt-BR |
+| `servers` | Servers | en, de, fr, es, pt-BR |
+| `lastRefresh` | Last refresh | en, de, fr, es, pt-BR |
+
+### `src/content/dynamic-key.content.ts` (`dynamic-key`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `ok` | Healthy | en, de, fr, es, pt-BR |
+| `warn` | Degraded | en, de, fr, es, pt-BR |
+| `fail` | Down | en, de, fr, es, pt-BR |
+
+### `src/content/multi-placeholder.content.ts` (`multi-placeholder`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `greeting` | Hello {name}, you have {count} alerts | en, de, fr, es, pt-BR |
+
+### `src/content/spread-props.content.ts` (`spread-props`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `ok` | All checks passed | en, de, fr, es, pt-BR |
+| `fail` | Checks failed | en, de, fr, es, pt-BR |
+
+## Interpolation conversions
+
+These leaves used Intlayer `{token}` placeholders paired with `.replace('{token}', …)` and were stored as i18next `{{token}}`. The catalog key is already the `{{token}}` form, so they are not listed under **New catalog keys**.
+
+- `common`.`navigation.helpFor` tokens `pageName`: `Help for {pageName}` → `Help for {{pageName}}`
+
+## Auto-rewrites
+
+- `src/components/Dashboard.tsx:8` `content.heading.value` → `t('Overview')` (simple, `dashboard.heading`)
+- `src/components/Dashboard.tsx:11` `content.servers.value` → `t('Servers')` (simple, `dashboard.servers`)
+- `src/components/Dashboard.tsx:15` `content.lastRefresh.value` → `t('Last refresh')` (simple, `dashboard.lastRefresh`)
+- `src/components/Dashboard.tsx:19` `common.navigation.dashboard.value` → `t('Dashboard')` (simple, `common.navigation.dashboard`)
+- `src/components/Header.tsx:9` `content.subtitle.value` → `t('Intlayer migration demo')` (simple, `app-header.subtitle`)
+- `src/components/Header.tsx:10` `content.title.value` → `t('Status console')` (simple, `app-header.title`)
+- `src/components/Header.tsx:6` `common.navigation.helpFor.value.replace("{pageName}", pageName)` → `t('Help for {{pageName}}', { pageName: pageName })` (replace, `common.navigation.helpFor`)
+- `src/components/Header.tsx:13` `common.ui.save.value` → `t('Save')` (simple, `common.ui.save`)
+- `src/components/Header.tsx:15` `common.ui.cancel.value` → `t('Cancel')` (simple, `common.ui.cancel`)
+- `src/components/Header.tsx:18` `common.ui.back.value` → `t('Back')` (simple, `common.ui.back`)
+
+## Manual review
+
+### `src/components/DynamicLabel.tsx:11` — `dynamic-key`
+
+- **Reason:** `dynamic-member`
+- **Hint:** Computed key cannot be resolved statically. Rewrite each possible key to `t('<source text>')` (or a map of key → `t()`).
+- **Import:**
+
+```ts
+import { t } from '../i18n';
+```
+
+The literal must be a direct `t('…')` argument, built during render, so extract sees it and a locale change re-runs it.
+
+```ts
+content[statusKey].value
+```
+
+Write:
+
+- `ok` → `t('Healthy')`
+- `warn` → `t('Degraded')`
+- `fail` → `t('Down')`
+
+### `src/components/MultiPlaceholderBanner.tsx:5` — `multi-placeholder.greeting`
+
+- **Reason:** `chained-transform`
+- **Hint:** More than one `.replace()` / method is chained after `.value`. Rewrite as `t('… {{a}} … {{b}}', { a: …, b: … })`.
+- **Import:**
+
+```ts
+import { t } from '../i18n';
+```
+
+Seeded text for this leaf is still `Hello {name}, you have {count} alerts`. `Hello {{name}}, you have {{count}} alerts` is a new source string, so the seeded translations do not apply. Do not edit `strings.json` or the flat locale files by hand. Run `ai-i18n-tools extract` then `ai-i18n-tools translate-ui`.
+
+```ts
+content.greeting.value
+    .replace("{name}", name)
+    .replace("{count}", String(count))
+```
+
+Write:
+
+```ts
+t('Hello {{name}}, you have {{count}} alerts', { name: name, count: String(count) })
+```
+
+### `src/components/SpreadWidget.tsx:18` — `spread-props`
+
+- **Reason:** `spread`
+- **Hint:** The dictionary object is spread into another object or JSX props. Resolve each leaf at the usage site (or in the child) with `t('<source text>')`.
+- **Import:**
+
+```ts
+import { t } from '../i18n';
+```
+
+`StatusBadge` expects `ok.value` and `fail.value`. Pass translated strings for those props and read them in the child without `.value`.
+
+```ts
+<StatusBadge {...content} />
+```
+
+Write:
+
+```ts
+<StatusBadge ok={t('All checks passed')} fail={t('Checks failed')} />
+```
+
+## New catalog keys
+
+Safe `.replace()` rewrites already store i18next `{{token}}` strings in the catalog (see **Interpolation conversions**). Those keys are not listed here.
+
+These manual rewrites change the source string. Seeded translations stay on the old string and do not apply. Do not patch `strings.json`, the flat locale bundles, or `ui-languages.json` by hand. After rewriting, run `ai-i18n-tools extract` then `ai-i18n-tools translate-ui`. `extract` records the new source string and writes `ui-languages.json`; `translate-ui` fills the new string.
+
+- `src/components/MultiPlaceholderBanner.tsx:5` `multi-placeholder.greeting` — seeded `Hello {name}, you have {count} alerts`. The new source string is `Hello {{name}}, you have {{count}} alerts`.
+
+## Cleanup
+
+After every manual-review site is rewritten, remove these leftovers. The manual sites still read the dictionaries until then.
+
+Remove these Intlayer hook imports:
+
+- `src/components/DynamicLabel.tsx:1` `useIntlayer`
+- `src/components/MultiPlaceholderBanner.tsx:1` `useIntlayer`
+- `src/components/SpreadWidget.tsx:1` `useIntlayer`
+
+Remove `IntlayerProvider`. It is not rewritten automatically:
+
+- `src/app.tsx` lines 2, 21 — delete the import and the `<IntlayerProvider>` wrapper
+
+Then delete these unused `*.content.ts` files:
+
+- `src/content/app-header.content.ts`
+- `src/content/common.content.ts`
+- `src/content/dashboard.content.ts`
+- `src/content/dynamic-key.content.ts`
+- `src/content/multi-placeholder.content.ts`
+- `src/content/spread-props.content.ts`
+
+## Runtime bootstrap
+
+Replace `src/i18n.ts` with:
+
+```ts
+import i18n from "i18next";
+import aiI18n from "ai-i18n-tools/runtime";
+import stringsJson from "./locales/strings.json";
+import uiLanguages from "./locales/ui-languages.json";
+
+export const SOURCE_LOCALE = "en";
+export const TARGET_LOCALES = ["de", "fr", "es", "pt-BR"] as const;
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson: stringsJson as Record<string, { plural?: boolean; source?: string }>,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages as Array<{ code: string }>,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`)
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export function getLocale(): string {
+  return i18n.language;
+}
+export default i18n;
+```
+
+`src/locales/strings.json`, the flat locale bundles, and `src/locales/ui-languages.json` are generated. Do not edit them by hand. `--write` seeds the catalog and flat bundles. `ai-i18n-tools extract` (also `generate-ui-languages`) writes `src/locales/ui-languages.json`; the bootstrap imports it, so run extract before compiling, even when no new copy was introduced.
+
+`loadLocale` comes from `makeLoadLocale`. It adds the flat bundle for a target locale and returns immediately for the source locale. It does not change the active language.
+
+In the locale control handler, import the default `i18n` export from the same module as `loadLocale` and call both:
+
+```ts
+async function onChange(next: string) {
+  await loadLocale(next);
+  await i18n.changeLanguage(next);
+}
+```
+
+Without `i18n.changeLanguage(next)`, the control moves and the strings stay on the previous language.
+
+## Catalog locations
+
+- Report: `migrate-intlayer-report.md`
+- `strings.json`: `src/locales/strings.json` (generated by `--write` and refreshed by `extract`; do not edit)
+- Flat locale bundles: `src/locales` (generated by `--write` and `translate-ui`; do not edit)
+- `src/locales/ui-languages.json` (generated by `extract`; do not edit)
+
+## Step-by-step TODO
+
+Work these in order. Finish each box before starting the next.
+
+- [ ] **1. Rewrite the 3 manual-review sites.** Use the exact `t('…')` or JSX and the `import { t }` line from **Manual review**. Add that import when `t` is not already imported. Do not invent English copy.
+  - [ ] `src/components/DynamicLabel.tsx:11` — `dynamic-member` (`dynamic-key`). Add `import { t } from '../i18n';` when `t` is not already imported.
+  - [ ] `src/components/MultiPlaceholderBanner.tsx:5` — `chained-transform` (`multi-placeholder.greeting`). Add `import { t } from '../i18n';` when `t` is not already imported.
+  - [ ] `src/components/SpreadWidget.tsx:18` — `spread` (`spread-props`). Add `import { t } from '../i18n';` when `t` is not already imported.
+- [ ] **2. Clear the Intlayer leftovers.** Under **Cleanup**: 3 hook imports and `IntlayerProvider` in `src/app.tsx`, then delete the 6 `*.content.ts` files.
+- [ ] **3. Replace `src/i18n.ts`.** Paste the module under **Runtime bootstrap**.
+- [ ] **4. Wire the locale control.** Call `await loadLocale(next)` and then `await i18n.changeLanguage(next)`. `loadLocale` only registers the flat bundle.
+- [ ] **5. Run `ai-i18n-tools extract`.** It records every `t('…')` literal and writes `src/locales/ui-languages.json`, which the bootstrap imports. Run it before compiling, even when no new copy was introduced.
+- [ ] **6. Run `ai-i18n-tools translate-ui`.** It will translate all new strings, if any.
+- [ ] **7. Verify.** `rg -n "intlayer" src` returns nothing, and the app builds.
+- [ ] **8. Remove the Intlayer packages.** Drop `intlayer` and `react-intlayer` once nothing imports them.
+
+Never edit `src/locales/strings.json`, the flat locale bundles under `src/locales`, or `src/locales/ui-languages.json` by hand, and never write translations yourself. `extract` and `translate-ui` own those files.
+

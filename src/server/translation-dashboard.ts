@@ -4,8 +4,8 @@ import path from "path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { TranslationCache } from "../core/cache.js";
-import { parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
-import type { CldrPluralForm } from "../core/types.js";
+import { GLOSSARY_USER_HEADERS, parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
+import type { ApiCallFilters, ApiCallOutcome, CldrPluralForm } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import {
   isKnownCldrPluralFormKey,
@@ -15,16 +15,14 @@ import {
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { translationScriptIssue } from "../core/locale-utils.js";
 import { computeProjectStats } from "../core/project-stats.js";
+import {
+  parseUsageDeleteOlderThan,
+  parseUsageSince,
+  withEstimatedCosts,
+  type ProviderPricingTable,
+} from "../core/usage-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 import { docBlockFileTrackingKeyToRelPath } from "../core/doc-file-tracking.js";
-
-/** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
-const GLOSSARY_USER_HEADERS = [
-  "Original language string",
-  "locale",
-  "Translation",
-  "Force",
-] as const;
 
 function csvEscapeCell(s: string): string {
   if (/[",\n\r]/.test(s)) {
@@ -190,6 +188,27 @@ export interface TranslationDashboardOptions {
     locale: string;
     dir: "ltr" | "rtl";
     bundle: Record<string, string>;
+  };
+  /** Optional `providers.<name>.pricing` used to estimate cost for rows stored without `cost_usd`. */
+  providerPricing?: ProviderPricingTable;
+}
+
+function parseUsageFiltersFromQuery(query: Record<string, unknown>): ApiCallFilters {
+  const str = (key: string): string | undefined => {
+    const v = query[key];
+    return typeof v === "string" && v.trim() ? v.trim() : undefined;
+  };
+  const sinceRaw = str("since");
+  const outcomeRaw = str("outcome");
+  const outcome: ApiCallOutcome | undefined =
+    outcomeRaw === "accepted" || outcomeRaw === "discarded" ? outcomeRaw : undefined;
+  return {
+    ...(sinceRaw ? { since: parseUsageSince(sinceRaw) } : {}),
+    provider: str("provider"),
+    model: str("model"),
+    operation: str("operation"),
+    locale: str("locale"),
+    outcome,
   };
 }
 
@@ -752,6 +771,7 @@ export function createTranslationDashboardApp(
         locale: r["locale"] ?? "",
         Translation: r["Translation"] ?? r["translation"] ?? "",
         force: r["Force"] ?? r["force"] ?? "",
+        Context: r["Context"] ?? r["context"] ?? r["Notes"] ?? r["notes"] ?? "",
       }));
       res.json({
         headers: [...GLOSSARY_USER_HEADERS],
@@ -769,7 +789,7 @@ export function createTranslationDashboardApp(
         res.status(400).json({ error: "glossary user path not configured" });
         return;
       }
-      const { original, locale, translation, force } = req.body as Record<string, string>;
+      const { original, locale, translation, force, context } = req.body as Record<string, string>;
       if (!original?.trim() || !locale?.trim() || translation === undefined) {
         res.status(400).json({ error: "Missing original, locale, or translation" });
         return;
@@ -784,9 +804,16 @@ export function createTranslationDashboardApp(
           r["locale"] ?? "",
           r["Translation"] ?? r["translation"] ?? "",
           r["Force"] ?? r["force"] ?? "",
+          r["Context"] ?? r["context"] ?? r["Notes"] ?? r["notes"] ?? "",
         ]);
       }
-      rows.push([original.trim(), locale.trim(), String(translation), force?.trim() ?? ""]);
+      rows.push([
+        original.trim(),
+        locale.trim(),
+        String(translation),
+        force?.trim() ?? "",
+        context?.trim() ?? "",
+      ]);
       writeAtomicUtf8(glossaryPath, serializeGlossaryCsv(headers, rows));
       res.json({ ok: true });
     } catch (err) {
@@ -806,6 +833,7 @@ export function createTranslationDashboardApp(
       r["locale"] ?? "",
       r["Translation"] ?? r["translation"] ?? "",
       r["Force"] ?? r["force"] ?? "",
+      r["Context"] ?? r["context"] ?? r["Notes"] ?? r["notes"] ?? "",
     ]);
   }
 
@@ -820,7 +848,7 @@ export function createTranslationDashboardApp(
         res.status(400).json({ error: "Invalid row index" });
         return;
       }
-      const { original, locale, translation, force } = req.body as Record<string, string>;
+      const { original, locale, translation, force, context } = req.body as Record<string, string>;
       if (original === undefined || locale === undefined || translation === undefined) {
         res.status(400).json({ error: "Missing original, locale, or translation" });
         return;
@@ -837,6 +865,7 @@ export function createTranslationDashboardApp(
         String(locale).trim(),
         String(translation),
         force !== undefined ? String(force).trim() : (prev[3] ?? ""),
+        context !== undefined ? String(context) : (prev[4] ?? ""),
       ];
       writeAtomicUtf8(glossaryPath, serializeGlossaryCsv(headers, rows));
       res.json({ ok: true });
@@ -886,6 +915,72 @@ export function createTranslationDashboardApp(
         targetLocales: opts.targetLocales,
       });
       res.json({ cache: cacheStats, uiStrings, glossary });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.get("/api/usage", (req, res) => {
+    try {
+      const filters = parseUsageFiltersFromQuery(req.query as Record<string, unknown>);
+      const pricing = opts.providerPricing ?? {};
+      const stats = withEstimatedCosts(cache.getApiCallStats(filters), pricing);
+      res.json(stats);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.startsWith("Invalid since") || msg.startsWith("Empty since")) {
+        res.status(400).json({ error: msg });
+        return;
+      }
+      console.error(err);
+      res.status(500).json({ error: msg });
+    }
+  });
+
+  app.get("/api/usage/filter-options", (_req, res) => {
+    try {
+      res.json(cache.getApiCallFilterOptions());
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  app.post("/api/usage/clear", (req, res) => {
+    try {
+      const body = (req.body ?? {}) as { olderThan?: unknown; dryRun?: unknown };
+      const dryRun = body.dryRun === true;
+      const olderRaw = body.olderThan;
+      if (olderRaw === undefined || olderRaw === null || olderRaw === "" || olderRaw === "all") {
+        const result = cache.clearUsage(dryRun);
+        res.json({
+          ok: true,
+          removed: result.removedCalls + result.removedTotals,
+          removedCalls: result.removedCalls,
+          removedTotals: result.removedTotals,
+          dryRun,
+        });
+        return;
+      }
+      let preset: ReturnType<typeof parseUsageDeleteOlderThan>;
+      try {
+        preset = parseUsageDeleteOlderThan(String(olderRaw));
+      } catch (e) {
+        res.status(400).json({
+          error: e instanceof Error ? e.message : String(e),
+        });
+        return;
+      }
+      const result =
+        preset === "all" ? cache.clearUsage(dryRun) : cache.deleteUsageOlderThan(preset, dryRun);
+      res.json({
+        ok: true,
+        removed: result.removedCalls + result.removedTotals,
+        removedCalls: result.removedCalls,
+        removedTotals: result.removedTotals,
+        dryRun,
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: String(err) });

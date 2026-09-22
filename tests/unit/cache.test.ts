@@ -3,6 +3,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { TranslationCache } from "../../src/core/cache.js";
+import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 
 describe("TranslationCache", () => {
   it("updates start_line on upsert when a new non-null line is written", () => {
@@ -51,6 +52,31 @@ describe("TranslationCache", () => {
     expect(det?.model).toBe("test/model");
     expect(cache.getTranslationSourceText(h, "de")).toBe("hello world");
     expect(cache.getTranslationSourceText(h, "fr")).toBeNull();
+    cache.close();
+  });
+
+  it("misses cached segments when prompt context hash changes but keeps user edits", () => {
+    const cache = new TranslationCache(":memory:");
+    const h = TranslationCache.computeHash("hello world");
+    cache.setSegment(h, "de", "hello world", "hallo welt", "m", "a.md", 1, "ctx-a");
+    expect(cache.getSegment(h, "de", "a.md", 1, "ctx-a")).toBe("hallo welt");
+    expect(cache.getSegment(h, "de", "a.md", 1, "ctx-b")).toBeNull();
+    expect(cache.getSegmentsBatch([h], "de", "ctx-b").has(h)).toBe(false);
+    cache.setSegment(h, "de", "hello world", "hand edit", USER_EDITED_MODEL, "a.md", 1, "ctx-a");
+    expect(cache.getSegment(h, "de", "a.md", 1, "ctx-b")).toBe("hand edit");
+    cache.close();
+  });
+
+  it("file tracking matches only when source hash and prompt context agree", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setFileStatus("doc.md", "de", "abc123", "ctx-a");
+    expect(cache.fileTrackingMatches("doc.md", "de", "abc123", "ctx-a")).toBe(true);
+    expect(cache.fileTrackingMatches("doc.md", "de", "abc123", "ctx-b")).toBe(false);
+    expect(cache.fileTrackingMatches("doc.md", "de", "zzz", "ctx-a")).toBe(false);
+    expect(cache.getFileTrackingHashes("doc.md", "de")).toEqual({
+      sourceHash: "abc123",
+      promptContextHash: "ctx-a",
+    });
     cache.close();
   });
 
@@ -725,6 +751,221 @@ describe("TranslationCache", () => {
       expect(frBatch.get("h1")?.text).toBe("t1-fr");
 
       cache.close();
+    });
+  });
+
+  describe("api_calls", () => {
+    it("records calls and aggregates mixed reported/unknown cost", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-docs",
+        locale: "de",
+        outcome: "accepted",
+        inputTokens: 10,
+        outputTokens: 20,
+        totalTokens: 30,
+        costUsd: 0.01,
+      });
+      cache.recordApiCall({
+        provider: "openai",
+        model: "m2",
+        operation: "translate-ui",
+        locale: "fr",
+        outcome: "discarded",
+        inputTokens: 5,
+        outputTokens: 7,
+        totalTokens: 12,
+      });
+      const stats = cache.getApiCallStats();
+      expect(stats.summary.calls).toBe(2);
+      expect(stats.summary.acceptedCalls).toBe(1);
+      expect(stats.summary.discardedCalls).toBe(1);
+      expect(stats.summary.totalTokens).toBe(42);
+      expect(stats.summary.callsWithCost).toBe(1);
+      expect(stats.summary.callsWithoutCost).toBe(1);
+      expect(stats.summary.actualCostUsd).toBeCloseTo(0.01);
+      expect(stats.summary.inputTokensWithoutCost).toBe(5);
+      expect(stats.byProvider.map((r) => r.provider).sort()).toEqual(["openai", "openrouter"]);
+      expect(stats.byModel).toHaveLength(2);
+      expect(stats.byOperation.map((r) => r.operation).sort()).toEqual([
+        "translate-docs",
+        "translate-ui",
+      ]);
+      const { rows, total } = cache.listApiCalls({ limit: 10, offset: 0 });
+      expect(total).toBe(2);
+      expect(rows).toHaveLength(2);
+      expect(rows.find((r) => r.model === "m2")?.cost_usd).toBeNull();
+      const opts = cache.getApiCallFilterOptions();
+      expect(opts.providers).toEqual(["openai", "openrouter"]);
+      expect(opts.locales).toEqual(["de", "fr"]);
+      cache.close();
+    });
+
+    it("filters by provider and prunes old rows", () => {
+      const cache = new TranslationCache(":memory:");
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-docs",
+        outcome: "accepted",
+        inputTokens: 1,
+        outputTokens: 1,
+        totalTokens: 2,
+        costUsd: 0.1,
+        createdAt: "2020-01-01 00:00:00",
+      });
+      cache.recordApiCall({
+        provider: "openai",
+        model: "m2",
+        operation: "translate-ui",
+        outcome: "accepted",
+        inputTokens: 2,
+        outputTokens: 2,
+        totalTokens: 4,
+      });
+      const filtered = cache.getApiCallStats({ provider: "openai" });
+      expect(filtered.summary.calls).toBe(1);
+      expect(filtered.summary.totalTokens).toBe(4);
+      const preview = cache.deleteUsageOlderThan("1mo", true, new Date("2026-09-21T12:00:00.000Z"));
+      expect(preview.removedCalls).toBe(1);
+      expect(cache.getApiCallStats().summary.calls).toBe(2);
+      const removed = cache.deleteUsageOlderThan(
+        "1mo",
+        false,
+        new Date("2026-09-21T12:00:00.000Z")
+      );
+      expect(removed.removedCalls).toBe(1);
+      expect(cache.getApiCallStats().summary.calls).toBe(1);
+      expect(cache.clearUsage(true)).toEqual({ removedCalls: 1, removedTotals: 0 });
+      expect(cache.clearUsage(false)).toEqual({ removedCalls: 1, removedTotals: 0 });
+      expect(cache.getApiCallStats().summary.calls).toBe(0);
+      cache.close();
+    });
+
+    it("creates api_totals in the v5 schema and rolls up rows older than seven calendar days", () => {
+      const cache = new TranslationCache(":memory:");
+      const now = new Date("2026-09-21T12:00:00.000Z");
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-ui",
+        locale: "de",
+        outcome: "accepted",
+        inputTokens: 10,
+        outputTokens: 20,
+        totalTokens: 30,
+        costUsd: 0.1,
+        createdAt: "2026-08-15 10:00:00",
+      });
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-ui",
+        locale: "de",
+        outcome: "discarded",
+        inputTokens: 3,
+        outputTokens: 4,
+        totalTokens: 7,
+        costUsd: 0.02,
+        createdAt: "2026-08-16 10:00:00",
+      });
+      cache.recordApiCall({
+        provider: "openai",
+        model: "m2",
+        operation: "translate-ui",
+        locale: "de",
+        outcome: "accepted",
+        inputTokens: 100,
+        outputTokens: 50,
+        totalTokens: 150,
+        createdAt: "2026-08-17 10:00:00",
+      });
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-ui",
+        locale: "de",
+        outcome: "accepted",
+        inputTokens: 5,
+        outputTokens: 5,
+        totalTokens: 10,
+        costUsd: 0.05,
+        createdAt: "2026-09-18 10:00:00",
+      });
+      expect(cache.consolidateApiCalls(now)).toEqual({ rolledUpCalls: 3 });
+      expect(cache.consolidateApiCalls(now)).toEqual({ rolledUpCalls: 0 });
+      expect(cache.listApiCalls().total).toBe(1);
+      const stats = cache.getApiCallStats(undefined, now);
+      expect(stats.summary.calls).toBe(4);
+      expect(stats.summary.acceptedCalls).toBe(3);
+      expect(stats.summary.discardedCalls).toBe(1);
+      expect(stats.summary.totalTokens).toBe(197);
+      expect(stats.summary.actualCostUsd).toBeCloseTo(0.17);
+      expect(stats.summary.callsWithCost).toBe(3);
+      expect(stats.summary.callsWithoutCost).toBe(1);
+      expect(stats.summary.inputTokensWithoutCost).toBe(100);
+      expect(stats.summary.outputTokensWithoutCost).toBe(50);
+      expect(stats.byMonth.map((r) => r.month).sort()).toEqual(["2026-08", "2026-09"]);
+      const august = stats.byMonth.find((r) => r.month === "2026-08");
+      expect(august?.calls).toBe(3);
+      expect(august?.acceptedCalls).toBe(2);
+      expect(august?.discardedCalls).toBe(1);
+      expect(august?.callsWithCost).toBe(2);
+      expect(august?.callsWithoutCost).toBe(1);
+      expect(stats.byDay).toHaveLength(1);
+      expect(stats.byDay[0]?.day).toBe("2026-09-18");
+      const short = cache.getApiCallStats({ since: "2026-09-21 11:30:00" }, now);
+      expect(short.summary.calls).toBe(0);
+      const twoMonths = cache.getApiCallStats({ since: "2026-08-01 00:00:00" }, now);
+      expect(twoMonths.summary.calls).toBe(4);
+      cache.close();
+    });
+
+    it("consolidates on close after recording and upserts the same monthly dimensions", () => {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "api-totals-"));
+      try {
+        const now = new Date("2026-09-21T12:00:00.000Z");
+        const first = new TranslationCache(dir);
+        first.recordApiCall({
+          provider: "openrouter",
+          model: "m1",
+          operation: "translate-docs",
+          outcome: "accepted",
+          inputTokens: 8,
+          outputTokens: 2,
+          totalTokens: 10,
+          costUsd: 0.01,
+          createdAt: "2026-07-02 00:00:00",
+        });
+        first.close();
+        const second = new TranslationCache(dir);
+        expect(second.listApiCalls().total).toBe(0);
+        expect(second.getApiCallStats(undefined, now).summary.calls).toBe(1);
+        second.recordApiCall({
+          provider: "openrouter",
+          model: "m1",
+          operation: "translate-docs",
+          outcome: "accepted",
+          inputTokens: 2,
+          outputTokens: 2,
+          totalTokens: 4,
+          costUsd: 0.02,
+          createdAt: "2026-07-03 00:00:00",
+        });
+        expect(second.consolidateApiCalls(now)).toEqual({ rolledUpCalls: 1 });
+        const stats = second.getApiCallStats(undefined, now);
+        expect(stats.summary.calls).toBe(2);
+        expect(stats.summary.totalTokens).toBe(14);
+        expect(stats.summary.actualCostUsd).toBeCloseTo(0.03);
+        expect(stats.byMonth).toEqual([
+          expect.objectContaining({ month: "2026-07", calls: 2, acceptedCalls: 2 }),
+        ]);
+        second.close();
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
     });
   });
 });

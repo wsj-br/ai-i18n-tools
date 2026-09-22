@@ -28,6 +28,29 @@ describe("bin/ai-i18n-tools.mjs", () => {
     });
     expect(out).toMatch(/Usage:/i);
     expect(out).toMatch(/ai-i18n-tools/i);
+    expect(out).toMatch(/dashboard\|dash/);
+  });
+
+  it("accepts dash as an alias for dashboard", () => {
+    expect(fs.existsSync(cliEntry)).toBe(true);
+    const env = { ...process.env, AI_I18N_LANG: "en-GB" };
+    const dashboardHelp = execFileSync(process.execPath, [binShim, "dashboard", "--help"], {
+      encoding: "utf8",
+      cwd: repoRoot,
+      env,
+    });
+    const dashHelp = execFileSync(process.execPath, [binShim, "dash", "--help"], {
+      encoding: "utf8",
+      cwd: repoRoot,
+      env,
+    });
+    expect(dashboardHelp).toMatch(/dashboard\|dash/);
+    expect(dashHelp).toMatch(/dashboard\|dash/);
+    expect(dashboardHelp).toMatch(/--port/);
+    expect(dashHelp).toMatch(/--port/);
+    expect(dashboardHelp).toMatch(/--no-open/);
+    expect(dashHelp).toMatch(/--no-open/);
+    expect(dashHelp).toContain("Launch the Translation Dashboard");
   });
 });
 

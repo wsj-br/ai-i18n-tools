@@ -216,8 +216,8 @@ VitePressプロジェクトの**devDependency**として`ai-i18n-tools`を追加
 
 **執筆ルール**
 
-- ページ間のドキュメントリンク: `docs/`配下の英語Markdownでは**サイトルート** (`/guide/…`, `/reference/…`) を使用するか、別のプロジェクトの`docs/index.md`に同期されるREADMEを執筆する場合は`docs/guide/…`パスを使用します。
-- 実行可能なデモ、`LICENSE`、その他のリポジトリファイル: `README.md`およびドキュメント内では**完全なGitHub URL**を使用します ([READMEとドキュメントのホームページ](#readme-as-the-docs-homepage) を参照)。
-- `docs/<locale>/`内のリンクは手動で編集し**ない**でください — `sync` / `translate-docs`で再生成してください。
+- ページ間ドキュメントリンク: `docs/` 配下の英語マークダウンでは **サイトルート** (`/guide/…`、`/reference/…`) を使用し、別のプロジェクトの `docs/index.md` に同期される README を作成する場合は `docs/guide/…` パスを使用してください。
+- 実行可能なデモ、`LICENSE`、およびその他のリポジトリファイル: `README.md` およびドキュメントでは **完全な GitHub URL** を使用してください ([README とドキュメントのホームページ](#readme-and-the-docs-homepage) を参照)。
+- `docs/<locale>/` のリンクは手動で編集**しない**でください。`sync` / `translate-docs` を使用して再生成してください。
 
 [リンクの書き換え](/ja/guide/images-and-screenshots/link-rewriting) (フラット vs VitePress) および [設定 — `docsOutput`](/ja/reference/configuration#docsoutput) も参照してください。

@@ -75,10 +75,10 @@ O JSON shell do Docusaurus de `docusaurusCatalogDir` e outros artefatos JSON em 
 
 **Aliases** (mesmo motor `doc-system`, predefinição `localeSubpath` e padrões):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` assume como padrão `docusaurus-plugin-content-docs/current` (layout do plugin i18n do Docusaurus).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` assume como padrão `""`; `localePathLowercase` assume como padrão `true`. Páginas traduzidas em `{outputDir}/{locale}/`, correspondendo a [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`. Também usado para páginas de localidade Astro simples (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — veja [páginas do site Astro](/pt-BR/guide/ui-strings/astro-website#pages-parse-and-replace).
-- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` assume como padrão `false`). Veja [integração VitePress](/pt-BR/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a fonte em inglês fica em uma pasta de localidade (por exemplo, `content/en/`). Veja [integração Nextra](/pt-BR/guide/integrations/nextra).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` tem como padrão `docusaurus-plugin-content-docs/current` (layout do plugin de i18n do Docusaurus).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` tem como padrão `""`; `localePathLowercase` tem como padrão `true`. Páginas traduzidas em `{outputDir}/{locale}/`, correspondendo ao [Starlight](https://starlight.astro.build/guides/i18n/) quando o inglês está na raiz do conteúdo e `outputDir` é igual a `docsRoot`. Também usado para páginas de localidade simples do Astro (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — veja as [páginas do site do Astro](/pt-BR/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` — mesmo layout que `doc-system` com `localeSubpath` vazio; os nomes das pastas de localidade BCP-47 são preservados (`localePathLowercase` tem como padrão `false`). Veja a [integração com o VitePress](/pt-BR/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — mesmo layout que `doc-system` com `localeSubpath` vazio; a origem em inglês fica dentro de uma pasta de localidade (por exemplo, `content/en/`). Veja a [integração com o Nextra](/pt-BR/guide/integrations/nextra).
 
 Predefinição Docusaurus (páginas principais de documentação):
 

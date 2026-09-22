@@ -216,8 +216,8 @@ VitePress प्रोजेक्ट में `ai-i18n-tools` को एक **
 
 **लेखन नियम**
 
-- क्रॉस-पेज डॉक लिंक: `docs/` के तहत अंग्रेजी मार्कडाउन में **साइट रूट** (`/guide/…`, `/reference/…`) का उपयोग करें, या किसी अन्य प्रोजेक्ट में `docs/index.md` में सिंक होने वाली README को लिखते समय `docs/guide/…` पाथ का उपयोग करें।
-- चलाने योग्य डेमो, `LICENSE`, और अन्य रेपो फ़ाइलें: `README.md` और डॉक्स में **पूर्ण GitHub URL** का उपयोग करें ([README और डॉक्स होमपेज](#readme-as-the-docs-homepage) देखें)।
-- `docs/<locale>/` में लिंक को मैन्युअल रूप से संपादित **न करें** — `sync` / `translate-docs` के साथ पुन: उत्पन्न करें।
+- क्रॉस-पेज डॉक लिंक: `docs/` के अंतर्गत अंग्रेज़ी मार्कडाउन में **साइट रूट** (`/guide/…`, `/reference/…`) का उपयोग करें, या किसी अन्य प्रोजेक्ट में `docs/index.md` में सिंक किए जाने वाले README को लिखते समय `docs/guide/…` पाथ का उपयोग करें।
+- रन करने योग्य डेमो, `LICENSE`, और अन्य रेपो फ़ाइलें: `README.md` में और डॉक्स में **पूर्ण GitHub URL** का उपयोग करें ([README और डॉक्स होमपेज](#readme-and-the-docs-homepage) देखें)।
+- `docs/<locale>/` में लिंक को मैन्युअल रूप से संपादित **न** करें — `sync` / `translate-docs` का उपयोग करके पुनः जनरेट करें।
 
 यह भी देखें [लिंक पुनर्लेखन](/hi/guide/images-and-screenshots/link-rewriting) (फ्लैट बनाम VitePress) और [कॉन्फ़िगरेशन — `docsOutput`](/hi/reference/configuration#docsoutput)।

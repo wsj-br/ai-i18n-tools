@@ -5,6 +5,7 @@ import type { I18nDocTranslateConfig, TranslationFailureInsert } from "../core/t
 import type { Segment } from "../core/types.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
+import { computeGuidanceFingerprint } from "../glossary/translation-context.js";
 import { LlmClient } from "../api/llm-client.js";
 import {
   protectSegmentForTranslation,
@@ -94,6 +95,11 @@ export async function translateTsObjectLiteralFile(
   const content = fs.readFileSync(absSource, "utf8");
   const fileHash = hashFileContent(content);
   const sourceFileMtime = fs.statSync(absSource).mtime.toISOString();
+  const promptContextHash = computeGuidanceFingerprint(
+    glossary,
+    locale,
+    opts.translationContextFingerprint ?? ""
+  );
 
   if (opts.force && cache && !opts.noCache) {
     await withCacheMutex(opts.cacheMutex, () => cache.clearFile(fileTrackingKey, locale));
@@ -101,15 +107,17 @@ export async function translateTsObjectLiteralFile(
 
   const cachedFileHash =
     cache && !opts.noCache
-      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
-      : null;
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+        )
+      : false;
 
   if (
     !opts.force &&
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    cachedFileHash === fileHash &&
+    cachedFileHash &&
     !(opts.checkCache && localeEnforcesOutputScript(locale)) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -194,7 +202,7 @@ export async function translateTsObjectLiteralFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, relPathFromCwd)
+        cache.getSegment(s.hash, locale, relPathFromCwd, undefined, promptContextHash)
       );
       if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
@@ -288,7 +296,7 @@ export async function translateTsObjectLiteralFile(
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
-        cache.setFileStatus(fileTrackingKey, locale, fileHash);
+        cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
         for (const s of segments) {
           if (!s.translatable) {
             continue;
@@ -304,7 +312,8 @@ export async function translateTsObjectLiteralFile(
             entry.text,
             entry.modelUsed,
             relPathFromCwd,
-            null
+            null,
+            promptContextHash
           );
         }
       });

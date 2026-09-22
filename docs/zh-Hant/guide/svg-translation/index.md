@@ -1,19 +1,19 @@
-<a id="svg-translation"></a>
-# SVG 翻譯
+<a id="svg"></a>
+# SVG
 
-專為包含人類可讀標籤的 **SVG 插圖和圖表**而設計。`translate-svg` 命令讀取來源 `.svg` 檔案，從 `<text>`、`<title>` 和 `<desc>` 元素中提取文字，透過作用中的 LLM 供應商翻譯這些字串，並為**每個目標語言環境寫入一個輸出 SVG**。
+專為翻譯包含人類可讀標籤的**SVG 插圖與圖表**而設計。`translate-svg` 命令會讀取來源 `.svg` 檔案，從 `<text>`、`<title>` 及 `<desc>` 元素中擷取文字，透過啟用的 LLM 提供者翻譯這些字串，並寫入**每個目標語言區域各一個輸出 SVG**。
 
 這是唯一會發出特定語言環境的 **二進位** SVG 檔案的管線。`translate-docs` 會翻譯 Markdown 替代文字和連結參考，但它不會修改或複製 SVG 資產。當頁面需要帶有翻譯標籤的圖表時，請啟用 `features.translateSVG` 並設定頂層 `svg` 區塊。
 
 <a id="per-locale-model-overrides"></a>
-### 每個地區模型覆蓋
+## 各語言區域的模型覆寫
 
 `translate-svg` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。每個地區的 SVG 運行使用其自己的回退鏈 — 在 CJK 地區的圖表標籤需要腳本調優的模型時非常有用（例如 `ja`）。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
 
 SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的 SQLite 快取。已翻譯的文字區段會從快取中提供；只有新的或變更的來源文字才會傳送至 LLM。
 
 <a id="when-to-use-svg-translation"></a>
-### 何時使用 SVG 翻譯
+## 何時使用 SVG 翻譯
 
 在以下情況下使用 `translate-svg`：
 
@@ -28,7 +28,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 - 嵌入路徑資料而非 `<text>` 元素的文字 — 提取器無法讀取路徑輪廓。
 
 <a id="design-for-i18n-from-the-start"></a>
-### 從一開始就為國際化設計
+## 從一開始就進行 i18n 設計
 
 當標籤從一開始就是真實文字元素時，SVG 最容易翻譯：
 
@@ -39,7 +39,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 對於 Web 應用程式，當您的設計使用全小寫標籤時，請啟用 `forceLowercase: true` — 這可以避免跨檔案系統和 CDN 的大小寫敏感度不匹配。
 
 <a id="output-layouts"></a>
-### 輸出佈局
+## 輸出版面配置
 
 `translate-svg` 支援兩種常見的輸出形狀。根據您的應用程式或文件網站如何在執行時參考 SVG 檔案來選擇。
 
@@ -59,7 +59,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 請參閱 [圖片和螢幕截圖決策指南](/zh-Hant/guide/images-and-screenshots/#decision-guide)，了解 SVG 版面配置如何與點陣圖螢幕截圖策略配合。
 
 <a id="step-1-enable-and-configure"></a>
-### 步驟 1：啟用和設定
+## 步驟 1：啟用並設定
 
 啟用功能並將 `translate-svg` 指向您的來源檔案和輸出根目錄：
 
@@ -87,7 +87,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 完整欄位參考：[設定 — `svg`](/zh-Hant/reference/configuration#svg)。
 
 <a id="step-2-translate"></a>
-### 步驟 2：翻譯
+## 步驟 2：翻譯
 
 ```bash
 ai-i18n-tools translate-svg
@@ -108,6 +108,6 @@ ai-i18n-tools translate-svg --dry-run
 當 `features.translateSVG` 與 `svg` 同時設定時，`sync` 會自動執行 SVG 步驟（使用 `--no-svg` 跳過）。共用旗標包含 `-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency`、`--force` / `--force-update` 以及 `--check-cache`。
 
 <a id="troubleshooting"></a>
-### 疑難排解
+## 疑難排解
 
 常見的 SVG 問題 — 混合的來源/輸出目錄、Docusaurus 上的絕對靜態 URL 以及路徑佈局錯誤 — 在[SVG 疑難排解](/zh-Hant/guide/svg-translation/troubleshooting)中有所涵蓋。對於點陣圖資產和連結重寫，請參閱[圖片和螢幕截圖疑難排解](/zh-Hant/guide/images-and-screenshots/troubleshooting)。

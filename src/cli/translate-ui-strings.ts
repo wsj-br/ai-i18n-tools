@@ -50,12 +50,20 @@ import {
   interruptErrorFromSignal,
 } from "../utils/run-interrupt.js";
 import { Glossary } from "../glossary/glossary.js";
-import { parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
+import { GLOSSARY_USER_HEADERS, parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
+import {
+  computeGuidanceFingerprint,
+  loadTranslationContextFromConfig,
+  translationContextClientOpts,
+  UI_STRINGS_TRACKING_KEY,
+} from "../glossary/translation-context.js";
 import {
   protectGlossaryForcedTerms,
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { TranslationCache } from "../core/cache.js";
+import { usageRecorderForCache } from "../core/usage-recorder.js";
 import {
   safeResolveActiveProvider,
   localeModelsMapForProvider,
@@ -329,7 +337,7 @@ async function runTranslateUIBody(
     : undefined;
 
   if (config.glossary?.autoAddUserEditedToGlossary !== false && glossaryUser && !opts.dryRun) {
-    const headers = ["Original language string", "locale", "Translation", "Force"];
+    const headers = [...GLOSSARY_USER_HEADERS];
     let csvRows: string[][] = [];
 
     if (fs.existsSync(glossaryUser)) {
@@ -340,6 +348,7 @@ async function runTranslateUIBody(
         r["locale"] ?? "",
         r["Translation"] ?? r["translation"] ?? "",
         r["Force"] ?? r["force"] ?? "",
+        r["Context"] ?? r["context"] ?? r["Notes"] ?? r["notes"] ?? "",
       ]);
     }
 
@@ -358,7 +367,7 @@ async function runTranslateUIBody(
             const pairKey = `${entry.source}\0${target}`;
             const starKey = `${entry.source}\0*`;
             if (!existingPairs.has(pairKey) && !existingPairs.has(starKey)) {
-              csvRows.push([entry.source, target, translation, ""]);
+              csvRows.push([entry.source, target, translation, "", ""]);
               existingPairs.add(pairKey);
               addedToGlossary++;
             }
@@ -392,6 +401,20 @@ async function runTranslateUIBody(
   }
 
   const glossary = new Glossary(undefined, glossaryUser, targets);
+  const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
+  if (translationContext.truncated) {
+    console.warn(
+      chalk.yellow(
+        t(
+          "⚠️  Translation context truncated to {{max}} characters ({{files}} file(s)). Shorten glossary.contextFiles or raise glossary.contextMaxChars.",
+          {
+            max: config.glossary?.contextMaxChars ?? 12_000,
+            files: translationContext.loadedPaths.length,
+          }
+        )
+      )
+    );
+  }
 
   const allLocalesForModels = dedupeOrderedModelIds(
     [srcNorm],
@@ -465,6 +488,10 @@ async function runTranslateUIBody(
 
   const langProgress = { completed: 0, total: targets.length };
 
+  const usageCache = opts.dryRun
+    ? null
+    : new TranslationCache(path.join(opts.cwd, config.cacheDir));
+
   try {
     // ── Step 0: fill source-locale cardinal forms for plural entries ─────────
     if (!opts.dryRun) {
@@ -473,7 +500,9 @@ async function runTranslateUIBody(
         step0Client = await createFilteredLlmClient(config, srcNorm, {
           ui: true,
           ...llmClientDebugFailedOpts(opts, config.cacheDir),
+          ...translationContextClientOpts(translationContext.text),
           debugFailedRelativePath: stringsRel,
+          onApiCall: usageRecorderForCache(usageCache, "translate-ui", srcNorm),
         });
       } catch (e) {
         throw new Error(
@@ -515,6 +544,7 @@ async function runTranslateUIBody(
           glossaryHints: hints,
           intlPluralLocaleTag: srcNorm,
           sourceLocale: srcNorm,
+          translationContext: translationContext.text || undefined,
         });
         let batch;
         try {
@@ -584,7 +614,9 @@ async function runTranslateUIBody(
           localeClient = await createFilteredLlmClient(config, locale, {
             ui: true,
             ...llmClientDebugFailedOpts(opts, config.cacheDir),
+            ...translationContextClientOpts(translationContext.text),
             debugFailedRelativePath: stringsRel,
+            onApiCall: usageRecorderForCache(usageCache, "translate-ui", locale),
           });
         } catch (e) {
           throw new Error(
@@ -594,6 +626,17 @@ async function runTranslateUIBody(
           );
         }
       }
+
+      const promptContextHash = computeGuidanceFingerprint(
+        glossary,
+        locale,
+        translationContext.fingerprint
+      );
+      const storedGuidance = usageCache?.getFileTrackingHashes(UI_STRINGS_TRACKING_KEY, locale);
+      const guidanceChanged =
+        storedGuidance !== null &&
+        storedGuidance !== undefined &&
+        storedGuidance.promptContextHash !== promptContextHash;
 
       // Pass A — plain (non-plural) rows
       const missingPlain = entries.filter(([_hash, entry]) => {
@@ -607,8 +650,14 @@ async function runTranslateUIBody(
         if (opts.force) {
           return true;
         }
+        if (entry.models?.[locale] === USER_EDITED_MODEL) {
+          return false;
+        }
         const t = entry.translated?.[locale];
         if (t === undefined || String(t).trim() === "") {
+          return true;
+        }
+        if (guidanceChanged) {
           return true;
         }
         return translationScriptIssue(String(t), locale, src) !== null;
@@ -769,6 +818,12 @@ async function runTranslateUIBody(
         if (opts.force) {
           return true;
         }
+        if (entry.models?.[locale] === USER_EDITED_MODEL) {
+          return false;
+        }
+        if (guidanceChanged) {
+          return true;
+        }
         if (!pluralTranslatedLocaleHasContent(entry.translated?.[locale], locale)) {
           return true;
         }
@@ -846,6 +901,7 @@ async function runTranslateUIBody(
               glossaryHints: hints,
               intlPluralLocaleTag: locale,
               targetLocale: locale,
+              translationContext: translationContext.text || undefined,
             });
             let batch;
             try {
@@ -913,6 +969,7 @@ async function runTranslateUIBody(
       const localePath = path.join(outDir, `${locale}.json`);
       if (!opts.dryRun) {
         writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
+        usageCache?.setFileStatus(UI_STRINGS_TRACKING_KEY, locale, "", promptContextHash);
         if (opts.verbose) {
           console.log(
             chalk.gray(
@@ -1055,5 +1112,7 @@ async function runTranslateUIBody(
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);
     }
     throw e;
+  } finally {
+    usageCache?.close();
   }
 }

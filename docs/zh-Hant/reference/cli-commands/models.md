@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI — 模型與目錄
+<a id="cli--models--languages"></a>
+# CLI — 模型與語言
 
 <a id="check-models"></a>
 ### `check-models`
 
 **簡介：** `ai-i18n-tools check-models`
 
-根據作用中提供者的 `GET /models` 清單（成員資格與 `expiration_date`）驗證每個已設定的模型 ID。需要該提供者的 API 金鑰（Ollama 等無金鑰提供者則不需要）。當任何已設定的 ID 缺失或過期時，會以非零狀態結束，並遵守提供者的 `requestTimeoutMs`。當提供者回傳定價（例如 OpenRouter）時，也會顯示每 1M 權杖的提示/完成 USD 成本。
+驗證每個已設定的模型 ID 是否符合當前供應商的 `GET /models` 清單（成員資格與 `expiration_date`）。需要該供應商的 API 金鑰（Ollama 等無金鑰供應商則無需提供）。當任何已設定的 ID 缺失或過期時，將以非零狀態碼退出，並遵守解析後的請求逾時（供應商上的 `requestTimeout` 或 `requestTimeoutMs`，否則使用頂層值）。當供應商回傳定價時（例如 OpenRouter），也會顯示每 100 萬個 Token 的提示/完成 USD 費用。
 
 **另請參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)
 

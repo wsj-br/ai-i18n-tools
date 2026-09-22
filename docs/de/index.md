@@ -3,15 +3,17 @@ layout: home
 title: ai-i18n-tools
 description: >-
   CLI und Toolkit zur Internationalisierung von
-  JavaScript/TypeScript-Anwendungen und Dokumentationsseiten mit LLMs.
+  JavaScript/TypeScript-Anwendungen und Dokumentationsseiten mit dem
+  LLM-Anbieter Ihrer Wahl.
 hero:
   name: ai-i18n-tools
   text: Apps & Docs mit jedem LLM übersetzen
   tagline: >-
-    Eine Konfigurationsdatei, drei Übersetzungsmodi und der von Ihnen gewählte
-    Anbieter – OpenAI, Anthropic, Gemini, OpenRouter, Ollama oder jede
-    OpenAI-kompatible API. Wechseln Sie Modelle pro Projekt oder pro
-    Gebietsschema, ohne Ihren Code neu schreiben zu müssen.
+    Extrahieren Sie t()-Strings, übersetzen Sie Markdown, MDX, JSON-Bundles und
+    SVG-Labels — alles aus einer einzigen Konfiguration heraus, mit OpenAI,
+    Anthropic, Gemini, OpenRouter, Ollama oder einer beliebigen
+    OpenAI-kompatiblen API. Wechseln Sie Modelle pro Projekt oder pro Locale,
+    ohne Ihre Codebasis umschreiben zu müssen.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools-Logo
@@ -103,8 +105,8 @@ SVG-Illustrationen verwenden einen separaten `translate-svg`-Pfad – nicht `doc
 - [**Integrationen**](/de/guide/integrations/) – VitePress, Nextra, Fumadocs, Docusaurus und Astro
 - [**Anbieter und Modelle**](/de/guide/providers-and-models) – Voreinstellungen, Fallback-Ketten und `-P`-Überschreibungen
 - [**CLI-Referenz**](/de/reference/cli-commands/) – jeder Befehl, jedes Flag und jeder Workflow
-- [**Konfiguration**](/de/reference/configuration) – vollständiges `ai-i18n-tools.config.json`-Schema
-- [**Beispiele**](/de/examples) – neun ausführbare Demo-Projekte mit `npx degit`
-- [**Architektur**](/de/reference/architecture) – Interna, programmatische API und Erweiterungspunkte
+- [**Konfiguration**](/de/reference/configuration) — vollständiges `ai-i18n-tools.config.json`-Schema
+- [**Beispiele**](/de/examples) — zwölf ausführbare Demoprojekte mit `npx degit`
+- [**Architektur**](/de/reference/architecture) — Interna, programmatische API und Erweiterungspunkte
 
 Möchten Sie das Paket in Ihr eigenes Projekt integrieren? Beginnen Sie mit [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). Die [Repository-README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) ist eine kurze GitHub/npm-Landingpage, die für Details hierher verlinkt.

@@ -97,6 +97,13 @@
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs`（選填）
+
+每個供應商每次 LLM 請求的最長等待時間。`requestTimeout` 為整數秒；`requestTimeoutMs` 為毫秒。預設值：當兩者皆省略時為 **45** 秒。僅設定其中一項。若供應商設定了其中任一欄位，則僅對該供應商使用該值。
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` 和 `providers`
 
@@ -122,8 +129,14 @@
   每個請求的最大完成權杖數。預設值：`8192`。
 - `temperature`
   取樣溫度。預設值：`0.2`。
+- `requestTimeout`
+  向此供應商發送每個請求時等待的最長時間（以秒為單位）。覆寫頂層 `requestTimeout` / `requestTimeoutMs`。若此供應商與頂層設定皆未設定逾時，預設為 `45` 秒。在同一物件上僅能設定 `requestTimeout` 或 `requestTimeoutMs` 其中之一。
 - `requestTimeoutMs`
-  等待每個請求的最長時間（毫秒）。預設值：`30000`（30 秒）。
+  向此供應商發送每個請求時等待的最長時間（以毫秒為單位）。覆寫頂層 `requestTimeout` / `requestTimeoutMs`。若此供應商與頂層設定皆未設定逾時，預設為 `45000`（45 秒）。在同一物件上僅能設定 `requestTimeout` 或 `requestTimeoutMs` 其中之一。
+- `pricing`（選用）
+  供應商層級每 1,000,000 個 token 的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有供應商回報的 `usage.cost` 時（OpenRouter 以外的大多數供應商），此費率將套用至該呼叫的輸入與輸出 token。此金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。相符的 `modelPricing` 項目會覆寫此預設值。供應商回報的成本絕不會被取代。儲存時未包含成本的列，稍後仍可透過 [`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 與 [使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 進行估算。
+- `modelPricing`（選用）
+  每個模型每 1,000,000 個 token 的美元費用：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆寫該模型 ID 的 `pricing`。當供應商省略 `usage.cost` 時，會在呼叫時套用，並與該呼叫一起儲存。
 
 內建提供者預設值（金鑰 — 基本 URL — API 金鑰環境變數）：
 
@@ -143,9 +156,9 @@
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (無) |
 
-仍然接受舊式的頂層 `openrouter` 區塊（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeoutMs`），並在載入時自動遷移至 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 會合併到 `translationModels` 中。
+舊版頂層 `openrouter` 區塊（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍受支援，並會在載入時自動遷移至 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 會摺疊進 `translationModels`。
 
-如需在一個設定中設定多個提供者並使用 `-P` 在它們之間切換的可執行範例，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（`openai`、`anthropic`、`nvidia` 和 `deepseek` 在同一文件中）。
+如需在一個設定中配置多個供應商並透過 `-P` 在其間切換的可執行範例，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（同一文件中的 `openai`、`anthropic`、`openrouter` 與 `deepseek`）。
 
 **為何使用多個模型：** 不同的提供者和模型在成本和品質上有所差異，且在不同語言和地區的表現也不同。將 `translationModels` 設定為**有序的備用鏈**（而非單一模型），以便在請求失敗時，CLI 可以嘗試下一個模型。
 
@@ -342,13 +355,13 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 - `docsOutput.flatPreserveRelativeDir`
 當 `docsOutput.style = "flat"` 時，保留來源子目錄，以便具有相同基本名稱的檔案不會衝突。預設 `false`。
 - `docsOutput.rewriteRelativeLinks`
-翻譯後重寫相對連結（當 `docsOutput.style = "flat"` 且無自訂 `pathTemplate` 時自動啟用）。
+在翻譯後重寫相對連結（當 `docsOutput.style = "flat"` 且沒有自訂 `pathTemplate` 時自動啟用）。
 - `docsOutput.linkRewriteDocsRoot`
-計算扁平連結重寫前綴時使用的儲存庫根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常保持為 `"."`。
+計算扁平連結重寫前綴時所使用的儲存庫根目錄。通常請維持為 `"."`，除非您的翻譯文件位於不同的專案根目錄下。
 - `docsOutput.rewriteVitepressLinks`
-當 `true` 時，在翻譯後執行 VitePress 連結正規化工具。當 `docsOutput.style` 為 `"vitepress"` 時預設為啟用。與任何將語系資料夾置於英文旁的 `docsRoot` 下的 `doc-system` 佈局搭配使用。將 README 風格的 `docs/guide/…` 路徑重寫為網站路由 (`/guide/…`) 和語系相對的 `../guide/…` 連結。對於指向 VitePress 樹狀結構外儲存庫檔案的連結 (`LICENSE`, `examples/`)，請在英文原始碼中使用完整 URL — 請參閱 [VitePress 整合 — 以 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-as-homepage)。
+當 `true` 時，在翻譯後執行 VitePress 連結標準化程式。當 `docsOutput.style` 為 `"vitepress"` 時預設啟用。適用於任何 `doc-system` 版面配置，其中語系資料夾與英文並列於 `docsRoot` 之下。會將 README 風格的 `docs/guide/…` 路徑重寫為網站路由 (`/guide/…`) 及語系相對的 `../guide/…` 連結。對於指向 VitePress 樹狀結構外之儲存庫檔案的連結 (`LICENSE`、`examples/`)，請在英文來源中使用完整 URL — 請參閱 [VitePress 整合 — 以 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 - `docsOutput.rewriteNextraLinks`
-當 `true` 時，在翻譯後執行 Nextra 連結正規化工具。當 `docsOutput.style` 為 `"nextra"` 時預設為啟用。為 Next.js `i18n` 將 `content/en/…` 和相對 `.mdx` 路徑重寫為語系中立的網站路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
+當 `true` 時，在翻譯後執行 Nextra 連結標準化程式。當 `docsOutput.style` 為 `"nextra"` 時預設啟用。會將 `content/en/…` 與相對 `.mdx` 路徑重寫為 Next.js `i18n` 的語系中立網站路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
 `"dot"` (預設) 或 `"dir"`。Dot 會將 `stem.{locale}.mdx` 寫在英文原始碼旁；dir 會寫入類似 Nextra 的語系資料夾。請參閱 [Fumadocs 整合 — 頁面佈局](/zh-Hant/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ BCP-47 代碼的可選陣列，被視為 RTL 以用於強調佔位符預設值�
 | 欄位 | 描述 |
 |-------|-------------|
 | `description` | CLI / `status` 的可選註釋（不翻譯）。 |
-| `contentPaths` | 專案根目錄下的來源 `.json` 檔案、目錄或 glob 模式。 |
+| `contentPaths` | 專案根目錄下的來源 `.json` 檔案、目錄或 glob 模式。支援典型的 i18next 命名空間檔案（`public/locales/en/*.json`）：巢狀物件、陣列、字串值中的 <code v-pre>{{var}}</code> 插值，以及獨立的複數後綴鍵（`key_one`、`key_other`）。 |
 | `outputPathTemplate` | 每個目標地區設定必需的輸出路徑。佔位符：`{locale}`、`{LOCALE}`、`{llocale}`、`{stem}`、`{basename}`、`{extension}`、`{relativeToSourceRoot}`。 |
 | `targetLocales` | 此區塊的可選子集；否則為根目錄的 `targetLocales`。 |
 | `keyPolicy.mode` | `allowlist`、`denylist` 或 `both`。 |
@@ -474,13 +487,31 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 | 欄位          | 說明                                                                                                                                                                                                                                                              |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | 指向 `strings.json` 的路徑 - 會從現有翻譯自動建構詞彙表。                                                                                                                                                                                          |
-| `userGlossary` | 指向 CSV 檔案的路徑，其中包含 `Original language string`（或 `en`）、`locale`、`Translation` 等欄位 - 每行代表一個來源術語和目標地區設定（`locale` 可以是 `*` 以代表所有目標地區設定）。 |
+| `userGlossary` | CSV 檔案路徑，包含欄位 `Original language string`（或 `en`）、`locale`、`Translation`、選填的 `Force` 與選填的 `Context` — 每個來源詞彙與目標地區各一列（`locale` 可為 `*` 以套用至所有目標）。 |
 | `autoAddUserEditedToGlossary` | 當 `true` 時，對 UI 字串的儀表板編輯可以自動附加到使用者詞彙表中。 |
+| `contextFiles` | 選填的、相對於 cwd 的 Markdown 或純文字檔案（`.md`、`.markdown`、`.txt`），包含產品或功能說明。於指令啟動時載入，並注入至 UI、文件、JSON、SVG 及校對提示詞中。除非您也希望翻譯這些檔案，否則請勿將其置於 `docs[].contentPaths`。URL 會被拒絕。完整文字會傳送至已配置的 LLM 供應商，並可能出現在 `--debug-failed` 日誌中 — 請勿包含機密資訊或個人識別資訊（PII）。 |
+| `contextMaxChars` | 傳送至模型的串接上下文檔案文字之最大字元數（預設 `12000`，上限 `100000`）。超出部分會被截斷並發出警告。 |
 
 `translate-docs` 使用相同的詞彙表來提供術語提示，但會跳過精簡的 UI 標籤縮寫（帶有結尾句點的形式，例如 `Alm.`，或是簡短的單一標記壓縮，例如 `Size` → `Tam`），以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 標記。完整的產品術語與非縮寫的 UI 翻譯仍會提供提示。
+
+選填的 `Context` CSV 欄位為該詞彙的來源語言用法指引（定義、語法用途、產品含義）。僅在詞彙符合目前批次時才會納入。變更詞彙的 `Context` 註記或任何 `contextFiles` 內容，會使下一次執行時相符地區的快取區段與檔案追蹤列失效，因此翻譯會自動重新整理。僅變更偏好的 `Translation` 仍會使用現有快取，除非您傳入 `--force` / `--force-update`。儀表板中使用者編輯過的快取列會予以保留。
+
+範例：
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **產生一個空的詞彙表 CSV：**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+若要從儲存庫草擬 `contextFiles`，請使用 [透過 AI 代理程式產生上下文檔案](/zh-Hant/guide/glossary#generate-a-context-file-with-an-ai-agent) 中的複製貼上代理程式提示。如需了解如何套用術語列與上下文檔案，請參閱 [術語表](/zh-Hant/guide/glossary)。

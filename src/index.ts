@@ -39,12 +39,24 @@ export {
   type FileTracking,
   type CacheEntry,
   type TranslationRow,
+  type ApiCallOutcome,
+  type ApiCallInsert,
+  type ApiCallRow,
+  type ApiCallFilters,
+  type ApiCallStatsResult,
+  type ApiCallBreakdownRow,
+  type ApiTotalsRow,
+  type UsageDeleteOlderThan,
+  type UsageDeleteResult,
+  type LlmApiCallEvent,
+  type LlmModelPricing,
   type MarkdownSourceIssueInsert,
   type MarkdownSourceIssueListRow,
   type MarkdownSourceIssueSummary,
   type CleanupStats,
   type ContentExtractor,
   type GlossaryTerm,
+  type GlossaryTermHint,
   type BatchTranslationResult,
   type ChatMessage,
   type ChatResponse,
@@ -198,6 +210,23 @@ export { SvgExtractor, type SvgExtractorOptions } from "./extractors/svg-extract
 export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
 /** @deprecated Use {@link UIStringExtractor} */
 export { UIStringExtractor as ReactExtractor } from "./extractors/ui-string-extractor.js";
+export {
+  extractIntlayerContentFile,
+  pickIntlayerSourceText,
+  mapIntlayerLocaleToConfig,
+  convertIntlayerPlaceholders,
+  type IntlayerLeaf,
+  type UnsupportedIntlayerLeaf,
+  type IntlayerDictionaryExtract,
+} from "./extractors/intlayer-content-extractor.js";
+export {
+  codemodIntlayerUsages,
+  formatTCall,
+  relativeTImport,
+  type CodemodFileResult,
+  type SafeRewrite,
+  type ManualReviewSite,
+} from "./extractors/intlayer-usage-codemod.js";
 export {
   HTML_I18N_MARKERS,
   HTML_I18N_IGNORE_ATTR,
@@ -409,5 +438,16 @@ export {
   pluralTranslatedLocaleHasContent,
 } from "./core/plural-forms.js";
 
-export { Glossary, isUiLabelAbbreviation } from "./glossary/glossary.js";
+export { Glossary, formatGlossaryHint, isUiLabelAbbreviation } from "./glossary/glossary.js";
 export { GlossaryMatcher } from "./glossary/matcher.js";
+export { GLOSSARY_USER_HEADERS } from "./glossary/parse-glossary-csv.js";
+export {
+  CONTEXT_MAX_CHARS_HARD_LIMIT,
+  DEFAULT_CONTEXT_MAX_CHARS,
+  UI_STRINGS_TRACKING_KEY,
+  computeGuidanceFingerprint,
+  loadTranslationContext,
+  loadTranslationContextFromConfig,
+  sanitizePromptSupplementaryText,
+  type TranslationContextLoadResult,
+} from "./glossary/translation-context.js";

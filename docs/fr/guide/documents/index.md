@@ -21,7 +21,7 @@ Les fichiers [SVG](/fr/guide/svg-translation/) sont traduits via [`translate-svg
 
 Les paquets JSON d'interface utilisateur imbriqués arbitraires, sans rapport avec les chaînes de l'habillage/thème d'un framework de documentation, appartiennent au pipeline [JSON](/fr/guide/json), et non à `docs[]`.
 
-Pour la **cohérence terminologique** entre l'interface utilisateur et la documentation, définissez `glossary.uiGlossary` sur votre chemin `strings.json` — `translate-docs` réutilise les traductions d'interface utilisateur existantes comme indices dans les invites LLM lorsque des termes correspondants apparaissent dans un segment. L'option `glossary.userGlossary` ajoute des remplacements CSV pour les termes du produit (partagés avec `translate-ui` et `proofread-ui`). Les abréviations compactes des étiquettes d'interface utilisateur utilisées pour s'adapter aux colonnes étroites (par exemple `Size` → `Tam`) restent disponibles pour la traduction de l'interface utilisateur, mais sont omises des indices du glossaire des documents. Générez un fichier CSV de démarrage avec `glossary-generate`, modifiez les lignes dans l'onglet **Glossaire** du tableau de bord de traduction, ou consultez [Configuration — `glossary`](/fr/reference/configuration#glossary) et [Glossaire](/fr/guide/translation-dashboard/glossary).
+Pour assurer la **cohérence terminologique** entre l'interface utilisateur et la documentation, définissez `glossary.uiGlossary` sur le chemin de votre `strings.json` — `translate-docs` réutilise les traductions existantes de l'interface utilisateur comme suggestions dans les invites du LLM lorsque des termes correspondants apparaissent dans un segment. L'option facultative `glossary.userGlossary` ajoute des surcharges CSV pour les termes du produit (partagées avec `translate-ui` et `proofread-ui`). Les abréviations compactes des libellés de l'interface, utilisées pour s'adapter aux colonnes étroites (par exemple `Size` → `Tam`), restent disponibles pour la traduction de l'interface, mais sont omises des suggestions du glossaire de la documentation. Générez un fichier CSV de base avec `glossary-generate`, modifiez les lignes dans l'onglet [Glossaire](/fr/guide/translation-dashboard/glossary) du tableau de bord de traduction, ou consultez [Configuration — `glossary`](/fr/reference/configuration#glossary) et [Glossaire](/fr/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
@@ -43,7 +43,7 @@ Pour la **cohérence terminologique** entre l'interface utilisateur et la docume
 | Liens `#anchor` entre pages | [Liens d'ancrage](/fr/guide/documents/anchor-links) |
 | Réécriture d'URL de liens et d'actifs (`regexAdjustments`) | [Réécriture de liens](/fr/guide/documents/link-rewriting) |
 | Captures d'écran dans la documentation | [Images et captures d'écran](/fr/guide/images-and-screenshots/) |
-| Terminologie produit et cohérence UI/doc | [Configuration — `glossary`](/fr/reference/configuration#glossary), [Glossaire](/fr/guide/translation-dashboard/glossary) |
+| Terminologie du produit et cohérence interface/doc | [Configuration — `glossary`](/fr/reference/configuration#glossary), [Glossaire](/fr/guide/glossary) |
 | Drapeaux et cache `translate-docs` | [Options CLI](/fr/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

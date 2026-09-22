@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI – Modelle & Katalog
+<a id="cli--models--languages"></a>
+# CLI — Modelle und Sprachen
 
 <a id="check-models"></a>
 ### `check-models`
 
 **Zusammenfassung:** `ai-i18n-tools check-models`
 
-Überprüfen Sie jede konfigurierte Modell-ID gegen die `GET /models`-Liste des aktiven Anbieters (Mitgliedschaft und `expiration_date`). Erfordert den API-Schlüssel des Anbieters (keinen für schlüssellose Anbieter wie Ollama). Beendet mit einem von Null verschiedenen Exit-Status, wenn eine konfigurierte ID fehlt oder abgelaufen ist, und berücksichtigt die `requestTimeoutMs` des Anbieters. Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), zeigt er auch den USD-Preis pro 1 Mio. Token für Prompt/Ausführung an.
+Validiert jede konfigurierte Modell-ID anhand der `GET /models`-Liste des aktiven Anbieters (Mitgliedschaft und `expiration_date`). Erfordert den API-Schlüssel des Anbieters (keiner für schlüssellose Anbieter wie Ollama). Beendet den Vorgang mit einem Fehlercode ungleich Null, wenn eine konfigurierte ID fehlt oder abgelaufen ist, und berücksichtigt das aufgelöste Anforderungs-Timeout (`requestTimeout` oder `requestTimeoutMs` beim Anbieter, andernfalls den obersten Wert). Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch die USD pro 1 Mio. Tokens für Prompt/Vervollständigung angezeigt.
 
 **Siehe auch:** [LLM-Provider](/de/guide/providers-and-models)
 

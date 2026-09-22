@@ -31,6 +31,7 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [plain-html](./plain-html/) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` |
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
+| [intlayer-migration](./intlayer-migration/) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` |
 
 ### From the full ai-i18n-tools repository
 
@@ -56,6 +57,7 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [plain-html](./plain-html/)         | Workspace app      | Plain HTML + `data-i18n*` markers + static locale JSON                  | Static HTML (no framework) |
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
+| [intlayer-migration](./intlayer-migration/) | Workspace app | Intlayer `.content.ts` → `t()` migration (`migrate-intlayer`) | Vite + React (Intlayer shim → ai-i18n-tools/runtime) |
 
 Each example has its own README with setup, commands, and project layout. Use the links above for full walkthroughs.
 
@@ -225,7 +227,7 @@ Minimal fixture for **comparing LLM providers** on the same Portuguese markdown 
 
 **What it demonstrates**
 
-- Multiple providers in one config (`openai`, `anthropic`, `nvidia`, `deepseek`)
+- Multiple providers in one config (`openai`, `anthropic`, `openrouter`, `deepseek`)
 - Switching provider per run with `-P` / `--provider`
 - `check-models`, `list-models`, and `bench-models` against live provider catalogs
 - Document translation only — no UI extraction
@@ -253,6 +255,22 @@ Markdown **stress-test fixture** for the document translation pipeline.
 
 ---
 
+## [intlayer-migration](./intlayer-migration/)
+
+Practice **`migrate-intlayer`**: Intlayer `*.content.ts` dictionaries and `useIntlayer` call sites, including three complex cases that stay in the AI-agent report.
+
+**What it demonstrates**
+
+- Dry-run vs `--write` catalog seeding and safe `t()` rewrites
+- `intlayer-pristine/` + `pnpm reset` so you can retry the migration
+- Finishing manual-review sites from `migrate-intlayer-report.md`, then running with `ai-i18n-tools/runtime`
+
+**Good starting point if** you are moving an Intlayer project onto ai-i18n-tools' English source-string `t()` schema.
+
+→ [intlayer-migration/README.md](./intlayer-migration/README.md)
+
+---
+
 ## Choosing an example
 
 | Your goal | Start here |
@@ -265,8 +283,10 @@ Markdown **stress-test fixture** for the document translation pipeline.
 | Astro Starlight docs site | [astro-docs](./astro-docs/) |
 | VitePress docs site | [vitepress-docs](./vitepress-docs/) |
 | Nextra 4 docs site | [nextra-docs](./nextra-docs/) |
+| Fumadocs 4 docs site | [fumadocs-docs](./fumadocs-docs/) |
 | Plain HTML + `data-i18n*` markers | [plain-html](./plain-html/) |
 | Pick or benchmark an LLM provider | [multi-provider](./multi-provider/) |
 | Regression-test markdown / CJK translation | [test-markdown](./test-markdown/) |
+| Migrate Intlayer `.content.ts` to `t()` | [intlayer-migration](./intlayer-migration/) |
 
 For conceptual background (catalog vs flat bundles, translation overview, config schema), see the [documentation site](https://wsj-br.github.io/ai-i18n-tools/) and [docs/ai-i18n-tools-context.md](../docs/ai-i18n-tools-context.md).

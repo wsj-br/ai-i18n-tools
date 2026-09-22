@@ -30,7 +30,7 @@
 | | `src/processors/` | 占位符保护、批处理、验证、链接重写 |
 | **共享** | `src/core/` | 配置、类型、SQLite 缓存、提示、输出路径、区域设置实用程序 |
 | | `src/api/` | `LlmClient` — 与提供商无关的聊天客户端（Vercel AI SDK），带模型回退 |
-| | `src/glossary/` | 词汇表加载和提示的术语提示 |
+| | `src/glossary/` | 术语表加载、术语提示以及用于提示词的可选项目上下文文件 |
 | | `src/utils/` | 记录器、哈希、忽略解析器、显示宽度表、`.env` 加载器 |
 | **您的应用运行时** | `src/runtime/` | i18next 助手和显示实用程序 — 导出为 `'ai-i18n-tools/runtime'` ([运行时助手](/zh-Hans/guide/runtime-helpers)) |
 | **工具 UI** *(内部测试)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此包自己的 CLI 和翻译仪表板 — 与您的项目内容分开 ([自本地化](#self-localization-tool-ui)) |
@@ -202,6 +202,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 每次运行时，都会按哈希 × 语言环境查找片段。只有缓存未命中才会发送给 LLM。翻译后，当前翻译范围内未命中的片段行的 `last_hit_at` 会被重置。文档翻译期间成功的缓存命中会清除该片段过期的 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后移除过期的片段行（空 `last_hit_at` / 空文件路径），当解析的源路径在磁盘上缺失时修剪 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其元数据文件路径指向缺失文件的翻译行，修剪孤立的 `translation_failures` 行，修剪其解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行，并丢弃配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales` 以及任何按块划分的 `docs[]` / `json[]` `targetLocales`；仅限 SQLite —— 使用 `purge-locale` 删除生成的文件）；除非传递了 `--backup <path>`，否则它不会备份 `cache.db`，该参数会首先将备份写入该路径。
 
+计费的模型调用（已接受的翻译和已丢弃的重试）存储在 `api_calls` 中。在执行记录调用的命令后，超过 7 个 UTC 日历日的明细行将汇总到月度 `api_totals` 中。`usage` 和仪表板的“使用量与成本”视图会合并这两个表。请参阅[使用量与成本](/zh-Hans/guide/translation-dashboard/usage)。
+
+术语表 `Context` 注释和 `glossary.contextFiles` 会生成指纹（`prompt_context_hash`）并注入到 UI、文档、JSON、SVG 和校对提示中。更改此指引会导致在下次运行时使匹配的缓存段和文件跟踪行失效。仪表板 `user-edited` 缓存行将被保留。仅更改首选术语翻译会保留现有缓存，直至 `--force` / `--force-update`。
+
 `translate-docs` 命令还使用 **文件跟踪**，因此对于未更改且已有最新输出的源文件，可以完全跳过处理。`--check-cache` 会以预期的书写系统重新打开区域设置，从而重新验证缓存的片段；`--force-update` 会为每个区域设置重新运行文件处理，同时仍使用片段缓存；`--force` 会清除文件跟踪，并在进行 API 翻译时绕过片段缓存读取。当所有已配置的模型在某个 Markdown 片段上未能通过 AST 验证时，`translate-docs` 可以逐步拆分该片段并重试较小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认开启）。有关完整的标志表，请参阅[文档 — 缓存行为与标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 
 **批量提示格式：** `translate-docs --prompt-format` 仅为 `LlmClient.translateDocumentBatch` 选择 XML (`<seg>` / `<t>`) 或 JSON 数组/对象形状；提取、占位符和验证保持不变。请参阅 [批量提示格式](/zh-Hans/guide/documents/cli-options#batch-prompt-format)。
@@ -251,10 +255,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 基于 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）构建的提供商无关的聊天客户端。它从 `provider` / `providers` 解析活动提供商，为该提供商的 `baseUrl` + API 密钥构建一个 OpenAI 兼容的客户端（`createOpenAICompatible`），并通过 `generateText` 路由所有调用。`OpenRouterClient` 保留为已弃用的别名。关键行为：
 
-- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首选 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 管道），接着是 `translationModels`。文档、JSON 和 SVG 翻译使用非 UI 链为每个区域设置创建一个客户端。相反，`bench-models` 命令为每个已配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
-- **请求超时**：活动提供商的 `requestTimeoutMs`（默认 30 秒）通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供商）加载提供商的模型列表时，相同的值适用于 `GET /models`。丢弃未知模型 id 的可选预检过滤器仅在活动提供商为 OpenRouter 时运行。
-- **OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段进行吞吐量路由，`HTTP-Referer` / `X-Title` 标头，以及从 `usage.cost` 读取的精确美元成本。每个提供商都会报告令牌使用情况；精确成本仅在提供商返回时提供。
-- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供商 API / 空正文失败将打印在控制台上，而不是转储仅包含提示的文件。
+- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首先使用 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 流水线），接着是 `translationModels`。文档、JSON 和 SVG 翻译会使用非 UI 链为每个区域设置创建一个客户端。`bench-models` 命令则为每个配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
+- **请求超时**：活动提供程序上的 `requestTimeout`（秒）或 `requestTimeoutMs`，否则为配置顶部的相同键（默认 45 秒），通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供程序）加载提供程序的模型列表时，相同的值适用于 `GET /models`。丢弃未知模型 id 的可选预检过滤器仅在活动提供程序为 OpenRouter 时运行。
+- **OpenRouter 额外功能**（仅当 `openrouter` 处于活动状态时）：通过 `provider` 请求字段、`HTTP-Referer` / `X-Title` 标头进行吞吐量路由，以及从 `usage.cost` 读取的精确美元成本。每个提供程序都会报告令牌使用情况。当提供程序省略 `usage.cost` 时，美元成本根据 `providers.<name>.modelPricing` 或提供程序范围的 `pricing` 默认值计算，并存储在 `api_calls` 行上。提供程序报告的成本永远不会被替换。
+- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示词、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供程序 API / 空正文失败会在控制台上打印，而不是转储仅包含提示词的文件。
 
 <a id="config-loading"></a>
 ### 加载配置
@@ -423,7 +427,8 @@ src/
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
-│   └── matcher.ts                  Term hint extraction for prompts
+│   ├── matcher.ts                  Term hint extraction for prompts
+│   └── translation-context.ts      contextFiles loader and guidance fingerprints
 │
 ├── runtime/
 │   ├── index.ts                    Runtime re-exports

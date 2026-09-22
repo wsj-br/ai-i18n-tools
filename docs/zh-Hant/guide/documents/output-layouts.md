@@ -75,10 +75,10 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 **別名**（相同的 `doc-system` 引擎，預設 `localeSubpath` 與預設值）：
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` 預設為 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 外掛佈局）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` 預設為 `""`；`localePathLowercase` 預設為 `true`。翻譯頁面位於 `{outputDir}/{locale}/` 之下，當英文內容位於內容根目錄且 `outputDir` 等於 `docsRoot` 時，與 [Starlight](https://starlight.astro.build/guides/i18n/) 一致。亦用於一般 Astro 語系頁面（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）—請參閱 [Astro 網站頁面](/zh-Hant/guide/ui-strings/astro-website#pages-parse-and-replace)。
-- `docsOutput.style = "vitepress"` — 與 `doc-system` 相同的佈局，但 `localeSubpath` 為空；保留 BCP-47 語系資料夾名稱（`localePathLowercase` 預設為 `false`）。請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
-- `docsOutput.style = "nextra"` — 與 `doc-system` 相同的佈局，但 `localeSubpath` 為空；英文來源位於語系資料夾之下（例如 `content/en/`）。請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra)。
+- `docsOutput.style = "docusaurus"` — `localeSubpath` 預設為 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 外掛程式版面配置）。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` 預設為 `""`；`localePathLowercase` 預設為 `true`。翻譯後的頁面位於 `{outputDir}/{locale}/` 下，當英文位於內容根目錄且 `outputDir` 等於 `docsRoot` 時，即符合 [Starlight](https://starlight.astro.build/guides/i18n/) 的配置。也用於純 Astro 地區設定頁面（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）— 請參閱 [Astro 網站頁面](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
+- `docsOutput.style = "vitepress"` — 與 `doc-system` 版面配置相同，但 `localeSubpath` 為空；保留 BCP-47 地區設定資料夾名稱（`localePathLowercase` 預設為 `false`）。請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
+- `docsOutput.style = "nextra"` — 與 `doc-system` 版面配置相同，但 `localeSubpath` 為空；英文原始檔位於地區設定資料夾下（例如 `content/en/`）。請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra)。
 
 Docusaurus 預設（主要文件頁面）：
 

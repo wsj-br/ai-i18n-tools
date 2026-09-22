@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## 일반적인 부트스트랩
+
+최소 형태의 `src/i18n.ts`에서 i18next 헬퍼를 조합합니다. `SOURCE_LOCALE`은 `ai-i18n-tools.config.json`의 `sourceLocale`와 일치해야 합니다. 아래 import 경로는 이 파일이 `locales/`와 같은 디렉터리에 위치한다고 가정합니다.
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+언어가 변경되면 `await loadLocale(next)`을 호출한 다음 `await i18n.changeLanguage(next)`을 호출합니다. React(`initReactI18next`), 소스 로케일 복수형(`sourcePluralFlatBundle`) 및 `applyDirection`에 대한 내용은 [Wire i18next](/ko/guide/ui-strings/i18next-runtime)에서 다룹니다.
+
 <a id="quick-reference"></a>
 ## 빠른 참조
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-일반적인 앱 진입점으로 `setupKeyAsDefaultT`를 사용하세요(키 자르기 + 복수형 `wrapT` + 선택적 `translate-ui` `{sourceLocale}.json`). 애플리케이션 설정을 위해 `wrapI18nWithKeyTrim`만 호출하는 것은 **사용 중단됨**입니다.
+[일반적인 부트스트랩](#typical-bootstrap)은 이러한 팩토리를 조합하는 방법을 보여줍니다. 일반적인 앱 진입점으로 `setupKeyAsDefaultT`을 사용하십시오(키 트리밍 + 복수형 `wrapT` + 선택적 `translate-ui` `{sourceLocale}.json`). 애플리케이션 와이어링 시 `wrapI18nWithKeyTrim`만 호출하는 것은 **더 이상 사용되지 않습니다**.
 
 `sourcePluralFlatBundle`에는 `addResourceBundle()`이(가) 포함된 i18next 인스턴스가 필요합니다. `lng` 필드는 부트스트랩 파일의 `SOURCE_LOCALE`과(와) `ai-i18n-tools.config.json`의 `sourceLocale`과(와) 일치해야 합니다.
 

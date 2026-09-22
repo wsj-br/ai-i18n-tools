@@ -6,16 +6,17 @@
 <a id="command-overview"></a>
 ## コマンド概要
 
-<a id="setupsetup"></a>
-### [セットアップ](setup)
+<a id="getting-startedsetup"></a>
+### [はじめに](setup)
 
 | コマンド | 概要 |
 |---------|---------|
 | [`version`](setup#version) | CLIのバージョンとビルドタイムスタンプを表示します。 |
 | [`init`](setup#init) | 初期設定ファイルを書き出します。`-t` がスキャフォールドテンプレートを選択します。 |
+| [`help`](setup#help) | サブコマンドのヘルプを表示します。 |
 
-<a id="models--catalogmodels"></a>
-### [モデルとカタログ](models)
+<a id="models--languagesmodels"></a>
+### [モデルと言語](models)
 
 | コマンド | 概要 |
 |---------|---------|
@@ -31,6 +32,7 @@
 |---------|---------|
 | [`extract`](ui-strings#extract) | ソースリテラルとHTMLマーカーから `strings.json` を更新します。 |
 | [`mark-html`](ui-strings#mark-html) | HTMLファイルに `data-i18n*` マーカーを挿入します。 |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayerの`.content.ts`辞書をインポートし、シンプルな`useIntlayer` / `getIntlayer`サイトを`t()`に書き換えます。 |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | 設定のロケールから `ui-languages.json` を書き出します。 |
 | [`translate-ui`](ui-strings#translate-ui) | UI文字列を翻訳します (`strings.json` → ロケールJSON)。 |
 | [`sync-ui`](ui-strings#sync-ui) | UI文字列を抽出してから翻訳します。 |
@@ -46,25 +48,26 @@
 | [`write-heading-ids`](documents#write-heading-ids) | ATX見出しの前にHTMLアンカー行を挿入します。 |
 | [`check-markdown`](documents#check-markdown) | Markdown/MDXをスキャンして区切り文字と強調の問題を検出します。 |
 
-<a id="other-contentcontent"></a>
-### [その他のコンテンツ](content)
+<a id="json--svgcontent"></a>
+### [JSONとSVG](content)
 
 | コマンド | 概要 |
 |---------|---------|
 | [`translate-json`](content#translate-json) | `json[]` 設定ブロックに従ってネストされたJSONを翻訳します。 |
 | [`translate-svg`](content#translate-svg) | `config.svg` で設定されたSVGファイルを翻訳します。 |
 
-<a id="workflows--statusworkflows"></a>
-### [ワークフローとステータス](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [ワークフローとレポート](workflows)
 
 | コマンド | 概要 |
 |---------|---------|
 | [`sync`](workflows#sync) | 抽出 + UI + SVG + ドキュメント + JSON を1つのパイプラインで実行します。 |
 | [`status`](workflows#status) | UI、ドキュメント、およびJSONの翻訳カバレッジを出力します。 |
 | [`statistics`](workflows#statistics) | キャッシュと`strings.json`の統計を出力します。 |
+| [`usage`](workflows#usage) | 記録されたモデルAPI呼び出しのトークンとコストを出力します。 |
 
-<a id="cache--maintenancemaintenance"></a>
-### [キャッシュとメンテナンス](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [キャッシュのメンテナンス](maintenance)
 
 | Command | Summary |
 |---------|---------|
@@ -72,46 +75,47 @@
 | [`clean-temp`](maintenance#clean-temp) | `*.log`、`*.tmp`、およびキャッシュのバックアップを検索して削除します。 |
 | [`purge-locale`](maintenance#purge-locale) | ロケールのキャッシュ行と生成されたアーティファクトを削除します。 |
 
-<a id="toolstools"></a>
-### [ツール](tools)
+<a id="dashboard--glossarytools"></a>
+### [ダッシュボードと用語集](tools)
 
 | コマンド | 概要 |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | 翻訳ダッシュボードのWeb UIを起動します。 |
+| [`dashboard`](tools#dashboard) (`dash`) | 翻訳ダッシュボードのWeb UIを起動します。 |
 | [`glossary-generate`](tools#glossary-generate) | 空の`glossary-user.csv`テンプレートを書き込みます。 |
-| [`help`](tools#help) | サブコマンドのヘルプを表示します。 |
 
 <a id="synopsis"></a>
 ## 概要
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

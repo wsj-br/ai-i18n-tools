@@ -97,6 +97,13 @@
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs` (선택 사항)
+
+모든 프로바이더에 대한 각 LLM 요청의 최대 대기 시간입니다. `requestTimeout`는 초 단위이고, `requestTimeoutMs`는 밀리초 단위입니다. 둘 다 생략 시 기본값은 **45**초입니다. 둘 중 하나만 설정하세요. 프로바이더가 두 필드 중 하나를 설정하면, 해당 프로바이더에 한해 그 값이 대신 사용됩니다.
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` 및 `providers`
 
@@ -122,8 +129,14 @@
   요청당 최대 완료 토큰 수입니다. 기본값: `8192`.
 - `temperature`
   샘플링 온도입니다. 기본값: `0.2`.
+- `requestTimeout`
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs`을(를) 재정의합니다. 이 공급자나 최상위 구성 모두에서 시간 초과를 설정하지 않은 경우 기본값은 `45`초입니다. 동일한 객체에는 `requestTimeout` 및 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `requestTimeoutMs`
-  각 요청을 기다리는 최대 시간(밀리초)입니다. 기본값: `30000` (30초).
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs`을(를) 재정의합니다. 이 공급자나 최상위 구성 모두에서 시간 초과를 설정하지 않은 경우 기본값은 `45000`(45초)입니다. 동일한 객체에는 `requestTimeout` 및 `requestTimeoutMs` 중 하나만 설정하십시오.
+- `pricing` (선택 사항)
+  공급자 전체 토큰 1,000,000개당 USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`이(가) 없는 경우(OpenRouter 외의 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다. 일치하는 `modelPricing` 항목이 이 기본값을 재정의합니다. 공급자가 보고한 비용은 절대 대체되지 않습니다. 비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)을(를) 통해 여전히 추정할 수 있습니다.
+- `modelPricing` (선택 사항)
+  모델별 토큰 1,000,000개당 USD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대해 `pricing`을(를) 재정의합니다. 공급자가 `usage.cost`을(를) 생략한 경우 호출 시점에 적용되며 호출과 함께 저장됩니다.
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
 
@@ -143,9 +156,9 @@
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
 
-레거시 최상위 `openrouter` 블록 (`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs` 포함)은 여전히 허용되며 로드 시 `providers.openrouter` (`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`은 `translationModels`로 접힙니다.
+레거시 최상위 `openrouter` 블록(`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` 포함)은 여전히 허용되며, 로드 시 `providers.openrouter`(`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`는 `translationModels`로 병합됩니다.
 
-하나의 구성에서 여러 공급자를 구성하고 `-P`로 전환하는 실행 가능한 예는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)을 참조하십시오(`openai`, `anthropic`, `nvidia` 및 `deepseek`가 동일한 문서에 있음).
+하나의 설정에서 여러 프로바이더를 구성하고 `-P`로 전환하는 실행 가능한 예제는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)를 참조하세요(`openai`, `anthropic`, `openrouter`, `deepseek`가 동일한 문서에 있습니다).
 
 **여러 모델을 사용하는 이유:** 공급자와 모델마다 비용이 다르고 언어 및 로케일에 따라 다른 수준의 품질을 제공합니다. `translationModels`를 **순서대로 대체되는 체인**으로 구성하십시오 (단일 모델이 아닌). 그러면 요청 실패 시 CLI가 다음 모델을 시도할 수 있습니다.
 
@@ -342,13 +355,13 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다. 기본값은 `false`입니다.
 - `docsOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동으로 활성화됨).
+번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 정의 `pathTemplate`이(가) 없을 때 자동으로 활성화됨).
 - `docsOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한 일반적으로 `"."`로 두십시오.
+플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있는 경우가 아니라면 일반적으로 `"."`(으)로 유지하십시오.
 - `docsOutput.rewriteVitepressLinks`
-`true`일 때, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 기본적으로 활성화됩니다. 로케일 폴더가 `docsRoot` 아래의 영어 폴더 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용하십시오. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 영어 소스에 전체 URL을 사용하십시오 — [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-as-homepage)를 참조하십시오.
+`true`인 경우, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이(가) `"vitepress"`일 때 기본적으로 활성화됩니다. `docsRoot` 아래에서 로케일 폴더가 영어 폴더와 나란히 위치하는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일(`LICENSE`, `examples/`)에 대한 링크는 영어 소스에서 전체 URL을 사용하십시오. [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하십시오.
 - `docsOutput.rewriteNextraLinks`
-`true`일 때, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이 `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`을 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하십시오.
+`true`인 경우, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이(가) `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`에 대해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하십시오.
 - `docsOutput.fumadocsParser`
 `"dot"` (기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하십시오.
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값
 | 필드 | 설명 |
 |-------|-------------|
 | `description` | CLI / `status`용 선택적 메모(번역되지 않음). |
-| `contentPaths` | 프로젝트 루트 내의 소스 `.json` 파일, 디렉터리 또는 glob 패턴. |
+| `contentPaths` | 프로젝트 루트 하의 소스 `.json` 파일, 디렉터리 또는 글로브입니다. 일반적인 i18next 네임스페이스 파일(`public/locales/en/*.json`)이 지원됩니다: 중첩 객체, 배열, 문자열 값의 <code v-pre>{{var}}</code> 보간, 독립적인 복수 접미사 키(`key_one`, `key_other`). |
 | `outputPathTemplate` | 대상 로케일별 필수 출력 경로. 자리표시자: `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
 | `targetLocales` | 이 블록에 대한 선택적 하위 집합. 생략 시 루트 `targetLocales` 사용. |
 | `keyPolicy.mode` | `allowlist`, `denylist` 또는 `both`. |
@@ -474,13 +487,31 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | 필드          | 설명                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | 기존 번역을 기반으로 용어집을 자동 생성하는 `strings.json` 파일의 경로입니다.                                                                                                 |
-| `userGlossary` | 열이 `Original language string`(또는 `en`), `locale`, `Translation`인 CSV 파일의 경로 - 각 원본 용어와 대상 로케일에 해당하는 행 하나씩 포함 (`locale`는 모든 대상에 대해 `*`일 수 있음). |
+| `userGlossary` | 열이 `Original language string`(또는 `en`), `locale`, `Translation`, 선택적 `Force`, 선택적 `Context`인 CSV 경로 - 소스 용어와 대상 로케일당 한 행(`locale`는 모든 대상에 대해 `*`일 수 있음). |
 | `autoAddUserEditedToGlossary` | `true`일 때, UI 문자열에 대한 대시보드 편집 내용을 사용자 용어집에 자동으로 추가할 수 있습니다. |
+| `contextFiles` | 선택적 cwd 상대 경로의 Markdown 또는 일반 텍스트 파일(`.md`, `.markdown`, `.txt`)로, 제품 또는 기능 설명을 포함합니다. 명령 시작 시 로드되어 UI, 문서, JSON, SVG 및 교정 프롬프트에 주입됩니다. 번역도 원할 경우에만 이 파일들을 `docs[].contentPaths`에 넣으세요. URL은 거부됩니다. 전체 텍스트는 구성된 LLM 프로바이더로 전송되며 `--debug-failed` 로그에 나타날 수 있으므로 — 비밀이나 PII를 포함하지 마세요. |
+| `contextMaxChars` | 모델로 전송되는 결합된 컨텍스트 파일 텍스트의 최대 문자 수(기본값 `12000`, 하드 캡 `100000`). 초과 텍스트는 경고와 함께 잘립니다. |
 
 `translate-docs`는 용어 힌트에 동일한 용어집을 사용하지만, 간결한 UI 레이블 약어(마침표로 끝나는 형식인 `Alm.` 또는 짧은 단일 토큰 압축형인 `Size` → `Tam` 등)는 건너뛰어 문서 프롬프트가 임의로 생성된 <code v-pre>{{…}}</code> 토큰으로 유도되지 않도록 합니다. 전체 제품 용어와 비약어 UI 번역은 여전히 힌트로 제공됩니다.
+
+선택적 `Context` CSV 열은 해당 용어에 대한 소스 언어 사용 가이드(정의, 문법적 용법, 제품 의미)입니다. 용어가 현재 배치와 일치할 때만 포함됩니다. 용어의 `Context` 메모 또는 `contextFiles` 콘텐츠를 변경하면 다음 실행 시 일치하는 로케일의 캐시된 세그먼트와 파일 추적 행이 무효화되므로, 번역이 자동으로 새로고침됩니다. 선호하는 `Translation`만 변경하면 `--force` / `--force-update`를 전달하지 않는 한 기존 캐시를 계속 사용합니다. 대시보드에서 사용자가 편집한 캐시 행은 유지됩니다.
+
+예시:
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **빈 용어집 CSV 생성:**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+저장소에서 `contextFiles`의 초안을 작성하려면 [AI 에이전트로 컨텍스트 파일 생성](/ko/guide/glossary#generate-a-context-file-with-an-ai-agent)의 복사하여 붙여넣기 에이전트 프롬프트를 사용하십시오. 용어 행 및 컨텍스트 파일이 적용되는 방식은 [용어집](/ko/guide/glossary)을(를) 참조하십시오.

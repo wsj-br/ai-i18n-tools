@@ -12,17 +12,17 @@
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "dependencies": {
-    "next": "^16.3.5",
+    "next": "^16.3.6",
     "nextra": "^4.6.1",
     "nextra-theme-docs": "^4.6.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "ai-i18n-tools": "^1.8.12",
+    "ai-i18n-tools": "^1.9.0",
     "typescript": "^5.9.0"
   },
   "engines": {

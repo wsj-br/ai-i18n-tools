@@ -1,4 +1,5 @@
 <a id="astro-website"></a>
+<a id="astro-website"></a>
 # Site Astro
 
 Para sites de marketing ou aplicativos Astro estáticos (Astro puro, não Starlight), combine [o roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. Consulte também [a integração do Astro](/pt-BR/guide/integrations/astro).
@@ -56,7 +57,7 @@ const t = useTranslations(locale, makeT(flat));
 Helpers de suporte no exemplo: `src/i18n/utils.ts`, `src/i18n/locale.ts` e `ui-languages.json` para rótulos, direção e códigos BCP-47. Execute `generate-ui-languages` após alterar `targetLocales` (opcionalmente defina `languagesManifestPath` para que o manifesto fique ao lado dos seus helpers, por exemplo, `src/i18n/ui-languages.json`). `MainLayout.astro` define `<html lang>` e `<html dir>` a partir de `resolveUiLanguage(Astro.currentLocale)`; `LanguagePicker.astro` usa `getRelativeLocaleUrl` de `astro:i18n`.
 
 <a id="pages-parse-and-replace"></a>
-## Páginas (analisar e substituir)
+## Páginas (análise e substituição)
 
 Para páginas de marketing com HTML embutido em arquivos `.astro`, permita que `translate-docs` extraia nós de texto e atributos (`alt`, `title`, `aria-label`, `placeholder`), traduza-os com o cache de documento e grave cópias específicas por localidade na sua árvore de páginas. Você **não** precisa de `t()` para a maioria dos textos visíveis.
 

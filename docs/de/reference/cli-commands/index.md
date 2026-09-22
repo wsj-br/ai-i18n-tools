@@ -6,16 +6,17 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 <a id="command-overview"></a>
 ## Befehlsübersicht
 
-<a id="setupsetup"></a>
-### [Einrichtung](setup)
+<a id="getting-startedsetup"></a>
+### [Erste Schritte](setup)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
 | [`version`](setup#version) | Druckt die CLI-Version und den Build-Timestamp. |
 | [`init`](setup#init) | Erstellt eine Starter-Konfiguration; `-t` wählt eine Scaffold-Vorlage aus. |
+| [`help`](setup#help) | Hilfe für einen Unterbefehl anzeigen. |
 
-<a id="models--catalogmodels"></a>
-### [Modelle & Katalog](models)
+<a id="models--languagesmodels"></a>
+### [Modelle & Sprachen](models)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
@@ -31,6 +32,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 |---------|---------|
 | [`extract`](ui-strings#extract) | Aktualisiert `strings.json` aus Quell-Literalen und HTML-Markern. |
 | [`mark-html`](ui-strings#mark-html) | Fügt `data-i18n*`-Marker in HTML-Dateien ein. |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayer `.content.ts`-Wörterbücher importieren und einfache `useIntlayer`- / `getIntlayer`-Websites in `t()` umschreiben. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | Erstellt `ui-languages.json` aus Konfig-Lokalen. |
 | [`translate-ui`](ui-strings#translate-ui) | Übersetzt UI-Strings (`strings.json` → Lokale JSON). |
 | [`sync-ui`](ui-strings#sync-ui) | Extrahiert und übersetzt dann UI-Strings. |
@@ -46,25 +48,26 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 | [`write-heading-ids`](documents#write-heading-ids) | Fügt HTML-Ankerzeilen vor ATX-Überschriften ein. |
 | [`check-markdown`](documents#check-markdown) | Scanniert Markdown/MDX auf Trennzeichen- und Betonungsprobleme. |
 
-<a id="other-contentcontent"></a>
-### [Andere Inhalte](content)
+<a id="json--svgcontent"></a>
+### [JSON & SVG](content)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
 | [`translate-json`](content#translate-json) | Übersetzt verschachteltes JSON pro `json[]`-Konfig-Block. |
 | [`translate-svg`](content#translate-svg) | Übersetzt SVG-Dateien, die in `config.svg` konfiguriert sind. |
 
-<a id="workflows--statusworkflows"></a>
-### [Workflows & Status](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [Workflows & Reporting](workflows)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
 | [`sync`](workflows#sync) | Führt Extraktion + UI + SVG + Dokumente + JSON in einer Pipeline aus. |
 | [`status`](workflows#status) | Zeigt die Übersetzungsabdeckung von UI, Dokumentation und JSON an. |
 | [`statistics`](workflows#statistics) | Zeigt Cache- und `strings.json`-Statistiken an. |
+| [`usage`](workflows#usage) | Aufgezeichnete Token und Kosten für Modell-API-Aufrufe ausgeben. |
 
-<a id="cache--maintenancemaintenance"></a>
-### [Cache & Wartung](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [Cache-Wartung](maintenance)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
@@ -72,46 +75,47 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 | [`clean-temp`](maintenance#clean-temp) | Sucht und löscht `*.log`, `*.tmp` und Cache-Backups. |
 | [`purge-locale`](maintenance#purge-locale) | Entfernt Cache-Zeilen und generierte Artefakte für Gebietsschema(s). |
 
-<a id="toolstools"></a>
-### [Tools](tools)
+<a id="dashboard--glossarytools"></a>
+### [Dashboard & Glossar](tools)
 
 | Befehl | Zusammenfassung |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | Startet die Web-UI des Übersetzungs-Dashboards. |
+| [`dashboard`](tools#dashboard) (`dash`) | Startet die Weboberfläche des Übersetzungs-Dashboards. |
 | [`glossary-generate`](tools#glossary-generate) | Schreibt eine leere `glossary-user.csv`-Vorlage. |
-| [`help`](tools#help) | Zeigt Hilfe für einen Unterbefehl an. |
 
 <a id="synopsis"></a>
 ## Synopsis
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

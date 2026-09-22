@@ -1,19 +1,19 @@
-<a id="svg-translation"></a>
-# Traduction SVG
+<a id="svg"></a>
+# SVG
 
-Conçu pour les **illustrations et diagrammes SVG** qui contiennent des étiquettes lisibles par l'homme. La commande `translate-svg` lit les fichiers source `.svg`, extrait le texte des éléments `<text>`, `<title>` et `<desc>`, traduit ces chaînes via le fournisseur LLM actif, et écrit **un fichier SVG de sortie par locale cible**.
+Conçu pour traduire les **illustrations et diagrammes SVG** contenant des libellés lisibles par l'homme. La commande `translate-svg` lit les fichiers `.svg` sources, extrait le texte des éléments `<text>`, `<title>` et `<desc>`, traduit ces chaînes via le fournisseur LLM actif, et écrit **un SVG de sortie par langue cible**.
 
 C'est le seul pipeline qui émet des fichiers SVG **binaires** spécifiques à la locale. `translate-docs` traduit le texte alternatif markdown et les références de liens, mais il ne modifie ni ne copie les ressources SVG. Lorsqu'une page a besoin d'un diagramme avec des étiquettes traduites, activez `features.translateSVG` et configurez le bloc `svg` de niveau supérieur.
 
 <a id="per-locale-model-overrides"></a>
-### Substitutions de modèle par locale
+## Surcharges de modèle par locale
 
 `translate-svg` résout les modèles **par paramètre régional cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Chaque exécution SVG de paramètre régional utilise sa propre chaîne de secours — utile lorsque les étiquettes de diagramme dans les paramètres régionaux CJK nécessitent un modèle adapté au script (par exemple `ja`). Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
 
 La traduction SVG utilise le même cache SQLite que `translate-docs` et `translate-json` (`cacheDir`). Les segments de texte déjà traduits sont servis à partir du cache ; seul le texte source nouveau ou modifié est envoyé au LLM.
 
 <a id="when-to-use-svg-translation"></a>
-### Quand utiliser la traduction SVG
+## Quand utiliser la traduction SVG
 
 Utilisez `translate-svg` lorsque :
 
@@ -28,7 +28,7 @@ N'utilisez **pas** `translate-svg` pour :
 - Le texte intégré dans les données de chemin au lieu des éléments `<text>` — l'extracteur ne peut pas lire les contours de chemin.
 
 <a id="design-for-i18n-from-the-start"></a>
-### Concevoir pour l'i18n dès le départ
+## Concevoir pour l'i18n dès le départ
 
 Les SVG sont plus faciles à traduire lorsque les étiquettes sont de véritables éléments de texte dès le premier jour :
 
@@ -39,7 +39,7 @@ Les SVG sont plus faciles à traduire lorsque les étiquettes sont de véritable
 Pour les applications web, activez `forceLowercase: true` lorsque votre conception utilise des étiquettes en minuscules — cela évite les problèmes de casse entre les systèmes de fichiers et les CDN.
 
 <a id="output-layouts"></a>
-### Dispositions de sortie
+## Mises en page de sortie
 
 `translate-svg` prend en charge deux formes de sortie courantes. Choisissez en fonction de la manière dont votre application ou votre site de documentation référence les fichiers SVG au moment de l'exécution.
 
@@ -59,7 +59,7 @@ La **disposition co-localisée** écrit le SVG de chaque locale dans l'arboresce
 Consultez le [guide de décision Images et captures d'écran](/fr/guide/images-and-screenshots/#decision-guide) pour savoir comment les dispositions SVG s'intègrent aux stratégies de captures d'écran raster.
 
 <a id="step-1-enable-and-configure"></a>
-### Étape 1 : Activer et configurer
+## Étape 1 : Activer et configurer
 
 Activez la fonctionnalité et pointez `translate-svg` vers vos fichiers source et votre racine de sortie :
 
@@ -87,7 +87,7 @@ Champs clés `svg` :
 Référence complète du champ : [Configuration — `svg`](/fr/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
-### Étape 2 : Traduire
+## Étape 2 : Traduire
 
 ```bash
 ai-i18n-tools translate-svg
@@ -108,6 +108,6 @@ ai-i18n-tools translate-svg --dry-run
 `sync` exécute automatiquement l'étape SVG lorsque `features.translateSVG` et `svg` sont tous deux définis (ignorer avec `--no-svg`). Les drapeaux partagés incluent `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update` et `--check-cache`.
 
 <a id="troubleshooting"></a>
-### Dépannage
+## Dépannage
 
 Les problèmes SVG courants — répertoires source/sortie mixtes, URL statiques absolues sur Docusaurus et erreurs de mise en page de chemin — sont traités dans [Dépannage SVG](/fr/guide/svg-translation/troubleshooting). Pour les ressources raster et la réécriture de liens, voir [Dépannage des images et captures d'écran](/fr/guide/images-and-screenshots/troubleshooting).

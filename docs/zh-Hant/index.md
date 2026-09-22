@@ -1,13 +1,14 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: 使用 LLM 將 JavaScript/TypeScript 應用程式與文件網站國際化的 CLI 與工具包。
+description: 用於將 JavaScript/TypeScript 應用程式與文件網站國際化的 CLI 及工具包，可搭配您選擇的 LLM 提供者使用。
 hero:
   name: ai-i18n-tools
   text: 使用任何 LLM 翻譯應用程式與文件
   tagline: >-
-    一個設定檔、三種翻譯模式，以及您選擇的供應商 — OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何相容於
-    OpenAI 的 API。無需重寫程式碼庫即可按專案或語系切換模型。
+    擷取 t() 字串，翻譯 Markdown、MDX、JSON 套件與 SVG 標籤——全部只需透過單一設定檔即可完成，並支援
+    OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何 OpenAI 相容
+    API。可依專案或語系切換模型，無需重寫您的程式碼庫。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 標誌
@@ -87,8 +88,8 @@ SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths
 - [**整合**](/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus 與 Astro
 - [**供應商與模型**](/zh-Hant/guide/providers-and-models) — 預設、後備鏈與 `-P` 覆寫
 - [**CLI 參考**](/zh-Hant/reference/cli-commands/) — 每個指令、旗標與工作流程
-- [**設定**](/zh-Hant/reference/configuration) — 完整 `ai-i18n-tools.config.json` 結構描述
-- [**範例**](/zh-Hant/examples) — 九個可執行的示範專案，附 `npx degit`
-- [**架構**](/zh-Hant/reference/architecture) — 內部原理、程式化 API 與擴充點
+- [**設定**](/zh-Hant/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 結構描述
+- [**範例**](/zh-Hant/examples) — 十二個可執行的示範專案，內含 `npx degit`
+- [**架構**](/zh-Hant/reference/architecture) — 內部實作、程式化 API 與擴充點
 
 要將套件整合到您自己的專案中嗎？請從 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 開始。[repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一個簡短的 GitHub/npm 首頁，它會連結至此以取得詳細資訊。

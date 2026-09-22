@@ -14,8 +14,14 @@ import { resolveLocalesForJson } from "../core/ui-languages.js";
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
+import {
+  computeGuidanceFingerprint,
+  loadTranslationContextFromConfig,
+  translationContextClientOpts,
+} from "../glossary/translation-context.js";
 import { LlmClient } from "../api/llm-client.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
+import { usageRecorderForCache } from "../core/usage-recorder.js";
 import { hashFileContent, translatedOutputIsCurrent, writeAtomicUtf8 } from "./helpers.js";
 import type { Segment } from "../core/types.js";
 import {
@@ -106,18 +112,26 @@ export async function translateNestedJsonFile(
     ? path.join(projectRoot, config.glossary.userGlossary)
     : undefined;
   const glossary = new Glossary(glossaryUi, glossaryUser, [locale]);
+  const promptContextHash = computeGuidanceFingerprint(
+    glossary,
+    locale,
+    opts.translationContextFingerprint ?? ""
+  );
 
   if (opts.force && cache && !opts.noCache) {
     cache.clearFile(trackingKey, locale);
   }
 
-  const cachedHash = cache && !opts.noCache ? cache.getFileHash(trackingKey, locale) : null;
+  const cachedMatches =
+    cache && !opts.noCache
+      ? cache.fileTrackingMatches(trackingKey, locale, fileHash, promptContextHash)
+      : false;
   if (
     !opts.force &&
     !opts.forceUpdate &&
     cache &&
     !opts.noCache &&
-    cachedHash === fileHash &&
+    cachedMatches &&
     !(opts.checkCache && localeEnforcesOutputScript(locale)) &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
@@ -166,6 +180,8 @@ export async function translateNestedJsonFile(
   if (!opts.dryRun) {
     client = await createFilteredLlmClient(config, locale, {
       ...llmClientDebugFailedOpts(opts, config.cacheDir),
+      ...translationContextClientOpts(opts.translationContextText ?? ""),
+      onApiCall: usageRecorderForCache(cache, "translate-json", locale),
     });
   }
 
@@ -175,7 +191,7 @@ export async function translateNestedJsonFile(
       continue;
     }
     if (!opts.force && cache && !opts.noCache) {
-      const hit = cache.getSegment(s.hash, locale, relSourcePath);
+      const hit = cache.getSegment(s.hash, locale, relSourcePath, undefined, promptContextHash);
       if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
         segmentsCached++;
@@ -240,7 +256,7 @@ export async function translateNestedJsonFile(
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
-      cache.setFileStatus(trackingKey, locale, fileHash);
+      cache.setFileStatus(trackingKey, locale, fileHash, promptContextHash);
       for (const s of segments) {
         if (!s.translatable) {
           continue;
@@ -254,7 +270,8 @@ export async function translateNestedJsonFile(
             entry.text,
             entry.modelUsed,
             relSourcePath,
-            null
+            null,
+            promptContextHash
           );
         }
       }
@@ -296,6 +313,12 @@ export async function runTranslateJson(
 
   const cacheDir = path.join(projectRoot, config.cacheDir);
   const cache = opts.noCache ? undefined : new TranslationCache(cacheDir);
+  const translationContext = loadTranslationContextFromConfig(config, projectRoot);
+  opts = {
+    ...opts,
+    translationContextText: translationContext.text,
+    translationContextFingerprint: translationContext.fingerprint,
+  };
   const wallStart = Date.now();
   const sum = emptyTranslateTotals();
 

@@ -16,6 +16,7 @@ import {
   buildMarkdownPreservation,
   collectDocumentPlaceholderKinds,
 } from "./document-placeholder-types.js";
+import { sanitizePromptSupplementaryText } from "../glossary/translation-context.js";
 
 export {
   buildDocumentCoreRules,
@@ -63,6 +64,8 @@ export interface PromptBuilderOptions {
   glossaryHints: string[];
   /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
   targetLocale?: string;
+  /** Project/feature context from `glossary.contextFiles`. */
+  translationContext?: string;
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────
@@ -141,6 +144,13 @@ function buildGlossaryBlock(hints: string[], preamble?: string): string {
   return `${prefix}\n<glossary>\n${filtered.join("\n")}\n</glossary>\n`;
 }
 
+function buildTranslationContextBlock(context: string | undefined, preamble?: string): string {
+  const text = sanitizePromptSupplementaryText(context ?? "").trim();
+  if (!text) return "";
+  const prefix = preamble ? `\n\n${preamble}` : "";
+  return `${prefix}\n<translation-context>\n${text}\n</translation-context>\n`;
+}
+
 function escapeXml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -185,6 +195,10 @@ export function buildDocumentBatchPrompt(
   responseFormat: DocumentBatchResponseFormat = "xml-tags"
 ): { systemPrompt: string; userContent: string } {
   const glossary = buildGlossaryBlock(opts.glossaryHints);
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.document.translationContextPreamble
+  );
   const addendum = contentTypeAddendum(contentType);
   const segmentTexts = segments.map((s) => s.content);
   const rules = documentCoreRulesBlock(opts, segmentTexts);
@@ -193,7 +207,7 @@ export function buildDocumentBatchPrompt(
     const userContent = JSON.stringify(segmentTexts, null, 2);
     const systemPrompt = `${rules}${addendum}
 
-${PROMPTS.document.batchJsonArrayInstruction}${glossary}`;
+${PROMPTS.document.batchJsonArrayInstruction}${glossary}${translationContext}`;
     return { systemPrompt, userContent };
   }
 
@@ -205,7 +219,7 @@ ${PROMPTS.document.batchJsonArrayInstruction}${glossary}`;
     const userContent = JSON.stringify(payload, null, 2);
     const systemPrompt = `${rules}${addendum}
 
-${PROMPTS.document.batchJsonObjectInstruction}${glossary}`;
+${PROMPTS.document.batchJsonObjectInstruction}${glossary}${translationContext}`;
     return { systemPrompt, userContent };
   }
 
@@ -214,7 +228,7 @@ ${PROMPTS.document.batchJsonObjectInstruction}${glossary}`;
     .join("\n");
   const systemPrompt = `${rules}${addendum}
 
-${PROMPTS.document.batchXmlInstruction}${glossary}`;
+${PROMPTS.document.batchXmlInstruction}${glossary}${translationContext}`;
   const userContent = `<segments>
 ${segBlocks}
 </segments>`;
@@ -228,6 +242,10 @@ export function buildDocumentSinglePrompt(
   contentType: DocumentPromptContentType = "markdown"
 ): { systemPrompt: string; userContent: string } {
   const glossary = buildGlossaryBlock(opts.glossaryHints);
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.document.translationContextPreamble
+  );
   const addendum = contentTypeAddendum(contentType);
   const outputHint = PROMPTS.document.singleSegmentOutputInstruction;
   const kinds = collectDocumentPlaceholderKinds([content]);
@@ -242,12 +260,12 @@ export function buildDocumentSinglePrompt(
 ${example}
 
 ---
-${outputHint}${glossary}`;
+${outputHint}${glossary}${translationContext}`;
   } else {
     systemPrompt = `${rules}${addendum}
 
 ---
-${outputHint}${glossary}`;
+${outputHint}${glossary}${translationContext}`;
   }
 
   const userContent = content;
@@ -265,6 +283,7 @@ export function buildUIPromptMessages(
     glossaryHints?: string[];
     /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
     targetLocale?: string;
+    translationContext?: string;
   }
 ): { systemPrompt: string; userContent: string } {
   const systemBase = PROMPTS.ui.systemPrompt.join("\n");
@@ -273,9 +292,13 @@ export function buildUIPromptMessages(
     .replace(/\{\{SOURCE_LANG\}\}/g, opts.sourceLanguageLabel)
     .replace(/\{\{TARGET_LANG\}\}/g, opts.targetLanguageLabel);
   const glossaryBlock = buildGlossaryBlock(opts.glossaryHints ?? [], PROMPTS.ui.glossaryPreamble);
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.ui.translationContextPreamble
+  );
 
   const systemPrompt = withScriptDirective(
-    `${systemBase}${jobBlock}${glossaryBlock}`,
+    `${systemBase}${jobBlock}${glossaryBlock}${translationContext}`,
     opts.targetLocale
   );
   const userContent = JSON.stringify(texts, null, 2);
@@ -294,10 +317,15 @@ export function buildPluralStep0Prompt(opts: {
   intlPluralLocaleTag?: string;
   /** Source BCP-47 locale; when it has an effective script, a script directive is prepended. */
   sourceLocale?: string;
+  translationContext?: string;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
     PROMPTS.ui.glossaryPreamblePlural
+  );
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.ui.translationContextPreamble
   );
   const formsList = opts.requiredForms.join(", ");
   const zeroNote = opts.zeroDigit
@@ -323,7 +351,7 @@ Reply with ONLY one JSON object whose keys are exactly those category names (str
 
   return {
     systemPrompt: withScriptDirective(
-      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock + translationContext,
       opts.sourceLocale
     ),
     userContent,
@@ -342,10 +370,15 @@ export function buildPluralPassBPrompt(opts: {
   intlPluralLocaleTag?: string;
   /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
   targetLocale?: string;
+  translationContext?: string;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
     PROMPTS.ui.glossaryPreamblePlural
+  );
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.ui.translationContextPreamble
   );
   const intlHint =
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
@@ -370,7 +403,7 @@ Reply with ONLY one JSON object whose keys are exactly those category names and 
 
   return {
     systemPrompt: withScriptDirective(
-      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock,
+      PROMPTS.ui.pluralFormsSystemPrompt.join("\n") + glossaryBlock + translationContext,
       opts.targetLocale
     ),
     userContent,
@@ -384,17 +417,23 @@ export function buildProofreadUIPromptMessages(
   opts: {
     languageLabel: string;
     glossaryHints?: string[];
+    translationContext?: string;
   }
 ): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
     PROMPTS.proofreadUI.glossaryPreamble
   );
+  const translationContext = buildTranslationContextBlock(
+    opts.translationContext,
+    PROMPTS.proofreadUI.translationContextPreamble
+  );
   const localeLine = `\n\nLocale / language of the strings under review: ${opts.languageLabel}`;
   const systemPrompt =
     PROMPTS.proofreadUI.systemPrompt.join("\n") +
     localeLine +
     glossaryBlock +
+    translationContext +
     "\n\n" +
     PROMPTS.proofreadUI.outputContract.trim();
 

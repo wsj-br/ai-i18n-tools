@@ -212,6 +212,95 @@ describe("LlmClient", () => {
     expect(res.cost).toBeUndefined();
   });
 
+  it("chat calculates cost from modelPricing when the provider omits usage.cost", async () => {
+    generateTextMock.mockResolvedValue(
+      genResult("ok", {
+        usage: { inputTokens: 1_000_000, outputTokens: 200_000, totalTokens: 1_200_000 },
+      })
+    );
+    const events: Array<{ cost: number | undefined; outcome: string }> = [];
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "anthropic",
+        providers: {
+          anthropic: {
+            translationModels: ["claude-opus-4-6"],
+            pricing: { inputPerMTokens: 1, outputPerMTokens: 5 },
+            modelPricing: {
+              "claude-opus-4-6": { inputPerMTokens: 5, outputPerMTokens: 25 },
+            },
+          },
+        },
+      },
+      apiKey: "k",
+      onApiCall: (event) => events.push({ cost: event.cost, outcome: event.outcome }),
+    });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    // 1M input × $5 + 0.2M output × $25
+    expect(res.cost).toBeCloseTo(10);
+    expect(events).toEqual([{ cost: 10, outcome: "accepted" }]);
+  });
+
+  it("chat uses the provider-wide pricing default when the model has no override", async () => {
+    generateTextMock.mockResolvedValue(
+      genResult("ok", {
+        usage: { inputTokens: 2_000_000, outputTokens: 0, totalTokens: 2_000_000 },
+      })
+    );
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "anthropic",
+        providers: {
+          anthropic: {
+            translationModels: ["claude-haiku-4-5-20251001"],
+            pricing: { inputPerMTokens: 1, outputPerMTokens: 5 },
+            modelPricing: {
+              "claude-opus-4-6": { inputPerMTokens: 5, outputPerMTokens: 25 },
+            },
+          },
+        },
+      },
+      apiKey: "k",
+    });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    expect(res.cost).toBeCloseTo(2);
+  });
+
+  it("chat keeps a provider-reported cost when pricing is also configured", async () => {
+    generateTextMock.mockResolvedValue(
+      genResult("ok", {
+        cost: 0.0012,
+        usage: { inputTokens: 1_000_000, outputTokens: 1_000_000, totalTokens: 2_000_000 },
+      })
+    );
+    const c = new LlmClient({
+      config: llmConfig(["m1"], {
+        providers: {
+          openrouter: {
+            translationModels: ["m1"],
+            pricing: { inputPerMTokens: 100, outputPerMTokens: 100 },
+          },
+        },
+      }),
+      apiKey: "k",
+    });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    expect(res.cost).toBe(0.0012);
+  });
+
   it("non-openrouter providers do not require the OpenRouter key", () => {
     delete process.env.OPENROUTER_API_KEY;
     process.env.GROQ_API_KEY = "groq-key";
@@ -931,6 +1020,66 @@ describe("LlmClient", () => {
       { inputTokens: 1, cost: 0.0005 },
       { inputTokens: 2, cost: 0.001 },
     ]);
+  });
+
+  it("onApiCall reports discarded then accepted for a fallback retry", async () => {
+    const events: Array<{ model: string; outcome: string; inputTokens: number }> = [];
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">only-one</t>`, {
+          cost: 0.001,
+          usage: { inputTokens: 5, outputTokens: 5, totalTokens: 10 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult(`<t id="0">A</t><t id="1">B</t>`, {
+          cost: 0.002,
+          usage: { inputTokens: 2, outputTokens: 2, totalTokens: 4 },
+        })
+      );
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      onApiCall: (event) =>
+        events.push({
+          model: event.model,
+          outcome: event.outcome,
+          inputTokens: event.usage.inputTokens,
+        }),
+    });
+    const segs = [
+      { id: "s0", type: "paragraph" as const, content: "a", hash: "h0", translatable: true },
+      { id: "s1", type: "paragraph" as const, content: "b", hash: "h1", translatable: true },
+    ];
+    await c.translateDocumentBatch(segs, "de");
+    expect(events).toEqual([
+      { model: "bad", outcome: "discarded", inputTokens: 5 },
+      { model: "good", outcome: "accepted", inputTokens: 2 },
+    ]);
+  });
+
+  it("onApiCall reports discarded for an empty-content billed response", async () => {
+    const outcomes: string[] = [];
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult("   ", {
+          cost: 0.0005,
+          usage: { inputTokens: 1, outputTokens: 0, totalTokens: 1 },
+        })
+      )
+      .mockResolvedValueOnce(
+        genResult("ok", { cost: 0.001, usage: { inputTokens: 2, outputTokens: 3, totalTokens: 5 } })
+      );
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      onApiCall: (event) => outcomes.push(event.outcome),
+    });
+    await c.chat([
+      { role: "system", content: "s" },
+      { role: "user", content: "u" },
+    ]);
+    expect(outcomes).toEqual(["discarded", "accepted"]);
   });
 
   it("appendDebugLog writes request/response when debugTrafficFilePath set", async () => {

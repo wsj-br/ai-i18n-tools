@@ -24,8 +24,8 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 [Docusaurus](/ko/guide/integrations/docusaurus) 문서(`docsOutput.style = "docusaurus"`)에서는 `ai-i18n-tools write-heading-ids`의 HTML 앵커 대신 Docusaurus의 네이티브 제목 ID를 사용하는 것을 권장합니다:
 
-1. Docusaurus의 클래식 `{#…}` 접미사(CommonMark) 또는 MDX 주석 `{/* #… */}`(`.mdx`에 권장)를 사용하여 제목 줄에 명시적 id를 추가합니다. 예: `## TLS configuration {#tls-configuration}` 또는 `## TLS configuration {/* #tls-configuration */}`. `translate-docs` 중에는 보이는 제목 텍스트만 모델로 전송됩니다 — id 접미사는 먼저 제거되고 번역된 제목 줄의 **끝**에 다시 고정됩니다(Docusaurus는 제목 중간에 들어간 `{/* #id */}`을 무시합니다).
-2. Docusaurus 프로젝트 루트(보통 `package.json`에 연결된 경우 `pnpm run write-heading-ids`)에서 `docusaurus write-heading-ids`을 실행하여 id가 없는 제목에 id를 추가하거나 갱신합니다 — `{/* #… */}` 형식의 경우 `--syntax mdx-comment`을 사용하세요. 또는 동일한 `docs[]` / `contentPaths`에서 `ai-i18n-tools write-heading-ids --slug-style mdx-comment`를 실행할 수도 있습니다. 이 명령은 기존 번역 파일의 동일한 영어 id도 재배치합니다(번역된 제목을 슬러그화하지 않습니다). 제목 이름을 변경한 후에는 오래된 id가 현재 제목과 일치하도록 다시 실행하세요.
+1. 제목 줄에 명시적 ID를 추가합니다. Docusaurus의 기존 `{#…}` 접미사(CommonMark) 또는 MDX 주석 `{/* #… */}`(`.mdx`에 권장됨)을 사용하며, 예를 들어 `## TLS configuration {#tls-configuration}` 또는 `## TLS configuration {/* #tls-configuration */}` 형식을 사용합니다. `translate-docs` 중에는 보이는 제목 텍스트만 모델로 전송됩니다. ID 접미사는 먼저 제거되었다가 번역된 제목 줄의 **끝**에 다시 고정됩니다(Docusaurus는 제목 중간에 있는 `{/* #id */}`을(를) 무시합니다).
+2. Docusaurus 프로젝트 루트(`package.json`에 연결된 경우 보통 `pnpm run write-heading-ids`)에서 `docusaurus write-heading-ids`을(를) 실행하여 ID가 없는 제목에 ID를 추가하거나 새로 고칩니다. `{/* #… */}` 형식에는 `--syntax mdx-comment`을(를) 사용하십시오. 또는 동일한 `docs[]` / `contentPaths`에서 `ai-i18n-tools write-heading-ids --slug-style mdx-comment`을(를) 실행할 수 있습니다. 이 명령은 기존 번역 파일에서 동일한 영어 ID의 위치를 재지정하며(번역된 제목을 슬러그화하지 않음), 세그먼트 수가 일치할 때 일치하는 캐시된 세그먼트를 업데이트하므로 이후 `sync --force-update` 시 수정된 ID가 유지됩니다. 제목 이름을 변경한 후 다시 실행하여 오래된 ID가 현재 제목과 일치하도록 하십시오.
 
 마크다운 **앵커 링크**를 해당 안정적인 id로 가리키세요(예: `[label](other.md#tls-configuration)`). 여기서 프래그먼트는 `{#…}` 또는 `{/* #… */}` id와 일치해야 하며, 영어 단어만으로 추측한 slug가 아니어야 합니다. 이 패턴을 사용한 커밋된 문서는 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/)를 참조하세요.
 
@@ -34,8 +34,8 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 Docusaurus를 사용하지 않거나, `{#…}` / `{/* #… */}` 접미사 대신 HTML 앵커가 필요한 경우:
 
-1. `translate-docs` 전에 소스 `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을 실행하세요(평소와 동일한 `docs[]` / `contentPaths`). 각 제목 앞 줄에 명시적 HTML 앵커를 삽입하여 `id` 값이 모든 번역본에서 공유되도록 하고, 동일한 영어 id를 기존 번역 파일에 복사합니다. 제목 이름을 변경한 후에는 오래된 앵커 id가 현재 제목과 일치하도록 갱신되도록 다시 실행하세요.
-2. 마크다운 **앵커 링크**를 이러한 안정적인 id로 가리키세요. 예: `[label](other.md#section-id)`. 여기서 `section-id`은 도구가 작성한 앵커와 일치해야 합니다 — 영어 단어만으로 추측한 값이 아니어야 합니다.
+1. `translate-docs` 전에 소스 `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을(를) 실행합니다(평소와 동일한 `docs[]` / `contentPaths` 사용). 이 도구는 각 제목 앞줄에 명시적 HTML 앵커를 삽입하여 `id` 값이 모든 번역 사본에서 공유되도록 하고, 동일한 영어 ID를 기존 번역 파일에 복사합니다. 세그먼트 수가 일치하면 일치하는 캐시된 세그먼트도 업데이트되므로, 이후 `sync --force-update` 시 수정된 ID가 유지됩니다. 제목 이름을 변경한 후 다시 실행하여 오래된 앵커 ID가 새로 고쳐져 현재 제목과 일치하도록 하십시오.
+2. 마크다운 **앵커 링크**를 해당 안정적 ID(예: `[label](other.md#section-id)`)로 지정합니다. 여기서 `section-id`은(는) 도구에서 작성한 앵커와 일치해야 하며, 단순히 영어 단어로 추측한 값이 아니어야 합니다.
 
 <a id="example"></a>
 ## 예시

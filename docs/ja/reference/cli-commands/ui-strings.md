@@ -12,6 +12,21 @@
 
 ---
 
+<a id="migrate-intlayer"></a>
+### `migrate-intlayer`
+
+**概要:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
+
+Intlayerの`*.content.ts`辞書を`strings.json`およびフラットなロケールファイルにインポートし、単純な`useIntlayer` / `getIntlayer`の呼び出し箇所を`t('English source')`に書き換えます。デフォルトではドライランです（レポートは引き続き書き込まれます）。`--write`はカタログをシードし、安全な書き換えを適用します。LLMは呼び出しません。
+
+レポートは`--write`が残したすべてのものの引き継ぎであり、残りの作業を順序付けた**ステップバイステップのTODO**で締めくくられます。これには、各手動サイトに対する具体的な`t()`またはJSX呼び出し、`import { t }`行、辞書ファイルおよび後で削除する`IntlayerProvider`の残留ファイル、`extract`してから`translate-ui`する必要があるソース文字列、そしてアプリのi18nモジュールに貼り付けて上書きするi18nextランタイムブートストラップが含まれます。ロケール制御は`loadLocale`だけでなく`i18n.changeLanguage`も呼び出す必要があります。`extract`は`ui-languages.json`を記述し、そのブートストラップがこれをインポートします。`strings.json`、フラットなロケールファイル、または`ui-languages.json`を手動で編集しないでください。
+
+**主なオプション:** `--write`, `--report`, `--content-glob` (デフォルト `**/*.content.ts`), `--t-import`
+
+**関連情報:** [Intlayerからの移行](/ja/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

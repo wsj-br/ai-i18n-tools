@@ -24,8 +24,8 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 在 [Docusaurus](/zh-Hant/guide/integrations/docusaurus) 文件 (`docsOutput.style = "docusaurus"`) 中，請優先使用 Docusaurus 原生的標題 ID，而不是來自 `ai-i18n-tools write-heading-ids` 的 HTML 錨點：
 
-1. 在標題行上使用 Docusaurus 經典的 `{#…}` 後綴（CommonMark）或 MDX 註解 `{/* #… */}`（推薦用於 `.mdx`）來加入明確的 id，例如 `## TLS configuration {#tls-configuration}` 或 `## TLS configuration {/* #tls-configuration */}`。在 `translate-docs` 期間，只有可見的標題文字會被傳送給模型 — id 後綴會先被移除，然後重新釘回翻譯標題行的**末尾**（Docusaurus 會忽略落在標題中間的 `{/* #id */}`）。
-2. 從你的 Docusaurus 專案根目錄執行 `docusaurus write-heading-ids`（當整合在 `package.json` 中時通常是 `pnpm run write-heading-ids`），為缺少 id 的標題新增或更新 id — 對 `{/* #… */}` 形式使用 `--syntax mdx-comment`。或者在同一個 `docs[]` / `contentPaths` 上執行 `ai-i18n-tools write-heading-ids --slug-style mdx-comment`。該命令也會重新定位現有翻譯檔案中的相同英文 id（它不會對翻譯標題進行 slug 處理）。在重新命名標題後重新執行，以便過時的 id 能與目前標題相符。
+1. 在標題列新增明確的 id，使用 Docusaurus 經典的 `{#…}` 後綴 (CommonMark) 或 MDX 註解 `{/* #… */}`（建議用於 `.mdx`），例如 `## TLS configuration {#tls-configuration}` 或 `## TLS configuration {/* #tls-configuration */}`。在 `translate-docs` 期間，只有可見的標題文字會傳送至模型 — 系統會先剝離 id 後綴，然後將其附加回翻譯後標題列的**結尾**（Docusaurus 會忽略落在標題中間的 `{/* #id */}`）。
+2. 從您的 Docusaurus 專案根目錄執行 `docusaurus write-heading-ids`（在 `package.json` 中整合時通常為 `pnpm run write-heading-ids`），以便在缺少 id 的標題上新增或重新整理 id — 使用 `--syntax mdx-comment` 來處理 `{/* #… */}` 格式。或者，在相同的 `docs[]` / `contentPaths` 上執行 `ai-i18n-tools write-heading-ids --slug-style mdx-comment`。該命令也會重新定位現有翻譯檔案中相同的英文 id（它不會將翻譯後的標題轉換為 slug），並在區段計數相符時更新相符的快取區段，以便後續的 `sync --force-update` 保留修復後的 id。重新命名標題後請重新執行，讓過時的 id 與目前的標題相符。
 
 將您的 markdown **錨點連結** 指向這些穩定的 id，例如 `[label](other.md#tls-configuration)`，其中的片段與 `{#…}` 或 `{/* #… */}` id 相符 — 而不是僅從英文單字猜測的 slug。請參閱 [examples/docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/) 以取得使用此模式的已提交文件。
 
@@ -34,8 +34,8 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 當您不在 Docusaurus 上，或者您需要 HTML 錨點而不是 `{#…}` / `{/* #… */}` 後綴時：
 
-1. 在 `translate-docs` 之前對你的來源 `.md` / `.mdx` 執行 `ai-i18n-tools write-heading-ids`（與平常一樣使用相同的 `docs[]` / `contentPaths`）。它會在每個標題前的行上插入明確的 HTML 錨點，使 `id` 值能由每個翻譯副本共用，並將這些相同的英文 id 複製到現有的翻譯檔案中。在重新命名標題後重新執行它，以便過時的錨點 id 能重新整理為與目前標題相符。
-2. 將你的 markdown **錨點連結** 指向這些穩定的 id，例如 `[label](other.md#section-id)`，其中 `section-id` 與工具寫入的錨點相符 — 而非僅從英文單字猜測。
+1. 在 `translate-docs` 之前，對您的來源 `.md` / `.mdx` 執行 `ai-i18n-tools write-heading-ids`（與平常相同的 `docs[]` / `contentPaths`）。它會在每個標題前的那一列插入明確的 HTML 錨點，讓每個翻譯副本共用 `id` 值，並將這些相同的英文 id 複製到現有的翻譯檔案中。當區段計數相符時，也會更新相符的快取區段，以便後續的 `sync --force-update` 保留修復後的 id。重新命名標題後請重新執行，以便重新整理過時的錨點 id 來符合目前的標題。
+2. 將您的 markdown **錨點連結**指向這些穩定的 id，例如 `[label](other.md#section-id)`，其中 `section-id` 符合工具寫入的錨點 — 而不是僅憑英文單字猜測。
 
 <a id="example"></a>
 ## 範例

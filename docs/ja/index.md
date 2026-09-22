@@ -1,11 +1,11 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: LLMを使用してJavaScript/TypeScriptアプリケーションやドキュメントサイトを国際化するためのCLIおよびツールキット。
+description: 任意のLLMプロバイダーを使用して、JavaScript/TypeScriptアプリケーションおよびドキュメントサイトを国際化するためのCLIおよびツールキット。
 hero:
   name: ai-i18n-tools
   text: 任意のLLMでアプリとドキュメントを翻訳
-  tagline: 1つの設定ファイル、3つの翻訳モード、そして選択したプロバイダー（OpenAI、Anthropic、Gemini、OpenRouter、Ollama、またはOpenAI互換の任意のAPI）に対応。コードベースを書き換えることなく、プロジェクトやロケールごとにモデルを切り替えられます。
+  tagline: t()文字列を抽出し、Markdown、MDX、JSONバンドル、SVGラベルを翻訳します。これらすべてを単一の設定で、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、または任意のOpenAI互換APIを使用して実行できます。コードベースを書き換えることなく、プロジェクトごとまたはロケールごとにモデルを切り替えられます。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools ロゴ
@@ -81,8 +81,8 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 - [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、および Astro
 - [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、および `-P` のオーバーライド
 - [**CLIリファレンス**](/ja/reference/cli-commands/) — すべてのコマンド、フラグ、ワークフロー
-- [**設定**](/ja/reference/configuration) — 完全な `ai-i18n-tools.config.json` スキーマ
-- [**例**](/ja/examples) — `npx degit` を使用した9つの実行可能なデモプロジェクト
-- [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラマティックAPI、拡張ポイント
+- [**設定**](/ja/reference/configuration) — 完全な`ai-i18n-tools.config.json`スキーマ
+- [**サンプル**](/ja/examples) — `npx degit`を使用した12の実行可能なデモプロジェクト
+- [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラムAPI、および拡張ポイント
 
 パッケージを自分のプロジェクトに組み込む場合は、[AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) から始めてください。[リポジトリの README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) は短い GitHub/npm ランディングページであり、詳細についてはここへリンクしています。

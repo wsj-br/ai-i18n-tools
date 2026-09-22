@@ -21,7 +21,7 @@
 
 与文档框架的外壳/主题字符串无关的任意嵌套 UI JSON 包属于 [JSON](/zh-Hans/guide/json) 管道，而不属于 `docs[]`。
 
-为了在 UI 和文档之间保持**术语一致性**，请将 `glossary.uiGlossary` 设置为你的 `strings.json` 路径 —— 当片段中出现匹配的术语时，`translate-docs` 会复用现有的 UI 翻译作为 LLM 提示中的提示信息。可选的 `glossary.userGlossary` 会为产品术语添加 CSV 覆盖（与 `translate-ui` 和 `proofread-ui` 共享）。用于适应窄列的紧凑 UI 标签缩写（例如 `Size` → `Tam`）在 UI 翻译中仍然可用，但在文档术语表提示中会被省略。使用 `glossary-generate` 生成入门 CSV，在翻译仪表板的 **Glossary** 标签页中编辑行，或者查看[配置 — `glossary`](/zh-Hans/reference/configuration#glossary)和[Glossary](/zh-Hans/guide/translation-dashboard/glossary)。
+为了确保 UI 和文档之间的**术语一致性**，请将 `glossary.uiGlossary` 设置为您的 `strings.json` 路径 — 当片段中出现匹配的术语时，`translate-docs` 会复用现有的 UI 翻译作为 LLM 提示词中的提示。可选的 `glossary.userGlossary` 可为产品术语添加 CSV 覆盖项（与 `translate-ui` 和 `proofread-ui` 共享）。为适应窄列而使用的紧凑 UI 标签缩写（例如 `Size` → `Tam`）仍可用于 UI 翻译，但不会包含在文档术语表提示中。使用 `glossary-generate` 生成初始 CSV，在翻译控制台的[术语表](/zh-Hans/guide/translation-dashboard/glossary)选项卡中编辑行，或参阅[配置 — `glossary`](/zh-Hans/reference/configuration#glossary)和[术语表](/zh-Hans/guide/glossary)。
 
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
@@ -43,7 +43,7 @@
 | 跨页面 `#anchor` 链接 | [锚点链接](/zh-Hans/guide/documents/anchor-links) |
 | 链接和资产 URL 重写 (`regexAdjustments`) | [链接重写](/zh-Hans/guide/documents/link-rewriting) |
 | 文档中的屏幕截图 | [图像和屏幕截图](/zh-Hans/guide/images-and-screenshots/) |
-| 产品术语和 UI/文档一致性 | [配置 — `glossary`](/zh-Hans/reference/configuration#glossary)、[术语表](/zh-Hans/guide/translation-dashboard/glossary) |
+| 产品术语与 UI/文档一致性 | [配置 — `glossary`](/zh-Hans/reference/configuration#glossary)、[术语表](/zh-Hans/guide/glossary) |
 | `translate-docs` 标志和缓存 | [CLI 选项](/zh-Hans/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

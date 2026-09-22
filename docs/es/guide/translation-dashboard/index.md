@@ -3,9 +3,9 @@
 
 El Panel de control de traducción es una interfaz de usuario web local para inspeccionar y editar los datos de traducción de su proyecto. Lee de tres almacenes:
 
-- **Caché de SQLite** (`cacheDir`) — traducciones de segmentos de documentación, registros de fallos, escaneos de problemas de Markdown
+- Caché de SQLite (`cacheDir`) — traducciones de segmentos de documentación, registros de fallos, escaneos de problemas de Markdown, uso de llamadas a la API facturadas
 - **`strings.json`** — catálogo de cadenas de la interfaz de usuario (cadenas simples y grupos plurales)
-- **CSV de glosario de usuario** (`glossary.userGlossary`) — sugerencias de terminología para `translate-ui` y `proofread-ui`
+- **CSV del glosario de usuario** (`glossary.userGlossary`) — sugerencias de terminología para `translate-ui` y `proofread-ui`
 
 Úselo después de una ejecución de traducción para encontrar problemas, anular resultados incorrectos o revisar la cobertura de la caché, sin tener que buscar manualmente en SQLite o JSON.
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-El puerto de escucha predeterminado es **8675**. Si ese puerto no está disponible, el servidor intenta el siguiente puerto (hasta 1000 intentos) y registra el puerto que eligió. El alias obsoleto `editor` aún funciona, pero muestra una advertencia; se recomienda usar `dashboard`.
+El puerto de escucha predeterminado es **8675**. Si ese puerto no está disponible, el servidor intenta el siguiente puerto (hasta 1000 intentos) y registra el puerto que eligió. `dash` es un alias equivalente. El alias obsoleto `editor` sigue funcionando, pero imprime una advertencia; prefiera `dashboard` o `dash`.
 
 La interfaz de usuario del panel de control utiliza la misma resolución de configuración regional que la CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuración `uiLanguage` → configuración regional del SO. Consulte [Idioma de la interfaz de usuario de la herramienta](/es/guide/tool-ui-language).
 
@@ -36,6 +36,7 @@ La interfaz de usuario del panel de control utiliza la misma resolución de conf
 | Corregir una forma plural (`one`, `other`, …) | **Plurales de la interfaz de usuario** | [Cadenas y plurales de la interfaz de usuario](/es/guide/translation-dashboard/ui-strings) |
 | Bloquear la terminología para la traducción de la interfaz de usuario | **Glosario** | [Glosario](/es/guide/translation-dashboard/glossary) |
 | Ver la cobertura de la caché y el uso del modelo | **Estadísticas** | [Estadísticas](/es/guide/translation-dashboard/statistics) |
+| Ver tokens y coste de llamadas a la API | **Uso y costes** | [Uso y costes](/es/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## Después de editar

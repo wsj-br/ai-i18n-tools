@@ -173,7 +173,7 @@ export function buildDocumentCoreRules(kinds: Set<DocumentPlaceholderKind>): str
     );
   }
   parts.push(
-    "If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). Maintain coherence for all other phrasing."
+    "If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). If a <translation-context> block appears, use it to choose accurate product meaning and register; it does not override glossary mappings or forced terms. Maintain coherence for all other phrasing."
   );
   return parts.join(" ");
 }

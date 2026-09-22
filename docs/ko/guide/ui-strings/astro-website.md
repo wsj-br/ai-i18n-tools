@@ -1,4 +1,5 @@
 <a id="astro-website"></a>
+<a id="astro-website"></a>
 # Astro 웹사이트
 
 정적 Astro 마케팅 또는 앱 사이트(Starlight가 아닌 일반 Astro)의 경우, [Astro 기본 제공 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합하세요. [Astro 통합](/ko/guide/integrations/astro)도 참조하세요.
@@ -30,7 +31,7 @@
 ```
 
 <a id="ui-strings-ssg"></a>
-## UI 문자열(SSG)
+## UI 문자열 (SSG)
 
 `init -t ui-astro-website`를 사용하여 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록에 병합합니다([페이지 구문 분석 및 바꾸기](#astro-website-pages-parse-and-replace) 참조). TypeScript 모듈의 `t('…')`와 `.astro` 프런트매터(그리고 중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록)에 복사본을 래핑합니다.
 
@@ -56,7 +57,7 @@ const t = useTranslations(locale, makeT(flat));
 예제의 지원 헬퍼: 레이블, 방향, BCP-47 코드를 위한 `src/i18n/utils.ts`, `src/i18n/locale.ts`, `ui-languages.json`. `targetLocales`를 변경한 후 `generate-ui-languages`을 실행하세요 (선택적으로 `languagesManifestPath`를 설정하여 매니페스트가 헬퍼 옆에 위치하도록 할 수 있습니다(예: `src/i18n/ui-languages.json`)). `MainLayout.astro`은 `resolveUiLanguage(Astro.currentLocale)`에서 `<html lang>` 및 `<html dir>`를 설정합니다; `LanguagePicker.astro`은 `astro:i18n`에서 `getRelativeLocaleUrl`를 사용합니다.
 
 <a id="pages-parse-and-replace"></a>
-## 페이지(구문 분석 및 바꾸기)
+## 페이지 (파싱 및 대체)
 
 `.astro` 파일에 하드코딩된 HTML이 포함된 마케팅 페이지의 경우, `translate-docs`이 텍스트 노드 및 속성(`alt`, `title`, `aria-label`, `placeholder`)을 추출하고 문서 캐시로 번역한 후 페이지 트리 아래에 로케일별 사본을 작성하도록 하세요. 대부분의 가시적 텍스트에는 `t()`이 **필요하지 않습니다**.
 

@@ -3,14 +3,15 @@ layout: home
 title: ai-i18n-tools
 description: >-
   CLI and toolkit for internationalizing JavaScript/TypeScript applications and
-  documentation sites using LLMs.
+  documentation sites with the LLM provider of your choice.
 hero:
   name: ai-i18n-tools
   text: Translate apps & docs with any LLM
   tagline: >-
-    One config file, three translation modes, and the provider you choose —
-    OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or any OpenAI-compatible API.
-    Switch models per project or per locale without rewriting your codebase.
+    Extract t() strings, translate Markdown, MDX, JSON bundles, and SVG labels —
+    all from one config, with OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or
+    any OpenAI-compatible API. Switch models per project or per locale without
+    rewriting your codebase.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools logo
@@ -97,7 +98,7 @@ SVG illustrations use a separate `translate-svg` path — not `docs[].contentPat
 - [**Providers and models**](/guide/providers-and-models) — presets, fallback chains, and `-P` overrides
 - [**CLI reference**](/reference/cli-commands/) — every command, flag, and workflow
 - [**Configuration**](/reference/configuration) — full `ai-i18n-tools.config.json` schema
-- [**Examples**](/examples) — nine runnable demo projects with `npx degit`
+- [**Examples**](/examples) — twelve runnable demo projects with `npx degit`
 - [**Architecture**](/reference/architecture) — internals, programmatic API, and extension points
 
 Integrating the package into your own project? Start with [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). The [repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) is a short GitHub/npm landing page that links here for detail.

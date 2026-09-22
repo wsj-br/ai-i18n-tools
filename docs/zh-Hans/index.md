@@ -1,13 +1,14 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: 使用 LLM 对 JavaScript/TypeScript 应用程序和文档站点进行国际化的 CLI 和工具包。
+description: 命令行工具与工具包，支持使用您首选的大语言模型服务商，对 JavaScript/TypeScript 应用和文档站点进行国际化。
 hero:
   name: ai-i18n-tools
   text: 使用任意 LLM 翻译应用和文档
   tagline: >-
-    一个配置文件，三种翻译模式，以及您选择的提供商 —— OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何兼容
-    OpenAI 的 API。按项目或按区域设置切换模型，无需重写代码库。
+    提取 t() 字符串，翻译 Markdown、MDX、JSON 语言包和 SVG 标签——只需一份配置文件，即可接入
+    OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何兼容 OpenAI 的
+    API。无需重写代码库，即可按项目或按区域设置切换模型。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 标志
@@ -87,8 +88,8 @@ SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPa
 - [**集成**](/zh-Hans/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus 和 Astro
 - [**提供商和模型**](/zh-Hans/guide/providers-and-models) — 预设、回退链和 `-P` 覆盖
 - [**CLI 参考**](/zh-Hans/reference/cli-commands/) — 每个命令、标志和工作流
-- [**配置**](/zh-Hans/reference/configuration) — 完整 `ai-i18n-tools.config.json` 架构
-- [**示例**](/zh-Hans/examples) — 九个可运行的演示项目及 `npx degit`
-- [**架构**](/zh-Hans/reference/architecture) — 内部原理、程序化 API 和扩展点
+- [**配置**](/zh-Hans/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 模式
+- [**示例**](/zh-Hans/examples) — 十二个包含 `npx degit` 的可运行演示项目
+- [**架构**](/zh-Hans/reference/architecture) — 内部机制、编程 API 及扩展点
 
 要将该包集成到你自己的项目中？请从 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 开始。[仓库 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一个简短的 GitHub/npm 着陆页，链接到此处以获取详细信息。

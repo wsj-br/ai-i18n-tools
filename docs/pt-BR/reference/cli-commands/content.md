@@ -1,5 +1,5 @@
-<a id="cli--other-content"></a>
-# CLI — Outro conteúdo
+<a id="cli--json--svg"></a>
+# CLI — JSON e SVG
 
 <a id="translate-json"></a>
 ### `translate-json`

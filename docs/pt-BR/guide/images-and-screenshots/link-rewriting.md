@@ -40,7 +40,7 @@ Reescritas típicas:
 | `../guide/foo.md` (de um arquivo de localidade) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | inalterado (use URLs completas para caminhos de repositório) |
 
-Para projetos que sincronizam `README.md` → `docs/index.md`, use URLs completas do GitHub em `README.md` para `LICENSE`, `examples/` e outros arquivos fora da árvore do VitePress. Consulte [Integração VitePress — README como a página inicial da documentação](/pt-BR/guide/integrations/vitepress#readme-as-homepage).
+Para projetos que sincronizam `README.md` → `docs/index.md`, use URLs completas do GitHub em `README.md` para `LICENSE`, `examples/` e outros arquivos fora da árvore do VitePress. Consulte [Integração com o VitePress — README como a página inicial da documentação](/pt-BR/guide/integrations/vitepress#readme-and-the-docs-homepage).
 
 O reescritor "flat" e o normalizador VitePress são mutuamente exclusivos por bloco `docs[]` — apenas um é executado antes de `regexAdjustments`. Consulte [Integração VitePress — Convenções de link](/pt-BR/guide/integrations/vitepress#link-conventions).
 

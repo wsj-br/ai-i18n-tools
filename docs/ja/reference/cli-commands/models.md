@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI — モデルとカタログ
+<a id="cli--models--languages"></a>
+# CLI — モデルと言語
 
 <a id="check-models"></a>
 ### `check-models`
 
 **概要:** `ai-i18n-tools check-models`
 
-設定された各モデルIDを、アクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。そのプロバイダーのAPIキーが必要です（Ollamaのようなキー不要のプロバイダーでは不要）。設定されたIDのいずれかが欠落しているか期限切れの場合、非ゼロで終了し、プロバイダーの`requestTimeoutMs`を尊重します。プロバイダーが価格を返す場合（例: OpenRouter）、プロンプト/補完の100万トークンあたりのUSDも表示します。
+設定された各モデルIDを、アクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。そのプロバイダーのAPIキーが必要です（Ollamaのようなキー不要のプロバイダーの場合は不要）。設定されたIDのいずれかが欠落しているか期限切れの場合は非ゼロで終了し、解決されたリクエストタイムアウト（プロバイダーの`requestTimeout`または`requestTimeoutMs`、それ以外の場合はトップレベルの値）に従います。プロバイダーが価格を返す場合（例: OpenRouter）、プロンプト/補完の100万トークンあたりのUSDも表示します。
 
 **関連項目:** [LLMプロバイダー](/ja/guide/providers-and-models)
 

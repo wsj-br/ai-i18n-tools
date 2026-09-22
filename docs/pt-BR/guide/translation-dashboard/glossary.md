@@ -13,6 +13,7 @@ A aba fica oculta quando `glossary.userGlossary` não está configurado.
 | **Cadeia de caracteres do idioma original** | Termo ou frase de origem |
 | **locale** | Localidade de destino, ou `*` para todas as localidades |
 | **Tradução** | Tradução preferencial |
+| **Contexto** | Explicação opcional na língua de origem sobre o significado ou uso pretendido. Enviado apenas quando este termo corresponde ao lote atual. |
 | **Forçar** | Quando marcada, o termo deve ser traduzido exatamente como fornecido |
 
 <a id="add-a-row"></a>
@@ -20,8 +21,8 @@ A aba fica oculta quando `glossary.userGlossary` não está configurado.
 
 Use o formulário na parte superior da aba:
 
-1. Insira **Original**, **localidade** (`*` ou um código de localidade de destino) e **Tradução**.
-2. Opcionalmente, marque **Forçar**.
+1. Insira **Original**, **locale** (`*` ou um código de localidade de destino) e **Translation**.
+2. Opcionalmente, adicione **Contexto** (notas de uso) e marque **Forçar**.
 3. Clique em **Adicionar**.
 
 O arquivo CSV é criado na primeira adição, se ainda não existir.
@@ -32,12 +33,14 @@ O arquivo CSV é criado na primeira adição, se ainda não existir.
 - **Edição em linha** — altere os campos diretamente na tabela e clique em **Salvar** nessa linha.
 - **Excluir** — remova uma linha com o controle de exclusão.
 
-As alterações entram em vigor na próxima execução de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`.
+As alterações entram em vigor na próxima execução de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`. A edição de uma nota de **Contexto** (ou `glossary.contextFiles` na configuração) atualiza automaticamente as traduções em cache para a localidade afetada — você não precisa de `--force`.
+
+Mantenha os arquivos de contexto como resumos concisos em Markdown ou texto simples fora das árvores `docs[]` traduzidas. O texto é enviado ao LLM em cada requisição correspondente; não inclua segredos nem dados pessoais. Como esses arquivos e o CSV são criados é abordado no [Glossário](/pt-BR/guide/glossary).
 
 <a id="filters"></a>
 ## Filtros
 
-Filtre por **texto original**, **localidade** (incluindo `*`) ou substring de **texto de tradução** e, em seguida, clique em **Aplicar**.
+Filtre por **texto original**, **localidade** (incluindo `*`), **texto de tradução** ou substring de **Contexto** e, em seguida, clique em **Aplicar**.
 
 <a id="dashboard-edits-and-glossary-auto-add"></a>
 ## Edições do painel e adição automática de glossário

@@ -1,5 +1,5 @@
-<a id="cli--cache--maintenance"></a>
-# CLI — 캐시 및 유지 관리
+<a id="cli--cache-maintenance"></a>
+# CLI — 캐시 유지 관리
 
 <a id="cleanup"></a>
 ### `cleanup`

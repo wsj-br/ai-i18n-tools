@@ -50,9 +50,9 @@ Different providers and models vary in cost, speed, and quality across languages
 
 **UI strings:** optional `uiModels` lets you route `translate-ui`, plural generation, and `proofread-ui` through premium models before the global `translationModels` chain — useful because UI copy is short but user-facing.
 
-**Asian locales:** optional `localeModels` entries for `ja`, `ko`, `zh-Hans`, and `zh-Hant` are tried first in every pipeline; models such as `z-ai/glm-5.2` and `minimax/minimax-m2.7` often perform better on CJK scripts than general-purpose fallbacks.
+**Asian locales:** optional `localeModels` entries for `ja`, `ko`, `zh-Hans`, and `zh-Hant` are tried first in every pipeline; models such as `z-ai/glm-5.3` and `minimax/minimax-m2.7` often perform better on CJK scripts than general-purpose fallbacks.
 
-Example config (OpenRouter):
+Example config (OpenRouter). `translationModels` and `uiModels` are the lists this repository uses in `ai-i18n-tools.config.json`. `localeModels` is an optional recommended add-on for CJK locales; this repository does not set it.
 
 ```json
 {
@@ -60,24 +60,25 @@ Example config (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Each provider block can define its own `translationModels`, optional `uiModels` and `localeModels`, `maxTokens`, `temperature`, and `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
+Each provider block can define its own `translationModels`, optional `uiModels` and `localeModels`, `maxTokens`, `temperature`, and `requestTimeout` (seconds) or `requestTimeoutMs`. A timeout on the provider overrides the top-level `requestTimeout` / `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
 
-Runnable example with four providers on the same document: [`examples/multi-provider`](/examples#multi-provider).
+Optional `pricing` and `modelPricing` set USD per 1,000,000 tokens (`inputPerMTokens` and `outputPerMTokens`) when the provider omits `usage.cost`. `pricing` is the provider-wide default; a `modelPricing` entry overrides it for one model id. OpenRouter already returns a per-call cost, so leave both unset on that provider. A provider-reported cost is kept as returned. The amount is included in the translation summary, [`usage`](/reference/cli-commands/workflows#usage), and [Usage & costs](/guide/translation-dashboard/usage).
+
+Runnable example with four providers on the same document, including sample rates: [`examples/multi-provider`](/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Further reference
 
-- [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, OpenRouter-specific behaviour.
+- [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, cost rates, OpenRouter-specific behaviour.
 - [Architecture — LLM client](/reference/architecture) — how model fallback, batching, and cost reporting work internally.
 - [Environment variables](/reference/environment-variables) — API-key env vars and base-URL overrides.

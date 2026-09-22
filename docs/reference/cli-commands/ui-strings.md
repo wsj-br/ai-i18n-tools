@@ -12,6 +12,21 @@ Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `pack
 
 ---
 
+<a id="migrate-intlayer"></a>
+### `migrate-intlayer`
+
+**Synopsis:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
+
+Import Intlayer `*.content.ts` dictionaries into `strings.json` and flat locale files, and rewrite simple `useIntlayer` / `getIntlayer` call sites to `t('English source')`. Dry run by default (the report is still written). `--write` seeds the catalog and applies safe rewrites. Does not call an LLM.
+
+The report is the handoff for everything `--write` leaves behind, and it ends with a **Step-by-step TODO** that orders the rest of the work: a concrete `t()` or JSX call for each manual site, the `import { t }` line, dictionary files and `IntlayerProvider` leftovers to delete afterwards, source strings that need `extract` then `translate-ui`, and an i18next runtime bootstrap to paste over the app's i18n module. The locale control must call `i18n.changeLanguage` as well as `loadLocale`. `extract` writes `ui-languages.json`, which that bootstrap imports. Do not edit `strings.json`, the flat locale files, or `ui-languages.json` by hand.
+
+**Key options:** `--write`, `--report`, `--content-glob` (default `**/*.content.ts`), `--t-import`
+
+**See also:** [Migrating from Intlayer](/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

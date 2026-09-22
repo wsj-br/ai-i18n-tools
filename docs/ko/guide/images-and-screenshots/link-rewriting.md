@@ -40,7 +40,7 @@
 | `../guide/foo.md` (로케일 파일에서) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 변경 없음(리포지토리 경로에는 전체 URL 사용) |
 
-`README.md` → `docs/index.md`로 동기화하는 프로젝트의 경우, VitePress 트리 외부의 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에서 전체 GitHub URL을 사용하세요. [VitePress 통합 — README를 문서 홈페이지로 사용](/ko/guide/integrations/vitepress#readme-as-homepage)을 참조하세요.
+`README.md` → `docs/index.md`를 동기화하는 프로젝트에서는 VitePress 트리 외부에 있는 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에 전체 GitHub URL을 사용하세요. [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하세요.
 
 플랫 리라이터와 VitePress 노멀라이저는 `docs[]` 블록마다 상호 배타적이며, `regexAdjustments` 이전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/ko/guide/integrations/vitepress#link-conventions)을 참조하세요.
 

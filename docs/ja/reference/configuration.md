@@ -97,6 +97,13 @@
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs`（任意）
+
+各LLMリクエストの最大待機時間。すべてのプロバイダーに適用されます。`requestTimeout`は秒単位、`requestTimeoutMs`はミリ秒単位です。両方を省略した場合のデフォルトは**45**秒です。いずれか一方のみを設定してください。プロバイダーがいずれかのフィールドを設定している場合、そのプロバイダーではその値が優先されます。
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` と `providers`
 
@@ -122,8 +129,14 @@
   リクエストあたりの最大完了トークン数。デフォルト: `8192`。
 - `temperature`
   サンプリング温度。デフォルト: `0.2`。
+- `requestTimeout`
+  このプロバイダーへの各リクエストを待機する最大時間（秒）。トップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーとトップレベル設定のいずれにもタイムアウトが設定されていない場合、デフォルトは `45` 秒です。同じオブジェクトには `requestTimeout` と `requestTimeoutMs` のいずれか一方のみを設定してください。
 - `requestTimeoutMs`
-  各リクエストを待機する最大時間（ミリ秒）。デフォルト: `30000`（30秒）。
+  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。トップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーとトップレベル設定のいずれにもタイムアウトが設定されていない場合、デフォルトは `45000`（45秒）です。同じオブジェクトには `requestTimeout` と `requestTimeoutMs` のいずれか一方のみを設定してください。
+- `pricing`（オプション）
+  プロバイダー全体の100万トークンあたりの米ドル：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。課金対象の呼び出しにプロバイダーが報告する `usage.cost` がない場合（OpenRouter以外のほとんどのプロバイダー）、このレートがその呼び出しの入力トークンと出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls` 行に保存されます。一致する `modelPricing` エントリがある場合、このデフォルト値が上書きされます。プロバイダーが報告したコストが置き換えられることはありません。コストなしで保存された行も、後から [`usage`](/ja/reference/cli-commands/workflows#usage) と [使用量とコスト](/ja/guide/translation-dashboard/usage) によって推定できます。
+- `modelPricing`（オプション）
+  モデルごとの100万トークンあたりの米ドル：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDの `pricing` を上書きします。プロバイダーが `usage.cost` を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
 
@@ -143,9 +156,9 @@
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
 
-レガシーなトップレベルの`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeoutMs`を含む）も引き続き受け入れられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）に自動移行されます。`defaultModel` / `fallbackModel`は`translationModels`に折りたたまれます。
+従来のトップレベル`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`を含む）は引き続き受け付けられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）へ自動マイグレーションされます。`defaultModel` / `fallbackModel`は`translationModels`に統合されます。
 
-1つの設定で複数のプロバイダーを構成し、`-P`でそれらを切り替える実行可能な例については、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（`openai`、`anthropic`、`nvidia`、および`deepseek`が同じドキュメント上にある）を参照してください。
+1つの設定で複数のプロバイダーを構成し、`-P`で切り替える実行可能な例については、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)を参照してください（`openai`、`anthropic`、`openrouter`、`deepseek`は同じドキュメント上にあります）。
 
 **複数のモデルを使用する理由：** プロバイダーおよびモデルによってコストが異なり、言語やロケールごとに品質レベルが異なります。`translationModels`を単一のモデルではなく、順序付きフォールバックチェーンとして**設定**することで、リクエストが失敗した場合にCLIが次のモデルを試行できるようにします。
 
@@ -342,13 +355,13 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`の場合、ソースサブディレクトリを保持して、同じベース名のファイルが衝突しないようにします。デフォルトは`false`。
 - `docsOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`docsOutput.style = "flat"`で、かつカスタムの`pathTemplate`がない場合は自動的に有効になります）。
+翻訳後に相対リンクを書き換えます（`docsOutput.style = "flat"`で、カスタムの`pathTemplate`がない場合に自動的に有効になります）。
 - `docsOutput.linkRewriteDocsRoot`
-フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルートに存在しない限り、通常は`"."`のままにしてください。
+フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルートに存在しない限り、通常は`"."`のままにしておきます。
 - `docsOutput.rewriteVitepressLinks`
-`true`の場合、翻訳後にVitePressリンクノーマライザーを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。ロケールフォルダが`docsRoot`の下の英語と並んで配置されている任意の`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）およびロケール相対`../guide/…`リンクに書き換えます。VitePressツリー外のリポジトリファイルへのリンク（`LICENSE`、`examples/`）については、英語のソースで完全なURLを使用してください — [VitePressの統合 — READMEをドキュメントのホームページとして使用する](/ja/guide/integrations/vitepress#readme-as-homepage) を参照してください。
+`true`の場合、翻訳後にVitePressリンクノーマライザーを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。`docsRoot`の下でロケールフォルダが英語フォルダと並んで配置されている`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）およびロケール相対の`../guide/…`リンクに書き換えます。VitePressツリーの外にあるリポジトリファイル（`LICENSE`、`examples/`）へのリンクには、英語ソースで完全なURLを使用してください。[VitePressの統合 — ドキュメントのホームページとしてのREADME](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage)を参照してください。
 - `docsOutput.rewriteNextraLinks`
-`true`の場合、翻訳後にNextraリンクノーマライザーを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`向けに、`content/en/…`および相対`.mdx`パスをロケールに依存しないサイトルート（`/guide/…`）に書き換えます。[Nextraの統合 — リンクの規約](/ja/guide/integrations/nextra#link-conventions) を参照してください。
+`true`の場合、翻訳後にNextraリンクノーマライザーを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`用に、`content/en/…`および相対`.mdx`パスをロケール非依存のサイトルート（`/guide/…`）に書き換えます。[Nextraの統合 — リンクの規則](/ja/guide/integrations/nextra#link-conventions)を参照してください。
 - `docsOutput.fumadocsParser`
 `"dot"`（デフォルト）または`"dir"`。dotは英語ソースの隣に`stem.{locale}.mdx`を書き込みます。dirはNextraのようにロケールフォルダを書き込みます。[Fumadocsの統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout) を参照してください。
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフ
 | フィールド | 説明 |
 |-------|-------------|
 | `description` | CLI / `status`用のオプションの注釈（翻訳対象外）。 |
-| `contentPaths` | プロジェクトルート以下のソース`.json`ファイル、ディレクトリ、またはグロブ。 |
+| `contentPaths` | プロジェクトルート配下のソース`.json`ファイル、ディレクトリ、またはグロブ。一般的なi18next名前空間ファイル（`public/locales/en/*.json`）がサポートされています: ネストされたオブジェクト、配列、文字列値内の<code v-pre>{{var}}</code>補間、および独立した複数形サフィックスキー（`key_one`、`key_other`）。 |
 | `outputPathTemplate` | 各ターゲットロケールごとの必須出力パス。プレースホルダー：`{locale}`、`{LOCALE}`、`{llocale}`、`{stem}`、`{basename}`、`{extension}`、`{relativeToSourceRoot}`。 |
 | `targetLocales` | このブロック用のオプションのサブセット。指定しない場合、ルートの`targetLocales`を使用。 |
 | `keyPolicy.mode` | `allowlist`、`denylist`、または`both`。 |
@@ -474,13 +487,31 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | フィールド | 説明 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | 既存の翻訳から自動的に用語集を生成するための `strings.json` へのパス。                                                                                                 |
-| `userGlossary` | `Original language string`（または `en`）、`locale`、`Translation` の列を持つCSVファイルへのパス。各行は1つのソース用語と対象ロケールに対応します（`locale` はすべての対象言語で `*` でも可）。 |
+| `userGlossary` | 列`Original language string`（または`en`）、`locale`、`Translation`、任意の`Force`、任意の`Context`を持つCSVへのパス — ソース用語とターゲットロケールごとに1行（`locale`はすべてのターゲットについて`*`にできます）。 |
 | `autoAddUserEditedToGlossary` | `true`の場合、UI文字列に対するダッシュボードの編集は、ユーザー用語集に自動的に追加できます。 |
+| `contextFiles` | 任意のcwd相対Markdownまたはプレーンテキストファイル（`.md`、`.markdown`、`.txt`）。製品や機能の説明を含みます。コマンド開始時にロードされ、UI、ドキュメント、JSON、SVG、および校正プロンプトに注入されます。翻訳対象にも含めたい場合を除き、これらのファイルを`docs[].contentPaths`に配置しないでください。URLは拒否されます。全文が設定されたLLMプロバイダーに送信され、`--debug-failed`ログに表示される可能性があります — 機密情報やPIIを含めないでください。 |
+| `contextMaxChars` | モデルに送信される結合済みコンテキストファイルテキストの最大文字数（デフォルト`12000`、ハード上限`100000`）。超過分のテキストは警告とともに切り詰められます。 |
 
 `translate-docs`は用語ヒントに同じ用語集を使用しますが、コンパクトなUIラベル略語（`Alm.`のような末尾ドット形式、または`Size` → `Tam`のような短い単一トークン圧縮）をスキップし、ドキュメントプロンプトが架空の<code v-pre>{{…}}</code>トークンへ誘導されないようにします。完全な製品用語および略語化されていないUI翻訳は引き続きヒントとして提供されます。
+
+任意の`Context` CSV列は、その用語のソース言語での使用ガイダンス（定義、文法的用法、製品上の意味）です。用語が現在のバッチに一致する場合にのみ含まれます。用語の`Context`ノートや`contextFiles`の内容を変更すると、次回実行時に該当ロケールのキャッシュされたセグメントとファイル追跡行が無効化され、翻訳が自動的に更新されます。優先する`Translation`のみを変更した場合は、`--force` / `--force-update`を渡さない限り既存のキャッシュが使用されます。ダッシュボードでユーザーが編集したキャッシュ行は保持されます。
+
+例:
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **空の用語集CSVを生成する：**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+リポジトリから `contextFiles` を作成するには、[AIエージェントでコンテキストファイルを生成する](/ja/guide/glossary#generate-a-context-file-with-an-ai-agent) のコピー＆ペースト用エージェントプロンプトを使用します。用語行とコンテキストファイルの適用方法については、[用語集](/ja/guide/glossary) を参照してください。

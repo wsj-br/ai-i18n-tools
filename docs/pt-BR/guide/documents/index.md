@@ -21,7 +21,7 @@ Arquivos [SVG](/pt-BR/guide/svg-translation/) são traduzidos via [`translate-sv
 
 Pacotes JSON de UI aninhados arbitrários não relacionados às strings de shell/tema de um framework de documentação pertencem ao pipeline [JSON](/pt-BR/guide/json), não ao `docs[]`.
 
-Para **consistência terminológica** entre a interface do usuário e a documentação, defina `glossary.uiGlossary` para o seu caminho `strings.json` — `translate-docs` reutiliza traduções existentes da interface do usuário como dicas em prompts de LLM quando termos correspondentes aparecem em um segmento. Opcional `glossary.userGlossary` adiciona substituições CSV para termos de produto (compartilhados com `translate-ui` e `proofread-ui`). Abreviações compactas de rótulos de interface do usuário usadas para caber em colunas estreitas (por exemplo, `Size` → `Tam`) permanecem disponíveis para tradução da interface do usuário, mas são omitidas das dicas do glossário do documento. Gere um CSV inicial com `glossary-generate`, edite as linhas na guia **Glossário** do Painel de Tradução ou consulte [Configuração — `glossary`](/pt-BR/reference/configuration#glossary) e [Glossário](/pt-BR/guide/translation-dashboard/glossary).
+Para garantir a **consistência da terminologia** entre a IU e a documentação, defina `glossary.uiGlossary` como o caminho de `strings.json` — `translate-docs` reutiliza as traduções existentes da IU como sugestões nos prompts do LLM quando termos correspondentes aparecem em um segmento. O `glossary.userGlossary` opcional adiciona substituições via CSV para termos do produto (compartilhadas com `translate-ui` e `proofread-ui`). As abreviações compactas de rótulos da IU, usadas para caber em colunas estreitas (por exemplo, `Size` → `Tam`), permanecem disponíveis para a tradução da IU, mas são omitidas das sugestões do glossário da documentação. Gere um CSV inicial com `glossary-generate`, edite as linhas na aba [Glossário](/pt-BR/guide/translation-dashboard/glossary) do Painel de Tradução ou consulte [Configuração — `glossary`](/pt-BR/reference/configuration#glossary) e [Glossário](/pt-BR/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
@@ -43,7 +43,7 @@ Para **consistência terminológica** entre a interface do usuário e a document
 | Links `#anchor` entre páginas | [Links de âncora](/pt-BR/guide/documents/anchor-links) |
 | Reescrita de URL de link e ativo (`regexAdjustments`) | [Reescrita de link](/pt-BR/guide/documents/link-rewriting) |
 | Capturas de tela na documentação | [Imagens e Capturas de Tela](/pt-BR/guide/images-and-screenshots/) |
-| Terminologia do produto e consistência UI/documentos | [Configuração — `glossary`](/pt-BR/reference/configuration#glossary), [Glossário](/pt-BR/guide/translation-dashboard/glossary) |
+| Terminologia do produto e consistência entre IU e documentação | [Configuração — `glossary`](/pt-BR/reference/configuration#glossary), [Glossário](/pt-BR/guide/glossary) |
 | Sinalizadores e cache `translate-docs` | [Opções da CLI](/pt-BR/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

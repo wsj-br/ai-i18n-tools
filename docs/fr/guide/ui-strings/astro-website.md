@@ -1,4 +1,5 @@
 <a id="astro-website"></a>
+<a id="astro-website"></a>
 # Site web Astro
 
 Pour les sites marketing ou les applications Astro statiques (Astro simple, pas Starlight), combinez le [routage i18n intégré d'Astro](https://docs.astro.build/en/guides/internationalization/) avec ai-i18n-tools. Voir aussi l'[intégration Astro](/fr/guide/integrations/astro).

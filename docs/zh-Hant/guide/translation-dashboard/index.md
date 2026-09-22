@@ -3,9 +3,9 @@
 
 翻譯儀表板是一個本地網路使用者介面，用於檢查和編輯專案的翻譯資料。它從三個儲存區讀取：
 
-- **SQLite 快取** (`cacheDir`) — 文件區段翻譯、失敗記錄、Markdown 問題掃描
-- **`strings.json`** — UI 字串目錄（純字串和複數群組）
-- **使用者詞彙表 CSV** (`glossary.userGlossary`) — 針對 `translate-ui` 和 `proofread-ui` 的術語提示
+- SQLite 快取 (`cacheDir`) — 文件段落翻譯、失敗記錄、Markdown 問題掃描、計費 API 呼叫用量
+- **`strings.json`** — UI 字串目錄（純文字字串與複數群組）
+- **使用者詞彙表 CSV** (`glossary.userGlossary`) — 用於 `translate-ui` 和 `proofread-ui` 的術語提示
 
 在翻譯執行後使用它來尋找問題、覆寫錯誤輸出或檢閱快取覆蓋率 — 無需手動深入研究 SQLite 或 JSON。
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-預設的監聽埠是 **8675**。如果該埠無法使用，伺服器會嘗試下一個埠（最多嘗試 1000 次）並記錄所選的埠。已棄用的別名 `editor` 仍然可用，但會顯示警告 — 請優先使用 `dashboard`。
+預設的監聽連接埠為 **8675**。如果該連接埠不可用，伺服器會嘗試下一個連接埠（最多嘗試 1000 次），並記錄它所選擇的連接埠。`dash` 是一個等效的別名。已棄用的別名 `editor` 仍然有效，但會印出警告 — 請改用 `dashboard` 或 `dash`。
 
 儀表板 UI 使用與 CLI 相同的地區解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 設定 `uiLanguage` → 作業系統地區。請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
 
@@ -36,6 +36,7 @@ ai-i18n-tools dashboard
 | 修正複數形式 (`one`、`other`、…) | **UI 複數** | [UI 字串與複數](/zh-Hant/guide/translation-dashboard/ui-strings) |
 | 鎖定 UI 翻譯的術語 | **詞彙表** | [詞彙表](/zh-Hant/guide/translation-dashboard/glossary) |
 | 查看快取覆蓋率和模型使用情況 | **統計資料** | [統計資料](/zh-Hant/guide/translation-dashboard/statistics) |
+| 查看 API 呼叫權杖與費用 | **用量與費用** | [用量與費用](/zh-Hant/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## 編輯後

@@ -11,7 +11,7 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-ai-i18n-tools incluye su propio extractor de cadenas. Si anteriormente usabas `i18next-scanner`, `babel-plugin-i18next-extract` o herramientas similares, puedes eliminar esas dependencias de desarrollo tras migrar.
+ai-i18n-tools incluye su propio extractor de cadenas. Si anteriormente utilizaba `i18next-scanner`, `babel-plugin-i18next-extract` o similar, puede eliminar esas dependencias de desarrollo después de la migración. Los archivos **JSON de espacio de nombres** de i18next existentes pueden permanecer en la [canalización JSON](/es/guide/json#i18next-namespace-files). Los diccionarios `.content.ts` de Intlayer se pueden importar con `migrate-intlayer`; consulte [Migración desde Intlayer](/es/guide/migrating-from-intlayer).
 
 <a id="using-the-cli"></a>
 ### Uso de la CLI

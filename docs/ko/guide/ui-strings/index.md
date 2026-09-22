@@ -14,6 +14,7 @@ i18next를 사용하는 모든 JS/TS 프로젝트에 적합합니다: React 앱,
 | `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/ko/guide/ui-strings/t-calls-and-plurals) |
 | 언어 선택기 / RTL | [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher) |
 | 런타임 API 서명 | [런타임 도우미](/ko/guide/runtime-helpers) |
+| Intlayer `.content.ts` 사전 | [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## 1단계: 초기화

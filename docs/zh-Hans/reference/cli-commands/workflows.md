@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI — 工作流与状态
+<a id="cli--workflows--reporting"></a>
+# CLI — 工作流与报告
 
 <a id="sync"></a>
 ### `sync`
@@ -35,3 +35,16 @@
 **主要选项：** `--max-columns`
 
 **另请参阅：** [仪表板统计信息](/zh-Hans/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**摘要：** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+打印已记录的模型 API 调用统计信息（调用次数、令牌数以及单一的美元成本）。成本在存在时为提供商的 `usage.cost`，否则为来自 `providers.<name>.modelPricing` 的金额或提供商范围内的 `providers.<name>.pricing` 默认值（存储于新调用中；对于没有存储成本的旧行，在报告时应用）。与“翻译仪表板 → 用量与成本”中的聚合相同。早于七个 UTC 日历日的明细行将汇总到每月的 `api_totals` 中；报告合并这两个表。`--since` 接受 `YYYY-MM-DD`、一个持续时间（`30m`、`1h`、`6h`、`12h`、`24h`、`7d`、`30d`）或一个日历月窗口（`1mo`、`2mo`、`3mo`）。`--clear` 删除明细行和每月总计（`--older-than` 为 `1mo`、`2mo`、`3mo`、`6mo`、`1y` 或 `all`；`--dry-run` 报告计数而不删除）。
+
+**主要选项：** `--since`、`--provider`、`--model`、`--operation`、`-l` / `--locale`、`--outcome`、`--clear`、`--older-than`、`--dry-run`
+
+**另请参阅：** [仪表板用量与费用](/zh-Hans/guide/translation-dashboard/usage)

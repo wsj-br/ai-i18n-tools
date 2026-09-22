@@ -4,7 +4,7 @@
 डॉक-सिस्टम साइटों के लिए उपयोग करें जहाँ अनुवादित SVG चित्र प्रत्येक स्थानीयकरण की सामग्री निर्देशिका में अनुवादित दस्तावेज़ों के साथ दिखाई देने चाहिए — वही स्थान जहाँ [सह-स्थित स्क्रीनशॉट](/hi/guide/images-and-screenshots/colocated-screenshots) होते हैं। Docusaurus प्रीसेट प्राथमिक उदाहरण है।
 
 <a id="config"></a>
-### कॉन्फ़िग
+## कॉन्फ़िगरेशन
 
 ```json
 "features": {
@@ -29,7 +29,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 ```
 
 <a id="source-markdown"></a>
-### स्रोत मार्कडाउन
+## स्रोत मार्कडाउन
 
 सभी स्थानीयकरणों में सभी दस्तावेज़ एक ही सापेक्ष पथ का उपयोग करते हैं:
 
@@ -42,12 +42,12 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 किसी `regexAdjustments` नियम की आवश्यकता नहीं है क्योंकि अंग्रेजी स्रोत दस्तावेज़ और अनुवादित आउटपुट दस्तावेज़ समान पथों का उपयोग करते हैं।
 
 <a id="svg-source-location"></a>
-### SVG स्रोत स्थान
+## SVG स्रोत स्थान
 
 अनुशंसित: स्रोत SVGs को `documentation/static/assets/` में en-GB PNG के साथ स्टोर करें। यह सभी दस्तावेज़ संपत्तियों को एक ही स्थान पर रखता है, और वही `docs/assets` सिम्लिंक दोनों को कवर करता है। `svg.sourcePath` प्रविष्टियाँ तब `documentation/static/assets/name.svg` की ओर इंगित करती हैं।
 
 <a id="pathtemplate-placeholders"></a>
-### `pathTemplate` प्लेसहोल्डर
+## `pathTemplate` प्लेसहोल्डर्स
 
 | प्लेसहोल्डर              | मान                                                  |
 |--------------------------|--------------------------------------------------------|
@@ -63,7 +63,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 [svg कॉन्फ़िगरेशन तालिका](/hi/reference/configuration#svg) में पूर्ण संदर्भ।
 
 <a id="implementation-example"></a>
-### कार्यान्वयन उदाहरण
+## कार्यान्वयन उदाहरण
 
 [duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) में `pathTemplate` के साथ नेस्टेड `svg` ब्लॉक; `documentation/static/assets/` में स्रोत SVGs (उदाहरण के लिए [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)); `translate-svg` सह-स्थित PNG के बगल में `documentation/i18n/<locale>/…/current/assets/` में प्रति-स्थानीयकरण फ़ाइलें लिखता है; दस्तावेज़ उन्हें `../assets/` पथों के माध्यम से एम्बेड करते हैं (उदाहरण के लिए [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)) बिना किसी `regexAdjustments` ब्रिज की आवश्यकता के।
 

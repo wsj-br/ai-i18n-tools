@@ -40,7 +40,7 @@
 | `../guide/foo.md` (ロケールファイルから) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 変更なし（リポジトリパスには完全なURLを使用） |
 
-`README.md` → `docs/index.md` を同期するプロジェクトでは、VitePressツリー外の `LICENSE`、`examples/`、およびその他のファイルの `README.md` において完全なGitHub URLを使用してください。[VitePress integration — README as the docs homepage](/ja/guide/integrations/vitepress#readme-as-homepage) を参照してください。
+`README.md` → `docs/index.md` を同期するプロジェクトでは、VitePress ツリー外にある `LICENSE`、`examples/`、およびその他のファイルについて、`README.md` には完全な GitHub URL を使用してください。[VitePress の統合 — ドキュメントのホームページとしての README](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage) を参照してください。
 
 フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/ja/guide/integrations/vitepress#link-conventions) を参照してください。
 

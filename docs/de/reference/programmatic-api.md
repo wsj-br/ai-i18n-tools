@@ -47,7 +47,8 @@ Schlüsselexporte (häufig verwendet – siehe `src/index.ts` für die vollstän
 | `splitTranslatableIntoBatches` | Gruppiere Segmente in LLM-gerechte Batches. |
 | `validateTranslation` | Strukturelle Prüfungen nach der Übersetzung (**asynchron** – muss erwartet werden). |
 | `resolveDocumentationOutputPath` | Ermittle Ausgabedateipfad für ein übersetztes Dokument. |
-| `Glossary` / `GlossaryMatcher` | Lade und wende Übersetzungsglossare an. |
+| `Glossary` / `GlossaryMatcher` | Laden und Anwenden von Übersetzungsglossaren, einschließlich optionaler `Context`-Hinweise. |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | Laden von `glossary.contextFiles` und Fingerabdruck-Anleitung zur Cache-Invalidierung. |
 | `runTranslateUI` | Programmatischer Einstiegspunkt für die Übersetzungs-UI. |
 | `writeInitConfigFile` | Eine Starter-Konfigurations-JSON schreiben (`template`, optional `providerKey` mit Standardwert `openrouter`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter-`translationModels` pro integriertem Preset, das von `init -P` verwendet wird. |

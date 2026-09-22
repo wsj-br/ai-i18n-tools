@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# Von Anfang an für i18n entwerfen
+## Von Anfang an für i18n konzipieren
 
 Die Wahl des richtigen Verzeichnislayouts, bevor überhaupt Screenshots existieren, ist der entscheidende Faktor dafür, wie problemlos sprachspezifische Assets später zu handhaben sind. Ein Nachrüsten des Layouts, nachdem Dutzende Screenshots committet wurden, bedeutet, Pfade umzustrukturieren und jeden Markdown-Verweis zu aktualisieren.
 
@@ -105,7 +105,7 @@ Aktivieren Sie `forceLowercase: true` im `svg`-Konfigurationsblock, um Probleme 
 ---
 
 <a id="decision-guide"></a>
-# Entscheidungsleitfaden
+## Entscheidungshilfe
 
 **Ist das Asset ein SVG mit übersetztem Text oder Beschriftungen?**
   - **Ja** → [Web-App-SVG](/de/guide/svg-translation/translated-svg-web-app) oder [Kolokalisierter SVG](/de/guide/svg-translation/translated-svg-colocated)

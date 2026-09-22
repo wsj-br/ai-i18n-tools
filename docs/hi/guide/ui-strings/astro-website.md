@@ -1,5 +1,6 @@
 <a id="astro-website"></a>
-# एस्ट्रो वेबसाइट
+<a id="astro-website"></a>
+# Astro वेबसाइट
 
 स्थैतिक एस्ट्रो मार्केटिंग या ऐप साइटों (सादे एस्ट्रो, स्टारलाइट नहीं) के लिए, [एस्ट्रो बिल्ट-इन i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-टूल के साथ संयोजित करें। [एस्ट्रो एकीकरण](/hi/guide/integrations/astro) भी देखें।
 
@@ -30,7 +31,7 @@
 ```
 
 <a id="ui-strings-ssg"></a>
-## UI स्ट्रिंग (SSG)
+## यूआई स्ट्रिंग्स (एसएसजी)
 
 `init -t ui-astro-website` के साथ UI एक्सट्रैक्शन को स्केफोल्ड करें, फिर जब आप पेज HTML का भी अनुवाद करते हैं तो `docs[]` ब्लॉक में मर्ज करें ([पेज पार्स करें और बदलें](#astro-website-pages-parse-and-replace) देखें)। TypeScript मॉड्यूल में `t('…')` और `.astro` फ्रंटमैटर (और टेम्पलेट `{expression}` ब्लॉक जब आप डुप्लिकेट स्थानीय पेज के बजाय UI स्ट्रिंग पसंद करते हैं) में कॉपी को रैप करें:
 
@@ -56,7 +57,7 @@ const t = useTranslations(locale, makeT(flat));
 उदाहरण में सहायक सहायक: लेबल, दिशा और BCP-47 कोड के लिए `src/i18n/utils.ts`, `src/i18n/locale.ts`, और `ui-languages.json`। `targetLocales` बदलने के बाद `generate-ui-languages` चलाएँ (वैकल्पिक रूप से `languagesManifestPath` सेट करें ताकि मैनिफेस्ट आपके सहायकों के बगल में रहे, जैसे `src/i18n/ui-languages.json`)। `MainLayout.astro` `resolveUiLanguage(Astro.currentLocale)` से `<html lang>` और `<html dir>` सेट करता है; `LanguagePicker.astro` `astro:i18n` से `getRelativeLocaleUrl` का उपयोग करता है।
 
 <a id="pages-parse-and-replace"></a>
-## पेज (पार्स करें और बदलें)
+## पृष्ठ (पार्स-एंड-रिप्लेस)
 
 `.astro` फ़ाइलों में हार्डकोडेड HTML वाले मार्केटिंग पेजों के लिए, `translate-docs` को टेक्स्ट नोड्स और एट्रिब्यूट (`alt`, `title`, `aria-label`, `placeholder`) निकालने दें, उन्हें दस्तावेज़ कैश के साथ अनुवाद करें, और अपने पेज ट्री के तहत स्थानीय-विशिष्ट प्रतियां लिखें। आपको अधिकांश दृश्यमान कॉपी के लिए `t()` की आवश्यकता **नहीं** है।
 

@@ -216,8 +216,8 @@ VitePress 프로젝트에 `ai-i18n-tools`을(를) **devDependency**로 추가하
 
 **작성 규칙**
 
-- 페이지 간 문서 링크: `docs/` 아래의 영어 마크다운에서는 **사이트 라우트** (`/guide/…`, `/reference/…`)를 사용하거나, 다른 프로젝트의 `docs/index.md`로 동기화될 README를 작성할 때는 `docs/guide/…` 경로를 사용하세요.
-- 실행 가능한 데모, `LICENSE`, 기타 저장소 파일: `README.md` 및 문서에서 **전체 GitHub URL**을 사용하세요 ([README 및 문서 홈페이지](#readme-as-the-docs-homepage) 참조).
-- `docs/<locale>/`의 링크는 직접 수정하지 **마세요** — `sync` / `translate-docs`로 다시 생성하세요.
+- 페이지 간 문서 링크: `docs/` 아래의 영어 마크다운에서는 **사이트 경로**(`/guide/…`, `/reference/…`)를 사용하고, 다른 프로젝트의 `docs/index.md`로 동기화될 README를 작성할 때는 `docs/guide/…` 경로를 사용합니다.
+- 실행 가능한 데모, `LICENSE` 및 기타 리포지토리 파일: `README.md` 및 문서에서는 **전체 GitHub URL**을 사용합니다([README 및 문서 홈페이지](#readme-and-the-docs-homepage) 참조).
+- `docs/<locale>/`의 링크는 **직접 수정하지** 마시고 `sync` / `translate-docs`를 사용하여 다시 생성하십시오.
 
 [링크 재작성](/ko/guide/images-and-screenshots/link-rewriting) (플랫 vs VitePress) 및 [구성 — `docsOutput`](/ko/reference/configuration#docsoutput)도 참조하세요.

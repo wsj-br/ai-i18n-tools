@@ -1,12 +1,12 @@
-<a id="cli--tools"></a>
-# CLI — Herramientas
+<a id="cli--dashboard--glossary"></a>
+# CLI — Panel de control y glosario
 
 <a id="dashboard"></a>
 ### `dashboard`
 
 **Resumen:** `ai-i18n-tools dashboard [-p <port>] [--no-open]`
 
-Iniciar el panel de control de traducción (interfaz web local para segmentos de caché, `strings.json`, glosario, errores y estadísticas). Puerto predeterminado **8675** (intenta el siguiente puerto si no está disponible). Con `--no-open`, el navegador predeterminado no se abre automáticamente. El alias obsoleto `editor` todavía funciona, pero muestra una advertencia.
+Inicie el Panel de control de traducción (interfaz de usuario web local para segmentos de caché, `strings.json`, glosario, fallos, estadísticas y uso). El puerto predeterminado es el **8675** (reintenta el siguiente puerto si no está disponible). Con `--no-open`, el navegador predeterminado no se abre automáticamente. `dash` es un alias equivalente. El alias obsoleto `editor` sigue funcionando, pero imprime una advertencia.
 
 **Opciones clave:** `-p` / `--port`, `--no-open`
 
@@ -25,13 +25,4 @@ Escribir una plantilla `glossary-user.csv` vacía. Se niega a sobrescribir un ar
 
 `-o`: anular la ruta de salida (predeterminada: `glossary.userGlossary` desde la configuración, o `glossary-user.csv`).
 
-**Ver también:** [Glosario del panel de control](/es/guide/translation-dashboard/glossary)
-
----
-
-<a id="help"></a>
-### `help`
-
-**Resumen:** `ai-i18n-tools help [command]`
-
-Mostrar ayuda para un subcomando (misma salida que `ai-i18n-tools <command> --help`).
+**Consulte también:** [Glosario](/es/guide/glossary), [Glosario del panel de control](/es/guide/translation-dashboard/glossary)

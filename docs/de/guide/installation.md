@@ -11,7 +11,7 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-ai-i18n-tools enthält einen eigenen Zeichenketten-Extraktor. Wenn Sie zuvor `i18next-scanner`, `babel-plugin-i18next-extract` oder Ähnliches verwendet haben, können Sie diese Dev-Abhängigkeiten nach der Migration entfernen.
+ai-i18n-tools enthält einen eigenen String-Extraktor. Wenn Sie zuvor `i18next-scanner`, `babel-plugin-i18next-extract` oder Ähnliches verwendet haben, können Sie diese Entwicklungsabhängigkeiten nach der Migration entfernen. Bestehende i18next **Namespace-JSON**-Dateien können in der [JSON-Pipeline](/de/guide/json#i18next-namespace-files) verbleiben. Intlayer `.content.ts`-Wörterbücher können mit `migrate-intlayer` importiert werden – siehe [Migration von Intlayer](/de/guide/migrating-from-intlayer).
 
 <a id="using-the-cli"></a>
 ### Verwendung der CLI
@@ -71,7 +71,7 @@ Führen Sie dann z. B. `pnpm run i18n:sync` aus. Eine vollständige Liste der em
 **Alternativen** – wenn Sie `PATH` nicht anpassen möchten: `npx ai-i18n-tools …` (npm) oder `pnpm exec ai-i18n-tools …` (pnpm). Für eine einmalige Installation ohne `package.json`-Eintrag: `npx ai-i18n-tools <cmd>` oder `pnpm dlx ai-i18n-tools <cmd>`.
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
-### Geklontes ai-i18n-tools Monorepo
+### Geklontes ai-i18n-tools-Monorepo
 
 Beim Entwickeln des Pakets oder Ausführen von Workspace-**Beispielen** aus einem vollständigen Klon von [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):
 

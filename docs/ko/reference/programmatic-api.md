@@ -47,7 +47,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `splitTranslatableIntoBatches` | 구문을 LLM 크기의 배치로 그룹화. |
 | `validateTranslation` | 번역 후 구조 검사 (**async** — 대기해야 함). |
 | `resolveDocumentationOutputPath` | 번역된 문서의 출력 파일 경로 결정. |
-| `Glossary` / `GlossaryMatcher` | 번역 용어집 로드 및 적용. |
+| `Glossary` / `GlossaryMatcher` | 번역 용어집을 로드하고 적용하며, 선택적인 용어 `Context` 메모를 포함합니다. |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | 캐시 무효화를 위한 `glossary.contextFiles` 및 지문 가이드를 로드합니다. |
 | `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점. |
 | `writeInitConfigFile` | 스타터 구성 JSON 작성(`template`, 선택적 `providerKey`의 기본값은 `openrouter`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |

@@ -216,8 +216,8 @@ Fügen Sie `ai-i18n-tools` als **devDependency** im VitePress-Projekt (siehe `ex
 
 **Regeln für die Erstellung**
 
-- Dokumentationslinks über Seiten hinweg: Verwenden Sie **Site-Routen** (`/guide/…`, `/reference/…`) im englischen Markdown unter `docs/`, oder `docs/guide/…`-Pfade, wenn Sie ein README erstellen, das in ein anderes Projekt unter `docs/index.md` synchronisiert werden soll.
-- Ausführbare Demos, `LICENSE` und andere Repo-Dateien: Verwenden Sie **vollständige GitHub-URLs** in `README.md` und in der Dokumentation (siehe [README und die Dokumentations-Homepage](#readme-as-the-docs-homepage)).
-- Bearbeiten Sie Links in `docs/<locale>/` **nicht** manuell – generieren Sie sie mit `sync` / `translate-docs` neu.
+- Seitenübergreifende Dokumentationslinks: Verwenden Sie **Site-Routen** (`/guide/…`, `/reference/…`) in englischem Markdown unter `docs/` oder `docs/guide/…`-Pfade, wenn Sie eine README-Datei verfassen, die in einem anderen Projekt in `docs/index.md` synchronisiert wird.
+- Ausführbare Demos, `LICENSE` und andere Repository-Dateien: Verwenden Sie **vollständige GitHub-URLs** in `README.md` und in der Dokumentation (siehe [README und die Dokumentations-Startseite](#readme-and-the-docs-homepage)).
+- Bearbeiten Sie Links in `docs/<locale>/` **nicht** manuell — generieren Sie diese mit `sync` / `translate-docs` neu.
 
 Siehe auch [Link-Umschreibung](/de/guide/images-and-screenshots/link-rewriting) (flat vs. VitePress) und [Konfiguration — `docsOutput`](/de/reference/configuration#docsoutput).

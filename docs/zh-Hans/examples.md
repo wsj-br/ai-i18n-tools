@@ -29,6 +29,7 @@ pnpm install
 <a id="fumadocs-docs"></a>
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
+<a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
 
 | 示例 | 最适合 | 使用 degit 复制 | 运行 |
@@ -44,5 +45,6 @@ pnpm install
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 纯 HTML + `data-i18n*` 标记；静态区域设置 JSON（仪表板式 UI） | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev`（`:3090`） |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | 选择或基准测试 LLM 提供商 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 回归测试 Markdown / CJK 翻译 (梵文, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
+| [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()`（`migrate-intlayer`，重置 + AI 代理报告） | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev`（`:3091`） |
 
 每个 **示例** 名称都链接到其 GitHub README，其中包含完整的设置、命令和项目布局 — 或者浏览[存储库中的示例索引](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)。

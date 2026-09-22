@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI — 모델 및 카탈로그
+<a id="cli--models--languages"></a>
+# CLI — 모델 및 언어
 
 <a id="check-models"></a>
 ### `check-models`
 
 **개요:** `ai-i18n-tools check-models`
 
-활성 프로바이더의 `GET /models` 목록(멤버십 및 `expiration_date`)에 대해 구성된 각 모델 ID를 검증합니다. 해당 프로바이더의 API 키가 필요합니다(Ollama와 같은 키가 필요 없는 프로바이더의 경우 없음). 구성된 ID 중 누락되거나 만료된 것이 있으면 0이 아닌 값으로 종료되며, 프로바이더의 `requestTimeoutMs`를 준수합니다. 프로바이더가 가격을 반환하는 경우(예: OpenRouter), 프롬프트/컴플리션당 1M 토큰당 USD도 표시합니다.
+구성된 각 모델 ID를 활성 제공자의 `GET /models` 목록(멤버십 및 `expiration_date`)에 대해 검증합니다. 해당 제공자의 API 키가 필요합니다(Ollama와 같은 키가 없는 제공자의 경우 없음). 구성된 ID 중 하나라도 누락되거나 만료된 경우 0이 아닌 종료 코드로 종료되며, 확인된 요청 제한 시간(`requestTimeout` 또는 제공자의 `requestTimeoutMs`, 그렇지 않으면 최상위 값)을 준수합니다. 제공자가 가격을 반환하는 경우(예: OpenRouter) 프롬프트/완료에 대한 1M 토큰당 USD도 표시합니다.
 
 **참고:** [LLM 프로바이더](/ko/guide/providers-and-models)
 

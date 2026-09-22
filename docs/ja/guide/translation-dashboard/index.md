@@ -3,9 +3,9 @@
 
 翻訳ダッシュボードは、プロジェクトの翻訳データを検査および編集するためのローカルWeb UIです。次の3つのストアから読み取ります。
 
-- **SQLiteキャッシュ** (`cacheDir`) — ドキュメントセグメントの翻訳、失敗記録、Markdownの問題スキャン
-- **`strings.json`** — UI文字列カタログ（プレーン文字列と複数形グループ）
-- **ユーザー用語集CSV** (`glossary.userGlossary`) — `translate-ui`と`proofread-ui`の用語のヒント
+- SQLiteキャッシュ (`cacheDir`) — ドキュメントセグメントの翻訳、失敗レコード、Markdownの問題スキャン、課金対象API呼び出しの使用量
+- **`strings.json`** — UI文字列カタログ（通常文字列と複数形グループ）
+- **ユーザーグロサリーCSV** (`glossary.userGlossary`) — `translate-ui`および`proofread-ui`の用語ヒント
 
 翻訳実行後にこれを使用して、SQLiteやJSONを手動で掘り下げることなく、問題を見つけたり、不正な出力を上書きしたり、キャッシュのカバレッジを確認したりできます。
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-デフォルトのリッスンポートは **8675** です。そのポートが使用できない場合、サーバーは次のポートを試行します（最大1000回の試行）し、使用したポートをログに出力します。非推奨のエイリアス `editor` は引き続き機能しますが警告を出力します。代わりに `dashboard` を使用してください。
+デフォルトのリッスンポートは**8675**です。そのポートが利用できない場合、サーバーは次のポートを試行し（最大1000回まで）、選択したポートをログに記録します。`dash`は同等のエイリアスです。非推奨のエイリアス`editor`は引き続き機能しますが、警告を出力します — `dashboard`または`dash`を優先してください。
 
 ダッシュボードUIはCLIと同じロケール解決を使用します: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OSロケール。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。
 
@@ -36,6 +36,7 @@ ai-i18n-tools dashboard
 | 複数形を修正する (`one`、`other`、…) | **UI複数形** | [UI文字列と複数形](/ja/guide/translation-dashboard/ui-strings) |
 | UI翻訳の用語をロックする | **用語集** | [用語集](/ja/guide/translation-dashboard/glossary) |
 | キャッシュのカバレッジとモデルの使用状況を確認する | **統計** | [統計](/ja/guide/translation-dashboard/statistics) |
+| API呼び出しトークンとコストを参照 | **使用量とコスト** | [使用量とコスト](/ja/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## 編集後

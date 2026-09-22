@@ -5,6 +5,12 @@ import type * as Sqlite from "node:sqlite";
 import { CacheError } from "./errors.js";
 import { USER_EDITED_MODEL } from "./user-edited-model.js";
 import type {
+  ApiCallBreakdownRow,
+  ApiCallFilters,
+  ApiCallInsert,
+  ApiCallOutcome,
+  ApiCallRow,
+  ApiCallStatsResult,
   BatchCacheResult,
   CacheEntry,
   CleanupStats,
@@ -16,12 +22,53 @@ import type {
   TranslationFailureListRow,
   TranslationFailureSummary,
   TranslationRow,
+  UsageDeleteOlderThan,
+  UsageDeleteResult,
 } from "./types.js";
 import { computeSegmentHash } from "../utils/hash.js";
 import { resolveCacheTrackingKeyToAbs } from "./cache-tracking-keys.js";
 import { normalizeLocale } from "./locale-utils.js";
+import {
+  apiTotalsMonthLowerBound,
+  shouldIncludeApiTotals,
+  usageDeleteCutoffMonth,
+  usageDetailRetentionCutoff,
+} from "./usage-stats.js";
 
-const SCHEMA_VERSION = 4;
+const API_TOTALS_CREATE_SQL = `
+        CREATE TABLE IF NOT EXISTS api_totals (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          month TEXT NOT NULL,
+          provider TEXT NOT NULL,
+          model TEXT NOT NULL,
+          operation TEXT NOT NULL,
+          locale TEXT NOT NULL DEFAULT '',
+          itkn_acc INTEGER NOT NULL DEFAULT 0,
+          otkn_acc INTEGER NOT NULL DEFAULT 0,
+          ttkn_acc INTEGER NOT NULL DEFAULT 0,
+          tcost_acc REAL NOT NULL DEFAULT 0,
+          itkn_dis INTEGER NOT NULL DEFAULT 0,
+          otkn_dis INTEGER NOT NULL DEFAULT 0,
+          ttkn_dis INTEGER NOT NULL DEFAULT 0,
+          tcost_dis REAL NOT NULL DEFAULT 0,
+          ncalls_acc INTEGER NOT NULL DEFAULT 0,
+          ncalls_dis INTEGER NOT NULL DEFAULT 0,
+          ncost_acc INTEGER NOT NULL DEFAULT 0,
+          ncost_dis INTEGER NOT NULL DEFAULT 0,
+          itkn_nc_acc INTEGER NOT NULL DEFAULT 0,
+          otkn_nc_acc INTEGER NOT NULL DEFAULT 0,
+          itkn_nc_dis INTEGER NOT NULL DEFAULT 0,
+          otkn_nc_dis INTEGER NOT NULL DEFAULT 0,
+          UNIQUE (month, provider, model, operation, locale)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_api_totals_month ON api_totals(month);
+        CREATE INDEX IF NOT EXISTS idx_api_totals_provider ON api_totals(provider);
+        CREATE INDEX IF NOT EXISTS idx_api_totals_model ON api_totals(model);
+        CREATE INDEX IF NOT EXISTS idx_api_totals_operation ON api_totals(operation);
+`;
+
+const SCHEMA_VERSION = 6;
 const require = createRequire(import.meta.url);
 
 type SqliteModule = typeof Sqlite;
@@ -72,6 +119,8 @@ export class TranslationCache {
   private db: Sqlite.DatabaseSync;
   private readonly dbFilePath: string | null;
   private closed = false;
+  /** True when this instance inserted at least one `api_calls` row (triggers end-of-run rollup). */
+  private recordedApiCallsThisSession = false;
 
   constructor(cachePath: string) {
     const { DatabaseSync } = loadSqlite();
@@ -192,7 +241,62 @@ export class TranslationCache {
         CREATE INDEX IF NOT EXISTS idx_markdown_source_issues_issue_code
           ON markdown_source_issues(issue_code);
       `);
+      this.db.exec("PRAGMA user_version = 4");
+    }
+    if (current < 5) {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS api_calls (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          created_at TEXT DEFAULT (datetime('now')),
+          provider TEXT NOT NULL,
+          model TEXT NOT NULL,
+          operation TEXT NOT NULL,
+          locale TEXT,
+          outcome TEXT NOT NULL CHECK (outcome IN ('accepted','discarded')),
+          input_tokens INTEGER NOT NULL,
+          output_tokens INTEGER NOT NULL,
+          total_tokens INTEGER NOT NULL,
+          cost_usd REAL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_api_calls_created_at ON api_calls(created_at);
+        CREATE INDEX IF NOT EXISTS idx_api_calls_provider ON api_calls(provider);
+        CREATE INDEX IF NOT EXISTS idx_api_calls_model ON api_calls(model);
+        CREATE INDEX IF NOT EXISTS idx_api_calls_operation ON api_calls(operation);
+        ${API_TOTALS_CREATE_SQL}
+      `);
+      this.db.exec("PRAGMA user_version = 5");
+    }
+    if (current < 6) {
+      this.db.exec(`
+        ALTER TABLE translations ADD COLUMN prompt_context_hash TEXT NOT NULL DEFAULT '';
+        ALTER TABLE file_tracking ADD COLUMN prompt_context_hash TEXT NOT NULL DEFAULT '';
+      `);
       this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+    }
+    // Unpublished v5 caches created before `api_totals` still have user_version 5.
+    this.ensureApiTotalsSchema();
+  }
+
+  private ensureApiTotalsSchema(): void {
+    this.db.exec(API_TOTALS_CREATE_SQL);
+    const existing = new Set(
+      (this.db.prepare("PRAGMA table_info(api_totals)").all() as { name: string }[]).map(
+        (c) => c.name
+      )
+    );
+    const extras: Array<[string, string]> = [
+      ["ncost_acc", "INTEGER NOT NULL DEFAULT 0"],
+      ["ncost_dis", "INTEGER NOT NULL DEFAULT 0"],
+      ["itkn_nc_acc", "INTEGER NOT NULL DEFAULT 0"],
+      ["otkn_nc_acc", "INTEGER NOT NULL DEFAULT 0"],
+      ["itkn_nc_dis", "INTEGER NOT NULL DEFAULT 0"],
+      ["otkn_nc_dis", "INTEGER NOT NULL DEFAULT 0"],
+    ];
+    for (const [name, decl] of extras) {
+      if (!existing.has(name)) {
+        this.db.exec(`ALTER TABLE api_totals ADD COLUMN ${name} ${decl}`);
+      }
     }
   }
 
@@ -209,15 +313,24 @@ export class TranslationCache {
     sourceHash: string,
     locale: string,
     filepath?: string,
-    startLine?: number
+    startLine?: number,
+    promptContextHash?: string
   ): { text: string; model: string | null } | null {
     const selectStmt = this.db.prepare(`
-      SELECT translated_text, model FROM translations
+      SELECT translated_text, model, prompt_context_hash FROM translations
       WHERE source_hash = ? AND locale = ?
     `);
     const row = selectStmt.get(sourceHash, locale) as
-      { translated_text: string; model: string | null } | undefined;
+      | { translated_text: string; model: string | null; prompt_context_hash: string }
+      | undefined;
     if (!row) {
+      return null;
+    }
+    if (
+      promptContextHash !== undefined &&
+      row.model !== USER_EDITED_MODEL &&
+      (row.prompt_context_hash ?? "") !== promptContextHash
+    ) {
       return null;
     }
     const updates: string[] = ["last_hit_at = datetime('now')"];
@@ -246,16 +359,24 @@ export class TranslationCache {
     sourceHash: string,
     locale: string,
     filepath?: string,
-    startLine?: number
+    startLine?: number,
+    promptContextHash?: string
   ): string | null {
-    return this.getSegmentDetails(sourceHash, locale, filepath, startLine)?.text ?? null;
+    return (
+      this.getSegmentDetails(sourceHash, locale, filepath, startLine, promptContextHash)?.text ??
+      null
+    );
   }
 
   /**
    * Batch fetch cached segments without updating last_hit_at.
    * Use batchUpdateLastHitAt() after processing to update timestamps.
    */
-  getSegmentsBatch(sourceHashes: readonly string[], locale: string): BatchCacheResult {
+  getSegmentsBatch(
+    sourceHashes: readonly string[],
+    locale: string,
+    promptContextHash?: string
+  ): BatchCacheResult {
     const result: BatchCacheResult = new Map();
     if (sourceHashes.length === 0) {
       return result;
@@ -268,7 +389,7 @@ export class TranslationCache {
       const chunk = sourceHashes.slice(i, i + CHUNK_SIZE);
       const placeholders = chunk.map(() => "?").join(",");
       const stmt = this.db.prepare(`
-        SELECT source_hash, translated_text, model
+        SELECT source_hash, translated_text, model, prompt_context_hash
         FROM translations
         WHERE source_hash IN (${placeholders}) AND locale = ?
       `);
@@ -276,9 +397,17 @@ export class TranslationCache {
         source_hash: string;
         translated_text: string;
         model: string | null;
+        prompt_context_hash: string;
       }>;
 
       for (const row of rows) {
+        if (
+          promptContextHash !== undefined &&
+          row.model !== USER_EDITED_MODEL &&
+          (row.prompt_context_hash ?? "") !== promptContextHash
+        ) {
+          continue;
+        }
         result.set(row.source_hash, { text: row.translated_text, model: row.model });
       }
     }
@@ -326,18 +455,20 @@ export class TranslationCache {
     translatedText: string,
     model: string,
     filepath?: string,
-    startLine?: number | null
+    startLine?: number | null,
+    promptContextHash?: string
   ): void {
     const stmt = this.db.prepare(`
-      INSERT INTO translations (source_hash, locale, source_text, translated_text, model, filepath, created_at, last_hit_at, start_line)
-      VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), ?)
+      INSERT INTO translations (source_hash, locale, source_text, translated_text, model, filepath, created_at, last_hit_at, start_line, prompt_context_hash)
+      VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), ?, ?)
       ON CONFLICT(source_hash, locale) DO UPDATE SET
         source_text = excluded.source_text,
         translated_text = excluded.translated_text,
         model = excluded.model,
         filepath = excluded.filepath,
         last_hit_at = datetime('now'),
-        start_line = COALESCE(excluded.start_line, translations.start_line)
+        start_line = COALESCE(excluded.start_line, translations.start_line),
+        prompt_context_hash = excluded.prompt_context_hash
     `);
     stmt.run(
       sourceHash,
@@ -346,7 +477,8 @@ export class TranslationCache {
       translatedText,
       model,
       filepath ?? null,
-      startLine ?? null
+      startLine ?? null,
+      promptContextHash ?? ""
     );
   }
 
@@ -359,13 +491,53 @@ export class TranslationCache {
     return row?.source_hash ?? null;
   }
 
-  setFileStatus(filepath: string, locale: string, sourceHash: string): void {
+  /** Source hash + guidance fingerprint for a tracked file, or `null` when absent. */
+  getFileTrackingHashes(
+    filepath: string,
+    locale: string
+  ): { sourceHash: string; promptContextHash: string } | null {
+    const stmt = this.db.prepare(`
+      SELECT source_hash, prompt_context_hash FROM file_tracking
+      WHERE filepath = ? AND locale = ?
+    `);
+    const row = stmt.get(filepath, locale) as
+      | { source_hash: string; prompt_context_hash: string }
+      | undefined;
+    if (!row) {
+      return null;
+    }
+    return { sourceHash: row.source_hash, promptContextHash: row.prompt_context_hash ?? "" };
+  }
+
+  /**
+   * True when file tracking matches both the source file hash and the current guidance fingerprint.
+   */
+  fileTrackingMatches(
+    filepath: string,
+    locale: string,
+    sourceHash: string,
+    promptContextHash: string
+  ): boolean {
+    const tracked = this.getFileTrackingHashes(filepath, locale);
+    return (
+      tracked !== null &&
+      tracked.sourceHash === sourceHash &&
+      tracked.promptContextHash === promptContextHash
+    );
+  }
+
+  setFileStatus(
+    filepath: string,
+    locale: string,
+    sourceHash: string,
+    promptContextHash?: string
+  ): void {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO file_tracking
-      (filepath, locale, source_hash)
-      VALUES (?, ?, ?)
+      (filepath, locale, source_hash, prompt_context_hash)
+      VALUES (?, ?, ?, ?)
     `);
-    stmt.run(filepath, locale, sourceHash);
+    stmt.run(filepath, locale, sourceHash, promptContextHash ?? "");
   }
 
   /**
@@ -1395,11 +1567,726 @@ export class TranslationCache {
     return rows.map((r) => r.issue_code);
   }
 
+  recordApiCall(row: ApiCallInsert): void {
+    const stmt = this.db.prepare(
+      `INSERT INTO api_calls
+       (created_at, provider, model, operation, locale, outcome, input_tokens, output_tokens, total_tokens, cost_usd)
+       VALUES (COALESCE(?, datetime('now')), ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    stmt.run(
+      row.createdAt ?? null,
+      row.provider,
+      row.model,
+      row.operation,
+      row.locale?.trim() ? row.locale.trim() : null,
+      row.outcome,
+      row.inputTokens,
+      row.outputTokens,
+      row.totalTokens,
+      typeof row.costUsd === "number" ? row.costUsd : null
+    );
+    this.recordedApiCallsThisSession = true;
+  }
+
+  /**
+   * Roll `api_calls` older than seven full UTC calendar days into `api_totals` and delete
+   * those detail rows. Idempotent: a second pass finds nothing to move.
+   */
+  consolidateApiCalls(now = new Date()): { rolledUpCalls: number } {
+    const cutoff = usageDetailRetentionCutoff(now);
+    const pending = (
+      this.db.prepare("SELECT COUNT(*) as c FROM api_calls WHERE created_at < ?").get(cutoff) as {
+        c: number;
+      }
+    ).c;
+    const rolledUpCalls = Number(pending);
+    if (rolledUpCalls === 0) {
+      return { rolledUpCalls: 0 };
+    }
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      this.db
+        .prepare(
+          `INSERT INTO api_totals (
+             month, provider, model, operation, locale,
+             itkn_acc, otkn_acc, ttkn_acc, tcost_acc,
+             itkn_dis, otkn_dis, ttkn_dis, tcost_dis,
+             ncalls_acc, ncalls_dis,
+             ncost_acc, ncost_dis,
+             itkn_nc_acc, otkn_nc_acc, itkn_nc_dis, otkn_nc_dis
+           )
+           SELECT
+             substr(created_at, 1, 7) as month,
+             provider,
+             model,
+             operation,
+             COALESCE(NULLIF(TRIM(locale), ''), '') as locale,
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' THEN input_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' THEN output_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' THEN total_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' THEN COALESCE(cost_usd, 0) ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' THEN input_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' THEN output_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' THEN total_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' THEN COALESCE(cost_usd, 0) ELSE 0 END), 0),
+             SUM(CASE WHEN outcome = 'accepted' THEN 1 ELSE 0 END),
+             SUM(CASE WHEN outcome = 'discarded' THEN 1 ELSE 0 END),
+             SUM(CASE WHEN outcome = 'accepted' AND cost_usd IS NOT NULL THEN 1 ELSE 0 END),
+             SUM(CASE WHEN outcome = 'discarded' AND cost_usd IS NOT NULL THEN 1 ELSE 0 END),
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' AND cost_usd IS NULL THEN input_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'accepted' AND cost_usd IS NULL THEN output_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' AND cost_usd IS NULL THEN input_tokens ELSE 0 END), 0),
+             COALESCE(SUM(CASE WHEN outcome = 'discarded' AND cost_usd IS NULL THEN output_tokens ELSE 0 END), 0)
+           FROM api_calls
+           WHERE created_at < ?
+           GROUP BY substr(created_at, 1, 7), provider, model, operation,
+                    COALESCE(NULLIF(TRIM(locale), ''), '')
+           ON CONFLICT(month, provider, model, operation, locale) DO UPDATE SET
+             itkn_acc = itkn_acc + excluded.itkn_acc,
+             otkn_acc = otkn_acc + excluded.otkn_acc,
+             ttkn_acc = ttkn_acc + excluded.ttkn_acc,
+             tcost_acc = tcost_acc + excluded.tcost_acc,
+             itkn_dis = itkn_dis + excluded.itkn_dis,
+             otkn_dis = otkn_dis + excluded.otkn_dis,
+             ttkn_dis = ttkn_dis + excluded.ttkn_dis,
+             tcost_dis = tcost_dis + excluded.tcost_dis,
+             ncalls_acc = ncalls_acc + excluded.ncalls_acc,
+             ncalls_dis = ncalls_dis + excluded.ncalls_dis,
+             ncost_acc = ncost_acc + excluded.ncost_acc,
+             ncost_dis = ncost_dis + excluded.ncost_dis,
+             itkn_nc_acc = itkn_nc_acc + excluded.itkn_nc_acc,
+             otkn_nc_acc = otkn_nc_acc + excluded.otkn_nc_acc,
+             itkn_nc_dis = itkn_nc_dis + excluded.itkn_nc_dis,
+             otkn_nc_dis = otkn_nc_dis + excluded.otkn_nc_dis`
+        )
+        .run(cutoff);
+      this.db.prepare("DELETE FROM api_calls WHERE created_at < ?").run(cutoff);
+      this.db.exec("COMMIT");
+    } catch (err) {
+      try {
+        this.db.exec("ROLLBACK");
+      } catch {
+        // Keep the original error if rollback itself fails.
+      }
+      throw err;
+    }
+    return { rolledUpCalls };
+  }
+
+  /** Roll up old detail rows when this instance recorded API calls. */
+  consolidateApiCallsIfRecorded(now = new Date()): { rolledUpCalls: number } {
+    if (!this.recordedApiCallsThisSession) {
+      return { rolledUpCalls: 0 };
+    }
+    const result = this.consolidateApiCalls(now);
+    this.recordedApiCallsThisSession = false;
+    return result;
+  }
+
+  private apiCallWhere(filters?: ApiCallFilters): {
+    clause: string;
+    params: (string | number)[];
+  } {
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+    if (filters?.since?.trim()) {
+      conditions.push("created_at >= ?");
+      params.push(filters.since.trim());
+    }
+    if (filters?.provider?.trim()) {
+      conditions.push("provider = ?");
+      params.push(filters.provider.trim());
+    }
+    if (filters?.model?.trim()) {
+      conditions.push("model = ?");
+      params.push(filters.model.trim());
+    }
+    if (filters?.operation?.trim()) {
+      conditions.push("operation = ?");
+      params.push(filters.operation.trim());
+    }
+    if (filters?.locale?.trim()) {
+      conditions.push("locale = ?");
+      params.push(filters.locale.trim());
+    }
+    if (filters?.outcome === "accepted" || filters?.outcome === "discarded") {
+      conditions.push("outcome = ?");
+      params.push(filters.outcome);
+    }
+    return {
+      clause: conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "",
+      params,
+    };
+  }
+
+  private apiTotalsWhere(
+    filters?: ApiCallFilters,
+    now = new Date()
+  ): { clause: string; params: (string | number)[]; include: boolean } {
+    if (filters?.since?.trim() && !shouldIncludeApiTotals(filters.since, now)) {
+      return { clause: "", params: [], include: false };
+    }
+    const conditions: string[] = [];
+    const params: (string | number)[] = [];
+    const monthFrom = apiTotalsMonthLowerBound(filters?.since, now);
+    if (monthFrom) {
+      conditions.push("month >= ?");
+      params.push(monthFrom);
+    }
+    if (filters?.provider?.trim()) {
+      conditions.push("provider = ?");
+      params.push(filters.provider.trim());
+    }
+    if (filters?.model?.trim()) {
+      conditions.push("model = ?");
+      params.push(filters.model.trim());
+    }
+    if (filters?.operation?.trim()) {
+      conditions.push("operation = ?");
+      params.push(filters.operation.trim());
+    }
+    if (filters?.locale?.trim()) {
+      conditions.push("locale = ?");
+      params.push(filters.locale.trim());
+    }
+    if (filters?.outcome === "accepted") {
+      conditions.push("ncalls_acc > 0");
+    } else if (filters?.outcome === "discarded") {
+      conditions.push("ncalls_dis > 0");
+    }
+    return {
+      include: true,
+      clause: conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "",
+      params,
+    };
+  }
+
+  private static emptyBreakdown(): ApiCallBreakdownRow {
+    return {
+      calls: 0,
+      acceptedCalls: 0,
+      discardedCalls: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      totalTokens: 0,
+      actualCostUsd: 0,
+      callsWithCost: 0,
+      callsWithoutCost: 0,
+      inputTokensWithoutCost: 0,
+      outputTokensWithoutCost: 0,
+    };
+  }
+
+  private static mapBreakdownRow(row: {
+    calls: number | null;
+    accepted_calls: number | null;
+    discarded_calls: number | null;
+    input_tokens: number | null;
+    output_tokens: number | null;
+    total_tokens: number | null;
+    actual_cost_usd: number | null;
+    calls_with_cost: number | null;
+    calls_without_cost: number | null;
+    input_tokens_without_cost: number | null;
+    output_tokens_without_cost: number | null;
+  }): ApiCallBreakdownRow {
+    return {
+      calls: Number(row.calls ?? 0),
+      acceptedCalls: Number(row.accepted_calls ?? 0),
+      discardedCalls: Number(row.discarded_calls ?? 0),
+      inputTokens: Number(row.input_tokens ?? 0),
+      outputTokens: Number(row.output_tokens ?? 0),
+      totalTokens: Number(row.total_tokens ?? 0),
+      actualCostUsd: Number(row.actual_cost_usd ?? 0),
+      callsWithCost: Number(row.calls_with_cost ?? 0),
+      callsWithoutCost: Number(row.calls_without_cost ?? 0),
+      inputTokensWithoutCost: Number(row.input_tokens_without_cost ?? 0),
+      outputTokensWithoutCost: Number(row.output_tokens_without_cost ?? 0),
+    };
+  }
+
+  private static mapTotalsBreakdown(
+    row: {
+      ncalls_acc: number | null;
+      ncalls_dis: number | null;
+      ncost_acc: number | null;
+      ncost_dis: number | null;
+      itkn_acc: number | null;
+      otkn_acc: number | null;
+      ttkn_acc: number | null;
+      tcost_acc: number | null;
+      itkn_dis: number | null;
+      otkn_dis: number | null;
+      ttkn_dis: number | null;
+      tcost_dis: number | null;
+      itkn_nc_acc: number | null;
+      otkn_nc_acc: number | null;
+      itkn_nc_dis: number | null;
+      otkn_nc_dis: number | null;
+    },
+    outcome?: ApiCallOutcome
+  ): ApiCallBreakdownRow {
+    const acc = outcome !== "discarded";
+    const dis = outcome !== "accepted";
+    const acceptedCalls = acc ? Number(row.ncalls_acc ?? 0) : 0;
+    const discardedCalls = dis ? Number(row.ncalls_dis ?? 0) : 0;
+    const inputTokens =
+      (acc ? Number(row.itkn_acc ?? 0) : 0) + (dis ? Number(row.itkn_dis ?? 0) : 0);
+    const outputTokens =
+      (acc ? Number(row.otkn_acc ?? 0) : 0) + (dis ? Number(row.otkn_dis ?? 0) : 0);
+    const totalTokens =
+      (acc ? Number(row.ttkn_acc ?? 0) : 0) + (dis ? Number(row.ttkn_dis ?? 0) : 0);
+    const actualCostUsd =
+      (acc ? Number(row.tcost_acc ?? 0) : 0) + (dis ? Number(row.tcost_dis ?? 0) : 0);
+    const callsWithCost =
+      (acc ? Number(row.ncost_acc ?? 0) : 0) + (dis ? Number(row.ncost_dis ?? 0) : 0);
+    const calls = acceptedCalls + discardedCalls;
+    return {
+      calls,
+      acceptedCalls,
+      discardedCalls,
+      inputTokens,
+      outputTokens,
+      totalTokens,
+      actualCostUsd,
+      callsWithCost,
+      callsWithoutCost: Math.max(0, calls - callsWithCost),
+      inputTokensWithoutCost:
+        (acc ? Number(row.itkn_nc_acc ?? 0) : 0) + (dis ? Number(row.itkn_nc_dis ?? 0) : 0),
+      outputTokensWithoutCost:
+        (acc ? Number(row.otkn_nc_acc ?? 0) : 0) + (dis ? Number(row.otkn_nc_dis ?? 0) : 0),
+    };
+  }
+
+  private static addBreakdown(a: ApiCallBreakdownRow, b: ApiCallBreakdownRow): ApiCallBreakdownRow {
+    return {
+      calls: a.calls + b.calls,
+      acceptedCalls: a.acceptedCalls + b.acceptedCalls,
+      discardedCalls: a.discardedCalls + b.discardedCalls,
+      inputTokens: a.inputTokens + b.inputTokens,
+      outputTokens: a.outputTokens + b.outputTokens,
+      totalTokens: a.totalTokens + b.totalTokens,
+      actualCostUsd: a.actualCostUsd + b.actualCostUsd,
+      callsWithCost: a.callsWithCost + b.callsWithCost,
+      callsWithoutCost: a.callsWithoutCost + b.callsWithoutCost,
+      inputTokensWithoutCost: a.inputTokensWithoutCost + b.inputTokensWithoutCost,
+      outputTokensWithoutCost: a.outputTokensWithoutCost + b.outputTokensWithoutCost,
+    };
+  }
+
+  private static mergeBreakdownRows<T extends ApiCallBreakdownRow>(
+    a: T[],
+    b: T[],
+    keyOf: (row: T) => string,
+    compare: (x: T, y: T) => number
+  ): T[] {
+    const map = new Map<string, T>();
+    for (const row of [...a, ...b]) {
+      const key = keyOf(row);
+      const prev = map.get(key);
+      if (!prev) {
+        map.set(key, row);
+      } else {
+        map.set(key, { ...prev, ...TranslationCache.addBreakdown(prev, row) });
+      }
+    }
+    return [...map.values()].sort(compare);
+  }
+
+  private static readonly API_CALL_AGG = `COUNT(*) as calls,
+     SUM(CASE WHEN outcome = 'accepted' THEN 1 ELSE 0 END) as accepted_calls,
+     SUM(CASE WHEN outcome = 'discarded' THEN 1 ELSE 0 END) as discarded_calls,
+     COALESCE(SUM(input_tokens), 0) as input_tokens,
+     COALESCE(SUM(output_tokens), 0) as output_tokens,
+     COALESCE(SUM(total_tokens), 0) as total_tokens,
+     COALESCE(SUM(CASE WHEN cost_usd IS NOT NULL THEN cost_usd ELSE 0 END), 0) as actual_cost_usd,
+     SUM(CASE WHEN cost_usd IS NOT NULL THEN 1 ELSE 0 END) as calls_with_cost,
+     SUM(CASE WHEN cost_usd IS NULL THEN 1 ELSE 0 END) as calls_without_cost,
+     COALESCE(SUM(CASE WHEN cost_usd IS NULL THEN input_tokens ELSE 0 END), 0) as input_tokens_without_cost,
+     COALESCE(SUM(CASE WHEN cost_usd IS NULL THEN output_tokens ELSE 0 END), 0) as output_tokens_without_cost`;
+
+  private static readonly API_TOTALS_AGG = `COALESCE(SUM(ncalls_acc), 0) as ncalls_acc,
+     COALESCE(SUM(ncalls_dis), 0) as ncalls_dis,
+     COALESCE(SUM(ncost_acc), 0) as ncost_acc,
+     COALESCE(SUM(ncost_dis), 0) as ncost_dis,
+     COALESCE(SUM(itkn_acc), 0) as itkn_acc,
+     COALESCE(SUM(otkn_acc), 0) as otkn_acc,
+     COALESCE(SUM(ttkn_acc), 0) as ttkn_acc,
+     COALESCE(SUM(tcost_acc), 0) as tcost_acc,
+     COALESCE(SUM(itkn_dis), 0) as itkn_dis,
+     COALESCE(SUM(otkn_dis), 0) as otkn_dis,
+     COALESCE(SUM(ttkn_dis), 0) as ttkn_dis,
+     COALESCE(SUM(tcost_dis), 0) as tcost_dis,
+     COALESCE(SUM(itkn_nc_acc), 0) as itkn_nc_acc,
+     COALESCE(SUM(otkn_nc_acc), 0) as otkn_nc_acc,
+     COALESCE(SUM(itkn_nc_dis), 0) as itkn_nc_dis,
+     COALESCE(SUM(otkn_nc_dis), 0) as otkn_nc_dis`;
+
+  getApiCallStats(filters?: ApiCallFilters, now = new Date()): ApiCallStatsResult {
+    const { clause, params } = this.apiCallWhere(filters);
+    const summaryRow = this.db
+      .prepare(`SELECT ${TranslationCache.API_CALL_AGG} FROM api_calls ${clause}`)
+      .get(...params) as Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0];
+    const detailSummary = TranslationCache.mapBreakdownRow(summaryRow);
+
+    const providerRows = this.db
+      .prepare(
+        `SELECT provider, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY provider
+         ORDER BY calls DESC, provider`
+      )
+      .all(...params) as Array<
+      { provider: string } & Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0]
+    >;
+    const modelRows = this.db
+      .prepare(
+        `SELECT provider, model, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY provider, model
+         ORDER BY calls DESC, provider, model`
+      )
+      .all(...params) as Array<
+      { provider: string; model: string } & Parameters<
+        (typeof TranslationCache)["mapBreakdownRow"]
+      >[0]
+    >;
+    const operationRows = this.db
+      .prepare(
+        `SELECT operation, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY operation
+         ORDER BY calls DESC, operation`
+      )
+      .all(...params) as Array<
+      { operation: string } & Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0]
+    >;
+    const localeRows = this.db
+      .prepare(
+        `SELECT COALESCE(NULLIF(TRIM(locale), ''), '(none)') as locale, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY COALESCE(NULLIF(TRIM(locale), ''), '(none)')
+         ORDER BY calls DESC, locale`
+      )
+      .all(...params) as Array<
+      { locale: string } & Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0]
+    >;
+    const dayRows = this.db
+      .prepare(
+        `SELECT substr(created_at, 1, 10) as day, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY substr(created_at, 1, 10)
+         ORDER BY day DESC`
+      )
+      .all(...params) as Array<
+      { day: string } & Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0]
+    >;
+    const monthFromCalls = this.db
+      .prepare(
+        `SELECT substr(created_at, 1, 7) as month, ${TranslationCache.API_CALL_AGG}
+         FROM api_calls ${clause}
+         GROUP BY substr(created_at, 1, 7)
+         ORDER BY month DESC`
+      )
+      .all(...params) as Array<
+      { month: string } & Parameters<(typeof TranslationCache)["mapBreakdownRow"]>[0]
+    >;
+
+    const byProvider = providerRows.map((r) => ({
+      provider: r.provider,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    const byModel = modelRows.map((r) => ({
+      provider: r.provider,
+      model: r.model,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    const byOperation = operationRows.map((r) => ({
+      operation: r.operation,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    const byLocale = localeRows.map((r) => ({
+      locale: r.locale,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    const byDay = dayRows.map((r) => ({
+      day: r.day,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    let byMonth = monthFromCalls.map((r) => ({
+      month: r.month,
+      ...TranslationCache.mapBreakdownRow(r),
+    }));
+    let summary = detailSummary.calls === 0 ? TranslationCache.emptyBreakdown() : detailSummary;
+
+    const totalsWhere = this.apiTotalsWhere(filters, now);
+    if (totalsWhere.include) {
+      const tParams = totalsWhere.params;
+      const tClause = totalsWhere.clause;
+      const outcome = filters?.outcome;
+      const totalsSummaryRow = this.db
+        .prepare(`SELECT ${TranslationCache.API_TOTALS_AGG} FROM api_totals ${tClause}`)
+        .get(...tParams) as Parameters<(typeof TranslationCache)["mapTotalsBreakdown"]>[0];
+      const totalsSummary = TranslationCache.mapTotalsBreakdown(totalsSummaryRow, outcome);
+      if (totalsSummary.calls > 0) {
+        summary = TranslationCache.addBreakdown(summary, totalsSummary);
+      }
+
+      const tProvider = this.db
+        .prepare(
+          `SELECT provider, ${TranslationCache.API_TOTALS_AGG}
+           FROM api_totals ${tClause}
+           GROUP BY provider`
+        )
+        .all(...tParams) as Array<
+        { provider: string } & Parameters<(typeof TranslationCache)["mapTotalsBreakdown"]>[0]
+      >;
+      const tModel = this.db
+        .prepare(
+          `SELECT provider, model, ${TranslationCache.API_TOTALS_AGG}
+           FROM api_totals ${tClause}
+           GROUP BY provider, model`
+        )
+        .all(...tParams) as Array<
+        { provider: string; model: string } & Parameters<
+          (typeof TranslationCache)["mapTotalsBreakdown"]
+        >[0]
+      >;
+      const tOperation = this.db
+        .prepare(
+          `SELECT operation, ${TranslationCache.API_TOTALS_AGG}
+           FROM api_totals ${tClause}
+           GROUP BY operation`
+        )
+        .all(...tParams) as Array<
+        { operation: string } & Parameters<(typeof TranslationCache)["mapTotalsBreakdown"]>[0]
+      >;
+      const tLocale = this.db
+        .prepare(
+          `SELECT COALESCE(NULLIF(TRIM(locale), ''), '(none)') as locale, ${TranslationCache.API_TOTALS_AGG}
+           FROM api_totals ${tClause}
+           GROUP BY COALESCE(NULLIF(TRIM(locale), ''), '')`
+        )
+        .all(...tParams) as Array<
+        { locale: string } & Parameters<(typeof TranslationCache)["mapTotalsBreakdown"]>[0]
+      >;
+      const tMonth = this.db
+        .prepare(
+          `SELECT month, ${TranslationCache.API_TOTALS_AGG}
+           FROM api_totals ${tClause}
+           GROUP BY month`
+        )
+        .all(...tParams) as Array<
+        { month: string } & Parameters<(typeof TranslationCache)["mapTotalsBreakdown"]>[0]
+      >;
+
+      const byCallsDesc = <T extends ApiCallBreakdownRow>(
+        extra: (x: T, y: T) => number
+      ): ((x: T, y: T) => number) => {
+        return (x, y) => y.calls - x.calls || extra(x, y);
+      };
+
+      const mergedProvider = TranslationCache.mergeBreakdownRows(
+        byProvider,
+        tProvider.map((r) => ({
+          provider: r.provider,
+          ...TranslationCache.mapTotalsBreakdown(r, outcome),
+        })),
+        (r) => r.provider,
+        byCallsDesc((x, y) => x.provider.localeCompare(y.provider))
+      );
+      const mergedModel = TranslationCache.mergeBreakdownRows(
+        byModel,
+        tModel.map((r) => ({
+          provider: r.provider,
+          model: r.model,
+          ...TranslationCache.mapTotalsBreakdown(r, outcome),
+        })),
+        (r) => `${r.provider}\0${r.model}`,
+        byCallsDesc(
+          (x, y) => x.provider.localeCompare(y.provider) || x.model.localeCompare(y.model)
+        )
+      );
+      const mergedOperation = TranslationCache.mergeBreakdownRows(
+        byOperation,
+        tOperation.map((r) => ({
+          operation: r.operation,
+          ...TranslationCache.mapTotalsBreakdown(r, outcome),
+        })),
+        (r) => r.operation,
+        byCallsDesc((x, y) => x.operation.localeCompare(y.operation))
+      );
+      const mergedLocale = TranslationCache.mergeBreakdownRows(
+        byLocale,
+        tLocale.map((r) => ({
+          locale: r.locale,
+          ...TranslationCache.mapTotalsBreakdown(r, outcome),
+        })),
+        (r) => r.locale,
+        byCallsDesc((x, y) => x.locale.localeCompare(y.locale))
+      );
+      byMonth = TranslationCache.mergeBreakdownRows(
+        byMonth,
+        tMonth.map((r) => ({
+          month: r.month,
+          ...TranslationCache.mapTotalsBreakdown(r, outcome),
+        })),
+        (r) => r.month,
+        (x, y) => y.month.localeCompare(x.month)
+      );
+
+      return {
+        summary: summary.calls === 0 ? TranslationCache.emptyBreakdown() : summary,
+        byProvider: mergedProvider,
+        byModel: mergedModel,
+        byOperation: mergedOperation,
+        byLocale: mergedLocale,
+        byDay,
+        byMonth,
+      };
+    }
+
+    return {
+      summary: summary.calls === 0 ? TranslationCache.emptyBreakdown() : summary,
+      byProvider,
+      byModel,
+      byOperation,
+      byLocale,
+      byDay,
+      byMonth,
+    };
+  }
+
+  listApiCalls(filters?: ApiCallFilters & { limit?: number; offset?: number }): {
+    rows: ApiCallRow[];
+    total: number;
+  } {
+    const limit = filters?.limit ?? 50;
+    const offset = filters?.offset ?? 0;
+    const { clause, params } = this.apiCallWhere(filters);
+    const total = (
+      this.db.prepare(`SELECT COUNT(*) as count FROM api_calls ${clause}`).get(...params) as {
+        count: number;
+      }
+    ).count;
+    const rows = this.db
+      .prepare(
+        `SELECT id, created_at, provider, model, operation, locale, outcome,
+                input_tokens, output_tokens, total_tokens, cost_usd
+         FROM api_calls ${clause}
+         ORDER BY created_at DESC, id DESC
+         LIMIT ? OFFSET ?`
+      )
+      .all(...params, limit, offset) as unknown as ApiCallRow[];
+    return { rows, total };
+  }
+
+  getApiCallFilterOptions(): {
+    providers: string[];
+    models: string[];
+    operations: string[];
+    locales: string[];
+  } {
+    const col = (sql: string): string[] =>
+      (this.db.prepare(sql).all() as { v: string }[]).map((r) => r.v);
+    return {
+      providers: col(
+        `SELECT v FROM (
+           SELECT DISTINCT provider as v FROM api_calls WHERE provider != ''
+           UNION
+           SELECT DISTINCT provider as v FROM api_totals WHERE provider != ''
+         ) ORDER BY v`
+      ),
+      models: col(
+        `SELECT v FROM (
+           SELECT DISTINCT model as v FROM api_calls WHERE model != ''
+           UNION
+           SELECT DISTINCT model as v FROM api_totals WHERE model != ''
+         ) ORDER BY v`
+      ),
+      operations: col(
+        `SELECT v FROM (
+           SELECT DISTINCT operation as v FROM api_calls WHERE operation != ''
+           UNION
+           SELECT DISTINCT operation as v FROM api_totals WHERE operation != ''
+         ) ORDER BY v`
+      ),
+      locales: col(
+        `SELECT v FROM (
+           SELECT DISTINCT locale as v FROM api_calls
+           WHERE locale IS NOT NULL AND TRIM(locale) != ''
+           UNION
+           SELECT DISTINCT locale as v FROM api_totals
+           WHERE TRIM(locale) != ''
+         ) ORDER BY v`
+      ),
+    };
+  }
+
+  clearUsage(dryRun = false): UsageDeleteResult {
+    const removedCalls = (
+      this.db.prepare("SELECT COUNT(*) as c FROM api_calls").get() as { c: number }
+    ).c;
+    const removedTotals = (
+      this.db.prepare("SELECT COUNT(*) as c FROM api_totals").get() as { c: number }
+    ).c;
+    if (!dryRun) {
+      if (removedCalls > 0) {
+        this.db.prepare("DELETE FROM api_calls").run();
+      }
+      if (removedTotals > 0) {
+        this.db.prepare("DELETE FROM api_totals").run();
+      }
+    }
+    return { removedCalls: Number(removedCalls), removedTotals: Number(removedTotals) };
+  }
+
+  /** @deprecated Use {@link clearUsage}; returns the combined row count from both tables. */
+  clearApiCalls(dryRun = false): number {
+    const result = this.clearUsage(dryRun);
+    return result.removedCalls + result.removedTotals;
+  }
+
+  deleteUsageOlderThan(
+    preset: UsageDeleteOlderThan,
+    dryRun = false,
+    now = new Date()
+  ): UsageDeleteResult {
+    const month = usageDeleteCutoffMonth(preset, now);
+    const cutoff = `${month}-01 00:00:00`;
+    const removedCalls = (
+      this.db.prepare("SELECT COUNT(*) as c FROM api_calls WHERE created_at < ?").get(cutoff) as {
+        c: number;
+      }
+    ).c;
+    const removedTotals = (
+      this.db.prepare("SELECT COUNT(*) as c FROM api_totals WHERE month < ?").get(month) as {
+        c: number;
+      }
+    ).c;
+    if (!dryRun) {
+      if (removedCalls > 0) {
+        this.db.prepare("DELETE FROM api_calls WHERE created_at < ?").run(cutoff);
+      }
+      if (removedTotals > 0) {
+        this.db.prepare("DELETE FROM api_totals WHERE month < ?").run(month);
+      }
+    }
+    return { removedCalls: Number(removedCalls), removedTotals: Number(removedTotals) };
+  }
+
   close(): void {
     // Idempotent: a command's `finally` and the process-exit safety net may both call this. Closing
     // an already-closed `node:sqlite` connection throws, so guard against the double close.
     if (this.closed) {
       return;
+    }
+    if (this.recordedApiCallsThisSession) {
+      try {
+        this.consolidateApiCallsIfRecorded();
+      } catch {
+        // Best-effort rollup; never block closing the connection.
+      }
     }
     this.closed = true;
     openCaches.delete(this);
@@ -1431,18 +2318,24 @@ export class TranslationCache {
       entry.translatedText,
       entry.model,
       entry.filepath,
-      entry.startLine ?? undefined
+      entry.startLine ?? undefined,
+      entry.promptContextHash
     );
     return Promise.resolve();
   }
 
   async getFileStatus(filepath: string, locale: string): Promise<FileTracking | null> {
     const stmt = this.db.prepare(`
-      SELECT source_hash, last_translated FROM file_tracking
+      SELECT source_hash, last_translated, prompt_context_hash FROM file_tracking
       WHERE filepath = ? AND locale = ?
     `);
     const row = stmt.get(filepath, locale) as
-      { source_hash: string; last_translated: string | null } | undefined;
+      | {
+          source_hash: string;
+          last_translated: string | null;
+          prompt_context_hash: string;
+        }
+      | undefined;
     if (!row) {
       return null;
     }
@@ -1451,11 +2344,17 @@ export class TranslationCache {
       locale,
       sourceHash: row.source_hash,
       lastTranslated: row.last_translated,
+      promptContextHash: row.prompt_context_hash ?? "",
     });
   }
 
-  async setFileStatusAsync(filepath: string, locale: string, hash: string): Promise<void> {
-    this.setFileStatus(filepath, locale, hash);
+  async setFileStatusAsync(
+    filepath: string,
+    locale: string,
+    hash: string,
+    promptContextHash?: string
+  ): Promise<void> {
+    this.setFileStatus(filepath, locale, hash, promptContextHash);
     return Promise.resolve();
   }
 

@@ -11,7 +11,9 @@
 
 **お好みのAIモデルでアプリとドキュメントを翻訳 — ロックインなし、書き直し不要。**
 
-JavaScript/TypeScriptアプリおよびドキュメントサイト（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、プレーンなMarkdown/MDX）を国際化するためのCLIおよびツールキットです。OpenAI、Anthropic、Gemini、OpenRouter、Ollamaなどの組み込みプリセット、またはOpenAI互換の任意のAPIを使用できます。コードベースを変更することなく、プロジェクトやロケールごとにプロバイダーやモデルを切り替えられます。
+JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化するためのCLIおよびツールキット。`t()`文字列の抽出、Markdown/MDXページ、JSONバンドル、SVGラベルの翻訳を単一の構成から実行でき、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、およびOpenAI互換API用の組み込みプリセットを備えています。コードベースを変更することなく、プロジェクトごとまたはロケールごとにプロバイダーやモデルを切り替えられます。
+
+VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、およびプレーンMarkdownに対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）を維持したまま、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行できます。
 
 <a id="features"></a>
 ## 機能

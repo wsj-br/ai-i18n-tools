@@ -14,6 +14,7 @@
 | `t()` नियम, इंटरपोलेशन, बहुवचन | [t() कॉल और बहुवचन](/hi/guide/ui-strings/t-calls-and-plurals) |
 | भाषा पिकर / RTL | [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher) |
 | रनटाइम एपीआई हस्ताक्षर | [रनटाइम हेल्पर](/hi/guide/runtime-helpers) |
+| इंटलेयर `.content.ts` डिक्शनरीज़ | [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## चरण 1: आरंभ करें

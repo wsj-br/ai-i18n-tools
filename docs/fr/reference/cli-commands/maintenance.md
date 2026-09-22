@@ -1,5 +1,5 @@
-<a id="cli--cache--maintenance"></a>
-# CLI — Cache et maintenance
+<a id="cli--cache-maintenance"></a>
+# CLI — Maintenance du cache
 
 <a id="cleanup"></a>
 ### `cleanup`

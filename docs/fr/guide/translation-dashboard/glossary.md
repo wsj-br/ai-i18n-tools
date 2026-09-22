@@ -13,6 +13,7 @@ L'onglet est masqué lorsque `glossary.userGlossary` n'est pas configuré.
 | **Chaîne de langue originale** | Terme ou expression source |
 | **locale** | Locale cible, ou `*` pour toutes les locales |
 | **Traduction** | Traduction préférée |
+| **Contexte** | Explication facultative dans la langue source de la signification ou de l'utilisation prévue. Envoyé uniquement lorsque ce terme correspond au lot actuel. |
 | **Forcer** | Lorsque cette option est cochée, le terme doit être traduit exactement tel qu'il est donné |
 
 <a id="add-a-row"></a>
@@ -21,7 +22,7 @@ L'onglet est masqué lorsque `glossary.userGlossary` n'est pas configuré.
 Utilisez le formulaire en haut de l'onglet :
 
 1. Saisissez **Original**, **locale** (`*` ou un code de locale cible) et **Traduction**.
-2. Cochez éventuellement **Forcer**.
+2. Ajoutez éventuellement un **Contexte** (notes d'utilisation) et cochez **Forcer**.
 3. Cliquez sur **Ajouter**.
 
 Le fichier CSV est créé lors du premier ajout s'il n'existe pas encore.
@@ -32,12 +33,14 @@ Le fichier CSV est créé lors du premier ajout s'il n'existe pas encore.
 - **Modification en ligne** — modifiez les champs directement dans le tableau et cliquez sur **Enregistrer** sur cette ligne.
 - **Supprimer** — supprimez une ligne avec le contrôle de suppression.
 
-Les modifications prennent effet lors de la prochaine exécution de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`.
+Les modifications prennent effet lors de la prochaine exécution de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`. La modification d'une note de **Contexte** (ou `glossary.contextFiles` dans la configuration) actualise automatiquement les traductions mises en cache pour la locale affectée – vous n'avez pas besoin de `--force`.
+
+Conservez les fichiers de contexte sous forme de notes concises en Markdown ou en texte brut, en dehors des arborescences `docs[]` traduites. Le texte est envoyé au LLM à chaque requête correspondante ; n’incluez pas de secrets ni de données personnelles. La façon dont ces fichiers et le CSV sont générés est expliquée dans [Glossaire](/fr/guide/glossary).
 
 <a id="filters"></a>
 ## Filtres
 
-Filtrez par **texte original**, **locale** (y compris `*`) ou sous-chaîne de **texte de traduction**, puis cliquez sur **Appliquer**.
+Filtrez par **texte original**, **locale** (y compris `*`), **texte de traduction** ou sous-chaîne de **Contexte**, puis cliquez sur **Appliquer**.
 
 <a id="dashboard-edits-and-glossary-auto-add"></a>
 ## Modifications du tableau de bord et ajout automatique au glossaire

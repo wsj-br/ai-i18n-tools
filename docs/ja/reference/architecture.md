@@ -30,7 +30,7 @@
 | | `src/processors/` | プレースホルダー保護、バッチ処理、検証、リンク書き換え |
 | **共有** | `src/core/` | 設定、型、SQLiteキャッシュ、プロンプト、出力パス、ロケールユーティリティ |
 | | `src/api/` | `LlmClient` — プロバイダーに依存しないチャットクライアント（Vercel AI SDK）、モデルフォールバック付き |
-| | `src/glossary/` | 用語集の読み込みとプロンプトの用語ヒント |
+| | `src/glossary/` | プロンプト用の用語集読み込み、用語ヒント、およびオプションのプロジェクトコンテキストファイル |
 | | `src/utils/` | ロガー、ハッシュ化、無視パーサー、表示幅テーブル、`.env`ローダー |
 | **アプリのランタイム** | `src/runtime/` | i18nextヘルパーと表示ユーティリティ — `'ai-i18n-tools/runtime'`としてエクスポートされます（[ランタイムヘルパー](/ja/guide/runtime-helpers)） |
 | **ツールUI** *(ドッグフーディング)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | このパッケージ自身のCLIと翻訳ダッシュボードをローカライズ — プロジェクトコンテンツとは別です（[自己ローカライズ](#self-localization-tool-ui)） |
@@ -202,6 +202,10 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 各実行時に、セグメントはハッシュ × ロケールで検索されます。キャッシュミスのみがLLMに送られます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の `last_hit_at` がリセットされます。ドキュメント翻訳中のキャッシュヒット成功は、そのセグメントの古い `translation_failures` 行をクリアします。`cleanup` は最初に `sync --force-update` を実行し、その後、古いセグメント行（null の `last_hit_at` / 空のファイルパス）を削除し、解決されたソースパスがディスク上に存在しない場合に `file_tracking` キーを整理し（`doc-block:…`, `json-block:…`, `svg-files:…` など）、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除し、孤立した `translation_failures` 行を整理し、解決されたソースパスがディスク上に存在しない孤立した `markdown_source_issues` 行を整理し、設定に存在しないロケールのキャッシュ行を破棄します（`sourceLocale`、ルート `targetLocales`、およびブロックごとの `docs[]` / `json[]` `targetLocales`; SQLiteのみ — 生成されたファイルを削除するには `purge-locale` を使用してください）。`--backup <path>` が渡されない限り `cache.db` をバックアップしませんが、渡された場合は最初にそのパスへバックアップを書き込みます。
 
+課金対象のモデル呼び出し (採用された翻訳と破棄された再試行) は `api_calls` に保存されます。呼び出しを記録するコマンドの実行後、UTC暦日で7日を超えた詳細行は月次の `api_totals` にロールアップされます。`usage` とダッシュボードの「使用量とコスト」ビューでは、両方のテーブルが統合されます。[使用量とコスト](/ja/guide/translation-dashboard/usage) を参照してください。
+
+用語集の `Context` メモと `glossary.contextFiles` はフィンガープリント化 (`prompt_context_hash`) され、UI、ドキュメント、JSON、SVG、および校正プロンプトに挿入されます。そのガイダンスを変更すると、次回の実行時に対応するキャッシュセグメントとファイル追跡行が無効化されます。ダッシュボードの `user-edited` キャッシュ行は保持されます。用語集の優先翻訳のみを変更した場合は、`--force` / `--force-update` まで既存のキャッシュがそのまま保持されます。
+
 `translate-docs`コマンドは**ファイルトラッキング**も使用するため、変更されていないソースで既存の最新の出力がある場合、作業を完全にスキップできます。`--check-cache`は期待される書記体系でロケールを再度開き、キャッシュされたセグメントを再検証します。`--force-update`はセグメントキャッシュを使用しながら、各ロケールのファイル処理を再実行します。`--force`はファイルトラッキングをクリアし、API翻訳のセグメントキャッシュ読み取りをバイパスします。設定されたすべてのモデルがMarkdownセグメントのAST検証に失敗した場合、`translate-docs`はセグメントを段階的に分割し、より小さな部分を再試行できます（`docs[].segmentSplitting.qualityRetrySplit`、デフォルトでオン）。フラグの完全な表については、[ドキュメント — キャッシュの動作とフラグ](/ja/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)を参照してください。
 
 **バッチプロンプト形式:** `translate-docs --prompt-format`は、`LlmClient.translateDocumentBatch`のみのXML（`<seg>` / `<t>`）またはJSON配列/オブジェクトの形式を選択します。抽出、プレースホルダー、検証は変更されません。[バッチプロンプト形式](/ja/guide/documents/cli-options#batch-prompt-format)を参照してください。
@@ -251,10 +255,10 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルのフォールバック**: 解決されたリスト内の各モデルを順番に試し、リクエストや解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決されたチェーンを持ちます。設定されている場合は最初に `localeModels(locale)`、次に `uiModels` (UIパイプラインのみ)、次に `translationModels` となります。ドキュメント、JSON、SVGの翻訳は、非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models` コマンドは、設定されたIDごとに単一モデルのクライアントを1つ構築します (`translationModels`、`uiModels`、`localeModels` の和集合、`translationModels: [id]`、フォールバックなし)。これにより、各モデルを個別に計測し価格を評価できます。
-- **リクエストタイムアウト**: アクティブなプロバイダーの `requestTimeoutMs` (デフォルト30秒) が `AbortSignal.timeout` を介して各リクエストを中止します。CLIが `check-models` (任意のプロバイダー) のプロバイダーのモデルリストを読み込む際、同じ値が `GET /models` に適用されます。不明なモデルIDを破棄するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
-- **OpenRouterの追加機能** (`openrouter` がアクティブな場合のみ): `provider` リクエストフィールドを介したスループットルーティング、`HTTP-Referer` / `X-Title` ヘッダー、および `usage.cost` から読み取られた正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されますが、正確なコストはプロバイダーがそれを返した場合にのみ報告されます。
-- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONをファイルに追加します (プログラム的)。CLIの `--debug-failed` は、失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対して、システム/ユーザープロンプト、生のアシスタント応答、および検証エラーを含む `FAILED-TRANSLATION` ファイルを `cacheDir` の下に書き込みます。プロバイダーAPI / 空のボディの失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
+- **モデルフォールバック**: 解決済みリスト内の各モデルを順番に試行し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決済みチェーンを持ちます。設定されている場合は `localeModels(locale)` が最初、次に `uiModels`（UIパイプラインのみ）、次に `translationModels` となります。ドキュメント、JSON、SVGの翻訳は非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models` コマンドは、設定された各IDごとに単一モデルのクライアントを構築します（`translationModels`、`uiModels`、`localeModels` の和集合、`translationModels: [id]`、フォールバックなし）。これにより各モデルを個別に計測および価格評価できます。
+- **リクエストタイムアウト**: アクティブなプロバイダーの `requestTimeout`（秒）または `requestTimeoutMs`、それ以外の場合は設定ファイルの最上位にある同じキー（デフォルト45秒）が、`AbortSignal.timeout` を介して各リクエストを中止します。CLIが `check-models`（任意のプロバイダー）用にプロバイダーのモデルリストを読み込む際、`GET /models` にも同じ値が適用されます。未知のモデルIDを除外するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合のみ実行されます。
+- **OpenRouter拡張機能**（`openrouter` がアクティブな場合のみ）: `provider` リクエストフィールドによるスループットルーティング、`HTTP-Referer` / `X-Title` ヘッダー、および `usage.cost` から読み取った正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されます。プロバイダーが `usage.cost` を省略した場合、USDコストは `providers.<name>.modelPricing` またはプロバイダー全体の `pricing` デフォルトから計算され、`api_calls` 行に保存されます。プロバイダーから報告されたコストは置き換えられません。
+- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONをファイルに追記します（プログラマティック）。CLIの `--debug-failed` は、`cacheDir` 配下に `FAILED-TRANSLATION` ファイルを書き出します。これには、失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対するシステム/ユーザープロンプト、生のアシスタント応答、および検証エラーが含まれます。プロバイダーAPI / 空ボディの失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
 
 <a id="config-loading"></a>
 ### 設定の読み込み
@@ -423,7 +427,8 @@ src/
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
-│   └── matcher.ts                  Term hint extraction for prompts
+│   ├── matcher.ts                  Term hint extraction for prompts
+│   └── translation-context.ts      contextFiles loader and guidance fingerprints
 │
 ├── runtime/
 │   ├── index.ts                    Runtime re-exports

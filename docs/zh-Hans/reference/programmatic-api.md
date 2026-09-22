@@ -47,7 +47,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `splitTranslatableIntoBatches` | 将片段分组为适合 LLM 的批次。 |
 | `validateTranslation` | 翻译后的结构检查（**async** — 必须等待）。 |
 | `resolveDocumentationOutputPath` | 解析已翻译文档的输出文件路径。 |
-| `Glossary` / `GlossaryMatcher` | 加载并应用翻译词汇表。 |
+| `Glossary` / `GlossaryMatcher` | 加载并应用翻译术语表，包括可选的术语 `Context` 说明。 |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | 加载 `glossary.contextFiles` 和用于缓存失效的指纹指引。 |
 | `runTranslateUI` | 程序化翻译 UI 入口点。 |
 | `writeInitConfigFile` | 编写初始配置 JSON（`template`，可选的 `providerKey` 默认为 `openrouter`）。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` 所用各内置预设的初始 `translationModels`。 |

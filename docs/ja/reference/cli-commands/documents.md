@@ -25,6 +25,8 @@ markdown、MDX、`.astro`、オプションのDocusaurusカタログJSON（`docu
 
 ソースファイルの更新後、コマンドは各ロケールの既存の翻訳済みマークダウンも走査します（`translate-docs`と同じ`docsOutput`パスマッピング）。ドキュメントの順序で一致するATX見出しに**英語**の見出しIDをコピーします（翻訳されたタイトルのスラッグ化は決して行いません）。また、見出し途中の`{#id}` / `{/* #id */}`（または孤立したHTML `<a id>`）をDocusaurusまたは選択したスタイルが期待する形式に戻します。翻訳済みファイルが欠落している場合はスキップされます。`--remove`は、不適切な位置にある行内のトークンを含め、それらの翻訳済みファイルからも見出しIDを削除します。
 
+翻訳済みファイルの見出しIDが再配置または修復されると、英語ソースと新旧の翻訳コンテンツのセグメント数が一致している場合に限り、対応するキャッシュ済み翻訳セグメント（英語ソースハッシュをキーとする）も更新されます。セグメント数が一致しない場合は、そのファイルとロケールはスキップされます。その後、`sync --force-update`によって更新されたキャッシュ行からファイルが再構築されます。
+
 **主なオプション:** `-p` / `--path`、`-f` / `--file`、`--slug-style`、`--remove`、`--dry-run`
 
 `--slug-style`: `github`（デフォルト、doctoc / anchor-markdown-header）、`bitbucket`、`gitlab`、`pymdown`、`azure-devops`、`mdx-comment`（Docusaurus `{/* #… */}`サフィックス）。`pymdown`、オプションの`--pymdown-case`、`--pymdown-normalize`、`--pymdown-percent-encode` / `--no-pymdown-percent-encode`。`--remove`は`--pymdown-*`と組み合わせることはできません。

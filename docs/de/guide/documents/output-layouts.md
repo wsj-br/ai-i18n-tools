@@ -75,10 +75,10 @@ Docusaurus-Shell-JSON aus `docusaurusCatalogDir` und andere JSON-Artefakte unter
 
 **Aliase** (gleiche `doc-system`-Engine, voreingestelltes `localeSubpath` und Standardwerte):
 
-- `docsOutput.style = "docusaurus"` – `localeSubpath` ist standardmäßig `docusaurus-plugin-content-docs/current` (Docusaurus i18n-Plugin-Layout).
-- `docsOutput.style = "astro-starlight"` – `localeSubpath` ist standardmäßig `""`; `localePathLowercase` ist standardmäßig `true`. Übersetzte Seiten unter `{outputDir}/{locale}/`, passend zu [Starlight](https://starlight.astro.build/guides/i18n/), wenn Englisch im Inhaltsstamm liegt und `outputDir` gleich `docsRoot` ist. Wird auch für einfache Astro-Locale-Seiten verwendet (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) – siehe [Astro-Website-Seiten](/de/guide/ui-strings/astro-website#pages-parse-and-replace).
-- `docsOutput.style = "vitepress"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; BCP-47-Locale-Ordnernamen bleiben erhalten (`localePathLowercase` ist standardmäßig `false`). Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` – gleiches Layout wie `doc-system` mit leerem `localeSubpath`; englische Quelle liegt unter einem Locale-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/de/guide/integrations/nextra).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` ist standardmäßig `docusaurus-plugin-content-docs/current` (Docusaurus i18n-Plugin-Layout).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` ist standardmäßig `""`; `localePathLowercase` ist standardmäßig `true`. Übersetzte Seiten unter `{outputDir}/{locale}/`, was [Starlight](https://starlight.astro.build/guides/i18n/) entspricht, wenn Englisch im Content-Root liegt und `outputDir` gleich `docsRoot` ist. Wird auch für einfache Astro-Locale-Seiten verwendet (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — siehe [Astro-Website-Seiten](/de/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` — gleiches Layout wie `doc-system` mit leerem `localeSubpath`; Namen der BCP-47-Locale-Ordner werden beibehalten (`localePathLowercase` ist standardmäßig `false`). Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — gleiches Layout wie `doc-system` mit leerem `localeSubpath`; die englische Quelle befindet sich in einem Locale-Ordner (z. B. `content/en/`). Siehe [Nextra-Integration](/de/guide/integrations/nextra).
 
 Docusaurus-Voreinstellung (primäre Dokumentationsseiten):
 

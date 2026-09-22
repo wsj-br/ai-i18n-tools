@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# 从一开始就为国际化设计
+## 从一开始就进行国际化设计
 
 在任何屏幕截图存在之前选择正确的目录布局，是在后续处理特定于区域设置的资源时最能减轻痛苦的因素。在提交了数十张屏幕截图后才重新设计布局，意味着需要重构路径并更新每个 markdown 引用。
 
@@ -105,7 +105,7 @@ public/img/screenshots/en-GB/screenshot.png
 ---
 
 <a id="decision-guide"></a>
-# 决策指南
+## 决策指南
 
 **该资产是否为带有可翻译文本或标签的SVG？**
   - **是** → [Web 应用程序 SVG](/zh-Hans/guide/svg-translation/translated-svg-web-app) 或 [同位置 SVG](/zh-Hans/guide/svg-translation/translated-svg-colocated)

@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI — Workflows et statut
+<a id="cli--workflows--reporting"></a>
+# CLI — Flux de travail et rapports
 
 <a id="sync"></a>
 ### `sync`
@@ -35,3 +35,16 @@ Affiche les statistiques du cache de documentation et de `strings.json` (mêmes 
 **Options clés :** `--max-columns`
 
 **Voir aussi :** [Statistiques du tableau de bord](/fr/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**Synopsis :** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+Affiche les statistiques d'appels d'API de modèle enregistrées (appels, jetons et un coût unique en USD). Le coût est le `usage.cost` du fournisseur lorsqu'il est présent, sinon le montant de `providers.<name>.modelPricing` ou la valeur par défaut `providers.<name>.pricing` à l'échelle du fournisseur (stockée lors de nouveaux appels ; appliquée au moment du rapport pour les lignes plus anciennes qui n'ont pas de coût stocké). Mêmes agrégats que Tableau de bord de traduction → Utilisation et coûts. Les lignes de détail de plus de sept jours calendaires UTC sont regroupées en `api_totals` mensuels ; les rapports combinent les deux tables. `--since` accepte `YYYY-MM-DD`, une durée (`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`) ou une fenêtre de mois calendaire (`1mo`, `2mo`, `3mo`). `--clear` supprime les lignes de détail et les totaux mensuels (`--older-than` est `1mo`, `2mo`, `3mo`, `6mo`, `1y` ou `all` ; `--dry-run` signale le nombre sans supprimer).
+
+**Options clés :** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**Voir aussi :** [Utilisation et coûts du tableau de bord](/fr/guide/translation-dashboard/usage)

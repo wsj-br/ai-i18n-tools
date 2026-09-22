@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## 標準的なブートストラップ
+
+最小限の`src/i18n.ts`でi18nextヘルパーを構成します。`SOURCE_LOCALE`は`ai-i18n-tools.config.json`内の`sourceLocale`と一致している必要があります。以下のインポートパスは、このファイルが`locales/`と同じディレクトリに配置されていることを前提としています。
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+言語が変更されたら、`await loadLocale(next)`を呼び出してから`await i18n.changeLanguage(next)`を呼び出します。React（`initReactI18next`）、ソースロケールの複数形（`sourcePluralFlatBundle`）、および`applyDirection`については、[i18nextのワイヤリング](/ja/guide/ui-strings/i18next-runtime)で説明しています。
+
 <a id="quick-reference"></a>
 ## クイックリファレンス
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-通常のアプリケーションエントリポイントとして `setupKeyAsDefaultT` を使用してください（キーのトリミング＋複数形 `wrapT`＋オプションの `translate-ui` `{sourceLocale}.json`）。アプリケーションの配線において、単独で `wrapI18nWithKeyTrim` を呼び出すことは**非推奨**です。
+[標準的なブートストラップ](#typical-bootstrap)では、これらのファクトリを構成する方法を示しています。通常のアプリのエントリポイントとして`setupKeyAsDefaultT`を使用します（キートリム + 複数形`wrapT` + オプションの`translate-ui` `{sourceLocale}.json`）。アプリケーションのワイヤリングにおいて、`wrapI18nWithKeyTrim`のみを呼び出すことは**非推奨**です。
 
 `sourcePluralFlatBundle`には、`addResourceBundle()`を持つi18nextインスタンスが必要です。`lng`フィールドは、ブートストラップファイル内の`SOURCE_LOCALE`および`ai-i18n-tools.config.json`内の`sourceLocale`と一致する必要があります。
 

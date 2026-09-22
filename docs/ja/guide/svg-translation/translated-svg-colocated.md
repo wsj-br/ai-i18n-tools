@@ -4,7 +4,7 @@
 翻訳されたSVGイラストが、各ロケールのコンテンツディレクトリにある翻訳されたドキュメント（[併置されたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots)と同じ場所）と一緒に表示されるドキュメントシステムサイトで使用します。Docusaurusプリセットが主な例です。
 
 <a id="config"></a>
-### 設定
+## 設定
 
 ```json
 "features": {
@@ -29,7 +29,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 ```
 
 <a id="source-markdown"></a>
-### ソースMarkdown
+## ソースマークダウン
 
 すべてのロケールのドキュメントは同じ相対パスを使用します。
 
@@ -42,12 +42,12 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 英語のソースドキュメントと翻訳済み出力ドキュメントはパスが同一のため、`regexAdjustments`ルールは必要ありません。
 
 <a id="svg-source-location"></a>
-### SVGソースの場所
+## SVGソースの場所
 
 推奨：ソースSVGをen-GB用PNGと同じ場所である`documentation/static/assets/`内に保存してください。これにより、すべてのドキュメントアセットが1か所にまとまり、同じ`docs/assets`シンボリックリンクで両方をカバーできます。`svg.sourcePath`のエントリは、その後`documentation/static/assets/name.svg`を指すようにします。
 
 <a id="pathtemplate-placeholders"></a>
-### `pathTemplate` プレースホルダー
+## `pathTemplate`プレースホルダー
 
 | プレースホルダー              | 値                                                  |
 |--------------------------|--------------------------------------------------------|
@@ -63,7 +63,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 [SVG設定テーブル](/ja/reference/configuration#svg)の完全なリファレンス。
 
 <a id="implementation-example"></a>
-### 実装例
+## 実装例
 
 [duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 内の `pathTemplate` を含むネストされた `svg` ブロック。`documentation/static/assets/` 内のソースSVG（例: [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)）。`translate-svg` はロケールごとのファイルをコロケーションされたPNGの隣の `documentation/i18n/<locale>/…/current/assets/` に書き込みます。ドキュメントは `../assets/` パス経由でそれらを埋め込み（例: [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)）、`regexAdjustments` ブリッジは不要です。
 

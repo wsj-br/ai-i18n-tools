@@ -2,16 +2,17 @@
 layout: home
 title: ai-i18n-tools
 description: >-
-  CLI y kit de herramientas para internacionalizar aplicaciones y sitios de
-  documentación de JavaScript/TypeScript usando LLM.
+  CLI y conjunto de herramientas para internacionalizar aplicaciones
+  JavaScript/TypeScript y sitios de documentación con el proveedor de LLM de su
+  elección.
 hero:
   name: ai-i18n-tools
   text: Traduce aplicaciones y documentos con cualquier LLM
   tagline: >-
-    Un archivo de configuración, tres modos de traducción y el proveedor que
-    elijas: OpenAI, Anthropic, Gemini, OpenRouter, Ollama o cualquier API
-    compatible con OpenAI. Cambia de modelo por proyecto o por idioma sin
-    reescribir tu código base.
+    Extraiga cadenas t(), traduzca Markdown, MDX, paquetes JSON y etiquetas SVG
+    — todo desde una única configuración, con OpenAI, Anthropic, Gemini,
+    OpenRouter, Ollama o cualquier API compatible con OpenAI. Cambie de modelo
+    por proyecto o por configuración regional sin reescribir su base de código.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: Logotipo de ai-i18n-tools
@@ -102,7 +103,7 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 - [**Proveedores y modelos**](/es/guide/providers-and-models) — preajustes, cadenas de respaldo y anulaciones de `-P`
 - [**Referencia de la CLI**](/es/reference/cli-commands/) — cada comando, bandera y flujo de trabajo
 - [**Configuración**](/es/reference/configuration) — esquema completo de `ai-i18n-tools.config.json`
-- [**Ejemplos**](/es/examples) — nueve proyectos de demostración ejecutables con `npx degit`
-- [**Arquitectura**](/es/reference/architecture) — elementos internos, API programática y puntos de extensión
+- [**Ejemplos**](/es/examples) — doce proyectos de demostración ejecutables con `npx degit`
+- [**Arquitectura**](/es/reference/architecture) — funcionamiento interno, API programática y puntos de extensión
 
 ¿Va a integrar el paquete en su propio proyecto? Empiece con [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). El [README del repositorio](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) es una breve página de inicio de GitHub/npm que enlaza aquí para obtener más detalles.

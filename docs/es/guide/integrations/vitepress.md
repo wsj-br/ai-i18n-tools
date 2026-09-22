@@ -216,8 +216,8 @@ Añada `ai-i18n-tools` como **devDependency** en el proyecto VitePress (consulte
 
 **Reglas de autoría**
 
-- Enlaces de documentos entre páginas: use **rutas del sitio** (`/guide/…`, `/reference/…`) en markdown en inglés bajo `docs/`, o rutas `docs/guide/…` al crear un README que se sincronizará con `docs/index.md` en otro proyecto.
-- Demos ejecutables, `LICENSE` y otros archivos del repositorio: use **URL completas de GitHub** en `README.md` y en la documentación (consulte [README y la página de inicio de la documentación](#readme-as-the-docs-homepage)).
-- **No** edite manualmente los enlaces en `docs/<locale>/` — regenere con `sync` / `translate-docs`.
+- Enlaces de documentación entre páginas: use **rutas del sitio** (`/guide/…`, `/reference/…`) en Markdown en inglés bajo `docs/`, o rutas `docs/guide/…` al redactar un README que se sincronizará con `docs/index.md` en otro proyecto.
+- Demos ejecutables, `LICENSE` y otros archivos del repositorio: use **URL completas de GitHub** en `README.md` y en la documentación (consulte el [README y la página principal de la documentación](#readme-and-the-docs-homepage)).
+- **No** edite manualmente los enlaces en `docs/<locale>/` — regenérelos con `sync` / `translate-docs`.
 
 Consulte también [Reescritura de enlaces](/es/guide/images-and-screenshots/link-rewriting) (plano vs VitePress) y [Configuración — `docsOutput`](/es/reference/configuration#docsoutput).

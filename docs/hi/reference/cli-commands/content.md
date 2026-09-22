@@ -1,5 +1,5 @@
-<a id="cli--other-content"></a>
-# सीएलआई — अन्य सामग्री
+<a id="cli--json--svg"></a>
+# सीएलआई — JSON और SVG
 
 <a id="translate-json"></a>
 ### `translate-json`

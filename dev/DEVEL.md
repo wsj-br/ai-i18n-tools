@@ -22,6 +22,7 @@
   - [Testing](#testing)
     - [Testing Placeholders Handling](#testing-placeholders-handling)
     - [Test the translation end-to-end on the ai-i18n-tools documentation and the example projects](#test-the-translation-end-to-end-on-the-ai-i18n-tools-documentation-and-the-example-projects)
+    - [Usage dashboard fixture](#usage-dashboard-fixture)
   - [Publishing documentation to GitHub Pages](#publishing-documentation-to-github-pages)
     - [One-time setup: GitHub Pages](#one-time-setup-github-pages)
     - [How deployment is triggered](#how-deployment-is-triggered)
@@ -339,7 +340,7 @@ examples/         Example projects — see examples/README.md
 scripts/          Mainstream workflow helpers (build, docs, release, dependency upgrade)
 ```
 
-Workspace packages are listed in `pnpm-workspace.yaml`: root, `examples/console-app`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, and `examples/vitepress-docs`. Standalone fixtures (`multi-provider`, `test-markdown`) install `ai-i18n-tools` from npm when copied with `degit`.
+Workspace packages are listed in `pnpm-workspace.yaml`: root, `examples/console-app`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, `examples/vitepress-docs`, and the other workspace examples including `examples/intlayer-migration`. Standalone fixtures (`multi-provider`, `test-markdown`) install `ai-i18n-tools` from npm when copied with `degit`.
 
 ## Running Examples
 
@@ -387,6 +388,20 @@ pnpm test:watch        # re-run on changes
 pnpm test:live         # opt-in OpenRouter smokes under tests/live/ (needs OPENROUTER_API_KEY in repo-root `.env`)
 pnpm test:live -- --verbose   # same, plus prompt / model return / check-detail dumps
 ```
+
+### Usage dashboard fixture
+
+After `pnpm build`, seed two years of billed API-call rows (mixed providers, operations, locales, accepted/discarded, reported vs missing cost). By default the last seven UTC calendar days stay in `api_calls` and older rows are rolled into `api_totals`:
+
+```bash
+pnpm seed:usage -- --clear
+pnpm seed:usage -- --dry-run
+pnpm seed:usage -- --no-consolidate
+ai-i18n-tools usage --since 2mo
+pnpm i18n:dashboard
+```
+
+`--clear` wipes existing usage first. `--months` (default **24**) and `--seed` control span and reproducibility. Use `--cache-dir` to write somewhere other than `.translation-cache`.
 
 
 

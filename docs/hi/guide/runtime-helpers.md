@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## सामान्य बूटस्ट्रैप
+
+एक न्यूनतम `src/i18n.ts` i18next हेल्पर्स को संयोजित करता है। `SOURCE_LOCALE` को `ai-i18n-tools.config.json` में `sourceLocale` से मेल खाना चाहिए। नीचे दिए गए इम्पोर्ट पाथ यह मानते हैं कि यह फ़ाइल `locales/` के बगल में स्थित है।
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+भाषा बदलने पर, पहले `await loadLocale(next)` और फिर `await i18n.changeLanguage(next)` को कॉल करें। React (`initReactI18next`), स्रोत-लोकेल बहुवचन (`sourcePluralFlatBundle`), और `applyDirection` को [Wire i18next](/hi/guide/ui-strings/i18next-runtime) में कवर किया गया है।
+
 <a id="quick-reference"></a>
 ## त्वरित संदर्भ
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-सामान्य ऐप एंट्री पॉइंट के रूप में `setupKeyAsDefaultT` का उपयोग करें (की-ट्रिम + बहुवचन `wrapT` + वैकल्पिक `translate-ui` `{sourceLocale}.json`)। एप्लिकेशन वायरिंग के लिए अकेले `wrapI18nWithKeyTrim` को कॉल करना **अप्रचलित** है।
+[सामान्य बूटस्ट्रैप](#typical-bootstrap) दिखाता है कि ये फ़ैक्ट्रियाँ कैसे संयोजित होती हैं। सामान्य ऐप एंट्री पॉइंट के रूप में `setupKeyAsDefaultT` का उपयोग करें (की-ट्रिम + बहुवचन `wrapT` + वैकल्पिक `translate-ui` `{sourceLocale}.json`)। एप्लिकेशन वायरिंग के लिए अकेले `wrapI18nWithKeyTrim` को कॉल करना **डिप्रीकेटेड** है।
 
 `sourcePluralFlatBundle` को `addResourceBundle()` के साथ एक i18next इंस्टेंस की आवश्यकता है। `lng` फ़ील्ड आपके बूटस्ट्रैप फ़ाइल में `SOURCE_LOCALE` और `ai-i18n-tools.config.json` में `sourceLocale` से मेल खाना चाहिए।
 

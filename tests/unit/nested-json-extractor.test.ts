@@ -91,6 +91,36 @@ describe("NestedJsonExtractor", () => {
     expect(JSON.parse(out)).toEqual({ items: ["Eins", "Zwei"] });
   });
 
+  it("preserves i18next {{name}} interpolation tokens through extract and reassemble", () => {
+    const json = JSON.stringify({
+      greeting: "Hello {{name}}",
+      items_one: "{{count}} item",
+      items_other: "{{count}} items",
+    });
+    const segments = extractor.extract(json, "en/common.json", {
+      mode: "denylist",
+      skipKeys: [],
+      translateKeys: [],
+    });
+    const byPath = new Map(segments.map((s) => [s.jsonKey!, s]));
+    expect(byPath.get("greeting")?.content).toBe("Hello {{name}}");
+    expect(byPath.get("items_one")?.content).toBe("{{count}} item");
+    expect(byPath.get("items_other")?.content).toBe("{{count}} items");
+    const out = extractor.reassemble(
+      segments,
+      new Map([
+        [byPath.get("greeting")!.hash, { text: "Hallo {{name}}" }],
+        [byPath.get("items_one")!.hash, { text: "{{count}} Eintrag" }],
+        [byPath.get("items_other")!.hash, { text: "{{count}} Einträge" }],
+      ])
+    );
+    expect(JSON.parse(out)).toEqual({
+      greeting: "Hallo {{name}}",
+      items_one: "{{count}} Eintrag",
+      items_other: "{{count}} Einträge",
+    });
+  });
+
   it("reassemble throws when extract was not called first", () => {
     const fresh = new NestedJsonExtractor();
     expect(() => fresh.reassemble([], new Map())).toThrow(/call extract\(\) first/);

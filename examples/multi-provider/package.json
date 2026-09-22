@@ -7,17 +7,17 @@
     "build": "rm -rf .translation-cache translated-docs/",
     "translate:openai": "ai-i18n-tools translate-docs -P openai --force",
     "translate:anthropic": "ai-i18n-tools translate-docs -P anthropic --force",
-    "translate:nvidia": "ai-i18n-tools translate-docs -P nvidia --force",
+    "translate:openrouter": "ai-i18n-tools translate-docs -P openrouter --force",
     "translate:deepseek": "ai-i18n-tools translate-docs -P deepseek --force",
-    "check-models:all": "ai-i18n-tools check-models -P openai && ai-i18n-tools check-models -P anthropic && ai-i18n-tools check-models -P nvidia && ai-i18n-tools check-models -P deepseek",
+    "check-models:all": "ai-i18n-tools check-models -P openai && ai-i18n-tools check-models -P anthropic && ai-i18n-tools check-models -P openrouter && ai-i18n-tools check-models -P deepseek",
     "check-models:openai": "ai-i18n-tools check-models -P openai",
     "check-models:anthropic": "ai-i18n-tools check-models -P anthropic",
-    "check-models:nvidia": "ai-i18n-tools check-models -P nvidia",
+    "check-models:openrouter": "ai-i18n-tools check-models -P openrouter",
     "check-models:deepseek": "ai-i18n-tools check-models -P deepseek",
     "clean": "rm -rf .translation-cache translated-docs/"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.8.12"
+    "ai-i18n-tools": "^1.9.0"
   },
   "engines": {
     "node": ">=22.16.0"

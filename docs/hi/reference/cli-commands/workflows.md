@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# सीएलआई — वर्कफ़्लो और स्थिति
+<a id="cli--workflows--reporting"></a>
+# CLI — वर्कफ़्लो और रिपोर्टिंग
 
 <a id="sync"></a>
 ### `sync`
@@ -34,4 +34,17 @@
 
 **मुख्य विकल्प:** `--max-columns`
 
-**यह भी देखें:** [डैशबोर्ड आँकड़े](/hi/guide/translation-dashboard/statistics)
+**यह भी देखें:** [डैशबोर्ड सांख्यिकी](/hi/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**सारांश:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+रिकॉर्ड किए गए मॉडल API-कॉल आँकड़े (कॉल, टोकन और एक USD लागत) प्रिंट करें। लागत प्रदाता की `usage.cost` है जब मौजूद हो, अन्यथा `providers.<name>.modelPricing` से राशि या प्रदाता-व्यापी `providers.<name>.pricing` डिफ़ॉल्ट (नए कॉल पर संग्रहीत; पुरानी पंक्तियों के लिए रिपोर्ट समय पर लागू होती है जिनमें कोई संग्रहीत लागत नहीं है)। अनुवाद डैशबोर्ड → उपयोग और लागत के समान एग्रीगेट्स। सात UTC कैलेंडर दिनों से पुरानी विवरण पंक्तियों को मासिक `api_totals` में रोल किया जाता है; रिपोर्ट दोनों तालिकाओं को जोड़ती है। `--since` `YYYY-MM-DD`, एक अवधि (`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`), या एक कैलेंडर-माह विंडो (`1mo`, `2mo`, `3mo`) स्वीकार करता है। `--clear` विवरण पंक्तियों और मासिक योगों को हटाता है (`--older-than` `1mo`, `2mo`, `3mo`, `6mo`, `1y`, या `all` है; `--dry-run` हटाए बिना गिनती की रिपोर्ट करता है)।
+
+**मुख्य विकल्प:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**यह भी देखें:** [डैशबोर्ड उपयोग और लागत](/hi/guide/translation-dashboard/usage)

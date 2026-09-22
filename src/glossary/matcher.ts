@@ -13,4 +13,12 @@ export class GlossaryMatcher {
   ): string[] {
     return this.glossary.findTermsInText(text, locale, opts);
   }
+
+  findTermHintsInText(
+    text: string,
+    locale: string,
+    opts?: { skipUiAbbreviations?: boolean }
+  ): ReturnType<Glossary["findTermHintsInText"]> {
+    return this.glossary.findTermHintsInText(text, locale, opts);
+  }
 }

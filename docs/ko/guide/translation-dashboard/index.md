@@ -3,8 +3,8 @@
 
 번역 대시보드는 프로젝트의 번역 데이터를 검사하고 편집하기 위한 로컬 웹 UI입니다. 다음 세 가지 저장소에서 데이터를 읽습니다.
 
-- **SQLite 캐시** (`cacheDir`) — 문서 세그먼트 번역, 실패 기록, 마크다운 문제 스캔
-- **`strings.json`** — UI 문자열 카탈로그(일반 문자열 및 복수 그룹)
+- SQLite 캐시(`cacheDir`) — 문서 세그먼트 번역, 실패 기록, 마크다운 문제 스캔, 청구된 API 호출 사용량
+- **`strings.json`** — UI 문자열 카탈로그(일반 문자열 및 복수형 그룹)
 - **사용자 용어집 CSV** (`glossary.userGlossary`) — `translate-ui` 및 `proofread-ui`에 대한 용어 힌트
 
 번역 실행 후 이를 사용하여 문제를 찾거나, 잘못된 출력을 재정의하거나, 캐시 적용 범위를 검토할 수 있습니다. 수동으로 SQLite 또는 JSON을 파고들 필요가 없습니다.
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-기본 수신 포트는 **8675**입니다. 해당 포트를 사용할 수 없는 경우, 서버는 다음 포트를 시도하며(최대 1000회 시도), 선택한 포트를 로그에 기록합니다. 더 이상 사용되지 않는 별칭 `editor`은 여전히 작동하지만 경고를 출력합니다. 대신 `dashboard`을 사용하는 것이 좋습니다.
+기본 수신 대기 포트는 **8675**입니다. 해당 포트를 사용할 수 없는 경우, 서버는 다음 포트를 시도하고(최대 1000회 시도) 선택한 포트를 로그에 기록합니다. `dash`은(는) 동일한 별칭입니다. 지원 중단된 별칭 `editor`은(는) 여전히 작동하지만 경고를 출력합니다 — `dashboard` 또는 `dash`을(를) 사용하는 것을 권장합니다.
 
 대시보드 UI는 CLI와 동일한 로케일 결정 방식을 사용합니다: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS 로케일. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
@@ -36,6 +36,7 @@ ai-i18n-tools dashboard
 | 복수형 수정 (`one`, `other`, …) | **UI 복수형** | [UI 문자열 및 복수형](/ko/guide/translation-dashboard/ui-strings) |
 | UI 번역을 위한 용어 잠금 | **용어집** | [용어집](/ko/guide/translation-dashboard/glossary) |
 | 캐시 적용 범위 및 모델 사용량 확인 | **통계** | [통계](/ko/guide/translation-dashboard/statistics) |
+| API 호출 토큰 및 비용 보기 | **사용량 및 비용** | [사용량 및 비용](/ko/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## 편집 후

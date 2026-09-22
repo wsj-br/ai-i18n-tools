@@ -4,7 +4,7 @@
 用於文件系統網站，翻譯後的SVG插圖必須與翻譯後的文件一起出現在每個地區設定的內容目錄中 — 与 [同位置的螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots) 相同。Docusaurus 預設設定是主要範例。
 
 <a id="config"></a>
-### 設定
+## 設定
 
 ```json
 "features": {
@@ -29,7 +29,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 ```
 
 <a id="source-markdown"></a>
-### 原始 Markdown
+## 來源 Markdown
 
 所有語系中的文件皆使用相同的相對路徑：
 
@@ -42,12 +42,12 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 不需要 `regexAdjustments` 規則，因為英文原始文件與翻譯後輸出文件使用相同的路徑。
 
 <a id="svg-source-location"></a>
-### SVG 原始檔位置
+## SVG 來源位置
 
 建議：將原始 SVG 檔案儲存在 `documentation/static/assets/`，與 en-GB 的 PNG 檔案放在一起。這可將所有文件資源集中管理，且相同的 `docs/assets` 符號連結即可同時涵蓋兩者。`svg.sourcePath` 項目接著指向 `documentation/static/assets/name.svg`。
 
 <a id="pathtemplate-placeholders"></a>
-### `pathTemplate` 標記
+## `pathTemplate` 預留位置
 
 | 標記                     | 值                                                     |
 |--------------------------|--------------------------------------------------------|
@@ -63,7 +63,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 在[SVG 配置表](/zh-Hant/reference/configuration#svg)中查看完整參考。
 
 <a id="implementation-example"></a>
-### 實作範例
+## 實作範例
 
 [duplistatus](https://github.com/wsj-br/duplistatus) — [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json) 中的巢狀 `svg` 區塊包含 `pathTemplate`；來源 SVG 位於 `documentation/static/assets/`（例如 [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)）；`translate-svg` 會將各語系檔案寫入 `documentation/i18n/<locale>/…/current/assets/`，與共置的 PNG 並列；文件透過 `../assets/` 路徑嵌入它們（例如 [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)），無需 `regexAdjustments` 橋接。
 

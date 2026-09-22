@@ -87,7 +87,35 @@ function guideSidebar(t: ThemeCatalog) {
               ],
             },
             { text: t.sidebar.json, link: "/guide/json" },
+            {
+              text: t.sidebar.svgTranslation,
+              collapsed: true,
+              link: "/guide/svg-translation/",
+              items: [
+                { text: t.sidebar.overview, link: "/guide/svg-translation/" },
+                {
+                  text: t.sidebar.svgWebAppFlat,
+                  link: "/guide/svg-translation/translated-svg-web-app",
+                },
+                {
+                  text: t.sidebar.svgColocated,
+                  link: "/guide/svg-translation/translated-svg-colocated",
+                },
+                {
+                  text: t.sidebar.svgTroubleshooting,
+                  link: "/guide/svg-translation/troubleshooting",
+                },
+              ],
+            },
           ],
+        },
+        {
+          text: t.sidebar.glossary ?? "Glossary",
+          link: "/guide/glossary",
+        },
+        {
+          text: t.sidebar.migratingFromIntlayer ?? "Migrating from Intlayer",
+          link: "/guide/migrating-from-intlayer",
         },
         {
           text: t.sidebar.integrations,
@@ -127,23 +155,6 @@ function guideSidebar(t: ThemeCatalog) {
             },
           ],
         },
-        {
-          text: t.sidebar.svgTranslation,
-          collapsed: true,
-          link: "/guide/svg-translation/",
-          items: [
-            { text: t.sidebar.overview, link: "/guide/svg-translation/" },
-            {
-              text: t.sidebar.svgWebAppFlat,
-              link: "/guide/svg-translation/translated-svg-web-app",
-            },
-            {
-              text: t.sidebar.svgColocated,
-              link: "/guide/svg-translation/translated-svg-colocated",
-            },
-            { text: t.sidebar.svgTroubleshooting, link: "/guide/svg-translation/troubleshooting" },
-          ],
-        },
         { text: t.sidebar.providers, link: "/guide/providers-and-models" },
         { text: t.sidebar.runtimeHelpers, link: "/guide/runtime-helpers" },
         {
@@ -169,6 +180,10 @@ function guideSidebar(t: ThemeCatalog) {
             {
               text: t.sidebar.dashboardStatistics,
               link: "/guide/translation-dashboard/statistics",
+            },
+            {
+              text: t.sidebar.dashboardUsage ?? "Usage & costs",
+              link: "/guide/translation-dashboard/usage",
             },
           ],
         },

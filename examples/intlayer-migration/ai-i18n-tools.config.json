@@ -1,0 +1,29 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "es", "pt-BR"],
+  "concurrency": 4,
+  "features": {
+    "translateUIStrings": true,
+    "translateDocs": false,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "google/gemini-2.5-flash",
+        "openai/gpt-4o-mini"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter",
+  "ui": {
+    "sourceRoots": ["src"],
+    "stringsJson": "src/locales/strings.json",
+    "flatOutputDir": "src/locales"
+  },
+  "languagesManifestPath": "src/locales/ui-languages.json",
+  "cacheDir": ".translation-cache"
+}

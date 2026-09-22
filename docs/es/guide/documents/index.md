@@ -21,7 +21,7 @@ Los archivos [SVG](/es/guide/svg-translation/) se traducen a través de [`transl
 
 Los paquetes JSON de interfaz de usuario anidados arbitrarios no relacionados con las cadenas de shell/tema de un framework de documentación pertenecen a la canalización [JSON](/es/guide/json), no a `docs[]`.
 
-Para lograr una **coherencia terminológica** entre la interfaz de usuario y la documentación, configure `glossary.uiGlossary` en la ruta de su `strings.json`; `translate-docs` reutiliza las traducciones de interfaz de usuario existentes como sugerencias en las indicaciones del LLM cuando aparecen términos coincidentes en un segmento. La opción `glossary.userGlossary` añade anulaciones de CSV para los términos del producto (compartidos con `translate-ui` y `proofread-ui`). Las abreviaturas compactas de etiquetas de interfaz de usuario utilizadas para ajustarse a columnas estrechas (por ejemplo, `Size` → `Tam`) permanecen disponibles para la traducción de la interfaz de usuario, pero se omiten de las sugerencias del glosario del documento. Genere un CSV inicial con `glossary-generate`, edite las filas en la pestaña **Glosario** del Panel de traducción, o consulte [Configuración — `glossary`](/es/reference/configuration#glossary) y [Glosario](/es/guide/translation-dashboard/glossary).
+Para garantizar la **consistencia de la terminología** entre la interfaz de usuario y la documentación, establezca `glossary.uiGlossary` en la ruta de `strings.json` — `translate-docs` reutiliza las traducciones existentes de la interfaz como sugerencias en las indicaciones del LLM cuando los términos coincidentes aparecen en un segmento. El `glossary.userGlossary` opcional añade anulaciones CSV para los términos del producto (compartidas con `translate-ui` y `proofread-ui`). Las abreviaturas compactas de las etiquetas de la interfaz utilizadas para ajustarse a columnas estrechas (por ejemplo, `Size` → `Tam`) siguen disponibles para la traducción de la interfaz, pero se omiten en las sugerencias del glosario de documentos. Genere un CSV inicial con `glossary-generate`, edite las filas en la pestaña [Glosario](/es/guide/translation-dashboard/glossary) del Panel de traducción, o consulte [Configuración — `glossary`](/es/reference/configuration#glossary) y [Glosario](/es/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Anulaciones de modelo por configuración regional
@@ -43,7 +43,7 @@ Para lograr una **coherencia terminológica** entre la interfaz de usuario y la 
 | Enlaces `#anchor` entre páginas | [Enlaces de anclaje](/es/guide/documents/anchor-links) |
 | Reescritura de URL de enlaces y activos (`regexAdjustments`) | [Reescritura de enlaces](/es/guide/documents/link-rewriting) |
 | Capturas de pantalla en documentos | [Imágenes y capturas de pantalla](/es/guide/images-and-screenshots/) |
-| Terminología de productos y coherencia de UI/documentos | [Configuración — `glossary`](/es/reference/configuration#glossary), [Glosario](/es/guide/translation-dashboard/glossary) |
+| Terminología del producto y consistencia entre interfaz y documentación | [Configuración — `glossary`](/es/reference/configuration#glossary), [Glosario](/es/guide/glossary) |
 | Banderas y caché de `translate-docs` | [Opciones de CLI](/es/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

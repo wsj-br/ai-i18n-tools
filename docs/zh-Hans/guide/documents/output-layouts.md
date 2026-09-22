@@ -76,9 +76,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 **别名**（相同的 `doc-system` 引擎、预设 `localeSubpath` 和默认值）：
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` 默认为 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 插件布局）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`；`localePathLowercase` 默认为 `true`。翻译页面位于 `{outputDir}/{locale}/` 之下，当英文内容位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配。也可用于普通 Astro 区域设置页面（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）— 参见 [Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#pages-parse-and-replace)。
-- `docsOutput.style = "vitepress"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；保留 BCP-47 区域设置文件夹名称（`localePathLowercase` 默认为 `false`）。参见 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)。
-- `docsOutput.style = "nextra"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；英文源位于区域设置文件夹下（例如 `content/en/`）。参见 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`；`localePathLowercase` 默认为 `true`。翻译后的页面位于 `{outputDir}/{locale}/` 下，当英文内容位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配。也用于普通的 Astro 语言区域页面（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）— 请参阅 [Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
+- `docsOutput.style = "vitepress"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；保留 BCP-47 语言区域文件夹名称（`localePathLowercase` 默认为 `false`）。请参阅 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)。
+- `docsOutput.style = "nextra"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；英文源文件位于语言区域文件夹下（例如 `content/en/`）。请参阅 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。
 
 Docusaurus 预设（主要的文档页面）：
 

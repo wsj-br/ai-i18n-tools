@@ -70,7 +70,10 @@ export interface ResolvedProviderSettings {
   requestTimeoutMs: number;
 }
 
-type ProviderSelectionConfig = Pick<I18nConfig, "provider" | "providers">;
+type ProviderSelectionConfig = Pick<
+  I18nConfig,
+  "provider" | "providers" | "requestTimeout" | "requestTimeoutMs"
+>;
 
 /**
  * The active provider key: explicit `provider`, or the single configured provider when only one
@@ -118,6 +121,44 @@ function providerEntry(config: ProviderSelectionConfig, name: string): LlmProvid
 }
 
 /**
+ * Milliseconds for one config level. Returns `undefined` when neither field is set.
+ * `requestTimeout` is seconds; `requestTimeoutMs` is milliseconds. Setting both is an error.
+ */
+function timeoutMsFromPair(
+  requestTimeout: number | undefined,
+  requestTimeoutMs: number | undefined,
+  where: string
+): number | undefined {
+  if (requestTimeout !== undefined && requestTimeoutMs !== undefined) {
+    throw new ConfigValidationError(
+      `${where}: set only one of requestTimeout (seconds) or requestTimeoutMs (milliseconds)`
+    );
+  }
+  if (requestTimeoutMs !== undefined) {
+    return requestTimeoutMs;
+  }
+  if (requestTimeout !== undefined) {
+    return requestTimeout * 1000;
+  }
+  return undefined;
+}
+
+/**
+ * Milliseconds to wait for each request. A provider value wins over the top-level config;
+ * otherwise the built-in default applies.
+ */
+function resolveRequestTimeoutMs(
+  entry: LlmProviderConfig,
+  config: ProviderSelectionConfig
+): number {
+  return (
+    timeoutMsFromPair(entry.requestTimeout, entry.requestTimeoutMs, "provider") ??
+    timeoutMsFromPair(config.requestTimeout, config.requestTimeoutMs, "config") ??
+    DEFAULT_LLM_REQUEST_TIMEOUT_MS
+  );
+}
+
+/**
  * Merge a provider's config block with its built-in preset and the global LLM defaults.
  * Throws when a provider has neither a preset nor a configured `baseUrl`.
  */
@@ -143,7 +184,7 @@ export function resolveProviderSettings(
     headers: entry.headers ?? {},
     maxTokens: entry.maxTokens ?? DEFAULT_LLM_MAX_TOKENS,
     temperature: entry.temperature ?? DEFAULT_LLM_TEMPERATURE,
-    requestTimeoutMs: entry.requestTimeoutMs ?? DEFAULT_LLM_REQUEST_TIMEOUT_MS,
+    requestTimeoutMs: resolveRequestTimeoutMs(entry, config),
   };
 }
 

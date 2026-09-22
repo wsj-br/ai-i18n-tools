@@ -40,7 +40,7 @@
 | `../guide/foo.md` (来自本地化文件) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 未更改（对仓库路径使用完整 URL） |
 
-对于同步 `README.md` → `docs/index.md` 的项目，请在 `README.md` 中为 `LICENSE`、`examples/` 以及 VitePress 目录树之外的其他文件使用完整的 GitHub URL。请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-as-homepage)。
+对于同步 `README.md` → `docs/index.md` 的项目，请在 `README.md` 中为 `LICENSE`、`examples/` 以及 VitePress 目录树之外的其他文件使用完整的 GitHub URL。请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 
 扁平重写器和 VitePress 规范化器在每个 `docs[]` 块中互斥——在 `regexAdjustments` 之前仅运行其中一个。请参阅 [VitePress 集成 — 链接约定](/zh-Hans/guide/integrations/vitepress#link-conventions)。
 

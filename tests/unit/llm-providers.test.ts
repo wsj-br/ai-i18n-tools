@@ -75,6 +75,57 @@ describe("resolveProviderSettings", () => {
     expect(s.headers).toEqual({ "X-Test": "1" });
   });
 
+  it("converts a provider requestTimeout from seconds to milliseconds", () => {
+    const s = resolveProviderSettings("openai", {
+      providers: { openai: { requestTimeout: 60 } },
+    });
+    expect(s.requestTimeoutMs).toBe(60_000);
+  });
+
+  it("uses a top-level requestTimeout when the provider does not set one", () => {
+    const s = resolveProviderSettings("openai", {
+      requestTimeout: 90,
+      providers: { openai: {} },
+    });
+    expect(s.requestTimeoutMs).toBe(90_000);
+  });
+
+  it("uses a top-level requestTimeoutMs when the provider does not set one", () => {
+    const s = resolveProviderSettings("openai", {
+      requestTimeoutMs: 12_000,
+      providers: { openai: {} },
+    });
+    expect(s.requestTimeoutMs).toBe(12_000);
+  });
+
+  it("lets a provider timeout override the top-level timeout", () => {
+    const seconds = resolveProviderSettings("openai", {
+      requestTimeoutMs: 12_000,
+      providers: { openai: { requestTimeout: 30 } },
+    });
+    expect(seconds.requestTimeoutMs).toBe(30_000);
+    const millis = resolveProviderSettings("groq", {
+      requestTimeout: 90,
+      providers: { groq: { requestTimeoutMs: 2500 } },
+    });
+    expect(millis.requestTimeoutMs).toBe(2500);
+  });
+
+  it("rejects requestTimeout and requestTimeoutMs set together", () => {
+    expect(() =>
+      resolveProviderSettings("openai", {
+        providers: { openai: { requestTimeout: 30, requestTimeoutMs: 1000 } },
+      })
+    ).toThrow(/provider: set only one of requestTimeout/);
+    expect(() =>
+      resolveProviderSettings("openai", {
+        requestTimeout: 30,
+        requestTimeoutMs: 1000,
+        providers: { openai: {} },
+      })
+    ).toThrow(/config: set only one of requestTimeout/);
+  });
+
   it("treats ollama as keyless", () => {
     const s = resolveProviderSettings("ollama", { providers: { ollama: {} } });
     expect(s.requiresApiKey).toBe(false);

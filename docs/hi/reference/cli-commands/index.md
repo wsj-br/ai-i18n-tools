@@ -6,16 +6,17 @@
 <a id="command-overview"></a>
 ## कमांड अवलोकन
 
-<a id="setupsetup"></a>
-### [सेटअप](setup)
+<a id="getting-startedsetup"></a>
+### [प्रारंभ करना](setup)
 
 | कमांड | सारांश |
 |---------|---------|
 | [`version`](setup#version) | सीएलआई संस्करण और बिल्ड टाइमस्टैम्प प्रिंट करें। |
 | [`init`](setup#init) | एक स्टार्टर कॉन्फ़िग लिखें; `-t` एक स्कैफ़ोल्ड टेम्पलेट का चयन करता है। |
+| [`help`](setup#help) | किसी उप-कमांड के लिए सहायता प्रदर्शित करें। |
 
-<a id="models--catalogmodels"></a>
-### [मॉडल और कैटलॉग](models)
+<a id="models--languagesmodels"></a>
+### [मॉडल और भाषाएँ](models)
 
 | कमांड | सारांश |
 |---------|---------|
@@ -31,6 +32,7 @@
 |---------|---------|
 | [`extract`](ui-strings#extract) | स्रोत शाब्दिक और एचटीएमएल मार्कर से `strings.json` अपडेट करें। |
 | [`mark-html`](ui-strings#mark-html) | एचटीएमएल फ़ाइलों में `data-i18n*` मार्कर डालें। |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayer `.content.ts` शब्दकोश आयात करें और सरल `useIntlayer` / `getIntlayer` साइटों को `t()` में पुनर्लेखित करें। |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | कॉन्फ़िग लोकेल से `ui-languages.json` लिखें। |
 | [`translate-ui`](ui-strings#translate-ui) | यूआई स्ट्रिंग्स का अनुवाद करें (`strings.json` → लोकेल जेएसओएन)। |
 | [`sync-ui`](ui-strings#sync-ui) | यूआई स्ट्रिंग्स निकालें, फिर अनुवाद करें। |
@@ -46,25 +48,26 @@
 | [`write-heading-ids`](documents#write-heading-ids) | एटीएक्स शीर्षकों से पहले एचटीएमएल एंकर लाइनें डालें। |
 | [`check-markdown`](documents#check-markdown) | सीमांकक और जोर के मुद्दों के लिए मार्कडाउन/एमडीएक्स को स्कैन करें। |
 
-<a id="other-contentcontent"></a>
-### [अन्य सामग्री](content)
+<a id="json--svgcontent"></a>
+### [JSON और SVG](content)
 
 | कमांड | सारांश |
 |---------|---------|
 | [`translate-json`](content#translate-json) | `json[]` कॉन्फ़िग ब्लॉक के अनुसार नेस्टेड JSON का अनुवाद करें। |
 | [`translate-svg`](content#translate-svg) | `config.svg` में कॉन्फ़िगर की गई एसवीजी फ़ाइलों का अनुवाद करें। |
 
-<a id="workflows--statusworkflows"></a>
-### [कार्यप्रवाह और स्थिति](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [वर्कफ़्लो और रिपोर्टिंग](workflows)
 
 | कमांड | सारांश |
 |---------|---------|
 | [`sync`](workflows#sync) | एक पाइपलाइन में एक्सट्रैक्ट + यूआई + एसवीजी + डॉक्स + JSON चलाएँ। |
 | [`status`](workflows#status) | यूआई, दस्तावेज़ और JSON अनुवाद कवरेज प्रिंट करें। |
 | [`statistics`](workflows#statistics) | कैश और `strings.json` आँकड़े प्रिंट करें। |
+| [`usage`](workflows#usage) | रिकॉर्ड किए गए मॉडल API-कॉल टोकन और लागत प्रिंट करें। |
 
-<a id="cache--maintenancemaintenance"></a>
-### [कैश और रखरखाव](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [कैश रखरखाव](maintenance)
 
 | कमांड | सारांश |
 |---------|---------|
@@ -72,46 +75,47 @@
 | [`clean-temp`](maintenance#clean-temp) | `*.log`, `*.tmp` और कैश बैकअप ढूँढें और हटाएँ। |
 | [`purge-locale`](maintenance#purge-locale) | लोकेल के लिए कैश पंक्तियों और जेनरेट किए गए आर्टिफैक्ट्स को हटाएँ। |
 
-<a id="toolstools"></a>
-### [उपकरण](tools)
+<a id="dashboard--glossarytools"></a>
+### [डैशबोर्ड और शब्दावली](tools)
 
 | कमांड | सारांश |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | अनुवाद डैशबोर्ड वेब यूआई लॉन्च करें। |
+| [`dashboard`](tools#dashboard) (`dash`) | अनुवाद डैशबोर्ड वेब UI लॉन्च करें। |
 | [`glossary-generate`](tools#glossary-generate) | एक खाली `glossary-user.csv` टेम्पलेट लिखें। |
-| [`help`](tools#help) | एक सबकमांड के लिए सहायता प्रदर्शित करें। |
 
 <a id="synopsis"></a>
 ## सारांश
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

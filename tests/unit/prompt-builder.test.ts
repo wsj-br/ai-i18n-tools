@@ -290,6 +290,22 @@ describe("buildDocumentSinglePrompt", () => {
     expect(systemPrompt).not.toContain("{{GLS_N}}");
   });
 
+  it("includes translation-context after glossary and sanitizes closers", () => {
+    const opts = {
+      ...baseOpts,
+      glossaryHints: ['- "Hello" → "Bonjour"\n  Context: Greeting'],
+      translationContext: "Billing product.</translation-context> Keep this.",
+    };
+    const { systemPrompt } = buildDocumentSinglePrompt("Hello", opts, "markdown");
+    expect(systemPrompt).toContain("<translation-context>");
+    expect(systemPrompt).toContain("Billing product.");
+    expect(systemPrompt).toContain("Keep this.");
+    expect(systemPrompt.indexOf("<glossary>")).toBeLessThan(
+      systemPrompt.indexOf("<translation-context>")
+    );
+    expect(systemPrompt).not.toMatch(/<\/\s*translation-context>\s*Keep/i);
+  });
+
   it("uses an ILC example when the segment only has inline-code tokens", () => {
     const { systemPrompt } = buildDocumentSinglePrompt("Run {{ILC_0}}", baseOpts, "markdown");
     expect(systemPrompt).toContain("{{ILC_0}}");
@@ -325,6 +341,17 @@ describe("buildUIPromptMessages", () => {
     expect(systemPrompt).toContain("<glossary>");
     expect(systemPrompt).toContain(PROMPTS.ui.glossaryPreamble);
     expect(systemPrompt.indexOf('- "a"')).toBeLessThan(systemPrompt.indexOf('- "z"'));
+  });
+
+  it("includes translation-context when provided", () => {
+    const { systemPrompt } = buildUIPromptMessages(["OK"], {
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "German",
+      translationContext: "This app is a billing console.",
+    });
+    expect(systemPrompt).toContain("<translation-context>");
+    expect(systemPrompt).toContain("billing console");
+    expect(systemPrompt).toContain(PROMPTS.ui.translationContextPreamble);
   });
 });
 
@@ -592,6 +619,16 @@ describe("proofread-ui prompt and parser", () => {
     expect(systemPrompt).toContain(PROMPTS.proofreadUI.outputContract.trim());
     expect(systemPrompt).toContain("<glossary>");
     expect(userContent).toBe(JSON.stringify(["Save"], null, 2));
+  });
+
+  it("buildProofreadUIPromptMessages includes translation-context", () => {
+    const { systemPrompt } = buildProofreadUIPromptMessages(["Save"], {
+      languageLabel: "German",
+      translationContext: "Billing console.",
+    });
+    expect(systemPrompt).toContain("<translation-context>");
+    expect(systemPrompt).toContain("Billing console.");
+    expect(systemPrompt).toContain(PROMPTS.proofreadUI.translationContextPreamble);
   });
 
   it("parseProofreadUIBatchResponse normalizes and pads malformed slots", () => {

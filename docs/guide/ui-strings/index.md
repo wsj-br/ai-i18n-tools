@@ -14,6 +14,7 @@ Designed for any JS/TS project that uses i18next: React apps, Next.js (client an
 | `t()` rules, interpolation, plurals | [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals) |
 | Language picker / RTL | [Language switcher & RTL](/guide/ui-strings/language-switcher) |
 | Runtime API signatures | [Runtime helpers](/guide/runtime-helpers) |
+| Intlayer `.content.ts` dictionaries | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## Step 1: Initialise

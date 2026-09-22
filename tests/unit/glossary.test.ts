@@ -158,6 +158,32 @@ describe("Glossary", () => {
     expect(isUiLabelAbbreviation("File Size", "Tamaño de Archivo")).toBe(false);
   });
 
+  it("user CSV Context fills from * then exact locale overwrites", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-ctx-"));
+    const user = path.join(dir, "user.csv");
+    fs.writeFileSync(
+      user,
+      [
+        "Original language string,locale,Translation,Force,Context",
+        "Dashboard,*,Tableau,,The product home",
+        "Dashboard,de,Übersicht,,German analytics home",
+      ].join("\n"),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(undefined, user, ["de", "fr"]);
+      expect(g.getContext("Dashboard", "fr")).toBe("The product home");
+      expect(g.getContext("Dashboard", "de")).toBe("German analytics home");
+      const deHints = g.findTermsInText("Open the Dashboard", "de");
+      expect(deHints.some((h) => h.includes("German analytics home"))).toBe(true);
+      const frHints = g.findTermsInText("Open the Dashboard", "fr");
+      expect(frHints.some((h) => h.includes("The product home"))).toBe(true);
+      expect(g.findTermsInText("unrelated text", "de")).toHaveLength(0);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("user CSV exact locale overrides star", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss2-"));
     const ui = path.join(dir, "ui.json");

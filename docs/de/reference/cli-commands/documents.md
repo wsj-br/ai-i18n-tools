@@ -25,6 +25,8 @@ Erfordert mindestens einen `docs[]`-Block. Sammelt `.md` / `.mdx` unter dem `con
 
 Nach dem Aktualisieren der Quelldateien durchläuft der Befehl auch die vorhandenen übersetzten Markdown-Dateien jedes Gebietsschemas (dieselbe `docsOutput`-Pfadzuordnung wie `translate-docs`). Er kopiert die **englischen** Überschriften-IDs auf die passenden ATX-Überschriften in Dokumentreihenfolge – er slugt niemals den übersetzten Titel – und verschiebt eine Überschriften-ID `{#id}` / `{/* #id */}` (oder verirrte HTML-ID `<a id>`) zurück in die Form, die Docusaurus / der gewählte Stil erwartet. Fehlende übersetzte Dateien werden übersprungen. `--remove` entfernt auch Überschriften-IDs aus diesen übersetzten Dateien, einschließlich falsch platzierter Inline-Tokens.
 
+Wenn die Überschriften-IDs einer übersetzten Datei neu positioniert oder korrigiert werden, wird das zugehörige zwischengespeicherte übersetzte Segment (referenziert über den Hash der englischen Quelle) ebenfalls aktualisiert, sofern die englische Quelle sowie der alte und der neue übersetzte Inhalt dieselbe Anzahl an Segmenten aufweisen. Bei einer Abweichung der Anzahl werden diese Datei und dieses Gebietsschema übersprungen. Ein nachfolgender `sync --force-update` setzt die Datei dann aus der aktualisierten Cache-Zeile wieder zusammen.
+
 **Wichtige Optionen:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
 `--slug-style`: `github` (Standard; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}`-Suffix). Mit `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove` kann nicht mit `--pymdown-*` kombiniert werden.

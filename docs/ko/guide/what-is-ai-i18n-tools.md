@@ -40,8 +40,10 @@ ai-i18n-tools는 선호하는 LLM 공급자를 사용하여 앱과 문서를 번
 | [vitepress-docs](/ko/examples#vitepress-docs) | VitePress 문서 및 테마 카탈로그 |
 | [nextra-docs](/ko/examples#nextra-docs) | Nextra 문서 및 `_meta.ts` 사이드바 레이블 및 테마 사전 |
 | [fumadocs-docs](/ko/examples#fumadocs-docs) | Fumadocs 문서 및 `meta.json` 사이드바 레이블 및 UI 카탈로그 |
+| [plain-html](/ko/examples#plain-html) | `data-i18n*` 마커 및 로케일 JSON이 포함된 정적 HTML |
 | [multi-provider](/ko/examples#multi-provider) | 동일한 문서에서 LLM 공급자 비교 |
 | [test-markdown](/ko/examples#test-markdown) | Markdown 파이프라인 스트레스 테스트(CJK, 데바나가리, 엣지 케이스) |
+| [intlayer-migration](/ko/examples#intlayer-migration) | `migrate-intlayer`을 통한 Intlayer `.content.ts` → `t()` |
 
 `npx degit` 복사 명령 및 선택 가이드는 [예시](/ko/examples)를 참조하세요.
 

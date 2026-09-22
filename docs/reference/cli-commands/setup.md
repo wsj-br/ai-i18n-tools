@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI — Setup
+<a id="cli--getting-started"></a>
+# CLI — Getting started
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 | `ui-json-bundles` | JSON (`json[]` only) |
 
 `--with-translate-ignore` creates a starter `.translate-ignore`.
+
+---
+
+<a id="help"></a>
+### `help`
+
+**Synopsis:** `ai-i18n-tools help [command]`
+
+Display help for a subcommand (same output as `ai-i18n-tools <command> --help`).

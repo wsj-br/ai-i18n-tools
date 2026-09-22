@@ -9,6 +9,39 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: examples — `intlayer-migration` typechecks `src/` only. `intlayer-pristine/` stays the reset snapshot and is excluded from `tsc` and the editor project.
+- **Added**: cli — `migrate-intlayer` report ends with a **Step-by-step TODO** (one box per manual site, then cleanup, runtime bootstrap, locale switch, `extract`, `translate-ui` for any new strings, and package removal). Steps that do not apply are omitted. A dry run starts with the exact `--write` command to re-run.
+- **Added**: docs — `migrating-from-intlayer` gains a "Migrate your project" section with generic setup/config steps (`init`, edit `sourceLocale`/`targetLocales`/`ui.*`, dry run, `--write`, report, `extract`/`translate-ui`, cleanup) that apply to any Intlayer project, not just the shipped example.
+- **Removed**: examples — `intlayer-migration` no longer ships `runtime/i18n.ts` or `pnpm use-runtime`. The migration report is the runtime bootstrap.
+- **Changed**: cli — `migrate-intlayer` report omits catalog hashes. It names the old and new source strings, and says not to hand-edit `strings.json`, flat locale bundles, or `ui-languages.json` (`extract` then `translate-ui` own those files).
+- **Changed**: cli — `migrate-intlayer` report now includes a concrete `t()` or JSX call for each manual site (full chained `.replace()` text, sibling leaves, spread props), the `import { t }` line, catalog keys that still need `extract` then `translate-ui`, leftover `*.content.ts` / `useIntlayer` / `IntlayerProvider` cleanup, and a runtime bootstrap whose locale switch must call `loadLocale` and `i18n.changeLanguage`.
+- **Fixed**: examples — `intlayer-migration` loads locale JSON with `import.meta.glob` so `pnpm dev` starts before `migrate-intlayer` creates `src/locales/`.
+- **Removed**: dashboard — Usage & costs no longer shows the paginated per-call log (`GET /api/usage/rows`). Summary cards and breakdown tables stay.
+- **Fixed**: docs — repair dead in-page anchors (`#cloned-monorepo`, Astro website section ids, VitePress README homepage), and show this repository's live OpenRouter `translationModels` in the providers guide.
+- **Changed**: dashboard — Usage & costs **Delete entries older than** defaults to `-`, lists `all data (clear)` last, and **Delete data** stays disabled until a window is chosen.
+- **Added**: cli — `dash` is an equivalent alias for `dashboard`.
+- **Changed**: dashboard/cli — Usage & costs shows a single **Cost** (provider-reported `usage.cost`, or the configured `pricing` / `modelPricing` rate). The separate Actual / Est. columns are gone; leftover rows stored without `cost_usd` still use the configured rates and are added into that one figure.
+- **Added**: glossary — optional CSV `Context` notes and `glossary.contextFiles` Markdown/plain-text briefs are injected into UI, docs, JSON, SVG, and proofread prompts; changing that guidance invalidates matching cache and file-tracking rows on the next run (`SCHEMA_VERSION` 6 `prompt_context_hash`).
+- **Fixed**: api — when a provider omits `usage.cost`, `LlmClient` calculates USD cost from `providers.<name>.modelPricing` (or the provider-wide `pricing` default) and includes it in the translation summary and `api_calls.cost_usd`. A provider-reported cost is still kept as returned.
+- **Added**: cli — `migrate-intlayer` imports Intlayer `*.content.ts` dictionaries into `strings.json` / flat locale files, rewrites simple `useIntlayer` / `getIntlayer` call sites to `t()`, and writes an AI-agent-ready `migrate-intlayer-report.md` for the rest (dry run by default; `--write` applies).
+- **Added**: examples — `intlayer-migration` demo with `intlayer-pristine/` + `pnpm reset`, basic and complex Intlayer cases, and a sample migration report.
+- **Added**: docs — confirm that `json[]` covers typical i18next namespace files (nested keys, interpolation tokens, independent `key_one` / `key_other` suffixes) and add [Migrating from Intlayer](../docs/guide/migrating-from-intlayer.md).
+- **Added**: config — `providers.<name>.requestTimeout` sets the per-request timeout in seconds (same limit as `requestTimeoutMs`; setting both is rejected).
+- **Added**: config — top-level `requestTimeout` (seconds) and `requestTimeoutMs` apply to every provider unless that provider sets its own timeout.
+- **Changed**: dashboard — Usage & costs adds space between the filter row and **Delete entries older than**, and between **Usage over time** and the paginated call log.
+- **Added**: dev scripts — `pnpm seed:usage` writes two years of billed `api_calls` (and optional monthly rollups) so Usage time ranges and deletion presets can be exercised locally.
+- **Added**: cache — roll API-call rows older than seven UTC calendar days into monthly `api_totals` (accepted/discarded token and cost accumulators, plus `ncost_*` / `*_nc_*` so missing provider cost stays distinct from `$0`) at the end of any command that recorded billed calls; reports and deletes combine both tables.
+- **Changed**: dashboard/cli — Usage time windows include 30 minutes, 1/6/12 hours, and last 2/3 calendar months; **Usage over time** stays daily for short ranges and adds monthly rows for all-time / multi-month views; delete uses calendar presets (`all`, `1mo`, `2mo`, `3mo`, `6mo`, `1y`) instead of a free-form day count.
+- **Fixed**: cli — `usage` table headers and separators pad from unstyled text so ANSI-bold columns stay aligned.
+- **Added**: cache — persist every billed model API call (accepted and discarded retries) in a new `api_calls` SQLite table (`SCHEMA_VERSION` 5).
+- **Added**: api — `LlmClient` `onApiCall` reports per-call provider, model, tokens, cost, and outcome after the response is accepted or discarded.
+- **Added**: cli — `usage` prints recorded API-call statistics and costs (`--since`, `--provider`, `--model`, `--operation`, `--locale`, `--outcome`, `--clear` / `--older-than` / `--dry-run`).
+- **Added**: dashboard — **Usage & costs** tab with the same aggregates, a paginated call log, and log pruning (`GET`/`POST` `/api/usage*`).
+- **Changed**: examples — `multi-provider` replaces the `nvidia` provider with `openrouter` (`openai/gpt-4o-mini`, `google/gemma-4-26b-a4b-it`) and omits `pricing` there because OpenRouter reports cost per call. Also replaces retired `deepseek-v4-flash` with `deepseek-flash`.
+- **Added**: examples — `multi-provider` sets `providers.<name>.pricing` (provider-wide default) and `modelPricing` (fallback-model override) so `usage` can estimate cost on OpenAI, Anthropic, and DeepSeek.
+- **Added**: config — optional `providers.<name>.pricing` (provider-wide USD per 1M input/output tokens) and `providers.<name>.modelPricing` (per-model overrides) for estimated cost on providers that do not report `usage.cost`.
+- **Fixed**: write-heading-ids — repositioning or repairing a heading id in a translated markdown file now also updates the matching cached translated segment (keyed by the English source hash), so a later `sync --force-update` reassembles the file from the cache instead of resurrecting the stale heading id. Segment counts must line up 1:1 between the English source and the old/new translated content for the sync to apply; a mismatch skips that file/locale.
+
 ## [1.8.12] - 2026-09-21
 
 - **Fixed**: docs — `translate-docs` peels `{#id}` / `{/* #id */}` heading-id suffixes off ATX headings before the LLM call and pins them back at end of line after restore, so CJK/SOV word order cannot leave a mid-heading comment that Docusaurus ignores.

@@ -4,7 +4,7 @@
 Use when a web app embeds locale-specific SVG illustrations or diagrams and references them by locale code at runtime.
 
 <a id="config"></a>
-### Config
+## Config
 
 ```json
 "features": {
@@ -28,19 +28,19 @@ public/assets/
 ```
 
 <a id="app-reference"></a>
-### App reference
+## App reference
 
 ```tsx
 <img src={`/assets/dashboard.${locale}.svg`} alt="Dashboard diagram" />
 ```
 
 <a id="source-layout-recommendation"></a>
-### Source layout recommendation
+## Source layout recommendation
 
 Keep source SVGs separate from the output directory. With `sourcePath: "images"` and `outputDir: "public/assets"` the two directories are distinct. Never set both to the same directory.
 
 <a id="implementation-example"></a>
-### Implementation example
+## Implementation example
 
 [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/) — `svg` block in [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json) (`sourcePath: "images"`, `outputDir: "public/assets"`, `svg.style = "flat"`); source [translation_demo_svg.svg](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/images/translation_demo_svg.svg); per-locale outputs under [public/assets/](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/public/assets/) (e.g. `translation_demo_svg.de.svg`); runtime URL in [page.tsx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/app/page.tsx) (`/assets/translation_demo_svg.${locale}.svg`).
 

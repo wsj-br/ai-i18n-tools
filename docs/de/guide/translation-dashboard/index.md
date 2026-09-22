@@ -3,8 +3,8 @@
 
 Das Übersetzungs-Dashboard ist eine lokale Web-Benutzeroberfläche zum Prüfen und Bearbeiten der Übersetzungsdaten Ihres Projekts. Es liest aus drei Speichern:
 
-- **SQLite-Cache** (`cacheDir`) – Übersetzungen von Dokumentationssegmenten, Fehleraufzeichnungen, Markdown-Problemanalysen
-- **`strings.json`** – UI-String-Katalog (einfache Strings und Pluralgruppen)
+- SQLite-Cache (`cacheDir`) – Übersetzungen von Dokumentationssegmenten, Fehlerprotokolle, Markdown-Problemscans, abgerechnete API-Aufrufe
+- **`strings.json`** – UI-Stringkatalog (einfache Strings und Pluralgruppen)
 - **Benutzerglossar-CSV** (`glossary.userGlossary`) – Terminologiehinweise für `translate-ui` und `proofread-ui`
 
 Verwenden Sie es nach einem Übersetzungslauf, um Probleme zu finden, fehlerhafte Ausgaben zu überschreiben oder die Cache-Abdeckung zu überprüfen – ohne manuell SQLite oder JSON durchsuchen zu müssen.
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-Der Standard-Listen-Port ist **8675**. Falls dieser Port nicht verfügbar ist, versucht der Server den nächsten Port (bis zu 1000 Versuche) und protokolliert den gewählten Port. Der veraltete Alias `editor` funktioniert weiterhin, gibt aber eine Warnung aus – bevorzugen Sie `dashboard`.
+Der Standard-Listen-Port ist **8675**. Wenn dieser Port nicht verfügbar ist, versucht der Server den nächsten Port (bis zu 1000 Versuche) und protokolliert den gewählten Port. `dash` ist ein gleichwertiger Alias. Der veraltete Alias `editor` funktioniert weiterhin, gibt aber eine Warnung aus – bevorzugen Sie `dashboard` oder `dash`.
 
 Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wie die CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → Konfiguration `uiLanguage` → Betriebssystem-Gebietsschema. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language).
 
@@ -36,6 +36,7 @@ Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wi
 | Eine Pluralform korrigieren (`one`, `other`, …) | **UI-Plurale** | [UI-Strings & Plurale](/de/guide/translation-dashboard/ui-strings) |
 | Terminologie für die UI-Übersetzung sperren | **Glossar** | [Glossar](/de/guide/translation-dashboard/glossary) |
 | Cache-Abdeckung und Modellnutzung anzeigen | **Statistiken** | [Statistiken](/de/guide/translation-dashboard/statistics) |
+| API-Aufruftoken und Kosten anzeigen | **Nutzung & Kosten** | [Nutzung & Kosten](/de/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## Nach der Bearbeitung

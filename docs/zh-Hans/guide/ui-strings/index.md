@@ -14,6 +14,7 @@
 | `t()` 规则、插值、复数 | [t() 调用和复数](/zh-Hans/guide/ui-strings/t-calls-and-plurals) |
 | 语言选择器 / RTL | [语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher) |
 | 运行时 API 签名 | [运行时助手](/zh-Hans/guide/runtime-helpers) |
+| Intlayer `.content.ts` 字典 | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## 步骤 1：初始化

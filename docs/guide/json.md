@@ -104,6 +104,32 @@ When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, 
 | Nextra `_meta.ts` labels and theme dictionary `.ts` | Documents — `translate-docs` (auto `_meta` when `style: "nextra"`, optional `nextraDictionaryPath`); **do not** use `json[]` — see [Nextra integration](/guide/integrations/nextra) |
 | Fumadocs `meta.json` labels and UI overrides catalog | Documents — `translate-docs` (auto `meta.json` when `style: "fumadocs"`, optional `fumadocsUiCatalog`); **do not** use `json[]` — see [Fumadocs integration](/guide/integrations/fumadocs) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
+| i18next namespace files (`public/locales/en/common.json`, <code v-pre>{{name}}</code> tokens, `key_one` / `key_other` suffixes) | JSON — `json[]` + `translate-json` (see [i18next namespace files](#i18next-namespace-files)) |
+| Intlayer `*.content.ts` dictionaries + `useIntlayer` | [Migrating from Intlayer](/guide/migrating-from-intlayer) — `migrate-intlayer`, then UI strings |
 | Illustrated `.svg` files with `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (optional; not one of the three main pipelines) |
 
 Field reference: [`json`](#json) in [Configuration reference](/reference/configuration#json). Cache keys for cleanup use `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.
+
+<a id="i18next-namespace-files"></a>
+### i18next namespace files
+
+The JSON pipeline covers typical i18next key/value locale files: nested objects, string arrays, <code v-pre>{{name}}</code> interpolation in values, and independent plural suffix keys (`welcome_one`, `welcome_other`). It does **not** rewrite `t("some.key")` call sites — those stay key-based. To move a project onto ai-i18n-tools' English source-string `t()` schema, change call sites to `t("English text")` (or run `migrate-intlayer` when the source is Intlayer `.content.ts`).
+
+Example (source English namespaces under `public/locales/en/`):
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero` (and other CLDR suffixes) are translated as separate leaves. That is enough for i18next to keep resolving plurals by suffix; the pipeline does not regroup them into a single catalog row.

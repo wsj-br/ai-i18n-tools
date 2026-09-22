@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# 最初からi18nを考慮して設計する
+## 最初から国際化を考慮した設計
 
 スクリーンショットが存在する前に適切なディレクトリレイアウトを選択することが、後でロケール固有のアセットがどれだけ簡単になるかの最大の要因です。数十のスクリーンショットがコミットされた後にレイアウトを改修することは、パスの再構築とすべてのマークダウン参照の更新を意味します。
 
@@ -105,7 +105,7 @@ SVGソースファイルは専用のソースディレクトリ（例：`images/
 ---
 
 <a id="decision-guide"></a>
-# 決定ガイド
+## 意思決定ガイド
 
 **アセットは翻訳可能なテキストまたはラベルを含むSVGですか？**
   - **はい** → [WebアプリSVG](/ja/guide/svg-translation/translated-svg-web-app)または[共存SVG](/ja/guide/svg-translation/translated-svg-colocated)

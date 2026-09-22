@@ -50,9 +50,9 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 
 **UI स्ट्रिंग्स:** वैकल्पिक `uiModels` आपको `translate-ui`, बहुवचन जनरेशन, और `proofread-ui` को वैश्विक `translationModels` श्रृंखला से पहले प्रीमियम मॉडल के माध्यम से रूट करने देता है — उपयोगी क्योंकि UI कॉपी छोटी लेकिन उपयोगकर्ता-सामने होती है।
 
-**एशियाई स्थान:** `ja`, `ko`, `zh-Hans`, और `zh-Hant` के लिए वैकल्पिक `localeModels` प्रविष्टियों को प्रत्येक पाइपलाइन में पहले आज़माया जाता है; `z-ai/glm-5.2` और `minimax/minimax-m2.7` जैसे मॉडल अक्सर सामान्य-उद्देश्य फ़ॉलबैक की तुलना में CJK स्क्रिप्ट पर बेहतर प्रदर्शन करते हैं।
+**एशियाई लोकेल:** `ja`, `ko`, `zh-Hans`, और `zh-Hant` के लिए वैकल्पिक `localeModels` प्रविष्टियों को प्रत्येक पाइपलाइन में सबसे पहले आज़माया जाता है; `z-ai/glm-5.3` और `minimax/minimax-m2.7` जैसे मॉडल अक्सर सामान्य-उद्देश्य वाले फ़ॉलबैक की तुलना में CJK स्क्रिप्ट पर बेहतर प्रदर्शन करते हैं।
 
-उदाहरण कॉन्फ़िग (OpenRouter):
+उदाहरण कॉन्फ़िग (OpenRouter)। `translationModels` और `uiModels` वे सूचियाँ हैं जिनका उपयोग यह रिपॉजिटरी `ai-i18n-tools.config.json` में करती है। `localeModels` CJK लोकेल्स के लिए एक वैकल्पिक अनुशंसित ऐड-ऑन है; यह रिपॉजिटरी इसे सेट नहीं करती है।
 
 ```json
 {
@@ -60,24 +60,25 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-प्रत्येक प्रदाता ब्लॉक अपनी स्वयं की `translationModels`, वैकल्पिक `uiModels` और `localeModels`, `maxTokens`, `temperature`, और `requestTimeoutMs` को परिभाषित कर सकता है। एक विरासत शीर्ष-स्तरीय `openrouter` ब्लॉक अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` में स्वतः माइग्रेट हो जाता है।
+प्रत्येक प्रदाता ब्लॉक अपनी स्वयं की `translationModels`, वैकल्पिक `uiModels` और `localeModels`, `maxTokens`, `temperature`, और `requestTimeout` (सेकंड) या `requestTimeoutMs` को परिभाषित कर सकता है। प्रदाता पर एक टाइमआउट शीर्ष-स्तरीय `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। एक लेगेसी शीर्ष-स्तरीय `openrouter` ब्लॉक अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` में स्वतः माइग्रेट हो जाता है।
 
-एक ही दस्तावेज़ पर चार प्रदाताओं के साथ चलाने योग्य उदाहरण: [`examples/multi-provider`](/hi/examples#multi-provider)।
+वैकल्पिक `pricing` और `modelPricing` प्रति 1,000,000 टोकन USD निर्धारित करते हैं (`inputPerMTokens` और `outputPerMTokens`) जब प्रदाता `usage.cost` को छोड़ देता है। `pricing` प्रदाता-व्यापी डिफ़ॉल्ट है; एक `modelPricing` प्रविष्टि एक मॉडल आईडी के लिए इसे ओवरराइड करती है। OpenRouter पहले से ही प्रति-कॉल लागत लौटाता है, इसलिए उस प्रदाता पर दोनों को अनसेट छोड़ दें। प्रदाता द्वारा रिपोर्ट की गई लागत को वैसे ही रखा जाता है जैसा वह लौटाया जाता है। यह राशि अनुवाद सारांश, [`usage`](/hi/reference/cli-commands/workflows#usage), और [उपयोग और लागत](/hi/guide/translation-dashboard/usage) में शामिल की जाती है।
+
+समान दस्तावेज़ पर चार प्रदाताओं के साथ चलाने योग्य उदाहरण, जिसमें नमूना दरें शामिल हैं: [`examples/multi-provider`](/hi/examples#multi-provider)।
 
 <a id="further-reference"></a>
 ### आगे का संदर्भ
 
-- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट तालिका, कस्टम एंडपॉइंट, अनुरोध टाइमआउट, OpenRouter-विशिष्ट व्यवहार।
-- [आर्किटेक्चर — LLM क्लाइंट](/hi/reference/architecture) — मॉडल फ़ॉलबैक, बैचिंग और लागत रिपोर्टिंग आंतरिक रूप से कैसे काम करती है।
-- [पर्यावरण चर](/hi/reference/environment-variables) — API-कुंजी env चर और बेस-URL ओवरराइड।
+- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट तालिका, कस्टम एंडपॉइंट, अनुरोध टाइमआउट, लागत दरें, OpenRouter-विशिष्ट व्यवहार।
+- [आर्किटेक्चर — LLM क्लाइंट](/hi/reference/architecture) — मॉडल फ़ॉलबैक, बैचिंग और लागत रिपोर्टिंग आंतरिक रूप से कैसे काम करते हैं।
+- [एनवायरनमेंट वेरिएबल्स](/hi/reference/environment-variables) — API-कुंजी एनवायरनमेंट वेरिएबल्स और बेस-URL ओवरराइड।

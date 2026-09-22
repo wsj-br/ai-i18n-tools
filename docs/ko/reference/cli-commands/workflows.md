@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI — 워크플로 및 상태
+<a id="cli--workflows--reporting"></a>
+# CLI — 워크플로 및 보고
 
 <a id="sync"></a>
 ### `sync`
@@ -35,3 +35,16 @@
 **주요 옵션:** `--max-columns`
 
 **참고:** [대시보드 통계](/ko/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**개요:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+기록된 모델 API 호출 통계(호출 수, 토큰 수, 단일 USD 비용)를 인쇄합니다. 비용은 제공자의 `usage.cost`가 있는 경우 해당 값을 사용하고, 그렇지 않으면 `providers.<name>.modelPricing`의 금액 또는 제공자 전체의 `providers.<name>.pricing` 기본값을 사용합니다(새 호출에 저장됨; 저장된 비용이 없는 이전 행의 경우 보고서 작성 시 적용됨). 번역 대시보드 → 사용량 및 비용과 동일한 집계입니다. 7 UTC 달력일보다 오래된 세부 행은 월간 `api_totals`로 통합됩니다; 보고서는 두 테이블을 모두 결합합니다. `--since`는 `YYYY-MM-DD`, 기간(`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`) 또는 달력 월 창(`1mo`, `2mo`, `3mo`)을 허용합니다. `--clear`은 세부 행과 월간 합계를 삭제합니다(`--older-than`은 `1mo`, `2mo`, `3mo`, `6mo`, `1y` 또는 `all`입니다; `--dry-run`는 삭제하지 않고 개수를 보고합니다).
+
+**주요 옵션:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**참고:** [대시보드 사용량 및 비용](/ko/guide/translation-dashboard/usage)

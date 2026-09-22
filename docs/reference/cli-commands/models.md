@@ -1,12 +1,12 @@
-<a id="cli--models--catalog"></a>
-# CLI — Models & catalog
+<a id="cli--models--languages"></a>
+# CLI — Models & languages
 
 <a id="check-models"></a>
 ### `check-models`
 
 **Synopsis:** `ai-i18n-tools check-models`
 
-Validate each configured model id against the active provider's `GET /models` list (membership and `expiration_date`). Requires that provider's API key (none for keyless providers like Ollama). Exits non-zero when any configured id is missing or expired, and respects the provider's `requestTimeoutMs`. When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion.
+Validate each configured model id against the active provider's `GET /models` list (membership and `expiration_date`). Requires that provider's API key (none for keyless providers like Ollama). Exits non-zero when any configured id is missing or expired, and respects the resolved request timeout (`requestTimeout` or `requestTimeoutMs` on the provider, otherwise the top-level value). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion.
 
 **See also:** [LLM providers](/guide/providers-and-models)
 

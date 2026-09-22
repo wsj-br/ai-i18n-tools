@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## 典型初始化
+
+最精簡的 `src/i18n.ts` 會組合 i18next 輔助工具。`SOURCE_LOCALE` 必須與 `ai-i18n-tools.config.json` 中的 `sourceLocale` 相符。下方的匯入路徑假設此檔案與 `locales/` 放在同一目錄下。
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+語言變更時，請先呼叫 `await loadLocale(next)`，然後再呼叫 `await i18n.changeLanguage(next)`。React (`initReactI18next`)、來源語言區域的複數 (`sourcePluralFlatBundle`) 以及 `applyDirection` 皆涵蓋於[串接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 中。
+
 <a id="quick-reference"></a>
 ## 快速參考
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-將 `setupKeyAsDefaultT` 作為常用的應用程式進入點（鍵修剪 + plural `wrapT` + 可選的 `translate-ui` `{sourceLocale}.json`）。單獨呼叫 `wrapI18nWithKeyTrim` 是應用程式連接的**已棄用**。
+[典型初始化](#typical-bootstrap) 說明了這些工廠函式如何組合。請使用 `setupKeyAsDefaultT` 作為一般的應用程式進入點（鍵值修剪 + 複數 `wrapT` + 選用的 `translate-ui` `{sourceLocale}.json`）。對於應用程式組裝，單獨呼叫 `wrapI18nWithKeyTrim` 已**棄用**。
 
 `sourcePluralFlatBundle` 需要一個帶有 `addResourceBundle()` 的 i18next 實例。`lng` 欄位必須與您的啟動檔案中的 `SOURCE_LOCALE` 以及 `ai-i18n-tools.config.json` 中的 `sourceLocale` 相符。
 

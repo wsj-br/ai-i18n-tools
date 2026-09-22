@@ -4,7 +4,7 @@
 Use for doc-system sites where translated SVG illustrations must appear alongside translated docs in each locale's content directory — the same location as [colocated screenshots](/guide/images-and-screenshots/colocated-screenshots). The Docusaurus preset is the primary example.
 
 <a id="config"></a>
-### Config
+## Config
 
 ```json
 "features": {
@@ -29,7 +29,7 @@ documentation/i18n/fr/docusaurus-plugin-content-docs/current/assets/diagram.svg
 ```
 
 <a id="source-markdown"></a>
-### Source markdown
+## Source markdown
 
 All docs in all locales use the same relative path:
 
@@ -42,12 +42,12 @@ For the English locale the symlink `docs/assets → ../static/assets` resolves t
 No `regexAdjustments` rule is needed because English source docs and translated output docs use identical paths.
 
 <a id="svg-source-location"></a>
-### SVG source location
+## SVG source location
 
 Recommended: store source SVGs in `documentation/static/assets/` alongside the en-GB PNGs. This keeps all documentation assets in one place, and the same `docs/assets` symlink covers both. The `svg.sourcePath` entries then point to `documentation/static/assets/name.svg`.
 
 <a id="pathtemplate-placeholders"></a>
-### `pathTemplate` placeholders
+## `pathTemplate` placeholders
 
 | Placeholder              | Value                                                  |
 |--------------------------|--------------------------------------------------------|
@@ -63,7 +63,7 @@ Recommended: store source SVGs in `documentation/static/assets/` alongside the e
 Full reference in the [svg configuration table](/reference/configuration#svg).
 
 <a id="implementation-example"></a>
-### Implementation example
+## Implementation example
 
 [duplistatus](https://github.com/wsj-br/duplistatus) — nested `svg` block with `pathTemplate` in [ai-i18n-tools.config.json](https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json); source SVGs in `documentation/static/assets/` (e.g. [duplistatus_toolbar.svg](https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg)); `translate-svg` writes per-locale files into `documentation/i18n/<locale>/…/current/assets/` beside colocated PNGs; docs embed them via `../assets/` paths (e.g. [overview.md](https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md)) with no `regexAdjustments` bridge needed.
 

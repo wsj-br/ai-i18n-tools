@@ -104,6 +104,32 @@ ai-i18n-tools status
 | Nextra `_meta.ts` लेबल और थीम डिक्शनरी `.ts` | दस्तावेज़ — `translate-docs` (`style: "nextra"` होने पर ऑटो `_meta`, वैकल्पिक `nextraDictionaryPath`); `json[]` का उपयोग **न करें** — [Nextra एकीकरण](/hi/guide/integrations/nextra) देखें |
 | Fumadocs `meta.json` लेबल और UI ओवरराइड कैटलॉग | दस्तावेज़ — `translate-docs` (`style: "fumadocs"` होने पर ऑटो `meta.json`, वैकल्पिक `fumadocsUiCatalog`); `json[]` का उपयोग **न करें** — [Fumadocs एकीकरण](/hi/guide/integrations/fumadocs) देखें |
 | स्टैंडअलोन नेस्टेड लोकेल JSON (ZenBrowser-शैली `translation.json` ट्री) | JSON — `json[]` + `translate-json` |
+| i18next नेमस्पेस फ़ाइलें (`public/locales/en/common.json`, <code v-pre>{{name}}</code> टोकन, `key_one` / `key_other` प्रत्यय) | JSON — `json[]` + `translate-json` ([i18next नेमस्पेस फ़ाइलें](#i18next-namespace-files) देखें) |
+| इंटलेयर `*.content.ts` डिक्शनरी + `useIntlayer` | [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) — `migrate-intlayer`, फिर UI स्ट्रिंग |
 | `<text>` / `<title>` / `<desc>` के साथ सचित्र `.svg` फ़ाइलें | `features.translateSVG` + [`svg`](/hi/reference/configuration#svg) + `translate-svg` (वैकल्पिक; तीन मुख्य पाइपलाइनों में से एक नहीं) |
 
 फ़ील्ड संदर्भ: [कॉन्फ़िगरेशन संदर्भ](/hi/reference/configuration#json) में [`json`](#json)। सफाई के लिए कैश कुंजियाँ `file_tracking` में `json-block:{blockIndex}:{projectRelPath}` का उपयोग करती हैं।
+
+<a id="i18next-namespace-files"></a>
+### i18next नेमस्पेस फ़ाइलें
+
+जेसन पाइपलाइन में टाइपिकल i18next कुंजी/मान स्थान फ़ाइलें शामिल हैं: नेस्टेड वस्तुएं, स्ट्रिंग सरणियां, <code v-pre>{{name}}</code> मानों में इंटरपोलेशन, और स्वतंत्र बहुवचन प्रत्यय कुंजियां (`welcome_one`, `welcome_other`)। यह **नहीं** `t("some.key")` कॉल साइट्स को पुनः लिखता — वे कुंजी-आधारित रहते हैं। एक परियोजना को ai-i18n-tools के अंग्रेजी स्रोत-स्ट्रिंग `t()` स्कीमा पर ले जाने के लिए, कॉल साइट्स को `t("English text")` (या इंटलेयर `.content.ts` के स्रोत के साथ `migrate-intlayer` चलाएं) में बदलें।
+
+उदाहरण (`public/locales/en/` के तहत स्रोत अंग्रेजी नेमस्पेस):
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero` (और अन्य CLDR प्रत्यय) को अलग-अलग पत्तियों के रूप में अनुवादित किया जाता है। i18next के लिए प्रत्यय द्वारा बहुवचन को हल करते रहने के लिए यह पर्याप्त है; पाइपलाइन उन्हें एक ही कैटलॉग पंक्ति में पुनर्गठित नहीं करती है।

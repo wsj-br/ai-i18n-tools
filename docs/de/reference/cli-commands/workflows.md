@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI – Workflows & Status
+<a id="cli--workflows--reporting"></a>
+# CLI – Workflows und Reporting
 
 <a id="sync"></a>
 ### `sync`
@@ -35,3 +35,16 @@ Gibt Dokumentations-Cache- und `strings.json`-Statistiken aus (dieselben Aggrega
 **Wichtige Optionen:** `--max-columns`
 
 **Siehe auch:** [Dashboard-Statistiken](/de/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**Zusammenfassung:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+Zeigt aufgezeichnete API-Aufrufstatistiken des Modells an (Aufrufe, Token und eine einzelne USD-Kosten). Die Kosten sind der `usage.cost` des Anbieters, falls vorhanden, andernfalls der Betrag von `providers.<name>.modelPricing` oder der anbieterweite `providers.<name>.pricing`-Standard (gespeichert bei neuen Aufrufen; zum Zeitpunkt der Berichterstellung für ältere Zeilen ohne gespeicherte Kosten angewendet). Dieselben Aggregate wie im Übersetzungs-Dashboard → Nutzung & Kosten. Detailzeilen, die älter als sieben UTC-Kalendertage sind, werden in monatliche `api_totals` zusammengefasst; Berichte kombinieren beide Tabellen. `--since` akzeptiert `YYYY-MM-DD`, eine Dauer (`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`) oder ein Kalendermonatsfenster (`1mo`, `2mo`, `3mo`). `--clear` löscht Detailzeilen und monatliche Summen (`--older-than` ist `1mo`, `2mo`, `3mo`, `6mo`, `1y` oder `all`; `--dry-run` meldet die Anzahl, ohne zu löschen).
+
+**Wichtige Optionen:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**Siehe auch:** [Dashboard-Nutzung & Kosten](/de/guide/translation-dashboard/usage)

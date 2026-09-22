@@ -21,7 +21,7 @@ Für einen optionalen **Sprachumschalter**-Block in README oder Docs setzen Sie 
 
 Beliebige verschachtelte UI-JSON-Bundles, die nicht mit den Shell-/Theme-Strings eines Dokumentations-Frameworks zusammenhängen, gehören in die [JSON](/de/guide/json)-Pipeline, nicht in `docs[]`.
 
-Für **konsistente Terminologie** zwischen UI und Dokumentation setzen Sie `glossary.uiGlossary` auf Ihren `strings.json`-Pfad – `translate-docs` verwendet vorhandene UI-Übersetzungen als Hinweise in LLM-Prompts, wenn übereinstimmende Begriffe in einem Segment erscheinen. Optionales `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu (geteilt mit `translate-ui` und `proofread-ui`). Kompakte UI-Label-Abkürzungen, die für schmale Spalten verwendet werden (z. B. `Size` → `Tam`), bleiben für die UI-Übersetzung verfügbar, werden aber aus den Dokumentglossarhinweisen weggelassen. Generieren Sie eine Starter-CSV mit `glossary-generate`, bearbeiten Sie Zeilen im Tab **Glossar** des Übersetzungs-Dashboards, oder sehen Sie unter [Konfiguration – `glossary`](/de/reference/configuration#glossary) und [Glossar](/de/guide/translation-dashboard/glossary).
+Für **Terminologiekonsistenz** zwischen UI und Dokumentation setzen Sie `glossary.uiGlossary` auf Ihren `strings.json`-Pfad — `translate-docs` nutzt bestehende UI-Übersetzungen als Hinweise in LLM-Prompts, wenn passende Begriffe in einem Segment vorkommen. Das optionale `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu (gemeinsam genutzt mit `translate-ui` und `proofread-ui`). Kompakte UI-Label-Abkürzungen für schmale Spalten (z. B. `Size` → `Tam`) bleiben für die UI-Übersetzung verfügbar, werden aber aus den Glossar-Hinweisen der Dokumentation ausgelassen. Generieren Sie eine CSV-Vorlage mit `glossary-generate`, bearbeiten Sie Zeilen auf der Registerkarte [Glossar](/de/guide/translation-dashboard/glossary) im Translation Dashboard oder lesen Sie [Konfiguration — `glossary`](/de/reference/configuration#glossary) und [Glossar](/de/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
@@ -43,7 +43,7 @@ Für **konsistente Terminologie** zwischen UI und Dokumentation setzen Sie `glos
 | Seitenübergreifende `#anchor`-Links | [Anker-Links](/de/guide/documents/anchor-links) |
 | Umschreiben von Link- und Asset-URLs (`regexAdjustments`) | [Link-Umschreibung](/de/guide/documents/link-rewriting) |
 | Screenshots in Docs | [Bilder & Screenshots](/de/guide/images-and-screenshots/) |
-| Produktterminologie und UI/Dokumentationskonsistenz | [Konfiguration — `glossary`](/de/reference/configuration#glossary), [Glossar](/de/guide/translation-dashboard/glossary) |
+| Produktterminologie und Konsistenz zwischen UI und Dokumentation | [Konfiguration — `glossary`](/de/reference/configuration#glossary), [Glossar](/de/guide/glossary) |
 | `translate-docs`-Flags und Cache | [CLI-Optionen](/de/guide/documents/cli-options) |
 
 <a id="step-1-initialise-for-documentation"></a>

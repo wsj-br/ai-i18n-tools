@@ -47,7 +47,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `splitTranslatableIntoBatches` | 將區段分組為 LLM 大小的批次。 |
 | `validateTranslation` | 轉譯後的結構檢查（**async** — 必須等待）。 |
 | `resolveDocumentationOutputPath` | 解析已翻譯文件的輸出檔案路徑。 |
-| `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表。 |
+| `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表，包括可選術語 `Context` 註解。 |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | 載入 `glossary.contextFiles` 和快取失效的指紋指引。 |
 | `runTranslateUI` | 程式化翻譯 UI 的進入點。 |
 | `writeInitConfigFile` | 寫入起始設定檔 JSON（`template`，選擇性 `providerKey` 預設為 `openrouter`）。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |

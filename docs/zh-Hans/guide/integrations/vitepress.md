@@ -216,8 +216,8 @@ themeConfig: themeConfigFor(theme, code)
 
 **编写规则**
 
-- 跨页面文档链接：在 `docs/` 下的英文 markdown 中使用**站点路由**（`/guide/…`、`/reference/…`），或者在编写将同步到另一个项目中的 `docs/index.md` 的 README 时使用 `docs/guide/…` 路径。
-- 可运行的演示、`LICENSE` 和其他仓库文件：在 `README.md` 和文档中使用**完整的 GitHub URL**（参见 [README 和文档主页](#readme-as-the-docs-homepage)）。
-- **不要**手动编辑 `docs/<locale>/` 中的链接——使用 `sync` / `translate-docs` 重新生成。
+- 跨页文档链接：在 `docs/` 下的英文 Markdown 中使用**站点路由** (`/guide/…`, `/reference/…`)，或在编写将同步至其他项目 `docs/index.md` 的 README 时使用 `docs/guide/…` 路径。
+- 可运行的演示、`LICENSE` 及其他代码库文件：在 `README.md` 和文档中使用**完整的 GitHub URL**（请参阅 [README 和文档主页](#readme-and-the-docs-homepage)）。
+- **请勿**手动编辑 `docs/<locale>/` 中的链接——请通过 `sync` / `translate-docs` 重新生成。
 
 另请参阅 [链接重写](/zh-Hans/guide/images-and-screenshots/link-rewriting)（扁平结构与 VitePress 对比）和 [配置 — `docsOutput`](/zh-Hans/reference/configuration#docsoutput)。

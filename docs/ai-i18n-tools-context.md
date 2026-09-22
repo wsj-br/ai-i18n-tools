@@ -1,6 +1,6 @@
 # ai-i18n-tools — agent context
 
-Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behavior, runtime imports). Developing the package itself: see `AGENT.md` and `docs/reference/` in the upstream repo.
+Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behaviour, runtime imports). Developing the package itself: see `AGENTS.md` and `docs/reference/` in the upstream repo.
 
 ---
 
@@ -13,7 +13,9 @@ Standalone reference for assistants working **in a consumer repo** that depends 
 
 - **LLM provider:** configure under `providers.<name>` and select the active one with the top-level `provider` key (optional when only one provider is configured). Built-in presets (OpenRouter, OpenAI, Anthropic, Gemini, DeepSeek, Cerebras, Groq, Mistral, xAI, NVIDIA, Alibaba, APIFUN, Ollama) need only a `translationModels` list; their `baseUrl` and API-key env var are built in. Any OpenAI-compatible endpoint works by setting `providers.<name>.baseUrl` (+ `apiKeyEnv`). A legacy top-level `openrouter` block is auto-migrated to `providers.openrouter` on load.
 
-Optional: set `providers.<name>.requestTimeoutMs` if the default **45000** ms per request is wrong for your network.
+Optional: set top-level `requestTimeout` (seconds) or `requestTimeoutMs` for every provider, or the same keys under `providers.<name>` to override one provider, if the default **45** seconds per request is wrong for your network. Set only one of the two at each level.
+
+Optional cost rates under `providers.<name>`: `pricing` (provider-wide USD per 1,000,000 input and output tokens, `inputPerMTokens` / `outputPerMTokens`) and `modelPricing` (per-model overrides). Applied when the provider omits `usage.cost`. OpenRouter already returns a per-call cost, so leave both unset there. A provider-reported cost is kept as returned. The amount is stored with the call and shown by `usage` and the dashboard Usage & costs view. See [Providers and models](/guide/providers-and-models#multiple-providers).
 
 Optional model tiers under `providers.<active>`: `uiModels` (UI-only fallback after per-locale overrides) and `localeModels` (per-locale overrides for all pipelines). Resolution order — UI: `localeModels` → `uiModels` → `translationModels`; docs/JSON/SVG: `localeModels` → `translationModels`. See [Providers and models — Model fallback chain](/guide/providers-and-models#model-fallback-chain).
 
@@ -226,7 +228,31 @@ For sites that store UI copy in nested JSON files per locale (no `t()` in compon
 - `keyPolicy.mode`: `allowlist`, `denylist`, or `both` (allowlist first, then subtract denylist). Paths use dot notation (`nav.home.label`); globs use minimatch. Bare names like `slug` match the final key segment.
 - Cache file tracking: `json-block:{blockIndex}:{projectRelPath}`.
 
+Typical **i18next namespace JSON** (for example `public/locales/en/common.json` with nested keys and <code v-pre>{{name}}</code> interpolation) is this pipeline. Point `contentPaths` at the source-locale files and use `{locale}` / `{basename}` in `outputPathTemplate` so each namespace is written next to its siblings:
+
+```json
+{
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}",
+      "keyPolicy": {
+        "mode": "denylist",
+        "skipKeys": ["id", "slug", "href", "url", "key", "code"],
+        "translateKeys": []
+      }
+    }
+  ]
+}
+```
+
+i18next plural suffix keys (`key_one`, `key_other`, `key_zero`, …) are translated as independent string leaves (no family grouping). <code v-pre>{{var}}</code> interpolation tokens in values are preserved. Multi-namespace layouts (`public/locales/{lng}/{ns}.json`) work with a glob in `contentPaths` plus `{basename}` in the output template.
+
 **Commands:** `ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
+
+To migrate Intlayer `.content.ts` dictionaries (and simple `useIntlayer` / `getIntlayer` call sites) into the UI-strings `t("English")` schema instead, see `migrate-intlayer` and [Migrating from Intlayer](/guide/migrating-from-intlayer).
 
 **vs Documents:** Docusaurus shell files (`{ "key": { "message": "…", "description": "…" } }`) belong under `docs[].docusaurusCatalogDir` and are translated by `translate-docs`, not `translate-json`. The same rule applies to VitePress theme catalogs, Nextra dictionaries, and Fumadocs UI catalogs — all via `docs[]`, not `json[]`.
 
@@ -270,7 +296,7 @@ Paths depend on your config; common artifacts:
 - `cacheDir` — SQLite cache for `translate-docs`, `translate-json`, and `translate-svg` (shared segment store).
 - Per-locale SVG outputs — from `svg.outputDir` when `translateSVG` is on.
 - Outputs from `json[]` — paths from each block’s `outputPathTemplate` (e.g. `src/i18n/pt-br/translation.json` when using `{llocale}`).
-- Optional CSV at `glossary.userGlossary` — influences `translate-ui` and `proofread-ui` when present.
+- Optional CSV at `glossary.userGlossary` — influences `translate-ui` and `proofread-ui` when present. Optional `Context` column plus `glossary.contextFiles` add source-language usage notes and project briefs to every pipeline.
 
 Full config field reference: [Configuration](/reference/configuration).
 
@@ -278,7 +304,7 @@ Full config field reference: [Configuration](/reference/configuration).
 
 ## Commands (common)
 
-When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`.
+When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`. Optional `Context` cells and `glossary.contextFiles` add extra source-language guidance for all pipelines.
 
 - **Scaffold config:** `ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>]`
 - **Validate model ids:** `ai-i18n-tools check-models` (validates the union of `translationModels`, `uiModels`, and `localeModels`)
@@ -288,6 +314,7 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Build `ui-languages.json`:** `ai-i18n-tools generate-ui-languages`
 - **Refresh UI catalog:** `ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
 - **Insert HTML i18n markers:** `ai-i18n-tools mark-html [paths...]` (dry run; `--write` to apply)
+- **Migrate Intlayer dictionaries:** `ai-i18n-tools migrate-intlayer` (dry run; `--write` to seed `strings.json` and rewrite safe `useIntlayer` / `getIntlayer` sites; `--content-glob` defaults to `**/*.content.ts`)
 - **Translate UI:** `ai-i18n-tools translate-ui` (runs extract first)
 - **Translate documentation:** `ai-i18n-tools translate-docs` — `docs[]` pages plus framework shell catalogs (see **Documentation frameworks** below)
 - **Insert heading anchor ids:** `ai-i18n-tools write-heading-ids` (before re-translating when section links break)
@@ -299,7 +326,8 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Markdown static checks:** `ai-i18n-tools check-markdown` (no API; exit 1 on issues; updates `markdown_source_issues` in `cacheDir` unless `--no-cache`). Same rules run during `translate-docs` when `warnMarkdownSourceIssues` is enabled, including `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `[text](url)` link (put bold inside the link text only). Bold around inline code is handled at translation time via emphasis placeholders — not flagged as a source issue.
 - **Status tables:** `ai-i18n-tools status` (UI strings; markdown per `docs[]` block; `json[]` when `translateJson` is on)
 - **Cache aggregates:** `ai-i18n-tools statistics` (documentation cache + `strings.json` aggregates; same idea as the dashboard Statistics view)
-- **Web dashboard:** `ai-i18n-tools dashboard`
+- **API-call usage and cost:** `ai-i18n-tools usage` (recorded billed model calls, including discarded retries; last 7 UTC calendar days of detail plus monthly totals; same idea as the dashboard Usage & costs view)
+- **Web dashboard:** `ai-i18n-tools dashboard` (alias: `dash`)
 - **Cleanup:** `ai-i18n-tools cleanup` (clears the entire `markdown_source_issues` table, runs `sync --force-update`, then prunes stale cache rows; backs up SQLite only when `--backup` is set)
 - **Purge one locale:** `ai-i18n-tools purge-locale -l <code>` (cache + generated artifacts; `--dry-run`, `--keep-files`)
 - **Remove temp/log files:** `ai-i18n-tools clean-temp`

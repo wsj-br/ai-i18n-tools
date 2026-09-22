@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI — 설정
+<a id="cli--getting-started"></a>
+# CLI — 시작하기
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@ CLI 버전과 빌드 타임스탬프를 출력합니다(루트 프로그램의 `
 | `ui-json-bundles` | JSON (`json[]`만 해당) |
 
 `--with-translate-ignore`는 시작용 `.translate-ignore`를 생성합니다.
+
+---
+
+<a id="help"></a>
+### `help`
+
+**개요:** `ai-i18n-tools help [command]`
+
+하위 명령어의 도움말을 표시합니다(`ai-i18n-tools <command> --help`와 동일한 출력).

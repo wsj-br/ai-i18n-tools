@@ -4,14 +4,25 @@ Minimal example for comparing LLM providers on the same document. Unlike [`../te
 
 All four providers are defined in a single config ([`ai-i18n-tools.config.json`](./ai-i18n-tools.config.json)); you pick which one to use per run with the global `-P` / `--provider` flag.
 
-| Provider    | Model (default)             | API-key environment variable |
-| ----------- | --------------------------- | ---------------------------- |
-| `openai`    | `gpt-4o-mini`               | `OPENAI_API_KEY`             |
-| `anthropic` | `claude-haiku-4-5-20251001` | `ANTHROPIC_API_KEY`          |
-| `nvidia`    | `openai/gpt-oss-20b`        | `NVIDIA_API_KEY`             |
-| `deepseek`  | `deepseek-v4-flash`         | `DEEPSEEK_API_KEY`           |
+| Provider     | Model (default)             | API-key environment variable |
+| ------------ | --------------------------- | ---------------------------- |
+| `openai`     | `gpt-4o-mini`               | `OPENAI_API_KEY`             |
+| `anthropic`  | `claude-haiku-4-5-20251001` | `ANTHROPIC_API_KEY`          |
+| `openrouter` | `openai/gpt-4o-mini`        | `OPENROUTER_API_KEY`         |
+| `deepseek`   | `deepseek-flash`            | `DEEPSEEK_API_KEY`           |
 
-The default `provider` in the config is `nvidia`; the `-P` flag overrides it for a single run. Each provider's first entry in `translationModels` is its default — edit `translationModels` in the config to try different models per provider.
+The default `provider` in the config is `openrouter`; the `-P` flag overrides it for a single run. Each provider's first entry in `translationModels` is its default — edit `translationModels` in the config to try different models per provider.
+
+### Cost (`pricing` and `modelPricing`)
+
+OpenRouter returns `usage.cost` on each response, so the `openrouter` block has no `pricing` or `modelPricing`. OpenAI, Anthropic, and DeepSeek do not return a per-call cost, so the example config sets optional USD-per-1M-token rates for those three. Each billed call is priced from those rates and the amount is printed in the translation summary and stored on the `api_calls` row:
+
+- `providers.<name>.pricing` — provider-wide default (used for any model without an override). In this example it matches the first, cheaper `translationModels` entry.
+- `providers.<name>.modelPricing` — per-model override. Here it covers the more expensive fallback model only.
+
+A matching `modelPricing` id wins; otherwise the provider default is used; with neither, the call stays unpriced. Provider-reported cost is kept as returned. `ai-i18n-tools usage` and the dashboard show one Cost figure (stored amount, plus the same rates applied to any older rows that were saved without a cost).
+
+The sample rates are published list prices. Update them from your provider's current price list before treating the estimate as a bill.
 
 ## Source document and targets
 
@@ -30,7 +41,7 @@ Each provider needs its API key exported in your shell before running. Set only 
 ```bash
 export OPENAI_API_KEY=sk-...
 export ANTHROPIC_API_KEY=sk-ant-...
-export NVIDIA_API_KEY=nvapi-...
+export OPENROUTER_API_KEY=sk-or-...
 export DEEPSEEK_API_KEY=sk-...
 ```
 
@@ -69,7 +80,7 @@ Translate into all configured locales with a specific provider (the `-P` value m
 ```bash
 ai-i18n-tools translate-docs -P openai    --force
 ai-i18n-tools translate-docs -P anthropic --force
-ai-i18n-tools translate-docs -P nvidia    --force
+ai-i18n-tools translate-docs -P openrouter --force
 ai-i18n-tools translate-docs -P deepseek  --force
 ```
 
@@ -79,7 +90,7 @@ Single locale (for example, Hindi in Latin script with Anthropic):
 ai-i18n-tools translate-docs -P anthropic --locale hi-Latn
 ```
 
-Without `-P`, the default `provider` (`nvidia`) is used:
+Without `-P`, the default `provider` (`openrouter`) is used:
 
 ```bash
 ai-i18n-tools translate-docs
@@ -90,7 +101,7 @@ The package scripts in [`package.json`](./package.json) wrap the same commands:
 ```bash
 pnpm run translate:openai
 pnpm run translate:anthropic
-pnpm run translate:nvidia
+pnpm run translate:openrouter
 pnpm run translate:deepseek
 ```
 
@@ -115,7 +126,7 @@ Before translating, use `check-models` to confirm that each provider's configure
 ```bash
 ai-i18n-tools check-models -P openai
 ai-i18n-tools check-models -P anthropic
-ai-i18n-tools check-models -P nvidia
+ai-i18n-tools check-models -P openrouter
 ai-i18n-tools check-models -P deepseek
 ```
 
@@ -125,7 +136,7 @@ The package scripts in [`package.json`](./package.json) wrap the same commands, 
 pnpm run check-models:all
 pnpm run check-models:openai
 pnpm run check-models:anthropic
-pnpm run check-models:nvidia
+pnpm run check-models:openrouter
 pnpm run check-models:deepseek
 ```
 
@@ -139,6 +150,14 @@ Use the related `list-models` command to see every model a provider advertises. 
 
 ```bash
 ai-i18n-tools list-models -P anthropic
+```
+
+### Reviewing recorded usage and estimated cost
+
+After one or more translation runs, print recorded calls, tokens, and cost (OpenRouter's reported cost, or the amount stored from the configured rates for the other providers):
+
+```bash
+ai-i18n-tools usage
 ```
 
 ### Benchmarking the configured models
@@ -170,7 +189,7 @@ pnpm clean
 ```text
 examples/multi-provider/
 ├── README.md
-├── ai-i18n-tools.config.json   # pt-BR source → en-GB, hi-Latn, zh-Hans; openai/anthropic/nvidia/deepseek providers
+├── ai-i18n-tools.config.json   # pt-BR source → en-GB, hi-Latn, zh-Hans; openai/anthropic/openrouter/deepseek providers
 ├── markdown-example.md         # Portuguese source
 ├── package.json                # build + per-provider translate / check-models scripts
 ├── .gitignore                  # ignores .translation-cache/ and translated-docs/

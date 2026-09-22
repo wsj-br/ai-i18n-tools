@@ -3,7 +3,7 @@
 
 Le tableau de bord de traduction est une interface utilisateur web locale permettant d'inspecter et de modifier les données de traduction de votre projet. Il lit à partir de trois sources :
 
-- **Cache SQLite** (`cacheDir`) — traductions de segments de documentation, enregistrements d'échec, analyses de problèmes Markdown
+- Cache SQLite (`cacheDir`) — traductions de segments de documentation, enregistrements d'échecs, analyses de problèmes Markdown, utilisation des appels d'API facturés
 - **`strings.json`** — catalogue de chaînes d'interface utilisateur (chaînes simples et groupes de pluriels)
 - **CSV du glossaire utilisateur** (`glossary.userGlossary`) — suggestions terminologiques pour `translate-ui` et `proofread-ui`
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-Le port d'écoute par défaut est **8675**. Si ce port est indisponible, le serveur essaie le port suivant (jusqu'à 1000 tentatives) et enregistre dans les journaux le port choisi. L'alias obsolète `editor` fonctionne encore mais affiche un avertissement — privilégiez `dashboard`.
+Le port d'écoute par défaut est **8675**. Si ce port n'est pas disponible, le serveur essaie le port suivant (jusqu'à 1000 tentatives) et enregistre le port qu'il a choisi. `dash` est un alias équivalent. L'alias déprécié `editor` fonctionne toujours mais affiche un avertissement — préférez `dashboard` ou `dash`.
 
 L'interface utilisateur du tableau de bord utilise la même résolution de localisation que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → localisation du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
@@ -36,6 +36,7 @@ L'interface utilisateur du tableau de bord utilise la même résolution de local
 | Corriger une forme plurielle (`one`, `other`, …) | **Pluriels d'interface utilisateur** | [Chaînes et pluriels d'interface utilisateur](/fr/guide/translation-dashboard/ui-strings) |
 | Verrouiller la terminologie pour la traduction de l'interface utilisateur | **Glossaire** | [Glossaire](/fr/guide/translation-dashboard/glossary) |
 | Voir la couverture du cache et l'utilisation du modèle | **Statistiques** | [Statistiques](/fr/guide/translation-dashboard/statistics) |
+| Voir les jetons et le coût des appels d'API | **Utilisation et coûts** | [Utilisation et coûts](/fr/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## Après avoir modifié

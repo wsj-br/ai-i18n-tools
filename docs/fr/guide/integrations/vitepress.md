@@ -216,8 +216,8 @@ Ajoutez `ai-i18n-tools` en tant que **devDependency** dans le projet VitePress (
 
 **Règles de rédaction**
 
-- Liens de documentation inter-pages : utilisez les **routes du site** (`/guide/…`, `/reference/…`) dans le markdown anglais sous `docs/`, ou les chemins `docs/guide/…` lors de la rédaction d'un README qui sera synchronisé dans `docs/index.md` dans un autre projet.
-- Démos exécutables, `LICENSE` et autres fichiers de dépôt : utilisez les **URL GitHub complètes** dans `README.md` et dans la documentation (voir [README et la page d'accueil de la documentation](#readme-as-the-docs-homepage)).
+- Liens inter-pages de la documentation : utilisez les **routes du site** (`/guide/…`, `/reference/…`) dans le markdown en anglais sous `docs/`, ou les chemins `docs/guide/…` lors de la rédaction d'un README qui sera synchronisé dans `docs/index.md` d'un autre projet.
+- Démonstrations exécutables, `LICENSE` et autres fichiers du dépôt : utilisez les **URL GitHub complètes** dans `README.md` et dans la documentation (voir [README et page d'accueil de la documentation](#readme-and-the-docs-homepage)).
 - Ne modifiez **pas** manuellement les liens dans `docs/<locale>/` — régénérez-les avec `sync` / `translate-docs`.
 
 Voir aussi [Réécriture de liens](/fr/guide/images-and-screenshots/link-rewriting) (plat vs VitePress) et [Configuration — `docsOutput`](/fr/reference/configuration#docsoutput).

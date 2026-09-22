@@ -75,10 +75,10 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 **उपनाम** (वही `doc-system` इंजन, प्रीसेट `localeSubpath` और डिफ़ॉल्ट):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` डिफ़ॉल्ट रूप से `docusaurus-plugin-content-docs/current` (Docusaurus i18n प्लगइन लेआउट) पर सेट होता है।
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` डिफ़ॉल्ट रूप से `""` पर सेट होता है; `localePathLowercase` डिफ़ॉल्ट रूप से `true` पर सेट होता है। `{outputDir}/{locale}/` के अंतर्गत अनुवादित पृष्ठ, [Starlight](https://starlight.astro.build/guides/i18n/) से मेल खाते हैं जब अंग्रेज़ी सामग्री रूट पर रहती है और `outputDir` `docsRoot` के बराबर होता है। सादे Astro लोकेल पृष्ठों के लिए भी उपयोग किया जाता है (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — [Astro वेबसाइट पृष्ठ](/hi/guide/ui-strings/astro-website#pages-parse-and-replace) देखें।
-- `docsOutput.style = "vitepress"` — `doc-system` के समान लेआउट जिसमें खाली `localeSubpath` होता है; BCP-47 लोकेल फ़ोल्डर नाम संरक्षित रहते हैं (`localePathLowercase` डिफ़ॉल्ट रूप से `false` पर सेट होता है)। [VitePress एकीकरण](/hi/guide/integrations/vitepress) देखें।
-- `docsOutput.style = "nextra"` — `doc-system` के समान लेआउट जिसमें खाली `localeSubpath` होता है; अंग्रेज़ी स्रोत एक लोकेल फ़ोल्डर के अंतर्गत रहता है (जैसे `content/en/`)। [Nextra एकीकरण](/hi/guide/integrations/nextra) देखें।
+- `docsOutput.style = "docusaurus"` — `localeSubpath` का डिफ़ॉल्ट `docusaurus-plugin-content-docs/current` है (Docusaurus i18n प्लगइन लेआउट)।
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` का डिफ़ॉल्ट `""` है; `localePathLowercase` का डिफ़ॉल्ट `true` है। अनुवादित पृष्ठ `{outputDir}/{locale}/` के अंतर्गत, [Starlight](https://starlight.astro.build/guides/i18n/) से मेल खाते हैं जब अंग्रेज़ी कंटेंट रूट पर होती है और `outputDir`, `docsRoot` के बराबर होता है। सामान्य Astro लोकेल पृष्ठों (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) के लिए भी उपयोग किया जाता है — [Astro वेबसाइट पृष्ठ](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) देखें।
+- `docsOutput.style = "vitepress"` — रिक्त `localeSubpath` के साथ `doc-system` जैसा ही लेआउट; BCP-47 लोकेल फ़ोल्डर नाम सुरक्षित रखे जाते हैं (`localePathLowercase` का डिफ़ॉल्ट `false` है)। [VitePress एकीकरण](/hi/guide/integrations/vitepress) देखें।
+- `docsOutput.style = "nextra"` — रिक्त `localeSubpath` के साथ `doc-system` जैसा ही लेआउट; अंग्रेज़ी स्रोत एक लोकेल फ़ोल्डर के अंतर्गत स्थित होता है (उदा. `content/en/`)। [Nextra एकीकरण](/hi/guide/integrations/nextra) देखें।
 
 Docusaurus प्रीसेट (प्राथमिक दस्तावेज़ पृष्ठ):
 

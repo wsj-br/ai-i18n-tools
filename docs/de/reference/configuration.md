@@ -97,6 +97,13 @@ Segment-Batching für **translate-docs**, **translate-svg** und **translate-json
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs` (optional)
+
+Maximale Wartezeit für jede LLM-Anfrage, für jeden Anbieter. `requestTimeout` sind ganze Sekunden; `requestTimeoutMs` sind Millisekunden. Standard: **45** Sekunden, wenn beide weggelassen werden. Legen Sie nur eines von beiden fest. Ein Anbieter, der eines der Felder festlegt, verwendet diesen Wert stattdessen nur für diesen Anbieter.
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` und `providers`
 
@@ -122,8 +129,14 @@ Jeder `providers.<name>`-Block akzeptiert:
   Maximale Vervollständigungs-Tokens pro Anfrage. Standard: `8192`.
 - `temperature`
   Sampling-Temperatur. Standard: `0.2`.
+- `requestTimeout`
+  Maximale Wartezeit in Sekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, ist der Standardwert `45` Sekunden. Legen Sie für dasselbe Objekt nur `requestTimeout` oder `requestTimeoutMs` fest.
 - `requestTimeoutMs`
-  Maximale Wartezeit in Millisekunden für jede Anfrage. Standard: `30000` (30 Sekunden).
+  Maximale Wartezeit in Millisekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, ist der Standardwert `45000` (45 Sekunden). Legen Sie für dasselbe Objekt nur `requestTimeout` oder `requestTimeoutMs` fest.
+- `pricing` (optional)
+  Anbieterweite USD pro 1.000.000 Token: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf keine vom Anbieter gemeldeten `usage.cost` aufweist (die meisten Anbieter außer OpenRouter), wird dieser Satz auf die Eingabe- und Ausgabe-Token dieses Aufrufs angewendet. Der Betrag wird in die Übersetzungszusammenfassung aufgenommen und in der `api_calls`-Zeile gespeichert. Ein übereinstimmender `modelPricing`-Eintrag überschreibt diesen Standardwert. Vom Anbieter gemeldete Kosten werden niemals ersetzt. Zeilen, die ohne Kosten gespeichert wurden, können später weiterhin durch [`usage`](/de/reference/cli-commands/workflows#usage) und [Nutzung und Kosten](/de/guide/translation-dashboard/usage) geschätzt werden.
+- `modelPricing` (optional)
+  Modellspezifische USD pro 1.000.000 Token: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zur Aufrufzeit angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
 
 Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebungsvariable):
 
@@ -143,9 +156,9 @@ Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebu
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (keine) |
 
-Ein Legacy-Top-Level-`openrouter`-Block (mit `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs`) wird immer noch akzeptiert und beim Laden automatisch in `providers.openrouter` (mit `provider: "openrouter"`) migriert; `defaultModel` / `fallbackModel` werden in `translationModels` zusammengefasst.
+Ein veralteter übergeordneter `openrouter`-Block (mit `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) wird weiterhin akzeptiert und beim Laden automatisch zu `providers.openrouter` (mit `provider: "openrouter"`) migriert; `defaultModel` / `fallbackModel` werden in `translationModels` zusammengeführt.
 
-Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfiguriert und mit `-P` zwischen ihnen wechselt, finden Sie unter [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `nvidia` und `deepseek` im selben Dokument).
+Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfiguriert und mit `-P` zwischen ihnen wechselt, finden Sie unter [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` und `deepseek` im selben Dokument).
 
 **Warum mehrere Modelle verwenden:** Verschiedene Provider und Modelle haben unterschiedliche Kosten und bieten unterschiedliche Qualitätsstufen über Sprachen und Gebiete hinweg. Konfigurieren Sie `translationModels` **als eine geordnete Fallback-Kette** (anstatt eines einzelnen Modells), damit die CLI das nächste Modell versuchen kann, wenn eine Anfrage fehlschlägt.
 
@@ -342,13 +355,13 @@ Wenn `true`, verwenden integrierte Ausgabelayouts (`nested`, `flat`, `doc-system
 - `docsOutput.flatPreserveRelativeDir`
 Wenn `docsOutput.style = "flat"`, Quellunterverzeichnisse beibehalten, damit Dateien mit demselben Basisnamen nicht kollidieren. Standard `false`.
 - `docsOutput.rewriteRelativeLinks`
-Relative Links nach der Übersetzung neu schreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
+Relative Links nach der Übersetzung umschreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
 - `docsOutput.linkRewriteDocsRoot`
-Das Repository-Root-Verzeichnis, das beim Berechnen von Präfixen für Flat-Link-Umschreibungen verwendet wird. Dies sollte normalerweise als `"."` belassen werden, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Root-Verzeichnis.
+Repo-Root, das beim Berechnen der Präfixe für das Umschreiben von Flat-Links verwendet wird. Belassen Sie dies üblicherweise auf `"."`, außer Ihre übersetzte Dokumentation befindet sich in einem anderen Projekt-Root.
 - `docsOutput.rewriteVitepressLinks`
-Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Gebietsschema-Ordner neben Englisch unter `docsRoot` befinden. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und gebietsschema-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle – siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-as-homepage).
+Wenn `true`, führen Sie den VitePress-Link-Normalizer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Locale-Ordner neben dem englischen Ordner unter `docsRoot` befinden. Schreibt `docs/guide/…`-Pfade im README-Stil in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle — siehe [VitePress-Integration — README als Dokumentations-Startseite](/de/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
+Wenn `true`, führen Sie den Nextra-Link-Normalizer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in locale-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration — Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
 `"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben englische Quellen; dir schreibt Gebietsschema-Ordner wie Nextra. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
@@ -443,7 +456,7 @@ Top-Level-Array von verschachtelten JSON-Übersetzungspipelines. Wird nur verwen
 | Feld | Beschreibung |
 |-------|-------------|
 | `description` | Optionale Anmerkung für CLI / `status` (wird nicht übersetzt). |
-| `contentPaths` | Quell-`.json`-Dateien, Verzeichnisse oder Muster unterhalb des Projekt-Stammverzeichnisses. |
+| `contentPaths` | Quell-`.json`-Dateien, -Verzeichnisse oder -Globs unter dem Projektstamm. Typische i18next-Namespace-Dateien (`public/locales/en/*.json`) werden unterstützt: verschachtelte Objekte, Arrays, <code v-pre>{{var}}</code>-Interpolation in Zeichenfolgenwerten und unabhängige Plural-Suffixschlüssel (`key_one`, `key_other`). |
 | `outputPathTemplate` | Erforderlicher Ausgabepfad pro Zielsprache. Platzhalter: `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
 | `targetLocales` | Optionaler Teilbereich für diesen Block; andernfalls Stamm-`targetLocales`. |
 | `keyPolicy.mode` | `allowlist`, `denylist` oder `both`. |
@@ -474,13 +487,31 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 | Feld          | Beschreibung                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | Pfad zu `strings.json` – erstellt automatisch ein Glossar aus vorhandenen Übersetzungen.                                                                                                 |
-| `userGlossary` | Pfad zu einer CSV-Datei mit den Spalten `Original language string` (oder `en`), `locale`, `Translation` – eine Zeile pro Quellbegriff und Zielsprache (`locale` kann `*` für alle Ziele sein). |
+| `userGlossary` | Pfad zu einer CSV-Datei mit den Spalten `Original language string` (oder `en`), `locale`, `Translation`, optional `Force` und optional `Context` – eine Zeile pro Quellbegriff und Zielsprache (`locale` kann für alle Ziele `*` sein). |
 | `autoAddUserEditedToGlossary` | Wenn `true`, können Dashboard-Bearbeitungen von UI-Strings automatisch dem Benutzerglossar hinzugefügt werden. |
+| `contextFiles` | Optionale, relativ zum aktuellen Arbeitsverzeichnis liegende Markdown- oder Nur-Text-Dateien (`.md`, `.markdown`, `.txt`) mit Produkt- oder Funktionserklärungen. Werden beim Start des Befehls geladen und in die Benutzeroberfläche, Dokumente, JSON, SVG und Korrekturaufforderungen eingefügt. Legen Sie diese Dateien nicht in `docs[].contentPaths` ab, es sei denn, Sie möchten sie ebenfalls übersetzen lassen. URLs werden abgelehnt. Der vollständige Text wird an den konfigurierten LLM-Anbieter gesendet und kann in `--debug-failed`-Protokollen erscheinen – geben Sie keine Geheimnisse oder personenbezogenen Daten an. |
+| `contextMaxChars` | Maximale Zeichenanzahl des verketteten Kontextdateitextes, der an das Modell gesendet wird (Standard `12000`, harte Obergrenze `100000`). Überschüssiger Text wird mit einer Warnung abgeschnitten. |
 
 `translate-docs` verwendet dasselbe Glossar für Terminologiehinweise, überspringt jedoch kompakte UI-Label-Abkürzungen (Formen mit nachgestelltem Punkt wie `Alm.` oder kurze Ein-Token-Komprimierungen wie `Size` → `Tam`), damit Dokumentaufforderungen nicht auf erfundene <code v-pre>{{…}}</code>-Tokens gelenkt werden. Vollständige Produktbegriffe und nicht abgekürzte UI-Übersetzungen werden weiterhin als Hinweis gegeben.
+
+Die optionale `Context`-CSV-Spalte enthält sprachspezifische Nutzungshinweise für diesen Begriff (Definition, grammatikalische Verwendung, Produktbedeutung). Sie wird nur aufgenommen, wenn der Begriff mit dem aktuellen Batch übereinstimmt. Das Ändern einer `Context`-Notiz eines Begriffs oder eines `contextFiles`-Inhalts macht die zwischengespeicherten Segmente der entsprechenden Sprache und die Dateiverfolgungszeilen beim nächsten Lauf ungültig, sodass Übersetzungen automatisch aktualisiert werden. Das Ändern nur einer bevorzugten `Translation` verwendet weiterhin den vorhandenen Cache, es sei denn, Sie übergeben `--force` / `--force-update`. Vom Dashboard-Benutzer bearbeitete Cache-Zeilen bleiben erhalten.
+
+Beispiel:
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **Ein leeres Glossar im CSV-Format generieren:**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+Um `contextFiles` aus dem Repository zu entwerfen, verwenden Sie den Copy-Paste-Agenten-Prompt in [Kontextdatei mit einem KI-Agenten generieren](/de/guide/glossary#generate-a-context-file-with-an-ai-agent). Siehe [Glossar](/de/guide/glossary), um zu erfahren, wie Begriffszeilen und Kontextdateien angewendet werden.

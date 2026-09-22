@@ -47,7 +47,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `splitTranslatableIntoBatches` | खंडों को LLM-आकार के बैचों में समूहित करें। |
 | `validateTranslation` | अनुवाद के बाद संरचनात्मक जांच (**async** — प्रतीक्षा की जानी चाहिए)। |
 | `resolveDocumentationOutputPath` | अनुवादित दस्तावेज़ के लिए आउटपुट फ़ाइल पथ हल करें। |
-| `Glossary` / `GlossaryMatcher` | अनुवाद शब्दावलियों को लोड और लागू करें। |
+| `Glossary` / `GlossaryMatcher` | वैकल्पिक शब्द `Context` नोट्स सहित अनुवाद शब्दावलियों को लोड और लागू करें। |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | कैश अमान्यकरण के लिए `glossary.contextFiles` और फ़िंगरप्रिंट मार्गदर्शन लोड करें। |
 | `runTranslateUI` | प्रोग्रामेटिक translate-UI एंट्री पॉइंट। |
 | `writeInitConfigFile` | एक स्टार्टर कॉन्फ़िग JSON लिखें (`template`, वैकल्पिक `providerKey` जो डिफ़ॉल्ट रूप से `openrouter` पर सेट होता है)। |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` द्वारा उपयोग किए जाने वाले प्रति अंतर्निहित प्रीसेट के लिए स्टार्टर `translationModels`। |

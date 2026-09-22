@@ -50,9 +50,9 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 **UI 문자열:** 선택적 `uiModels`를 사용하면 `translate-ui`, 복수형 생성, `proofread-ui`를 전역 `translationModels` 체인 전에 프리미엄 모델로 라우팅할 수 있습니다. UI 문구는 짧지만 사용자에게 노출되므로 유용합니다.
 
-**아시아 로케일:** `ja`, `ko`, `zh-Hans`, `zh-Hant`에 대한 선택적 `localeModels` 항목이 모든 파이프라인에서 먼저 시도됩니다. `z-ai/glm-5.2` 및 `minimax/minimax-m2.7`와 같은 모델은 범용 폴백보다 CJK 스크립트에서 더 나은 성능을 발휘하는 경우가 많습니다.
+**아시아 로케일:** `ja`, `ko`, `zh-Hans` 및 `zh-Hant`에 대한 선택적 `localeModels` 항목이 모든 파이프라인에서 우선적으로 시도되며, `z-ai/glm-5.3` 및 `minimax/minimax-m2.7`와 같은 모델은 범용 폴백보다 CJK 스크립트에서 종종 더 우수한 성능을 발휘합니다.
 
-예시 설정(OpenRouter):
+예제 구성(OpenRouter). `translationModels` 및 `uiModels`은 이 저장소에서 `ai-i18n-tools.config.json`에 사용하는 목록입니다. `localeModels`은 CJK 로케일을 위한 선택적 권장 추가 기능이지만 이 저장소에서는 설정하지 않습니다.
 
 ```json
 {
@@ -60,24 +60,25 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-각 제공업체 블록은 자체 `translationModels`, 선택 사항인 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeoutMs`를 정의할 수 있습니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`로 자동 마이그레이션됩니다.
+각 프로바이더 블록은 자체 `translationModels`, 선택적 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeout`(초) 또는 `requestTimeoutMs`을 정의할 수 있습니다. 프로바이더의 타임아웃은 최상위 `requestTimeout` / `requestTimeoutMs`을 재정의합니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`으로 자동 마이그레이션됩니다.
 
-동일한 문서에 4개의 공급자가 있는 실행 가능한 예시: [`examples/multi-provider`](/ko/examples#multi-provider).
+선택적 `pricing` 및 `modelPricing`은(는) 제공자가 `usage.cost`을(를) 생략할 때 1,000,000토큰당 USD(`inputPerMTokens` 및 `outputPerMTokens`)를 설정합니다. `pricing`은(는) 제공자 전체 기본값이며, `modelPricing` 항목은 단일 모델 id에 대해 이 값을 재정의합니다. OpenRouter는 이미 호출당 비용을 반환하므로 해당 제공자에서는 둘 다 설정하지 않은 상태로 두십시오. 제공자가 보고한 비용은 반환된 값 그대로 사용됩니다. 이 금액은 번역 요약, [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)에 포함됩니다.
+
+샘플 요금을 포함하여 동일한 문서에서 4개의 제공자를 사용하는 실행 가능한 예제: [`examples/multi-provider`](/ko/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### 추가 참조
 
-- [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers) — 사전 설정 테이블, 사용자 지정 엔드포인트, 요청 시간 초과, OpenRouter 관련 동작.
-- [아키텍처 — LLM 클라이언트](/ko/reference/architecture) — 모델 대체, 배치 및 비용 보고가 내부적으로 작동하는 방식.
+- [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers) — 프리셋 테이블, 사용자 지정 엔드포인트, 요청 타임아웃, 비용 요율, OpenRouter 전용 동작.
+- [아키텍처 — LLM 클라이언트](/ko/reference/architecture) — 모델 폴백, 일괄 처리 및 비용 보고가 내부적으로 작동하는 방식.
 - [환경 변수](/ko/reference/environment-variables) — API 키 환경 변수 및 기본 URL 재정의.

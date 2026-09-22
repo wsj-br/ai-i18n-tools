@@ -1,19 +1,19 @@
-<a id="svg-translation"></a>
-# SVG の変換
+<a id="svg"></a>
+# SVG
 
-人間が判読できるラベルを含む**SVGイラストと図**用に設計されています。`translate-svg`コマンドは、ソース`.svg`ファイルを読み取り、`<text>`、`<title>`、および`<desc>`要素からテキストを抽出し、アクティブなLLMプロバイダーを介してそれらの文字列を翻訳し、**ターゲットロケールごとに1つの出力SVG**を書き込みます。
+人間が読めるラベルを含む**SVGイラストおよび図表**を翻訳するように設計されています。`translate-svg`コマンドは、ソース`.svg`ファイルを読み込み、`<text>`、`<title>`、および`<desc>`要素からテキストを抽出し、アクティブなLLMプロバイダー経由でこれらの文字列を翻訳し、**ターゲットロケールごとに1つの出力SVG**を生成します。
 
 これは、ロケール固有の**バイナリ**SVGファイルを出力する唯一のパイプラインです。`translate-docs`はマークダウンの代替テキストとリンク参照を翻訳しますが、SVGアセットを変更またはコピーしません。ページに翻訳されたラベル付きの図が必要な場合は、`features.translateSVG`を有効にして、トップレベルの`svg`ブロックを構成します。
 
 <a id="per-locale-model-overrides"></a>
-### ロケールごとのモデルオーバーライド
+## ロケールごとのモデルオーバーライド
 
 `translate-svg` は **対象ロケールごと**にモデルを解決します: 設定されている場合は最初に `localeModels(locale)`、その後 `translationModels` を使用します。各ロケールの SVG 実行では独自のフォールバックチェーンが使用されます — これは、CJK ロケールの図表ラベルにスクリプトに最適化されたモデル（例: `ja`）が必要な場合に便利です。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。
 
 SVG翻訳は、`translate-docs`および`translate-json`と同じSQLiteキャッシュ（`cacheDir`）を使用します。すでに翻訳されたテキストセグメントはキャッシュから提供され、新規または変更されたソーステキストのみがLLMに送信されます。
 
 <a id="when-to-use-svg-translation"></a>
-### SVG翻訳を使用するタイミング
+## SVG翻訳を使用するタイミング
 
 次の場合に`translate-svg`を使用します。
 
@@ -28,7 +28,7 @@ SVG翻訳は、`translate-docs`および`translate-json`と同じSQLiteキャッ
 - `<text>`要素ではなくパスデータに埋め込まれたテキスト—エクストラクターはパスのアウトラインを読み取ることができません。
 
 <a id="design-for-i18n-from-the-start"></a>
-### 最初からi18nを考慮した設計
+## 最初から国際化を考慮した設計
 
 SVGは、ラベルが最初から実際のテキスト要素である場合に最も簡単に翻訳できます。
 
@@ -39,7 +39,7 @@ SVGは、ラベルが最初から実際のテキスト要素である場合に�
 Webアプリの場合、デザインですべて小文字のラベルを使用している場合は`forceLowercase: true`を有効にしてください。これにより、ファイルシステムとCDN間の大文字と小文字の不一致が回避されます。
 
 <a id="output-layouts"></a>
-### 出力レイアウト
+## 出力レイアウト
 
 `translate-svg`は2つの一般的な出力形式をサポートしています。アプリまたはドキュメントサイトが実行時にSVGファイルを参照する方法に基づいて選択してください。
 
@@ -59,7 +59,7 @@ Webアプリの場合、デザインですべて小文字のラベルを使用�
 SVGレイアウトがラスタースクリーンショット戦略とどのように適合するかについては、[画像とスクリーンショットの決定ガイド](/ja/guide/images-and-screenshots/#decision-guide)を参照してください。
 
 <a id="step-1-enable-and-configure"></a>
-### ステップ1：有効化と設定
+## ステップ1: 有効化と構成
 
 機能を有効にし、`translate-svg`をソースファイルと出力ルートに指定します。
 
@@ -87,7 +87,7 @@ SVGレイアウトがラスタースクリーンショット戦略とどのよ�
 フィールドの完全なリファレンス: [設定 — `svg`](/ja/reference/configuration#svg)。
 
 <a id="step-2-translate"></a>
-### ステップ2: 翻訳
+## ステップ2: 翻訳
 
 ```bash
 ai-i18n-tools translate-svg
@@ -108,6 +108,6 @@ ai-i18n-tools translate-svg --dry-run
 `sync`は、`features.translateSVG`と`svg`が両方とも設定されている場合、SVGステップを自動的に実行します（`--no-svg`でスキップ）。共有フラグには、`-l` / `--locale`、`-p` / `--path`、`-j` / `--concurrency`、`--force` / `--force-update`、および`--check-cache`があります。
 
 <a id="troubleshooting"></a>
-### トラブルシューティング
+## トラブルシューティング
 
 一般的なSVGの問題 — 混在するソース/出力ディレクトリ、Docusaurus上の絶対静的URL、パスレイアウトの誤り — は、[SVGトラブルシューティング](/ja/guide/svg-translation/troubleshooting)で説明されています。ラスターアセットとリンクの書き換えについては、[画像とスクリーンショットのトラブルシューティング](/ja/guide/images-and-screenshots/troubleshooting)を参照してください。

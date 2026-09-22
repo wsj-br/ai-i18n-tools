@@ -12,6 +12,21 @@
 
 ---
 
+<a id="migrate-intlayer"></a>
+### `migrate-intlayer`
+
+**概要：** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
+
+将 Intlayer `*.content.ts` 字典导入到 `strings.json` 和扁平化区域设置文件中，并将简单的 `useIntlayer` / `getIntlayer` 调用点重写为 `t('English source')`。默认进行试运行（仍会写入报告）。`--write` 会初始化目录并应用安全的重写。不调用 LLM。
+
+该报告是 `--write` 留下的所有内容的交接文档，并以**分步待办事项**结尾，安排了剩余的工作：每个手动站点对应的具体 `t()` 或 JSX 调用、`import { t }` 行、之后需要删除的字典文件和 `IntlayerProvider` 遗留内容、需要先 `extract` 再 `translate-ui` 的源字符串，以及一段用于覆盖应用 i18n 模块的 i18next 运行时引导代码。区域设置控件必须调用 `i18n.changeLanguage` 以及 `loadLocale`。`extract` 会写入 `ui-languages.json`，并由该引导代码导入。请勿手动编辑 `strings.json`、扁平化区域设置文件或 `ui-languages.json`。
+
+**主要选项：** `--write`, `--report`, `--content-glob` (默认 `**/*.content.ts`), `--t-import`
+
+**另请参阅：** [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

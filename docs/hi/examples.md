@@ -29,6 +29,7 @@ pnpm install
 <a id="fumadocs-docs"></a>
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
+<a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
 
 | उदाहरण | इसके लिए सबसे अच्छा | degit के साथ कॉपी करें | चलाएँ |
@@ -44,5 +45,6 @@ pnpm install
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | सादा HTML + `data-i18n*` मार्कर; स्थिर लोकेल JSON (डैशबोर्ड-शैली UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | एक LLM प्रदाता चुनें या बेंचमार्क करें (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | रिग्रेशन-टेस्ट मार्कडाउन / CJK अनुवाद (देवनागरी, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
+| [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | इंटलेयर `.content.ts` → `t()` (`migrate-intlayer`, रीसेट + AI-एजेंट रिपोर्ट) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 प्रत्येक **उदाहरण** नाम पूर्ण सेटअप, कमांड और प्रोजेक्ट लेआउट के साथ अपने GitHub README से लिंक करता है — या [रिपॉजिटरी में उदाहरण इंडेक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) ब्राउज़ करें।

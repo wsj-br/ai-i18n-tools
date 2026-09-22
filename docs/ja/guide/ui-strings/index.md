@@ -14,6 +14,7 @@ i18nextを使用するあらゆるJS/TSプロジェクト向けに設計され�
 | `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/ja/guide/ui-strings/t-calls-and-plurals) |
 | 言語ピッカー / RTL | [言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher) |
 | ランタイムAPIシグネチャ | [ランタイムヘルパー](/ja/guide/runtime-helpers) |
+| Intlayer `.content.ts` 辞書 | [Intlayer からの移行](/ja/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## ステップ1: 初期化

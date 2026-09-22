@@ -38,7 +38,8 @@
       if (key) el.textContent = t(key);
     });
     document.querySelectorAll("[data-i18n-title]").forEach((el) => {
-      const key = el.getAttribute("data-i18n-title") || normalizeI18nText(el.getAttribute("title") || "");
+      const key =
+        el.getAttribute("data-i18n-title") || normalizeI18nText(el.getAttribute("title") || "");
       if (key) el.setAttribute("title", t(key));
     });
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
@@ -372,9 +373,12 @@
     }
     if (res.status === 409 && body.code === "script_issue" && !confirmScriptIssue) {
       const ok = confirm(
-        t("This translation does not use the expected writing system ({{issue}}). Save it anyway?", {
-          issue: typeof body.error === "string" ? body.error : "",
-        })
+        t(
+          "This translation does not use the expected writing system ({{issue}}). Save it anyway?",
+          {
+            issue: typeof body.error === "string" ? body.error : "",
+          }
+        )
       );
       if (!ok) return false;
       return segPatchTranslation(newText, true);
@@ -428,7 +432,9 @@
     try {
       const sourceHashEnc = encodeURIComponent(row.source_hash);
       const localeEnc = encodeURIComponent(row.locale);
-      const res = await fetch(`/api/translations/${sourceHashEnc}/${localeEnc}`, { method: "DELETE" });
+      const res = await fetch(`/api/translations/${sourceHashEnc}/${localeEnc}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error(await res.text());
       await segLoadData();
       await segLoadFilepaths();
@@ -455,7 +461,9 @@
       if (seg.filters.last_hit === "stale") params.set("last_hit_at_null", "true");
       if (seg.filters.last_hit === "active") params.set("last_hit_at_not_null", "true");
       const qs = params.toString();
-      const res = await fetch(`/api/translations/by-filters${qs ? "?" + qs : ""}`, { method: "DELETE" });
+      const res = await fetch(`/api/translations/by-filters${qs ? "?" + qs : ""}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
       alert(t("Deleted {{deleted}} translation(s).", { deleted: data.deleted }));
@@ -473,9 +481,12 @@
     if (!filepath) return;
     if (!confirm(t('Delete all translations for "{{filepath}}"?', { filepath }))) return;
     try {
-      const res = await fetch(`/api/translations/by-filepath?filepath=${encodeURIComponent(filepath)}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/translations/by-filepath?filepath=${encodeURIComponent(filepath)}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || res.statusText);
       alert(t("Deleted {{deleted}} translation(s).", { deleted: data.deleted }));
@@ -535,7 +546,9 @@
     seg.filters.model = document.getElementById("seg-filter-model").value.trim();
     seg.filters.source_hash = document.getElementById("seg-filter-source-hash").value.trim();
     seg.filters.source_text = document.getElementById("seg-filter-source-text").value.trim();
-    seg.filters.translated_text = document.getElementById("seg-filter-translated-text").value.trim();
+    seg.filters.translated_text = document
+      .getElementById("seg-filter-translated-text")
+      .value.trim();
     seg.filters.last_hit = document.getElementById("seg-filter-last-hit").value;
     seg.currentPage = 1;
     const applyBtn = document.getElementById("seg-btn-apply");
@@ -584,7 +597,9 @@
     document.getElementById("seg-select-filepath").addEventListener("change", (e) => {
       document.getElementById("seg-btn-delete-filepath").disabled = !e.target.value;
     });
-    document.getElementById("seg-btn-delete-filepath").addEventListener("click", segDeleteByFilepath);
+    document
+      .getElementById("seg-btn-delete-filepath")
+      .addEventListener("click", segDeleteByFilepath);
     document.getElementById("seg-btn-delete-filtered").addEventListener("click", segDeleteFiltered);
 
     function prev() {
@@ -651,11 +666,13 @@
     if (failState.filters.filename) params.set("filename", failState.filters.filename);
     if (failState.filters.locale) params.set("locale", failState.filters.locale);
     if (failState.filters.model) params.set("model", failState.filters.model);
-    if (failState.filters.quality_error) params.set("quality_error", failState.filters.quality_error);
+    if (failState.filters.quality_error)
+      params.set("quality_error", failState.filters.quality_error);
     if (failState.filters.fatal === "true") params.set("fatal", "true");
     if (failState.filters.source_hash) params.set("source_hash", failState.filters.source_hash);
     if (failState.filters.source_text) params.set("source_text", failState.filters.source_text);
-    if (failState.filters.error_message) params.set("error_message", failState.filters.error_message);
+    if (failState.filters.error_message)
+      params.set("error_message", failState.filters.error_message);
     return params.toString();
   }
 
@@ -697,7 +714,8 @@
       });
       linkBtn.addEventListener("click", (e) => segLogLinksToServer(row, e));
       const failureModelHtml = escapeHtml(row.model || "").replace(/\n/g, "<br>");
-      const cacheModelRaw = row.translation_model != null ? String(row.translation_model).trim() : "";
+      const cacheModelRaw =
+        row.translation_model != null ? String(row.translation_model).trim() : "";
       const cacheModelHtml =
         cacheModelRaw !== ""
           ? `<span class="fail-cache-translation-model" title="${escapeHtml(
@@ -855,7 +873,8 @@
       }
       const qualitySel = document.getElementById("fail-filter-quality");
       const prevQuality = qualitySel.value;
-      qualitySel.innerHTML = '<option value="">' + escapeHtml(t("All quality errors")) + "</option>";
+      qualitySel.innerHTML =
+        '<option value="">' + escapeHtml(t("All quality errors")) + "</option>";
       for (const q of qRes.qualityErrors || []) {
         const opt = document.createElement("option");
         opt.value = q;
@@ -878,7 +897,9 @@
     failState.filters.fatal = document.getElementById("fail-filter-fatal").value.trim();
     failState.filters.source_hash = document.getElementById("fail-filter-source-hash").value.trim();
     failState.filters.source_text = document.getElementById("fail-filter-source-text").value.trim();
-    failState.filters.error_message = document.getElementById("fail-filter-error-message").value.trim();
+    failState.filters.error_message = document
+      .getElementById("fail-filter-error-message")
+      .value.trim();
     failState.sort = document.getElementById("fail-sort").value || "failures_desc";
     failState.currentPage = 1;
     failLoadRowsAndSummary();
@@ -1048,7 +1069,11 @@
     const info =
       mdissState.total === 0
         ? t("No rows")
-        : t("Showing {{from}}\u2013{{to}} of {{total}}", { from: lo, to: hi, total: mdissState.total });
+        : t("Showing {{from}}\u2013{{to}} of {{total}}", {
+            from: lo,
+            to: hi,
+            total: mdissState.total,
+          });
     document.getElementById("mdiss-pagination-info").textContent = info;
     document.getElementById("mdiss-pagination-info-bottom").textContent = info;
     const pi = t("Page {{page}} of {{totalPages}}", { page: mdissState.currentPage, totalPages });
@@ -1057,7 +1082,8 @@
     document.getElementById("mdiss-btn-prev").disabled = mdissState.currentPage <= 1;
     document.getElementById("mdiss-btn-next").disabled = mdissState.currentPage >= totalPages;
     document.getElementById("mdiss-btn-prev-bottom").disabled = mdissState.currentPage <= 1;
-    document.getElementById("mdiss-btn-next-bottom").disabled = mdissState.currentPage >= totalPages;
+    document.getElementById("mdiss-btn-next-bottom").disabled =
+      mdissState.currentPage >= totalPages;
   }
 
   function mdissRenderSummary(summary) {
@@ -1103,7 +1129,9 @@
   function mdissApplyFilters() {
     mdissState.filters.filename = document.getElementById("mdiss-filter-filename").value.trim();
     mdissState.filters.issue_code = document.getElementById("mdiss-filter-issue-code").value.trim();
-    mdissState.filters.source_hash = document.getElementById("mdiss-filter-source-hash").value.trim();
+    mdissState.filters.source_hash = document
+      .getElementById("mdiss-filter-source-hash")
+      .value.trim();
     mdissState.sort = document.getElementById("mdiss-sort").value || "filepath_line_asc";
     mdissState.currentPage = 1;
     mdissLoadRowsAndSummary();
@@ -1120,7 +1148,9 @@
   function mdissInit() {
     document.getElementById("mdiss-btn-apply").addEventListener("click", mdissApplyFilters);
     document.getElementById("mdiss-btn-clear").addEventListener("click", mdissClearFilters);
-    document.getElementById("mdiss-filter-issue-code").addEventListener("change", mdissApplyFilters);
+    document
+      .getElementById("mdiss-filter-issue-code")
+      .addEventListener("change", mdissApplyFilters);
     document.getElementById("mdiss-sort").addEventListener("change", mdissApplyFilters);
     for (const id of ["mdiss-filter-filename", "mdiss-filter-source-hash"]) {
       document.getElementById(id).addEventListener("keydown", (e) => {
@@ -1248,7 +1278,10 @@
   function uiApplyFiltersToList() {
     uiSyncFilterFilepathSelect();
     const idQ = document.getElementById("ui-filter-id").value.trim().toLowerCase();
-    const filenamePartial = document.getElementById("ui-filter-filename").value.trim().toLowerCase();
+    const filenamePartial = document
+      .getElementById("ui-filter-filename")
+      .value.trim()
+      .toLowerCase();
     const filepathSel = document.getElementById("ui-filter-filepath-select").value;
     const srcQ = document.getElementById("ui-filter-source").value.trim().toLowerCase();
     const trQ = document.getElementById("ui-filter-translated").value.trim().toLowerCase();
@@ -1266,11 +1299,14 @@
       }
       if (srcQ && !(e.source || "").toLowerCase().includes(srcQ)) continue;
       for (const locale of uiLocalesForTableRows(e)) {
-        const t = ((e.translated || {})[locale] != null ? String((e.translated || {})[locale]) : "").toLowerCase();
+        const t = (
+          (e.translated || {})[locale] != null ? String((e.translated || {})[locale]) : ""
+        ).toLowerCase();
         if (trQ && !t.includes(trQ)) continue;
         if (modelQ) {
           const rowModel = (e.models || {})[locale];
-          const rowModelStr = rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
+          const rowModelStr =
+            rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
           if (rowModelStr !== modelQ) continue;
         }
         rows.push({ entry: e, locale });
@@ -1297,7 +1333,9 @@
     const page = Math.min(uiState.page, totalPages);
     uiState.page = page;
     const start = (page - 1) * UI_PAGE_SIZE;
-    const slice = showPag ? uiState.filteredRows.slice(start, start + UI_PAGE_SIZE) : uiState.filteredRows;
+    const slice = showPag
+      ? uiState.filteredRows.slice(start, start + UI_PAGE_SIZE)
+      : uiState.filteredRows;
 
     if (showPag) {
       const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
@@ -1318,7 +1356,8 @@
 
     for (const { entry: e, locale: rowLocale } of slice) {
       const tr = document.createElement("tr");
-      const trText = (e.translated || {})[rowLocale] != null ? String((e.translated || {})[rowLocale]) : "";
+      const trText =
+        (e.translated || {})[rowLocale] != null ? String((e.translated || {})[rowLocale]) : "";
       const modelLabel =
         (e.models || {})[rowLocale] != null && String((e.models || {})[rowLocale]).trim() !== ""
           ? String((e.models || {})[rowLocale])
@@ -1358,7 +1397,8 @@
   function uiOpenModal(entry, locale) {
     uiState.editingEntry = entry;
     uiState.editingLocale = locale;
-    document.getElementById("ui-modal-textarea").value = (entry.translated && entry.translated[locale]) || "";
+    document.getElementById("ui-modal-textarea").value =
+      (entry.translated && entry.translated[locale]) || "";
     const modal = document.querySelector("#ui-modal-overlay .modal h2");
     if (modal) {
       modal.textContent = t("Edit UI translation ({{locale}})", { locale });
@@ -1468,7 +1508,10 @@
             locales: (meta.targetLocales || []).join(", "),
           })
         : t("UI strings path not configured or file missing.");
-      document.getElementById("ui-th-source").textContent = formatWithSourceLocale(t("Source"), meta.sourceLocale);
+      document.getElementById("ui-th-source").textContent = formatWithSourceLocale(
+        t("Source"),
+        meta.sourceLocale
+      );
       const localeSel = document.getElementById("ui-edit-locale");
       const prevLocale = localeSel.value;
       localeSel.innerHTML = "";
@@ -1482,14 +1525,16 @@
         opt.textContent = loc;
         localeSel.appendChild(opt);
       }
-      const hasPrev = prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
+      const hasPrev =
+        prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
       localeSel.value = hasPrev ? prevLocale : "";
       if (!meta.available) {
         setStatus(document.getElementById("ui-status"), t("Unavailable"), false);
         document.getElementById("ui-table-body").innerHTML = "";
         document.getElementById("ui-filter-filename").value = "";
         const fpSel = document.getElementById("ui-filter-filepath-select");
-        fpSel.innerHTML = '<option value="">' + escapeHtml(t("-- Select filepath --")) + "</option>";
+        fpSel.innerHTML =
+          '<option value="">' + escapeHtml(t("-- Select filepath --")) + "</option>";
         fpSel.value = "";
         const modelSel = document.getElementById("ui-filter-model");
         modelSel.innerHTML = '<option value="">' + escapeHtml(t("All models")) + "</option>";
@@ -1567,9 +1612,13 @@
       }
     }
     document.getElementById("ui-filter-id").addEventListener("keydown", uiApplyFiltersOnEnter);
-    document.getElementById("ui-filter-filename").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document
+      .getElementById("ui-filter-filename")
+      .addEventListener("keydown", uiApplyFiltersOnEnter);
     document.getElementById("ui-filter-source").addEventListener("keydown", uiApplyFiltersOnEnter);
-    document.getElementById("ui-filter-translated").addEventListener("keydown", uiApplyFiltersOnEnter);
+    document
+      .getElementById("ui-filter-translated")
+      .addEventListener("keydown", uiApplyFiltersOnEnter);
     document.getElementById("ui-edit-locale").addEventListener("change", uiApplyAndRender);
     document.getElementById("ui-filter-filepath-select").addEventListener("change", (e) => {
       document.getElementById("ui-filter-filename").value = e.target.value;
@@ -1759,7 +1808,10 @@
   function upApplyFiltersToList() {
     upSyncFilterFilepathSelect();
     const idQ = document.getElementById("up-filter-id").value.trim().toLowerCase();
-    const filenamePartial = document.getElementById("up-filter-filename").value.trim().toLowerCase();
+    const filenamePartial = document
+      .getElementById("up-filter-filename")
+      .value.trim()
+      .toLowerCase();
     const filepathSel = document.getElementById("up-filter-filepath-select").value;
     const srcQ = document.getElementById("up-filter-source").value.trim().toLowerCase();
     const trQ = document.getElementById("up-filter-translated").value.trim().toLowerCase();
@@ -1785,7 +1837,8 @@
         if (trQ && !flat.includes(trQ)) continue;
         if (modelQ) {
           const rowModel = (e.models || {})[locale];
-          const rowModelStr = rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
+          const rowModelStr =
+            rowModel != null && String(rowModel).trim() !== "" ? String(rowModel).trim() : "";
           if (rowModelStr !== modelQ) continue;
         }
         rows.push({ entry: e, locale });
@@ -1806,7 +1859,10 @@
             locales: (meta.pluralLocales || []).join(", "),
           })
         : t("UI strings path not configured or file missing.");
-      document.getElementById("up-th-source").textContent = formatWithSourceLocale(t("Source"), meta.sourceLocale);
+      document.getElementById("up-th-source").textContent = formatWithSourceLocale(
+        t("Source"),
+        meta.sourceLocale
+      );
       const localeSel = document.getElementById("up-edit-locale");
       const prevLocale = localeSel.value;
       localeSel.innerHTML = "";
@@ -1820,7 +1876,8 @@
         opt.textContent = loc;
         localeSel.appendChild(opt);
       }
-      const hasPrev = prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
+      const hasPrev =
+        prevLocale === "" || Array.from(localeSel.options).some((o) => o.value === prevLocale);
       localeSel.value = hasPrev ? prevLocale : "";
       if (!meta.available) {
         setStatus(document.getElementById("up-status"), t("Unavailable"), false);
@@ -1910,7 +1967,9 @@
     const page = Math.min(upState.page, totalPages);
     upState.page = page;
     const start = (page - 1) * UP_PAGE_SIZE;
-    const slice = showPag ? upState.filteredRows.slice(start, start + UP_PAGE_SIZE) : upState.filteredRows;
+    const slice = showPag
+      ? upState.filteredRows.slice(start, start + UP_PAGE_SIZE)
+      : upState.filteredRows;
 
     if (showPag) {
       const info = t("Showing {{from}}\u2013{{to}} of {{total}}", {
@@ -1984,7 +2043,9 @@
       [];
     const bucket = (entry.translated && entry.translated[locale]) || {};
     const formList =
-      reqForms.length > 0 ? reqForms : Object.keys(bucket).filter((k) => typeof bucket[k] === "string");
+      reqForms.length > 0
+        ? reqForms
+        : Object.keys(bucket).filter((k) => typeof bucket[k] === "string");
     const container = document.getElementById("uip-modal-fields");
     container.innerHTML = "";
     const titleEl = document.getElementById("uip-modal-title");
@@ -2097,9 +2158,13 @@
       }
     }
     document.getElementById("up-filter-id").addEventListener("keydown", upApplyFiltersOnEnter);
-    document.getElementById("up-filter-filename").addEventListener("keydown", upApplyFiltersOnEnter);
+    document
+      .getElementById("up-filter-filename")
+      .addEventListener("keydown", upApplyFiltersOnEnter);
     document.getElementById("up-filter-source").addEventListener("keydown", upApplyFiltersOnEnter);
-    document.getElementById("up-filter-translated").addEventListener("keydown", upApplyFiltersOnEnter);
+    document
+      .getElementById("up-filter-translated")
+      .addEventListener("keydown", upApplyFiltersOnEnter);
     document.getElementById("up-edit-locale").addEventListener("change", upApplyAndRender);
     document.getElementById("up-filter-filepath-select").addEventListener("change", (e) => {
       document.getElementById("up-filter-filename").value = e.target.value;
@@ -2163,13 +2228,16 @@
     const localeRaw = document.getElementById("gl-filter-locale").value.trim().toLowerCase();
     const lQ = localeRaw === "*" ? "" : localeRaw;
     const tQ = document.getElementById("gl-filter-translation").value.trim().toLowerCase();
+    const cQ = document.getElementById("gl-filter-context").value.trim().toLowerCase();
     glState.filtered = glState.rows.filter((r) => {
       const o = (r["Original language string"] || "").toLowerCase();
       const loc = (r.locale || "").toLowerCase();
       const tr = (r.Translation || "").toLowerCase();
+      const ctx = (r.Context || "").toLowerCase();
       if (oQ && !o.includes(oQ)) return false;
       if (lQ && loc !== lQ) return false;
       if (tQ && !tr.includes(tQ)) return false;
+      if (cQ && !ctx.includes(cQ)) return false;
       return true;
     });
     glState.page = 1;
@@ -2210,6 +2278,7 @@
       const orig = r["Original language string"] ?? "";
       const loc = r.locale ?? "";
       const trn = r.Translation ?? "";
+      const ctx = r.Context ?? "";
       const forceRaw = (r.force ?? "").trim().toLowerCase();
       const forced = forceRaw === "true" || forceRaw === "1" || forceRaw === "yes";
       const idx = r.rowIndex;
@@ -2241,6 +2310,13 @@
       inpT.value = trn;
       tdT.appendChild(inpT);
 
+      const tdC = document.createElement("td");
+      const inpC = document.createElement("input");
+      inpC.type = "text";
+      inpC.dataset.field = "context";
+      inpC.value = ctx;
+      tdC.appendChild(inpC);
+
       const tdF = document.createElement("td");
       const inpF = document.createElement("input");
       inpF.type = "checkbox";
@@ -2261,7 +2337,7 @@
       delBtn.addEventListener("click", () => glDeleteRow(idx));
       tdA.append(saveBtn, delBtn);
 
-      tr.append(tdO, tdL, tdT, tdF, tdA);
+      tr.append(tdO, tdL, tdT, tdC, tdF, tdA);
       tbody.appendChild(tr);
     }
   }
@@ -2274,13 +2350,15 @@
     const orig = tr.querySelector('[data-field="orig"]').value;
     const locale = tr.querySelector('[data-field="locale"]').value;
     const translation = tr.querySelector('[data-field="tr"]').value;
+    const contextEl = tr.querySelector('[data-field="context"]');
+    const context = contextEl ? contextEl.value : "";
     const forceEl = tr.querySelector('[data-field="force"]');
     const force = forceEl && forceEl.checked ? "true" : "";
     try {
       const res = await fetch(`/api/glossary-user/${rowIndex}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ original: orig, locale, translation, force }),
+        body: JSON.stringify({ original: orig, locale, translation, force, context }),
       });
       const pj = await res.json();
       if (!res.ok) throw new Error(pj.error || res.statusText);
@@ -2337,7 +2415,11 @@
       glState.rows = data.rows || [];
       glApplyFilters();
       glRenderTable();
-      setStatus(document.getElementById("gl-status"), t("{{count}} row(s)", { count: glState.rows.length }), true);
+      setStatus(
+        document.getElementById("gl-status"),
+        t("{{count}} row(s)", { count: glState.rows.length }),
+        true
+      );
     } catch (e) {
       setStatus(document.getElementById("gl-status"), String(e.message || e), false);
     }
@@ -2348,6 +2430,7 @@
       const original = document.getElementById("gl-new-original").value.trim();
       const locale = document.getElementById("gl-new-locale").value;
       const translation = document.getElementById("gl-new-translation").value;
+      const context = document.getElementById("gl-new-context").value;
       const force = document.getElementById("gl-new-force").checked ? "true" : "";
       if (!original || locale === "") {
         setStatus(document.getElementById("gl-status"), t("Original and locale required"), false);
@@ -2356,13 +2439,14 @@
       const pr = await fetch("/api/glossary-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ original, locale, translation, force }),
+        body: JSON.stringify({ original, locale, translation, force, context }),
       });
       const pj = await pr.json();
       setStatus(document.getElementById("gl-status"), pr.ok ? t("Added.") : pj.error, pr.ok);
       if (pr.ok) {
         document.getElementById("gl-new-original").value = "";
         document.getElementById("gl-new-translation").value = "";
+        document.getElementById("gl-new-context").value = "";
         document.getElementById("gl-new-force").checked = false;
         await loadGlossary();
       }
@@ -2371,6 +2455,7 @@
       document.getElementById("gl-filter-original").value = "";
       document.getElementById("gl-filter-locale").value = "*";
       document.getElementById("gl-filter-translation").value = "";
+      document.getElementById("gl-filter-context").value = "";
       glApplyFilters();
       glRenderTable();
       setStatus(
@@ -2403,7 +2488,10 @@
       }
     }
     document.getElementById("gl-filter-original").addEventListener("keydown", glFilterFieldKeydown);
-    document.getElementById("gl-filter-translation").addEventListener("keydown", glFilterFieldKeydown);
+    document
+      .getElementById("gl-filter-translation")
+      .addEventListener("keydown", glFilterFieldKeydown);
+    document.getElementById("gl-filter-context").addEventListener("keydown", glFilterFieldKeydown);
     document.getElementById("gl-filter-locale").addEventListener("change", glRunAppliedFilters);
     function glPrev() {
       if (glState.page > 1) {
@@ -2442,7 +2530,13 @@
 
     /** @param mode {"cache"|"ui"} — UI uses plain row counts per locale (same denominator as plain coverage). */
     function renderModelLocaleMatrix(byModel, localeRows, byModelLocale, mode) {
-      if (!byModel || byModel.length === 0 || !localeRows || localeRows.length === 0 || !byModelLocale)
+      if (
+        !byModel ||
+        byModel.length === 0 ||
+        !localeRows ||
+        localeRows.length === 0 ||
+        !byModelLocale
+      )
         return "";
       const locales = localeRows.map((r) => r.locale);
       let mHtml = '<h4 class="stats-subtitle">' + escapeHtml(t("By model and locale")) + "</h4>";
@@ -2453,7 +2547,7 @@
       for (const loc of locales) {
         mHtml += `<th>${escapeHtml(loc)}</th>`;
       }
-      mHtml += '</tr></thead><tbody>';
+      mHtml += "</tr></thead><tbody>";
 
       const map = {};
       for (const r of byModelLocale) {
@@ -2481,9 +2575,9 @@
             mHtml += `<td>${count} <span style="color: var(--text-secondary); font-size: 0.85em;">(${pct}%)</span></td>`;
           }
         }
-        mHtml += '</tr>';
+        mHtml += "</tr>";
       }
-      mHtml += '</tbody></table></div>';
+      mHtml += "</tbody></table></div>";
       return mHtml;
     }
 
@@ -2500,7 +2594,7 @@
 
         let html = "";
         html += '<div class="stats-grid"><div class="stats-column">';
-        
+
         html +=
           '<div class="stats-section"><h3 class="stats-section-title">' +
           escapeHtml(t("Documentation cache")) +
@@ -2548,8 +2642,8 @@
         html += `<tfoot><tr class="stats-table-total"><th scope="row">${escapeHtml(t("Total"))}</th><td>${c.totalSegments}</td><td>${
           c.totalSegments === 0 ? "—" : "100.0%"
         }</td></tr></tfoot></table>`;
-        
-        html += '</div>';
+
+        html += "</div>";
 
         html += '</div><div class="stats-column">';
 
@@ -2574,7 +2668,8 @@
           html += `<div class="stats-card"><span class="stats-card-value">${ui.plainTotal}</span><span class="stats-card-label">${escapeHtml(t("Plain entries"))}</span></div>`;
           html += `<div class="stats-card"><span class="stats-card-value">${ui.pluralTotal}</span><span class="stats-card-label">${escapeHtml(t("Plural groups"))}</span></div>`;
           html += "</div>";
-          html += '<h4 class="stats-subtitle">' + escapeHtml(t("Plain coverage per locale")) + "</h4>";
+          html +=
+            '<h4 class="stats-subtitle">' + escapeHtml(t("Plain coverage per locale")) + "</h4>";
           html +=
             '<table class="stats-table"><thead><tr><th>' +
             escapeHtml(t("Locale")) +
@@ -2590,7 +2685,10 @@
             html += `<tr><td>${escapeHtml(row.locale)}</td><td>${row.translated}</td><td>${row.missing}</td><td>${cov}%</td></tr>`;
           }
           html += "</tbody></table>";
-          html += '<h4 class="stats-subtitle">' + escapeHtml(t("Plural completeness per locale")) + "</h4>";
+          html +=
+            '<h4 class="stats-subtitle">' +
+            escapeHtml(t("Plural completeness per locale")) +
+            "</h4>";
           html +=
             '<table class="stats-table"><thead><tr><th>' +
             escapeHtml(t("Locale")) +
@@ -2631,7 +2729,12 @@
 
         html += "</div></div>";
 
-        const cacheMatrix = renderModelLocaleMatrix(c.byModel, c.byLocale, c.byModelLocale, "cache");
+        const cacheMatrix = renderModelLocaleMatrix(
+          c.byModel,
+          c.byLocale,
+          c.byModelLocale,
+          "cache"
+        );
         const uiMatrix = ui.available
           ? renderModelLocaleMatrix(ui.byModel, ui.plainByLocale, ui.byModelLocale, "ui")
           : "";
@@ -2663,6 +2766,294 @@
       });
   }
 
+  // ---------- Usage & costs ----------
+  const usageState = {
+    filters: {
+      since: "",
+      provider: "",
+      model: "",
+      operation: "",
+      locale: "",
+      outcome: "",
+    },
+  };
+
+  function usageFillSelect(sel, placeholder, values, prev) {
+    sel.innerHTML = '<option value="">' + escapeHtml(placeholder) + "</option>";
+    for (const v of values || []) {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      sel.appendChild(opt);
+    }
+    if (prev && Array.from(sel.options).some((o) => o.value === prev)) sel.value = prev;
+  }
+
+  function usageQueryParams() {
+    const params = new URLSearchParams();
+    const f = usageState.filters;
+    if (f.since) params.set("since", f.since);
+    if (f.provider) params.set("provider", f.provider);
+    if (f.model) params.set("model", f.model);
+    if (f.operation) params.set("operation", f.operation);
+    if (f.locale) params.set("locale", f.locale);
+    if (f.outcome) params.set("outcome", f.outcome);
+    return params;
+  }
+
+  function usageResolvedCost(row) {
+    const stored = (row.callsWithCost ?? 0) > 0 ? Number(row.actualCostUsd) : undefined;
+    const estimated = row.estimatedCostUsd == null ? undefined : Number(row.estimatedCostUsd);
+    if (stored == null && estimated == null) return undefined;
+    return (stored ?? 0) + (estimated ?? 0);
+  }
+
+  function usageFormatCost(amount) {
+    if (amount == null) return "—";
+    return "$" + Number(amount).toFixed(6);
+  }
+
+  function usageCard(value, label, muted) {
+    const extra = muted ? " stats-card-muted" : "";
+    return `<div class="stats-card${extra}"><span class="stats-card-value">${escapeHtml(String(value))}</span><span class="stats-card-label">${escapeHtml(label)}</span></div>`;
+  }
+
+  function usageBreakdownTable(title, firstHeader, rows, firstKey) {
+    if (!rows || rows.length === 0) {
+      return (
+        '<h4 class="stats-subtitle">' +
+        escapeHtml(title) +
+        '</h4><p class="hint stats-unavailable">' +
+        escapeHtml(t("(no API-call rows)")) +
+        "</p>"
+      );
+    }
+    let html =
+      '<h4 class="stats-subtitle">' +
+      escapeHtml(title) +
+      '</h4><table class="stats-table"><thead><tr><th>' +
+      escapeHtml(firstHeader) +
+      "</th><th>" +
+      escapeHtml(t("Calls")) +
+      "</th><th>" +
+      escapeHtml(t("Tokens")) +
+      "</th><th>" +
+      escapeHtml(t("Cost")) +
+      "</th></tr></thead><tbody>";
+    for (const row of rows) {
+      html += `<tr><td>${escapeHtml(String(row[firstKey]))}</td><td>${row.calls}</td><td>${Number(row.totalTokens).toLocaleString()}</td><td>${usageFormatCost(usageResolvedCost(row))}</td></tr>`;
+    }
+    html += "</tbody></table>";
+    return html;
+  }
+
+  function usageReadFiltersFromForm() {
+    usageState.filters.since = document.getElementById("usage-filter-since").value.trim();
+    usageState.filters.provider = document.getElementById("usage-filter-provider").value.trim();
+    usageState.filters.model = document.getElementById("usage-filter-model").value.trim();
+    usageState.filters.operation = document.getElementById("usage-filter-operation").value.trim();
+    usageState.filters.locale = document.getElementById("usage-filter-locale").value.trim();
+    usageState.filters.outcome = document.getElementById("usage-filter-outcome").value.trim();
+  }
+
+  async function usageLoadFilterOptions() {
+    try {
+      const res = await fetch("/api/usage/filter-options");
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      usageFillSelect(
+        document.getElementById("usage-filter-provider"),
+        t("All providers"),
+        data.providers,
+        usageState.filters.provider
+      );
+      usageFillSelect(
+        document.getElementById("usage-filter-model"),
+        t("All models"),
+        data.models,
+        usageState.filters.model
+      );
+      usageFillSelect(
+        document.getElementById("usage-filter-operation"),
+        t("All operations"),
+        data.operations,
+        usageState.filters.operation
+      );
+      usageFillSelect(
+        document.getElementById("usage-filter-locale"),
+        t("All locales"),
+        data.locales,
+        usageState.filters.locale
+      );
+    } catch (err) {
+      console.error("Error loading usage filter options:", err);
+    }
+  }
+
+  async function usageLoadAggregates() {
+    const statusEl = document.getElementById("usage-status");
+    const contentEl = document.getElementById("usage-content");
+    const res = await fetch("/api/usage?" + usageQueryParams().toString());
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || res.statusText);
+    }
+    const data = await res.json();
+    const s = data.summary || {};
+    const costAmount = usageResolvedCost(s);
+    let html = '<div class="stats-cards">';
+    html += usageCard(s.calls ?? 0, t("Total calls"));
+    html += usageCard(s.acceptedCalls ?? 0, t("Accepted"));
+    html += usageCard(s.discardedCalls ?? 0, t("Discarded"));
+    html += usageCard(Number(s.totalTokens ?? 0).toLocaleString(), t("Total tokens"));
+    html += usageCard(usageFormatCost(costAmount), t("Cost"), costAmount == null);
+    html += "</div>";
+
+    html += '<div class="stats-grid"><div class="stats-column">';
+    html += usageBreakdownTable(t("By provider"), t("Provider"), data.byProvider, "provider");
+    html += usageBreakdownTable(t("By model"), t("Model"), data.byModel, "model");
+    html += '</div><div class="stats-column">';
+    html += usageBreakdownTable(t("By operation"), t("Operation"), data.byOperation, "operation");
+    html += usageBreakdownTable(t("By locale"), t("Locale"), data.byLocale, "locale");
+    html += "</div></div>";
+
+    const since = usageState.filters.since || "";
+    const showMonths = since === "" || since === "2mo" || since === "3mo";
+    const timeRows = [];
+    for (const row of data.byDay || []) {
+      timeRows.push({ period: row.day, ...row });
+    }
+    if (showMonths) {
+      for (const row of data.byMonth || []) {
+        timeRows.push({ period: row.month, ...row });
+      }
+    }
+    if (timeRows.length > 0) {
+      html += '<div class="stats-fullwidth"><div class="stats-section">';
+      html +=
+        '<h3 class="stats-section-title">' +
+        escapeHtml(t("Usage over time")) +
+        '</h3><table class="stats-table" style="max-width:none;"><thead><tr><th>' +
+        escapeHtml(t("Date")) +
+        "</th><th>" +
+        escapeHtml(t("Calls")) +
+        "</th><th>" +
+        escapeHtml(t("Accepted")) +
+        "</th><th>" +
+        escapeHtml(t("Discarded")) +
+        "</th><th>" +
+        escapeHtml(t("Tokens")) +
+        "</th><th>" +
+        escapeHtml(t("Cost")) +
+        "</th></tr></thead><tbody>";
+      for (const row of timeRows) {
+        html += `<tr><td>${escapeHtml(row.period)}</td><td>${row.calls}</td><td>${row.acceptedCalls}</td><td>${row.discardedCalls}</td><td>${Number(row.totalTokens).toLocaleString()}</td><td>${usageFormatCost(usageResolvedCost(row))}</td></tr>`;
+      }
+      html += "</tbody></table></div></div>";
+    }
+
+    contentEl.innerHTML = html;
+    setStatus(statusEl, t("Usage loaded."), true);
+  }
+
+  function loadUsage() {
+    const statusEl = document.getElementById("usage-status");
+    setStatus(statusEl, t("Loading usage..."), false);
+    usageLoadFilterOptions()
+      .then(() => usageLoadAggregates())
+      .catch((err) => {
+        setStatus(statusEl, String(err.message || err), false);
+      });
+  }
+
+  function usageApplyFilters() {
+    usageReadFiltersFromForm();
+    loadUsage();
+  }
+
+  function usageClearFilters() {
+    document.getElementById("usage-filter-since").value = "";
+    document.getElementById("usage-filter-provider").value = "";
+    document.getElementById("usage-filter-model").value = "";
+    document.getElementById("usage-filter-operation").value = "";
+    document.getElementById("usage-filter-locale").value = "";
+    document.getElementById("usage-filter-outcome").value = "";
+    usageApplyFilters();
+  }
+
+  function usageSyncDeleteButton() {
+    const preset = document.getElementById("usage-delete-older-than").value.trim();
+    document.getElementById("usage-btn-delete-data").disabled = preset === "";
+  }
+
+  async function usageDeleteData() {
+    const olderThan = document.getElementById("usage-delete-older-than").value.trim();
+    if (!olderThan) return;
+    try {
+      const previewRes = await fetch("/api/usage/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ olderThan, dryRun: true }),
+      });
+      if (!previewRes.ok) throw new Error(await previewRes.text());
+      const preview = await previewRes.json();
+      const calls = preview.removedCalls ?? 0;
+      const totals = preview.removedTotals ?? 0;
+      const confirmMsg =
+        olderThan === "all"
+          ? t(
+              "Delete all usage data ({{calls}} call row(s) and {{totals}} monthly total(s))? This cannot be undone.",
+              { calls, totals }
+            )
+          : t(
+              "Delete usage older than {{when}} ({{calls}} call row(s) and {{totals}} monthly total(s))? This cannot be undone.",
+              { when: olderThan, calls, totals }
+            );
+      if (!window.confirm(confirmMsg)) {
+        return;
+      }
+      const res = await fetch("/api/usage/clear", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ olderThan }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setStatus(
+        document.getElementById("usage-status"),
+        t("Deleted {{count}} usage row(s) ({{calls}} call(s), {{totals}} monthly total(s)).", {
+          count: data.removed ?? 0,
+          calls: data.removedCalls ?? 0,
+          totals: data.removedTotals ?? 0,
+        }),
+        true
+      );
+      loadUsage();
+    } catch (err) {
+      setStatus(document.getElementById("usage-status"), String(err.message || err), false);
+    }
+  }
+
+  function usageInit() {
+    document.getElementById("usage-btn-apply").addEventListener("click", usageApplyFilters);
+    document.getElementById("usage-btn-clear").addEventListener("click", usageClearFilters);
+    document.getElementById("usage-btn-delete-data").addEventListener("click", usageDeleteData);
+    document
+      .getElementById("usage-delete-older-than")
+      .addEventListener("change", usageSyncDeleteButton);
+    usageSyncDeleteButton();
+    for (const id of [
+      "usage-filter-since",
+      "usage-filter-provider",
+      "usage-filter-model",
+      "usage-filter-operation",
+      "usage-filter-locale",
+      "usage-filter-outcome",
+    ]) {
+      document.getElementById(id).addEventListener("change", usageApplyFilters);
+    }
+  }
+
   // ---------- Tabs ----------
   document.querySelectorAll(".tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -2683,6 +3074,7 @@
       if (tab === "ui-plurals") loadUiPlurals();
       if (tab === "glossary") loadGlossary();
       if (tab === "stats") loadStats();
+      if (tab === "usage") loadUsage();
     });
   });
 
@@ -2692,6 +3084,6 @@
   uiInitListeners();
   upInitListeners();
   glInitListeners();
+  usageInit();
   loadUiI18n();
-
 })();

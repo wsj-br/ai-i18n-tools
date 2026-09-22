@@ -97,6 +97,13 @@ Segment batching for **translate-docs**, **translate-svg**, and **translate-json
 
 ---
 
+<a id="requesttimeout--requesttimeoutms-optional"></a>
+### `requestTimeout` / `requestTimeoutMs` (optional)
+
+Maximum time to wait for each LLM request, for every provider. `requestTimeout` is whole seconds; `requestTimeoutMs` is milliseconds. Default: **45** seconds when both are omitted. Set only one of the two. A provider that sets either field uses that value instead, for that provider only.
+
+---
+
 <a id="provider-and-providers"></a>
 ### `provider` and `providers`
 
@@ -122,8 +129,14 @@ Each `providers.<name>` block accepts:
   Max completion tokens per request. Default: `8192`.
 - `temperature`
   Sampling temperature. Default: `0.2`.
+- `requestTimeout`
+  Maximum time in seconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45` seconds. Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
 - `requestTimeoutMs`
-  Maximum time in milliseconds to wait for each request. Default: `30000` (30 seconds).
+  Maximum time in milliseconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45000` (45 seconds). Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
+- `pricing` (optional)
+  Provider-wide USD per 1,000,000 tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row. A matching `modelPricing` entry overrides this default. A provider-reported cost is never replaced. Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage).
+- `modelPricing` (optional)
+  Per-model USD per 1,000,000 tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Overrides `pricing` for that model id. Applied at call time when the provider omitted `usage.cost`, and stored with the call.
 
 Built-in provider presets (key — base URL — API-key env var):
 
@@ -143,9 +156,9 @@ Built-in provider presets (key — base URL — API-key env var):
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (none) |
 
-A legacy top-level `openrouter` block (with `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeoutMs`) is still accepted and is auto-migrated to `providers.openrouter` (with `provider: "openrouter"`) on load; `defaultModel` / `fallbackModel` fold into `translationModels`.
+A legacy top-level `openrouter` block (with `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) is still accepted and is auto-migrated to `providers.openrouter` (with `provider: "openrouter"`) on load; `defaultModel` / `fallbackModel` fold into `translationModels`.
 
-For a runnable example that configures several providers in one config and switches between them with `-P`, see [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `nvidia`, and `deepseek` on the same document).
+For a runnable example that configures several providers in one config and switches between them with `-P`, see [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter`, and `deepseek` on the same document).
 
 **Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure `translationModels` **as an ordered fallback chain** (rather than a single model) so the CLI can attempt the next model if a request fails.
 
@@ -350,7 +363,7 @@ Rewrite relative links after translation (auto-enabled when `docsOutput.style = 
 - `docsOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `docsOutput.rewriteVitepressLinks`
-When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
+When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
 When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
@@ -447,7 +460,7 @@ Top-level array of nested JSON translation pipelines. Used only when `features.t
 | Field | Description |
 |-------|-------------|
 | `description` | Optional note for CLI / `status` (not translated). |
-| `contentPaths` | Source `.json` files, directories, or globs under the project root. |
+| `contentPaths` | Source `.json` files, directories, or globs under the project root. Typical i18next namespace files (`public/locales/en/*.json`) are supported: nested objects, arrays, <code v-pre>{{var}}</code> interpolation in string values, and independent plural suffix keys (`key_one`, `key_other`). |
 | `outputPathTemplate` | Required output path per target locale. Placeholders: `{locale}`, `{LOCALE}`, `{llocale}`, `{stem}`, `{basename}`, `{extension}`, `{relativeToSourceRoot}`. |
 | `targetLocales` | Optional subset for this block; otherwise root `targetLocales`. |
 | `keyPolicy.mode` | `allowlist`, `denylist`, or `both`. |
@@ -478,13 +491,31 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 | Field          | Description                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `uiGlossary`   | Path to `strings.json` - auto-builds a glossary from existing translations.                                                                                                 |
-| `userGlossary` | Path to a CSV with columns `Original language string` (or `en`), `locale`, `Translation` - one row per source term and target locale (`locale` may be `*` for all targets). |
+| `userGlossary` | Path to a CSV with columns `Original language string` (or `en`), `locale`, `Translation`, optional `Force`, and optional `Context` - one row per source term and target locale (`locale` may be `*` for all targets). |
 | `autoAddUserEditedToGlossary` | When `true`, dashboard edits to UI strings can be appended to the user glossary automatically. |
+| `contextFiles` | Optional cwd-relative Markdown or plain-text files (`.md`, `.markdown`, `.txt`) with product or feature explanations. Loaded at command start and injected into UI, docs, JSON, SVG, and proofread prompts. Do not put these files in `docs[].contentPaths` unless you also want them translated. URLs are rejected. The full text is sent to the configured LLM provider and may appear in `--debug-failed` logs — do not include secrets or PII. |
+| `contextMaxChars` | Maximum characters of concatenated context-file text sent to the model (default `12000`, hard cap `100000`). Excess text is truncated with a warning. |
 
 `translate-docs` uses the same glossary for terminology hints, but skips compact UI-label abbreviations (trailing-dot forms such as `Alm.`, or short single-token compressions such as `Size` → `Tam`) so document prompts are not steered toward invented <code v-pre>{{…}}</code> tokens. Full product terms and non-abbreviated UI translations are still hinted.
+
+The optional `Context` CSV column is source-language usage guidance for that term (definition, grammatical use, product meaning). It is included only when the term matches the current batch. Changing a term's `Context` note or any `contextFiles` content invalidates the matching locale's cached segments and file-tracking rows on the next run, so translations refresh automatically. Changing only a preferred `Translation` still uses the existing cache unless you pass `--force` / `--force-update`. Dashboard user-edited cache rows are kept.
+
+Example:
+
+```json
+{
+  "glossary": {
+    "userGlossary": "i18n/glossary.csv",
+    "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
+    "contextMaxChars": 12000
+  }
+}
+```
 
 **Generate an empty glossary CSV:**
 
 ```bash
 ai-i18n-tools glossary-generate
 ```
+
+To draft `contextFiles` from the repository, use the copy-paste agent prompt in [Generate a context file with an AI agent](/guide/glossary#generate-a-context-file-with-an-ai-agent). See [Glossary](/guide/glossary) for how term rows and context files are applied.

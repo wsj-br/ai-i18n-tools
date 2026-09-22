@@ -47,7 +47,8 @@ Exportações principais (comumente usadas — consulte `src/index.ts` para a su
 | `splitTranslatableIntoBatches` | Agrupar segmentos em lotes com tamanho adequado para LLMs. |
 | `validateTranslation` | Verificações estruturais após a tradução (**assíncronas** — devem ser aguardadas). |
 | `resolveDocumentationOutputPath` | Resolver o caminho do arquivo de saída para um documento traduzido. |
-| `Glossary` / `GlossaryMatcher` | Carregar e aplicar glossários de tradução. |
+| `Glossary` / `GlossaryMatcher` | Carrega e aplica glossários de tradução, incluindo notas opcionais de `Context` de termos. |
+| `loadTranslationContext` / `computeGuidanceFingerprint` | Carrega `glossary.contextFiles` e orientação de impressão digital para invalidação de cache. |
 | `runTranslateUI` | Ponto de entrada programático para a interface de tradução. |
 | `writeInitConfigFile` | Escreve um JSON de configuração inicial (`template`, `providerKey` opcional com padrão `openrouter`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` inicial por preset integrado usado por `init -P`. |

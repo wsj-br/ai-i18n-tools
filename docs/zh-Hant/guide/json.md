@@ -104,6 +104,32 @@ ai-i18n-tools status
 | Nextra `_meta.ts` 標籤與主題字典 `.ts` | 文件 — `translate-docs`（當 `style: "nextra"` 時自動 `_meta`，可選 `nextraDictionaryPath`）；**請勿**使用 `json[]` — 請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra) |
 | Fumadocs `meta.json` 標籤與 UI 覆寫目錄 | 文件 — `translate-docs`（當 `style: "fumadocs"` 時自動 `meta.json`，可選 `fumadocsUiCatalog`）；**請勿**使用 `json[]` — 請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
 | 獨立的巢狀地區設定 JSON (ZenBrowser 樣式 `translation.json` 樹) | JSON — `json[]` + `translate-json` |
+| i18next 命名空間檔案（`public/locales/en/common.json`、<code v-pre>{{name}}</code> 權杖、`key_one` / `key_other` 後綴） | JSON — `json[]` + `translate-json`（參見 [i18next 命名空間檔案](#i18next-namespace-files)） |
+| Intlayer `*.content.ts` 字典 + `useIntlayer` | [從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer) — `migrate-intlayer`，然後是 UI 字串 |
 | 附有 `<text>` / `<title>` / `<desc>` 的圖解 `.svg` 檔案 | `features.translateSVG` + [`svg`](/zh-Hant/reference/configuration#svg) + `translate-svg` (選用；非三個主要管道之一) |
 
 欄位參考：[設定參考](/zh-Hant/reference/configuration#json) 中的 [`json`](#json)。用於清理的快取鍵在 `file_tracking` 中使用 `json-block:{blockIndex}:{projectRelPath}`。
+
+<a id="i18next-namespace-files"></a>
+### i18next 命名空間檔案
+
+JSON 管線涵蓋典型的 i18next 鍵值地區設定檔案：巢狀物件、字串陣列、值中的 <code v-pre>{{name}}</code> 插值，以及獨立的複數後綴鍵（`welcome_one`、`welcome_other`）。它**不會**改寫 `t("some.key")` 呼叫位置——這些仍以鍵為基礎。若要將專案移轉至 ai-i18n-tools 的英文來源字串 `t()` 結構描述，請將呼叫位置改為 `t("English text")`（或當來源為 Intlayer `.content.ts` 時執行 `migrate-intlayer`）。
+
+範例（`public/locales/en/` 下的來源英文命名空間）：
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero`（以及其他 CLDR 後綴）會作為獨立的葉節點進行翻譯。這已足夠讓 i18next 繼續依後綴解析複數；管線不會將它們重新分組為單一目錄列。

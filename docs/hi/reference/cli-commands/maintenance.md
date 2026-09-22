@@ -1,5 +1,5 @@
-<a id="cli--cache--maintenance"></a>
-# सीएलआई — कैश और रखरखाव
+<a id="cli--cache-maintenance"></a>
+# सीएलआई — कैश रखरखाव
 
 <a id="cleanup"></a>
 ### `cleanup`

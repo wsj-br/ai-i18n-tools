@@ -85,6 +85,9 @@ function migrateOpenrouterBlock(o: Record<string, unknown>): void {
   if (typeof or.temperature === "number") {
     entry.temperature = or.temperature;
   }
+  if (typeof or.requestTimeout === "number") {
+    entry.requestTimeout = or.requestTimeout;
+  }
   if (typeof or.requestTimeoutMs === "number") {
     entry.requestTimeoutMs = or.requestTimeoutMs;
   }

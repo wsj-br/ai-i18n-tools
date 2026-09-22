@@ -11,7 +11,7 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-ai-i18n-toolsには独自の文字列抽出機能が含まれています。以前に`i18next-scanner`、`babel-plugin-i18next-extract`、または類似ツールを使用していた場合、移行後にそれらの開発依存関係を削除できます。
+ai-i18n-toolsには独自の文字列抽出機能が含まれています。以前に`i18next-scanner`、`babel-plugin-i18next-extract`などを使用していた場合は、移行後にそれらの開発依存関係を削除できます。既存のi18nextの**ネームスペースJSON**ファイルは、[JSONパイプライン](/ja/guide/json#i18next-namespace-files)にそのまま残すことができます。Intlayerの`.content.ts`辞書は`migrate-intlayer`でインポートできます — [Intlayerからの移行](/ja/guide/migrating-from-intlayer)を参照してください。
 
 <a id="using-the-cli"></a>
 ### CLI の使用方法
@@ -71,7 +71,7 @@ pnpmの場合、グローバルコマンドが見つからない場合はマシ�
 **代替手段** — `PATH` を調整したくない場合: `npx ai-i18n-tools …` (npm) または `pnpm exec ai-i18n-tools …` (pnpm)。`package.json` エントリを持たないインストール不要の一回限りの実行には: `npx ai-i18n-tools <cmd>` または `pnpm dlx ai-i18n-tools <cmd>`。
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
-### クローンした ai-i18n-tools モノレポ
+### クローンされたai-i18n-toolsモノレポ
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) の完全なクローンからパッケージを開発する、またはワークスペースの**例**を実行する場合:
 

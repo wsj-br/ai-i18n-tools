@@ -50,9 +50,9 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 **UI文字列:** オプションの `uiModels` を使用すると、グローバルな `translationModels` チェーンの前に、`translate-ui`、複数形生成、および `proofread-ui` をプレミアムモデルにルーティングできます。UIコピーは短く、ユーザーに直接見えるため、これは有用です。
 
-**アジアのロケール:** `ja`、`ko`、`zh-Hans`、および `zh-Hant` のオプションの `localeModels` エントリは、すべてのパイプラインで最初に試行されます。`z-ai/glm-5.2` や `minimax/minimax-m2.7` などのモデルは、汎用フォールバックよりもCJKスクリプトでより優れたパフォーマンスを発揮することがよくあります。
+**アジアのロケール:** `ja`、`ko`、`zh-Hans`、および`zh-Hant`用の任意の`localeModels`エントリは、各パイプラインで最初に試行されます。`z-ai/glm-5.3`や`minimax/minimax-m2.7`などのモデルは、中日韓文字に対して汎用フォールバックよりも優れたパフォーマンスを発揮することがよくあります。
 
-設定例 (OpenRouter):
+設定例（OpenRouter）。`translationModels`と`uiModels`は、このリポジトリが`ai-i18n-tools.config.json`で使用するリストです。`localeModels`はCJKロケール向けの推奨オプションアドオンですが、このリポジトリでは設定されていません。
 
 ```json
 {
@@ -60,24 +60,25 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-各プロバイダーブロックは、独自の `translationModels`、オプションの `uiModels` と `localeModels`、`maxTokens`、`temperature`、および `requestTimeoutMs` を定義できます。レガシーのトップレベル `openrouter` ブロックは引き続き受け入れられ、ロード時に `providers.openrouter` に自動移行されます。
+各プロバイダーブロックは独自の `translationModels`、オプションの `uiModels` および `localeModels`、`maxTokens`、`temperature`、`requestTimeout` (秒) または `requestTimeoutMs` を定義できます。プロバイダーのタイムアウトはトップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。従来のトップレベルの `openrouter` ブロックも引き続き受け付けられ、ロード時に `providers.openrouter` へ自動移行されます。
 
-同じドキュメントに4つのプロバイダーがある実行可能な例: [`examples/multi-provider`](/ja/examples#multi-provider)。
+オプションの`pricing`と`modelPricing`は、プロバイダーが`usage.cost`を省略した場合に、1,000,000トークンあたりのUSD（`inputPerMTokens`と`outputPerMTokens`）を設定します。`pricing`はプロバイダー全体のデフォルトであり、`modelPricing`エントリは1つのモデルIDに対してこれを上書きします。OpenRouterはすでに呼び出しごとのコストを返すため、当該プロバイダーでは両方とも未設定にしてください。プロバイダーから報告されたコストは返された値のまま保持されます。この金額は、翻訳サマリー、[`usage`](/ja/reference/cli-commands/workflows#usage)、および[使用量とコスト](/ja/guide/translation-dashboard/usage)に含まれます。
+
+同じドキュメントに対して4つのプロバイダーを使用する実行可能な例（サンプルレートを含む）：[`examples/multi-provider`](/ja/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### その他の参考資料
 
-- [設定 — `provider` と `providers`](/ja/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、OpenRouter 固有の動作。
-- [アーキテクチャ — LLM クライアント](/ja/reference/architecture) — モデルのフォールバック、バッチ処理、コストレポートが内部でどのように機能するか。
-- [環境変数](/ja/reference/environment-variables) — API キーの環境変数とベース URL のオーバーライド。
+- [設定 — `provider`と`providers`](/ja/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、コストレート、OpenRouter固有の動作。
+- [アーキテクチャ — LLMクライアント](/ja/reference/architecture) — モデルフォールバック、バッチ処理、コスト報告の内部動作。
+- [環境変数](/ja/reference/environment-variables) — APIキーの環境変数とベースURLのオーバーライド。

@@ -40,8 +40,10 @@ Le dépôt contient des exemples de projets exécutables sous `examples/` — ch
 | [vitepress-docs](/fr/examples#vitepress-docs) | Documentation VitePress et catalogue de thèmes |
 | [nextra-docs](/fr/examples#nextra-docs) | Documentation Nextra, plus les libellés de la barre latérale `_meta.ts` et le dictionnaire de thèmes |
 | [fumadocs-docs](/fr/examples#fumadocs-docs) | Documentation Fumadocs plus les libellés de la barre latérale `meta.json` et le catalogue d'interface utilisateur |
+| [plain-html](/fr/examples#plain-html) | HTML statique avec marqueurs `data-i18n*` et JSON de localisation |
 | [multi-provider](/fr/examples#multi-provider) | Comparer les fournisseurs LLM sur le même document |
 | [test-markdown](/fr/examples#test-markdown) | Tests de stress du pipeline Markdown (CJK, Devanagari, cas limites) |
+| [intlayer-migration](/fr/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
 
 Voir [Exemples](/fr/examples) pour les commandes de copie `npx degit` et un guide de choix.
 

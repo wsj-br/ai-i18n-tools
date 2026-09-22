@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# 처음부터 i18n을 위한 설계
+## 처음부터 i18n을 고려한 설계
 
 스크린샷이 존재하기 전에 올바른 디렉토리 레이아웃을 선택하는 것은 나중에 로케일별 자산이 얼마나 수월한지를 결정짓는 가장 큰 요소입니다. 수십 개의 스크린샷이 커밋된 후 레이아웃을 수정하는 것은 경로를 재구성하고 모든 마크다운 참조를 업데이트해야 함을 의미합니다.
 
@@ -105,7 +105,7 @@ SVG 소스 파일은 전용 소스 디렉터리(예: `images/` 또는 `src/asset
 ---
 
 <a id="decision-guide"></a>
-# 결정 가이드
+## 의사 결정 가이드
 
 **자산에 번역 가능한 텍스트 또는 레이블이 포함되어 있나요?**
   - **예** → [웹 앱 SVG](/ko/guide/svg-translation/translated-svg-web-app) 또는 [동일한 위치에 있는 SVG](/ko/guide/svg-translation/translated-svg-colocated)

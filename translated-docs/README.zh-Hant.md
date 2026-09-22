@@ -11,7 +11,9 @@
 
 **使用您選擇的 AI 模型翻譯您的應用程式與文件 — 無供應商綁定，無需重寫。**
 
-用於將 JavaScript/TypeScript 應用程式與文件網站（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、純 Markdown/MDX）國際化的 CLI 與工具包。使用內建的 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 等預設配置 — 或任何相容於 OpenAI 的 API。按專案或按語言環境切換供應商或模型，而無需更改您的程式碼庫。
+CLI 與工具套件，用於將 JavaScript/TypeScript 應用程式及文件網站國際化。擷取 `t()` 字串，翻譯 Markdown/MDX 頁面、JSON 套件與 SVG 標籤——全部透過單一設定檔完成，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 及任何相容 OpenAI 之 API 的預設配置。可依專案或地區設定切換供應商或模型，無需變更您的程式碼庫。
+
+適用於 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 及純 Markdown。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
 
 <a id="features"></a>
 ## 功能

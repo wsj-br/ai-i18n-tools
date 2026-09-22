@@ -43,6 +43,11 @@ import {
 } from "../processors/glossary-force-placeholders.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
 import { Glossary } from "../glossary/glossary.js";
+import {
+  computeGuidanceFingerprint,
+  loadTranslationContextFromConfig,
+  translationContextClientOpts,
+} from "../glossary/translation-context.js";
 import { LlmClient } from "../api/llm-client.js";
 import {
   dedupeOrderedModelIds,
@@ -53,6 +58,7 @@ import {
 } from "../core/config.js";
 import { safeResolveActiveProvider, localeModelsMapForProvider } from "../core/llm-providers.js";
 import { createFilteredLlmClient } from "./llm-client-factory.js";
+import { usageRecorderForCache } from "../core/usage-recorder.js";
 import {
   buildTranslationCheckSnapshot,
   validateDocTranslatePair,
@@ -237,6 +243,10 @@ export interface TranslateRunOptions {
   fileConcurrency?: number;
   /** When aborted (Ctrl+C), cooperative workers stop claiming new work. */
   abortSignal?: AbortSignal;
+  /** Loaded project translation context (system prompt). */
+  translationContextText?: string;
+  /** Fingerprint of project context files (not locale-specific). */
+  translationContextFingerprint?: string;
 }
 
 export interface TranslateTotals {
@@ -1637,6 +1647,14 @@ export async function scanAndRecordMarkdownSourceIssuesForTranslate(
   }
 }
 
+function promptContextHashFor(
+  glossary: Glossary,
+  locale: string,
+  opts: TranslateRunOptions
+): string {
+  return computeGuidanceFingerprint(glossary, locale, opts.translationContextFingerprint ?? "");
+}
+
 export async function translateMarkdownFile(
   absSource: string,
   relPath: string,
@@ -1669,6 +1687,7 @@ export async function translateMarkdownFile(
   const content = fileData.content;
   const fileHash = fileData.hash;
   const sourceFileMtime = fileData.mtime;
+  const promptContextHash = promptContextHashFor(glossary, locale, opts);
   /** Cwd-relative posix path for `translations.filepath` metadata (aligned with JSON/SVG). */
   const translationFilepathMeta = relPath.split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "markdown");
@@ -1689,10 +1708,12 @@ export async function translateMarkdownFile(
     }
   }
 
-  const cachedFileHash =
+  const fileTrackingMatches =
     cache && !opts.noCache
-      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
-      : null;
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+        )
+      : false;
 
   if (
     !opts.force &&
@@ -1700,7 +1721,7 @@ export async function translateMarkdownFile(
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
-    cachedFileHash === fileHash &&
+    fileTrackingMatches &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -1772,7 +1793,7 @@ export async function translateMarkdownFile(
   if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
     const hashes = translatableSegments.map(({ s }) => s.hash);
     batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
-      cache.getSegmentsBatch(hashes, locale)
+      cache.getSegmentsBatch(hashes, locale, promptContextHash)
     );
   }
 
@@ -1981,7 +2002,7 @@ export async function translateMarkdownFile(
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
-        cache.setFileStatus(fileTrackingKey, locale, fileHash);
+        cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
         for (const s of segments) {
           if (!s.translatable) {
             continue;
@@ -1997,7 +2018,8 @@ export async function translateMarkdownFile(
             entry.text,
             entry.modelUsed,
             translationFilepathMeta,
-            s.startLine ?? null
+            s.startLine ?? null,
+            promptContextHash
           );
         }
       });
@@ -2054,6 +2076,7 @@ export async function translateAstroFile(
   const content = fileData.content;
   const fileHash = fileData.hash;
   const sourceFileMtime = fileData.mtime;
+  const promptContextHash = promptContextHashFor(glossary, locale, opts);
   const translationFilepathMeta = relPath.split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "markdown");
   const outRelPosix = path.relative(opts.cwd, outPath).split(path.sep).join("/");
@@ -2074,10 +2097,12 @@ export async function translateAstroFile(
     }
   }
 
-  const cachedFileHash =
+  const fileTrackingMatches =
     cache && !opts.noCache
-      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
-      : null;
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+        )
+      : false;
 
   if (
     !opts.force &&
@@ -2085,7 +2110,7 @@ export async function translateAstroFile(
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
-    cachedFileHash === fileHash &&
+    fileTrackingMatches &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -2158,7 +2183,7 @@ export async function translateAstroFile(
   if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
     const hashes = translatableSegments.map(({ s }) => s.hash);
     batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
-      cache.getSegmentsBatch(hashes, locale)
+      cache.getSegmentsBatch(hashes, locale, promptContextHash)
     );
   }
 
@@ -2324,7 +2349,7 @@ export async function translateAstroFile(
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
-        cache.setFileStatus(fileTrackingKey, locale, fileHash);
+        cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
         for (const s of segments) {
           if (!s.translatable) {
             continue;
@@ -2340,7 +2365,8 @@ export async function translateAstroFile(
             entry.text,
             entry.modelUsed,
             translationFilepathMeta,
-            s.startLine ?? null
+            s.startLine ?? null,
+            promptContextHash
           );
         }
       });
@@ -2398,6 +2424,7 @@ export async function translateJsonFile(
   const content = fileData.content;
   const fileHash = fileData.hash;
   const sourceFileMtime = fileData.mtime;
+  const promptContextHash = promptContextHashFor(glossary, locale, opts);
   /** Cwd-relative path for cache/UI and `file_tracking` (must match `resolveDocTrackingKeyToAbs` under project root). */
   const relPathFromCwd = path.relative(opts.cwd, absSource).split(path.sep).join("/");
   const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "json");
@@ -2419,10 +2446,12 @@ export async function translateJsonFile(
     }
   }
 
-  const cachedFileHashJson =
+  const fileTrackingMatchesJson =
     cache && !opts.noCache
-      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
-      : null;
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+        )
+      : false;
 
   if (
     !opts.force &&
@@ -2430,7 +2459,7 @@ export async function translateJsonFile(
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
-    cachedFileHashJson === fileHash &&
+    fileTrackingMatchesJson &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -2490,7 +2519,7 @@ export async function translateJsonFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, relPathFromCwd)
+        cache.getSegment(s.hash, locale, relPathFromCwd, undefined, promptContextHash)
       );
       if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         translations.set(s.hash, { text: hit });
@@ -2576,7 +2605,7 @@ export async function translateJsonFile(
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
-        cache.setFileStatus(fileTrackingKey, locale, fileHash);
+        cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
         for (const s of segments) {
           if (!s.translatable) {
             continue;
@@ -2592,7 +2621,8 @@ export async function translateJsonFile(
             entry.text,
             entry.modelUsed,
             relPathFromCwd,
-            null
+            null,
+            promptContextHash
           );
         }
       });
@@ -2651,6 +2681,7 @@ export async function translateSvgAssetFile(
   const content = fs.readFileSync(absSource, "utf8");
   const fileHash = hashFileContent(content);
   const sourceFileMtime = fs.statSync(absSource).mtime.toISOString();
+  const promptContextHash = promptContextHashFor(glossary, locale, opts);
 
   if (opts.force && cache && !opts.noCache) {
     await withCacheMutex(opts.cacheMutex, () => cache.clearFile(cacheKey, locale));
@@ -2666,10 +2697,12 @@ export async function translateSvgAssetFile(
     }
   }
 
-  const cachedFileHashSvg =
+  const fileTrackingMatchesSvg =
     cache && !opts.noCache
-      ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(cacheKey, locale))
-      : null;
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(cacheKey, locale, fileHash, promptContextHash)
+        )
+      : false;
 
   if (
     !opts.force &&
@@ -2677,7 +2710,7 @@ export async function translateSvgAssetFile(
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
-    cachedFileHashSvg === fileHash &&
+    fileTrackingMatchesSvg &&
     translatedOutputIsCurrent(outPath, sourceFileMtime)
   ) {
     if (opts.verbose) {
@@ -2704,7 +2737,7 @@ export async function translateSvgAssetFile(
       fs.copyFileSync(absSource, outPath);
       if (cache && !opts.noCache) {
         await withCacheMutex(opts.cacheMutex, () => {
-          cache.setFileStatus(cacheKey, locale, fileHash);
+          cache.setFileStatus(cacheKey, locale, fileHash, promptContextHash);
         });
       }
       totals.filesWritten = 1;
@@ -2762,7 +2795,7 @@ export async function translateSvgAssetFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, translationSvgFilepathMeta)
+        cache.getSegment(s.hash, locale, translationSvgFilepathMeta, undefined, promptContextHash)
       );
       if (hit && translationScriptIssue(hit, locale, s.content) === null) {
         let t = hit;
@@ -2852,7 +2885,7 @@ export async function translateSvgAssetFile(
     writeAtomicUtf8(outPath, output);
     if (cache && !opts.noCache) {
       await withCacheMutex(opts.cacheMutex, () => {
-        cache.setFileStatus(cacheKey, locale, fileHash);
+        cache.setFileStatus(cacheKey, locale, fileHash, promptContextHash);
         for (const s of segments) {
           if (!s.translatable) {
             continue;
@@ -2868,7 +2901,8 @@ export async function translateSvgAssetFile(
             entry.text,
             entry.modelUsed,
             translationSvgFilepathMeta,
-            null
+            null,
+            promptContextHash
           );
         }
       });
@@ -3022,6 +3056,20 @@ export async function runTranslate(
 
   const locales = opts.locales.map((l) => normalizeLocale(l));
   const glossary = new Glossary(glossaryUi, glossaryUser, locales);
+  const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
+  if (translationContext.truncated) {
+    console.warn(
+      chalk.yellow(
+        t(
+          "⚠️  Translation context truncated to {{max}} characters ({{files}} file(s)). Shorten glossary.contextFiles or raise glossary.contextMaxChars.",
+          {
+            max: config.glossary?.contextMaxChars ?? 12_000,
+            files: translationContext.loadedPaths.length,
+          }
+        )
+      )
+    );
+  }
 
   const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
   const displayModels = dedupeOrderedModelIds(
@@ -3056,6 +3104,17 @@ export async function runTranslate(
         : undefined,
   });
   console.log(chalk.cyan(t("Glossary terms: ")) + chalk.magenta(`${glossary.size}`));
+  if (translationContext.loadedPaths.length > 0) {
+    console.log(
+      chalk.cyan(t("Translation context: ")) +
+        chalk.magenta(
+          t("{{count}} file(s), {{chars}} characters", {
+            count: translationContext.loadedPaths.length,
+            chars: translationContext.text.length,
+          })
+        )
+    );
+  }
   console.log(
     chalk.cyan(t("Output: ")) + chalk.magenta(`${path.resolve(opts.cwd, config.doc.outputDir)}`)
   );
@@ -3127,6 +3186,8 @@ export async function runTranslate(
     batchConcurrency: batchConcurrencyEffective,
     fileConcurrency: fileConcurrencyEffective,
     cacheMutex,
+    translationContextText: translationContext.text,
+    translationContextFingerprint: translationContext.fingerprint,
   };
 
   const recordFileTotals = async (
@@ -3175,6 +3236,7 @@ export async function runTranslate(
       if (needsApi) {
         client = await createFilteredLlmClient(config, locale, {
           ...llmClientDebugFailedOpts(runOpts, config.cacheDir),
+          ...translationContextClientOpts(translationContext.text),
           onApiUsage: (usage, cost) => {
             liveSum.inputTokens += usage.inputTokens;
             liveSum.outputTokens += usage.outputTokens;
@@ -3182,6 +3244,7 @@ export async function runTranslate(
               liveSum.costUsd = (liveSum.costUsd ?? 0) + cost;
             }
           },
+          onApiCall: usageRecorderForCache(cache, "translate-docs", locale),
         });
       }
 

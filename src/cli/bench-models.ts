@@ -11,6 +11,8 @@ import {
 } from "../core/config.js";
 import { resolveActiveProvider, resolveProviderSettings } from "../core/llm-providers.js";
 import { getDocumentationTargetLocaleCodes } from "../core/ui-languages.js";
+import { TranslationCache } from "../core/cache.js";
+import { createUsageRecorder } from "../core/usage-recorder.js";
 import { renderTable } from "../utils/table.js";
 import { runMapWithConcurrency } from "../utils/concurrency.js";
 import { printModelsTryInOrder } from "./format.js";
@@ -211,122 +213,132 @@ export async function runBenchModels(
   );
   console.log();
 
-  // Each model is benchmarked through its own single-model client so timings/usage map to exactly
-  // one model; `runMapWithConcurrency` preserves input order so `rows` matches `models`.
-  const benchmarkModel = async (modelId: string): Promise<BenchRow> => {
-    let client: LlmClient;
-    try {
-      client = new LlmClient({ config: effectiveConfig, apiKey, translationModels: [modelId] });
-    } catch (e) {
-      return {
-        modelId,
-        ok: false,
-        inputTokens: 0,
-        outputTokens: 0,
-        durationMs: 0,
-        costUsd: undefined,
-        error: e instanceof Error ? e.message : String(e),
-      };
+  const usageCache = new TranslationCache(path.join(projectRoot, config.cacheDir));
+  try {
+    // Each model is benchmarked through its own single-model client so timings/usage map to exactly
+    // one model; `runMapWithConcurrency` preserves input order so `rows` matches `models`.
+    const benchmarkModel = async (modelId: string): Promise<BenchRow> => {
+      let client: LlmClient;
+      try {
+        client = new LlmClient({
+          config: effectiveConfig,
+          apiKey,
+          translationModels: [modelId],
+          onApiCall: createUsageRecorder(usageCache, "bench-models", targetLocale),
+        });
+      } catch (e) {
+        return {
+          modelId,
+          ok: false,
+          inputTokens: 0,
+          outputTokens: 0,
+          durationMs: 0,
+          costUsd: undefined,
+          error: e instanceof Error ? e.message : String(e),
+        };
+      }
+
+      const start = Date.now();
+      try {
+        const res = await client.translateDocumentSegment(sampleText, targetLocale, []);
+        const durationMs = Date.now() - start;
+        console.log(
+          chalk.gray(
+            t("✔ {{model}} ({{time}})", { model: modelId, time: formatDurationMs(durationMs) })
+          )
+        );
+        return {
+          modelId,
+          ok: true,
+          inputTokens: res.usage.inputTokens,
+          outputTokens: res.usage.outputTokens,
+          durationMs,
+          costUsd: res.cost,
+        };
+      } catch (e) {
+        console.log(chalk.red(t("✗ {{model}} (failed)", { model: modelId })));
+        return {
+          modelId,
+          ok: false,
+          inputTokens: 0,
+          outputTokens: 0,
+          durationMs: Date.now() - start,
+          costUsd: undefined,
+          error: e instanceof Error ? e.message : String(e),
+        };
+      }
+    };
+
+    const rows = await runMapWithConcurrency(models, concurrency, benchmarkModel);
+
+    console.log();
+
+    const okRows = rows.filter((r) => r.ok);
+    const failedRows = rows.filter((r) => !r.ok);
+    const totalInput = okRows.reduce((acc, r) => acc + r.inputTokens, 0);
+    const totalOutput = okRows.reduce((acc, r) => acc + r.outputTokens, 0);
+    const costKnownRows = okRows.filter((r) => r.costUsd !== undefined);
+    const totalCost = costKnownRows.reduce((acc, r) => acc + (r.costUsd ?? 0), 0);
+    const someCostUnknown = okRows.some((r) => r.costUsd === undefined);
+
+    const headers = [t("Model"), t("Input"), t("Output"), t("Time"), t("Cost (USD)")];
+    const tableRows: string[][] = rows.map((r) =>
+      r.ok
+        ? [
+            r.modelId,
+            String(r.inputTokens),
+            String(r.outputTokens),
+            formatDurationMs(r.durationMs),
+            formatCost(r.costUsd),
+          ]
+        : [r.modelId, "—", "—", t("FAILED"), "—"]
+    );
+    if (okRows.length > 0) {
+      tableRows.push([
+        t("TOTAL"),
+        String(totalInput),
+        String(totalOutput),
+        "",
+        costKnownRows.length > 0 ? formatCost(totalCost) : "—",
+      ]);
     }
 
-    const start = Date.now();
-    try {
-      const res = await client.translateDocumentSegment(sampleText, targetLocale, []);
-      const durationMs = Date.now() - start;
+    const totalRowIndex = okRows.length > 0 ? tableRows.length - 1 : undefined;
+    const lines = renderTable({
+      headers,
+      rows: tableRows,
+      align: ["left", "right", "right", "right", "right"],
+      separatorBeforeRows: totalRowIndex !== undefined ? [totalRowIndex] : undefined,
+    });
+    for (const line of lines) {
+      console.log(line);
+    }
+    console.log();
+
+    if (someCostUnknown) {
       console.log(
         chalk.gray(
-          t("✔ {{model}} ({{time}})", { model: modelId, time: formatDurationMs(durationMs) })
+          t(
+            "Note: cost is reported only by providers that return it (e.g. OpenRouter); shown as — otherwise."
+          )
         )
       );
-      return {
-        modelId,
-        ok: true,
-        inputTokens: res.usage.inputTokens,
-        outputTokens: res.usage.outputTokens,
-        durationMs,
-        costUsd: res.cost,
-      };
-    } catch (e) {
-      console.log(chalk.red(t("✗ {{model}} (failed)", { model: modelId })));
-      return {
-        modelId,
-        ok: false,
-        inputTokens: 0,
-        outputTokens: 0,
-        durationMs: Date.now() - start,
-        costUsd: undefined,
-        error: e instanceof Error ? e.message : String(e),
-      };
+      console.log();
     }
-  };
 
-  const rows = await runMapWithConcurrency(models, concurrency, benchmarkModel);
-
-  console.log();
-
-  const okRows = rows.filter((r) => r.ok);
-  const failedRows = rows.filter((r) => !r.ok);
-  const totalInput = okRows.reduce((acc, r) => acc + r.inputTokens, 0);
-  const totalOutput = okRows.reduce((acc, r) => acc + r.outputTokens, 0);
-  const costKnownRows = okRows.filter((r) => r.costUsd !== undefined);
-  const totalCost = costKnownRows.reduce((acc, r) => acc + (r.costUsd ?? 0), 0);
-  const someCostUnknown = okRows.some((r) => r.costUsd === undefined);
-
-  const headers = [t("Model"), t("Input"), t("Output"), t("Time"), t("Cost (USD)")];
-  const tableRows: string[][] = rows.map((r) =>
-    r.ok
-      ? [
-          r.modelId,
-          String(r.inputTokens),
-          String(r.outputTokens),
-          formatDurationMs(r.durationMs),
-          formatCost(r.costUsd),
-        ]
-      : [r.modelId, "—", "—", t("FAILED"), "—"]
-  );
-  if (okRows.length > 0) {
-    tableRows.push([
-      t("TOTAL"),
-      String(totalInput),
-      String(totalOutput),
-      "",
-      costKnownRows.length > 0 ? formatCost(totalCost) : "—",
-    ]);
-  }
-
-  const totalRowIndex = okRows.length > 0 ? tableRows.length - 1 : undefined;
-  const lines = renderTable({
-    headers,
-    rows: tableRows,
-    align: ["left", "right", "right", "right", "right"],
-    separatorBeforeRows: totalRowIndex !== undefined ? [totalRowIndex] : undefined,
-  });
-  for (const line of lines) {
-    console.log(line);
-  }
-  console.log();
-
-  if (someCostUnknown) {
-    console.log(
-      chalk.gray(
-        t(
-          "Note: cost is reported only by providers that return it (e.g. OpenRouter); shown as — otherwise."
-        )
-      )
-    );
-    console.log();
-  }
-
-  if (failedRows.length > 0) {
-    console.log(chalk.red.bold(t("Failed models")));
-    for (const r of failedRows) {
-      console.log(chalk.red(`  • ${r.modelId}`));
-      if (r.error) {
-        console.log(chalk.gray(`    ${r.error}`));
+    if (failedRows.length > 0) {
+      console.log(chalk.red.bold(t("Failed models")));
+      for (const r of failedRows) {
+        console.log(chalk.red(`  • ${r.modelId}`));
+        if (r.error) {
+          console.log(chalk.gray(`    ${r.error}`));
+        }
       }
+      console.log();
     }
-    console.log();
-  }
 
-  return { exitCode: okRows.length === 0 ? 1 : 0 };
+    return { exitCode: okRows.length === 0 ? 1 : 0 };
+  } finally {
+    usageCache.close();
+  }
 }

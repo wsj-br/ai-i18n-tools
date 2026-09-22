@@ -50,9 +50,9 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 **UI 字符串：** 可选的 `uiModels` 允许你在全局 `translationModels` 链之前，将 `translate-ui`、复数生成和 `proofread-ui` 路由到高级模型——这很有用，因为 UI 文案简短但面向用户。
 
-**亚洲区域设置：** 针对 `ja`、`ko`、`zh-Hans` 和 `zh-Hant` 的可选 `localeModels` 条目会在每个流水线中优先尝试；像 `z-ai/glm-5.2` 和 `minimax/minimax-m2.7` 这样的模型在 CJK 脚本上的表现通常优于通用后备模型。
+**亚洲区域设置：** 在每个管道中，都会优先尝试针对 `ja`、`ko`、`zh-Hans` 和 `zh-Hant` 的可选 `localeModels` 条目；诸如 `z-ai/glm-5.3` 和 `minimax/minimax-m2.7` 等模型在处理中日韩文字时，通常比通用回退方案表现更好。
 
-配置示例（OpenRouter）：
+示例配置（OpenRouter）。`translationModels` 和 `uiModels` 是本仓库在 `ai-i18n-tools.config.json` 中使用的列表。`localeModels` 是针对 CJK 语言环境的可选推荐附加组件；本仓库未设置此项。
 
 ```json
 {
@@ -60,24 +60,25 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-每个提供商块可以定义自己的 `translationModels`，可选的 `uiModels` 和 `localeModels`，`maxTokens`，`temperature` 和 `requestTimeoutMs`。仍然接受旧版顶级 `openrouter` 块，并在加载时自动迁移到 `providers.openrouter`。
+每个提供程序块可以定义自己的 `translationModels`、可选的 `uiModels` 和 `localeModels`、`maxTokens`、`temperature`，以及 `requestTimeout`（秒）或 `requestTimeoutMs`。提供程序上的超时会覆盖顶级的 `requestTimeout` / `requestTimeoutMs`。仍然接受旧版的顶级 `openrouter` 块，并在加载时自动迁移到 `providers.openrouter`。
 
-在同一文档中使用四个提供程序的运行示例：[`examples/multi-provider`](/zh-Hans/examples#multi-provider)。
+可选的 `pricing` 和 `modelPricing` 用于在提供商省略 `usage.cost` 时设置每 1,000,000 个 token 的美元价格（`inputPerMTokens` 和 `outputPerMTokens`）。`pricing` 是提供商级别的全局默认值；`modelPricing` 条目会针对单个模型 ID 覆盖该默认值。OpenRouter 已经返回每次调用的成本，因此对于该提供商请将两者均留空。提供商报告的成本将按原样保留。该金额会包含在翻译摘要、[`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 以及[用量与成本](/zh-Hans/guide/translation-dashboard/usage) 中。
+
+针对同一文档使用四个提供商的可运行示例，包含示例费率：[`examples/multi-provider`](/zh-Hans/examples#multi-provider)。
 
 <a id="further-reference"></a>
 ### 更多参考
 
-- [配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers) — 预设表、自定义端点、请求超时、OpenRouter 特定行为。
-- [架构 — LLM 客户端](/zh-Hans/reference/architecture) — 模型回退、批处理和成本报告在内部如何工作。
-- [环境变量](/zh-Hans/reference/environment-variables) — API 密钥环境变量和基本 URL 覆盖。
+- [配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers) — 预设表、自定义端点、请求超时、成本费率、OpenRouter 特定行为。
+- [架构 — LLM 客户端](/zh-Hans/reference/architecture) — 模型回退、批处理和成本报告在内部的工作原理。
+- [环境变量](/zh-Hans/reference/environment-variables) — API 密钥环境变量和基础 URL 覆盖。

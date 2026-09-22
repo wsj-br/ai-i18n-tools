@@ -40,7 +40,7 @@ Typical rewrites:
 | `../guide/foo.md` (from a locale file) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | unchanged (use full URLs for repo paths) |
 
-For projects that sync `README.md` → `docs/index.md`, use full GitHub URLs in `README.md` for `LICENSE`, `examples/`, and other files outside the VitePress tree. See [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-as-homepage).
+For projects that sync `README.md` → `docs/index.md`, use full GitHub URLs in `README.md` for `LICENSE`, `examples/`, and other files outside the VitePress tree. See [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
 
 The flat rewriter and VitePress normalizer are mutually exclusive per `docs[]` block — only one runs before `regexAdjustments`. See [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
 

@@ -104,6 +104,32 @@ ai-i18n-tools status
 | Nextra `_meta.ts` 라벨 및 테마 사전 `.ts` | 문서 — `translate-docs` (`style: "nextra"`일 때 자동 `_meta`, 선택적 `nextraDictionaryPath`); `json[]`를 **사용하지 마세요** — [Nextra 통합](/ko/guide/integrations/nextra) 참조 |
 | Fumadocs `meta.json` 라벨 및 UI 오버라이드 카탈로그 | 문서 — `translate-docs` (`style: "fumadocs"`일 때 자동 `meta.json`, 선택적 `fumadocsUiCatalog`); `json[]`를 **사용하지 마세요** — [Fumadocs 통합](/ko/guide/integrations/fumadocs) 참조 |
 | 독립형 중첩 로케일 JSON (ZenBrowser 스타일 `translation.json` 트리) | JSON — `json[]` + `translate-json` |
+| i18next 네임스페이스 파일 (`public/locales/en/common.json`, <code v-pre>{{name}}</code> 토큰, `key_one` / `key_other` 접미사) | JSON — `json[]` + `translate-json` ([i18next 네임스페이스 파일](#i18next-namespace-files) 참조) |
+| Intlayer `*.content.ts` 사전 + `useIntlayer` | [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer) — `migrate-intlayer`, 이후 UI 문자열 |
 | `<text>` / `<title>` / `<desc>`가 포함된 그림 `.svg` 파일 | `features.translateSVG` + [`svg`](/ko/reference/configuration#svg) + `translate-svg` (선택 사항, 세 가지 주요 파이프라인 중 하나가 아님) |
 
 필드 참조: [구성 참조](/ko/reference/configuration#json)의 [`json`](#json). 정리를 위한 캐시 키는 `file_tracking`에서 `json-block:{blockIndex}:{projectRelPath}`을 사용합니다.
+
+<a id="i18next-namespace-files"></a>
+### i18next 네임스페이스 파일
+
+JSON 파이프라인은 일반적인 i18next 키/값 로케일 파일을 다룹니다: 중첩 객체, 문자열 배열, 값 내 <code v-pre>{{name}}</code> 보간, 독립적인 복수 접미사 키 (`welcome_one`, `welcome_other`). `t("some.key")` 호출 지점은 **재작성하지** 않습니다 — 해당 부분은 키 기반으로 유지됩니다. 프로젝트를 ai-i18n-tools의 영어 소스 문자열 `t()` 스키마로 이전하려면, 호출 지점을 `t("English text")`로 변경하십시오 (또는 소스가 Intlayer `.content.ts`인 경우 `migrate-intlayer`를 실행하십시오).
+
+예시 (`public/locales/en/` 아래의 소스 영어 네임스페이스):
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero` (및 기타 CLDR 접미사)는 별도의 리프로 번역됩니다. 이는 i18next가 접미사로 복수형을 계속 해석하기에 충분하며, 파이프라인은 이를 단일 카탈로그 행으로 재그룹화하지 않습니다.

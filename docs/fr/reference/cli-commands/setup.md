@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI — Configuration
+<a id="cli--getting-started"></a>
+# CLI — Premiers pas
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 | `ui-json-bundles` | JSON (`json[]` uniquement) |
 
 `--with-translate-ignore` crée un `.translate-ignore` de démarrage.
+
+---
+
+<a id="help"></a>
+### `help`
+
+**Synopsis :** `ai-i18n-tools help [command]`
+
+Affiche l'aide pour une sous-commande (même sortie que `ai-i18n-tools <command> --help`).

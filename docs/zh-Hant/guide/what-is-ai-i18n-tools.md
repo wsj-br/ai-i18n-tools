@@ -40,8 +40,10 @@ ai-i18n-tools 是一個命令列工具和工具包，可協助您使用偏好的
 | [vitepress-docs](/zh-Hant/examples#vitepress-docs) | VitePress 文件加上主題目錄 |
 | [nextra-docs](/zh-Hant/examples#nextra-docs) | Nextra 文件加上 `_meta.ts` 側邊欄標籤與主題字典 |
 | [fumadocs-docs](/zh-Hant/examples#fumadocs-docs) | Fumadocs 文件，加上 `meta.json` 側邊欄標籤與 UI 目錄 |
+| [plain-html](/zh-Hant/examples#plain-html) | 包含 `data-i18n*` 標記與語系 JSON 的靜態 HTML |
 | [multi-provider](/zh-Hant/examples#multi-provider) | 比較同一文件上的 LLM 供應商 |
 | [test-markdown](/zh-Hant/examples#test-markdown) | Markdown 管線壓力測試（CJK、天城文、邊緣案例） |
+| [intlayer-migration](/zh-Hant/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` 透過 `migrate-intlayer` |
 
 請參閱 [範例](/zh-Hant/examples) 以取得 `npx degit` 複製命令和選擇指南。
 

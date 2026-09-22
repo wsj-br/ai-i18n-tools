@@ -1,0 +1,5 @@
+node_modules
+dist
+.translation-cache
+migrate-intlayer-report.md
+src/locales

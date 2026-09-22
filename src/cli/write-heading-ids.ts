@@ -15,10 +15,17 @@ import {
 import { toDocTranslateConfig } from "../core/config.js";
 import { getDocumentationTargetLocaleCodesForBlock } from "../core/ui-languages.js";
 import type { DocBlock, I18nConfig } from "../core/types.js";
+import type { TranslationCache } from "../core/cache.js";
 import { writeAtomicUtf8, resolveTranslatedOutputPath } from "./helpers.js";
-import { matchesPathFilter, normalizePathFilterForProjectRoot } from "./doc-translate.js";
+import {
+  buildMarkdownExtractOpts,
+  matchesPathFilter,
+  normalizePathFilterForProjectRoot,
+} from "./doc-translate.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
+import { MarkdownExtractor } from "../extractors/markdown-extractor.js";
+import type { MarkdownExtractOptions } from "../extractors/markdown-extractor.js";
 import { t } from "../i18n/index.js";
 
 const SLUG_STYLES = new Set<SlugStyle>([
@@ -40,6 +47,13 @@ export interface WriteHeadingIdsOptions {
   pymdown?: PymdownSlugOptions;
   /** Strip HTML anchors and heading-id suffixes instead of writing ids. */
   remove?: boolean;
+  /**
+   * When provided, cached translated segments (keyed by English source hash) affected by a
+   * repositioned/rewritten heading id are updated to match the new translated file content,
+   * so a later `sync --force-update` reuses the fixed text instead of overwriting it with the
+   * stale cached version. Ignored when `dryRun` is true.
+   */
+  cache?: TranslationCache;
 }
 
 /** Union of markdown/MDX paths from all `docs[].contentPaths`, `.translate-ignore`, optional path filter. */
@@ -78,6 +92,50 @@ function applyBodyTransform(markdown: string, transform: (body: string) => strin
     return markdown;
   }
   return matterStringify(nextBody, parsed.data);
+}
+
+/**
+ * Update cached translated segments (keyed by English source hash) so their `translated_text`
+ * matches the just-rewritten translated file, for segments where `write-heading-ids` actually
+ * changed the translated content (e.g. moved/repaired a heading-id anchor). Segmentation must
+ * line up 1:1 between the English source and both translated versions (old/new) — the same
+ * invariant the translation pipeline relies on when reassembling files from cached segments —
+ * so a segment-count mismatch skips the sync for that file/locale rather than risk mismapping.
+ * Returns the number of cache rows updated.
+ */
+function syncCacheForRepositionedHeadingIds(args: {
+  cache: TranslationCache;
+  englishContent: string;
+  oldTranslatedContent: string;
+  newTranslatedContent: string;
+  locale: string;
+  extractOptions: MarkdownExtractOptions;
+  filepath: string;
+}): number {
+  const md = new MarkdownExtractor();
+  const englishSegments = md.extract(args.englishContent, args.filepath, args.extractOptions);
+  const oldSegments = md.extract(args.oldTranslatedContent, args.filepath, args.extractOptions);
+  const newSegments = md.extract(args.newTranslatedContent, args.filepath, args.extractOptions);
+
+  if (
+    englishSegments.length !== oldSegments.length ||
+    englishSegments.length !== newSegments.length
+  ) {
+    return 0;
+  }
+
+  let updated = 0;
+  for (let i = 0; i < englishSegments.length; i++) {
+    const en = englishSegments[i]!;
+    const oldSeg = oldSegments[i]!;
+    const newSeg = newSegments[i]!;
+    if (!en.translatable || oldSeg.content === newSeg.content) {
+      continue;
+    }
+    args.cache.updateTranslation(en.hash, args.locale, newSeg.content);
+    updated += 1;
+  }
+  return updated;
 }
 
 function collectBlockMarkdownRelPaths(args: {
@@ -184,6 +242,7 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
       continue;
     }
     const view = toDocTranslateConfig(opts.config, block);
+    const extractOptions = buildMarkdownExtractOpts(block);
     for (const rel of blockRels) {
       const englishNext = englishNextByRel.get(rel);
       if (!remove && englishNext === undefined) {
@@ -226,6 +285,27 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
         } else {
           writeAtomicUtf8(outPath, next);
           console.log(chalk.green(t("  Repositioned {{path}}", { path: translatedRel })));
+          if (opts.cache && englishNext !== undefined) {
+            const updated = syncCacheForRepositionedHeadingIds({
+              cache: opts.cache,
+              englishContent: englishNext,
+              oldTranslatedContent: translatedRaw,
+              newTranslatedContent: next,
+              locale,
+              extractOptions,
+              filepath: rel,
+            });
+            if (opts.verbose && updated > 0) {
+              console.log(
+                chalk.gray(
+                  t("    Synced {{count}} cached segment(s) for {{locale}}", {
+                    count: updated,
+                    locale,
+                  })
+                )
+              );
+            }
+          }
         }
       }
     }

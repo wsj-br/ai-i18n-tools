@@ -13,6 +13,7 @@ import { isFumadocsDotLocaleSuffixedMeta } from "../core/fumadocs-dot-source-fil
 import { NestedJsonExtractor } from "../extractors/nested-json-extractor.js";
 import { TranslationCache } from "../core/cache.js";
 import { Glossary } from "../glossary/glossary.js";
+import { computeGuidanceFingerprint } from "../glossary/translation-context.js";
 import { LlmClient } from "../api/llm-client.js";
 import {
   protectSegmentForTranslation,
@@ -133,6 +134,11 @@ export async function translateFumadocsMetaFiles(
   };
   const blockIdx = opts.documentationBlockIndex ?? 0;
   const keyPolicy = metaKeyPolicy(config);
+  const promptContextHash = computeGuidanceFingerprint(
+    glossary,
+    locale,
+    opts.translationContextFingerprint ?? ""
+  );
 
   for (const rel of metaRelPaths) {
     const absSource = path.join(projectRoot, rel);
@@ -148,15 +154,17 @@ export async function translateFumadocsMetaFiles(
 
     const cachedFileHash =
       cache && !opts.noCache
-        ? await withCacheMutex(opts.cacheMutex, () => cache.getFileHash(fileTrackingKey, locale))
-        : null;
+        ? await withCacheMutex(opts.cacheMutex, () =>
+            cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+          )
+        : false;
 
     if (
       !opts.force &&
       !opts.forceUpdate &&
       cache &&
       !opts.noCache &&
-      cachedFileHash === fileHash &&
+      cachedFileHash &&
       !(opts.checkCache && localeEnforcesOutputScript(locale)) &&
       translatedOutputIsCurrent(outPath, sourceFileMtime)
     ) {
@@ -211,7 +219,7 @@ export async function translateFumadocsMetaFiles(
       }
       if (!opts.force && cache && !opts.noCache) {
         const hit = await withCacheMutex(opts.cacheMutex, () =>
-          cache.getSegment(s.hash, locale, rel)
+          cache.getSegment(s.hash, locale, rel, undefined, promptContextHash)
         );
         if (hit && translationScriptIssue(hit, locale, s.content) === null) {
           translations.set(s.hash, { text: hit });
@@ -293,13 +301,22 @@ export async function translateFumadocsMetaFiles(
       writeAtomicUtf8(outPath, output);
       if (cache && !opts.noCache) {
         await withCacheMutex(opts.cacheMutex, () => {
-          cache.setFileStatus(fileTrackingKey, locale, fileHash);
+          cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
           for (const s of translatable) {
             const entry = translations.get(s.hash);
             if (entry?.modelUsed === undefined) {
               continue;
             }
-            cache.setSegment(s.hash, locale, s.content, entry.text, entry.modelUsed, rel, null);
+            cache.setSegment(
+              s.hash,
+              locale,
+              s.content,
+              entry.text,
+              entry.modelUsed,
+              rel,
+              null,
+              promptContextHash
+            );
           }
         });
       }

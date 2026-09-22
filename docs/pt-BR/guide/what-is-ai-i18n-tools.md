@@ -40,8 +40,10 @@ O repositório contém projetos de exemplo executáveis em `examples/` — cada 
 | [vitepress-docs](/pt-BR/examples#vitepress-docs) | Documentos VitePress mais catálogo de temas |
 | [nextra-docs](/pt-BR/examples#nextra-docs) | Documentos Nextra mais rótulos da barra lateral `_meta.ts` e dicionário de temas |
 | [fumadocs-docs](/pt-BR/examples#fumadocs-docs) | Documentos Fumadocs mais rótulos da barra lateral `meta.json` e catálogo da UI |
+| [plain-html](/pt-BR/examples#plain-html) | HTML estático com marcadores `data-i18n*` e JSON de localidade |
 | [multi-provider](/pt-BR/examples#multi-provider) | Compare provedores LLM no mesmo documento |
 | [test-markdown](/pt-BR/examples#test-markdown) | Testes de estresse de pipeline Markdown (CJK, Devanagari, casos extremos) |
+| [intlayer-migration](/pt-BR/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
 
 Consulte [Exemplos](/pt-BR/examples) para comandos de cópia `npx degit` e um guia de escolha.
 

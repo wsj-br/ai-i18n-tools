@@ -23,6 +23,37 @@ import {
 } from 'ai-i18n-tools/runtime';
 ```
 
+<a id="typical-bootstrap"></a>
+## Typisches Bootstrapping
+
+Ein minimales `src/i18n.ts` kombiniert die i18next-Helper. `SOURCE_LOCALE` muss mit `sourceLocale` in `ai-i18n-tools.config.json` übereinstimmen. Die folgenden Importpfade gehen davon aus, dass diese Datei neben `locales/` liegt.
+
+```ts
+import i18n from 'i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import stringsJson from './locales/strings.json';
+import uiLanguages from './locales/ui-languages.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, {
+  stringsJson,
+});
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export const t = i18n.t.bind(i18n);
+export default i18n;
+```
+
+Bei einem Sprachwechsel rufen Sie `await loadLocale(next)` und dann `await i18n.changeLanguage(next)` auf. React (`initReactI18next`), Plurale der Quell-Locale (`sourcePluralFlatBundle`) und `applyDirection` werden in [Wire i18next](/de/guide/ui-strings/i18next-runtime) behandelt.
+
 <a id="quick-reference"></a>
 ## Kurzübersicht
 
@@ -104,7 +135,7 @@ makeLoadLocale(
 ): (lang: string) => Promise<void>
 ```
 
-Verwenden Sie `setupKeyAsDefaultT` als üblichen Anwendungseinstiegspunkt (Schlüsselbereinigung + Plural `wrapT` + optional `translate-ui` `{sourceLocale}.json`). Der alleinige Aufruf von `wrapI18nWithKeyTrim` ist für die Anwendungsverdrahtung **veraltet**.
+Das [typische Bootstrapping](#typical-bootstrap) zeigt, wie diese Factories kombiniert werden. Verwenden Sie `setupKeyAsDefaultT` als üblichen App-Einstiegspunkt (Key-Trimming + Plural-`wrapT` + optional `translate-ui` `{sourceLocale}.json`). Der alleinige Aufruf von `wrapI18nWithKeyTrim` ist für die Anwendungskonfiguration **veraltet**.
 
 `sourcePluralFlatBundle` erfordert eine i18next-Instanz mit `addResourceBundle()`. Das Feld `lng` muss mit `SOURCE_LOCALE` in Ihrer Bootstrap-Datei und `sourceLocale` in `ai-i18n-tools.config.json` übereinstimmen.
 

@@ -1,19 +1,19 @@
-<a id="svg-translation"></a>
-# SVG translation
+<a id="svg"></a>
+# SVG
 
-Designed for **SVG illustrations and diagrams** that contain human-readable labels. The `translate-svg` command reads source `.svg` files, extracts text from `<text>`, `<title>`, and `<desc>` elements, translates those strings via the active LLM provider, and writes **one output SVG per target locale**.
+Designed to translate **SVG illustrations and diagrams** that contain human-readable labels. The `translate-svg` command reads source `.svg` files, extracts text from `<text>`, `<title>`, and `<desc>` elements, translates those strings via the active LLM provider, and writes **one output SVG per target locale**.
 
 This is the only pipeline that emits locale-specific **binary** SVG files. `translate-docs` translates markdown alt text and link references, but it does not modify or copy SVG assets. When a page needs a diagram with translated labels, enable `features.translateSVG` and configure the top-level `svg` block.
 
 <a id="per-locale-model-overrides"></a>
-### Per-locale model overrides
+## Per-locale model overrides
 
 `translate-svg` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Each locale's SVG run uses its own fallback chain — useful when diagram labels in CJK locales need a script-tuned model (for example `ja`). See [Providers and models](/guide/providers-and-models#model-fallback-chain).
 
 SVG translation uses the same SQLite cache as `translate-docs` and `translate-json` (`cacheDir`). Already-translated text segments are served from cache; only new or changed source text is sent to the LLM.
 
 <a id="when-to-use-svg-translation"></a>
-### When to use SVG translation
+## When to use SVG translation
 
 Use `translate-svg` when:
 
@@ -28,7 +28,7 @@ Do **not** use `translate-svg` for:
 - Text baked into path data instead of `<text>` elements — the extractor cannot read path outlines.
 
 <a id="design-for-i18n-from-the-start"></a>
-### Design for i18n from the start
+## Design for i18n from the start
 
 SVGs are easiest to translate when labels are real text elements from day one:
 
@@ -39,7 +39,7 @@ SVGs are easiest to translate when labels are real text elements from day one:
 For web apps, enable `forceLowercase: true` when your design uses all-lowercase labels — it avoids case-sensitivity mismatches across filesystems and CDNs.
 
 <a id="output-layouts"></a>
-### Output layouts
+## Output layouts
 
 `translate-svg` supports two common output shapes. Choose based on how your app or doc site references SVG files at runtime.
 
@@ -59,7 +59,7 @@ For web apps, enable `forceLowercase: true` when your design uses all-lowercase 
 See the [Images and screenshots decision guide](/guide/images-and-screenshots/#decision-guide) for how SVG layouts fit alongside raster screenshot strategies.
 
 <a id="step-1-enable-and-configure"></a>
-### Step 1: Enable and configure
+## Step 1: Enable and configure
 
 Enable the feature and point `translate-svg` at your source files and output root:
 
@@ -87,7 +87,7 @@ Key `svg` fields:
 Full field reference: [Configuration — `svg`](/reference/configuration#svg).
 
 <a id="step-2-translate"></a>
-### Step 2: Translate
+## Step 2: Translate
 
 ```bash
 ai-i18n-tools translate-svg
@@ -108,6 +108,6 @@ ai-i18n-tools translate-svg --dry-run
 `sync` runs the SVG step automatically when `features.translateSVG` and `svg` are both set (skip with `--no-svg`). Shared flags include `-l` / `--locale`, `-p` / `--path`, `-j` / `--concurrency`, `--force` / `--force-update`, and `--check-cache`.
 
 <a id="troubleshooting"></a>
-### Troubleshooting
+## Troubleshooting
 
 Common SVG issues — mixed source/output directories, absolute static URLs on Docusaurus, and path layout mistakes — are covered in [SVG troubleshooting](/guide/svg-translation/troubleshooting). For raster assets and link rewriting, see [Images and screenshots troubleshooting](/guide/images-and-screenshots/troubleshooting).

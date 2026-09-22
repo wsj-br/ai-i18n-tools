@@ -6,16 +6,17 @@
 <a id="command-overview"></a>
 ## 명령어 개요
 
-<a id="setupsetup"></a>
-### [설정](setup)
+<a id="getting-startedsetup"></a>
+### [시작하기](setup)
 
 | 명령 | 요약 |
 |---------|---------|
 | [`version`](setup#version) | CLI 버전과 빌드 타임스탬프를 출력합니다. |
 | [`init`](setup#init) | 시작 구성을 작성합니다; `-t`은 스캐폴드 템플릿을 선택합니다. |
+| [`help`](setup#help) | 하위 명령에 대한 도움말을 표시합니다. |
 
-<a id="models--catalogmodels"></a>
-### [모델 및 카탈로그](models)
+<a id="models--languagesmodels"></a>
+### [모델 및 언어](models)
 
 | 명령 | 요약 |
 |---------|---------|
@@ -31,6 +32,7 @@
 |---------|---------|
 | [`extract`](ui-strings#extract) | 소스 리터럴과 HTML 마커에서 `strings.json`을 업데이트합니다. |
 | [`mark-html`](ui-strings#mark-html) | HTML 파일에 `data-i18n*` 마커를 삽입합니다. |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayer `.content.ts` 사전을 가져오고 간단한 `useIntlayer` / `getIntlayer` 사이트를 `t()`로 재작성합니다. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | 구성 로케일에서 `ui-languages.json`을 작성합니다. |
 | [`translate-ui`](ui-strings#translate-ui) | UI 문자열을 번역합니다 (`strings.json` → 로케일 JSON). |
 | [`sync-ui`](ui-strings#sync-ui) | 추출한 다음 UI 문자열을 번역합니다. |
@@ -46,25 +48,26 @@
 | [`write-heading-ids`](documents#write-heading-ids) | ATX 제목 앞에 HTML 앵커 줄을 삽입합니다. |
 | [`check-markdown`](documents#check-markdown) | 구분 기호 및 강조 문제에 대해 마크다운/MDX를 스캔합니다. |
 
-<a id="other-contentcontent"></a>
-### [기타 콘텐츠](content)
+<a id="json--svgcontent"></a>
+### [JSON 및 SVG](content)
 
 | 명령 | 요약 |
 |---------|---------|
 | [`translate-json`](content#translate-json) | `json[]` 구성 블록에 따라 중첩된 JSON을 번역합니다. |
 | [`translate-svg`](content#translate-svg) | `config.svg`에 구성된 SVG 파일을 번역합니다. |
 
-<a id="workflows--statusworkflows"></a>
-### [워크플로 및 상태](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [워크플로 및 보고](workflows)
 
 | 명령 | 요약 |
 |---------|---------|
 | [`sync`](workflows#sync) | 추출 + UI + SVG + 문서 + JSON을 하나의 파이프라인에서 실행합니다. |
 | [`status`](workflows#status) | UI, 문서 및 JSON 번역 적용 범위를 출력합니다. |
 | [`statistics`](workflows#statistics) | 캐시 및 `strings.json` 통계를 출력합니다. |
+| [`usage`](workflows#usage) | 기록된 모델 API 호출 토큰 및 비용을 출력합니다. |
 
-<a id="cache--maintenancemaintenance"></a>
-### [캐시 및 유지 관리](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [캐시 유지 관리](maintenance)
 
 | 명령어 | 요약 |
 |---------|---------|
@@ -72,46 +75,47 @@
 | [`clean-temp`](maintenance#clean-temp) | `*.log`, `*.tmp` 및 캐시 백업을 찾아 삭제합니다. |
 | [`purge-locale`](maintenance#purge-locale) | 로케일에 대한 캐시 행과 생성된 아티팩트를 제거합니다. |
 
-<a id="toolstools"></a>
-### [도구](tools)
+<a id="dashboard--glossarytools"></a>
+### [대시보드 및 용어집](tools)
 
-| 명령 | 요약 |
+| 명령어 | 요약 |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | 번역 대시보드 웹 UI를 실행합니다. |
+| [`dashboard`](tools#dashboard) (`dash`) | 번역 대시보드 웹 UI를 실행합니다. |
 | [`glossary-generate`](tools#glossary-generate) | 빈 `glossary-user.csv` 템플릿을 작성합니다. |
-| [`help`](tools#help) | 하위 명령에 대한 도움말을 표시합니다. |
 
 <a id="synopsis"></a>
 ## 요약
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

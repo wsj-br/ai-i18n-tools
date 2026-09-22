@@ -50,9 +50,9 @@ Los diferentes proveedores y modelos varían en costo, velocidad y calidad entre
 
 **Cadenas de interfaz de usuario:** la `uiModels` opcional le permite enrutar `translate-ui`, la generación plural y `proofread-ui` a través de modelos premium antes de la cadena `translationModels` global, lo que es útil porque el texto de la interfaz de usuario es corto pero está orientado al usuario.
 
-**Configuraciones regionales asiáticas:** las entradas `localeModels` opcionales para `ja`, `ko`, `zh-Hans` y `zh-Hant` se prueban primero en cada canalización; los modelos como `z-ai/glm-5.2` y `minimax/minimax-m2.7` a menudo funcionan mejor en scripts CJK que las alternativas de propósito general.
+**Locales asiáticos:** las entradas `localeModels` opcionales para `ja`, `ko`, `zh-Hans` y `zh-Hant` se prueban primero en cada pipeline; los modelos como `z-ai/glm-5.3` y `minimax/minimax-m2.7` suelen ofrecer un mejor rendimiento en scripts CJK que las opciones de respaldo de propósito general.
 
-Configuración de ejemplo (OpenRouter):
+Configuración de ejemplo (OpenRouter). `translationModels` y `uiModels` son las listas que utiliza este repositorio en `ai-i18n-tools.config.json`. `localeModels` es un complemento opcional recomendado para configuraciones regionales CJK; este repositorio no lo configura.
 
 ```json
 {
@@ -60,24 +60,25 @@ Configuración de ejemplo (OpenRouter):
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Cada bloque de proveedor puede definir su propio `translationModels`, `uiModels` y `localeModels` opcionales, `maxTokens`, `temperature` y `requestTimeoutMs`. Todavía se acepta un bloque `openrouter` de nivel superior heredado y se migra automáticamente a `providers.openrouter` al cargarse.
+Cada bloque de proveedor puede definir su propio `translationModels`, `uiModels` y `localeModels` opcionales, `maxTokens`, `temperature` y `requestTimeout` (segundos) o `requestTimeoutMs`. Un tiempo de espera en el proveedor anula el `requestTimeout` / `requestTimeoutMs` de nivel superior. Un bloque `openrouter` de nivel superior heredado todavía se acepta y se migra automáticamente a `providers.openrouter` al cargarse.
 
-Ejemplo ejecutable con cuatro proveedores en el mismo documento: [`examples/multi-provider`](/es/examples#multi-provider).
+Los `pricing` y `modelPricing` opcionales establecen el costo en USD por 1.000.000 de tokens (`inputPerMTokens` y `outputPerMTokens`) cuando el proveedor omite `usage.cost`. `pricing` es el valor predeterminado a nivel de proveedor; una entrada `modelPricing` lo anula para un ID de modelo. OpenRouter ya devuelve un costo por llamada, por lo que debe dejar ambos sin definir en ese proveedor. Un costo reportado por el proveedor se conserva tal como se devuelve. El importe se incluye en el resumen de traducción, [`usage`](/es/reference/cli-commands/workflows#usage) y [Uso y costos](/es/guide/translation-dashboard/usage).
+
+Ejemplo ejecutable con cuatro proveedores en el mismo documento, incluyendo tarifas de ejemplo: [`examples/multi-provider`](/es/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Referencia adicional
 
-- [Configuración — `provider` y `providers`](/es/reference/configuration#provider-and-providers) — tabla preestablecida, puntos finales personalizados, tiempos de espera de solicitud, comportamiento específico de OpenRouter.
-- [Arquitectura — Cliente LLM](/es/reference/architecture) — cómo funcionan internamente la reserva de modelos, el procesamiento por lotes y la notificación de costos.
-- [Variables de entorno](/es/reference/environment-variables) — variables de entorno de clave API y anulaciones de URL base.
+- [Configuración — `provider` y `providers`](/es/reference/configuration#provider-and-providers) — tabla de valores predefinidos, endpoints personalizados, tiempos de espera de solicitud, tasas de coste, comportamiento específico de OpenRouter.
+- [Arquitectura — cliente LLM](/es/reference/architecture) — cómo funcionan internamente el fallback de modelos, el procesamiento por lotes y el reporte de costes.
+- [Variables de entorno](/es/reference/environment-variables) — variables de entorno de clave de API y anulaciones de URL base.

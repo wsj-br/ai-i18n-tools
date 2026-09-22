@@ -12,6 +12,21 @@
 
 ---
 
+<a id="migrate-intlayer"></a>
+### `migrate-intlayer`
+
+**개요:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
+
+Intlayer `*.content.ts` 사전을 `strings.json` 및 플랫 로케일 파일로 가져오고, 단순한 `useIntlayer` / `getIntlayer` 호출 지점을 `t('English source')`로 다시 작성합니다. 기본적으로 드라이 런입니다(보고서는 여전히 작성됩니다). `--write`는 카탈로그를 시드하고 안전한 다시 쓰기를 적용합니다. LLM을 호출하지 않습니다.
+
+보고서는 `--write`에서 남긴 모든 작업에 대한 인수인계 문서이며, 나머지 작업 순서를 정리한 **단계별 TODO**로 마무리됩니다: 각 수동 사이트별 구체적인 `t()` 또는 JSX 호출, `import { t }` 행, 나중에 삭제할 사전 파일 및 `IntlayerProvider` 잔여 파일, `extract` 다음 `translate-ui` 작업이 필요한 소스 문자열, 그리고 앱의 i18n 모듈에 붙여넣을 i18next 런타임 부트스트랩. 로케일 제어는 `loadLocale`뿐만 아니라 `i18n.changeLanguage`도 호출해야 합니다. `extract`은(는) 이 부트스트랩에서 가져오는 `ui-languages.json`을(를) 생성합니다. `strings.json`, 플랫 로케일 파일, `ui-languages.json`은(는) 수동으로 편집하지 마십시오.
+
+**주요 옵션:** `--write`, `--report`, `--content-glob` (기본값 `**/*.content.ts`), `--t-import`
+
+**참고 항목:** [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

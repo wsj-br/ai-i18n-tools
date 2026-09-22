@@ -145,6 +145,8 @@ export interface FileTracking {
   locale: string;
   sourceHash: string;
   lastTranslated: string | null;
+  /** Fingerprint of glossary/project context used when the file was last translated. */
+  promptContextHash?: string;
 }
 
 /** Arguments for {@link import("./cache.js").TranslationCache.setSegment}. */
@@ -156,6 +158,8 @@ export interface CacheEntry {
   model: string;
   filepath?: string;
   startLine?: number | null;
+  /** Fingerprint of glossary/project context used when this segment was translated. */
+  promptContextHash?: string;
 }
 
 /** Result type for {@link import("./cache.js").TranslationCache.getSegmentsBatch}. */
@@ -247,6 +251,138 @@ export interface MarkdownSourceIssueInsert {
   detail: string;
 }
 
+/** Whether a billed LLM response was used (`accepted`) or dropped by fallback/validation (`discarded`). */
+export type ApiCallOutcome = "accepted" | "discarded";
+
+/** One billed API response reported by {@link import("../api/llm-client.js").LlmClient} `onApiCall`. */
+export interface LlmApiCallEvent {
+  provider: string;
+  model: string;
+  usage: LlmUsageStats;
+  cost: number | undefined;
+  outcome: ApiCallOutcome;
+}
+
+/** Row written by {@link import("./cache.js").TranslationCache.recordApiCall}. */
+export interface ApiCallInsert {
+  provider: string;
+  model: string;
+  operation: string;
+  locale?: string | null;
+  outcome: ApiCallOutcome;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  /**
+   * USD cost for this call. Provider-reported `usage.cost` when the provider returns it;
+   * otherwise the amount calculated from `providers.<name>.modelPricing` / `pricing` at record
+   * time. Omit or `null` only when neither source applies.
+   */
+  costUsd?: number | null;
+  /** Override `created_at` (SQLite UTC `YYYY-MM-DD HH:MM:SS`); tests and restores only. */
+  createdAt?: string;
+}
+
+/** One persisted billed API call (`api_calls` table). */
+export interface ApiCallRow {
+  id: number;
+  created_at: string;
+  provider: string;
+  model: string;
+  operation: string;
+  locale: string | null;
+  outcome: ApiCallOutcome;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  cost_usd: number | null;
+}
+
+/** Filter for {@link import("./cache.js").TranslationCache.getApiCallStats} / `listApiCalls`. */
+export interface ApiCallFilters {
+  /** Inclusive lower bound on `created_at` (SQLite UTC `YYYY-MM-DD HH:MM:SS`). */
+  since?: string;
+  provider?: string;
+  model?: string;
+  operation?: string;
+  locale?: string;
+  outcome?: ApiCallOutcome;
+}
+
+/** Token/call/cost totals for one grouping key in {@link ApiCallStatsResult}. */
+export interface ApiCallBreakdownRow {
+  calls: number;
+  acceptedCalls: number;
+  discardedCalls: number;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  /** Sum of non-null `cost_usd` (0 when no call in the group reported cost). */
+  actualCostUsd: number;
+  callsWithCost: number;
+  callsWithoutCost: number;
+  inputTokensWithoutCost: number;
+  outputTokensWithoutCost: number;
+  /**
+   * Filled at report time from configured `providers.<name>.pricing` / `modelPricing` for calls
+   * whose `cost_usd` was not stored. Folded into the single displayed Cost; never written back
+   * to `api_calls`.
+   */
+  estimatedCostUsd?: number;
+}
+
+export interface ApiCallStatsResult {
+  summary: ApiCallBreakdownRow;
+  byProvider: Array<ApiCallBreakdownRow & { provider: string }>;
+  byModel: Array<ApiCallBreakdownRow & { provider: string; model: string }>;
+  byOperation: Array<ApiCallBreakdownRow & { operation: string }>;
+  byLocale: Array<ApiCallBreakdownRow & { locale: string }>;
+  byDay: Array<ApiCallBreakdownRow & { day: string }>;
+  byMonth: Array<ApiCallBreakdownRow & { month: string }>;
+}
+
+/** Calendar-month rollup row (`api_totals` table). Locale is `""` when the call had no locale. */
+export interface ApiTotalsRow {
+  id: number;
+  month: string;
+  provider: string;
+  model: string;
+  operation: string;
+  locale: string;
+  itkn_acc: number;
+  otkn_acc: number;
+  ttkn_acc: number;
+  tcost_acc: number;
+  itkn_dis: number;
+  otkn_dis: number;
+  ttkn_dis: number;
+  tcost_dis: number;
+  ncalls_acc: number;
+  ncalls_dis: number;
+  /** Accepted calls that reported a provider cost (so `$0` stays distinct from “unavailable”). */
+  ncost_acc: number;
+  ncost_dis: number;
+  itkn_nc_acc: number;
+  otkn_nc_acc: number;
+  itkn_nc_dis: number;
+  otkn_nc_dis: number;
+}
+
+/** Preset for deleting usage older than a calendar window (`--older-than` / dashboard). */
+export type UsageDeleteOlderThan = "1mo" | "2mo" | "3mo" | "6mo" | "1y";
+
+/** Result of clearing or age-deleting `api_calls` plus `api_totals`. */
+export interface UsageDeleteResult {
+  removedCalls: number;
+  removedTotals: number;
+}
+
+/** USD per 1,000,000 tokens (provider-wide default or a per-model override). */
+export interface LlmModelPricing {
+  inputPerMTokens: number;
+  outputPerMTokens: number;
+}
+
 export interface CleanupStats {
   staleTranslationsRemoved: number;
   deletedRows: Array<{ source_hash: string; locale: string; filepath: string | null }>;
@@ -265,6 +401,15 @@ export interface GlossaryTerm {
   partOfSpeech: string;
   /** From user glossary CSV `force` column (per locale after * / exact merge). */
   forcedByLocale?: Record<string, boolean>;
+  /** Source-language usage notes from user glossary CSV `Context` (per locale after * / exact merge). */
+  contextByLocale?: Record<string, string>;
+}
+
+/** One matched glossary hint ready for prompt formatting. */
+export interface GlossaryTermHint {
+  english: string;
+  translation: string;
+  context?: string;
 }
 
 /** Result from batch translation (index → translated text). */
@@ -316,6 +461,13 @@ const localeModelsEntrySchema = z
   })
   .strict();
 
+const llmModelPricingSchema = z
+  .object({
+    inputPerMTokens: z.number().nonnegative(),
+    outputPerMTokens: z.number().nonnegative(),
+  })
+  .strict();
+
 const providerEntrySchema = z
   .object({
     /** OpenAI-compatible base URL (e.g. `https://api.example.com/v1`). Overrides the preset baseUrl. */
@@ -338,11 +490,33 @@ const providerEntrySchema = z
     localeModels: z.array(localeModelsEntrySchema).optional(),
     maxTokens: z.number().int().positive().optional(),
     temperature: z.number().min(0).max(2).optional(),
-    /** Max time to wait for each chat-completions request. Default 30s. */
+    /** Max time in seconds for each request to this provider. Overrides the top-level timeout. Mutually exclusive with `requestTimeoutMs`. */
+    requestTimeout: z.number().int().positive().optional(),
+    /** Max time in milliseconds for each request to this provider. Overrides the top-level timeout. Mutually exclusive with `requestTimeout`. */
     requestTimeoutMs: z.number().int().positive().optional(),
+    /**
+     * Optional provider-wide USD-per-1M-token rates. Applied when a billed call has no
+     * provider-reported `usage.cost`: the amount is stored on the `api_calls` row and included in
+     * the translation summary. Overridden by a matching `modelPricing` entry. A reported cost is
+     * never replaced. Rows recorded without a cost can still be estimated later by `usage`.
+     */
+    pricing: llmModelPricingSchema.optional(),
+    /**
+     * Optional per-model USD-per-1M-token rates. A matching model id overrides `pricing`. Applied
+     * at call time when the provider omitted `usage.cost`, and stored on the `api_calls` row.
+     * A provider-reported cost is never replaced.
+     */
+    modelPricing: z.record(z.string().min(1), llmModelPricingSchema).optional(),
   })
   .strict()
   .superRefine((entry, ctx) => {
+    if (entry.requestTimeout !== undefined && entry.requestTimeoutMs !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "set only one of requestTimeout (seconds) or requestTimeoutMs (milliseconds)",
+        path: ["requestTimeout"],
+      });
+    }
     const localeModels = entry.localeModels;
     if (!localeModels?.length) {
       return;
@@ -393,6 +567,16 @@ const glossarySchema = z.preprocess(
       uiGlossary: z.string().optional(),
       userGlossary: z.string().optional(),
       autoAddUserEditedToGlossary: z.boolean().default(true),
+      /**
+       * Optional cwd-relative Markdown/plain-text files with project or feature context.
+       * Loaded at command start and injected into every translation/proofread prompt.
+       */
+      contextFiles: z.array(z.string().min(1)).optional(),
+      /**
+       * Maximum characters of concatenated context-file text sent to the model (default 12000).
+       * Hard-capped at 100000.
+       */
+      contextMaxChars: z.number().int().positive().max(100_000).default(12_000),
     })
     .strict()
 );
@@ -824,7 +1008,10 @@ const i18nConfigSchemaInner = z
       translateJson: false,
       translateSVG: false,
     }),
-    glossary: glossarySchema.default({ autoAddUserEditedToGlossary: true }),
+    glossary: glossarySchema.default({
+      autoAddUserEditedToGlossary: true,
+      contextMaxChars: 12_000,
+    }),
     ui: uiConfigSchema.default({
       sourceRoots: [],
       stringsJson: "strings.json",
@@ -855,6 +1042,16 @@ const i18nConfigSchemaInner = z
     batchSize: z.number().int().positive().optional(),
     maxBatchChars: z.number().int().positive().optional(),
     /**
+     * Max time in seconds to wait for each LLM request, for every provider that does not set its own
+     * timeout. Mutually exclusive with top-level `requestTimeoutMs`. Default 45 seconds.
+     */
+    requestTimeout: z.number().int().positive().optional(),
+    /**
+     * Max time in milliseconds to wait for each LLM request, for every provider that does not set its own
+     * timeout. Mutually exclusive with top-level `requestTimeout`. Default 45000.
+     */
+    requestTimeoutMs: z.number().int().positive().optional(),
+    /**
      * Max parallel **target locales** (`translate-ui`, `translate-docs`). Defaults: UI `4`, docs `3` when unset.
      */
     concurrency: z.number().int().positive().optional(),
@@ -873,7 +1070,16 @@ const i18nConfigSchemaInner = z
      */
     fileConcurrency: z.number().int().positive().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((config, ctx) => {
+    if (config.requestTimeout !== undefined && config.requestTimeoutMs !== undefined) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "set only one of requestTimeout (seconds) or requestTimeoutMs (milliseconds)",
+        path: ["requestTimeout"],
+      });
+    }
+  });
 
 /** Unified package config: shared root + `ui` + `docs` + optional `json` pipelines. */
 export const i18nConfigSchema = z.preprocess(preprocessLegacyConfigInput, i18nConfigSchemaInner);

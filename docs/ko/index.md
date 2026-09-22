@@ -1,13 +1,16 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: LLM을 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하는 CLI 및 툴킷입니다.
+description: >-
+  선택한 LLM 제공업체를 사용하여 JavaScript/TypeScript 애플리케이션 및 문서 사이트를 국제화하기 위한 CLI 및
+  툴킷입니다.
 hero:
   name: ai-i18n-tools
   text: 모든 LLM으로 앱과 문서를 번역하세요
   tagline: >-
-    하나의 설정 파일, 세 가지 번역 모드, 그리고 원하는 공급자 — OpenAI, Anthropic, Gemini, OpenRouter,
-    Ollama 또는 OpenAI 호환 API. 코드베이스를 다시 작성하지 않고도 프로젝트별 또는 로케일별로 모델을 전환하세요.
+    t() 문자열을 추출하고 Markdown, MDX, JSON 번들 및 SVG 레이블을 번역하세요. OpenAI, Anthropic,
+    Gemini, OpenRouter, Ollama 또는 임의의 OpenAI 호환 API를 사용하여 단일 설정에서 이 모든 작업을 수행할 수
+    있습니다. 코드베이스를 다시 작성하지 않고도 프로젝트별 또는 로캘별로 모델을 전환할 수 있습니다.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 로고
@@ -90,7 +93,7 @@ SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다
 - [**제공자 및 모델**](/ko/guide/providers-and-models) — 프리셋, 폴백 체인 및 `-P` 재정의
 - [**CLI 참조**](/ko/reference/cli-commands/) — 모든 명령, 플래그 및 워크플로
 - [**구성**](/ko/reference/configuration) — 전체 `ai-i18n-tools.config.json` 스키마
-- [**예제**](/ko/examples) — `npx degit`를 사용한 9개의 실행 가능한 데모 프로젝트
-- [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 방식 API 및 확장 지점
+- [**예제**](/ko/examples) — `npx degit`이 포함된 실행 가능한 12개의 데모 프로젝트
+- [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 API 및 확장 포인트
 
 패키지를 자체 프로젝트에 통합하시나요? [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)부터 시작하세요. [저장소 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)는 자세한 내용을 위해 이곳으로 연결되는 짧은 GitHub/npm 랜딩 페이지입니다.

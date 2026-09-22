@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# CLI – Einrichtung
+<a id="cli--getting-started"></a>
+# CLI — Erste Schritte
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@ Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers
 | `ui-json-bundles` | JSON (nur `json[]`) |
 
 `--with-translate-ignore` erstellt eine Starter-`.translate-ignore`.
+
+---
+
+<a id="help"></a>
+### `help`
+
+**Synopsis:** `ai-i18n-tools help [command]`
+
+Zeigt die Hilfe für einen Unterbefehl an (gleiche Ausgabe wie `ai-i18n-tools <command> --help`).

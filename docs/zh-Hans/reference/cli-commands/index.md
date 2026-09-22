@@ -6,16 +6,17 @@
 <a id="command-overview"></a>
 ## 命令概览
 
-<a id="setupsetup"></a>
-### [设置](setup)
+<a id="getting-startedsetup"></a>
+### [快速入门](setup)
 
 | 命令 | 摘要 |
 |---------|---------|
 | [`version`](setup#version) | 打印 CLI 版本和构建时间戳。 |
 | [`init`](setup#init) | 编写初始配置；`-t` 选择脚手架模板。 |
+| [`help`](setup#help) | 显示子命令的帮助信息。 |
 
-<a id="models--catalogmodels"></a>
-### [模型与目录](models)
+<a id="models--languagesmodels"></a>
+### [模型与语言](models)
 
 | 命令 | 摘要 |
 |---------|---------|
@@ -31,6 +32,7 @@
 |---------|---------|
 | [`extract`](ui-strings#extract) | 从源文本字面量和 HTML 标记更新 `strings.json`。 |
 | [`mark-html`](ui-strings#mark-html) | 将 `data-i18n*` 标记插入 HTML 文件。 |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | 导入 Intlayer `.content.ts` 词典，并将简单的 `useIntlayer` / `getIntlayer` 站点重写为 `t()`。 |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | 根据配置的区域设置写入 `ui-languages.json`。 |
 | [`translate-ui`](ui-strings#translate-ui) | 翻译 UI 字符串（`strings.json` → 区域设置 JSON）。 |
 | [`sync-ui`](ui-strings#sync-ui) | 提取，然后翻译 UI 字符串。 |
@@ -46,25 +48,26 @@
 | [`write-heading-ids`](documents#write-heading-ids) | 在 ATX 标题前插入 HTML 锚点行。 |
 | [`check-markdown`](documents#check-markdown) | 扫描 markdown/MDX 以查找分隔符和强调标记问题。 |
 
-<a id="other-contentcontent"></a>
-### [其他内容](content)
+<a id="json--svgcontent"></a>
+### [JSON 与 SVG](content)
 
 | 命令 | 摘要 |
 |---------|---------|
 | [`translate-json`](content#translate-json) | 根据 `json[]` 配置块翻译嵌套 JSON。 |
 | [`translate-svg`](content#translate-svg) | 翻译在 `config.svg` 中配置的 SVG 文件。 |
 
-<a id="workflows--statusworkflows"></a>
-### [工作流与状态](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [工作流与报表](workflows)
 
 | 命令 | 摘要 |
 |---------|---------|
 | [`sync`](workflows#sync) | 在一条流水线中运行提取 + UI + SVG + 文档 + JSON。 |
 | [`status`](workflows#status) | 打印 UI、文档和 JSON 的翻译覆盖率。 |
 | [`statistics`](workflows#statistics) | 打印缓存和 `strings.json` 统计信息。 |
+| [`usage`](workflows#usage) | 打印已记录的模型 API 调用令牌和费用。 |
 
-<a id="cache--maintenancemaintenance"></a>
-### [缓存与维护](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [缓存维护](maintenance)
 
 | 命令 | 摘要 |
 |---------|---------|
@@ -72,46 +75,47 @@
 | [`clean-temp`](maintenance#clean-temp) | 查找并删除 `*.log`、`*.tmp` 和缓存备份。 |
 | [`purge-locale`](maintenance#purge-locale) | 移除指定区域设置的缓存行和生成的产物。 |
 
-<a id="toolstools"></a>
-### [工具](tools)
+<a id="dashboard--glossarytools"></a>
+### [仪表板与术语表](tools)
 
 | 命令 | 摘要 |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | 启动翻译仪表板 Web UI。 |
+| [`dashboard`](tools#dashboard) (`dash`) | 启动翻译仪表板 Web UI。 |
 | [`glossary-generate`](tools#glossary-generate) | 写入一个空的 `glossary-user.csv` 模板。 |
-| [`help`](tools#help) | 显示子命令的帮助信息。 |
 
 <a id="synopsis"></a>
 ## 概要
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

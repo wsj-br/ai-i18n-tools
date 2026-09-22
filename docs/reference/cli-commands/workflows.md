@@ -1,5 +1,5 @@
-<a id="cli--workflows--status"></a>
-# CLI — Workflows & status
+<a id="cli--workflows--reporting"></a>
+# CLI — Workflows & reporting
 
 <a id="sync"></a>
 ### `sync`
@@ -35,3 +35,16 @@ Print documentation cache and `strings.json` statistics (same aggregates as Tran
 **Key options:** `--max-columns`
 
 **See also:** [Dashboard statistics](/guide/translation-dashboard/statistics)
+
+---
+
+<a id="usage"></a>
+### `usage`
+
+**Synopsis:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
+
+Print recorded model API-call statistics (calls, tokens, and a single USD cost). Cost is the provider's `usage.cost` when present, otherwise the amount from `providers.<name>.modelPricing` or the provider-wide `providers.<name>.pricing` default (stored on new calls; applied at report time for older rows that have no stored cost). Same aggregates as Translation Dashboard → Usage & costs. Detail rows older than seven UTC calendar days are rolled into monthly `api_totals`; reports combine both tables. `--since` accepts `YYYY-MM-DD`, a duration (`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`), or a calendar-month window (`1mo`, `2mo`, `3mo`). `--clear` deletes detail rows and monthly totals (`--older-than` is `1mo`, `2mo`, `3mo`, `6mo`, `1y`, or `all`; `--dry-run` reports the count without deleting).
+
+**Key options:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
+
+**See also:** [Dashboard usage & costs](/guide/translation-dashboard/usage)

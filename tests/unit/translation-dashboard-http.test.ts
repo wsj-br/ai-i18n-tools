@@ -1931,6 +1931,42 @@ describe("createTranslationDashboardApp", () => {
       }
     });
 
+    it("POST /api/glossary-user writes Context and GET returns it", async () => {
+      cache = new TranslationCache(":memory:");
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-ctx-"));
+      try {
+        const app = createTranslationDashboardApp(cache, {
+          cwd: dir,
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          glossaryUserPath: "g.csv",
+        });
+        await withHttpServer(app, async (base) => {
+          const post = await fetch(`${base}/api/glossary-user`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              original: "Dashboard",
+              locale: "de",
+              translation: "Übersicht",
+              context: "Analytics home, not a vehicle",
+            }),
+          });
+          expect(post.ok).toBe(true);
+          const get = await fetch(`${base}/api/glossary-user`);
+          const data = (await get.json()) as {
+            headers: string[];
+            rows: Array<{ Context: string }>;
+          };
+          expect(data.headers).toContain("Context");
+          expect(data.rows[0]?.Context).toBe("Analytics home, not a vehicle");
+          expect(fs.readFileSync(path.join(dir, "g.csv"), "utf8")).toContain("Analytics home");
+        });
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    });
+
     it("PATCH /api/glossary-user preserves force when force omitted", async () => {
       cache = new TranslationCache(":memory:");
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-gloss-force-keep-"));
@@ -2095,6 +2131,140 @@ describe("createTranslationDashboardApp", () => {
       } finally {
         fs.rmSync(dir, { recursive: true, force: true });
       }
+    });
+  });
+
+  describe("usage API", () => {
+    it("GET /api/usage returns recorded calls", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-docs",
+        locale: "de",
+        outcome: "accepted",
+        inputTokens: 10,
+        outputTokens: 20,
+        totalTokens: 30,
+        costUsd: 0.0123,
+      });
+      cache.recordApiCall({
+        provider: "openai",
+        model: "gpt-4o-mini",
+        operation: "translate-ui",
+        locale: "fr",
+        outcome: "discarded",
+        inputTokens: 1_000_000,
+        outputTokens: 0,
+        totalTokens: 1_000_000,
+      });
+      const app = createTranslationDashboardApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        providerPricing: {
+          openai: {
+            default: { inputPerMTokens: 0.15, outputPerMTokens: 0.6 },
+            models: {},
+          },
+        },
+      });
+      await withHttpServer(app, async (base) => {
+        const statsRes = await fetch(`${base}/api/usage`);
+        expect(statsRes.ok).toBe(true);
+        const stats = (await statsRes.json()) as {
+          summary: { calls: number; callsWithoutCost: number; estimatedCostUsd?: number };
+          byModel: Array<{ model: string; estimatedCostUsd?: number }>;
+          byMonth: Array<{ month: string }>;
+        };
+        expect(stats.summary.calls).toBe(2);
+        expect(stats.summary.callsWithoutCost).toBe(1);
+        expect(stats.summary.estimatedCostUsd).toBeCloseTo(0.15);
+        expect(Array.isArray(stats.byMonth)).toBe(true);
+        expect(stats.byModel.find((r) => r.model === "gpt-4o-mini")?.estimatedCostUsd).toBeCloseTo(
+          0.15
+        );
+
+        const optsRes = await fetch(`${base}/api/usage/filter-options`);
+        expect(optsRes.ok).toBe(true);
+        const opts = (await optsRes.json()) as { providers: string[]; operations: string[] };
+        expect(opts.providers).toEqual(["openai", "openrouter"]);
+        expect(opts.operations.sort()).toEqual(["translate-docs", "translate-ui"]);
+      });
+    });
+
+    it("POST /api/usage/clear deletes rows", async () => {
+      cache = new TranslationCache(":memory:");
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m1",
+        operation: "translate-docs",
+        outcome: "accepted",
+        inputTokens: 1,
+        outputTokens: 1,
+        totalTokens: 2,
+        createdAt: "2020-01-01 00:00:00",
+      });
+      cache.recordApiCall({
+        provider: "openrouter",
+        model: "m2",
+        operation: "translate-ui",
+        outcome: "accepted",
+        inputTokens: 1,
+        outputTokens: 1,
+        totalTokens: 2,
+      });
+      const app = createTranslationDashboardApp(cache, {
+        cwd: "/tmp",
+        sourceLocale: "en",
+        targetLocales: ["de"],
+      });
+      await withHttpServer(app, async (base) => {
+        const prune = await fetch(`${base}/api/usage/clear`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ olderThan: "1mo" }),
+        });
+        expect(prune.ok).toBe(true);
+        expect(await prune.json()).toEqual({
+          ok: true,
+          removed: 1,
+          removedCalls: 1,
+          removedTotals: 0,
+          dryRun: false,
+        });
+        expect(cache.getApiCallStats().summary.calls).toBe(1);
+
+        const preview = await fetch(`${base}/api/usage/clear`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ olderThan: "all", dryRun: true }),
+        });
+        expect(preview.ok).toBe(true);
+        expect(await preview.json()).toMatchObject({
+          ok: true,
+          removed: 1,
+          removedCalls: 1,
+          removedTotals: 0,
+          dryRun: true,
+        });
+        expect(cache.getApiCallStats().summary.calls).toBe(1);
+
+        const clearAll = await fetch(`${base}/api/usage/clear`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ olderThan: "all" }),
+        });
+        expect(clearAll.ok).toBe(true);
+        expect(await clearAll.json()).toEqual({
+          ok: true,
+          removed: 1,
+          removedCalls: 1,
+          removedTotals: 0,
+          dryRun: false,
+        });
+        expect(cache.getApiCallStats().summary.calls).toBe(0);
+      });
     });
   });
 });

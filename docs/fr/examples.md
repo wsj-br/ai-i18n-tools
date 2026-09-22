@@ -29,6 +29,7 @@ Si vous avez cloné le dépôt [ai-i18n-tools](https://github.com/wsj-br/ai-i18n
 <a id="fumadocs-docs"></a>
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
+<a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
 
 | Exemple | Idéal pour | Copier avec degit | Exécuter |
@@ -44,5 +45,6 @@ Si vous avez cloné le dépôt [ai-i18n-tools](https://github.com/wsj-br/ai-i18n
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | HTML simple + marqueurs `data-i18n*` ; JSON de paramètres régionaux statiques (interface utilisateur de type tableau de bord) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | Choisir ou évaluer un fournisseur LLM (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Test de régression de la traduction Markdown / CJK (Devanagari, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
+| [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, réinitialisation + rapport d'agent IA) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
 
 Chaque nom d'**exemple** renvoie à son fichier README GitHub avec la configuration complète, les commandes et la disposition du projet — ou parcourez l'[index des exemples dans le référentiel](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).

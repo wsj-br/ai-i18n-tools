@@ -1,4 +1,5 @@
 <a id="astro-website"></a>
+<a id="astro-website"></a>
 # Sitio web de Astro
 
 Para sitios de marketing o aplicaciones estáticas de Astro (Astro simple, no Starlight), combine [el enrutamiento i18n integrado de Astro](https://docs.astro.build/en/guides/internationalization/) con ai-i18n-tools. Consulte también la [integración de Astro](/es/guide/integrations/astro).
@@ -30,7 +31,7 @@ Ejemplos de scripts `package.json` (del proyecto de referencia):
 ```
 
 <a id="ui-strings-ssg"></a>
-## Cadenas de interfaz de usuario (SSG)
+## Cadenas de UI (SSG)
 
 Andamie la extracción de la interfaz de usuario con `init -t ui-astro-website`, luego fusione en un bloque `docs[]` cuando también traduzca el HTML de la página (consulte [Analizar y reemplazar páginas](#astro-website-pages-parse-and-replace)). Envuelva la copia en `t('…')` en módulos TypeScript y frontmatter `.astro` (y bloques de plantilla `{expression}` cuando prefiera cadenas de interfaz de usuario en lugar de páginas de configuración regional duplicadas):
 

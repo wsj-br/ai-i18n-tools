@@ -3,8 +3,8 @@
 
 O Painel de Tradução é uma interface de usuário web local para inspecionar e editar os dados de tradução do seu projeto. Ele lê de três armazenamentos:
 
-- **Cache SQLite** (`cacheDir`) — traduções de segmentos de documentação, registros de falhas, varreduras de problemas de markdown
-- **`strings.json`** — catálogo de strings da UI (strings simples e grupos plurais)
+- Cache SQLite (`cacheDir`) — traduções de segmentos de documentação, registros de falhas, varreduras de problemas de markdown, uso de chamadas de API faturadas
+- **`strings.json`** — catálogo de strings da UI (strings simples e grupos de plural)
 - **CSV de glossário do usuário** (`glossary.userGlossary`) — dicas de terminologia para `translate-ui` e `proofread-ui`
 
 Use-o após uma execução de tradução para encontrar problemas, substituir saídas ruins ou revisar a cobertura do cache — sem precisar vasculhar o SQLite ou JSON manualmente.
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-A porta de escuta padrão é **8675**. Se essa porta estiver indisponível, o servidor tenta a próxima porta (até 1000 tentativas) e registra a porta escolhida. O alias obsoleto `editor` ainda funciona, mas exibe um aviso — prefira usar `dashboard`.
+A porta de escuta padrão é **8675**. Se essa porta não estiver disponível, o servidor tenta a próxima porta (até 1000 tentativas) e registra a porta escolhida. `dash` é um alias equivalente. O alias obsoleto `editor` ainda funciona, mas exibe um aviso — prefira `dashboard` ou `dash`.
 
 A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → configuração `uiLanguage` → localidade do SO. Consulte [Idioma da interface da ferramenta](/pt-BR/guide/tool-ui-language).
 
@@ -36,6 +36,7 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 | Corrigir uma forma plural (`one`, `other`, …) | **Plurais da UI** | [Strings e plurais da UI](/pt-BR/guide/translation-dashboard/ui-strings) |
 | Bloquear terminologia para tradução da UI | **Glossário** | [Glossário](/pt-BR/guide/translation-dashboard/glossary) |
 | Ver cobertura de cache e uso do modelo | **Estatísticas** | [Estatísticas](/pt-BR/guide/translation-dashboard/statistics) |
+| Ver tokens e custo de chamadas de API | **Uso e custos** | [Uso e custos](/pt-BR/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## Depois de editar

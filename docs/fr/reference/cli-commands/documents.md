@@ -25,6 +25,8 @@ Nécessite au moins un bloc `docs[]`. Collecte `.md` / `.mdx` sous le `contentPa
 
 Après la mise à jour des fichiers source, la commande parcourt également le markdown traduit existant de chaque locale (même mappage de chemin `docsOutput` que `translate-docs`). Elle copie les identifiants d'en-tête **anglais** sur les en-têtes ATX correspondants dans l'ordre du document — elle ne transforme jamais le titre traduit en slug — et déplace un `{#id}` / `{/* #id */}` (ou un `<a id>` HTML égaré) au milieu de l'en-tête vers la forme attendue par Docusaurus / le style choisi. Les fichiers traduits manquants sont ignorés. `--remove` supprime également les identifiants d'en-tête de ces fichiers traduits, y compris les jetons mal placés en milieu de ligne.
 
+Lorsque les identifiants des titres d'un fichier traduit sont repositionnés ou corrigés, le segment traduit en cache correspondant (indexé par le hachage de la source en anglais) est également mis à jour, si la source en anglais ainsi que l'ancien et le nouveau contenu traduit comportent le même nombre de segments. En cas de divergence de comptage, ce fichier et cette locale sont ignorés. Un `sync --force-update` ultérieur réassemble ensuite le fichier à partir de la ligne de cache mise à jour.
+
 **Options clés :** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
 `--slug-style` : `github` (par défaut ; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (suffixe Docusaurus `{/* #… */}`). Avec `pymdown`, `--pymdown-case` facultatif, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove` ne peut pas être combiné avec `--pymdown-*`.

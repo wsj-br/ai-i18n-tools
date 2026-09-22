@@ -25,6 +25,8 @@
 
 소스 파일을 업데이트한 후, 이 명령은 각 로케일의 기존 번역된 마크다운도 순회합니다(`translate-docs`과 동일한 `docsOutput` 경로 매핑). 문서 순서에 따라 일치하는 ATX 헤딩에 **English** 헤딩 id를 복사합니다(번역된 제목을 슬러그화하지 않음). 또한 헤딩 중간에 있는 `{#id}` / `{/* #id */}`(또는 잘못된 HTML `<a id>`)을 Docusaurus 또는 선택한 스타일이 예상하는 형식으로 되돌립니다. 누락된 번역 파일은 건너뜁니다. `--remove`는 잘못 배치된 줄 중간 토큰을 포함하여 해당 번역 파일에서도 헤딩 id를 제거합니다.
 
+번역된 파일의 제목 ID가 재배치되거나 복구될 때, 영어 원본과 기존 및 신규 번역 콘텐츠의 세그먼트 수가 동일하면 영어 원본 해시를 키로 하는 일치하는 캐시된 번역 세그먼트도 함께 업데이트됩니다. 개수가 불일치할 경우 해당 파일 및 로캘을 건너뜁니다. 이후 `sync --force-update`에서 업데이트된 캐시 행을 기반으로 파일을 재구성합니다.
+
 **주요 옵션:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
 `--slug-style`: `github`(기본값; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment`(Docusaurus `{/* #… */}` 접미사). `pymdown` 사용 시, 선택적 `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove`는 `--pymdown-*`와 함께 사용할 수 없습니다.

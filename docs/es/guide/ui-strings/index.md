@@ -14,6 +14,7 @@ Diseñado para cualquier proyecto JS/TS que utilice i18next: aplicaciones React,
 | Reglas de `t()`, interpolación, plurales | [Llamadas a t() y plurales](/es/guide/ui-strings/t-calls-and-plurals) |
 | Selector de idioma / RTL | [Selector de idioma y RTL](/es/guide/ui-strings/language-switcher) |
 | Firmas de API en tiempo de ejecución | [Ayudantes en tiempo de ejecución](/es/guide/runtime-helpers) |
+| Diccionarios de Intlayer `.content.ts` | [Migración desde Intlayer](/es/guide/migrating-from-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## Paso 1: Inicializar

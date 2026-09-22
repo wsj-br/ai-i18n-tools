@@ -1,4 +1,5 @@
 <a id="astro-website"></a>
+<a id="astro-website"></a>
 # Astro 网站
 
 对于静态的 Astro 营销或应用站点（纯 Astro，而非 Starlight），请将 [Astro 内置 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 与 ai-i18n-tools 结合使用。另请参阅 [Astro 集成](/zh-Hans/guide/integrations/astro)。
@@ -56,7 +57,7 @@ const t = useTranslations(locale, makeT(flat));
 示例中支持的辅助函数：`src/i18n/utils.ts`、`src/i18n/locale.ts` 和 `ui-languages.json` 用于标签、方向和 BCP-47 代码。在更改 `targetLocales` 后运行 `generate-ui-languages`（可选择设置 `languagesManifestPath` 以便清单文件与辅助函数放在一起，例如 `src/i18n/ui-languages.json`）。`MainLayout.astro` 从 `resolveUiLanguage(Astro.currentLocale)` 设置 `<html lang>` 和 `<html dir>`；`LanguagePicker.astro` 使用来自 `astro:i18n` 的 `getRelativeLocaleUrl`。
 
 <a id="pages-parse-and-replace"></a>
-## 页面（解析和替换）
+## 页面 (解析并替换)
 
 对于在 `.astro` 文件中具有硬编码 HTML 的营销页面，让 `translate-docs` 提取文本节点和属性（`alt`、`title`、`aria-label`、`placeholder`），使用文档缓存翻译它们，并在您的页面树下写入特定语言的副本。对于大多数可见文本，您**不需要** `t()`。
 

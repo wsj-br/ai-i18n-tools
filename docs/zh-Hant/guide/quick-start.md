@@ -146,7 +146,7 @@ ai-i18n-tools status
 
 <br />
 
-`glossary.uiGlossary` 會將文件翻譯指向與 UI 相同的 `strings.json` 目錄，以確保術語一致性；`glossary.userGlossary` 會新增 CSV 覆寫以處理產品術語。
+`glossary.uiGlossary` 將文件翻譯指向與使用者介面相同的 `strings.json` 目錄，以確保術語一致性；`glossary.userGlossary` 則會新增產品術語的 CSV 覆寫。請參閱[術語表](/zh-Hant/guide/glossary)。
 
 執行 `ai-i18n-tools sync` 以執行一個流水線：當啟用 `features.translateUIStrings` 時，先 **提取** 再 **翻譯 UI** 字串；可選的 **翻譯 SVG**（`features.translateSVG` + `svg` 區塊）；**翻譯文件**（`docs[]` 如已配置）；然後是可選的 **translate-json**（`features.translateJson` + `json[]`）。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳過部分步驟。文件和 `json[]` 步驟接受 `--dry-run`、`-p` / `--path`、`--force`、`--force-update` 和 `--check-cache`（當 `--no-docs` 時，僅用於文件的旗標會被忽略；當未設定 `--no-json` 時，JSON 使用相同的快取旗標）。
 

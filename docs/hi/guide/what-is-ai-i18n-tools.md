@@ -40,8 +40,10 @@ ai-i18n-tools एक कमांड-लाइन टूल और टूलक�
 | [वाइटप्रेस-डॉक्स](/hi/examples#vitepress-docs) | वाइटप्रेस डॉक्स प्लस थीम कैटलॉग |
 | [नेक्स्ट्रा-डॉक्स](/hi/examples#nextra-docs) | नेक्स्ट्रा डॉक्स प्लस `_meta.ts` साइडबार लेबल और थीम डिक्शनरी |
 | [फ्यूमाडॉक्स-डॉक्स](/hi/examples#fumadocs-docs) | फ्यूमाडॉक्स डॉक्स प्लस `meta.json` साइडबार लेबल और यूआई कैटलॉग |
+| [plain-html](/hi/examples#plain-html) | `data-i18n*` मार्कर और लोकेल JSON के साथ स्थैतिक HTML |
 | [मल्टी-प्रोवाइडर](/hi/examples#multi-provider) | एक ही दस्तावेज़ पर एलएलएम प्रोवाइडर की तुलना करें |
 | [टेस्ट-मार्कडाउन](/hi/examples#test-markdown) | मार्कडाउन पाइपलाइन स्ट्रेस टेस्ट (सीजेके, देवनागरी, एज केस) |
+| [intlayer-migration](/hi/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` `migrate-intlayer` के माध्यम से |
 
 `npx degit` कॉपी कमांड और चुनने के लिए गाइड के लिए [उदाहरण](/hi/examples) देखें।
 

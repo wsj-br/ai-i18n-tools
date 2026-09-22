@@ -11,7 +11,9 @@
 
 **Translate your app and documentation with the AI model of your choice — no lock-in, no rewrites.**
 
-CLI and toolkit for internationalizing JavaScript/TypeScript apps and documentation sites (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, plain Markdown/MDX). Use built-in presets for OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and more — or any OpenAI-compatible API. Switch provider or model per project or per locale without changing your codebase.
+CLI and toolkit for internationalizing JavaScript/TypeScript apps and documentation sites. Extract `t()` strings, translate Markdown/MDX pages, JSON bundles, and SVG labels — all from one config, with built-in presets for OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale without changing your codebase.
+
+Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and plain Markdown. Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and migrates [Intlayer](https://intlayer.org/) projects with `migrate-intlayer`.
 
 <a id="features"></a>
 ## Features

@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# Projete para i18n desde o início
+## Projete para i18n desde o início
 
 Escolher o layout de diretório correto antes que qualquer captura de tela exista é o fator mais importante para tornar os ativos específicos de localidade fáceis de gerenciar posteriormente. Adaptar o layout após dezenas de capturas de tela já terem sido confirmadas significa reestruturar caminhos e atualizar todas as referências em markdown.
 
@@ -105,7 +105,7 @@ Habilite `forceLowercase: true` no bloco de configuração `svg` para evitar inc
 ---
 
 <a id="decision-guide"></a>
-# Guia de decisão
+## Guia de decisão
 
 **O ativo é um SVG com texto ou rótulos translatáveis?**
   - **Sim** → [Aplicativo web SVG](/pt-BR/guide/svg-translation/translated-svg-web-app) ou [SVG Colocado](/pt-BR/guide/svg-translation/translated-svg-colocated)

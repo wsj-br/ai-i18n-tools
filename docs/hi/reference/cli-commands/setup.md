@@ -1,5 +1,5 @@
-<a id="cli--setup"></a>
-# सीएलआई — सेटअप
+<a id="cli--getting-started"></a>
+# CLI — आरंभ करना
 
 <a id="version"></a>
 ### `version`
@@ -35,3 +35,12 @@
 | `ui-json-bundles` | JSON (केवल `json[]`) |
 
 `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है।
+
+---
+
+<a id="help"></a>
+### `help`
+
+**सारांश:** `ai-i18n-tools help [command]`
+
+एक सबकमांड के लिए सहायता प्रदर्शित करें (`ai-i18n-tools <command> --help` के समान आउटपुट)।

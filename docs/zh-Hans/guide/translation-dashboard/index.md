@@ -3,9 +3,9 @@
 
 翻译仪表板是一个本地 Web UI，用于检查和编辑项目的翻译数据。它从三个存储中读取：
 
-- **SQLite 缓存** (`cacheDir`) — 文档段翻译、失败记录、Markdown 问题扫描
-- **`strings.json`** — UI 字符串目录（纯字符串和复数组）
-- **用户词汇表 CSV** (`glossary.userGlossary`) — `translate-ui` 和 `proofread-ui` 的术语提示
+- SQLite 缓存（`cacheDir`）—— 文档段落翻译、失败记录、Markdown 问题扫描、计费 API 调用用量
+- **`strings.json`** —— UI 字符串目录（普通字符串和复数组）
+- **用户术语表 CSV**（`glossary.userGlossary`）—— `translate-ui` 和 `proofread-ui` 的术语提示
 
 在翻译运行后使用它来查找问题、覆盖错误输出或检查缓存覆盖率 — 无需手动深入研究 SQLite 或 JSON。
 
@@ -18,7 +18,7 @@ ai-i18n-tools dashboard
 # ai-i18n-tools dashboard -p 8765 --no-open
 ```
 
-默认监听端口是 **8675**。如果该端口不可用，服务器将尝试下一个端口（最多尝试 1000 次）并记录所选端口。已弃用的别名 `editor` 仍然可用，但会显示警告 — 请优先使用 `dashboard`。
+默认监听端口为 **8675**。如果该端口不可用，服务器会尝试下一个端口（最多尝试 1000 次）并记录所选端口。`dash` 是一个等效的别名。已弃用的别名 `editor` 仍然有效，但会打印警告——建议使用 `dashboard` 或 `dash`。
 
 仪表板 UI 使用与 CLI 相同的区域设置解析方式：`-L` / `--ui-lang` → `AI_I18N_LANG` → 配置 `uiLanguage` → 操作系统区域设置。请参阅[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
 
@@ -36,6 +36,7 @@ ai-i18n-tools dashboard
 | 修复复数形式 (`one`、`other`、…) | **UI 复数** | [UI 字符串和复数](/zh-Hans/guide/translation-dashboard/ui-strings) |
 | 锁定 UI 翻译的术语 | **词汇表** | [词汇表](/zh-Hans/guide/translation-dashboard/glossary) |
 | 查看缓存覆盖率和模型使用情况 | **统计** | [统计](/zh-Hans/guide/translation-dashboard/statistics) |
+| 查看 API 调用令牌和费用 | **用量与费用** | [用量与费用](/zh-Hans/guide/translation-dashboard/usage) |
 
 <a id="after-you-edit"></a>
 ## 编辑后

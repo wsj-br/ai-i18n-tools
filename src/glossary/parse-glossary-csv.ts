@@ -1,6 +1,15 @@
 import path from "path";
 import { parse } from "csv-parse/sync";
 
+/** User glossary CSV columns (see {@link Glossary} `loadUserCsv`). */
+export const GLOSSARY_USER_HEADERS = [
+  "Original language string",
+  "locale",
+  "Translation",
+  "Force",
+  "Context",
+] as const;
+
 const GLOSSARY_CSV_PARSE_OPTIONS = {
   columns: true,
   skip_empty_lines: true,

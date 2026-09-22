@@ -76,9 +76,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 **별칭** (동일한 `doc-system` 엔진, 프리셋 `localeSubpath` 및 기본값):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath`의 기본값은 `docusaurus-plugin-content-docs/current`입니다(Docusaurus i18n 플러그인 레이아웃).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`입니다; `localePathLowercase`의 기본값은 `true`입니다. `{outputDir}/{locale}/` 아래의 번역 페이지는 영어가 콘텐츠 루트에 있고 `outputDir`가 `docsRoot`과 같을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치합니다. 일반 Astro 로케일 페이지(`src/pages/index.astro` → `src/pages/{locale}/index.astro`)에도 사용됩니다 — [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#pages-parse-and-replace)를 참조하세요.
-- `docsOutput.style = "vitepress"` — `doc-system`와 동일한 레이아웃이지만 `localeSubpath`가 비어 있습니다; BCP-47 로케일 폴더 이름이 보존됩니다(`localePathLowercase`의 기본값은 `false`). [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하세요.
-- `docsOutput.style = "nextra"` — `doc-system`와 동일한 레이아웃이지만 `localeSubpath`가 비어 있습니다; 영어 소스가 로케일 폴더 아래에 위치합니다(예: `content/en/`). [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요.
+- `docsOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`이며, `localePathLowercase`의 기본값은 `true`입니다. 번역된 페이지는 `{outputDir}/{locale}/` 하위에 배치되며, 영어 원본이 콘텐츠 루트에 위치하고 `outputDir`이(가) `docsRoot`과(와) 동일할 때 [Starlight](https://starlight.astro.build/guides/i18n/) 레이아웃과 일치합니다. 일반 Astro 로케일 페이지(`src/pages/index.astro` → `src/pages/{locale}/index.astro`)에도 사용되며, 자세한 내용은 [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)를 참조하십시오.
+- `docsOutput.style = "vitepress"` — `localeSubpath`이(가) 비어 있을 때 `doc-system`와 동일한 레이아웃을 사용하며, BCP-47 로케일 폴더 이름이 유지됩니다(`localePathLowercase`의 기본값은 `false`). [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하십시오.
+- `docsOutput.style = "nextra"` — `localeSubpath`이(가) 비어 있을 때 `doc-system`와 동일한 레이아웃을 사용하며, 영어 원본은 로케일 폴더 하위에 위치합니다(예: `content/en/`). [Nextra 통합](/ko/guide/integrations/nextra)을 참조하십시오.
 
 Docusaurus 사전 설정(기본 문서 페이지):
 

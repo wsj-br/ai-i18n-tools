@@ -40,7 +40,7 @@
 | `../guide/foo.md` (來自本地化檔案) | `/guide/foo` |
 | `https://github.com/…/examples/console-app/` | 不變（儲存庫路徑使用完整 URL） |
 
-對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 樹狀結構外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-as-homepage)。
+對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 目錄樹外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — 以 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 
 扁平化重寫器與 VitePress 正規化工具在每個 `docs[]` 區塊中互斥 — 在 `regexAdjustments` 之前僅會執行其中一個。請參閱 [VitePress 整合 — 連結慣例](/zh-Hant/guide/integrations/vitepress#link-conventions)。
 

@@ -146,7 +146,7 @@ Habilite todas las funciones en una sola configuración para ejecutar cadenas de
 
 <br />
 
-`glossary.uiGlossary` dirige la traducción de documentos al mismo catálogo `strings.json` que la interfaz de usuario para mantener la terminología consistente; `glossary.userGlossary` añade anulaciones CSV para términos del producto.
+`glossary.uiGlossary` dirige la traducción de documentos al mismo catálogo de `strings.json` que la interfaz de usuario para mantener la coherencia terminológica; `glossary.userGlossary` añade reemplazos CSV para los términos del producto. Consulte el [Glosario](/es/guide/glossary).
 
 Ejecute `ai-i18n-tools sync` para ejecutar una canalización: cuando `features.translateUIStrings` esté habilitado, **extraiga** y luego **traduzca las cadenas de la interfaz de usuario**; **traduzca SVG** opcionalmente (bloque `features.translateSVG` + `svg`); **traduzca la documentación** (`docs[]` según la configuración); luego **traduzca JSON** opcionalmente (`features.translateJson` + `json[]`). Omita partes con `--no-ui`, `--no-svg`, `--no-docs` o `--no-json`. Los pasos de documentos y `json[]` aceptan `--dry-run`, `-p` / `--path`, `--force`, `--force-update` y `--check-cache` (las banderas solo para documentos se ignoran cuando `--no-docs`; JSON usa las mismas banderas de caché cuando `--no-json` no está configurado).
 

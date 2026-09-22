@@ -8,7 +8,7 @@
 ---
 
 <a id="design-for-i18n-from-the-start"></a>
-# 從一開始就為國際化設計
+## 從一開始就進行 i18n 設計
 
 在任何螢幕截圖存在之前，選擇正確的目錄結構是後續處理地區專用資產順暢度的最大關鍵。在提交數十張螢幕截圖後才修改結構，意味著要重構路徑並更新每個 markdown 引用。
 
@@ -105,7 +105,7 @@ public/img/screenshots/en-GB/screenshot.png
 ---
 
 <a id="decision-guide"></a>
-# 決策指南
+## 決策指南
 
 **此素材是否為含有可譯文字或標籤的 SVG？**
   - **是** → [Web app SVG](/zh-Hant/guide/svg-translation/translated-svg-web-app) 或 [Colocated SVG](/zh-Hant/guide/svg-translation/translated-svg-colocated)

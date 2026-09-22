@@ -30,7 +30,7 @@
 | | `src/processors/` | 預留位置保護、批次處理、驗證、連結重寫 |
 | **共用** | `src/core/` | 設定、類型、SQLite 快取、提示、輸出路徑、語言環境工具 |
 | | `src/api/` | `LlmClient` — 與供應商無關的聊天用戶端 (Vercel AI SDK)，具有模型備援 |
-| | `src/glossary/` | 詞彙表載入和提示的術語提示 |
+| | `src/glossary/` | 詞彙表載入、術語提示，以及用於提示詞的選用專案情境檔案 |
 | | `src/utils/` | 記錄器、雜湊、忽略解析器、顯示寬度表格、`.env` 載入器 |
 | **您的應用程式執行階段** | `src/runtime/` | i18next 輔助程式和顯示工具 — 匯出為 `'ai-i18n-tools/runtime'` ([執行階段輔助程式](/zh-Hant/guide/runtime-helpers)) |
 | **工具 UI** *(內部測試)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此套件自己的 CLI 和翻譯儀表板 — 與您的專案內容分開 ([自我本地化](#self-localization-tool-ui)) |
@@ -202,6 +202,10 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 在每次執行時，區段會透過雜湊 × 語系進行查詢。只有快取未命中才會傳送至 LLM。翻譯後，目前翻譯範圍中未命中的區段列會重設 `last_hit_at`。文件翻譯期間成功的快取命中會清除該區段過時的 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，接著移除過時的區段列（null `last_hit_at` / 空白檔案路徑），當解析後的來源路徑在磁碟上不存在時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除元資料檔案路徑指向不存在檔案的翻譯列，修剪孤立的 `translation_failures` 列，修剪解析後來源路徑在磁碟上不存在的孤立 `markdown_source_issues` 列，並捨棄設定中缺少語系的快取列（`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`；僅限 SQLite — 使用 `purge-locale` 來刪除產生的檔案）；除非傳遞了 `--backup <path>`，否則它不會備份 `cache.db`，傳遞時會先將備份寫入該路徑。
 
+計費的模型呼叫（已接受的翻譯與已捨棄的重試）會儲存在 `api_calls` 中。在執行記錄呼叫的命令後，超過七個 UTC 曆日的詳細資料列會彙總至月度 `api_totals`。`usage` 與儀表板的「使用量與成本」檢視會合併這兩個資料表。請參閱[使用量與成本](/zh-Hant/guide/translation-dashboard/usage)。
+
+術語表 `Context` 備註與 `glossary.contextFiles` 會產生指紋 (`prompt_context_hash`)，並注入至 UI、文件、JSON、SVG 及校對提示詞中。變更該指引會使下次執行時相符的快取區段與檔案追蹤列失效。儀表板 `user-edited` 快取列會予以保留。僅變更偏好的術語表翻譯會維持現有快取不變，直到 `--force` / `--force-update`。
+
 `translate-docs` 指令也使用 **檔案追蹤**，因此對於未更改且已有最新輸出的來源，可以完全跳過工作。`--check-cache` 會以預期的書寫系統重新開啟語言環境，以便重新驗證快取的段落；`--force-update` 會對每個語言環境重新執行檔案處理，同時仍使用段落快取；`--force` 會清除檔案追蹤並繞過段落快取讀取以進行 API 翻譯。當每個已設定的模型在 Markdown 段落上未能通過 AST 驗證時，`translate-docs` 可以逐步分割段落並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。請參閱[文件 — 快取行為與旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)以取得完整的旗標表格。
 
 **批次提示格式：** `translate-docs --prompt-format` 僅為 `LlmClient.translateDocumentBatch` 選擇 XML (`<seg>` / `<t>`) 或 JSON 陣列/物件形狀；提取、佔位符和驗證保持不變。請參閱 [批次提示格式](/zh-Hant/guide/documents/cli-options#batch-prompt-format)。
@@ -251,10 +255,10 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 基於 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）建置的提供者無關的聊天用戶端。它會從 `provider` / `providers` 解析作用中的提供者，為該提供者的 `baseUrl` + API 金鑰建置一個 OpenAI 相容的用戶端（`createOpenAICompatible`），並透過 `generateText` 路由所有呼叫。`OpenRouterClient` 保留為已淘汰的別名。主要行為：
 
-- **模型後備**：依順序嘗試已解析列表中的每個模型；在請求或解析失敗時退回後備。每個目標語言環境都有自己解析的鏈：設定時優先使用 `localeModels(locale)`，然後是 `uiModels`（僅限 UI 管線），接著是 `translationModels`。文件、JSON 和 SVG 翻譯會使用非 UI 鏈為每個語言環境建立客戶端。`bench-models` 指令則為每個已設定的 ID 建立一個單一模型客戶端（`translationModels`、`uiModels` 和 `localeModels` 的聯集；`translationModels: [id]`，無後備），以便獨立計時和計價每個模型。
-- **請求逾時**：當前供應商的 `requestTimeoutMs`（預設 30 秒）透過 `AbortSignal.timeout` 中止每個請求。當 CLI 為 `check-models`（任何供應商）載入供應商的模型列表時，相同的值也適用於 `GET /models`。丟棄未知模型 ID 的選用性預檢篩選器僅在當前供應商為 OpenRouter 時執行。
-- **OpenRouter 額外功能**（僅在 `openrouter` 為當前時）：透過 `provider` 請求欄位進行吞吐量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的精確美元成本。每個供應商都會報告 Token 使用量；精確成本僅在供應商返回時提供。
-- **除錯流量日誌**：如果設定了 `debugTrafficFilePath`，會將請求和回應 JSON 附加到檔案中（程式化）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，包含系統/使用者提示、原始助理回覆，以及失敗的 UI、文件、JSON 和 SVG 翻譯檢查嘗試的驗證錯誤。供應商 API / 空內文失敗會改為在主控台上列印，而不是傾印僅含提示的檔案。
+- **模型後備**：依序嘗試已解析清單中的每個模型；在請求或解析失敗時回退。每個目標語言區都有各自的已解析鏈：已設定時優先使用 `localeModels(locale)`，接著是 `uiModels`（僅限 UI 管線），然後是 `translationModels`。文件、JSON 及 SVG 翻譯會使用非 UI 鏈為每個語言區建立客戶端。`bench-models` 指令則改為每個已設定的 id 建立一個單一模型客戶端（`translationModels`、`uiModels` 與 `localeModels` 的聯集；`translationModels: [id]`，無後備），以便獨立計時和計價每個模型。
+- **請求逾時**：`requestTimeout`（秒）或作用中供應商上的 `requestTimeoutMs`，否則使用設定檔頂端的相同鍵值（預設 45 秒），透過 `AbortSignal.timeout` 中止每個請求。當 CLI 載入供應商的模型清單以供 `check-models`（任何供應商）使用時，相同的值也適用於 `GET /models`。捨棄未知模型 id 的選用預檢篩選器僅在作用中供應商為 OpenRouter 時執行。
+- **OpenRouter 額外功能**（僅當 `openrouter` 為作用中時）：透過 `provider` 請求欄位進行吞吐量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的精確 USD 成本。每個供應商都會回報 Token 使用量。當供應商省略 `usage.cost` 時，USD 成本會從 `providers.<name>.modelPricing` 或供應商全域的 `pricing` 預設值計算，並儲存在 `api_calls` 列上。供應商回報的成本永遠不會被取代。
+- **除錯流量記錄**：若已設定 `debugTrafficFilePath`，會將請求與回應 JSON 附加至檔案（程式化方式）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 個檔案，包含系統/使用者提示詞、原始助理回覆，以及失敗的 UI、文件、JSON 及 SVG 翻譯檢查嘗試的驗證錯誤。供應商 API / 空回應體失敗會在主控台印出，而非傾印僅含提示詞的檔案。
 
 <a id="config-loading"></a>
 ### 設定載入
@@ -423,7 +427,8 @@ src/
 │
 ├── glossary/
 │   ├── glossary.ts                 Glossary loading (CSV + auto-build from strings.json)
-│   └── matcher.ts                  Term hint extraction for prompts
+│   ├── matcher.ts                  Term hint extraction for prompts
+│   └── translation-context.ts      contextFiles loader and guidance fingerprints
 │
 ├── runtime/
 │   ├── index.ts                    Runtime re-exports

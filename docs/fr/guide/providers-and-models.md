@@ -50,9 +50,9 @@ Les différents fournisseurs et modèles varient en coût, en vitesse et en qual
 
 **Chaînes d'interface utilisateur :** le `uiModels` facultatif vous permet d'acheminer le `translate-ui`, la génération au pluriel et le `proofread-ui` via des modèles premium avant la chaîne `translationModels` globale — utile car le texte de l'interface utilisateur est court mais destiné à l'utilisateur.
 
-**Paramètres régionaux asiatiques :** les entrées `localeModels` facultatives pour `ja`, `ko`, `zh-Hans` et `zh-Hant` sont d'abord essayées dans chaque pipeline ; les modèles tels que `z-ai/glm-5.2` et `minimax/minimax-m2.7` sont souvent plus performants sur les scripts CJK que les solutions de repli à usage général.
+**Locales asiatiques :** les entrées `localeModels` facultatives pour `ja`, `ko`, `zh-Hans` et `zh-Hant` sont testées en premier dans chaque pipeline ; des modèles tels que `z-ai/glm-5.3` et `minimax/minimax-m2.7` offrent souvent de meilleures performances sur les écritures CJK que les solutions de repli généralistes.
 
-Exemple de configuration (OpenRouter) :
+Exemple de configuration (OpenRouter). `translationModels` et `uiModels` sont les listes utilisées par ce dépôt dans `ai-i18n-tools.config.json`. `localeModels` est un module complémentaire facultatif recommandé pour les locales CJK ; ce dépôt ne le définit pas.
 
 ```json
 {
@@ -60,24 +60,25 @@ Exemple de configuration (OpenRouter) :
   "providers": {
     "openrouter": {
       "translationModels": [
-        "google/gemini-2.5-flash",
-        "meta-llama/llama-3.3-70b-instruct",
+        "qwen/qwen3.7-max",
+        "~anthropic/claude-sonnet-latest",
+        "openai/gpt-5.4",
+        "google/gemini-3.5-flash",
+        "tencent/hy-mt2-30b-a3b",
+        "mistralai/mistral-large",
         "openai/gpt-4o-mini",
-        "google/gemma-4-26b-a4b-it",
-        "anthropic/claude-3-haiku",
-        "z-ai/glm-5.2",
-        "google/gemini-3-flash-preview",
-        "~anthropic/claude-sonnet-latest"
+        "cohere/command-r-plus-08-2024",
+        "qwen/qwen-2.5-72b-instruct"  
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "z-ai/glm-5.2"
+        "openai/gpt-5.4"
       ],
       "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.2", "minimax/minimax-m2.7" ] }
+        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
+        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
       ]
     }
   }
@@ -125,13 +126,15 @@ npx ai-i18n-tools translate-docs -P anthropic
 npx ai-i18n-tools bench-models -P deepseek
 ```
 
-Chaque bloc de fournisseur peut définir son propre `translationModels`, les `uiModels` et `localeModels` facultatifs, `maxTokens`, `temperature` et `requestTimeoutMs`. Un bloc `openrouter` de niveau supérieur hérité est toujours accepté et migré automatiquement vers `providers.openrouter` au chargement.
+Chaque bloc de fournisseur peut définir son propre `translationModels`, ses `uiModels` et `localeModels` facultatifs, ses `maxTokens`, ses `temperature` et ses `requestTimeout` (secondes) ou `requestTimeoutMs`. Un délai d'attente sur le fournisseur remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Un bloc `openrouter` de niveau supérieur hérité est toujours accepté et migré automatiquement vers `providers.openrouter` lors du chargement.
 
-Exemple exécutable avec quatre fournisseurs sur le même document : [`examples/multi-provider`](/fr/examples#multi-provider).
+Les paramètres `pricing` et `modelPricing` facultatifs définissent le coût en USD par million de jetons (`inputPerMTokens` et `outputPerMTokens`) lorsque le fournisseur omet `usage.cost`. `pricing` est la valeur par défaut pour l'ensemble du fournisseur ; une entrée `modelPricing` la remplace pour un identifiant de modèle spécifique. OpenRouter renvoie déjà un coût par appel, il est donc recommandé de laisser ces deux paramètres non définis pour ce fournisseur. Un coût signalé par le fournisseur est conservé tel quel. Le montant est inclus dans le résumé de la traduction, [`usage`](/fr/reference/cli-commands/workflows#usage), et [Utilisation et coûts](/fr/guide/translation-dashboard/usage).
+
+Exemple exécutable avec quatre fournisseurs sur le même document, incluant des exemples de tarifs : [`examples/multi-provider`](/fr/examples#multi-provider).
 
 <a id="further-reference"></a>
 ### Références supplémentaires
 
-- [Configuration — `provider` et `providers`](/fr/reference/configuration#provider-and-providers) — tableau prédéfini, points de terminaison personnalisés, délais d'attente des requêtes, comportement spécifique à OpenRouter.
-- [Architecture — Client LLM](/fr/reference/architecture) — fonctionnement interne du repli de modèle, du traitement par lots et du rapport de coûts.
-- [Variables d'environnement](/fr/reference/environment-variables) — variables d'environnement de clé API et remplacements d'URL de base.
+- [Configuration — `provider` et `providers`](/fr/reference/configuration#provider-and-providers) — tableau des préréglages, points de terminaison personnalisés, délais d'expiration des requêtes, tarifs, comportement spécifique à OpenRouter.
+- [Architecture — client LLM](/fr/reference/architecture) — fonctionnement interne du repli de modèle, du traitement par lots et du rapport des coûts.
+- [Variables d'environnement](/fr/reference/environment-variables) — variables d'environnement des clés API et remplacements de l'URL de base.

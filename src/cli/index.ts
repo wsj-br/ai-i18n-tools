@@ -54,6 +54,7 @@ import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
 import { runMarkHtml } from "./mark-html.js";
+import { runMigrateIntlayer } from "./migrate-intlayer.js";
 import {
   runTranslate,
   shouldRunJson,
@@ -75,6 +76,7 @@ import {
   runGenerateUiLanguages,
 } from "./generate-ui-languages.js";
 import { TranslationCache } from "../core/cache.js";
+import { collectProviderPricing } from "../core/usage-stats.js";
 import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
 import { displayWidth } from "../utils/table.js";
@@ -105,6 +107,7 @@ import { runBenchModels } from "./bench-models.js";
 import { runListLanguages } from "./list-languages.js";
 import { runCleanTemp } from "./clean-temp.js";
 import { runPurgeLocale } from "./purge-locale.js";
+import { runUsage } from "./usage.js";
 
 function openBrowser(url: string): void {
   const onErr = (err: Error | null) => {
@@ -802,6 +805,12 @@ program
       process.exit(1);
     }
 
+    // Keeps cached translated segments (keyed by English source hash) in sync with any
+    // repositioned/repaired heading id written to a translated file, so a later
+    // `sync --force-update` reuses the fixed text instead of resurrecting the stale cached one.
+    const cache = o.dryRun
+      ? undefined
+      : new TranslationCache(path.join(projectRoot, config.cacheDir));
     try {
       const sum = runWriteHeadingIds({
         cwd: projectRoot,
@@ -812,6 +821,7 @@ program
         verbose: Boolean(g.verbose),
         pymdown: pymdownOpts,
         remove,
+        cache,
       });
       console.log(
         chalk.green(
@@ -841,6 +851,8 @@ program
         )
       );
       process.exit(1);
+    } finally {
+      cache?.close();
     }
   });
 
@@ -917,6 +929,83 @@ program
       process.exit(1);
     }
   });
+
+program
+  .command("migrate-intlayer")
+  .description(
+    t(
+      "Import Intlayer *.content.ts dictionaries into strings.json / flat locale files and rewrite simple useIntlayer call sites to t(). Dry run by default; does not call an LLM."
+    )
+  )
+  .argument("[paths...]", t("Files/dirs/globs to scan (default: ui.sourceRoots)"))
+  .option("--write", t("Apply catalog seeding and safe rewrites to disk (default: dry run)"), false)
+  .option(
+    "--report <path>",
+    t("Write the AI-agent migration report to this path (default: migrate-intlayer-report.md)")
+  )
+  .option(
+    "--content-glob <glob>",
+    t("Glob for Intlayer dictionary files (default: **/*.content.ts)"),
+    "**/*.content.ts"
+  )
+  .option(
+    "--t-import <specifier>",
+    t("Module specifier for the generated t() import (default: ./i18n or i18next)")
+  )
+  .action(
+    (
+      paths: string[],
+      opts: { write?: boolean; report?: string; contentGlob?: string; tImport?: string },
+      cmd
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+      const g = cmd.optsWithGlobals() as { verbose?: boolean };
+      try {
+        const sum = runMigrateIntlayer({
+          cwd: projectRoot,
+          config,
+          paths,
+          contentGlob: opts.contentGlob,
+          write: Boolean(opts.write),
+          reportPath: opts.report,
+          tImport: opts.tImport,
+          verbose: Boolean(g.verbose),
+        });
+        const headline = sum.written
+          ? t(
+              "✅ migrate-intlayer: {{changed}}/{{scanned}} file(s) updated, {{leaves}} leaf/leaves imported, {{reviews}} manual-review site(s) — see {{report}}",
+              {
+                changed: sum.filesChanged,
+                scanned: sum.filesScanned,
+                leaves: sum.leavesImported,
+                reviews: sum.reviews,
+                report: sum.reportPath,
+              }
+            )
+          : t(
+              "✅ migrate-intlayer (dry run): {{changed}}/{{scanned}} file(s) would change, {{leaves}} leaf/leaves, {{reviews}} manual-review site(s); re-run with --write to apply — see {{report}}",
+              {
+                changed: sum.filesChanged,
+                scanned: sum.filesScanned,
+                leaves: sum.leavesImported,
+                reviews: sum.reviews,
+                report: sum.reportPath,
+              }
+            );
+        console.log(chalk.green("\n" + headline));
+      } catch (e) {
+        console.error(
+          chalk.red(
+            t("❌ [migrate-intlayer] {{error}}", {
+              error: e instanceof Error ? e.message : String(e),
+            })
+          )
+        );
+        process.exit(1);
+      }
+    }
+  );
 
 function parsePositiveInt(optionLabel: string, value: string): number {
   const n = Number.parseInt(value, 10);
@@ -2813,6 +2902,70 @@ program
   });
 
 program
+  .command("usage")
+  .description(
+    t(
+      "Show recorded model API-call statistics and costs (same aggregates as Translation Dashboard → Usage & costs)"
+    )
+  )
+  .option(
+    "--since <when>",
+    t(
+      "Only usage since a date (YYYY-MM-DD) or window (30m, 1h, 6h, 12h, 24h, 7d, 30d, 1mo, 2mo, 3mo)"
+    )
+  )
+  .option("--provider <name>", t("Filter by LLM provider key"))
+  .option("--model <id>", t("Filter by model id"))
+  .option("--operation <name>", t("Filter by operation (translate-docs, translate-ui, …)"))
+  .option("-l, --locale <code>", t("Filter by locale"))
+  .option("--outcome <kind>", t("Filter by outcome (accepted or discarded)"))
+  .option("--clear", t("Delete recorded usage (detail rows and monthly totals)"))
+  .option(
+    "--older-than <when>",
+    t("With --clear, delete usage older than a calendar window (1mo, 2mo, 3mo, 6mo, 1y, or all)")
+  )
+  .option("--dry-run", t("With --clear, report how many rows would be deleted without deleting"))
+  .action(
+    (
+      opts: {
+        since?: string;
+        provider?: string;
+        model?: string;
+        operation?: string;
+        locale?: string;
+        outcome?: string;
+        clear?: boolean;
+        olderThan?: string;
+        dryRun?: boolean;
+      },
+      cmd
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+      const outcomeRaw = opts.outcome?.trim();
+      if (outcomeRaw && outcomeRaw !== "accepted" && outcomeRaw !== "discarded") {
+        console.error(chalk.red(t("--outcome must be accepted or discarded.")));
+        process.exit(1);
+      }
+      if (opts.olderThan !== undefined && !opts.clear) {
+        console.error(chalk.red(t("--older-than requires --clear.")));
+        process.exit(1);
+      }
+      runUsage(config, projectRoot, {
+        since: opts.since,
+        provider: opts.provider,
+        model: opts.model,
+        operation: opts.operation,
+        locale: opts.locale,
+        outcome: outcomeRaw === "accepted" || outcomeRaw === "discarded" ? outcomeRaw : undefined,
+        clear: Boolean(opts.clear),
+        olderThan: opts.olderThan,
+        dryRun: Boolean(opts.dryRun),
+      });
+    }
+  );
+
+program
   .command("cleanup")
   .description(
     t(
@@ -3072,6 +3225,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
       dir: uiLocaleDirection(uiLocale),
       bundle: loadUiBundle(uiLocale),
     },
+    providerPricing: collectProviderPricing(config.providers),
   });
 
   const staticDir = resolveDashboardAppStaticDir();
@@ -3149,9 +3303,10 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
 
 program
   .command("dashboard")
+  .alias("dash")
   .description(
     t(
-      "Launch the Translation Dashboard (local web UI: cache segments, UI strings, glossary, failures, statistics)"
+      "Launch the Translation Dashboard (local web UI: cache segments, UI strings, glossary, failures, statistics, usage)"
     )
   )
   .option("-p, --port <n>", t("Port"), String(DEFAULT_DASHBOARD_PORT))
@@ -3235,7 +3390,7 @@ program
     const out = opts.output
       ? path.resolve(cwd, opts.output)
       : path.join(projectRoot, config.glossary?.userGlossary || "glossary-user.csv");
-    const header = `"Original language string","locale","Translation","Force"\n`;
+    const header = `"Original language string","locale","Translation","Force","Context"\n`;
     if (fs.existsSync(out)) {
       console.error(t("Refusing to overwrite existing file: {{path}}", { path: out }));
       process.exit(1);

@@ -6,16 +6,17 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 <a id="command-overview"></a>
 ## Descripción general de los comandos
 
-<a id="setupsetup"></a>
-### [Configuración](setup)
+<a id="getting-startedsetup"></a>
+### [Primeros pasos](setup)
 
 | Comando | Resumen |
 |---------|---------|
 | [`version`](setup#version) | Imprime la versión de la CLI y la marca de tiempo de compilación. |
 | [`init`](setup#init) | Escribe una configuración inicial; `-t` selecciona una plantilla de andamiaje. |
+| [`help`](setup#help) | Mostrar ayuda para un subcomando. |
 
-<a id="models--catalogmodels"></a>
-### [Modelos y catálogo](models)
+<a id="models--languagesmodels"></a>
+### [Modelos y lenguajes](models)
 
 | Comando | Resumen |
 |---------|---------|
@@ -31,6 +32,7 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 |---------|---------|
 | [`extract`](ui-strings#extract) | Actualiza `strings.json` a partir de literales de origen y marcadores HTML. |
 | [`mark-html`](ui-strings#mark-html) | Inserta marcadores `data-i18n*` en archivos HTML. |
+| [`migrate-intlayer`](ui-strings#migrate-intlayer) | Importar diccionarios de Intlayer `.content.ts` y reescribir sitios simples de `useIntlayer` / `getIntlayer` a `t()`. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | Escribe `ui-languages.json` a partir de configuraciones regionales. |
 | [`translate-ui`](ui-strings#translate-ui) | Traduce cadenas de interfaz de usuario (`strings.json` → JSON de configuración regional). |
 | [`sync-ui`](ui-strings#sync-ui) | Extrae y luego traduce cadenas de interfaz de usuario. |
@@ -46,25 +48,26 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 | [`write-heading-ids`](documents#write-heading-ids) | Inserta líneas de anclaje HTML antes de los encabezados ATX. |
 | [`check-markdown`](documents#check-markdown) | Escanea markdown/MDX en busca de problemas de delimitadores y énfasis. |
 
-<a id="other-contentcontent"></a>
-### [Otro contenido](content)
+<a id="json--svgcontent"></a>
+### [JSON y SVG](content)
 
 | Comando | Resumen |
 |---------|---------|
 | [`translate-json`](content#translate-json) | Traduce JSON anidado según los bloques de configuración de `json[]`. |
 | [`translate-svg`](content#translate-svg) | Traduce archivos SVG configurados en `config.svg`. |
 
-<a id="workflows--statusworkflows"></a>
-### [Flujos de trabajo y estado](workflows)
+<a id="workflows--reportingworkflows"></a>
+### [Flujos de trabajo e informes](workflows)
 
 | Comando | Resumen |
 |---------|---------|
 | [`sync`](workflows#sync) | Ejecuta la extracción + UI + SVG + documentos + JSON en una sola canalización. |
 | [`status`](workflows#status) | Imprime la cobertura de traducción de la UI, la documentación y JSON. |
 | [`statistics`](workflows#statistics) | Imprime las estadísticas de la caché y de `strings.json`. |
+| [`usage`](workflows#usage) | Imprimir los tokens y costos registrados de las llamadas a la API del modelo. |
 
-<a id="cache--maintenancemaintenance"></a>
-### [Caché y mantenimiento](maintenance)
+<a id="cache-maintenancemaintenance"></a>
+### [Mantenimiento de caché](maintenance)
 
 | Comando | Resumen |
 |---------|---------|
@@ -72,46 +75,47 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 | [`clean-temp`](maintenance#clean-temp) | Busca y elimina `*.log`, `*.tmp` y las copias de seguridad de la caché. |
 | [`purge-locale`](maintenance#purge-locale) | Elimina las filas de caché y los artefactos generados para las configuraciones regionales. |
 
-<a id="toolstools"></a>
-### [Herramientas](tools)
+<a id="dashboard--glossarytools"></a>
+### [Panel de control y glosario](tools)
 
 | Comando | Resumen |
 |---------|---------|
-| [`dashboard`](tools#dashboard) | Inicia la interfaz de usuario web del Panel de control de traducción. |
+| [`dashboard`](tools#dashboard) (`dash`) | Inicia la interfaz de usuario web del Panel de traducción. |
 | [`glossary-generate`](tools#glossary-generate) | Escribe una plantilla `glossary-user.csv` vacía. |
-| [`help`](tools#help) | Muestra la ayuda para un subcomando. |
 
 <a id="synopsis"></a>
 ## Sinopsis
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
-ai-i18n-tools write-heading-ids …
-ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools extract
-ai-i18n-tools translate-docs …
-ai-i18n-tools translate-json …
-ai-i18n-tools translate-svg …
+ai-i18n-tools mark-html [paths...] [--write]
+ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …
 ai-i18n-tools proofread-ui …
-ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
 ai-i18n-tools export-ui-xliff …
+ai-i18n-tools translate-docs …
+ai-i18n-tools write-heading-ids …
+ai-i18n-tools check-markdown [-p|--path <path>] [-f|--file <path>] [--json] [--no-cache]
+ai-i18n-tools translate-json …
+ai-i18n-tools translate-svg …
 ai-i18n-tools sync …
 ai-i18n-tools status …
 ai-i18n-tools statistics …
+ai-i18n-tools usage …
 ai-i18n-tools cleanup …
 ai-i18n-tools clean-temp …
 ai-i18n-tools purge-locale -l <code> [-l <code> …] [--dry-run] [-y|--yes] [-f|--force] [--keep-files] [--backup <path>]
 ai-i18n-tools dashboard …
-ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools glossary-generate
-ai-i18n-tools help [command]
 ```
 
 <a id="root-and-global-options"></a>

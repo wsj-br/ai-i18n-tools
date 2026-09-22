@@ -1,6 +1,6 @@
 :root {
   --bg-page: #1a1a1a;
-  --bg-card: #161B22;
+  --bg-card: #161b22;
   --bg-input: #2d2d2d;
   --text-primary: #e0e0e0;
   --text-secondary: #a0a0a0;
@@ -18,7 +18,10 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--bg-page);
   color: var(--text-primary);
   line-height: 1.5;
@@ -177,6 +180,11 @@ main {
 .filters {
   margin-bottom: 1rem;
 }
+#panel-usage .filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .filters.seg-filters {
   display: flex;
   flex-direction: column;
@@ -286,21 +294,25 @@ main {
   cursor: pointer;
   font-size: 0.9rem;
 }
-.filter-row button:hover {
+.filter-row button:hover:not(:disabled) {
   background: var(--accent-hover);
+}
+.filter-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .filter-row button.seg-btn-clear {
   background: var(--bg-input);
   border: 1px solid var(--border);
   color: var(--text-primary);
 }
-.filter-row button.seg-btn-clear:hover {
+.filter-row button.seg-btn-clear:hover:not(:disabled) {
   background: var(--border);
 }
 .filter-row button.seg-btn-delete-filtered {
   background: var(--danger);
 }
-.filter-row button.seg-btn-delete-filtered:hover {
+.filter-row button.seg-btn-delete-filtered:hover:not(:disabled) {
   background: var(--danger-hover);
 }
 
@@ -760,52 +772,52 @@ td.last-hit-at.stale {
   display: none !important;
 }
 
-/* Statistics tab */
-#panel-stats .stats-grid {
+/* Statistics + Usage tabs */
+:is(#panel-stats, #panel-usage) .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
   align-items: start;
 }
-#panel-stats .stats-column {
+:is(#panel-stats, #panel-usage) .stats-column {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
-#panel-stats .stats-fullwidth {
+:is(#panel-stats, #panel-usage) .stats-fullwidth {
   display: flex;
   flex-direction: column;
   gap: 2rem;
   margin-top: 2rem;
 }
-#panel-stats .stats-section {
+:is(#panel-stats, #panel-usage) .stats-section {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
 }
-#panel-stats .stats-section:last-child {
+:is(#panel-stats, #panel-usage) .stats-section:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
-#panel-stats .stats-section-title {
+:is(#panel-stats, #panel-usage) .stats-section-title {
   margin: 0 0 1rem;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
 }
-#panel-stats .stats-subtitle {
+:is(#panel-stats, #panel-usage) .stats-subtitle {
   margin: 1.25rem 0 0.5rem;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
-#panel-stats .stats-cards {
+:is(#panel-stats, #panel-usage) .stats-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
-#panel-stats .stats-card {
+:is(#panel-stats, #panel-usage) .stats-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -815,47 +827,50 @@ td.last-hit-at.stale {
   flex-direction: column;
   gap: 0.25rem;
 }
-#panel-stats .stats-card-value {
+:is(#panel-stats, #panel-usage) .stats-card-value {
   font-size: 1.35rem;
   font-weight: 600;
   color: var(--accent);
   line-height: 1.2;
 }
-#panel-stats .stats-card-label {
+:is(#panel-stats, #panel-usage) .stats-card-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
-#panel-stats .stats-table {
+:is(#panel-stats, #panel-usage) .stats-card-muted .stats-card-value {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+:is(#panel-stats, #panel-usage) .stats-table {
   width: 100%;
   max-width: 720px;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
-#panel-stats .stats-table th,
-#panel-stats .stats-table td {
+:is(#panel-stats, #panel-usage) .stats-table th,
+:is(#panel-stats, #panel-usage) .stats-table td {
   border: 1px solid var(--border);
   padding: 0.45rem 0.65rem;
   text-align: left;
 }
-#panel-stats .stats-table thead {
+:is(#panel-stats, #panel-usage) .stats-table thead {
   background: var(--bg-card);
   color: var(--text-secondary);
 }
-#panel-stats .stats-table tfoot {
+:is(#panel-stats, #panel-usage) .stats-table tfoot {
   border-top: 2px solid var(--border);
 }
-#panel-stats .stats-table tfoot th,
-#panel-stats .stats-table tfoot td {
+:is(#panel-stats, #panel-usage) .stats-table tfoot th,
+:is(#panel-stats, #panel-usage) .stats-table tfoot td {
   font-weight: 600;
   color: var(--text-primary);
   background: var(--bg-card);
 }
-#panel-stats .stats-unavailable {
+:is(#panel-stats, #panel-usage) .stats-unavailable {
   margin: 0;
 }
-
 
 .code-inline {
   display: inline-block;

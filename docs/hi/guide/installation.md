@@ -11,7 +11,7 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
-ai-i18n-tools में अपना स्वयं का स्ट्रिंग एक्सट्रैक्टर शामिल है। यदि आपने पहले `i18next-scanner`, `babel-plugin-i18next-extract`, या इसी तरह के का उपयोग किया था, तो आप माइग्रेट करने के बाद उन dev निर्भरताओं को हटा सकते हैं।
+ai-i18n-tools में इसका अपना स्ट्रिंग एक्सट्रैक्टर शामिल है। यदि आपने पहले `i18next-scanner`, `babel-plugin-i18next-extract`, या इसी तरह के अन्य का उपयोग किया है, तो माइग्रेट करने के बाद आप उन देव डिपेंडेंसी को हटा सकते हैं। मौजूदा i18next **नेमस्पेस JSON** फ़ाइलें [JSON पाइपलाइन](/hi/guide/json#i18next-namespace-files) पर रह सकती हैं। इंटलेयर `.content.ts` डिक्शनरी को `migrate-intlayer` के साथ इम्पोर्ट किया जा सकता है — [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) देखें।
 
 <a id="using-the-cli"></a>
 ### CLI का उपयोग करना
@@ -71,7 +71,7 @@ pnpm के साथ, `pnpm setup` को एक बार प्रति म�
 **विकल्प** — यदि आप `PATH` को समायोजित नहीं करना चाहते हैं: `npx ai-i18n-tools …` (npm) या `pnpm exec ai-i18n-tools …` (pnpm)। `package.json` प्रविष्टि के बिना एक शून्य-इंस्टाल वन-ऑफ के लिए: `npx ai-i18n-tools <cmd>` या `pnpm dlx ai-i18n-tools <cmd>`।
 
 <a id="cloned-ai-i18n-tools-monorepo"></a>
-### क्लोन किया गया ai-i18n-tools मोनोरिपो
+### ai-i18n-tools मोनोरेपो क्लोन किया गया
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) के पूर्ण क्लोन से पैकेज विकसित करते समय या वर्कस्पेस **उदाहरण** चलाते समय:
 

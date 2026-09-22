@@ -25,6 +25,8 @@ Requires at least one `docs[]` block. Collects `.md` / `.mdx` under each block's
 
 After updating source files, the command also walks each locale's existing translated markdown (same `docsOutput` path mapping as `translate-docs`). It copies the **English** heading ids onto the matching ATX headings in document order — it never slugs the translated title — and moves a mid-heading `{#id}` / `{/* #id */}` (or stray HTML `<a id>`) back to the form Docusaurus / the chosen style expects. Missing translated files are skipped. `--remove` strips heading ids from those translated files as well, including misplaced mid-line tokens.
 
+When a translated file's heading ids are repositioned or repaired, the matching cached translated segment (keyed by the English source hash) is updated too, if the English source and the old and new translated content have the same number of segments. A count mismatch skips that file and locale. A later `sync --force-update` then reassembles the file from the updated cache row.
+
 **Key options:** `-p` / `--path`, `-f` / `--file`, `--slug-style`, `--remove`, `--dry-run`
 
 `--slug-style`: `github` (default; doctoc / anchor-markdown-header), `bitbucket`, `gitlab`, `pymdown`, `azure-devops`, `mdx-comment` (Docusaurus `{/* #… */}` suffix). With `pymdown`, optional `--pymdown-case`, `--pymdown-normalize`, `--pymdown-percent-encode` / `--no-pymdown-percent-encode`. `--remove` cannot be combined with `--pymdown-*`.

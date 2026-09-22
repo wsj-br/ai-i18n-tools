@@ -104,6 +104,32 @@ ai-i18n-tools status
 | Nextra `_meta.ts` ラベルおよびテーマ辞書 `.ts` | ドキュメント — `translate-docs`（`style: "nextra"`時に`_meta`を自動、オプションで`nextraDictionaryPath`）; `json[]`を**使用しないで**ください — [Nextra インテグレーション](/ja/guide/integrations/nextra)を参照 |
 | Fumadocs `meta.json` ラベルおよび UI オーバーライドカタログ | ドキュメント — `translate-docs`（`style: "fumadocs"`時に`meta.json`を自動、オプションで`fumadocsUiCatalog`）; `json[]`を**使用しないで**ください — [Fumadocs インテグレーション](/ja/guide/integrations/fumadocs)を参照 |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
+| i18next ネームスペースファイル（`public/locales/en/common.json`、<code v-pre>{{name}}</code> トークン、`key_one` / `key_other` サフィックス） | JSON — `json[]` + `translate-json`（[i18next ネームスペースファイル](#i18next-namespace-files) を参照） |
+| Intlayer の `*.content.ts` 辞書 + `useIntlayer` | [Intlayer からの移行](/ja/guide/migrating-from-intlayer) — `migrate-intlayer`、その後 UI 文字列 |
 | `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/ja/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 
 フィールドリファレンス: [設定リファレンス](/ja/reference/configuration#json)の[`json`](#json)。クリーンアップのキャッシュキーは`file_tracking`で`json-block:{blockIndex}:{projectRelPath}`を使用します。
+
+<a id="i18next-namespace-files"></a>
+### i18next ネームスペースファイル
+
+JSON パイプラインは、一般的な i18next のキー/値ロケールファイル（ネストされたオブジェクト、文字列配列、値内の <code v-pre>{{name}}</code> 補間、独立した複数形サフィックスキー（`welcome_one`、`welcome_other`））を対象とします。**ただし**、`t("some.key")` の呼び出し箇所は書き換えません。これらはキーベースのまま維持されます。プロジェクトを ai-i18n-tools の英語ソース文字列 `t()` スキーマに移行するには、呼び出し箇所を `t("English text")` に変更します（または、ソースが Intlayer の `.content.ts` の場合は `migrate-intlayer` を実行します）。
+
+例（`public/locales/en/` 配下のソース英語ネームスペース）:
+
+```json
+{
+  "sourceLocale": "en",
+  "targetLocales": ["de", "fr", "pt-BR"],
+  "features": { "translateJson": true },
+  "json": [
+    {
+      "description": "i18next namespaces",
+      "contentPaths": ["public/locales/en/*.json"],
+      "outputPathTemplate": "public/locales/{locale}/{basename}"
+    }
+  ]
+}
+```
+
+`key_one` / `key_other` / `key_zero`（およびその他の CLDR サフィックス）は、個別のリーフとして翻訳されます。これにより、i18next はサフィックスによる複数形の解決を引き続き行えます。パイプラインはこれらを単一のカタログ行にまとめ直すことはありません。

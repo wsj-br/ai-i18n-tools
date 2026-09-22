@@ -40,8 +40,10 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 | [vitepress 文档](/zh-Hans/examples#vitepress-docs) | VitePress 文档及主题目录 |
 | [nextra 文档](/zh-Hans/examples#nextra-docs) | Nextra 文档及 `_meta.ts` 侧边栏标签和主题词典 |
 | [fumadocs-docs](/zh-Hans/examples#fumadocs-docs) | Fumadocs 文档及 `meta.json` 侧边栏标签和 UI 目录 |
+| [plain-html](/zh-Hans/examples#plain-html) | 包含 `data-i18n*` 标记和区域设置 JSON 的静态 HTML |
 | [multi-provider](/zh-Hans/examples#multi-provider) | 比较同一文档上的 LLM 提供商 |
 | [test-markdown](/zh-Hans/examples#test-markdown) | Markdown 管道压力测试（CJK、天城文、边缘情况） |
+| [intlayer-migration](/zh-Hans/examples#intlayer-migration) | 通过 `migrate-intlayer` 将 Intlayer `.content.ts` 迁移至 `t()` |
 
 请参阅 [示例](/zh-Hans/examples) 获取 `npx degit` 复制命令和选择指南。
 
