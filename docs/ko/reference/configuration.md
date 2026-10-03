@@ -29,7 +29,7 @@
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (선택 사항)
 
-루트 수준의 선택적 문자열입니다 (`ui` 아래에 중첩되지 않음). `extract`와 `generate-ui-languages`가 `ui-languages.json` 매니페스트를 작성하는 경로이며, CLI가 표시 이름과 언어 목록 후처리를 위해 이를 읽어오는 경로입니다. 생략 시, 구성 로드 시 기본값으로 `ui.flatOutputDir/ui-languages.json`가 사용됩니다.
+루트 수준의 선택적 문자열입니다. 문서 언어 전환기가 이 경로를 읽습니다. 생략하면 첫 번째 UI 블록의 매니페스트, 즉 해당 블록의 `languagesManifestPath` 또는 `{flatOutputDir}/ui-languages.json`이(가) 기본값으로 사용됩니다. 각 UI 블록은 자체 `languagesManifestPath`을(를) 설정할 수 있으며, 블록 0은 자체 값을 생략하면 이 루트 경로를 사용합니다.
 
 다음과 같은 경우에 사용하세요:
 
@@ -235,34 +235,52 @@
 | 필드                | 파이프라인 | 설명                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")`를 `strings.json`로 추출한 다음, 항목을 번역하고 로케일별 플랫 JSON을 작성합니다(추출은 자동으로 실행됩니다. 카탈로그만 새로 고치려면 독립형 `extract`를 사용하세요). |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` 페이지 번역; `docs[].docusaurusCatalogDir`가 설정된 경우 Docusaurus 셸 JSON; Nextra `_meta` / 구성된 경우 사전; `docsOutput.vitepressThemeCatalog`가 설정된 경우 VitePress 테마; `docsOutput.style`가 `"fumadocs"`인 경우 Fumadocs `meta.json` / UI 카탈로그. |
+| `translateDocs`      | 2        | `.md` / `.mdx` / `.astro` / `.html` / `.htm` 페이지 번역; `docs[].docusaurusCatalogDir` 설정 시 Docusaurus 셸 JSON; 구성 시 Nextra `_meta` / 사전; `docsOutput.vitepressThemeCatalog` 설정 시 VitePress 테마; `docsOutput.style`이(가) `"fumadocs"`일 때 Fumadocs `meta.json` / UI 카탈로그. |
 | `translateJson` | 3 | `json[]` 아래의 임의의 중첩된 JSON (`translate-json`). |
 | `translateSVG` | — | `.svg` 파일 번역 (최상위 `svg` 블록 필요). |
 
-`features.translateSVG`이 true이고 최상위 `svg` 블록이 구성된 경우, `translate-svg`으로 SVG 파일을 **번역**합니다. `sync` 명령은 두 조건이 모두 충족될 때(단, `--no-svg`가 아닐 경우) 해당 단계를 실행합니다.
+각 플래그는 키를 생략하면 기본값으로 `true`이(가) 적용됩니다. 번역할 대상이 없는 상태에서 `true`을(를) 생략하면 해당 단계는 건너뜁니다. 건너뛰는 경우는 다음과 같습니다. `sourceRoots`이(가) 있는 UI 블록이 없는 경우, `contentPaths` 또는 `docusaurusCatalogDir`이(가) 있는 문서 블록이 없는 경우, `json[]`에 `contentPaths`이(가) 없는 경우, 또는 `svg`이(가) 설정되지 않은 경우입니다. 해당 파이프라인에 처리할 작업이 없는데 플래그를 `true`(으)로 지정하면 구성 오류입니다. `false`을(를) 지정하면 소스가 존재하더라도 `sync`에 대해 해당 파이프라인이 꺼집니다. `--no-ui`, `--no-docs`, `--no-json`, `--no-svg`은(는) 한 번의 실행 동안 해당 단계를 건너뜁니다.
+
+`features.translateSVG`이(가) true이고 최상위 `svg` 블록이 구성된 경우 `translate-svg`을(를) 사용하여 SVG 파일을 **번역**합니다. 플래그가 켜져 있고 `svg`이(가) 설정되어 있으면(단, `--no-svg`인 경우 제외) `sync` 명령이 해당 단계를 실행합니다.
 
 ---
 
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  `t("…")` 호출을 스캔하는 디렉터리 또는 전역 패턴(현재 작업 디렉터리 기준)입니다. `src/` 또는 `["src/**/*.ts"]`와 같은 패턴을 지원합니다.
-- `stringsJson`  
-  마스터 카탈로그 파일의 경로입니다. `extract`에 의해 업데이트됩니다.
-- `flatOutputDir`  
-  로케일별 JSON 파일(`de.json` 등)이 작성되는 디렉터리입니다.
-- `uiExtractor.funcNames` (또는 레거시 `reactExtractor.funcNames`)  
-  스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
-- `uiExtractor.extensions` (또는 레거시 `reactExtractor.extensions`)  
-  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프론트매터 및 템플릿 표현식의 경우 `.astro`을(를) 추가합니다.
-- `uiExtractor.includePackageDescription` (또는 레거시 `reactExtractor.includePackageDescription`)  
-  `true` (기본값)인 경우, `extract`은(는) 존재하는 경우 `package.json` `description`을(를) UI 문자열로도 포함합니다.
-- `uiExtractor.packageJsonPath` (또는 레거시 `reactExtractor.packageJsonPath`)  
-  선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로입니다.
-- `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
+카탈로그 객체 하나 또는 카탈로그 블록의 배열입니다(`docs[]`과(와) 같은 개념). 객체 하나를 지정해도 로드 시 요소가 하나인 배열로 래핑되어 처리되며, 디스크에 있는 파일은 다시 쓰이지 않습니다. 파싱 후에는 `config.ui`이(가) 항상 배열입니다.
 
-`true`(기본값 `false`)인 경우, `extract`는 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로부터 빌드됨)의 각 `englishName`를 소스 스캔에서 이미 존재하지 않는 한(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`는 읽지 않습니다.
+`extract`, `translate-ui`, `sync-ui`, `sync`의 UI 단계, `proofread-ui`, `export-ui-xliff`, `generate-ui-languages`, `purge-locale`은(는) `sourceRoots`이(가) 있는 모든 블록을 순회합니다. 블록 하나만 실행하려면 `--ui-block`에 0부터 시작하는 인덱스, 블록의 `description` 또는 `stringsJson` 경로를 전달하십시오. `status` 및 `statistics`은(는) 소스가 있거나 기존 카탈로그가 있는 모든 블록을 나열합니다. 번역 대시보드는 이러한 카탈로그를 모두 나열하며, 둘 이상이면 선택기를 표시합니다.
+
+확인된 `stringsJson`, `flatOutputDir` 및 매니페스트 경로는 블록 간에 고유해야 합니다. `description` 값은 설정하는 경우 고유해야 하며, `--ui-block`이(가) 해당 값을 정확히 일치시켜 찾기 때문입니다.
+
+- `description`
+  구성 파일을 읽는 사람을 위한 선택적 메모입니다(모델로 전송되지 않음). 명령 헤더, `status`, `statistics` 및 대시보드에 `ui[i] — description`(으)로 표시됩니다.
+- `sourceRoots`
+  `t("…")` 호출을 검색할 디렉터리 또는 glob 패턴입니다(cwd 기준 상대 경로). `src/` 또는 `["src/**/*.ts"]`과(와) 같은 패턴을 지원합니다. 목록이 비어 있는 블록은 건너뛰지만, `--ui-block`이(가) 해당 블록을 지정하면 오류가 발생합니다.
+- `stringsJson`
+  이 블록의 마스터 카탈로그 파일 경로입니다. `extract`에 의해 업데이트됩니다.
+- `flatOutputDir`
+  이 블록의 로캘별 JSON 파일이 기록되는 디렉터리입니다(`de.json` 등).
+- `targetLocales`
+  이 블록의 선택적 로캘 목록입니다. 생략하거나 비어 있으면 블록은 루트 `targetLocales`을(를) 사용합니다.
+- `languagesManifestPath`
+  `extract` 및 `generate-ui-languages`이(가) 이 블록의 `ui-languages.json`을(를) 기록하는 선택적 경로입니다. 생략하면 블록 0은 루트 `languagesManifestPath`을(를) 사용하며(이 값의 기본값은 이 블록의 `{flatOutputDir}/ui-languages.json`), 이후 블록은 기본적으로 `{flatOutputDir}/ui-languages.json`을(를) 사용합니다.
+- `uiGlossary`
+  `true`(기본값)이면 이 블록의 `strings.json`이(가) `translate-docs`, `translate-json`, `translate-svg`의 용어집 힌트 소스로 사용됩니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 이러한 힌트에서 제외하려면(예: 문서에 영향을 주지 않아야 하는 CLI 문자열 카탈로그) `false`을(를) 설정하십시오.
+- `uiExtractor.funcNames`(또는 레거시 `reactExtractor.funcNames`)
+  검색할 추가 함수 이름입니다(기본값: `["t", "i18n.t"]`).
+- `uiExtractor.extensions`(또는 레거시 `reactExtractor.extensions`)
+  포함할 파일 확장자입니다(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프런트매터와 템플릿 표현식을 사용하려면 `.astro`을(를) 추가하십시오.
+- `uiExtractor.includePackageDescription`(또는 레거시 `reactExtractor.includePackageDescription`)
+  `true`(기본값)이면 `extract`은(는) 존재하는 경우 `package.json` `description`도 UI 문자열로 포함합니다. 동일한 설명이 모든 카탈로그에 추출되지 않도록 추가 블록에는 `false`을(를) 설정하십시오.
+- `uiExtractor.packageJsonPath`(또는 레거시 `reactExtractor.packageJsonPath`)
+  선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로입니다.
+- `uiExtractor.includeUiLanguageEnglishNames`(또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
+
+`true`(기본값 `false`)이면 `extract`은(는) 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`에서 빌드됨)의 각 `englishName`도 소스 검색에서 아직 없는 경우(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`은(는) 읽지 않습니다.
+
+`glossary.uiGlossary` 및 `glossary.uiGlossaryFromStringsJson`은(는) 더 이상 허용되지 않습니다. 구성 로드가 실패하며, 오류 메시지에 대체 방법이 안내됩니다. 해당 키를 삭제하십시오. 이제 힌트는 각 블록의 `uiGlossary` 플래그(기본값 `true`)에서 가져옵니다.
 
 ---
 
@@ -311,7 +329,7 @@ SQLite 캐시 디렉터리(모든 `docs` 블록에서 공유). 기본값 `.trans
 | `features.translateMarkdown` | `features.translateDocs` |
 | `features.translateJSON` | 제거됨(`docs[].docusaurusCatalogDir` 또는 `json[]` 사용) |
 | `features.extractUIStrings` | 제거됨(`extract`은 UI 번역 전에 실행됨) |
-| `glossary.uiGlossaryFromStringsJson` | `glossary.uiGlossary` |
+| `glossary.uiGlossary` 및 `glossary.uiGlossaryFromStringsJson` | 제거됨; 구성 로드 실패. `ui[].uiGlossary` 사용(부울, 기본값 `true`) |
 | `ui.reactExtractor` | `ui.uiExtractor`(별칭은 여전히 허용됨) |
 | `svg.svgExtractor.forceLowercase` | `svg.forceLowercase` |
 
@@ -371,9 +389,13 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docs[].fumadocsMetaGlob`
 `docsOutput.style`이 `"fumadocs"`일 때 `meta.json` 컬렉션에 대한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
 - `docs[].fumadocsMetaTranslatableKeys`
-Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름(기본값: `title`, `description`).
+Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름입니다(기본값: `title`, `description`).
+- `docsOutput.localizedAssets`
+로캘 파일이 존재할 경우 번역된 HTML 내 이미지 및 아이콘 URL의 선택적 이름 변경입니다. 필드: `include`(기본값 `img/**`), `pattern`(기본값 `{stem}-{locale}{ext}`), `onlyIfExists`(기본값 `true`), `assetRoot`(루트 상대 URL 테스트에 사용되는 디렉터리, 기본값은 HTML 파일의 디렉터리). 자리 표시자: `{stem}`, `{ext}`, `{basename}`, `{locale}`, `{llocale}`, `{LOCALE}`. CSS `url()`은(는) 재작성되지 않습니다. [HTML 페이지](/ko/guide/documents/html-pages#links-and-images)를 참조하세요.
+- `docsOutput.html`
+HTML 문서를 위한 선택적 언어 목록 및 hreflang입니다. 기본 주석은 `<!-- ai-i18n:lang-list -->` … `<!-- /ai-i18n:lang-list -->` 및 `<!-- ai-i18n:hreflang -->` … `<!-- /ai-i18n:hreflang -->`입니다. `languageList.format`은(는) `links` 또는 `select`입니다. `languageList.label`은(는) `local`, `english` 또는 `both`입니다. `hreflang.siteUrl`은(는) 대체 링크에 접두사를 추가하며, 생략 시 링크는 상대 경로로 설정되고 경고가 로그에 기록됩니다. `hreflang.xDefault`의 기본값은 `sourceLocale`입니다. `hreflang.stripIndexHtml`은(는) `index.html`을(를) 디렉터리 URL로 변환합니다. HTML의 경우 로캘 폴더가 추가되기 전에 `docsRoot`이(가) 제거됩니다(`docsRoot`이(가) `site`일 때 `site/index.html` → `site/{locale}/index.html`). [HTML 페이지](/ko/guide/documents/html-pages)를 참조하세요.
 - `docsOutput.vitepressThemeCatalog`
-선택 사항입니다. `translate-docs` 내의 VitePress 테마/탐색/사이드바 카탈로그 부트스트랩 + 번역. 필드: `configPath`(테마 문자열이 있는 VitePress 구성), `catalogPath`(생성된 영어 중첩 JSON), 선택 사항인 `outputPathTemplate`(기본값: `catalogPath` 옆의 `theme.{locale}.json`).
+선택 사항입니다. `translate-docs` 내부에서 VitePress 테마/탐색/사이드바 카탈로그 부트스트랩 및 번역을 수행합니다. 필드: `configPath`(테마 문자열이 포함된 VitePress 구성), `catalogPath`(생성된 영어 중첩 JSON), 선택적 `outputPathTemplate`(기본값: `catalogPath` 옆의 `theme.{locale}.json`).
 
 **후처리**
 
@@ -486,13 +508,12 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 
 | 필드          | 설명                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiGlossary`   | 기존 번역을 기반으로 용어집을 자동 생성하는 `strings.json` 파일의 경로입니다.                                                                                                 |
-| `userGlossary` | 열이 `Original language string`(또는 `en`), `locale`, `Translation`, 선택적 `Force`, 선택적 `Context`인 CSV 경로 - 소스 용어와 대상 로케일당 한 행(`locale`는 모든 대상에 대해 `*`일 수 있음). |
+| `userGlossary` | 열이 `Original language string`(또는 `en`), `locale`, `Translation`, 선택 사항인 `Force` 및 선택 사항인 `Context`인 CSV 경로 - 소스 용어 및 대상 로캘당 한 행(`locale`은(는) 모든 대상에 대해 `*`일 수 있음). |
 | `autoAddUserEditedToGlossary` | `true`일 때, UI 문자열에 대한 대시보드 편집 내용을 사용자 용어집에 자동으로 추가할 수 있습니다. |
 | `contextFiles` | 선택적 cwd 상대 경로의 Markdown 또는 일반 텍스트 파일(`.md`, `.markdown`, `.txt`)로, 제품 또는 기능 설명을 포함합니다. 명령 시작 시 로드되어 UI, 문서, JSON, SVG 및 교정 프롬프트에 주입됩니다. 번역도 원할 경우에만 이 파일들을 `docs[].contentPaths`에 넣으세요. URL은 거부됩니다. 전체 텍스트는 구성된 LLM 프로바이더로 전송되며 `--debug-failed` 로그에 나타날 수 있으므로 — 비밀이나 PII를 포함하지 마세요. |
 | `contextMaxChars` | 모델로 전송되는 결합된 컨텍스트 파일 텍스트의 최대 문자 수(기본값 `12000`, 하드 캡 `100000`). 초과 텍스트는 경고와 함께 잘립니다. |
 
-`translate-docs`는 용어 힌트에 동일한 용어집을 사용하지만, 간결한 UI 레이블 약어(마침표로 끝나는 형식인 `Alm.` 또는 짧은 단일 토큰 압축형인 `Size` → `Tam` 등)는 건너뛰어 문서 프롬프트가 임의로 생성된 <code v-pre>{{…}}</code> 토큰으로 유도되지 않도록 합니다. 전체 제품 용어와 비약어 UI 번역은 여전히 힌트로 제공됩니다.
+`translate-docs`, `translate-json` 및 `translate-svg`는 `uiGlossary`이(가) `true`(기본값)인 각 UI 블록에서도 힌트를 가져옵니다. 이는 해당 블록의 `strings.json`에 이미 저장된 번역을 재사용합니다. 블록에서 `uiGlossary`을(를) `false`(으)로 설정하여 제외할 수 있습니다. `translate-ui` 및 `proofread-ui`는 이러한 카탈로그를 힌트로 사용하지 않습니다. 문서 프롬프트가 생성된 <code v-pre>{{…}}</code> 토큰으로 유도되지 않도록 간결한 UI 레이블 약어(`Alm.`과(와) 같은 후행 점 형식 또는 `Size` → `Tam`과(와) 같은 짧은 단일 토큰 압축)는 건너뜁니다. 전체 제품 용어 및 약어가 아닌 UI 번역은 여전히 힌트로 제공됩니다.
 
 선택적 `Context` CSV 열은 해당 용어에 대한 소스 언어 사용 가이드(정의, 문법적 용법, 제품 의미)입니다. 용어가 현재 배치와 일치할 때만 포함됩니다. 용어의 `Context` 메모 또는 `contextFiles` 콘텐츠를 변경하면 다음 실행 시 일치하는 로케일의 캐시된 세그먼트와 파일 추적 행이 무효화되므로, 번역이 자동으로 새로고침됩니다. 선호하는 `Translation`만 변경하면 `--force` / `--force-update`를 전달하지 않는 한 기존 캐시를 계속 사용합니다. 대시보드에서 사용자가 편집한 캐시 행은 유지됩니다.
 

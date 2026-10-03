@@ -6,7 +6,7 @@
 
 **概要：** `ai-i18n-tools extract`
 
-從 `t("…")` / `i18n.t("…")` 字面值、可選的 `package.json` 描述，以及當啟用 `includeUiLanguageEnglishNames` 時的可選隨附主檔 `englishName` 項目更新 `strings.json`（請參閱 `ui.uiExtractor`；不會讀取 `languagesManifestPath`）。同時會在 `languagesManifestPath` 重新產生 `ui-languages.json`。當 `.html` / `.htm` 列於 `ui.uiExtractor.extensions` 時，也會從 HTML 擷取 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記字串。需要非空白的 `ui.sourceRoots`。不會呼叫 LLM。
+從 `t("…")` / `i18n.t("…")` 常值、選用的 `package.json` 描述，以及啟用 `includeUiLanguageEnglishNames` 時選用的內建主要 `englishName` 項目來更新 `strings.json`（請參閱 `ui.uiExtractor`；不會讀取 `languagesManifestPath`）。同時重新產生每個區塊的 `ui-languages.json`。當 `ui.uiExtractor.extensions` 中列出 `.html` / `.htm` 時，也會從 HTML 擷取 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記字串。遍歷每個具有 `sourceRoots` 的 `ui` 區塊。`--ui-block` 會將執行限制為單一區塊（索引、描述或 `stringsJson` 路徑）。不會呼叫 LLM。
 
 **另請參閱：** [UI 字串概觀](/zh-Hant/guide/ui-strings/), [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)
 
@@ -32,7 +32,7 @@
 
 **概要：** `ai-i18n-tools mark-html [paths...] [--write]`
 
-將裸露的 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記插入 HTML 中，以便原始文字只撰寫一次（位於元素本身上）。掃描給定的檔案/目錄/萬用字元（預設：`ui.sourceRoots` 下的 `.html` / `.htm`）。預設為模擬執行（報告每個檔案的新增計數以及任何需要手動 `<span data-i18n>` 的混合內容元素）；`--write` 會套用變更。具備等冪性，遵循 `data-i18n-ignore`（跳過元素及其子樹），絕不碰觸類似程式碼的元素（`code`, `pre`, `kbd`, `samp`, `var`）或空白/僅含數字的文字，且絕不發出帶有值的標記。不會呼叫 LLM。
+將純 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記插入 HTML，使來源文字僅寫入一次（在元素本身上）。掃描指定的檔案/目錄/Glob 模式（預設：每個區塊 `sourceRoots` 下的 `.html` / `.htm`）。預設為試執行（回報每個檔案的新增計數，以及任何需要手動 `<span data-i18n>` 的混合內容元素）；`--write` 會套用變更。具備冪等性、遵循 `data-i18n-ignore`（跳過該元素及其子樹狀結構）、絕不觸及類似程式碼的元素（`code`、`pre`、`kbd`、`samp`、`var`）或空白/純數字文字，且絕不發出帶值的標記。不會呼叫 LLM。
 
 **關鍵選項：** `--write`
 
@@ -78,7 +78,7 @@
 
 **概要：** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-先執行 `extract`（需要 `features.translateUIStrings`），使 `strings.json` 與來源一致，再由 LLM 審查來源語系的 UI 字串（拼字、文法）。術語提示僅來自 `glossary.userGlossary` CSV（範圍與 `translate-ui` 相同 — 不含 `strings.json` / `uiGlossary`，因此不良文案不會被當作詞彙表而強化）。使用作用中的 LLM 供應商（其 API 金鑰環境變數）。
+先執行 `extract`（需要 `features.translateUIStrings`），使每個選取的目錄符合來源，然後由 LLM 審查來源語系的 UI 字串（拼字、文法）。`--ui-block` 會將擷取與審查限制為單一區塊。術語提示僅來自 `glossary.userGlossary` CSV（與 `translate-ui` 範圍相同——UI 目錄不會回饋輸入，因此不佳的文案不會被強化為術語表）。使用作用中的 LLM 提供者（其 API 金鑰環境變數）。
 
 失敗時以 **1** 結束 (缺少功能旗標、擷取失敗、缺少/無效的目錄、缺少 API 金鑰，或所有批次皆失敗時)；執行成功完成時以 **0** 結束 (發現僅供參考)。將 `proofread-ui-results_<timestamp>.log` 寫入 `cacheDir` 下，作為人類可讀的報告 (摘要、問題、未審查的列，以及每個字串的 OK 列)；終端機僅列印摘要計數和問題 (每個字串沒有 `[ok]` 行)。失敗的批次，或是短於批次長度且在每個位置沒有可用 `index` 的模型回應，會將這些字串計為未審查。系統會捨棄其問題，以免將過短的陣列套用到錯誤的字串。在最後一行印出記錄檔名稱。使用 `--json` 時，人類風格的輸出會傳送至 stderr。連結會使用 `path:line`，類似儀表板 UI 字串的連結按鈕。
 

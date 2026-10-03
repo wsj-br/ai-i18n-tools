@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## भाषा स्विचर UI
 
+<a id="plain-html"></a>
+### सादा HTML
+
+बिना किसी फ़्रेमवर्क वाले पृष्ठ के लिए, [`i18n.js`](/hi/guide/ui-strings/plain-html#obtain-the-runtime) लोड करें और `data-locale-select` को `<select>` की ओर इंगित करें (या `data-locale-list` को उस तत्व की ओर जिसे लिंक बनना चाहिए)। स्क्रिप्ट `ui-languages.json` से कंट्रोल को भरती है, स्थान पर ही लोकेल बदलती है, और `<html lang>` तथा `dir` सेट करती है। ब्राउज़र की भाषा के आधार पर दूसरा रीडायरेक्ट न जोड़ें। विवरण, मार्कअप और पूर्ण स्क्रिप्ट: [सादे HTML ऐप्स](/hi/guide/ui-strings/plain-html#language-selector)।
+
+उस स्टैटिक साइट के लिए जो प्रत्येक लोकेल के लिए एक HTML फ़ाइल जनरेट करती है, इस रनटाइम के बजाय [HTML पृष्ठों](/hi/guide/documents/html-pages) में जनरेट की गई भाषा सूची का उपयोग करें।
+
 भाषा चयनकर्ता बनाने के लिए `ui-languages.json` मैनिफेस्ट का उपयोग करें। `ai-i18n-tools` दो डिस्प्ले हेल्पर निर्यात करता है — हस्ताक्षरों के लिए [रनटाइम हेल्पर → डिस्प्ले हेल्पर](/hi/guide/runtime-helpers#display-helpers) देखें।
 
 <details>

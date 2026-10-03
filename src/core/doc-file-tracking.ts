@@ -11,6 +11,7 @@ const FUMADOCS_META_PREFIX = "fumadocs-meta:";
 const DICTIONARY_PREFIX = "nextra-dictionary:";
 const VITEPRESS_THEME_PREFIX = "vitepress-theme:";
 const FUMADOCS_UI_PREFIX = "fumadocs-ui:";
+const UI_BLOCK_PREFIX = "ui-block:";
 
 /**
  * @param relPath - Path segment after the block id: project-root-relative posix (e.g. markdown under
@@ -76,6 +77,27 @@ export function fumadocsUiFileTrackingKey(blockIndex: number, relPath: string): 
 export function jsonBlockFileTrackingKey(blockIndex: number, relPath: string): string {
   const p = relPath.split("\\").join("/");
   return `${JSON_PREFIX}${blockIndex}:${p}`;
+}
+
+/**
+ * Guidance fingerprint row for one UI catalog. `{stringsJsonRel}` is the block's
+ * catalog path relative to the project root (forward slashes).
+ */
+export function uiBlockFileTrackingKey(stringsJsonRel: string): string {
+  const p = stringsJsonRel.trim().split("\\").join("/").replace(/^\.\//, "");
+  return `${UI_BLOCK_PREFIX}${p}`;
+}
+
+export function isUiBlockTrackingKey(filepath: string): boolean {
+  return filepath.startsWith(UI_BLOCK_PREFIX);
+}
+
+/** `ui-block:src/i18n/strings.json` → absolute catalog path. */
+export function resolveUiBlockTrackingKeyToAbs(projectRoot: string, filepath: string): string | null {
+  if (!isUiBlockTrackingKey(filepath)) {
+    return null;
+  }
+  return path.resolve(projectRoot, filepath.slice(UI_BLOCK_PREFIX.length));
 }
 
 export function docBlockFileTrackingKeyToRelPath(filepath: string): string {

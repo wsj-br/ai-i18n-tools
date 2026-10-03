@@ -4,6 +4,7 @@ import chalk from "chalk";
 import type {
   CldrPluralForm,
   I18nConfig,
+  I18nUiTranslateConfig,
   StringsJsonEntry,
   StringsJsonPluralEntry,
 } from "../core/types.js";
@@ -28,6 +29,14 @@ import {
   pluralTranslatedLocaleHasContent,
   requiredCldrPluralForms,
 } from "../core/plural-forms.js";
+import { uiBlockFileTrackingKey } from "../core/doc-file-tracking.js";
+import {
+  effectiveUiTargetLocales,
+  formatUiBlockLabel,
+  resolveLocalesForUiBlock,
+  selectUiBlocks,
+  toUiTranslateConfig,
+} from "../core/ui-blocks.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import {
   llmClientDebugFailedOpts,
@@ -55,7 +64,6 @@ import {
   computeGuidanceFingerprint,
   loadTranslationContextFromConfig,
   translationContextClientOpts,
-  UI_STRINGS_TRACKING_KEY,
 } from "../glossary/translation-context.js";
 import {
   protectGlossaryForcedTerms,
@@ -128,6 +136,12 @@ export interface TranslateUIOptions {
    * Default: off.
    */
   debugFailed?: boolean;
+  /** Raw `-l` / `--locale` value. Resolved per UI block against that block's locales. */
+  localeFilter?: string;
+  /** Limits the run to one block (index, description, or stringsJson path). */
+  uiBlock?: string;
+  /** Skip the per-block completion summary so the caller can print one aggregate. */
+  suppressRunSummary?: boolean;
 }
 
 export interface TranslateUISummary {
@@ -141,7 +155,10 @@ export interface TranslateUISummary {
 type StringsFile = Record<string, StringsJsonEntry>;
 
 /** Same shape as {@link LlmClient} private `languageLabelForPrompt` for LLM instructions. */
-function localeLabelForPrompt(config: I18nConfig, localeCode: string): string {
+function localeLabelForPrompt(
+  config: Pick<I18nConfig, "localeDisplayNames">,
+  localeCode: string
+): string {
   const n = normalizeLocale(localeCode);
   const configured = config.localeDisplayNames?.[n];
   const display =
@@ -156,7 +173,7 @@ function localeLabelForPrompt(config: I18nConfig, localeCode: string): string {
 
 function writeUiTranslationFailureLog(
   opts: TranslateUIOptions,
-  config: I18nConfig,
+  config: Pick<I18nConfig, "cacheDir">,
   relativePath: string,
   locale: string,
   segmentsLabel: string,
@@ -269,7 +286,63 @@ export async function runTranslateUI(
   opts = boundOpts;
 
   try {
-    return await runTranslateUIBody(config, opts);
+    const selected = selectUiBlocks(config, opts.uiBlock);
+    if (selected.length === 0) {
+      throw new Error(t("ui.sourceRoots must be non-empty to extract UI strings"));
+    }
+    const summaries: TranslateUISummary[] = [];
+    for (const item of selected) {
+      const locales = resolveLocalesForUiBlock(config, item.block, opts.cwd, opts.localeFilter);
+      const requested = opts.localeFilter
+        ? locales
+        : opts.locales
+            .map((locale) => normalizeLocale(locale))
+            .filter((locale) => locales.includes(locale));
+      if (requested.length === 0) {
+        console.log(
+          chalk.yellow(
+            t("{{label}}: no target locales match this block; skipping.", {
+              label: formatUiBlockLabel(item.index, item.block),
+            })
+          )
+        );
+        continue;
+      }
+      console.log(chalk.cyan(formatUiBlockLabel(item.index, item.block)));
+      const view = toUiTranslateConfig(
+        { ...config, targetLocales: effectiveUiTargetLocales(config, item.block) },
+        item.block
+      );
+      summaries.push(
+        await runTranslateUIBody(view, {
+          ...opts,
+          locales: requested,
+          suppressRunSummary: selected.length > 1,
+        })
+      );
+    }
+    if (summaries.length === 0) {
+      throw new Error(t("No target locales after excluding sourceLocale"));
+    }
+    if (summaries.length === 1) {
+      return summaries[0]!;
+    }
+    return summaries.reduce(
+      (sum, item) => ({
+        stringsUpdated: sum.stringsUpdated + item.stringsUpdated,
+        localesTouched: [...new Set([...sum.localesTouched, ...item.localesTouched])],
+        inputTokens: sum.inputTokens + item.inputTokens,
+        outputTokens: sum.outputTokens + item.outputTokens,
+        costUsd: sum.costUsd + item.costUsd,
+      }),
+      {
+        stringsUpdated: 0,
+        localesTouched: [] as string[],
+        inputTokens: 0,
+        outputTokens: 0,
+        costUsd: 0,
+      }
+    );
   } finally {
     interruptScope.dispose();
   }
@@ -301,10 +374,13 @@ function printTranslateUiRunSummary(
 }
 
 async function runTranslateUIBody(
-  config: I18nConfig,
+  config: I18nUiTranslateConfig,
   opts: TranslateUIOptions
 ): Promise<TranslateUISummary> {
-  const stringsPath = resolveStringsJsonPath(config, opts.cwd);
+  const stringsPath = resolveStringsJsonPath(config.ui, opts.cwd);
+  const guidanceKey = uiBlockFileTrackingKey(
+    path.relative(opts.cwd, stringsPath).split("\\").join("/") || config.ui.stringsJson
+  );
   const stringsRel = stringsCatalogRelForLog(opts.cwd, stringsPath);
   if (!fs.existsSync(stringsPath)) {
     throw new Error(
@@ -632,7 +708,7 @@ async function runTranslateUIBody(
         locale,
         translationContext.fingerprint
       );
-      const storedGuidance = usageCache?.getFileTrackingHashes(UI_STRINGS_TRACKING_KEY, locale);
+      const storedGuidance = usageCache?.getFileTrackingHashes(guidanceKey, locale);
       const guidanceChanged =
         storedGuidance !== null &&
         storedGuidance !== undefined &&
@@ -969,7 +1045,7 @@ async function runTranslateUIBody(
       const localePath = path.join(outDir, `${locale}.json`);
       if (!opts.dryRun) {
         writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
-        usageCache?.setFileStatus(UI_STRINGS_TRACKING_KEY, locale, "", promptContextHash);
+        usageCache?.setFileStatus(guidanceKey, locale, "", promptContextHash);
         if (opts.verbose) {
           console.log(
             chalk.gray(
@@ -1080,7 +1156,9 @@ async function runTranslateUIBody(
       segmentsTranslated: stringsTranslated,
     };
 
-    printTranslateUiRunSummary(opts, sum, wallElapsed, "success");
+    if (!opts.suppressRunSummary) {
+      printTranslateUiRunSummary(opts, sum, wallElapsed, "success");
+    }
 
     return {
       stringsUpdated,
@@ -1108,7 +1186,9 @@ async function runTranslateUIBody(
         segmentsCached: stringsCached,
         segmentsTranslated: stringsTranslated,
       };
-      printTranslateUiRunSummary(opts, sum, Date.now() - wallStart, "interrupted");
+      if (!opts.suppressRunSummary) {
+        printTranslateUiRunSummary(opts, sum, Date.now() - wallStart, "interrupted");
+      }
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);
     }
     throw e;

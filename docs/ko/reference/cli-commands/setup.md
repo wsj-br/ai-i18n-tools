@@ -32,6 +32,8 @@ CLI 버전과 빌드 타임스탬프를 출력합니다(루트 프로그램의 `
 | `ui-nextra` | Nextra 문서(`docsOutput.style: "nextra"`) 및 테마 사전을 위한 `nextraDictionaryPath` (사이드바 `_meta.ts`는 자동으로 수집됨) |
 | `ui-fumadocs` | Fumadocs 문서(`docsOutput.style: "fumadocs"`) 및 UI 오버라이드를 위한 `fumadocsUiCatalog` (사이드바 `meta.json`는 자동으로 수집됨) |
 | `ui-astro-website` | Astro 웹사이트 UI 문자열 |
+| `ui-plain-html` | 일반 HTML 카탈로그(`data-i18n*` 마커, 플랫 로케일 JSON) |
+| `docs-plain-html` | 일반 HTML 문서(로케일당 파일 1개, 언어 목록, hreflang) |
 | `ui-json-bundles` | JSON (`json[]`만 해당) |
 
 `--with-translate-ignore`는 시작용 `.translate-ignore`를 생성합니다.

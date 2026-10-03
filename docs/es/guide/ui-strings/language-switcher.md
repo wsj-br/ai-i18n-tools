@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## Interfaz de usuario del selector de idioma
 
+<a id="plain-html"></a>
+### HTML puro
+
+Para una página sin framework, cargue [`i18n.js`](/es/guide/ui-strings/plain-html#obtain-the-runtime) y apunte `data-locale-select` a un `<select>` (o `data-locale-list` a un elemento que deba convertirse en enlaces). El script rellena el control desde `ui-languages.json`, cambia la configuración regional in situ y establece `<html lang>` y `dir`. No añada una segunda redirección basada en el idioma del navegador. Detalles, marcado y el script completo: [Aplicaciones en HTML puro](/es/guide/ui-strings/plain-html#language-selector).
+
+Para un sitio estático que genera un archivo HTML por cada configuración regional, utilice la lista de idiomas generada en [páginas HTML](/es/guide/documents/html-pages) en lugar de este entorno de ejecución.
+
 Utilice el manifiesto `ui-languages.json` para crear un selector de idioma. `ai-i18n-tools` exporta dos ayudantes de visualización; consulte [Ayudantes de tiempo de ejecución → Ayudantes de visualización](/es/guide/runtime-helpers#display-helpers) para ver las firmas.
 
 <details>

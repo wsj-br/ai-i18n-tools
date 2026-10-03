@@ -41,7 +41,10 @@ export interface RunMarkHtmlOptions {
  */
 export function runMarkHtml(opts: RunMarkHtmlOptions): MarkHtmlSummary {
   const { cwd, config, write } = opts;
-  const roots = opts.paths && opts.paths.length > 0 ? opts.paths : (config.ui?.sourceRoots ?? []);
+  const roots =
+    opts.paths && opts.paths.length > 0
+      ? opts.paths
+      : [...new Set(config.ui.flatMap((block) => block.sourceRoots))];
   if (roots.length === 0) {
     throw new Error(t("Provide one or more paths, or set ui.sourceRoots, to scan for HTML."));
   }

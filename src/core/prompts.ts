@@ -14,6 +14,7 @@ export interface DocumentPromptStrings {
   translationContextPreamble: string;
   markdownPreservation: string;
   jsonSegmentAddendum: string;
+  htmlSegmentAddendum: string;
   svgSegmentAddendum: string;
   markdownExample: string;
   /** Shown after the example / addendum for {@link buildDocumentSinglePrompt} (single-segment API). User message is raw segment text — no `<translate>` wrapper. */
@@ -91,6 +92,12 @@ Context (read this carefully): Each segment is one user-visible string taken fro
 - Prefer conventional product and UI wording (same mainstream-software guidance as in the TERMINOLOGY block above).
 - Preserve interpolation and markup exactly: {name}, {{var}}, ICU/plural patterns, HTML inside strings, Markdown fragments if present, %s / %d style placeholders.
 - Do not add or remove braces, brackets, or escape sequences; output only the translated human text inside each <t id="N"> block—never a full JSON object.`,
+
+    htmlSegmentAddendum: `
+Context: Each segment is visible text or a translatable attribute from an HTML page (headings, paragraphs, alt, title, placeholder, aria-label, the document title, or a meta description).
+- Translate the words. Keep {{HTM_N}} placeholders character-for-character and in the same order; they stand for tags such as <code> or <em>.
+- Do not add or remove tags, attributes, or URLs. Do not translate text that is already inside a placeholder.
+- Output only the translated segment, not a full HTML document.`,
 
     svgSegmentAddendum: `
 Context: Segments are human-readable text from SVG (text elements, titles).

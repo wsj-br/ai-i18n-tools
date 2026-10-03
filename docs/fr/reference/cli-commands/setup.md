@@ -32,6 +32,8 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 | `ui-nextra` | Documents Nextra (`docsOutput.style: "nextra"`) plus `nextraDictionaryPath` pour le dictionnaire de thème (la barre latérale `_meta.ts` est collectée automatiquement) |
 | `ui-fumadocs` | Documents Fumadocs (`docsOutput.style: "fumadocs"`) plus `fumadocsUiCatalog` pour les remplacements d'interface utilisateur (la barre latérale `meta.json` est collectée automatiquement) |
 | `ui-astro-website` | Chaînes d'interface utilisateur de site Web Astro |
+| `ui-plain-html` | Catalogue HTML simple (marqueurs `data-i18n*`, JSON plat des locales) |
+| `docs-plain-html` | Documents HTML simples (un fichier par locale, liste des langues, hreflang) |
 | `ui-json-bundles` | JSON (`json[]` uniquement) |
 
 `--with-translate-ignore` crée un `.translate-ignore` de démarrage.

@@ -8,7 +8,9 @@ import { normalizeLocale, toDocTranslateConfig } from "../core/config.js";
 import type { I18nConfig, StringsJsonEntry } from "../core/types.js";
 import { isFumadocsDotParser } from "../core/fumadocs-parser.js";
 import { collectFilesByExtension } from "./file-utils.js";
+import { filterGeneratedHtmlOutputs, htmlOutputLocales } from "../core/html-source-filter.js";
 import { resolveStringsJsonPath, resolveTranslatedOutputPath, writeAtomicUtf8 } from "./helpers.js";
+import { selectUiBlocks } from "../core/ui-blocks.js";
 
 type StringsFile = Record<string, StringsJsonEntry>;
 
@@ -29,6 +31,8 @@ export type RunPurgeLocaleOptions = {
   projectRoot?: string;
   /** When true, only purge the SQLite cache; leave generated files and `strings.json` untouched. */
   keepFiles?: boolean;
+  /** Index, description, or stringsJson path. Omit to purge every UI block with sourceRoots. */
+  uiBlock?: string;
 };
 
 type LocaleWork = {
@@ -38,8 +42,8 @@ type LocaleWork = {
   failures: number;
   /** Existing translated document outputs (absolute paths) for this locale. */
   docFiles: string[];
-  /** Existing generated flat `<locale>.json` UI file (absolute path), if any. */
-  flatFile: string | null;
+  /** Existing generated flat `<locale>.json` UI files (absolute paths). */
+  flatFiles: string[];
   /** Number of `strings.json` entries holding a translation for this locale. */
   stringsEntries: number;
 };
@@ -52,12 +56,12 @@ function hasWork(work: LocaleWork): boolean {
   return (
     cacheTotal(work) > 0 ||
     work.docFiles.length > 0 ||
-    work.flatFile !== null ||
+    work.flatFiles.length > 0 ||
     work.stringsEntries > 0
   );
 }
 
-const DOC_EXTENSIONS = new Set([".md", ".mdx", ".astro"]);
+const DOC_EXTENSIONS = new Set([".md", ".mdx", ".astro", ".html", ".htm"]);
 
 /** Recursively list files under `dir` whose lowercase extension is in `exts` (missing dir → []). */
 function listFilesRecursive(dir: string, exts: Set<string>): string[] {
@@ -135,6 +139,17 @@ function collectTranslatedDocOutputs(
         found.add(path.resolve(out));
       }
     }
+    const htmlSources = filterGeneratedHtmlOutputs(
+      collectFilesByExtension(block.contentPaths, [".html", ".htm"], projectRoot),
+      [block.outputDir],
+      htmlOutputLocales(config.sourceLocale, config.targetLocales)
+    );
+    for (const rel of htmlSources) {
+      const out = resolveTranslatedOutputPath(view, projectRoot, locale, rel, "html");
+      if (fs.existsSync(out)) {
+        found.add(path.resolve(out));
+      }
+    }
     for (const out of sweepLocaleDocOutputsOnDisk(config, block, projectRoot, locale)) {
       found.add(path.resolve(out));
     }
@@ -142,17 +157,40 @@ function collectTranslatedDocOutputs(
   return [...found];
 }
 
-function flatLocaleFilePath(
+function flatLocaleFiles(
   config: I18nConfig,
   projectRoot: string,
-  locale: string
-): string | null {
-  const flatDir = config.ui?.flatOutputDir?.trim();
-  if (!flatDir) {
-    return null;
+  locale: string,
+  selector?: string
+): string[] {
+  const files: string[] = [];
+  for (const item of selectUiBlocks(config, selector)) {
+    const flatDir = item.block.flatOutputDir?.trim();
+    if (!flatDir) {
+      continue;
+    }
+    const filePath = path.join(projectRoot, flatDir, `${locale}.json`);
+    if (fs.existsSync(filePath)) {
+      files.push(filePath);
+    }
   }
-  const p = path.join(projectRoot, flatDir, `${locale}.json`);
-  return fs.existsSync(p) ? p : null;
+  return files;
+}
+
+function readUiCatalogs(
+  config: I18nConfig,
+  projectRoot: string,
+  selector?: string
+): Array<{ path: string; doc: StringsFile }> {
+  const catalogs: Array<{ path: string; doc: StringsFile }> = [];
+  for (const item of selectUiBlocks(config, selector)) {
+    const stringsPath = resolveStringsJsonPath(item.block, projectRoot);
+    const doc = readStringsJson(stringsPath);
+    if (doc) {
+      catalogs.push({ path: stringsPath, doc });
+    }
+  }
+  return catalogs;
 }
 
 function readStringsJson(stringsPath: string): StringsFile | null {
@@ -224,11 +262,10 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
   const dryTag = opts.dryRun ? t(" (dry-run)") : "";
 
   // Read strings.json once up front so per-locale counts and the eventual removal share one object.
-  const stringsPath =
+  const catalogs =
     doFileOps && opts.config && opts.projectRoot
-      ? resolveStringsJsonPath(opts.config, opts.projectRoot)
-      : null;
-  const strings = stringsPath ? readStringsJson(stringsPath) : null;
+      ? readUiCatalogs(opts.config, opts.projectRoot, opts.uiBlock)
+      : [];
 
   const cache = new TranslationCache(opts.cacheDir);
   try {
@@ -239,12 +276,15 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
         doFileOps && opts.config && opts.projectRoot
           ? collectTranslatedDocOutputs(opts.config, opts.projectRoot, locale)
           : [];
-      const flatFile =
+      const flatFiles =
         doFileOps && opts.config && opts.projectRoot
-          ? flatLocaleFilePath(opts.config, opts.projectRoot, locale)
-          : null;
-      const stringsEntries = strings ? countLocaleInStrings(strings, locale) : 0;
-      allWork.push({ locale, ...counts, docFiles, flatFile, stringsEntries });
+          ? flatLocaleFiles(opts.config, opts.projectRoot, locale, opts.uiBlock)
+          : [];
+      const stringsEntries = catalogs.reduce(
+        (sum, catalog) => sum + countLocaleInStrings(catalog.doc, locale),
+        0
+      );
+      allWork.push({ locale, ...counts, docFiles, flatFiles, stringsEntries });
     }
 
     const purgeable: LocaleWork[] = [];
@@ -268,7 +308,7 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
             failures: work.failures,
             documents: work.docFiles.length,
             strings: work.stringsEntries,
-            flat: work.flatFile ? 1 : 0,
+            flat: work.flatFiles.length,
           }
         ) + dryTag
       );
@@ -276,8 +316,10 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
         for (const f of work.docFiles) {
           console.log(chalk.gray(`    - ${f}`));
         }
-        if (work.flatFile) {
-          console.log(chalk.gray(`    - ${work.flatFile}`));
+        if (work.flatFiles.length > 0) {
+          for (const flatFile of work.flatFiles) {
+            console.log(chalk.gray(`    - ${flatFile}`));
+          }
         }
       }
     }
@@ -310,7 +352,7 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
 
       let deletedFiles = 0;
       if (doFileOps) {
-        for (const f of [...work.docFiles, ...(work.flatFile ? [work.flatFile] : [])]) {
+        for (const f of [...work.docFiles, ...work.flatFiles]) {
           try {
             fs.rmSync(f, { force: true });
             deletedFiles++;
@@ -337,13 +379,17 @@ export async function runPurgeLocale(opts: RunPurgeLocaleOptions): Promise<void>
       );
     }
 
-    if (doFileOps && strings && stringsPath) {
-      const removed = removeLocalesFromStrings(
-        strings,
-        purgeable.map((w) => w.locale)
-      );
+    if (doFileOps && catalogs.length > 0) {
+      let removed = 0;
+      const locales = purgeable.map((work) => work.locale);
+      for (const catalog of catalogs) {
+        const cleared = removeLocalesFromStrings(catalog.doc, locales);
+        if (cleared > 0) {
+          writeAtomicUtf8(catalog.path, `${JSON.stringify(catalog.doc, null, 2)}\n`);
+          removed += cleared;
+        }
+      }
       if (removed > 0) {
-        writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
         console.log(
           chalk.blue(
             t("[purge-locale] Cleared {{count}} strings.json entr(ies) across purged locales", {

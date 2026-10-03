@@ -5,8 +5,8 @@ O glossário garante uma terminologia de produto consistente em todas as traduç
 
 Dois tipos de orientação são enviados ao modelo:
 
-- **Linhas de termos** em `glossary.userGlossary` (e, para alguns pipelines, traduções de UI existentes de `glossary.uiGlossary`). Uma linha só é incluída quando esse termo de origem aparece no texto que está sendo traduzido.
-- **Arquivos de contexto do projeto** em `glossary.contextFiles`. O briefing completo é injetado em todos os prompts de UI, documentação, JSON, SVG e revisão. Essa seção está [abaixo](#project-context-files).
+- **Linhas de termos** em `glossary.userGlossary` (e, para documentação, JSON e SVG, traduções de UI existentes de cada bloco `ui` com `uiGlossary` habilitado). Uma linha é incluída apenas quando esse termo de origem aparece no texto sendo traduzido.
+- **Arquivos de contexto do projeto** em `glossary.contextFiles`. O briefing completo é injetado em cada prompt de UI, documentação, JSON, SVG e revisão. Essa seção está [abaixo](#project-context-files).
 
 <a id="how-the-glossary-works"></a>
 ## Como o glossário funciona
@@ -16,12 +16,10 @@ Dois tipos de orientação são enviados ao modelo:
 
 | Fonte | Configuração | Usado por |
 | --- | --- | --- |
-| Catálogo de UI | `glossary.uiGlossary` — geralmente o mesmo caminho que `ui.stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
+| Catálogos de UI | `ui[].uiGlossary` (booleano, padrão `true`) — `stringsJson` desse bloco | `translate-docs`, `translate-json`, `translate-svg` |
 | CSV do usuário | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
-`uiGlossary` reutiliza traduções já armazenadas em `strings.json` como dicas, de modo que a documentação, o JSON e o SVG permaneçam alinhados com a UI. `translate-ui` e `proofread-ui` não leem `uiGlossary` — eles obtêm dicas apenas do CSV do usuário, para que uma tradução de UI ruim não seja realimentada como o termo preferido.
-
-O CSV do usuário prevalece sobre o catálogo de UI. Uma linha cujo `locale` é um código específico substitui tanto a linha de `*` quanto a tradução do catálogo de UI para esse idioma. Um `locale` de `*` aplica a mesma tradução a toda entrada de `targetLocales` que ainda não tenha uma vinda do catálogo de UI.
+Um bloco com `uiGlossary: true` reutiliza traduções já armazenadas em seu `strings.json` como sugestões, para que a documentação, o JSON e o SVG permaneçam alinhados com a UI. `translate-ui` e `proofread-ui` não leem esses catálogos — eles aceitam sugestões apenas do CSV do usuário, para que uma tradução de UI ruim não seja reinserida como o termo preferencial. Defina `uiGlossary` como `false` em um bloco que não deve orientar outros pipelines. Quando vários blocos compartilham um termo de origem, o bloco anterior preenche uma localidade e os blocos posteriores adicionam apenas as localidades que ainda estão faltando. O CSV do usuário prevalece sobre qualquer catálogo de UI. Uma linha cujo `locale` é um código específico substitui tanto a linha `*` quanto a tradução do catálogo de UI para essa localidade. Um `locale` de `*` aplica a mesma tradução a todas as localidades de destino que ainda não possuem uma tradução do catálogo de UI.
 
 Abreviações compactas de rótulos de UI (um ponto final como `Alm.`, ou uma compressão curta de token único como `Size` → `Tam`) permanecem disponíveis para tradução de UI. Os prompts de documentação as ignoram, para que não induzam os modelos a criar tokens <code v-pre>{{…}}</code> inventados em markdown ou MDX.
 
@@ -52,7 +50,6 @@ Aponte a configuração para o arquivo:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Combinado com um briefing de projeto:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

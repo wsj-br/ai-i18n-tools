@@ -5,7 +5,7 @@
 
 모델에는 두 가지 유형의 가이드가 전송됩니다.
 
-- `glossary.userGlossary`의 **용어 행**(및 일부 파이프라인의 경우 `glossary.uiGlossary`의 기존 UI 번역). 이 행은 해당 소스 용어가 번역 대상 텍스트에 나타나는 경우에만 포함됩니다.
+- `glossary.userGlossary`의 **용어 행**(문서, JSON, SVG의 경우 `uiGlossary`이(가) 활성화된 각 `ui` 블록의 기존 UI 번역 포함). 행은 해당 소스 용어가 번역 대상 텍스트에 나타나는 경우에만 포함됩니다.
 - `glossary.contextFiles`의 **프로젝트 컨텍스트 파일**. 전체 브리프는 모든 UI, 문서, JSON, SVG 및 교정 프롬프트에 주입됩니다. 해당 섹션은 [아래](#project-context-files)에 있습니다.
 
 <a id="how-the-glossary-works"></a>
@@ -14,14 +14,12 @@
 <a id="where-terms-come-from"></a>
 ### 용어 출처
 
-| 소스 | 구성 | 사용 주체 |
+| 소스 | 구성 | 사용 대상 |
 | --- | --- | --- |
-| UI 카탈로그 | `glossary.uiGlossary` — 일반적으로 `ui.stringsJson`과(와) 동일한 경로 | `translate-docs`, `translate-json`, `translate-svg` |
+| UI 카탈로그 | `ui[].uiGlossary`(부울, 기본값 `true`) — 해당 블록의 `stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
 | 사용자 CSV | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
-`uiGlossary`은(는) `strings.json`에 이미 저장된 번역을 힌트로 재사용하므로 문서, JSON 및 SVG가 UI와 일관성을 유지합니다. `translate-ui` 및 `proofread-ui`은(는) `uiGlossary`을(를) 읽지 않으며 사용자 CSV에서만 힌트를 가져오므로, 잘못된 UI 번역이 기본 용어로 다시 피드백되지 않습니다.
-
-사용자 CSV가 UI 카탈로그보다 우선합니다. `locale`이(가) 특정 코드인 행은 해당 로케일에 대한 `*` 행과 UI 카탈로그 번역을 모두 대체합니다. `*`의 `locale`은(는) UI 카탈로그에서 아직 번역이 없는 모든 `targetLocales` 항목에 동일한 번역을 적용합니다.
+`uiGlossary: true`이(가) 포함된 블록은 `strings.json`에 이미 저장된 번역을 힌트로 재사용하므로 문서, JSON 및 SVG가 UI와 일관성을 유지합니다. `translate-ui` 및 `proofread-ui`은(는) 해당 카탈로그를 읽지 않고 사용자 CSV에서만 힌트를 가져오므로, 잘못된 UI 번역이 선호 용어로 다시 반영되지 않습니다. 다른 파이프라인에 영향을 주지 않아야 하는 블록에서는 `uiGlossary`을(를) `false`(으)로 설정합니다. 여러 블록이 소스 용어를 공유하는 경우, 앞선 블록이 로케일을 채우고 뒤이어 오는 블록은 아직 누락된 로케일만 추가합니다. 사용자 CSV가 모든 UI 카탈로그보다 우선합니다. `locale`이(가) 특정 코드인 행은 해당 로케일에 대한 `*` 행과 UI 카탈로그 번역을 모두 대체합니다. `locale`이(가) `*`인 경우 UI 카탈로그의 번역이 아직 없는 모든 대상 로케일에 동일한 번역을 적용합니다.
 
 간결한 UI 레이블 약어(`Alm.`과(와) 같은 후행 점 또는 `Size` → `Tam`과(와) 같은 짧은 단일 토큰 압축)는 UI 번역에 계속 사용할 수 있습니다. 문서 프롬프트는 이를 건너뛰므로, 모델이 마크다운이나 MDX에서 <code v-pre>{{…}}</code> 토큰을 임의로 생성하도록 유도하지 않습니다.
 
@@ -52,7 +50,6 @@ ai-i18n-tools glossary-generate
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Original language string,locale,Translation,Force,Context
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

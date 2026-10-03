@@ -68,3 +68,8 @@
 | VitePress ドキュメント (最小限のデモ)      | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` の直前の行（例：`**Read in other languages:**`）は通常の翻訳対象セグメントであり、各ターゲットロケールでローカライズされます。マーカー内のリンク行は、`href` およびマニフェスト駆動のラベルを除き、そのまま再生成されます。
+
+<a id="html-pages"></a>
+## HTMLページ
+
+通常のHTMLドキュメントでは、`<!-- ai-i18n:lang-list -->`と`<!-- ai-i18n:hreflang -->`という別のコメントペアを使用します。言語リストはリンクまたは`<select>`として設定でき、hreflangの代替リンクは英語のソースファイルだけでなく各ロケールファイルにも記述されます。[HTMLページ](/ja/guide/documents/html-pages#language-list-and-hreflang)を参照してください。

@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## 語言切換器使用者介面
 
+<a id="plain-html"></a>
+### 純 HTML
+
+對於沒有使用框架的頁面，請載入 [`i18n.js`](/zh-Hant/guide/ui-strings/plain-html#obtain-the-runtime) 並將 `data-locale-select` 指向 `<select>`（或將 `data-locale-list` 指向應成為連結的元素）。該指令碼會從 `ui-languages.json` 填入控制項，就地切換地區設定，並設定 `<html lang>` 和 `dir`。請勿根據瀏覽器語言新增第二次重新導向。詳細資訊、標記和完整指令碼：[純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html#language-selector)。
+
+對於每個地區設定產生一個 HTML 檔案的靜態網站，請使用 [HTML 頁面](/zh-Hant/guide/documents/html-pages) 中產生的語言清單，而不是此執行階段。
+
 使用 `ui-languages.json` 資訊清單來建立語言選擇器。`ai-i18n-tools` 匯出兩個顯示輔助程式 — 請參閱[執行階段輔助程式 → 顯示輔助程式](/zh-Hant/guide/runtime-helpers#display-helpers)以取得簽章。
 
 <details>

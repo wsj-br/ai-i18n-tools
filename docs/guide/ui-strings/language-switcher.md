@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## Language switcher UI
 
+<a id="plain-html"></a>
+### Plain HTML
+
+For a page with no framework, load [`i18n.js`](/guide/ui-strings/plain-html#obtain-the-runtime) and point `data-locale-select` at a `<select>` (or `data-locale-list` at an element that should become links). The script fills the control from `ui-languages.json`, switches locale in place, and sets `<html lang>` and `dir`. Do not add a second redirect based on the browser language. Details, markup, and the full script: [Plain HTML apps](/guide/ui-strings/plain-html#language-selector).
+
+For a static site that emits one HTML file per locale, use the generated language list in [HTML pages](/guide/documents/html-pages) instead of this runtime.
+
 Use the `ui-languages.json` manifest to build a language selector. `ai-i18n-tools` exports two display helpers — see [Runtime helpers → Display helpers](/guide/runtime-helpers#display-helpers) for signatures.
 
 <details>

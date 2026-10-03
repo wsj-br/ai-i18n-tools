@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ Enable all features in a single config to run UI strings and documents together:
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ Enable all features in a single config to run UI strings and documents together:
 
 <br />
 
-`glossary.uiGlossary` points document translation at the same `strings.json` catalog as the UI so terminology stays consistent; `glossary.userGlossary` adds CSV overrides for product terms. See [Glossary](/guide/glossary).
+UI blocks include their `strings.json` catalogs as glossary hints for documentation by default (`uiGlossary`). `glossary.userGlossary` adds CSV overrides for product terms. See [Glossary](/guide/glossary).
 
 Run `ai-i18n-tools sync` to run one pipeline: when `features.translateUIStrings` is enabled, **extract** then **translate UI** strings; optional **translate SVG** (`features.translateSVG` + `svg` block); **translate documentation** (`docs[]` as configured); then optional **translate-json** (`features.translateJson` + `json[]`). Skip parts with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. The docs and `json[]` steps accept `--dry-run`, `-p` / `--path`, `--force`, `--force-update`, and `--check-cache` (docs-only flags are ignored when `--no-docs`; JSON uses the same cache flags when `--no-json` is not set).
 

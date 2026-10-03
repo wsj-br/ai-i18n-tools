@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## 言語スイッチャーUI
 
+<a id="plain-html"></a>
+### プレーンHTML
+
+フレームワークを使用しないページの場合、[`i18n.js`](/ja/guide/ui-strings/plain-html#obtain-the-runtime) を読み込み、`data-locale-select` を `<select>` に指定します（またはリンクにする要素に `data-locale-list` を指定します）。スクリプトは `ui-languages.json` からコントロールの値を設定し、ページ内でロケールを切り替え、`<html lang>` と `dir` を設定します。ブラウザの言語に基づく2回目のリダイレクトは追加しないでください。詳細、マークアップ、および完全なスクリプトについては、[プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html#language-selector) を参照してください。
+
+ロケールごとに1つのHTMLファイルを出力する静的サイトの場合、このランタイムの代わりに、[HTMLページ](/ja/guide/documents/html-pages) で生成された言語リストを使用してください。
+
 言語セレクターを構築するには、`ui-languages.json` マニフェストを使用します。`ai-i18n-tools` は2つの表示ヘルパーをエクスポートします。署名については、[ランタイムヘルパー → 表示ヘルパー](/ja/guide/runtime-helpers#display-helpers) を参照してください。
 
 <details>

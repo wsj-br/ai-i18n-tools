@@ -26,6 +26,16 @@ import {
   writeInitConfigFile,
   toDocTranslateConfig,
 } from "../core/config.js";
+import {
+  collectUiTargetLocales,
+  configHasUiWork,
+  configHasJsonWork,
+  effectiveUiManifestRel,
+  effectiveUiTargetLocales,
+  formatUiBlockLabel,
+  resolveLocalesForUiBlock,
+  selectUiBlocks,
+} from "../core/ui-blocks.js";
 import { scaffoldVitepressInitFiles } from "./vitepress-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
@@ -35,7 +45,6 @@ import {
   getJsonTargetLocaleCodes,
   resolveLocalesForDocumentation,
   resolveLocalesForSvg,
-  resolveLocalesForUI,
 } from "../core/ui-languages.js";
 import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
@@ -64,7 +73,13 @@ import {
   jsonFileProjectRelativePath,
   augmentMarkdownFilesFromPathFilter,
   augmentAstroFilesFromPathFilter,
+  augmentHtmlFilesFromPathFilter,
 } from "./doc-translate.js";
+import {
+  filterGeneratedHtmlOutputs,
+  htmlOutputLocales,
+  overlappingHtmlSources,
+} from "../core/html-source-filter.js";
 import { runTranslateSvg } from "./translate-svg.js";
 import { runTranslateUI } from "./translate-ui-strings.js";
 import { runProofreadUI } from "./proofread-ui.js";
@@ -231,10 +246,11 @@ function filterDocumentationFilesByPathFilter(
   md: string[],
   jsonFiles: string[],
   astro: string[],
+  html: string[],
   pathFilter: string | undefined
-): { markdown: string[]; json: string[]; astro: string[] } {
+): { markdown: string[]; json: string[]; astro: string[]; html: string[] } {
   if (!pathFilter?.trim()) {
-    return { markdown: md, json: jsonFiles, astro };
+    return { markdown: md, json: jsonFiles, astro, html };
   }
   return {
     markdown: md.filter((r) => matchesPathFilter(r, pathFilter)),
@@ -242,7 +258,58 @@ function filterDocumentationFilesByPathFilter(
       matchesPathFilter(jsonFileProjectRelativePath(projectRoot, jsonAbsRoot, r), pathFilter)
     ),
     astro: astro.filter((r) => matchesPathFilter(r, pathFilter)),
+    html: html.filter((r) => matchesPathFilter(r, pathFilter)),
   };
+}
+
+function discoverDocumentationHtml(
+  projectRoot: string,
+  config: I18nConfig,
+  block: I18nConfig["docs"][number],
+  blockIndex: number,
+  pathFilter: string | undefined
+): string[] {
+  const locales = htmlOutputLocales(config.sourceLocale, config.targetLocales);
+  const outputDirs = config.docs.map((entry) => entry.outputDir);
+  const discovered = filterGeneratedHtmlOutputs(
+    filterIgnored(
+      collectFilesByExtension(block.contentPaths, [".html", ".htm"], projectRoot),
+      projectRoot
+    ),
+    outputDirs,
+    locales
+  );
+  const { html, warnings } = augmentHtmlFilesFromPathFilter(
+    projectRoot,
+    pathFilter,
+    blockIndex,
+    config.docs,
+    discovered
+  );
+  for (const warning of warnings) {
+    console.warn(chalk.yellow(`⚠️  ${warning}`));
+  }
+  const htmlFiles = filterGeneratedHtmlOutputs(html, outputDirs, locales);
+  const uiHtml = filterGeneratedHtmlOutputs(
+    collectFilesByExtension(
+      config.ui.flatMap((block) => block.sourceRoots),
+      [".html", ".htm"],
+      projectRoot
+    ),
+    outputDirs,
+    locales
+  );
+  for (const rel of overlappingHtmlSources(uiHtml, htmlFiles)) {
+    console.warn(
+      chalk.yellow(
+        t(
+          "⚠️  {{path}} is both a UI HTML source and a documentation HTML page. Catalog markers and document translation will both apply.",
+          { path: rel }
+        )
+      )
+    );
+  }
+  return htmlFiles;
 }
 
 function warnAndAugmentMarkdownForExplicitPath(
@@ -624,7 +691,9 @@ program
   .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
-    "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-json-bundles",
+    t(
+      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html"
+    ),
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
@@ -664,13 +733,15 @@ Built-in presets for -P / --provider:
         "ui-nextra": "uiNextra",
         "ui-fumadocs": "uiFumadocs",
         "ui-astro-website": "uiAstroWebsite",
+        "ui-plain-html": "uiPlainHtml",
+        "docs-plain-html": "docsPlainHtml",
         "ui-json-bundles": "uiJsonBundles",
       };
       const key = templateMap[tpl];
       if (!key) {
         console.error(
           t(
-            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", or "ui-json-bundles".'
+            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", or "ui-json-bundles".'
           )
         );
         process.exitCode = 1;
@@ -863,11 +934,18 @@ program
       "Extract UI strings to strings.json (t(…) / i18n.t(…), optional package.json description, optional ui-languages englishName)"
     )
   )
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .action(async (_opts, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+    const uiBlock = (cmd.opts() as { uiBlock?: string }).uiBlock;
     try {
-      const s = runExtract(config, projectRoot);
+      const s = runExtract(config, projectRoot, uiBlock);
       console.log(
         chalk.green(
           t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
@@ -952,10 +1030,14 @@ program
     "--t-import <specifier>",
     t("Module specifier for the generated t() import (default: ./i18n or i18next)")
   )
+  .option(
+    "--ui-block <selector>",
+    t("UI block to seed: zero-based index, description, or strings.json path (default: block 0)")
+  )
   .action(
     (
       paths: string[],
-      opts: { write?: boolean; report?: string; contentGlob?: string; tImport?: string },
+      opts: { write?: boolean; report?: string; contentGlob?: string; tImport?: string; uiBlock?: string },
       cmd
     ) => {
       const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -970,6 +1052,7 @@ program
           write: Boolean(opts.write),
           reportPath: opts.report,
           tImport: opts.tImport,
+          uiBlock: opts.uiBlock,
           verbose: Boolean(g.verbose),
         });
         const headline = sum.written
@@ -1058,7 +1141,8 @@ function buildTranslateOpts(
     noEmphasisPlaceholders?: boolean;
   };
   const locales = resolveLocalesForDocumentation(config, projectRoot, o.locale ?? null);
-  const uiLocales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
+  const uiBlock = (cmd.opts() as { uiBlock?: string }).uiBlock;
+  const uiLocales = collectUiTargetLocales(config, projectRoot, uiBlock, o.locale ?? null);
   const pathFilterRaw = resolveCliPathOrFile({ path: o.path, file: o.file });
   warnIfCliPathOrFileNotFound(projectRoot, { path: o.path, file: o.file });
   const translateOpts: TranslateRunOptions = {
@@ -1112,7 +1196,7 @@ function buildCleanupSyncTranslateOpts(
   dryRun: boolean
 ): { uiLocales: string[]; translateOpts: TranslateRunOptions } {
   const locales = resolveLocalesForDocumentation(config, projectRoot, null);
-  const uiLocales = resolveLocalesForUI(config, projectRoot, null);
+  const uiLocales = collectUiTargetLocales(config, projectRoot, null, null);
   const translateOpts: TranslateRunOptions = {
     cwd: projectRoot,
     locales,
@@ -1144,18 +1228,31 @@ async function runSyncPipeline(args: {
   noSvg: boolean;
   noDocs: boolean;
   noJson: boolean;
+  uiBlock?: string;
+  localeFilter?: string;
 }): Promise<void> {
-  const { config, projectRoot, uiLocales, svgLocales, translateOpts, noUi, noSvg, noDocs, noJson } =
-    args;
+  const {
+    config,
+    projectRoot,
+    uiLocales,
+    svgLocales,
+    translateOpts,
+    noUi,
+    noSvg,
+    noDocs,
+    noJson,
+    uiBlock,
+    localeFilter,
+  } = args;
   const interrupt = createRunInterruptScope();
   const sharedOpts: TranslateRunOptions = {
     ...translateOpts,
     abortSignal: interrupt.signal,
   };
   try {
-    if (config.features.translateUIStrings && !noUi) {
+    if (config.features.translateUIStrings && configHasUiWork(config) && !noUi) {
       try {
-        const s = runExtract(config, projectRoot);
+        const s = runExtract(config, projectRoot, uiBlock);
         console.log(
           chalk.green(
             t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
@@ -1180,6 +1277,8 @@ async function runSyncPipeline(args: {
         await runTranslateUI(config, {
           cwd: projectRoot,
           locales: uiLocales,
+          localeFilter,
+          uiBlock,
           force: sharedOpts.force,
           dryRun: sharedOpts.dryRun,
           verbose: sharedOpts.verbose,
@@ -1219,7 +1318,7 @@ async function runSyncPipeline(args: {
         throw e;
       }
     }
-    if (!noDocs) {
+    if (!noDocs && config.features.translateDocs) {
       try {
         for (let bi = 0; bi < config.docs.length; bi++) {
           const block = config.docs[bi]!;
@@ -1250,6 +1349,13 @@ async function runSyncPipeline(args: {
             config,
             astroBase
           );
+          const html = discoverDocumentationHtml(
+            projectRoot,
+            config,
+            block,
+            bi,
+            sharedOpts.pathFilter
+          );
           const jsonRoot = block.docusaurusCatalogDir
             ? path.resolve(projectRoot, block.docusaurusCatalogDir)
             : path.resolve(projectRoot, ".");
@@ -1261,21 +1367,28 @@ async function runSyncPipeline(args: {
             markdown: mdScoped,
             json: jsonScoped,
             astro: astroScoped,
+            html: htmlScoped,
           } = filterDocumentationFilesByPathFilter(
             projectRoot,
             jsonRoot,
             md,
             jsonFiles,
             astro,
+            html,
             sharedOpts.pathFilter
           );
-          if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
+          if (
+            mdScoped.length === 0 &&
+            jsonScoped.length === 0 &&
+            astroScoped.length === 0 &&
+            htmlScoped.length === 0
+          ) {
             continue;
           }
           await runTranslate(
             view,
             { ...sharedOpts, documentationBlockIndex: bi },
-            { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
+            { markdown: mdScoped, json: jsonScoped, astro: astroScoped, html: htmlScoped },
             jsonRoot
           );
         }
@@ -1289,7 +1402,7 @@ async function runSyncPipeline(args: {
         throw e;
       }
     }
-    if (!noJson && config.features.translateJson) {
+    if (!noJson && config.features.translateJson && configHasJsonWork(config)) {
       try {
         const { runTranslateJson } = await import("./translate-json-run.js");
         await runTranslateJson(config, projectRoot, sharedOpts);
@@ -1352,7 +1465,7 @@ program
   )
   .option("--stats", t("Show cache statistics and exit"), false)
   .option("--clear-cache [locale]", t("Clear translation cache (all locales, or one locale)"))
-  .option("--type <kind>", "markdown | json")
+  .option("--type <kind>", t("markdown | json | astro | html"))
   .option("--json-only", t("JSON only"), false)
   .option("--no-json", t("Skip JSON"), false)
   .option("-j, --concurrency <n>", t("Max parallel target locales (default: config or 3)"))
@@ -1494,6 +1607,13 @@ program
           config,
           astroBase
         );
+        const html = discoverDocumentationHtml(
+          projectRoot,
+          config,
+          block,
+          bi,
+          translateOpts.pathFilter
+        );
         const jsonRoot = block.docusaurusCatalogDir
           ? path.resolve(projectRoot, block.docusaurusCatalogDir)
           : path.resolve(projectRoot, ".");
@@ -1505,15 +1625,22 @@ program
           markdown: mdScoped,
           json: jsonScoped,
           astro: astroScoped,
+          html: htmlScoped,
         } = filterDocumentationFilesByPathFilter(
           projectRoot,
           jsonRoot,
           md,
           jsonFiles,
           astro,
+          html,
           translateOpts.pathFilter
         );
-        if (mdScoped.length === 0 && jsonScoped.length === 0 && astroScoped.length === 0) {
+        if (
+          mdScoped.length === 0 &&
+          jsonScoped.length === 0 &&
+          astroScoped.length === 0 &&
+          htmlScoped.length === 0
+        ) {
           continue;
         }
         const desc =
@@ -1523,9 +1650,10 @@ program
         console.log(
           chalk.gray(
             `\n--- docs[${bi}]${desc} → ${path.resolve(projectRoot, block.outputDir)} (` +
-              t("{{md}} md, {{astro}} astro, {{json}} json", {
+              t("{{md}} md, {{astro}} astro, {{html}} html, {{json}} json", {
                 md: mdScoped.length,
                 astro: astroScoped.length,
+                html: htmlScoped.length,
                 json: jsonScoped.length,
               }) +
               `) ---\n`
@@ -1534,7 +1662,7 @@ program
         const sum = await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: mdScoped, json: jsonScoped, astro: astroScoped },
+          { markdown: mdScoped, json: jsonScoped, astro: astroScoped, html: htmlScoped },
           jsonRoot
         );
         totalSkipped += sum.filesSkipped;
@@ -1770,6 +1898,12 @@ program
   .option("--dry-run", t("No writes, no API calls"), false)
   .option("--force", t("Re-translate all entries per locale"), false)
   .option("-j, --concurrency <n>", t("Max parallel target locales (default: config or 4)"))
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1783,8 +1917,9 @@ program
       dryRun?: boolean;
       force?: boolean;
       concurrency?: string;
+      uiBlock?: string;
     };
-    const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
+    const locales = collectUiTargetLocales(config, projectRoot, o.uiBlock, o.locale ?? null);
     if (!config.features.translateUIStrings) {
       console.error(
         chalk.red(t("❌ [translate-ui] Enable features.translateUIStrings in config."))
@@ -1797,6 +1932,8 @@ program
       await runTranslateUI(config, {
         cwd: projectRoot,
         locales,
+        localeFilter: o.locale,
+        uiBlock: o.uiBlock,
         force: Boolean(o.force),
         dryRun: Boolean(o.dryRun),
         verbose: Boolean(g.verbose),
@@ -1840,6 +1977,12 @@ program
   .option("--dry-run", t("No writes / no API"), false)
   .option("--force", t("Re-translate all UI entries per locale"), false)
   .option("-j, --concurrency <n>", t("Max parallel target locales (default: config)"))
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1853,6 +1996,7 @@ program
       dryRun?: boolean;
       force?: boolean;
       concurrency?: string;
+      uiBlock?: string;
     };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync-ui");
@@ -1863,7 +2007,7 @@ program
     }
 
     try {
-      const s = runExtract(config, projectRoot);
+      const s = runExtract(config, projectRoot, o.uiBlock);
       console.log(
         chalk.green(
           t("✅ Extracted {{found}} strings ({{added}} new, {{updated}} updated) → {{outPath}}", {
@@ -1885,11 +2029,13 @@ program
       process.exit(1);
     }
 
-    const locales = resolveLocalesForUI(config, projectRoot, o.locale ?? null);
+    const locales = collectUiTargetLocales(config, projectRoot, o.uiBlock, o.locale ?? null);
     try {
       await runTranslateUI(config, {
         cwd: projectRoot,
         locales,
+        localeFilter: o.locale,
+        uiBlock: o.uiBlock,
         force: Boolean(o.force),
         dryRun: Boolean(o.dryRun),
         verbose: Boolean(g.verbose),
@@ -1931,6 +2077,12 @@ program
   .option("-j, --concurrency <n>", t("Max parallel batches (default: config.concurrency)"))
   .option("--dry-run", t("Print batch plan only; no API calls"), false)
   .option("--json", t("Write full JSON report to stdout (human output uses stderr)"), false)
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .action(async (_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -1941,11 +2093,13 @@ program
       concurrency?: string;
       dryRun?: boolean;
       json?: boolean;
+      uiBlock?: string;
     };
     try {
       const result = await runProofreadUI(config, {
         cwd: projectRoot,
         locale: o.locale,
+        uiBlock: o.uiBlock,
         chunkSize: parsePositiveInt("Chunk (--chunk)", o.chunk ?? "50"),
         concurrency:
           o.concurrency !== undefined
@@ -2036,6 +2190,12 @@ program
     false
   )
   .option("--dry-run", t("Print paths that would be written without writing files"), false)
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .action((_a, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
@@ -2044,6 +2204,7 @@ program
       outputDir?: string;
       untranslatedOnly?: boolean;
       dryRun?: boolean;
+      uiBlock?: string;
     };
     try {
       runExportUIXliff(config, {
@@ -2052,6 +2213,7 @@ program
         outputDir: o.outputDir,
         untranslatedOnly: Boolean(o.untranslatedOnly),
         dryRun: Boolean(o.dryRun),
+        uiBlock: o.uiBlock,
       });
     } catch (e) {
       console.error(
@@ -2108,6 +2270,12 @@ program
     false
   )
   .option("--no-ui", t("Skip UI strings translation"), false)
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block for the UI phase: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
   .option(
     "--no-svg",
     t("Skip SVG file translation (when features.translateSVG and config.svg)"),
@@ -2199,6 +2367,8 @@ program
         noSvg,
         noDocs,
         noJson,
+        uiBlock: (cmd.opts() as { uiBlock?: string }).uiBlock,
+        localeFilter: localeOpt.locale,
       });
     } catch (e) {
       if (exitIfRunInterrupted(e)) {
@@ -2309,8 +2479,18 @@ program
       }
     };
 
-    if (config.features.translateUIStrings) {
-      const stringsPath = resolveStringsJsonPath(config, projectRoot);
+    const uiStatusBlocks = config.ui
+      .map((block, index) => ({
+        block,
+        index,
+        stringsPath: resolveStringsJsonPath(block, projectRoot),
+      }))
+      .filter(
+        (item) =>
+          item.block.sourceRoots.some((root) => root.trim().length > 0) ||
+          fs.existsSync(item.stringsPath)
+      );
+    for (const { block, index, stringsPath } of uiStatusBlocks) {
       let stringsData: Record<string, unknown> = {};
       try {
         stringsData = JSON.parse(fs.readFileSync(stringsPath, "utf8")) as Record<string, unknown>;
@@ -2322,7 +2502,7 @@ program
       const total = keys.length;
 
       if (total > 0) {
-        const uiLocales = resolveLocalesForUI(config, projectRoot);
+        const uiLocales = resolveLocalesForUiBlock(config, block, projectRoot);
 
         const plainKeys = keys.filter((k) => !isPluralStringsEntry(stringsData[k] as never));
         const pluralKeys = keys.filter((k) => isPluralStringsEntry(stringsData[k] as never));
@@ -2399,7 +2579,7 @@ program
           console.log();
         };
 
-        console.log(chalk.bold.cyan(`\n${t("📊 UI strings status")}`));
+        console.log(chalk.bold.cyan(`\n${t("📊 UI strings status")} — ${formatUiBlockLabel(index, block)}`));
         console.log(chalk.gray(`(${stringsPath})\n`));
         printUiSubset(t("Plain UI strings"), plainKeys);
         printUiSubset(t("Plural UI string groups"), pluralKeys);
@@ -2591,9 +2771,6 @@ program
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const cache = new TranslationCache(cacheDir);
 
-    const stringsPath = config.glossary?.uiGlossary
-      ? path.join(projectRoot, config.glossary.uiGlossary)
-      : resolveStringsJsonPath(config, projectRoot);
     const glossaryPath = config.glossary?.userGlossary
       ? path.join(projectRoot, config.glossary.userGlossary)
       : null;
@@ -2637,19 +2814,40 @@ program
       }
     }
 
-    const {
-      cache: c,
-      uiStrings: ui,
-      glossary: gl,
-    } = computeProjectStats({
+    const { cache: c, glossary: gl } = computeProjectStats({
       cache,
-      stringsPath,
+      stringsPath: null,
       glossaryPath,
       sourceLocale: config.sourceLocale,
       targetLocales: config.targetLocales,
     });
 
-    console.log(chalk.bold.cyan(`\n${t("📊 UI strings (strings.json)")}`));
+    const uiCatalogs = config.ui
+      .map((block, index) => ({
+        block,
+        index,
+        stringsPath: resolveStringsJsonPath(block, projectRoot),
+      }))
+      .filter(
+        (item) =>
+          item.block.sourceRoots.some((root) => root.trim().length > 0) ||
+          fs.existsSync(item.stringsPath)
+      );
+    for (const catalog of uiCatalogs) {
+      const stringsPath = catalog.stringsPath;
+      const ui = computeProjectStats({
+        cache,
+        stringsPath,
+        glossaryPath: null,
+        sourceLocale: config.sourceLocale,
+        targetLocales: effectiveUiTargetLocales(config, catalog.block),
+      }).uiStrings;
+
+    console.log(
+      chalk.bold.cyan(
+        `\n${t("📊 UI strings (strings.json)")} — ${formatUiBlockLabel(catalog.index, catalog.block)}`
+      )
+    );
     console.log(chalk.gray(`(${stringsPath})\n`));
 
     if (!ui.available) {
@@ -2775,6 +2973,7 @@ program
       } else {
         console.log(chalk.magenta.bold(t("By model and locale")));
         runChunkedLocaleTables(uiLocalesList, printUiMatrixChunk);
+      }
       }
     }
 
@@ -3155,6 +3354,12 @@ program
     false
   )
   .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to purge: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
+  .option(
     "--backup <path>",
     t("Write a SQLite backup to <path> before deletion (no backup is made unless this is set)")
   )
@@ -3167,6 +3372,7 @@ program
         force?: boolean;
         keepFiles?: boolean;
         backup?: string;
+        uiBlock?: string;
       },
       cmd: Command
     ) => {
@@ -3189,6 +3395,7 @@ program
         keepFiles: Boolean(opts.keepFiles),
         config,
         projectRoot,
+        uiBlock: opts.uiBlock,
         backupPath: opts.backup ? path.resolve(cwd, opts.backup) : undefined,
       });
     }
@@ -3200,9 +3407,19 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   const cmdOpts = cmd.opts() as { port?: string; noOpen?: boolean };
   const port = parseInt(cmdOpts.port || String(DEFAULT_DASHBOARD_PORT), 10);
   const cache = new TranslationCache(path.join(projectRoot, config.cacheDir));
-  const stringsPath = config.glossary?.uiGlossary
-    ? path.join(projectRoot, config.glossary.uiGlossary)
-    : resolveStringsJsonPath(config, projectRoot);
+  const uiCatalogs = config.ui
+    .map((block, index) => ({
+      id: String(index),
+      label: formatUiBlockLabel(index, block),
+      stringsJsonPath: resolveStringsJsonPath(block, projectRoot),
+      sourceRoots: block.sourceRoots,
+    }))
+    .filter(
+      (item) =>
+        item.sourceRoots.some((root) => root.trim().length > 0) ||
+        fs.existsSync(item.stringsJsonPath)
+    )
+    .map(({ id, label, stringsJsonPath }) => ({ id, label, stringsJsonPath }));
   const glossaryPath = config.glossary?.userGlossary
     ? path.join(projectRoot, config.glossary.userGlossary)
     : null;
@@ -3214,7 +3431,8 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   let triggerShutdown: () => void = () => {};
   const app = createTranslationDashboardApp(cache, {
     cwd: projectRoot,
-    stringsJsonPath: stringsPath,
+    stringsJsonPath: uiCatalogs[0]?.stringsJsonPath ?? null,
+    uiCatalogs,
     glossaryUserPath: glossaryPath,
     sourceLocale: config.sourceLocale,
     targetLocales: config.targetLocales,
@@ -3332,7 +3550,13 @@ program
   )
   .option("--master <path>", t("Path to ui-languages-complete.json (default: bundled data file)"))
   .option("--dry-run", t("Print JSON to stdout only; do not write the output file"), false)
-  .action((opts: { master?: string; dryRun?: boolean }, cmd) => {
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to run: zero-based index, description, or strings.json path (default: every block with sourceRoots)"
+    )
+  )
+  .action((opts: { master?: string; dryRun?: boolean; uiBlock?: string }, cmd) => {
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const masterPath = opts.master
@@ -3343,27 +3567,43 @@ program
       process.exit(1);
     }
     try {
-      const result = runGenerateUiLanguages(config, projectRoot, {
-        masterPath,
-        dryRun: Boolean(opts.dryRun),
-      });
-      logGenerateUiLanguagesWarnings(result.warnings);
-      if (opts.dryRun) {
-        console.log(JSON.stringify(result.rows, null, 2));
-      } else {
-        console.log(
-          chalk.green(
-            result.rows.length === 1
-              ? t("✅ Wrote {{path}} ({{count}} row)", {
-                  path: result.outPath,
-                  count: result.rows.length,
-                })
-              : t("✅ Wrote {{path}} ({{count}} rows)", {
-                  path: result.outPath,
-                  count: result.rows.length,
-                })
-          )
+      const selected = selectUiBlocks(config, opts.uiBlock);
+      if (selected.length === 0) {
+        console.log(chalk.gray(t("No UI blocks with sourceRoots to write a language manifest for.")));
+        return;
+      }
+      for (const item of selected) {
+        const result = runGenerateUiLanguages(
+          {
+            ...config,
+            targetLocales: effectiveUiTargetLocales(config, item.block),
+            languagesManifestPath: effectiveUiManifestRel(config, item.block, item.index),
+          },
+          projectRoot,
+          {
+            masterPath,
+            dryRun: Boolean(opts.dryRun),
+          }
         );
+        logGenerateUiLanguagesWarnings(result.warnings);
+        console.log(chalk.cyan(formatUiBlockLabel(item.index, item.block)));
+        if (opts.dryRun) {
+          console.log(JSON.stringify(result.rows, null, 2));
+        } else {
+          console.log(
+            chalk.green(
+              result.rows.length === 1
+                ? t("✅ Wrote {{path}} ({{count}} row)", {
+                    path: result.outPath,
+                    count: result.rows.length,
+                  })
+                : t("✅ Wrote {{path}} ({{count}} rows)", {
+                    path: result.outPath,
+                    count: result.rows.length,
+                  })
+            )
+          );
+        }
       }
     } catch (e) {
       console.error(

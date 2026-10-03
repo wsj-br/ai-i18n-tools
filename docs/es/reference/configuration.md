@@ -29,7 +29,7 @@ Código BCP-47 para el idioma de la interfaz de usuario de la herramienta (ayuda
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (opcional)
 
-Cadena opcional de nivel raíz (no anidada bajo `ui`). Ruta donde `extract` y `generate-ui-languages` escriben el manifiesto `ui-languages.json`, y donde la CLI lo lee para nombres de visualización y post-procesamiento de la lista de idiomas. Cuando se omite, el valor predeterminado es `ui.flatOutputDir/ui-languages.json` al cargar la configuración.
+Cadena opcional de nivel raíz. El selector de idioma de la documentación lee esta ruta. Si se omite, toma por defecto el manifiesto del primer bloque de UI: el `languagesManifestPath` de ese bloque, o `{flatOutputDir}/ui-languages.json`. Cada bloque de UI puede establecer su propio `languagesManifestPath`; el bloque 0 utiliza esta ruta raíz cuando el bloque omite la suya.
 
 Utiliza esto cuando:
 
@@ -235,34 +235,52 @@ Para comparar los modelos configurados en un trabajo de traducción real, ejecut
 | Campo                | Canalización | Descripción                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | Extraer `t("…")` / `i18n.t("…")` en `strings.json`, luego traducir las entradas y escribir JSON plano por configuración regional (la extracción se ejecuta automáticamente; usar `extract` independiente para actualizar solo el catálogo). |
-| `translateDocs`      | 2        | Traducir `.md` / `.mdx` / `.astro` páginas; shell JSON de Docusaurus cuando `docs[].docusaurusCatalogDir` esté configurado; Nextra `_meta` / diccionario cuando esté configurado; tema VitePress cuando `docsOutput.vitepressThemeCatalog` esté configurado; Fumadocs `meta.json` / catálogo de interfaz de usuario cuando `docsOutput.style` esté `"fumadocs"`. |
+| `translateDocs`      | 2        | Traducir páginas `.md` / `.mdx` / `.astro` / `.html` / `.htm`; JSON del shell de Docusaurus cuando `docs[].docusaurusCatalogDir` está configurado; `_meta` / diccionario de Nextra cuando está configurado; tema de VitePress cuando `docsOutput.vitepressThemeCatalog` está configurado; `meta.json` / catálogo de UI de Fumadocs cuando `docsOutput.style` es `"fumadocs"`. |
 | `translateJson`      | 3        | JSON anidado arbitrario bajo `json[]` (`translate-json`).                                                                                                           |
 | `translateSVG`       | —        | Traducir archivos `.svg` (requiere el bloque `svg` de nivel superior).                                                                                                       |
 
-**Traduce** archivos SVG con `translate-svg` cuando `features.translateSVG` es verdadero y se configura un bloque superior `svg`. El comando `sync` ejecuta ese paso cuando ambos están establecidos (a menos que `--no-svg`).
+Cada indicador toma el valor predeterminado `true` cuando se omite la clave. Se omite un `true` si no hay nada que traducir: ningún bloque de UI tiene `sourceRoots`, ningún bloque de documentación tiene `contentPaths` o `docusaurusCatalogDir`, `json[]` no tiene `contentPaths`, o `svg` no está definido. Escribir el indicador como `true` cuando esa canalización no tiene trabajo es un error de configuración. Escribir `false` desactiva esa canalización para `sync` incluso cuando existen fuentes. `--no-ui`, `--no-docs`, `--no-json` y `--no-svg` omiten el paso para una sola ejecución.
+
+**Traducir** archivos SVG con `translate-svg` cuando `features.translateSVG` es verdadero y hay un bloque `svg` de nivel superior configurado. El comando `sync` ejecuta ese paso cuando el indicador está activado y `svg` está definido (a menos que `--no-svg`).
 
 ---
 
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  Directorios o patrones globales (relativos al directorio de trabajo actual) escaneados en busca de llamadas a `t("…")`. Admite patrones como `src/` o `["src/**/*.ts"]`.
-- `stringsJson`  
-  Ruta al archivo del catálogo maestro. Actualizado por `extract`.
-- `flatOutputDir`  
-  Directorio donde se escriben los archivos JSON por configuración regional (`de.json`, etc.).
-- `uiExtractor.funcNames` (o el obsoleto `reactExtractor.funcNames`)  
-  Nombres de funciones adicionales para escanear (predeterminado: `["t", "i18n.t"]`).
-- `uiExtractor.extensions` (o el obsoleto `reactExtractor.extensions`)  
-  Extensiones de archivo a incluir (predeterminado: `[".js", ".jsx", ".ts", ".tsx"]`). Agregue `.astro` para el frontmatter y las expresiones de plantilla de Astro.
-- `uiExtractor.includePackageDescription` (o el obsoleto `reactExtractor.includePackageDescription`)  
-  Cuando `true` (predeterminado), `extract` también incluye `package.json` `description` como una cadena de interfaz de usuario cuando está presente.
-- `uiExtractor.packageJsonPath` (o el obsoleto `reactExtractor.packageJsonPath`)  
-  Ruta personalizada al archivo `package.json` utilizado para esa extracción de descripción opcional.
-- `uiExtractor.includeUiLanguageEnglishNames` (o el obsoleto `reactExtractor.includeUiLanguageEnglishNames`)
+Un objeto de catálogo, o un array de bloques de catálogo (la misma idea que `docs[]`). Se acepta un único objeto al cargar y se envuelve en un array de un solo elemento; el archivo en el disco no se reescribe. Después del análisis, `config.ui` es siempre un array.
 
-Cuando `true` (predeterminado `false`), `extract` también agrega cada `englishName` del catálogo maestro de ui-languages incluido (construido a partir de `sourceLocale` + `targetLocales`) a `strings.json` cuando aún no está presente en el escaneo de origen (mismas claves hash). No lee `languagesManifestPath`.
+`extract`, `translate-ui`, `sync-ui`, la fase de UI de `sync`, `proofread-ui`, `export-ui-xliff`, `generate-ui-languages` y `purge-locale` recorren cada bloque que tiene `sourceRoots`. Pase `--ui-block` con un índice basado en cero, el `description` del bloque, o su ruta `stringsJson` para ejecutar un solo bloque. `status` y `statistics` listan cada bloque que tiene fuentes o un catálogo existente. El Panel de Traducción lista cada uno de estos catálogos y muestra un selector cuando hay más de uno.
+
+Las rutas resueltas de `stringsJson`, `flatOutputDir` y de manifiesto deben ser únicas en todos los bloques. Los valores de `description` deben ser únicos cuando se definen, porque `--ui-block` los coincide exactamente.
+
+- `description`
+  Nota opcional para las personas que leen la configuración (no se envía al modelo). Se muestra como `ui[i] — description` en los encabezados de comandos, `status`, `statistics` y el panel.
+- `sourceRoots`
+  Directorios o patrones glob (relativos a cwd) escaneados en busca de llamadas a `t("…")`. Admite patrones como `src/` o `["src/**/*.ts"]`. Se omite un bloque con una lista vacía a menos que `--ui-block` lo nombre, lo cual es un error.
+- `stringsJson`
+  Ruta al archivo de catálogo maestro de este bloque. Actualizado por `extract`.
+- `flatOutputDir`
+  Directorio donde se escriben los archivos JSON por configuración regional de este bloque (`de.json`, etc.).
+- `targetLocales`
+  Lista de configuraciones regionales opcional para este bloque. Si se omite o está vacía, el bloque utiliza la `targetLocales` raíz.
+- `languagesManifestPath`
+  Ruta opcional donde `extract` y `generate-ui-languages` escriben el `ui-languages.json` de este bloque. Si se omite, el bloque 0 utiliza la `languagesManifestPath` raíz (que a su vez toma por defecto la `{flatOutputDir}/ui-languages.json` de este bloque). Los bloques posteriores toman por defecto `{flatOutputDir}/ui-languages.json`.
+- `uiGlossary`
+  Cuando es `true` (el valor predeterminado), el `strings.json` de este bloque es una fuente de sugerencias de glosario para `translate-docs`, `translate-json` y `translate-svg`. `translate-ui`, `proofread-ui` y el linting de fuentes utilizan solo `glossary.userGlossary`. Defina `false` para mantener un catálogo fuera de esas sugerencias (por ejemplo, un catálogo de cadenas de CLI que no debería influir en la documentación).
+- `uiExtractor.funcNames` (o el heredado `reactExtractor.funcNames`)
+  Nombres de funciones adicionales a escanear (predeterminado: `["t", "i18n.t"]`).
+- `uiExtractor.extensions` (o el heredado `reactExtractor.extensions`)
+  Extensiones de archivo a incluir (predeterminado: `[".js", ".jsx", ".ts", ".tsx"]`). Añada `.astro` para el frontmatter de Astro y las expresiones de plantilla.
+- `uiExtractor.includePackageDescription` (o el heredado `reactExtractor.includePackageDescription`)
+  Cuando es `true` (predeterminado), `extract` también incluye `package.json` `description` como cadena de UI cuando está presente. Defina `false` en los bloques adicionales para que la misma descripción no se extraiga en cada catálogo.
+- `uiExtractor.packageJsonPath` (o el heredado `reactExtractor.packageJsonPath`)
+  Ruta personalizada al archivo `package.json` utilizado para esa extracción de descripción opcional.
+- `uiExtractor.includeUiLanguageEnglishNames` (o el heredado `reactExtractor.includeUiLanguageEnglishNames`)
+
+Cuando es `true` (predeterminado `false`), `extract` también añade cada `englishName` del catálogo maestro de ui-languages incluido (construido a partir de `sourceLocale` + la `targetLocales` efectiva del bloque) a `strings.json` cuando aún no está presente en el escaneo de fuentes (mismas claves hash). No lee `languagesManifestPath`.
+
+`glossary.uiGlossary` y `glossary.uiGlossaryFromStringsJson` ya no se aceptan. La carga de la configuración falla y el error explica el reemplazo: elimine la clave. Las sugerencias ahora provienen del indicador `uiGlossary` de cada bloque (predeterminado `true`).
 
 ---
 
@@ -311,7 +329,7 @@ Matriz de bloques de la canalización de documentación. `translate-docs` y la f
 | `features.translateMarkdown` | `features.translateDocs` |
 | `features.translateJSON` | eliminado (use `docs[].docusaurusCatalogDir` o `json[]`) |
 | `features.extractUIStrings` | eliminado (`extract` se ejecuta antes de la traducción de la interfaz de usuario) |
-| `glossary.uiGlossaryFromStringsJson` | `glossary.uiGlossary` |
+| `glossary.uiGlossary` y `glossary.uiGlossaryFromStringsJson` | eliminados; la carga de la configuración falla. Use `ui[].uiGlossary` (booleano, valor predeterminado `true`) |
 | `ui.reactExtractor` | `ui.uiExtractor` (el alias aún se acepta) |
 | `svg.svgExtractor.forceLowercase` | `svg.forceLowercase` |
 
@@ -371,9 +389,13 @@ Opcional. Catálogo de anulación de la interfaz de usuario de Fumadocs y traduc
 - `docs[].fumadocsMetaGlob`
 Glob(s) opcional(es) para la colección `meta.json` cuando `docsOutput.style` es `"fumadocs"`. Predeterminado: `meta.json` recursivo bajo `docsOutput.docsRoot`.
 - `docs[].fumadocsMetaTranslatableKeys`
-Nombres de propiedades cuyos valores de cadena se traducen en Fumadocs `meta.json` (predeterminado: `title`, `description`).
+Nombres de propiedades cuyos valores de cadena se traducen en `meta.json` de Fumadocs (predeterminado: `title`, `description`).
+- `docsOutput.localizedAssets`
+Renombrado opcional de URL de imágenes e iconos en el HTML traducido cuando existe un archivo de configuración regional. Campos: `include` (predeterminado `img/**`), `pattern` (predeterminado `{stem}-{locale}{ext}`), `onlyIfExists` (predeterminado `true`), `assetRoot` (directorio utilizado para probar URL relativas a la raíz; el valor predeterminado es el directorio del archivo HTML). Marcadores de posición: `{stem}`, `{ext}`, `{basename}`, `{locale}`, `{llocale}`, `{LOCALE}`. La `url()` CSS no se reescribe. Consulte [Páginas HTML](/es/guide/documents/html-pages#links-and-images).
+- `docsOutput.html`
+Lista de idiomas y hreflang opcionales para documentos HTML. Los comentarios predeterminados son `<!-- ai-i18n:lang-list -->` … `<!-- /ai-i18n:lang-list -->` y `<!-- ai-i18n:hreflang -->` … `<!-- /ai-i18n:hreflang -->`. `languageList.format` es `links` o `select`. `languageList.label` es `local`, `english` o `both`. `hreflang.siteUrl` añade prefijos a los enlaces alternativos; cuando se omite, los enlaces son relativos y se registra una advertencia. `hreflang.xDefault` tiene como valor predeterminado `sourceLocale`. `hreflang.stripIndexHtml` convierte `index.html` en una URL de directorio. Para HTML, `docsRoot` se elimina antes de añadir la carpeta de configuración regional (`site/index.html` → `site/{locale}/index.html` cuando `docsRoot` es `site`). Consulte [Páginas HTML](/es/guide/documents/html-pages).
 - `docsOutput.vitepressThemeCatalog`
-Opcional. Catálogo de inicio de tema/navegación/barra lateral de VitePress + traducción dentro de `translate-docs`. Campos: `configPath` (configuración de VitePress con cadenas de tema), `catalogPath` (JSON anidado en inglés generado), `outputPathTemplate` opcional (predeterminado: `theme.{locale}.json` junto a `catalogPath`).
+Opcional. Inicialización del catálogo de tema/navegación/barra lateral de VitePress + traducción dentro de `translate-docs`. Campos: `configPath` (configuración de VitePress con cadenas de tema), `catalogPath` (JSON anidado generado en inglés), `outputPathTemplate` opcional (predeterminado: `theme.{locale}.json` junto a `catalogPath`).
 
 **Posprocesado**
 
@@ -486,13 +508,12 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 
 | Campo          | Descripción                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiGlossary`   | Ruta a `strings.json` - crea automáticamente un glosario a partir de traducciones existentes.                                                                                                 |
-| `userGlossary` | Ruta a un CSV con columnas `Original language string` (o `en`), `locale`, `Translation`, `Force` opcional y `Context` opcional, una fila por término de origen y configuración regional de destino (`locale` puede ser `*` para todos los destinos). |
+| `userGlossary` | Ruta a un archivo CSV con las columnas `Original language string` (o `en`), `locale`, `Translation`, `Force` opcional y `Context` opcional - una fila por término de origen y configuración regional de destino (`locale` puede ser `*` para todos los destinos). |
 | `autoAddUserEditedToGlossary` | Cuando `true`, las ediciones del panel de control a las cadenas de la interfaz de usuario se pueden añadir automáticamente al glosario del usuario. |
 | `contextFiles` | Archivos Markdown o de texto sin formato (`.md`, `.markdown`, `.txt`) opcionales relativos al directorio de trabajo actual con explicaciones de productos o características. Se cargan al inicio del comando y se inyectan en la interfaz de usuario, documentos, JSON, SVG y avisos de revisión. No coloque estos archivos en `docs[].contentPaths` a menos que también desee que se traduzcan. Las URL son rechazadas. El texto completo se envía al proveedor de LLM configurado y puede aparecer en los registros de `--debug-failed`; no incluya secretos ni PII. |
 | `contextMaxChars` | Caracteres máximos de texto de archivo de contexto concatenado enviado al modelo (predeterminado `12000`, límite estricto `100000`). El texto en exceso se trunca con una advertencia. |
 
-`translate-docs` utiliza el mismo glosario para las sugerencias de terminología, pero omite las abreviaturas compactas de etiquetas de interfaz de usuario (formas con puntos finales como `Alm.`, o compresiones cortas de un solo token como `Size` → `Tam`) para que las indicaciones del documento no se dirijan a tokens <code v-pre>{{…}}</code> inventados. Los términos completos del producto y las traducciones de la interfaz de usuario no abreviadas todavía se sugieren.
+`translate-docs`, `translate-json` y `translate-svg` también obtienen sugerencias de cada bloque de interfaz de usuario cuyo `uiGlossary` es `true` (el valor predeterminado). Esto reutiliza las traducciones ya almacenadas en el `strings.json` de ese bloque. Establezca `uiGlossary` en `false` en un bloque para excluirlo. `translate-ui` y `proofread-ui` no utilizan esos catálogos como sugerencias. Las abreviaturas compactas de las etiquetas de la interfaz de usuario (formas con punto final como `Alm.`, o compresiones cortas de un solo token como `Size` → `Tam`) se omiten para que los prompts del documento no se orienten hacia tokens <code v-pre>{{…}}</code> inventados. Los términos completos del producto y las traducciones de la interfaz de usuario no abreviadas se siguen utilizando como sugerencias.
 
 La columna CSV opcional `Context` es una guía de uso en el idioma de origen para ese término (definición, uso gramatical, significado del producto). Se incluye solo cuando el término coincide con el lote actual. Cambiar la nota `Context` de un término o cualquier contenido de `contextFiles` invalida los segmentos en caché de la configuración regional coincidente y las filas de seguimiento de archivos en la siguiente ejecución, por lo que las traducciones se actualizan automáticamente. Cambiar solo un `Translation` preferido aún usa la caché existente a menos que pase `--force` / `--force-update`. Las filas de caché editadas por el usuario del panel se mantienen.
 

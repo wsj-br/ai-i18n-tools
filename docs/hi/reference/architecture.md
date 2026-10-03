@@ -65,11 +65,13 @@
 
 जेएस/टीएस फ़ाइलों में `i18next-scanner` के `Parser.parseFuncFromString` का उपयोग `t("literal")` और `i18n.t("literal")` कॉल खोजने के लिए करता है। `.astro` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हो), `ui-string-babel.ts` फ्रंटमैटर और टेम्प्लेट `{expression}` ब्लॉक को `@babel/parser` के साथ पार्स करता है और वही `funcNames` नियम लागू करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन `ui.uiExtractor` के माध्यम से कॉन्फ़िगर करने योग्य हैं (`ui.reactExtractor` एक समर्थित उपनाम है)। `extract` **गैर-स्कैनर इनपुट को भी उसी कैटलॉग में मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `includePackageDescription` सक्षम होता है (डिफ़ॉल्ट), और बंडल किए गए यूआई-भाषाओं मास्टर कैटलॉग से प्रत्येक `englishName` (`sourceLocale` + `targetLocales` से निर्मित) जब `includeUiLanguageEnglishNames` `true` होता है (स्रोत में पहले से मिली स्ट्रिंग्स को प्राथमिकता मिलती है; `languagesManifestPath` नहीं पढ़ता है)। `extract` `languagesManifestPath` पर `ui-languages.json` को भी पुनर्जीवित करता है। सेगमेंट हैश ट्रिम किए गए स्रोत स्ट्रिंग के **एमडी5 के पहले 8 हेक्स वर्ण** होते हैं — ये `strings.json` में कुंजी बन जाते हैं।
 
-`.html` / `.htm` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हो), `extract` इसके बजाय फ़ाइल को `html-i18n-marks.ts` के माध्यम से रूट करता है, जो `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` मार्कर विशेषताओं को स्कैन करता है (`ui.uiExtractor.htmlI18nAttributes` के माध्यम से कॉन्फ़िगर करने योग्य)। एक नंगे मार्कर अपना स्रोत पाठ तत्व के अपने `textContent` / `title` / `placeholder` से लेता है; एक मूल्यवान मार्कर (`data-i18n="Key"`) मान का उपयोग करता है। वही मॉड्यूल `mark-html` कमांड को शक्ति प्रदान करता है, जो नंगे मार्करों को स्वचालित रूप से सम्मिलित करता है। एचटीएमएल फ़ाइलें कभी भी बैबेल / i18next-scanner पास तक नहीं पहुँचती हैं।
+`.html` / `.htm` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हों), `extract` इसके बजाय फ़ाइल को `html-i18n-marks.ts` के माध्यम से रूट करता है, जो `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` मार्कर विशेषताओं को स्कैन करता है (`ui.uiExtractor.htmlI18nAttributes` द्वारा कॉन्फ़िगर करने योग्य)। एक बेयर मार्कर अपना स्रोत टेक्स्ट एलिमेंट के स्वयं के `textContent` या विशेषता से लेता है; एक वैल्यूड मार्कर (`data-i18n="Key"`) मान का उपयोग करता है। `data-i18n-locale-src` और `data-i18n-locale-href` ब्राउज़र रनटाइम के लिए आरक्षित हैं और इन्हें कभी भी एक्सट्रैक्ट नहीं किया जाता है। यही मॉड्यूल `mark-html` कमांड को संचालित करता है, जो बेयर मार्कर को स्वचालित रूप से सम्मिलित करता है (जिसमें `alt` और `aria-label` शामिल हैं) और लोकेल URL मार्कर को कभी सम्मिलित नहीं करता है। HTML फ़ाइलें कभी भी Babel / i18next-scanner पास तक नहीं पहुँचती हैं। docs `outputDir` के अंतर्गत जनरेट किया गया लोकेल HTML इस स्कैन से बाहर रखा गया है।
 
 प्लेन एस्ट्रो एसएसजी साइटें i18next को छोड़ सकती हैं: बिल्ड समय पर फ़्लैट `{locale}.json` लोड करें और स्रोत-पाठ कुंजी द्वारा `t('English')` को हल करें (`examples/astro-website/src/i18n/t.ts` और [यूआई स्ट्रिंग्स — एस्ट्रो वेबसाइट](/hi/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) देखें)।
 
-प्लेन एचटीएमएल ऐप्स मार्कर विशेषताओं के साथ समान कैटलॉग मॉडल का पालन करते हैं, `t()` कॉल के बजाय — [अनुवाद के लिए एचटीएमएल को चिह्नित करना](/hi/guide/ui-strings/plain-html#marking-html-for-translation) देखें।
+सादे HTML ऐप्स `t()` कॉल के बजाय मार्कर विशेषताओं के साथ समान कैटलॉग मॉडल का अनुसरण करते हैं — [अनुवाद के लिए HTML को मार्क करना](/hi/guide/ui-strings/plain-html#marking-html-for-translation) देखें। ड्रॉप-इन स्क्रिप्ट `ai-i18n-tools/html-runtime/i18n.js` है।
+
+स्टैटिक HTML जो प्रति लोकेल एक फ़ाइल बननी चाहिए, एक डॉक्यूमेंट्स पाइपलाइन (`translate-docs` के अंदर `HtmlTemplateExtractor`) है, न कि यह कैटलॉग। [HTML पेज](/hi/guide/documents/html-pages) देखें।
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -288,10 +290,10 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) पर निर्मित 
 
 यह टूल अपने स्वयं के UI — CLI सहायता, उच्च-ट्रैफ़िक लॉग/सारांश/त्रुटि संदेश, और अनुवाद डैशबोर्ड — को उस सामग्री से अलग से स्थानीयकृत करता है जिसका वह आपके लिए अनुवाद करता है।
 
-- **स्थानिक रिज़ॉल्यूशन** (`resolveUiLocale` में `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > कॉन्फ़िग `uiLanguage` > होस्ट OS स्थान (`Intl.DateTimeFormat().resolvedOptions().locale`) से UI स्थान चुनता है। उम्मीदवार को सामान्यीकृत किया जाता है और शिप किए गए बंडल सेट के साथ ठीक उसी तरह या निकटतम भिन्नता से मिलान किया जाता है (उदाहरण के लिए `pt-PT` → `pt-BR`, `en-US` → `en-GB`), स्रोत स्थान (`en-GB`) पर वापस आ जाता है। CLI सहायता बनने से पहले एक बार (प्री-पार्स argv स्कैन) और कॉन्फ़िग लोड होने के बाद फिर से हल करता है ताकि `uiLanguage` लागू हो (फ़्लैग और env var अभी भी जीतते हैं)।
-- **रनटाइम** (`src/i18n/index.ts`): `t(source, vars)` के साथ एक न्यूनतम ```{{name}}``` इंटरपोलेशन, `src/i18n/locales/<code>.json` में फ़्लैट प्रति-स्थानिक बंडलों के विरुद्ध अंग्रेजी स्रोत स्ट्रिंग द्वारा कुंजीबद्ध (बिल्ड पर `dist/i18n/locales` में कॉपी किया गया)। गुम कुंजी या बंडल स्रोत पाठ लौटाते हैं। यह UI स्ट्रिंग्स के समान कुंजी-के-डिफ़ॉल्ट मॉडल है - कोई हैश लुकअप नहीं है।
-- **डैशबोर्ड**: सर्वर `GET /api/ui-i18n` को उजागर करता है जो हल किए गए UI स्थान के लिए `{ locale, dir, bundle }` लौटाता है; फ़्रंटएंड `<html lang>` / `dir` सेट करता है और `data-i18n*` विशेषताओं के माध्यम से स्थिर मार्कअप को स्थानीयकृत करता है।
-- **डॉगफ़ूडिंग**: बंडल पैकेज के अपने एक्सट्रैक्ट → `translate-ui` पाइपलाइन को `ai-i18n-self.config.json` (`pnpm i18n:self`) के विरुद्ध चलाकर उत्पादित किए जाते हैं। कैटलॉग कुंजी `src/cli/` और `src/i18n/` में `t()` कॉल के साथ-साथ `src/dashboard-app/index.html` में डैशबोर्ड के `data-i18n*` मार्करों से आती हैं।
+- **लोकेल रिज़ॉल्यूशन** (`resolveUiLocale` in `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > कॉन्फ़िग `uiLanguage` > होस्ट ओएस लोकेल (`Intl.DateTimeFormat().resolvedOptions().locale`) से यूआई लोकेल चुनता है। चयनित लोकेल को नॉर्मलाइज़ किया जाता है और शिप किए गए बंडल सेट के साथ बिल्कुल या निकटतम वेरिएशन (उदा. `pt-PT` → `pt-BR`, `en-US` → `en-GB`) से मैच किया जाता है, जो स्रोत लोकेल (`en-GB`) पर फ़ॉल बैक होता है। सीएलआई हेल्प बनने से पहले एक बार (pre-parse argv स्कैन) और कॉन्फ़िग लोड होने के बाद दोबारा रिज़ॉल्व होता है ताकि `uiLanguage` लागू हो (फ़्लैग और एन्वायरनमेंट वेरिएबल अभी भी प्राथमिकता लेते हैं)।
+- **रनटाइम** (`src/i18n/index.ts`): ```{{name}}``` इंटरपोलेशन के साथ एक न्यूनतम `t(source, vars)`, जिसे `src/i18n/locales/<code>.json` में फ़्लैट प्रति-लोकेल बंडल्स के विरुद्ध अंग्रेज़ी स्रोत स्ट्रिंग द्वारा कुंजीबद्ध किया गया है (बिल्ड के समय `dist/i18n/locales` में कॉपी किया जाता है)। छूटी हुई कुंजियाँ या बंडल स्रोत टेक्स्ट वापस लौटाते हैं। यह यूआई स्ट्रिंग्स के समान की-एज़-डिफ़ॉल्ट मॉडल है — कोई हैश लुकअप नहीं है।
+- **डैशबोर्ड**: सर्वर `GET /api/ui-i18n` को एक्सपोज़ करता है जो रिज़ॉल्व किए गए यूआई लोकेल के लिए `{ locale, dir, bundle }` लौटाता है; फ्रंटएंड `<html lang>` / `dir` सेट करता है और `data-i18n*` एट्रिब्यूट्स के माध्यम से स्टैटिक मार्कअप को लोकलाइज़ करता है।
+- **डॉगफूडिंग**: बंडल्स `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) द्वारा निर्मित होते हैं, जो `ai-i18n-tools.config.json` में सीएलआई और डैशबोर्ड `ui` ब्लॉक को एक्सट्रैक्ट और ट्रांसलेट करता है। कैटलॉग कुंजियाँ `src/cli/` और `src/i18n/` भर में `t()` कॉल्स और `src/dashboard-app/index.html` में डैशबोर्ड के `data-i18n*` मार्कर्स से आती हैं।
 
 ---
 
@@ -309,7 +311,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) पर निर्मित 
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

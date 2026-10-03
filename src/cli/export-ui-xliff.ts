@@ -4,12 +4,19 @@ import chalk from "chalk";
 import type {
   CldrPluralForm,
   I18nConfig,
+  I18nUiTranslateConfig,
   StringsJsonEntry,
   StringsJsonPlainEntry,
 } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import { normalizeLocale } from "../core/config.js";
-import { resolveLocalesForUI } from "../core/ui-languages.js";
+import {
+  effectiveUiTargetLocales,
+  formatUiBlockLabel,
+  resolveLocalesForUiBlock,
+  selectUiBlocks,
+  toUiTranslateConfig,
+} from "../core/ui-blocks.js";
 import { requiredCldrPluralForms } from "../core/plural-forms.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { t } from "../i18n/index.js";
@@ -22,6 +29,8 @@ export interface ExportUIXliffOptions {
   outputDir?: string;
   untranslatedOnly: boolean;
   dryRun: boolean;
+  /** Index, description, or stringsJson path. Omit to export every block with sourceRoots. */
+  uiBlock?: string;
 }
 
 export interface ExportUIXliffSummary {
@@ -110,7 +119,7 @@ ${sourceLine}${targetLine}
 }
 
 function buildPluralUnitXml(
-  config: I18nConfig,
+  config: { sourceLocale: string },
   id: string,
   entry: StringsJsonPluralLike,
   targetLocale: string,
@@ -172,7 +181,7 @@ ${lines.join("\n")}
 }
 
 function buildUnitXml(
-  config: I18nConfig,
+  config: { sourceLocale: string },
   id: string,
   entry: StringsJsonEntry,
   targetLocale: string,
@@ -185,7 +194,7 @@ function buildUnitXml(
 }
 
 export function buildUiXliffString(
-  config: I18nConfig,
+  config: { sourceLocale: string },
   data: StringsJsonFile,
   targetLocale: string,
   untranslatedOnly: boolean,
@@ -218,7 +227,7 @@ ${body}
 }
 
 function shouldCountUnit(
-  config: I18nConfig,
+  config: { sourceLocale: string },
   entry: StringsJsonEntry | undefined,
   normalized: string,
   untranslatedOnly: boolean
@@ -248,7 +257,39 @@ export function runExportUIXliff(
   config: I18nConfig,
   opts: ExportUIXliffOptions
 ): ExportUIXliffSummary {
-  const stringsPath = resolveStringsJsonPath(config, opts.cwd);
+  const selected = selectUiBlocks(config, opts.uiBlock);
+  const combined: ExportUIXliffSummary = {
+    stringsPath: "",
+    outputDir: "",
+    locales: [],
+    filesWritten: [],
+    unitsPerLocale: {},
+  };
+  for (const item of selected) {
+    console.log(chalk.cyan(formatUiBlockLabel(item.index, item.block)));
+    const view = toUiTranslateConfig(
+      { ...config, targetLocales: effectiveUiTargetLocales(config, item.block) },
+      item.block
+    );
+    const one = exportOneUiCatalog(view, opts);
+    combined.stringsPath = one.stringsPath;
+    combined.outputDir = one.outputDir;
+    for (const locale of one.locales) {
+      if (!combined.locales.includes(locale)) {
+        combined.locales.push(locale);
+      }
+      combined.unitsPerLocale[locale] = (combined.unitsPerLocale[locale] ?? 0) + (one.unitsPerLocale[locale] ?? 0);
+    }
+    combined.filesWritten.push(...one.filesWritten);
+  }
+  return combined;
+}
+
+function exportOneUiCatalog(
+  config: I18nUiTranslateConfig,
+  opts: ExportUIXliffOptions
+): ExportUIXliffSummary {
+  const stringsPath = resolveStringsJsonPath(config.ui, opts.cwd);
   if (!fs.existsSync(stringsPath)) {
     throw new Error(t("[export-ui-xliff] strings.json not found: {{path}}", { path: stringsPath }));
   }
@@ -272,7 +313,7 @@ export function runExportUIXliff(
   const data = raw as StringsJsonFile;
   let locales: string[];
   try {
-    locales = resolveLocalesForUI(config, opts.cwd, opts.locales ?? null);
+    locales = resolveLocalesForUiBlock(config, config.ui, opts.cwd, opts.locales ?? null);
   } catch (e) {
     if (e instanceof Error && e.message.includes("[translate-ui]")) {
       throw new Error(e.message.replace("[translate-ui]", "[export-ui-xliff]"));

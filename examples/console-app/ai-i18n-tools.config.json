@@ -16,7 +16,6 @@
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "providers": {

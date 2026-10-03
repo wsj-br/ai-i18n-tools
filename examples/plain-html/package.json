@@ -11,10 +11,10 @@
     "i18n:translate-ui": "ai-i18n-tools translate-ui",
     "i18n:sync": "ai-i18n-tools sync",
     "i18n:locales": "ai-i18n-tools generate-ui-languages",
-    "i18n:clean": "rm -rf .translation-cache"
+    "i18n:clean": "rm -rf .translation-cache public/strings.json public/locales"
   },
   "devDependencies": {
-    "ai-i18n-tools": "^1.9.0"
+    "ai-i18n-tools": "^1.10.0"
   },
   "engines": {
     "node": ">=22.16.0"

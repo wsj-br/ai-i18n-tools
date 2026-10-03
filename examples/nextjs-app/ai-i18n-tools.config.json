@@ -17,7 +17,6 @@
     "translateSVG": true
   },
   "glossary": {
-    "uiGlossary": "locales/strings.json",
     "userGlossary": "glossary-user.csv",
     "autoAddUserEditedToGlossary": true
   },

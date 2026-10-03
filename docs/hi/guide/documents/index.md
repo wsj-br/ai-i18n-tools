@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # दस्तावेज़
 
-मुख्य रूप से `.astro` कॉन्फ़िग ब्लॉक के माध्यम से प्रबंधित **मार्कडाउन, MDX और `docs[]` दस्तावेज़ों** के लिए डिज़ाइन किया गया। प्रत्येक ब्लॉक का `contentPaths` फ़ील्ड अनुवाद करने के लिए फ़ाइलों या फ़ोल्डरों को सूचीबद्ध करता है।
+मुख्य रूप से **मार्कडाउन, MDX, `.astro`, और सादे HTML** के लिए डिज़ाइन किया गया, जिसे `docs[]` कॉन्फ़िग ब्लॉक के माध्यम से प्रबंधित किया जाता है। प्रत्येक ब्लॉक का `contentPaths` फ़ील्ड उन फ़ाइलों या फ़ोल्डरों को सूचीबद्ध करता है जिनका अनुवाद करना है। सादे HTML पृष्ठों (प्रति लोकेल एक फ़ाइल) का वर्णन [HTML पृष्ठ](/hi/guide/documents/html-pages) में किया गया है।
 
 [Docusaurus](/hi/guide/integrations/docusaurus) साइटों पर, `docusaurusCatalogDir` को अपने `write-translations` कैटलॉग फ़ोल्डर (जैसे `docs-site/i18n/en`) पर भी सेट करें। फिर `translate-docs` में शेल JSON भी शामिल है - नेविगेशन बार, फ़ुटर और थीम स्ट्रिंग।
 
@@ -21,7 +21,7 @@ README या दस्तावेज़ों में एक वैकल्
 
 एक दस्तावेज़ फ्रेमवर्क के शेल/थीम स्ट्रिंग से असंबंधित मनमानी नेस्टेड UI JSON बंडल [JSON](/hi/guide/json) पाइपलाइन में होते हैं, न कि `docs[]` में।
 
-यूआई और दस्तावेज़ों के बीच **शब्दावली सुसंगतता** के लिए, `glossary.uiGlossary` को अपने `strings.json` पथ पर सेट करें — `translate-docs` मौजूदा यूआई अनुवादों को एलएलएम प्रॉम्प्ट में संकेतों के रूप में पुन: उपयोग करता है जब किसी सेगमेंट में मेल खाने वाले शब्द दिखाई देते हैं। वैकल्पिक `glossary.userGlossary` उत्पाद शब्दों के लिए सीएसवी ओवरराइड जोड़ता है (`translate-ui` और `proofread-ui` के साथ साझा किया गया)। संकीर्ण कॉलम में फिट होने के लिए उपयोग किए जाने वाले संक्षिप्त यूआई लेबल रूप (उदाहरण के लिए `Size` → `Tam`) यूआई अनुवाद के लिए उपलब्ध रहते हैं लेकिन दस्तावेज़ शब्दावली संकेतों से हटा दिए जाते हैं। `glossary-generate` के साथ एक प्रारंभिक सीएसवी जनरेट करें, अनुवाद डैशबोर्ड [शब्दावली](/hi/guide/translation-dashboard/glossary) टैब में पंक्तियाँ संपादित करें, या [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary) और [शब्दावली](/hi/guide/glossary) देखें।
+प्रत्येक UI ब्लॉक में डिफ़ॉल्ट रूप से दस्तावेज़ीकरण के लिए शब्दावली संकेतों के रूप में इसका `strings.json` शामिल होता है (`uiGlossary`, डिफ़ॉल्ट `true`)। `translate-docs` उन अनुवादों का पुन: उपयोग LLM प्रॉम्प्ट में संकेतों के रूप में करता है जब किसी सेगमेंट में मेल खाने वाले शब्द दिखाई देते हैं। उस कैटलॉग पर `uiGlossary` को `false` पर सेट करें जिसे दस्तावेज़ प्रॉम्प्ट से बाहर रखना चाहिए। वैकल्पिक `glossary.userGlossary` उत्पाद शब्दों के लिए CSV ओवरराइड जोड़ता है (`translate-ui` और `proofread-ui` के साथ साझा किया गया)। संकीर्ण कॉलम में फिट होने के लिए उपयोग किए जाने वाले संक्षिप्त UI-लेबल संक्षेपाक्षर (उदाहरण के लिए `Size` → `Tam`) UI अनुवाद के लिए उपलब्ध रहते हैं लेकिन दस्तावेज़ शब्दावली संकेतों से छोड़ दिए जाते हैं। `glossary-generate` के साथ एक स्टार्टर CSV जनरेट करें, अनुवाद डैशबोर्ड [शब्दावली](/hi/guide/translation-dashboard/glossary) टैब में पंक्तियाँ संपादित करें, या [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary) और [शब्दावली](/hi/guide/glossary) देखें।
 
 <a id="per-locale-model-overrides"></a>
 ### प्रति-स्थानीय मॉडल ओवरराइड
@@ -38,6 +38,7 @@ README या दस्तावेज़ों में एक वैकल्
 | Nextra साइट | `init -t ui-nextra` + डिक्शनरी के लिए `nextraDictionaryPath` (साइडबार `_meta.ts` स्वचालित है) - [Nextra](/hi/guide/integrations/nextra) |
 | Fumadocs साइट | `init -t ui-fumadocs` + UI के लिए `fumadocsUiCatalog` (साइडबार `meta.json` स्वचालित है) - [Fumadocs](/hi/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/hi/guide/integrations/astro#astro-starlight) |
+| सादे HTML पृष्ठ | `init -t docs-plain-html` - [HTML पृष्ठ](/hi/guide/documents/html-pages) |
 | फ़्लैट दस्तावेज़ (README, चेंजलॉग, आदि) | `docsOutput.style = "flat"` - [आउटपुट लेआउट](/hi/guide/documents/output-layouts), वैकल्पिक [भाषा स्विचर](/hi/guide/documents/language-switcher) |
 | जहाँ अनुवादित फ़ाइलें आती हैं | [आउटपुट लेआउट](/hi/guide/documents/output-layouts) |
 | क्रॉस-पेज `#anchor` लिंक | [एंकर लिंक](/hi/guide/documents/anchor-links) |
@@ -101,8 +102,8 @@ ai-i18n-tools init -t ui-astro-website [-P <provider>]
 - `docs[].description` - रखरखावकर्ताओं के लिए वैकल्पिक छोटा नोट। जब सेट किया जाता है, तो यह `translate-docs` हेडलाइन और `status` अनुभाग शीर्षकों में दिखाई देता है।
 - `docs[].contentPaths` - मार्कडाउन/MDX/`.astro` स्रोत (और डोक्यूसौरस शेल JSON के लिए वैकल्पिक `docusaurusCatalogDir`)।
 - `docs[].outputDir` - उस ब्लॉक के लिए अनुवादित आउटपुट रूट।
-- `docs[].docsOutput.style` - `"nested"` (डिफ़ॉल्ट), `"flat"`, `"doc-system"`, या उपनाम `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (देखें [आउटपुट लेआउट](/hi/guide/documents/output-layouts)).
-- `glossary.uiGlossary` - `strings.json` का पाथ ताकि दस्तावेज़ खंडों को आपकी UI कैटलॉग से शब्दावली संकेत मिलें (देखें [कॉन्फ़िगरेशन — `glossary`](/hi/reference/configuration#glossary)).
+- `docs[].docsOutput.style` - `"nested"` (डिफ़ॉल्ट), `"flat"`, `"doc-system"`, या उपनाम `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([आउटपुट लेआउट](/hi/guide/documents/output-layouts) देखें)।
+- `ui[].uiGlossary` - जब `true` (डिफ़ॉल्ट), उस ब्लॉक का `strings.json` दस्तावेज़ सेगमेंट के लिए शब्दावली संकेत प्रदान करता है ([कॉन्फ़िगरेशन — `ui`](/hi/reference/configuration#ui) देखें)।
 - `glossary.userGlossary` - निश्चित उत्पाद-शब्द अनुवादों के लिए वैकल्पिक CSV; UI पाइपलाइन द्वारा भी उपयोग किया जाता है और [शब्दावली](/hi/guide/translation-dashboard/glossary) डैशबोर्ड टैब में संपादन योग्य है।
 
 **प्राथमिक बनाम अनुपूरक:** स्थानीयकृत पृष्ठों के लिए `contentPaths` पर ध्यान दें। जब आपको `write-translations` से Docusaurus शेल JSON की भी आवश्यकता हो तो `docusaurusCatalogDir` सेट करें। यदि आप केवल पृष्ठों का अनुवाद करते हैं तो `docusaurusCatalogDir` को छोड़ दें।

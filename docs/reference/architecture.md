@@ -66,11 +66,13 @@ Everything intended for programmatic use is re-exported from `src/index.ts` ([Pr
 
 Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and `i18n.t("literal")` calls in JS/TS files. For `.astro` sources (when listed in `ui.uiExtractor.extensions`), `ui-string-babel.ts` parses frontmatter and template `{expression}` blocks with `@babel/parser` and applies the same `funcNames` rules. Function names and file extensions are configurable via `ui.uiExtractor` (`ui.reactExtractor` is a supported alias). `extract` **also merges non-scanner inputs into the same catalog:** the project `package.json` `description` when `includePackageDescription` is enabled (default), and each `englishName` from the bundled ui-languages master catalog (built from `sourceLocale` + `targetLocales`) when `includeUiLanguageEnglishNames` is `true` (strings already found in source keep precedence; does not read `languagesManifestPath`). `extract` also regenerates `ui-languages.json` at `languagesManifestPath`. Segment hashes are **MD5 first 8 hex chars** of the trimmed source string — these become the keys in `strings.json`.
 
-For `.html` / `.htm` sources (when listed in `ui.uiExtractor.extensions`), `extract` instead routes the file through `html-i18n-marks.ts`, which scans `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker attributes (configurable via `ui.uiExtractor.htmlI18nAttributes`). A bare marker takes its source text from the element's own `textContent` / `title` / `placeholder`; a valued marker (`data-i18n="Key"`) uses the value. The same module powers the `mark-html` command, which inserts the bare markers automatically. HTML files never reach the Babel / i18next-scanner passes.
+For `.html` / `.htm` sources (when listed in `ui.uiExtractor.extensions`), `extract` instead routes the file through `html-i18n-marks.ts`, which scans `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` marker attributes (configurable via `ui.uiExtractor.htmlI18nAttributes`). A bare marker takes its source text from the element's own `textContent` or attribute; a valued marker (`data-i18n="Key"`) uses the value. `data-i18n-locale-src` and `data-i18n-locale-href` are reserved for the browser runtime and are never extracted. The same module powers the `mark-html` command, which inserts the bare markers automatically (including `alt` and `aria-label`) and never inserts the locale URL markers. HTML files never reach the Babel / i18next-scanner passes. Generated locale HTML under a docs `outputDir` is excluded from this scan.
 
 Plain Astro SSG sites can skip i18next: load flat `{locale}.json` at build time and resolve `t('English')` by source-text key (see `examples/astro-website/src/i18n/t.ts` and [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
 
-Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation).
+Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation). The drop-in script is `ai-i18n-tools/html-runtime/i18n.js`.
+
+Static HTML that should become one file per locale is a documents pipeline (`HtmlTemplateExtractor` inside `translate-docs`), not this catalog. See [HTML pages](/guide/documents/html-pages).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -292,7 +294,7 @@ The tool localizes its own UI — CLI help, high-traffic log/summary/error messa
 - **Locale resolution** (`resolveUiLocale` in `src/core/ui-locale.ts`): picks the UI locale from `-L` / `--ui-lang` > `AI_I18N_LANG` > config `uiLanguage` > host OS locale (`Intl.DateTimeFormat().resolvedOptions().locale`). The candidate is normalized and matched against the shipped bundle set exactly or by closest variation (e.g. `pt-PT` → `pt-BR`, `en-US` → `en-GB`), falling back to the source locale (`en-GB`). The CLI resolves once before help is built (pre-parse argv scan) and again after config load so `uiLanguage` applies (the flag and env var still win).
 - **Runtime** (`src/i18n/index.ts`): a minimal `t(source, vars)` with ```{{name}}``` interpolation, keyed by the English source string against flat per-locale bundles in `src/i18n/locales/<code>.json` (copied to `dist/i18n/locales` at build). Missing keys or bundles return the source text. This is the same key-as-default model as UI strings — there is no hash lookup.
 - **Dashboard**: the server exposes `GET /api/ui-i18n` returning `{ locale, dir, bundle }` for the resolved UI locale; the frontend sets `<html lang>` / `dir` and localizes static markup via `data-i18n*` attributes.
-- **Dogfooding**: the bundles are produced by running the package's own extract → `translate-ui` pipeline against `ai-i18n-self.config.json` (`pnpm i18n:self`). Catalog keys come from `t()` calls across `src/cli/` and `src/i18n/` plus the dashboard's `data-i18n*` markers in `src/dashboard-app/index.html`.
+- **Dogfooding**: the bundles are produced by `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`), which extracts and translates the CLI and dashboard `ui` block in `ai-i18n-tools.config.json`. Catalog keys come from `t()` calls across `src/cli/` and `src/i18n/` plus the dashboard's `data-i18n*` markers in `src/dashboard-app/index.html`.
 
 ---
 
@@ -310,7 +312,7 @@ Add non-standard translation function names via config:
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

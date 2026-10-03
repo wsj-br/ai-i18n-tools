@@ -6,7 +6,7 @@
 
 **Synopsis:** `ai-i18n-tools extract`
 
-Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional bundled-master `englishName` entries when `includeUiLanguageEnglishNames` is enabled (see `ui.uiExtractor`; does not read `languagesManifestPath`). Also regenerates `ui-languages.json` at `languagesManifestPath`. When `.html` / `.htm` are listed in `ui.uiExtractor.extensions`, also captures `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker strings from HTML. Requires non-empty `ui.sourceRoots`. Does not call an LLM.
+Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `package.json` description, and optional bundled-master `englishName` entries when `includeUiLanguageEnglishNames` is enabled (see `ui.uiExtractor`; does not read `languagesManifestPath`). Also regenerates each block's `ui-languages.json`. When `.html` / `.htm` are listed in `ui.uiExtractor.extensions`, also captures `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` marker strings from HTML. Walks every `ui` block that has `sourceRoots`. `--ui-block` limits the run to one block (index, description, or `stringsJson` path). Does not call an LLM.
 
 **See also:** [UI strings overview](/guide/ui-strings/), [Plain HTML apps](/guide/ui-strings/plain-html)
 
@@ -32,7 +32,7 @@ The report is the handoff for everything `--write` leaves behind, and it ends wi
 
 **Synopsis:** `ai-i18n-tools mark-html [paths...] [--write]`
 
-Insert bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers into HTML so the source text is written once (on the element itself). Scans the given files/dirs/globs (default: `.html` / `.htm` under `ui.sourceRoots`). Dry run by default (reports per-file add counts and any mixed-content elements that need a manual `<span data-i18n>`); `--write` applies changes. Idempotent, honours `data-i18n-ignore` (skips the element and its subtree), never touches code-like elements (`code`, `pre`, `kbd`, `samp`, `var`) or empty/numeric-only text, and never emits a valued marker. Does not call an LLM.
+Insert bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers into HTML so the source text is written once (on the element itself). Scans the given files/dirs/globs (default: `.html` / `.htm` under every block's `sourceRoots`). Dry run by default (reports per-file add counts and any mixed-content elements that need a manual `<span data-i18n>`); `--write` applies changes. Idempotent, honours `data-i18n-ignore` (skips the element and its subtree), never touches code-like elements (`code`, `pre`, `kbd`, `samp`, `var`) or empty/numeric-only text, and never emits a valued marker. Does not call an LLM.
 
 **Key options:** `--write`
 
@@ -78,7 +78,7 @@ Extract, then translate UI strings (requires `features.translateUIStrings`). UI-
 
 **Synopsis:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Runs `extract` first (requires `features.translateUIStrings`) so `strings.json` matches source, then LLM review of source-locale UI strings (spelling, grammar). Terminology hints come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — not `strings.json` / `uiGlossary`, so bad copy is not reinforced as glossary). Uses the active LLM provider (its API-key env var).
+Runs `extract` first (requires `features.translateUIStrings`) so each selected catalog matches source, then LLM review of source-locale UI strings (spelling, grammar). `--ui-block` limits extract and review to one block. Terminology hints come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — UI catalogs are not fed back in, so bad copy is not reinforced as glossary). Uses the active LLM provider (its API-key env var).
 
 Exits **1** on failure (missing feature flag, extract failure, missing/invalid catalog, missing API key, or when all batches fail); exit **0** when the run completes successfully (findings are advisory). Writes `proofread-ui-results_<timestamp>.log` under `cacheDir` as a human-readable report (summary, issues, not-reviewed rows, and per-string OK rows); the terminal prints summary counts and issues only (no `[ok]` lines per string). A batch that fails, or a model response that is shorter than the batch and has no usable `index` on each slot, counts those strings as not reviewed. Their issues are dropped so a short array is not applied to the wrong strings. Prints the log filename on the last line. With `--json`, human-style output goes to stderr. Links use `path:line` like the dashboard UI strings link button.
 

@@ -39,6 +39,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `UIStringExtractor` | JS/TS स्रोत से `t("…")` स्ट्रिंग निकालें। |
 | `collectHtmlI18nStrings` / `markHtmlContent` | HTML में `data-i18n*` मार्कर स्कैन/सम्मिलित करें (`extract` और `.html` के लिए `mark-html` कमांड को शक्ति प्रदान करता है)। |
 | `MarkdownExtractor` | मार्कडाउन से अनुवाद योग्य खंड निकालें। |
+| `HtmlTemplateExtractor` | सादे HTML दस्तावेज़ों को निकालें और पुनः संयोजित करें (टेक्स्ट और अनुवाद योग्य विशेषताएँ; `src` / `href` यथास्थान रहेंगे)। |
 | `JsonExtractor` | Docusaurus JSON लेबल फ़ाइलों (UI कैटलॉग, MDX बॉडी नहीं) से निकालें। |
 | `SvgExtractor` | SVG फ़ाइलों से निकालें। |
 | `LlmClient` | सक्रिय LLM प्रदाता को अनुवाद अनुरोध करें (`OpenRouterClient` एक बहिष्कृत उपनाम है)। |

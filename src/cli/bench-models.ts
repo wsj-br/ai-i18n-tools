@@ -164,7 +164,7 @@ export async function runBenchModels(
     targetLocale = normalizeLocale(opts.target.trim());
   } else {
     // Prefer a documentation target locale, then fall back to the top-level `targetLocales`
-    // (configs that only translate UI/JSON, e.g. ai-i18n-self.config.json, have `docs: []`).
+    // (a config with only UI or JSON work can leave `docs` as the default empty block).
     const docTargets = getDocumentationTargetLocaleCodes(config);
     const fallbackTargets = (config.targetLocales ?? [])
       .map((l) => normalizeLocale(l))

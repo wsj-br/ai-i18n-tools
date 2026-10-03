@@ -5,8 +5,8 @@
 
 モデルには2種類のガイダンスが送信されます。
 
-- `glossary.userGlossary`内の**用語行**（一部のパイプラインでは、`glossary.uiGlossary`からの既存のUI翻訳も含む）。行は、そのソース用語が翻訳対象のテキストに出現する場合にのみ含まれます。
-- `glossary.contextFiles`内の**プロジェクトコンテキストファイル**。完全なブリーフは、すべてのUI、ドキュメント、JSON、SVG、および校正プロンプトに注入されます。そのセクションは[以下](#project-context-files)にあります。
+- `glossary.userGlossary`内の**用語行**（およびドキュメント、JSON、SVGについては、`uiGlossary`をオンのままにした各`ui`ブロックからの既存のUI翻訳）。行は、該当するソース用語が翻訳対象テキストに出現する場合にのみ含まれます。
+- `glossary.contextFiles`内の**プロジェクトコンテキストファイル**。完全なブリーフは、すべてのUI、ドキュメント、JSON、SVG、および校正プロンプトに注入されます。該当セクションは[以下](#project-context-files)を参照してください。
 
 <a id="how-the-glossary-works"></a>
 ## 用語集の仕組み
@@ -14,14 +14,12 @@
 <a id="where-terms-come-from"></a>
 ### 用語の取得元
 
-| ソース | 構成 | 使用先 |
+| ソース | 設定 | 使用元 |
 | --- | --- | --- |
-| UIカタログ | `glossary.uiGlossary` — 通常は`ui.stringsJson`と同じパス | `translate-docs`、`translate-json`、`translate-svg` |
+| UIカタログ | `ui[].uiGlossary`（ブール値、デフォルトは`true`）— そのブロックの`stringsJson` | `translate-docs`、`translate-json`、`translate-svg` |
 | ユーザーCSV | `glossary.userGlossary` | `translate-ui`、`proofread-ui`、`translate-docs`、`translate-json`、`translate-svg` |
 
-`uiGlossary`は`strings.json`にすでに保存されている翻訳をヒントとして再利用するため、ドキュメント、JSON、およびSVGはUIと整合性が保たれます。`translate-ui`と`proofread-ui`は`uiGlossary`を読み取りません。これらはユーザーCSVからのヒントのみを取得するため、不適切なUI翻訳が優先用語としてフィードバックされることはありません。
-
-ユーザーCSVはUIカタログよりも優先されます。`locale`が特定のコードである行は、そのロケールの`*`行とUIカタログ翻訳の両方を置き換えます。`locale`が`*`の場合は、UIカタログからの翻訳をまだ持たないすべての`targetLocales`エントリに同じ翻訳を適用します。
+`uiGlossary: true`が設定されたブロックは、その`strings.json`にすでに保存されている翻訳をヒントとして再利用するため、ドキュメント、JSON、SVGがUIと整合性を保ちます。`translate-ui`と`proofread-ui`はこれらのカタログを読み取らず、ユーザーCSVからのみヒントを取得するため、不適切なUI翻訳が優先用語としてフィードバックされることはありません。他のパイプラインを誘導しないようにするブロックでは、`uiGlossary`を`false`に設定します。複数のブロックが1つのソース用語を共有する場合、先行するブロックがロケールを埋め、後続のブロックはまだ不足しているロケールのみを追加します。ユーザーCSVはすべてのUIカタログに優先します。`locale`が特定のコードである行は、そのロケールにおける`*`行とUIカタログの翻訳の両方を置き換えます。`*`の`locale`は、UIカタログからの翻訳がまだ存在しないすべてのターゲットロケールに同じ翻訳を適用します。
 
 簡潔なUIラベル略語（`Alm.`のような末尾のドット、または`Size` → `Tam`のような短い単一トークン圧縮）は、UI翻訳で引き続き使用できます。ドキュメントプロンプトはこれらをスキップするため、モデルがmarkdownやMDXで<code v-pre>{{…}}</code>トークンを勝手に生成する方向に誘導されることはありません。
 
@@ -52,7 +50,6 @@ ai-i18n-tools glossary-generate
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Original language string,locale,Translation,Force,Context
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

@@ -61,6 +61,26 @@ describe("collectHtmlI18nStrings", () => {
     expect(values(html)).toEqual(["Tip"]);
   });
 
+  it("reads alt and aria-label from bare attribute markers", () => {
+    expect(values(`<img data-i18n-alt alt="Italian Trulli" src="pic.jpg" />`)).toEqual([
+      "Italian Trulli",
+    ]);
+    expect(values(`<button data-i18n-aria-label aria-label="Close">x</button>`)).toEqual(["Close"]);
+  });
+
+  it("does not extract locale URL markers or runtime bookkeeping attributes", () => {
+    const html = `<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src data-i18n-source-alt="Italian Trulli" />`;
+    expect(
+      collectHtmlI18nStrings(html, [
+        "data-i18n-alt",
+        "data-i18n-locale-src",
+        "data-i18n-locale-href",
+        "data-i18n-source-alt",
+        "data-i18n-locale-src-base",
+      ]).map((s) => s.value)
+    ).toEqual(["Italian Trulli"]);
+  });
+
   it("skips elements (and subtree) under data-i18n-ignore", () => {
     const html = `<a data-i18n-ignore><span>brand/repo</span></a><button data-i18n>Keep</button>`;
     expect(values(html)).toEqual(["Keep"]);
@@ -91,6 +111,16 @@ describe("markHtmlContent", () => {
     const { output, added } = markHtmlContent(`<button type="button">Next</button>`);
     expect(output).toBe(`<button type="button" data-i18n>Next</button>`);
     expect(added).toBe(1);
+  });
+
+  it("inserts bare alt and aria-label markers and never locale-URL markers", () => {
+    const { output, added } = markHtmlContent(
+      `<img src="pic_trulli.jpg" alt="Italian Trulli" /><button aria-label="Close">x</button>`
+    );
+    expect(output).toContain(`alt="Italian Trulli" data-i18n-alt`);
+    expect(output).toContain(`data-i18n-aria-label`);
+    expect(output).not.toContain("data-i18n-locale-src");
+    expect(added).toBe(3);
   });
 
   it("inserts bare title/placeholder markers and works on void/self-closing tags", () => {

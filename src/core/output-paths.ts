@@ -8,7 +8,7 @@ import { localePathPlaceholders } from "./locale-utils.js";
 import type { I18nDocTranslateConfig } from "./types.js";
 import { DOCUSAURUS_LOCALE_SUBPATH } from "./types.js";
 
-export type DocArtifactKind = "markdown" | "json";
+export type DocArtifactKind = "markdown" | "json" | "html";
 
 /** @deprecated Use {@link DOCUSAURUS_LOCALE_SUBPATH} */
 const DOCUSAURUS_PLUGIN = DOCUSAURUS_LOCALE_SUBPATH;
@@ -23,10 +23,10 @@ function templateForKind(
   kind: DocArtifactKind
 ): string | undefined {
   const mo = config.doc.docsOutput;
-  if (kind === "markdown") {
-    return mo.pathTemplate?.trim();
+  if (kind === "json") {
+    return mo.jsonPathTemplate?.trim();
   }
-  return mo.jsonPathTemplate?.trim();
+  return mo.pathTemplate?.trim();
 }
 
 export interface PathTemplateContext {
@@ -98,11 +98,20 @@ function resolveByStyle(
   const outBase = path.resolve(cwd, doc.outputDir);
   const mo = doc.docsOutput;
   const localeSeg = effectiveLocaleForPath(locale, mo.localePathLowercase ?? false);
-  const posixRel = toPosix(relPath);
   const docsRootRaw = mo.docsRoot?.trim() || "docs";
   const docsRootPosix = toPosix(path.normalize(docsRootRaw)).replace(/\/$/, "");
+  let posixRel = toPosix(relPath);
+  let placedRel = relPath;
+  if (kind === "html" && docsRootPosix && docsRootPosix !== ".") {
+    const underDocs = posixRel === docsRootPosix || posixRel.startsWith(`${docsRootPosix}/`);
+    if (underDocs) {
+      posixRel =
+        posixRel === docsRootPosix ? "index.html" : posixRel.slice(docsRootPosix.length + 1);
+      placedRel = posixRel;
+    }
+  }
 
-  if (kind !== "markdown") {
+  if (kind !== "markdown" && kind !== "html") {
     const usesStyleLayout =
       mo.style === "nested" ||
       mo.style === "doc-system" ||
@@ -135,7 +144,7 @@ function resolveByStyle(
 
   switch (mo.style) {
     case "nested":
-      return path.join(outBase, localeSeg, relPath);
+      return path.join(outBase, localeSeg, placedRel);
     case "doc-system":
     case "docusaurus":
     case "astro-starlight":
@@ -147,7 +156,7 @@ function resolveByStyle(
         posixRel.startsWith(`${docsRootPosix}/`) ||
         posixRel.startsWith(`${docsRootPosix}\\`);
       if (!under) {
-        return path.join(outBase, localeSeg, relPath);
+        return path.join(outBase, localeSeg, placedRel);
       }
       const rest = posixRel === docsRootPosix ? "" : posixRel.slice(docsRootPosix.length + 1);
       let subpath: string;
@@ -182,7 +191,7 @@ function resolveByStyle(
       return path.join(outBase, `${stem}.${localeSeg}${ext}`);
     }
     default:
-      return path.join(outBase, localeSeg, relPath);
+      return path.join(outBase, localeSeg, placedRel);
   }
 }
 

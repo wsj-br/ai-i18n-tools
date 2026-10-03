@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # 文档
 
-主要为通过 `docs[]` 配置块管理的 **Markdown、MDX 和 `.astro` 文档**设计。每个块的 `contentPaths` 字段列出了要翻译的文件或文件夹。
+主要用于通过 `docs[]` 配置块管理的**Markdown、MDX、`.astro` 和纯 HTML**。每个配置块的 `contentPaths` 字段列出了需要翻译的文件或文件夹。纯 HTML 页面（每个语言环境一个文件）在 [HTML 页面](/zh-Hans/guide/documents/html-pages) 中有详细说明。
 
 在 [Docusaurus](/zh-Hans/guide/integrations/docusaurus) 站点上，还需将 `docusaurusCatalogDir` 设置为你的 `write-translations` 目录文件夹（例如 `docs-site/i18n/en`）。这样 `translate-docs` 也会包含 shell JSON——导航栏、页脚和主题字符串。
 
@@ -21,7 +21,7 @@
 
 与文档框架的外壳/主题字符串无关的任意嵌套 UI JSON 包属于 [JSON](/zh-Hans/guide/json) 管道，而不属于 `docs[]`。
 
-为了确保 UI 和文档之间的**术语一致性**，请将 `glossary.uiGlossary` 设置为您的 `strings.json` 路径 — 当片段中出现匹配的术语时，`translate-docs` 会复用现有的 UI 翻译作为 LLM 提示词中的提示。可选的 `glossary.userGlossary` 可为产品术语添加 CSV 覆盖项（与 `translate-ui` 和 `proofread-ui` 共享）。为适应窄列而使用的紧凑 UI 标签缩写（例如 `Size` → `Tam`）仍可用于 UI 翻译，但不会包含在文档术语表提示中。使用 `glossary-generate` 生成初始 CSV，在翻译控制台的[术语表](/zh-Hans/guide/translation-dashboard/glossary)选项卡中编辑行，或参阅[配置 — `glossary`](/zh-Hans/reference/configuration#glossary)和[术语表](/zh-Hans/guide/glossary)。
+每个 UI 区块默认包含其 `strings.json` 作为文档的术语表提示（`uiGlossary`，默认值为 `true`）。当段落中出现匹配术语时，`translate-docs` 会复用这些翻译作为 LLM 提示词中的提示。对于不应出现在文档提示词中的目录，请将 `uiGlossary` 设置为 `false`。可选的 `glossary.userGlossary` 可为产品术语添加 CSV 覆盖（与 `translate-ui` 和 `proofread-ui` 共享）。为适应窄列而使用的紧凑 UI 标签缩写（例如 `Size` → `Tam`）仍可用于 UI 翻译，但会从文档术语表提示中省略。使用 `glossary-generate` 生成初始 CSV，在翻译仪表板的 [术语表](/zh-Hans/guide/translation-dashboard/glossary) 选项卡中编辑行，或参阅 [配置 — `glossary`](/zh-Hans/reference/configuration#glossary) 和 [术语表](/zh-Hans/guide/glossary)。
 
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
@@ -38,6 +38,7 @@
 | Nextra 站点 | `init -t ui-nextra` + `nextraDictionaryPath` 用于字典（侧边栏 `_meta.ts` 是自动的）— [Nextra](/zh-Hans/guide/integrations/nextra) |
 | Fumadocs 站点 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用于 UI（侧边栏 `meta.json` 是自动的）— [Fumadocs](/zh-Hans/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Astro Starlight](/zh-Hans/guide/integrations/astro#astro-starlight) |
+| 纯 HTML 页面 | `init -t docs-plain-html` - [HTML 页面](/zh-Hans/guide/documents/html-pages) |
 | 扁平文档（README、变更日志等） | `docsOutput.style = "flat"` — [输出布局](/zh-Hans/guide/documents/output-layouts)，可选[语言切换器](/zh-Hans/guide/documents/language-switcher) |
 | 翻译文件存放位置 | [输出布局](/zh-Hans/guide/documents/output-layouts) |
 | 跨页面 `#anchor` 链接 | [锚点链接](/zh-Hans/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ ai-i18n-tools init -t ui-astro-website [-P <provider>]
 - `docs[].description` - 为维护者提供的可选简短说明。设置后，它会显示在 `translate-docs` 标题和 `status` 章节标题中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus shell JSON 的可选 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 该块的翻译输出根目录。
-- `docs[].docsOutput.style` — `"nested"`（默认）、`"flat"`、`"doc-system"`，或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（参见[输出布局](/zh-Hans/guide/documents/output-layouts)）。
-- `glossary.uiGlossary` — `strings.json` 的路径，使文档片段能从你的 UI 目录获取术语提示（参见[配置 — `glossary`](/zh-Hans/reference/configuration#glossary)）。
-- `glossary.userGlossary` — 用于固定产品术语翻译的可选 CSV；也被 UI 流水线使用，并可在[术语表](/zh-Hans/guide/translation-dashboard/glossary)仪表板标签页中编辑。
+- `docs[].docsOutput.style` - `"nested"`（默认）、`"flat"`、`"doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（请参阅 [输出布局](/zh-Hans/guide/documents/output-layouts)）。
+- `ui[].uiGlossary` - 当为 `true`（默认值）时，该区块的 `strings.json` 会为文档段落提供术语提示（请参阅 [配置 — `ui`](/zh-Hans/reference/configuration#ui)）。
+- `glossary.userGlossary` - 用于固定产品术语翻译的可选 CSV；也用于 UI 流水线，并可在 [术语表](/zh-Hans/guide/translation-dashboard/glossary) 仪表板选项卡中编辑。
 
 **主要与补充：** 专注于 `contentPaths` 用于本地化页面。当您还需要来自 `write-translations` 的 Docusaurus shell JSON 时，请设置 `docusaurusCatalogDir`。如果您只翻译页面，请省略 `docusaurusCatalogDir`。
 
@@ -135,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs` 会检查每个已翻译的段落是否保留了 markdown 结构（包括从文档解析出的强调标记），以及内部占位符标记是否能干净地还原。在一段话中堆叠大量 `bold` 片段并围绕 `` `inline code` ``、在加粗中嵌套反引号（例如模板字面量 `` `fetch(\`/locales/${code}.json\`)` ``），或在长句中交织加粗与代码的写法都很脆弱：某些语言区域需要不同的语序，这会改变翻译后 `**` 与 `` ` `` 的对齐方式，并触发诸如 `AST mismatch` 之类的 CLI 错误。
 
-在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 <code v-pre>**</code> 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
+在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 `**` 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
 
 **如果您遇到此类验证失败，建议优先简化源语言文本** - 拆分段落、将示例移入围栏代码块，或者用更少的嵌套粗体/代码对来描述相同的概念 - 而不是期望每个模型和语言环境都能完美重现密集的内联标记。
 

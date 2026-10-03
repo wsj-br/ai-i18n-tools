@@ -24,11 +24,14 @@ function configFor(_root: string): I18nConfig {
     targetLocales: ["de", "fr"],
     cacheDir: ".translation-cache",
     features: { translateUIStrings: true, translateDocs: false, translateJson: false },
-    ui: {
-      sourceRoots: ["src"],
-      stringsJson: "src/locales/strings.json",
-      flatOutputDir: "src/locales",
-    },
+    ui: [
+      {
+        sourceRoots: ["src"],
+        stringsJson: "src/locales/strings.json",
+        flatOutputDir: "src/locales",
+        uiGlossary: true,
+      },
+    ],
   } as unknown as I18nConfig;
 }
 

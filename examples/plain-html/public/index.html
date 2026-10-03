@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="i18n-pending">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,6 +49,17 @@
 
       <main>
         <section id="panel-filters" class="panel active">
+          <figure class="hero-figure">
+            <img
+              src="chart.png"
+              alt="Sample usage chart"
+              width="577"
+              height="139"
+              data-i18n-alt
+              data-i18n-locale-src="chart_{locale}.png"
+            />
+            <figcaption data-i18n>Sample usage chart</figcaption>
+          </figure>
           <p class="hint" data-i18n>
             Filter demo — static HTML with data-i18n markers, no t() calls in the markup.
           </p>
@@ -62,8 +73,6 @@
               <div class="filter-row">
                 <select id="filter-locale" title="Filter by locale" data-i18n-title>
                   <option value="" data-i18n>All locales</option>
-                  <option value="es" data-i18n>Spanish</option>
-                  <option value="fr" data-i18n>French</option>
                   <option value="pt-BR" data-i18n>Portuguese (Brazil)</option>
                 </select>
                 <select id="filter-status" title="Filter by status" data-i18n-title>
@@ -109,17 +118,17 @@
                 </tr>
                 <tr>
                   <td>public/index.html</td>
-                  <td>es</td>
+                  <td>pt-BR</td>
                   <td>Results</td>
                   <td>Resultados</td>
                   <td>Active</td>
                 </tr>
                 <tr>
                   <td>public/index.html</td>
-                  <td>fr</td>
+                  <td>pt-BR</td>
                   <td>Language</td>
-                  <td>Langue</td>
-                  <td>Stale</td>
+                  <td>Idioma</td>
+                  <td>Active</td>
                 </tr>
               </tbody>
             </table>
@@ -131,6 +140,14 @@
         <p data-i18n>Plain HTML example — static locale bundles under public/locales/</p>
       </footer>
     </div>
+    <script
+      src="i18n.js"
+      data-source-locale="en"
+      data-locales-base="./locales"
+      data-storage-key="plain-html-demo-locale"
+      data-locale-select="#locale-select"
+      data-label-mode="native"
+    ></script>
     <script src="app.js"></script>
   </body>
 </html>

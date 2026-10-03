@@ -10,6 +10,7 @@ export default tseslint.config(
       "coverage/**",
       "**/*.cjs",
       "src/dashboard-app/**",
+      "src/html-runtime/**",
       "vitest.config.ts",
       "vitest.live.config.ts",
       // VitePress site config/theme are outside the package tsconfigs used for typed lint.

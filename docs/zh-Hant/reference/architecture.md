@@ -65,11 +65,13 @@
 
 使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 來尋找 JS/TS 檔案中的 `t("literal")` 與 `i18n.t("literal")` 呼叫。對於 `.astro` 原始碼（當列於 `ui.uiExtractor.extensions` 時），`ui-string-babel.ts` 會剖析 frontmatter 與範本 `{expression}` 區塊（使用 `@babel/parser`），並套用相同的 `funcNames` 規則。函式名稱與副檔名可透過 `ui.uiExtractor` 設定（`ui.reactExtractor` 為支援的別名）。`extract` **也會將非掃描器的輸入合併至同一目錄：** 當啟用 `includePackageDescription` 時（預設）的專案 `package.json` `description`，以及當 `includeUiLanguageEnglishNames` 為 `true` 時，來自內建 ui-languages 主目錄（由 `sourceLocale` + `targetLocales` 建置）的每個 `englishName`（已在原始碼中找到的字串優先保留；不會讀取 `languagesManifestPath`）。`extract` 亦會在 `languagesManifestPath` 重新產生 `ui-languages.json`。區段雜湊為已修剪原始字串之 **MD5 前 8 個十六進位字元** — 這些會成為 `strings.json` 中的索引鍵。
 
-對於 `.html` / `.htm` 來源（當列於 `ui.uiExtractor.extensions` 時），`extract` 會改為透過 `html-i18n-marks.ts` 來路由檔案，該檔案會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 標記屬性（可透過 `ui.uiExtractor.htmlI18nAttributes` 設定）。純標記會從元素的自身 `textContent` / `title` / `placeholder` 獲取來源文字；有值的標記（`data-i18n="Key"`）則使用該值。相同的模組也支援 `mark-html` 命令，該命令會自動插入純標記。HTML 檔案永遠不會到達 Babel / i18next-scanner 的處理階段。
+對於 `.html` / `.htm` 來源（當列於 `ui.uiExtractor.extensions` 中時），`extract` 會改為將檔案路由至 `html-i18n-marks.ts`，該模組會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 標記屬性（可透過 `ui.uiExtractor.htmlI18nAttributes` 設定）。裸標記會從元素自身的 `textContent` 或屬性取得其來源文字；帶值標記（`data-i18n="Key"`）則使用該值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 保留供瀏覽器執行階段使用，絕不會被擷取。同一模組也驅動 `mark-html` 命令，該命令會自動插入裸標記（包含 `alt` 和 `aria-label`），且絕不插入地區設定 URL 標記。HTML 檔案絕不會進入 Babel / i18next-scanner 處理階段。在文件 `outputDir` 下產生的地區設定 HTML 會從此次掃描中排除。
 
 純 Astro SSG 網站可以略過 i18next：在建置時載入扁平 `{locale}.json`，並按源文字鍵解析 `t('English')`（參見 `examples/astro-website/src/i18n/t.ts` 與 [UI 字串 — Astro 網站](/zh-Hant/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
 
-純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫 — 參見[標記 HTML 以供翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)。
+純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫——請參閱[標記 HTML 以進行翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)。隨插即用指令碼為 `ai-i18n-tools/html-runtime/i18n.js`。
+
+應成為每個地區設定一個檔案的靜態 HTML 屬於文件管線（`translate-docs` 內的 `HtmlTemplateExtractor`），而非此目錄。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -191,7 +193,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 7. **行內程式碼區段**（`` `code` ``）與**粗體包裹的行內程式碼**（`**`code`**`）— 保留。
 8. **Markdown 強調**（可選，CJK/RTL 語系自動啟用）— 強調分隔符號會被遮罩。
 
-在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
+在模型回傳後，`translate-docs` 會還原映射並驗證區段：必須存在相同的雙大括號權杖多重集，結構權杖（<code v-pre>{{HTM_N}}</code>、警告標記）必須保持其有序子序列（內容權杖如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 可隨語序移動），還原的 HTML 標籤類型必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼必須已存在於來源中（因此虛構的權杖將會失敗）。文件提示也要求模型複製每個權杖一次，保持結構權杖順序，且不得發明新的雙大括號包裝器；機械式檢查仍然具有權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 
@@ -288,10 +290,10 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 此工具會將其自身的使用者介面（命令列說明、高流量記錄/摘要/錯誤訊息，以及翻譯儀表板）與您需要翻譯的內容分開進行本地化。
 
-- **地區解析**（`resolveUiLocale` 在 `src/core/ui-locale.ts` 中）：從 `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > 主機作業系統地區設定（`Intl.DateTimeFormat().resolvedOptions().locale`）中選擇 UI 地區設定。候選者會被正規化並與已發布的捆綁包集精確匹配或透過最接近的變體匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），回退到原始地區設定（`en-GB`）。CLI 在建立說明之前解析一次（預解析 argv 掃描），並在設定載入後再次解析，以便 `uiLanguage` 適用（該旗標和環境變數仍然優先）。
-- **執行時**（`src/i18n/index.ts`）：一個最小的 `t(source, vars)`，帶有 ```{{name}}``` 插值，透過英文原始字串作為鍵，對應 `src/i18n/locales/<code>.json` 中的扁平化每個地區設定捆綁包（在建置時複製到 `dist/i18n/locales`）。缺少鍵或捆綁包會返回原始文字。這與 UI 字串的鍵作為預設模型相同 — 沒有雜湊查找。
-- **儀表板**：伺服器公開 `GET /api/ui-i18n`，返回已解析 UI 地區設定的 `{ locale, dir, bundle }`；前端設定 `<html lang>` / `dir` 並透過 `data-i18n*` 屬性本地化靜態標記。
-- **內部測試**：捆綁包是透過對 `ai-i18n-self.config.json`（`pnpm i18n:self`）執行套件自己的提取 → `translate-ui` 管道生成的。目錄鍵來自 `t()` 在 `src/cli/` 和 `src/i18n/` 中的呼叫，以及儀表板在 `src/dashboard-app/index.html` 中的 `data-i18n*` 標記。
+- **區域設定解析** (`resolveUiLocale` 於 `src/core/ui-locale.ts`)：從 `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > 主機作業系統區域設定 (`Intl.DateTimeFormat().resolvedOptions().locale`) 挑選 UI 區域設定。候選項目會經過標準化，並與隨附的套件集進行精確配對或最接近的變體配對（例如 `pt-PT` → `pt-BR`、`en-US` → `en-GB`），若無符合則回退至來源區域設定 (`en-GB`)。CLI 會在建立說明前解析一次（預先剖析 argv 掃描），並在載入設定後再次解析，以便套用 `uiLanguage`（旗標和環境變數仍具有最高優先權）。
+- **執行階段** (`src/i18n/index.ts`)：具備 ```{{name}}``` 插值的最小化 `t(source, vars)`，以英文來源字串為鍵，對照 `src/i18n/locales/<code>.json` 中扁平化的各區域設定套件（在建置時複製到 `dist/i18n/locales`）。缺少鍵值或套件時會傳回來源文字。這與 UI 字串採用相同的「以鍵為預設值」模型——沒有雜湊查詢。
+- **儀表板**：伺服器會公開 `GET /api/ui-i18n`，針對解析後的 UI 區域設定傳回 `{ locale, dir, bundle }`；前端會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性將靜態標記當地語系化。
+- **內部試用**：套件由 `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) 產生，它會提取並翻譯 `ai-i18n-tools.config.json` 中 CLI 與儀表板的 `ui` 區塊。目錄鍵值來自 `src/cli/` 和 `src/i18n/` 中的 `t()` 呼叫，加上儀表板 `src/dashboard-app/index.html` 中的 `data-i18n*` 標記。
 
 ---
 
@@ -309,7 +311,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

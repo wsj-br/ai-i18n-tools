@@ -165,8 +165,10 @@ function serializeStringsJsonRow(
 
 export interface TranslationDashboardOptions {
   cwd: string;
-  /** Resolved absolute or cwd-relative path to strings.json (workspace B). */
+  /** Resolved absolute or cwd-relative path to strings.json. Used when `uiCatalogs` is omitted. */
   stringsJsonPath?: string | null;
+  /** UI catalogs shown in the dashboard. The first catalog is the default. */
+  uiCatalogs?: Array<{ id: string; label: string; stringsJsonPath: string }>;
   /** Resolved path to glossary-user.csv (workspace C). */
   glossaryUserPath?: string | null;
   /** BCP-47 locale for source / original strings (from config `sourceLocale`). */
@@ -518,18 +520,54 @@ export function createTranslationDashboardApp(
   });
 
   // --- Workspace B: strings.json ---
-  const stringsPath = opts.stringsJsonPath
-    ? path.isAbsolute(opts.stringsJsonPath)
-      ? opts.stringsJsonPath
-      : path.join(opts.cwd, opts.stringsJsonPath)
-    : null;
+  const dashboardCatalogs = (): Array<{ id: string; label: string; stringsJsonPath: string }> => {
+    if (opts.uiCatalogs && opts.uiCatalogs.length > 0) {
+      return opts.uiCatalogs;
+    }
+    if (opts.stringsJsonPath) {
+      return [{ id: "0", label: "UI strings", stringsJsonPath: opts.stringsJsonPath }];
+    }
+    return [];
+  };
+  const absCatalogPath = (catalogPath: string): string =>
+    path.isAbsolute(catalogPath) ? catalogPath : path.join(opts.cwd, catalogPath);
+  const catalogIdFrom = (req: { query: { catalog?: unknown }; body?: unknown }): string | undefined => {
+    const queryId = req.query.catalog;
+    if (typeof queryId === "string" && queryId.trim()) {
+      return queryId.trim();
+    }
+    if (req.body && typeof req.body === "object" && "catalog" in req.body) {
+      const bodyId = (req.body as { catalog?: unknown }).catalog;
+      if (typeof bodyId === "string" && bodyId.trim()) {
+        return bodyId.trim();
+      }
+    }
+    return undefined;
+  };
+  const stringsPathFor = (req: { query: { catalog?: unknown }; body?: unknown }): string | null => {
+    const catalogs = dashboardCatalogs();
+    const id = catalogIdFrom(req);
+    const chosen = id ? catalogs.find((catalog) => catalog.id === id) : catalogs[0];
+    return chosen ? absCatalogPath(chosen.stringsJsonPath) : null;
+  };
+
+  app.get("/api/ui-catalogs", (_req, res) => {
+    res.json({
+      catalogs: dashboardCatalogs().map((catalog) => ({
+        id: catalog.id,
+        label: catalog.label,
+        path: absCatalogPath(catalog.stringsJsonPath),
+      })),
+    });
+  });
 
   const uiPluralLocaleList = [...new Set([opts.sourceLocale, ...opts.targetLocales])];
   const requiredPluralFormsByLocale = Object.fromEntries(
     uiPluralLocaleList.map((loc) => [loc, pluralFormsRequiredForTranslateUi(loc)])
   );
 
-  app.get("/api/ui-strings/meta", (_req, res) => {
+  app.get("/api/ui-strings/meta", (req, res) => {
+    const stringsPath = stringsPathFor(req);
     res.json({
       path: stringsPath,
       targetLocales: opts.targetLocales,
@@ -540,8 +578,9 @@ export function createTranslationDashboardApp(
     });
   });
 
-  app.get("/api/ui-strings", (_req, res) => {
+  app.get("/api/ui-strings", (req, res) => {
     try {
+      const stringsPath = stringsPathFor(req);
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not configured or missing" });
         return;
@@ -590,6 +629,7 @@ export function createTranslationDashboardApp(
 
   app.patch("/api/ui-strings/:id", (req, res) => {
     try {
+      const stringsPath = stringsPathFor(req);
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not available" });
         return;
@@ -645,6 +685,7 @@ export function createTranslationDashboardApp(
 
   app.delete("/api/ui-strings/:id", (req, res) => {
     try {
+      const stringsPath = stringsPathFor(req);
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not available" });
         return;
@@ -692,6 +733,7 @@ export function createTranslationDashboardApp(
 
   app.post("/api/ui-strings/delete-rows", (req, res) => {
     try {
+      const stringsPath = stringsPathFor(req);
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not available" });
         return;
@@ -901,8 +943,9 @@ export function createTranslationDashboardApp(
     }
   });
 
-  app.get("/api/stats", (_req, res) => {
+  app.get("/api/stats", (req, res) => {
     try {
+      const stringsPath = stringsPathFor(req);
       const {
         cache: cacheStats,
         uiStrings,

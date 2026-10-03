@@ -28,7 +28,9 @@ export type UiLanguageRow = {
  * Ordered unique locale codes: `sourceLocale` then `targetLocales`.
  * Deduplication uses {@link normalizeManifestLocaleKey} (hyphen vs underscore, case-insensitive).
  */
-export function effectiveUiLanguagesCodes(config: I18nConfig): string[] {
+export function effectiveUiLanguagesCodes(
+  config: Pick<I18nConfig, "sourceLocale" | "targetLocales">
+): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const c of [config.sourceLocale, ...config.targetLocales]) {
@@ -162,7 +164,7 @@ export function assertEffectiveLocalesInUiLanguagesMaster(config: I18nConfig): v
  * Build manifest rows from config locales and a loaded master map (same rules as `generate-ui-languages`).
  */
 export function buildUiLanguageRowsFromMaster(
-  config: I18nConfig,
+  config: Pick<I18nConfig, "sourceLocale" | "targetLocales">,
   master: Map<string, UiLanguageRow>
 ): { rows: UiLanguageRow[]; warnings: string[] } {
   const codes = effectiveUiLanguagesCodes(config);

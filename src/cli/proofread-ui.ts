@@ -17,6 +17,8 @@ import type { ProofreadUIIssue } from "../core/prompt-builder.js";
 import { collectPlaceholderFamilies, extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
+import { formatUiBlockLabel, selectUiBlocks } from "../core/ui-blocks.js";
+import type { UiConfig } from "../core/types.js";
 import { Glossary } from "../glossary/glossary.js";
 import {
   loadTranslationContextFromConfig,
@@ -240,6 +242,10 @@ export interface ProofreadUIOptions {
   verbose?: boolean;
   json?: boolean;
   locale?: string;
+  /** Index, description, or stringsJson path. */
+  uiBlock?: string;
+  /** Internal: proofread this catalog after the caller already extracted. */
+  catalog?: UiConfig;
 }
 
 function isoTimestampForProofreadLog(): string {
@@ -371,30 +377,63 @@ export async function runProofreadUI(
   opts: ProofreadUIOptions
 ): Promise<{ report: ProofreadUIReport; logFilePath: string; exitWithError?: string }> {
   const cwd = opts.cwd;
-
-  if (!config.features.translateUIStrings) {
-    const stringsPathEarly = resolveStringsJsonPath(config, cwd);
-    return {
-      report: emptyReport(config, cwd, stringsPathEarly),
-      logFilePath: "",
-      exitWithError: t(
-        "[proofread-ui] Enable features.translateUIStrings in config (proofread-ui runs extract first so strings.json matches source)."
-      ),
-    };
+  if (!opts.catalog) {
+    let selected;
+    try {
+      selected = selectUiBlocks(config, opts.uiBlock);
+    } catch (e) {
+      return {
+        report: emptyReport(config, cwd, ""),
+        logFilePath: "",
+        exitWithError: e instanceof Error ? e.message : String(e),
+      };
+    }
+    if (!config.features.translateUIStrings) {
+      const stringsPathEarly = selected[0]
+        ? resolveStringsJsonPath(selected[0].block, cwd)
+        : "";
+      return {
+        report: emptyReport(config, cwd, stringsPathEarly),
+        logFilePath: "",
+        exitWithError: t(
+          "[proofread-ui] Enable features.translateUIStrings in config (proofread-ui runs extract first so strings.json matches source)."
+        ),
+      };
+    }
+    if (selected.length === 0) {
+      return {
+        report: emptyReport(config, cwd, ""),
+        logFilePath: "",
+        exitWithError: t("ui.sourceRoots must be non-empty to extract UI strings"),
+      };
+    }
+    try {
+      runExtract(config, cwd, opts.uiBlock);
+    } catch (e) {
+      return {
+        report: emptyReport(
+          config,
+          cwd,
+          resolveStringsJsonPath(selected[0]!.block, cwd)
+        ),
+        logFilePath: "",
+        exitWithError: e instanceof Error ? e.message : String(e),
+      };
+    }
+    let last: Awaited<ReturnType<typeof runProofreadUI>> | undefined;
+    for (const item of selected) {
+      console.log(chalk.cyan(formatUiBlockLabel(item.index, item.block)));
+      last = await runProofreadUI(config, { ...opts, catalog: item.block });
+      if (last.exitWithError) {
+        return last;
+      }
+    }
+    return last!;
   }
 
-  try {
-    runExtract(config, cwd);
-  } catch (e) {
-    const stringsPathEarly = resolveStringsJsonPath(config, cwd);
-    return {
-      report: emptyReport(config, cwd, stringsPathEarly),
-      logFilePath: "",
-      exitWithError: e instanceof Error ? e.message : String(e),
-    };
-  }
+  const activeBlock = opts.catalog;
 
-  const stringsPath = resolveStringsJsonPath(config, cwd);
+  const stringsPath = resolveStringsJsonPath(activeBlock, cwd);
   if (!fs.existsSync(stringsPath)) {
     return {
       report: emptyReport(config, cwd, stringsPath),

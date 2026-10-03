@@ -1,6 +1,6 @@
 # Plain HTML example (ai-i18n-tools)
 
-This example shows how to localize a **plain HTML** app (no `t()` calls in the markup) using bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers—the same pattern as the bundled [Translation Dashboard](https://github.com/wsj-br/ai-i18n-tools/tree/main/src/dashboard-app), but with **static** locale JSON files instead of a Node API server.
+This example shows how to localize a **plain HTML** app (no `t()` calls in the markup) using bare `data-i18n` markers and the drop-in [`public/i18n.js`](public/i18n.js) runtime (a copy of `ai-i18n-tools/html-runtime/i18n.js`). Locale JSON is static. The page stays one HTML file; the script swaps strings, `alt` text, and `chart.png` → `chart_pt-BR.png` without a reload.
 
 The UI is a trimmed dashboard-style demo: filter controls, a results table, tabs, and a language picker. English source text is written once on each element; `extract` captures it into `locales/strings.json`, and `translate-ui` fills flat bundles under `public/locales/`.
 
@@ -10,7 +10,7 @@ For the full guide, see [Plain HTML apps](https://wsj-br.github.io/ai-i18n-tools
 
 - Node.js ≥ 22.16
 - [pnpm](https://pnpm.io/) ≥ 10.33
-- An [OpenRouter](https://openrouter.ai) API key (only when re-running translation)
+- An [OpenRouter](https://openrouter.ai) API key (required for `pnpm i18n:sync` / `translate-ui`)
 
 ## Installation
 
@@ -20,6 +20,8 @@ For the full guide, see [Plain HTML apps](https://wsj-br.github.io/ai-i18n-tools
 npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html
 cd plain-html
 pnpm install
+export OPENROUTER_API_KEY=your_key_here
+pnpm i18n:sync
 ```
 
 ### From the full ai-i18n-tools repository
@@ -28,15 +30,17 @@ Use this when you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br
 
 ## Run the demo
 
-From this directory:
+From this directory, generate the extraction catalog and locale bundles, then serve the site:
 
 ```bash
+export OPENROUTER_API_KEY=your_key_here
+pnpm i18n:sync
 pnpm dev
 ```
 
-Open [http://localhost:3090/](http://localhost:3090/) for English, or [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) for Portuguese (Brazil). Use the **Language** dropdown in the header to switch locales; the choice is stored in `localStorage` and reflected in the URL query string.
+`i18n:sync` runs `extract` (→ `public/strings.json`) and `translate-ui` (→ `public/locales/*.json`). Run it before `pnpm dev` whenever those files are missing—for example after a fresh clone or `pnpm i18n:clean`.
 
-Committed locale files under `public/locales/` are included so you can explore translations without an API key.
+Open [http://localhost:3090/](http://localhost:3090/) for English, or [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) for Portuguese (Brazil). Use the **Language** dropdown in the header to switch locales; the choice is stored in `localStorage` and reflected in the URL query string.
 
 ---
 
@@ -45,12 +49,12 @@ Committed locale files under `public/locales/` are included so you can explore t
 | | **This example** | **Bundled dashboard** (`src/dashboard-app/`) |
 | --- | --- | --- |
 | **Serving** | Static files (`pnpm dev`) | Node server (`ai-i18n-tools dashboard`) |
-| **Locale bundles** | `fetch('/locales/{locale}.json')` | `GET /api/ui-i18n` |
-| **Locale resolution** | `?locale=` + picker + browser default | `--ui-lang` / env / config / OS |
-| **Runtime helper** | `applyStaticI18n()` in `public/app.js` | Same algorithm in `src/dashboard-app/app.js` |
+| **Locale bundles** | `fetch` of `./locales/{locale}.json` relative to `i18n.js` | `GET /api/ui-i18n` |
+| **Locale resolution** | `?locale=` + picker + browser default, switched in place | `--ui-lang` / env / config / OS |
+| **Runtime helper** | `public/i18n.js` (`window.i18n`) | `applyStaticI18n()` in `src/dashboard-app/app.js` |
 | **Dynamic JS strings** | None (HTML markers only) | Additional `t()` calls in `app.js` |
 
-The marker-walking logic in `public/app.js` matches the dashboard's `applyStaticI18n` and must stay aligned with `normalizeI18nText` in the tool's `src/extractors/html-i18n-marks.ts`.
+`normalizeI18nText` in `public/i18n.js` matches the dashboard and `src/extractors/html-i18n-marks.ts`. `public/app.js` only wires the tabs and the filter demo.
 
 ---
 
@@ -92,7 +96,7 @@ The committed `public/index.html` is already marked; re-running `mark-html` shou
 ```json
 {
   "sourceLocale": "en",
-  "targetLocales": ["es", "fr", "pt-BR"],
+  "targetLocales": ["pt-BR"],
   "features": { "translateUIStrings": true },
   "ui": {
     "sourceRoots": ["public"],
@@ -103,9 +107,9 @@ The committed `public/index.html` is already marked; re-running `mark-html` shou
 }
 ```
 
-With `flatOutputDir` set to `public/locales`, `ui-languages.json` is written there automatically (same folder as `es.json`, `pt-BR.json`, …) when you run `extract` or `generate-ui-languages` — no separate copy step.
+With `flatOutputDir` set to `public/locales`, `ui-languages.json` is written there automatically (same folder as `pt-BR.json`, …) when you run `extract` or `generate-ui-languages` — no separate copy step.
 
-**pt-BR** is the primary non-English demo locale (no German in this example).
+**pt-BR** is the only target locale in this example (English source + Portuguese Brazil).
 
 ---
 
@@ -165,9 +169,7 @@ plain-html/
     ├── strings.json             # extract catalog (committed; CLI + optional inspect via dev server)
     └── locales/
         ├── ui-languages.json    # generate-ui-languages (default: flatOutputDir)
-        ├── es.json
-        ├── fr.json
-        └── pt-BR.json           # primary demo locale
+        └── pt-BR.json           # Portuguese (Brazil) bundle
 ```
 
 ---
@@ -176,13 +178,13 @@ plain-html/
 
 | Script | Command | Purpose |
 | --- | --- | --- |
-| Dev | `pnpm dev` | Serve static files on port 3090 |
+| Dev | `pnpm i18n:sync` then `pnpm dev` | Generate locale JSON, then serve on port 3090 |
 | Mark HTML | `pnpm i18n:mark-html` | Insert bare markers (`--write`) |
 | Extract | `pnpm i18n:extract` | HTML markers → `public/strings.json` |
 | Translate | `pnpm i18n:translate-ui` | Catalog → `public/locales/*.json` |
 | Manifest | `pnpm i18n:locales` | → `public/locales/ui-languages.json` |
 | Sync | `pnpm i18n:sync` | extract + translate-ui |
-| Clean cache | `pnpm i18n:clean` | Remove `.translation-cache/` only |
+| Clean cache | `pnpm i18n:clean` | Remove `.translation-cache/` and `public/strings.json` |
 
 Set `OPENROUTER_API_KEY` before translate commands that call the API.
 

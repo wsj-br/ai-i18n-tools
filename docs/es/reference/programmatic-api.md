@@ -39,6 +39,7 @@ Exportaciones clave (de uso común; consulte `src/index.ts` para ver la superfic
 | `UIStringExtractor` | Extraer cadenas `t("…")` del código fuente JS/TS. |
 | `collectHtmlI18nStrings` / `markHtmlContent` | Escanea / inserta marcadores `data-i18n*` en HTML (potencia `extract` para `.html` y el comando `mark-html`). |
 | `MarkdownExtractor` | Extraer segmentos traducibles del markdown. |
+| `HtmlTemplateExtractor` | Extraer y reensamblar documentos HTML simples (texto y atributos traducibles; `src` / `href` permanecen en su lugar). |
 | `JsonExtractor` | Extraer de archivos JSON de etiquetas de Docusaurus (catálogos de interfaz de usuario, no del cuerpo MDX). |
 | `SvgExtractor` | Extraer de archivos SVG. |
 | `LlmClient` | Realiza solicitudes de traducción al proveedor LLM activo (`OpenRouterClient` es un alias obsoleto). |

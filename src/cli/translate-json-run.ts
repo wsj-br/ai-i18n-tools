@@ -3,6 +3,7 @@ import path from "path";
 import chalk from "chalk";
 import type { I18nConfig, JsonBlock } from "../core/types.js";
 import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
+import { resolveUiGlossaryPaths } from "../core/ui-blocks.js";
 import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
 import {
   localeEnforcesOutputScript,
@@ -105,9 +106,7 @@ export async function translateNestedJsonFile(
   );
   const trackingKey = jsonBlockFileTrackingKey(blockIndex, relSourcePath);
   const cache = opts.cache;
-  const glossaryUi = config.glossary?.uiGlossary
-    ? path.join(projectRoot, config.glossary.uiGlossary)
-    : undefined;
+  const glossaryUi = resolveUiGlossaryPaths(config, projectRoot);
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(projectRoot, config.glossary.userGlossary)
     : undefined;

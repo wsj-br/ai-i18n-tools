@@ -99,18 +99,22 @@ export class Glossary {
   private readonly _userGlossaryTermCount: number;
 
   constructor(
-    glossaryUiPath: string | undefined,
+    glossaryUiPath: string | string[] | undefined,
     glossaryUserPath: string | undefined,
     targetLocales: string[] = []
   ) {
-    if (glossaryUiPath && fs.existsSync(glossaryUiPath)) {
-      if (looksLikeStringsJson(glossaryUiPath)) {
-        this.loadFromStringsJson(glossaryUiPath);
-      } else {
-        this.loadUiCsv(glossaryUiPath);
+    const uiPaths = (Array.isArray(glossaryUiPath) ? glossaryUiPath : [glossaryUiPath]).filter(
+      (item): item is string => typeof item === "string" && item.trim().length > 0
+    );
+    for (const uiPath of uiPaths) {
+      if (!fs.existsSync(uiPath)) {
+        continue;
       }
-    } else if (glossaryUiPath) {
-      /* optional: missing file */
+      if (looksLikeStringsJson(uiPath)) {
+        this.loadFromStringsJson(uiPath);
+      } else {
+        this.loadUiCsv(uiPath);
+      }
     }
 
     this._uiStringsTermCount = this.terms.size;
@@ -155,7 +159,17 @@ export class Glossary {
       if (Object.keys(translations).length === 0) {
         continue;
       }
-      this.terms.set(source.toLowerCase(), {
+      const key = source.toLowerCase();
+      const existing = this.terms.get(key);
+      if (existing) {
+        for (const [locale, text] of Object.entries(translations)) {
+          if (!existing.translations[locale]) {
+            existing.translations[locale] = text;
+          }
+        }
+        continue;
+      }
+      this.terms.set(key, {
         english: source,
         translations,
         partOfSpeech: "unknown",

@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Documentos
 
-Diseñado principalmente para **documentación de markdown, MDX y `.astro`** gestionada a través de bloques de configuración de `docs[]`. El campo `contentPaths` de cada bloque enumera los archivos o carpetas a traducir.
+Diseñado principalmente para **markdown, MDX, `.astro` y HTML plano** gestionados mediante bloques de configuración de `docs[]`. El campo `contentPaths` de cada bloque enumera los archivos o carpetas a traducir. Las páginas HTML plano (un archivo por configuración regional) se describen en [Páginas HTML](/es/guide/documents/html-pages).
 
 En los sitios de [Docusaurus](/es/guide/integrations/docusaurus), también configure `docusaurusCatalogDir` en su carpeta de catálogo `write-translations` (por ejemplo, `docs-site/i18n/en`). Entonces `translate-docs` también incluye JSON de shell: barra de navegación, pie de página y cadenas de tema.
 
@@ -21,7 +21,7 @@ Los archivos [SVG](/es/guide/svg-translation/) se traducen a través de [`transl
 
 Los paquetes JSON de interfaz de usuario anidados arbitrarios no relacionados con las cadenas de shell/tema de un framework de documentación pertenecen a la canalización [JSON](/es/guide/json), no a `docs[]`.
 
-Para garantizar la **consistencia de la terminología** entre la interfaz de usuario y la documentación, establezca `glossary.uiGlossary` en la ruta de `strings.json` — `translate-docs` reutiliza las traducciones existentes de la interfaz como sugerencias en las indicaciones del LLM cuando los términos coincidentes aparecen en un segmento. El `glossary.userGlossary` opcional añade anulaciones CSV para los términos del producto (compartidas con `translate-ui` y `proofread-ui`). Las abreviaturas compactas de las etiquetas de la interfaz utilizadas para ajustarse a columnas estrechas (por ejemplo, `Size` → `Tam`) siguen disponibles para la traducción de la interfaz, pero se omiten en las sugerencias del glosario de documentos. Genere un CSV inicial con `glossary-generate`, edite las filas en la pestaña [Glosario](/es/guide/translation-dashboard/glossary) del Panel de traducción, o consulte [Configuración — `glossary`](/es/reference/configuration#glossary) y [Glosario](/es/guide/glossary).
+Cada bloque de UI incluye su `strings.json` como sugerencias de glosario para la documentación de forma predeterminada (`uiGlossary`, valor predeterminado `true`). `translate-docs` reutiliza esas traducciones como sugerencias en los prompts de LLM cuando aparecen términos coincidentes en un segmento. Configure `uiGlossary` como `false` en un catálogo que deba excluirse de los prompts de documentos. El `glossary.userGlossary` opcional añade sobrescrituras CSV para los términos del producto (compartidas con `translate-ui` y `proofread-ui`). Las abreviaturas compactas de las etiquetas de UI usadas para ajustar columnas estrechas (por ejemplo, `Size` → `Tam`) siguen disponibles para la traducción de la UI, pero se omiten de las sugerencias del glosario de documentos. Genere un CSV inicial con `glossary-generate`, edite las filas en la pestaña [Glosario](/es/guide/translation-dashboard/glossary) del Panel de traducción, o consulte [Configuración — `glossary`](/es/reference/configuration#glossary) y [Glosario](/es/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Anulaciones de modelo por configuración regional
@@ -38,6 +38,7 @@ Para garantizar la **consistencia de la terminología** entre la interfaz de usu
 | Sitio de Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para el diccionario (la barra lateral `_meta.ts` es automática) - [Nextra](/es/guide/integrations/nextra) |
 | Sitio de Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para la interfaz de usuario (la barra lateral `meta.json` es automática) - [Fumadocs](/es/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/es/guide/integrations/astro#astro-starlight) |
+| Páginas HTML plano | `init -t docs-plain-html` - [Páginas HTML](/es/guide/documents/html-pages) |
 | Documentos planos (README, registros de cambios, etc.) | `docsOutput.style = "flat"` - [Diseños de salida](/es/guide/documents/output-layouts), [selector de idioma](/es/guide/documents/language-switcher) opcional |
 | Dónde aterrizan los archivos traducidos | [Diseños de salida](/es/guide/documents/output-layouts) |
 | Enlaces `#anchor` entre páginas | [Enlaces de anclaje](/es/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ Edite el `ai-i18n-tools.config.json` generado:
 - `docs[].description` - nota breve opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.
 - `docs[].contentPaths` - fuentes de markdown/MDX/`.astro` (y `docusaurusCatalogDir` opcional para JSON de shell de Docusaurus).
 - `docs[].outputDir` - raíz de salida traducida para ese bloque.
-- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Diseños de salida](/es/guide/documents/output-layouts)).
-- `glossary.uiGlossary` - ruta a `strings.json` para que los segmentos de documentos obtengan sugerencias de terminología de su catálogo de UI (consulte [Configuración — `glossary`](/es/reference/configuration#glossary)).
-- `glossary.userGlossary` - CSV opcional para traducciones de términos de productos fijos; también utilizado por las canalizaciones de UI y editable en la pestaña del panel [Glosario](/es/guide/translation-dashboard/glossary).
+- `docs[].docsOutput.style` - `"nested"` (predeterminado), `"flat"`, `"doc-system"`, o los alias `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Diseños de salida](/es/guide/documents/output-layouts)).
+- `ui[].uiGlossary` - cuando es `true` (el valor predeterminado), el `strings.json` de ese bloque proporciona sugerencias de terminología para los segmentos del documento (consulte [Configuración — `ui`](/es/reference/configuration#ui)).
+- `glossary.userGlossary` - CSV opcional para traducciones fijas de términos del producto; también lo usan las canalizaciones de UI y se puede editar en la pestaña [Glosario](/es/guide/translation-dashboard/glossary) del panel.
 
 **Principal frente a suplementario:** Enfóquese en `contentPaths` para páginas localizadas. Establezca `docusaurusCatalogDir` cuando también necesite JSON del shell de Docusaurus desde `write-translations`. Omita `docusaurusCatalogDir` si solo traduce páginas.
 

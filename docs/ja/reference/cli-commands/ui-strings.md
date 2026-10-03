@@ -6,7 +6,7 @@
 
 **概要:** `ai-i18n-tools extract`
 
-`includeUiLanguageEnglishNames`が有効な場合、`t("…")` / `i18n.t("…")`リテラル、オプションの`package.json`説明、およびオプションのバンドルされたマスター`englishName`エントリから`strings.json`を更新します（`ui.uiExtractor`を参照、`languagesManifestPath`は読み取りません）。また、`languagesManifestPath`で`ui-languages.json`を再生成します。`.html` / `.htm`が`ui.uiExtractor.extensions`にリストされている場合、HTMLから`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカー文字列もキャプチャします。空でない`ui.sourceRoots`が必要です。LLMは呼び出しません。
+`includeUiLanguageEnglishNames`が有効な場合、`t("…")` / `i18n.t("…")`リテラル、任意の`package.json`記述、および任意のバンドルマスター`englishName`エントリから`strings.json`を更新します（`ui.uiExtractor`を参照。`languagesManifestPath`は読み取りません）。各ブロックの`ui-languages.json`も再生成します。`.html` / `.htm`が`ui.uiExtractor.extensions`にリストされている場合は、HTMLから`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカー文字列も抽出します。`sourceRoots`を持つすべての`ui`ブロックを走査します。`--ui-block`により、実行対象を1つのブロック（インデックス、記述、または`stringsJson`パス）に制限します。LLMの呼び出しは行いません。
 
 **関連項目:** [UI文字列の概要](/ja/guide/ui-strings/), [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)
 
@@ -32,7 +32,7 @@ Intlayerの`*.content.ts`辞書を`strings.json`およびフラットなロケ�
 
 **概要:** `ai-i18n-tools mark-html [paths...] [--write]`
 
-ソーステキストが1回（要素自体に）書き込まれるように、裸の`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーをHTMLに挿入します。指定されたファイル/ディレクトリ/グロブをスキャンします（デフォルト: `ui.sourceRoots`の下の`.html` / `.htm`）。デフォルトでドライラン（ファイルごとの追加数と、手動の`<span data-i18n>`が必要な混合コンテンツ要素を報告します）。`--write`が変更を適用します。冪等であり、`data-i18n-ignore`を尊重し（要素とそのサブツリーをスキップします）、コードのような要素（`code`, `pre`, `kbd`, `samp`, `var`）や空のテキスト/数値のみのテキストには決して触れず、値を持つマーカーは発行しません。LLMは呼び出しません。
+ソーステキストが1箇所（要素自体）にのみ記述されるよう、HTMLにbare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカーを挿入します。指定されたファイル/ディレクトリ/globパターンをスキャンします（デフォルト：各ブロックの`sourceRoots`配下の`.html` / `.htm`）。デフォルトではドライランとなり（ファイルごとの追加数と、手動での`<span data-i18n>`が必要な混合コンテンツ要素を報告します）、`--write`を指定すると変更が適用されます。冪等性を備え、`data-i18n-ignore`に従い（要素とそのサブツリーをスキップ）、コード系要素（`code`、`pre`、`kbd`、`samp`、`var`）や空文字列/数値のみのテキストには干渉せず、値付きマーカーを出力することもありません。LLMの呼び出しは行いません。
 
 **主なオプション:** `--write`
 
@@ -78,7 +78,7 @@ UI文字列を抽出してから翻訳します (`features.translateUIStrings`�
 
 **概要:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-最初に`extract`を実行し (`features.translateUIStrings`が必要) 、`strings.json`がソースと一致するようにしてから、ソースロケールのUI文字列 (スペル、文法) のLLMレビューを行います。用語のヒントは`glossary.userGlossary` CSVからのみ取得されます (`translate-ui`と同じスコープ — `strings.json` / `uiGlossary`ではないため、悪いコピーが用語集として強化されることはありません)。アクティブなLLMプロバイダー (そのAPIキー環境変数) を使用します。
+最初に`extract`を実行し（`features.translateUIStrings`が必要）、選択された各カタログをソースと一致させた後、ソースロケールのUI文字列（スペル、文法）に対するLLMレビューを実行します。`--ui-block`により、抽出とレビューの対象を1つのブロックに制限します。用語のヒントは`glossary.userGlossary` CSVからのみ取得されます（`translate-ui`と同じスコープ。UIカタログはフィードバックされないため、不適切なテキストが用語集として定着することはありません）。アクティブなLLMプロバイダー（そのAPIキー環境変数）を使用します。
 
 失敗時（機能フラグの未設定、抽出の失敗、カタログの欠落または無効、APIキーの欠落、あるいは全バッチの失敗）には、**1** で終了します。実行が正常に完了した場合（検出結果はあくまで参考情報です）には、**0** で終了します。`cacheDir` 配下に `proofread-ui-results_<timestamp>.log` を、人が読みやすい形式のレポート（概要、問題点、未レビューの行、および文字列ごとの正常行）として出力します。ターミナルには概要の件数と問題点のみが表示されます（文字列ごとの `[ok]` 行は出力されません）。バッチが失敗した場合、あるいはモデルの応答がバッチより短く、各スロットに利用可能な `index` がない場合は、該当する文字列は未レビューとしてカウントされます。短い配列が誤った文字列に適用されるのを防ぐため、これらの問題点は破棄されます。最終行にはログファイル名が出力されます。`--json` を指定すると、人が読みやすい形式の出力は標準エラー出力に送られます。リンクには、ダッシュボードUIの文字列リンクボタンと同様に `path:line` が使用されます。
 

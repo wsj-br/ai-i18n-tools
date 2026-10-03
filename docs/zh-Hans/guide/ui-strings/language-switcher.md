@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## 语言切换器UI
 
+<a id="plain-html"></a>
+### 纯 HTML
+
+对于不使用框架的页面，请加载 [`i18n.js`](/zh-Hans/guide/ui-strings/plain-html#obtain-the-runtime) 并将 `data-locale-select` 指向 `<select>`（或将 `data-locale-list` 指向应转换为链接的元素）。该脚本会从 `ui-languages.json` 填充控件，就地切换区域设置，并设置 `<html lang>` 和 `dir`。请勿根据浏览器语言添加二次重定向。详细信息、标记及完整脚本请参阅：[纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html#language-selector)。
+
+对于为每个区域设置生成一个 HTML 文件的静态站点，请使用 [HTML 页面](/zh-Hans/guide/documents/html-pages) 中生成的语言列表，而不是使用此运行时。
+
 使用 `ui-languages.json` 清单构建语言选择器。`ai-i18n-tools` 导出两个显示帮助器 — 有关签名，请参阅 [运行时帮助器 → 显示帮助器](/zh-Hans/guide/runtime-helpers#display-helpers)。
 
 <details>

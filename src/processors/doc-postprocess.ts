@@ -155,21 +155,43 @@ function markdownRelativeHref(fromTranslatedFile: string, toTargetFile: string):
   return rel.split(path.sep).join("/");
 }
 
+export type LocaleLabelStyle = "local" | "english" | "both";
+
+/** Endonym, English name, or `English / endonym` when they differ. */
+export function localeDisplayLabel(
+  style: LocaleLabelStyle,
+  code: string,
+  englishName?: string,
+  localLabel?: string,
+  fallback?: string
+): string {
+  const english = englishName?.trim() || fallback || code;
+  const local = localLabel?.trim() || fallback || code;
+  if (style === "english") return english;
+  if (style === "both") return english === local ? english : `${english} / ${local}`;
+  return local;
+}
+
 /** Ordered locale rows for the language switcher (manifest order when `ui-languages.json` is available). */
 export function buildLanguageSwitcherRows(
   config: I18nDocTranslateConfig,
-  cwd: string
+  cwd: string,
+  labelStyleOverride?: LocaleLabelStyle
 ): Array<{ code: string; label: string }> {
-  const labelStyle = config.doc.docsOutput.postProcessing?.languageListBlock?.label ?? "local";
+  const labelStyle =
+    labelStyleOverride ?? config.doc.docsOutput.postProcessing?.languageListBlock?.label ?? "local";
   const abs = resolveLanguagesManifestAbsPath(config as unknown as I18nConfig, cwd);
   if (abs && fs.existsSync(abs)) {
     const entries = loadUiLanguageEntries(abs);
     return entries.map((e) => ({
       code: normalizeLocale(e.code),
-      label:
-        labelStyle === "english"
-          ? e.englishName.trim()
-          : (e.label && e.label.trim()) || normalizeLocale(e.code),
+      label: localeDisplayLabel(
+        labelStyle,
+        normalizeLocale(e.code),
+        e.englishName,
+        e.label,
+        normalizeLocale(e.code)
+      ),
     }));
   }
 
@@ -190,10 +212,13 @@ export function buildLanguageSwitcherRows(
       const localLabel = hit?.label?.trim();
       rows.push({
         code,
-        label:
-          labelStyle === "english"
-            ? englishName || config.localeDisplayNames?.[code] || code
-            : localLabel || config.localeDisplayNames?.[code] || code,
+        label: localeDisplayLabel(
+          labelStyle,
+          code,
+          englishName,
+          localLabel,
+          config.localeDisplayNames?.[code]
+        ),
       });
     }
     return rows;
@@ -206,9 +231,17 @@ export function buildLanguageSwitcherRows(
   const rawList = useDoc ? doc! : config.targetLocales;
   const targets = [...new Set(rawList.map((l) => normalizeLocale(l)))].filter((c) => c !== src);
   targets.sort();
-  const rows: Array<{ code: string; label: string }> = [{ code: src, label: names[src] ?? src }];
-  for (const t of targets) {
-    rows.push({ code: t, label: names[t] ?? t });
+  const rows: Array<{ code: string; label: string }> = [
+    {
+      code: src,
+      label: localeDisplayLabel(labelStyle, src, names[src], names[src], src),
+    },
+  ];
+  for (const code of targets) {
+    rows.push({
+      code,
+      label: localeDisplayLabel(labelStyle, code, names[code], names[code], code),
+    });
   }
   return rows;
 }

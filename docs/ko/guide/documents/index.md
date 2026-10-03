@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # 문서
 
-주로 **마크다운, MDX, `.astro` 문서**용으로 설계되었으며, `docs[]` 구성 블록**을 통해 관리됩니다. 각 블록의 `contentPaths` 필드에는 번역할 파일 또는 폴더가 나열됩니다.
+주로 **마크다운, MDX, `.astro` 및 일반 HTML**을 위해 설계되었으며 `docs[]` 구성 블록을 통해 관리됩니다. 각 블록의 `contentPaths` 필드에는 번역할 파일 또는 폴더가 나열됩니다. 일반 HTML 페이지(로케일당 하나의 파일)는 [HTML 페이지](/ko/guide/documents/html-pages)에 설명되어 있습니다.
 
 [Docusaurus](/ko/guide/integrations/docusaurus) 사이트에서는 `docusaurusCatalogDir`를 `write-translations` 카탈로그 폴더(예: `docs-site/i18n/en`)로도 설정하세요. 그러면 `translate-docs`가 navbar, footer, 테마 문자열 등 shell JSON도 함께 포함합니다.
 
@@ -21,7 +21,7 @@ README나 문서에서 선택적 **언어 전환기** 블록을 사용하려면 
 
 문서 프레임워크의 셸/테마 문자열과 관련 없는 임의의 중첩된 UI JSON 번들은 `docs[]`이 아닌 [JSON](/ko/guide/json) 파이프라인에 속합니다.
 
-UI와 문서 간의 **용어 일관성**을 위해 `glossary.uiGlossary`을 `strings.json` 경로로 설정합니다. `translate-docs`는 세그먼트에 일치하는 용어가 나타날 때 LLM 프롬프트의 힌트로 기존 UI 번역을 재사용합니다. 선택적 `glossary.userGlossary`을 사용하면 제품 용어에 대한 CSV 재정의를 추가할 수 있으며(`translate-ui` 및 `proofread-ui`와 공유됨), 좁은 열에 맞추기 위해 사용되는 간결한 UI 레이블 약어(예: `Size` → `Tam`)는 UI 번역에는 계속 사용할 수 있지만 문서 용어집 힌트에서는 제외됩니다. `glossary-generate`로 초기 CSV를 생성하고, 번역 대시보드의 [용어집](/ko/guide/translation-dashboard/glossary) 탭에서 행을 편집하거나, [구성 — `glossary`](/ko/reference/configuration#glossary) 및 [용어집](/ko/guide/glossary)을 참조하세요.
+각 UI 블록은 기본적으로 문서용 용어집 힌트로 `strings.json`을(를) 포함합니다(`uiGlossary`, 기본값 `true`). `translate-docs`은(는) 세그먼트에 일치하는 용어가 나타날 때 LLM 프롬프트의 힌트로 해당 번역을 재사용합니다. 문서 프롬프트에서 제외해야 하는 카탈로그의 `uiGlossary`을(를) `false`(으)로 설정합니다. 선택 사항인 `glossary.userGlossary`은(는) 제품 용어에 대한 CSV 재정의를 추가합니다(`translate-ui` 및 `proofread-ui`과(와) 공유됨). 좁은 열에 맞추기 위해 사용되는 간결한 UI 레이블 약어(예: `Size` → `Tam`)는 UI 번역에는 계속 사용할 수 있지만 문서 용어집 힌트에서는 제외됩니다. `glossary-generate`을(를) 사용하여 시작 CSV를 생성하고, 번역 대시보드의 [용어집](/ko/guide/translation-dashboard/glossary) 탭에서 행을 편집하거나, [구성 — `glossary`](/ko/reference/configuration#glossary) 및 [용어집](/ko/guide/glossary)을(를) 참조하십시오.
 
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
@@ -38,6 +38,7 @@ UI와 문서 간의 **용어 일관성**을 위해 `glossary.uiGlossary`을 `str
 | Nextra 사이트 | 사전용 `init -t ui-nextra` + `nextraDictionaryPath` (sidebar `_meta.ts`는 자동) - [Nextra](/ko/guide/integrations/nextra) |
 | Fumadocs 사이트 | UI용 `init -t ui-fumadocs` + `fumadocsUiCatalog` (sidebar `meta.json`는 자동) - [Fumadocs](/ko/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/ko/guide/integrations/astro#astro-starlight) |
+| 일반 HTML 페이지 | `init -t docs-plain-html` - [HTML 페이지](/ko/guide/documents/html-pages) |
 | 단일 문서 (README, changelog 등) | `docsOutput.style = "flat"` - [출력 레이아웃](/ko/guide/documents/output-layouts), 선택적 [언어 전환기](/ko/guide/documents/language-switcher) |
 | 번역된 파일이 저장되는 위치 | [출력 레이아웃](/ko/guide/documents/output-layouts) |
 | 페이지 간 `#anchor` 링크 | [앵커 링크](/ko/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ ai-i18n-tools init -t ui-astro-website [-P <provider>]
 - `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모. 설정하면 `translate-docs` 헤드라인과 `status` 섹션 헤더에 나타납니다.
 - `docs[].contentPaths` - markdown/MDX/`.astro` 소스(및 Docusaurus 셸 JSON을 위한 선택적 `docusaurusCatalogDir`).
 - `docs[].outputDir` - 해당 블록의 번역된 출력 루트.
-- `docs[].docsOutput.style` - `"nested"` (기본값), `"flat"`, `"doc-system"`, 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
-- `glossary.uiGlossary` - `strings.json` 경로로, 문서 세그먼트가 UI 카탈로그에서 용어 힌트를 받습니다([구성 — `glossary`](/ko/reference/configuration#glossary) 참조).
-- `glossary.userGlossary` - 고정된 제품 용어 번역을 위한 선택적 CSV; UI 파이프라인에서도 사용되며 [용어집](/ko/guide/translation-dashboard/glossary) 대시보드 탭에서 편집할 수 있습니다.
+- `docs[].docsOutput.style` - `"nested"`(기본값), `"flat"`, `"doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
+- `ui[].uiGlossary` - `true`(기본값)인 경우, 해당 블록의 `strings.json`이(가) 문서 세그먼트에 대한 용어 힌트를 제공합니다([구성 — `ui`](/ko/reference/configuration#ui) 참조).
+- `glossary.userGlossary` - 고정된 제품 용어 번역을 위한 선택적 CSV로, UI 파이프라인에서도 사용되며 [용어집](/ko/guide/translation-dashboard/glossary) 대시보드 탭에서 편집할 수 있습니다.
 
 **주요 vs 보조:** 로컬화된 페이지에 대해 `contentPaths`에 집중하십시오. `docusaurusCatalogDir`을 설정하면 `write-translations`에서 Docusaurus 셸 JSON도 필요할 때입니다. 페이지만 번역하는 경우 `docusaurusCatalogDir`는 생략하십시오.
 
@@ -135,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs`는 각 번역된 세그먼트가 마크다운 구조(문서에서 파싱된 강조 포함)를 유지하고 내부 플레이스홀더 토큰이 깔끔하게 복원되는지 확인합니다. `` `inline code` `` 주변에 여러 `bold` 스팬을 쌓거나, 굵게 안에 백틱을 중첩하거나(예: `` `fetch(\`/locales/${code}.json\`)` ``와 같은 템플릿 리터럴), 하나의 긴 문장에 굵게와 코드를 엮는 단락은 취약합니다. 일부 로캘은 다른 어순이 필요하므로, 번역 후 `**` 및 `` ` ``가 정렬되는 방식이 변경되어 `AST mismatch`과 같은 CLI 오류가 발생할 수 있습니다.
 
-복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 <code v-pre>**</code>와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
+복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 `**`와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
 
 **이러한 종류의 유효성 검사 실패가 발생하면, 소스 언어 텍스트를 단순화하는 것을 선호하십시오** - 단락을 분할하거나, 예제를 펜스 코드 블록으로 이동하거나, 겹겨진 굵게/코드 쌍을 줄여 동일한 아이디어를 설명하십시오 - 모든 모델과 로케일이 조밀한 인라인 마크업을 완벽하게 재현할 것으로 기대하지 마십시오.
 

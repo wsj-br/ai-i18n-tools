@@ -7,18 +7,6 @@
     "isSourceLocale": true
   },
   {
-    "code": "es",
-    "label": "Español",
-    "englishName": "Spanish",
-    "direction": "ltr"
-  },
-  {
-    "code": "fr",
-    "label": "Français",
-    "englishName": "French",
-    "direction": "ltr"
-  },
-  {
     "code": "pt-BR",
     "label": "Português (Brasil)",
     "englishName": "Portuguese (Brazil)",

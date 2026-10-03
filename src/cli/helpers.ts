@@ -91,13 +91,9 @@ export function hashFileContent(content: string): string {
   return crypto.createHash("sha256").update(content, "utf8").digest("hex");
 }
 
-/** `strings.json` path: explicit glossary path or `ui.stringsJson`. */
-export function resolveStringsJsonPath(config: I18nConfig, cwd: string): string {
-  const fromGlossary = config.glossary?.uiGlossary?.trim();
-  if (fromGlossary) {
-    return path.isAbsolute(fromGlossary) ? fromGlossary : path.join(cwd, fromGlossary);
-  }
-  const p = config.ui.stringsJson.trim();
+/** `strings.json` path for one UI block. */
+export function resolveStringsJsonPath(block: { stringsJson: string }, cwd: string): string {
+  const p = block.stringsJson.trim();
   return path.isAbsolute(p) ? p : path.join(cwd, p);
 }
 

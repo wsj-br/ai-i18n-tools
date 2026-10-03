@@ -32,6 +32,8 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 | `ui-nextra` | Nextra ドキュメント (`docsOutput.style: "nextra"`) およびテーマ辞書用 `nextraDictionaryPath` (サイドバー `_meta.ts` は自動的に収集されます) |
 | `ui-fumadocs` | Fumadocs ドキュメント (`docsOutput.style: "fumadocs"`) およびUIオーバーライド用 `fumadocsUiCatalog` (サイドバー `meta.json` は自動的に収集されます) |
 | `ui-astro-website` | Astro ウェブサイトUI文字列 |
+| `ui-plain-html` | プレーンHTMLカタログ (`data-i18n*`マーカー、フラットロケールJSON) |
+| `docs-plain-html` | プレーンHTMLドキュメント (ロケールごとに1ファイル、言語リスト、hreflang) |
 | `ui-json-bundles` | JSON (`json[]` のみ) |
 
 `--with-translate-ignore` は初期設定の `.translate-ignore` を作成します。

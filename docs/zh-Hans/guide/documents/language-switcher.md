@@ -68,3 +68,8 @@
 | VitePress 文档（最小演示）      | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` 前面的那一行（例如 `**Read in other languages:**`）是一个正常的、可翻译的片段，并在每个目标区域设置中本地化；只有标记内的链接行会逐字重新生成，除了 `href` 和清单驱动的标签。
+
+<a id="html-pages"></a>
+## HTML 页面
+
+纯 HTML 文档使用另一对注释，即 `<!-- ai-i18n:lang-list -->` 和 `<!-- ai-i18n:hreflang -->`。语言列表可以是链接或 `<select>`，并且 hreflang 替代链接会同时写入英文源文件以及各个本地化文件中。请参阅 [HTML 页面](/zh-Hans/guide/documents/html-pages#language-list-and-hreflang)。

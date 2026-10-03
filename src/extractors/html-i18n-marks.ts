@@ -14,7 +14,25 @@ import type { UiStringLocation } from "./ui-string-locations.js";
 import { uiStringHash } from "./ui-string-locations.js";
 
 /** Default marker attributes. `data-i18n` => textContent; `data-i18n-<attr>` => that attribute's value. */
-export const HTML_I18N_MARKERS = ["data-i18n", "data-i18n-title", "data-i18n-placeholder"] as const;
+export const HTML_I18N_MARKERS = [
+  "data-i18n",
+  "data-i18n-title",
+  "data-i18n-placeholder",
+  "data-i18n-alt",
+  "data-i18n-aria-label",
+] as const;
+
+/**
+ * URL markers applied by the plain-HTML runtime (`i18n.js`). They are never catalog keys:
+ * a valued `data-i18n-<attr>` would send the URL to the translator.
+ */
+export const HTML_I18N_LOCALE_URL_MARKERS = ["data-i18n-locale-src", "data-i18n-locale-href"] as const;
+
+/** Runtime bookkeeping attributes (`data-i18n-source`, `*-base`). Not catalog keys. */
+const RUNTIME_INTERNAL_ATTR = /^data-i18n-source(?:-|$)|-base$/;
+
+/** Attributes `mark-html` mirrors with a bare `data-i18n-<attr>` marker. */
+const AUTO_MARK_ATTRS = ["title", "placeholder", "alt", "aria-label"] as const;
 
 /** Attribute that opts an element out of auto-marking (`mark-html`). */
 export const HTML_I18N_IGNORE_ATTR = "data-i18n-ignore";
@@ -90,7 +108,7 @@ interface OtherToken {
   end: number;
 }
 
-type Token = TextToken | TagToken | OtherToken;
+export type HtmlToken = TextToken | TagToken | OtherToken;
 
 const ATTR_RE = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*(=\s*("([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 
@@ -156,8 +174,8 @@ function parseTag(raw: string, start: number, end: number): TagToken {
   };
 }
 
-function tokenizeHtml(content: string): Token[] {
-  const tokens: Token[] = [];
+export function tokenizeHtml(content: string): HtmlToken[] {
+  const tokens: HtmlToken[] = [];
   const n = content.length;
   let i = 0;
   while (i < n) {
@@ -203,7 +221,7 @@ function tokenizeHtml(content: string): Token[] {
 }
 
 /** Token index of the close tag matching the open tag at `openIdx` (or last token when unbalanced). */
-function matchingCloseIndex(tokens: Token[], openIdx: number): number {
+export function htmlMatchingCloseIndex(tokens: HtmlToken[], openIdx: number): number {
   const open = tokens[openIdx];
   if (!open || open.kind !== "tag" || open.isSelfClose || VOID_ELEMENTS.has(open.name)) {
     return openIdx;
@@ -249,7 +267,7 @@ interface ElementContentInfo {
 }
 
 /** Walk from an opening tag token to its matching close, collecting textContent and direct-child info. */
-function elementContentInfo(tokens: Token[], openIdx: number): ElementContentInfo {
+function elementContentInfo(tokens: HtmlToken[], openIdx: number): ElementContentInfo {
   let depth = 1;
   let text = "";
   let directText = "";
@@ -280,7 +298,15 @@ function elementContentInfo(tokens: Token[], openIdx: number): ElementContentInf
   return { text, directText, hasChildElements };
 }
 
-function markerSourceFor(tok: TagToken, marker: string, tokens: Token[], idx: number): string {
+/** True when `marker` must not become a catalog string (locale URLs and runtime bookkeeping). */
+export function isNonCatalogHtmlMarker(marker: string): boolean {
+  return (
+    (HTML_I18N_LOCALE_URL_MARKERS as readonly string[]).includes(marker) ||
+    RUNTIME_INTERNAL_ATTR.test(marker)
+  );
+}
+
+function markerSourceFor(tok: TagToken, marker: string, tokens: HtmlToken[], idx: number): string {
   const markerVal = tok.attrs.get(marker);
   if (markerVal !== null && markerVal !== undefined && markerVal !== "") {
     return normalizeI18nText(decodeBasicHtmlEntities(markerVal));
@@ -317,12 +343,12 @@ export function collectHtmlI18nStrings(
       continue;
     }
     if (tok.attrs.has(HTML_I18N_IGNORE_ATTR)) {
-      idx = matchingCloseIndex(tokens, idx);
+      idx = htmlMatchingCloseIndex(tokens, idx);
       continue;
     }
     const line = lineAt(content, tok.start);
     for (const marker of markers) {
-      if (!tok.attrs.has(marker)) {
+      if (isNonCatalogHtmlMarker(marker) || !tok.attrs.has(marker)) {
         continue;
       }
       const source = markerSourceFor(tok, marker, tokens, idx);
@@ -383,7 +409,9 @@ function hasLetter(s: string): boolean {
 
 /**
  * Insert bare i18n markers where missing. Adds `data-i18n` to leaf elements with non-empty, letter-bearing
- * text; `data-i18n-title` / `data-i18n-placeholder` to elements that carry those attributes. Skips empty
+ * text; `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` to elements
+ * that carry those attributes. Never adds locale-URL markers (`data-i18n-locale-src` / `data-i18n-locale-href`).
+ * Skips empty
  * elements, `data-i18n-ignore` subtrees, already-marked attributes, and reports mixed-content elements.
  * Idempotent and bare-only (never emits a valued marker).
  */
@@ -399,7 +427,7 @@ export function markHtmlContent(content: string): MarkHtmlResult {
       continue;
     }
     if (tok.attrs.has(HTML_I18N_IGNORE_ATTR)) {
-      idx = matchingCloseIndex(tokens, idx);
+      idx = htmlMatchingCloseIndex(tokens, idx);
       continue;
     }
 
@@ -425,7 +453,7 @@ export function markHtmlContent(content: string): MarkHtmlResult {
       }
     }
 
-    for (const attr of ["title", "placeholder"]) {
+    for (const attr of AUTO_MARK_ATTRS) {
       const marker = `${ATTR_MARKER_PREFIX}${attr}`;
       const v = tok.attrs.get(attr);
       if (typeof v === "string" && v.trim() !== "" && !tok.attrs.has(marker)) {

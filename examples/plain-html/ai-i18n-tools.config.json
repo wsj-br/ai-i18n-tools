@@ -1,8 +1,6 @@
 {
   "sourceLocale": "en",
   "targetLocales": [
-    "es",
-    "fr",
     "pt-BR"
   ],
   "concurrency": 4,

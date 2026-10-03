@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## UI des Sprachumschalters
 
+<a id="plain-html"></a>
+### Einfaches HTML
+
+Für eine Seite ohne Framework laden Sie [`i18n.js`](/de/guide/ui-strings/plain-html#obtain-the-runtime) und verweisen `data-locale-select` auf ein `<select>` (oder `data-locale-list` auf ein Element, das in Links umgewandelt werden soll). Das Skript befüllt das Steuerelement aus `ui-languages.json`, wechselt das Gebietsschema direkt und setzt `<html lang>` und `dir`. Fügen Sie keine zweite Weiterleitung basierend auf der Browsersprache hinzu. Details, Markup und das vollständige Skript: [Einfache HTML-Apps](/de/guide/ui-strings/plain-html#language-selector).
+
+Für eine statische Website, die pro Gebietsschema eine HTML-Datei ausgibt, verwenden Sie anstelle dieser Laufzeitumgebung die generierte Sprachliste in [HTML-Seiten](/de/guide/documents/html-pages).
+
 Verwenden Sie das `ui-languages.json`-Manifest, um einen Sprachselektor zu erstellen. `ai-i18n-tools` exportiert zwei Anzeigehelfer – siehe [Laufzeithelfer → Anzeigehelfer](/de/guide/runtime-helpers#display-helpers) für Signaturen.
 
 <details>

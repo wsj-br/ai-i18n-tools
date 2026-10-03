@@ -14,8 +14,6 @@ This file tracks outstanding tasks, feature ideas, bugs, and planned changes for
 
 ## New features
 
-- Analyse extending config so `ui` can be more than one block (own `sourceRoots`, `stringsJson`, and `flatOutputDir` each), the way `docs[]` already is. Goal: one config file instead of a separate `-c` file per destination — for example folding `ai-i18n-self.config.json` (CLI / dashboard UI bundles) and `ai-i18n-tools.config.json` (docs) into a single config in this repo.
-
 
 ## Improvements
 

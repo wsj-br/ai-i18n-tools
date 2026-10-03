@@ -5,7 +5,7 @@ import {
   buildUiLanguageRowsFromMaster,
   loadUiLanguagesMaster,
 } from "../core/ui-languages-catalog.js";
-import type { I18nConfig, StringsJsonPluralEntry } from "../core/types.js";
+import type { I18nConfig, I18nUiTranslateConfig, StringsJsonPluralEntry } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
@@ -24,7 +24,19 @@ import {
   pluralMultiPlaceholderMissingCount,
 } from "../extractors/ui-string-babel.js";
 import { getUiExtractorConfig } from "../core/ui-extractor-config.js";
+import {
+  effectiveUiManifestRel,
+  effectiveUiTargetLocales,
+  formatUiBlockLabel,
+  selectUiBlocks,
+  toUiTranslateConfig,
+} from "../core/ui-blocks.js";
 import { collectFilesByExtension } from "./file-utils.js";
+import {
+  filterGeneratedHtmlOutputs,
+  htmlOutputLocales,
+  overlappingHtmlSources,
+} from "../core/html-source-filter.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import { timestamp } from "./format.js";
 import {
@@ -50,9 +62,58 @@ type ScannedRow = {
 };
 
 /**
- * Scan `ui.sourceRoots` for UI strings and write merged `strings.json`.
+ * Scan each selected UI block and write its `strings.json` plus manifest.
  */
-export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
+export function runExtract(config: I18nConfig, cwd: string, selector?: string): ExtractSummary {
+  let selected;
+  try {
+    selected = selectUiBlocks(config, selector);
+  } catch (e) {
+    throw new Error(e instanceof Error ? e.message : String(e));
+  }
+  if (selected.length === 0) {
+    throw new Error(t("ui.sourceRoots must be non-empty to extract UI strings"));
+  }
+  const blocks = selected.map((item) => {
+    const locales = effectiveUiTargetLocales(config, item.block);
+    const view = toUiTranslateConfig({ ...config, targetLocales: locales }, item.block);
+    if (selected.length > 1 || item.block.description?.trim()) {
+      console.log(chalk.cyan(formatUiBlockLabel(item.index, item.block)));
+    }
+    return runExtractBlock(view, cwd, item.index, config);
+  });
+  return combineExtractSummaries(blocks);
+}
+
+function combineExtractSummaries(blocks: ExtractSummary[]): ExtractSummary {
+  const first = blocks[0];
+  if (!first) {
+    throw new Error(t("ui.sourceRoots must be non-empty to extract UI strings"));
+  }
+  if (blocks.length === 1) {
+    return first;
+  }
+  return {
+    found: blocks.reduce((sum, block) => sum + block.found, 0),
+    added: blocks.reduce((sum, block) => sum + block.added, 0),
+    updated: blocks.reduce((sum, block) => sum + block.updated, 0),
+    outPath: blocks.map((block) => block.outPath).join(", "),
+    uiLanguagesOutPath: blocks
+      .map((block) => block.uiLanguagesOutPath)
+      .filter((item): item is string => Boolean(item))
+      .join(", "),
+  };
+}
+
+/**
+ * Scan one UI block's `sourceRoots` and write its merged `strings.json`.
+ */
+function runExtractBlock(
+  config: I18nUiTranslateConfig,
+  cwd: string,
+  blockIndex: number,
+  root: I18nConfig
+): ExtractSummary {
   if (config.ui.sourceRoots.length === 0) {
     throw new Error(t("ui.sourceRoots must be non-empty to extract UI strings"));
   }
@@ -68,7 +129,30 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
 
   // HTML files use marker attributes (not Babel `t()` calls); keep them out of the AST passes.
   const htmlExtensions = new Set([".html", ".htm"]);
-  const htmlFiles = files.filter((rel) => htmlExtensions.has(path.extname(rel).toLowerCase()));
+  const htmlLocales = htmlOutputLocales(config.sourceLocale, config.targetLocales);
+  const htmlOutputDirs = (config.docs ?? []).map((block) => block.outputDir);
+  const htmlFiles = filterGeneratedHtmlOutputs(
+    files.filter((rel) => htmlExtensions.has(path.extname(rel).toLowerCase())),
+    htmlOutputDirs,
+    htmlLocales
+  );
+  const docHtml = (config.docs ?? []).flatMap((block) =>
+    filterGeneratedHtmlOutputs(
+      collectFilesByExtension(block.contentPaths, [".html", ".htm"], cwd),
+      htmlOutputDirs,
+      htmlLocales
+    )
+  );
+  for (const rel of overlappingHtmlSources(htmlFiles, docHtml)) {
+    console.warn(
+      chalk.yellow(
+        t(
+          "⚠️  {{path}} is both a UI HTML source and a documentation HTML page. Catalog markers and document translation will both apply.",
+          { path: rel }
+        )
+      )
+    );
+  }
   const codeFiles = files.filter((rel) => !htmlExtensions.has(path.extname(rel).toLowerCase()));
   const htmlMarkers = uiExtractor?.htmlI18nAttributes ?? [...HTML_I18N_MARKERS];
 
@@ -199,7 +283,7 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
     }
   }
 
-  const outPath = resolveStringsJsonPath(config, cwd);
+  const outPath = resolveStringsJsonPath(config.ui, cwd);
   let existing: Record<string, unknown> = {};
   if (fs.existsSync(outPath)) {
     try {
@@ -277,7 +361,15 @@ export function runExtract(config: I18nConfig, cwd: string): ExtractSummary {
   const masterPath = resolveDefaultUiLanguagesMasterPath();
   if (fs.existsSync(masterPath)) {
     try {
-      const gen = runGenerateUiLanguages(config, cwd, { masterPath, dryRun: false });
+      const gen = runGenerateUiLanguages(
+        {
+          ...root,
+          targetLocales: config.targetLocales,
+          languagesManifestPath: effectiveUiManifestRel(root, config.ui, blockIndex),
+        },
+        cwd,
+        { masterPath, dryRun: false }
+      );
       logGenerateUiLanguagesWarnings(gen.warnings);
       uiLanguagesOutPath = gen.outPath;
     } catch (e) {

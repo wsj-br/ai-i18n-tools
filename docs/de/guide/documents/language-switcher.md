@@ -68,3 +68,8 @@ Für Endonym-Labels (`label: "local"`) generieren oder pflegen Sie `ui-languages
 | VitePress-Dokumentation (Minimal-Demo) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 Die Zeile unmittelbar vor `<small id="lang-list">` (z. B. `**Read in other languages:**`) ist ein normaler übersetzbarer Abschnitt und wird in jedem Zielgebietsschema lokalisiert; nur die Link-Zeile innerhalb der Marker wird wortwörtlich neu generiert, abgesehen von `href` und manifestgesteuerten Bezeichnungen.
+
+<a id="html-pages"></a>
+## HTML-Seiten
+
+Reine HTML-Dokumente verwenden ein anderes Kommentarpaar, `<!-- ai-i18n:lang-list -->` und `<!-- ai-i18n:hreflang -->`. Die Sprachliste kann aus Links oder einem `<select>` bestehen, und hreflang-Alternativen werden sowohl in die englische Quelldatei als auch in jede Locale-Datei geschrieben. Siehe [HTML-Seiten](/de/guide/documents/html-pages#language-list-and-hreflang).

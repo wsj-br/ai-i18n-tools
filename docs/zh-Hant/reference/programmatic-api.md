@@ -39,6 +39,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `UIStringExtractor` | 從 JS/TS 原始碼中提取 `t("…")` 字串。 |
 | `collectHtmlI18nStrings` / `markHtmlContent` | 掃描 / 插入 HTML 中的 `data-i18n*` 標記（支援 `extract` 用於 `.html` 以及 `mark-html` 命令）。 |
 | `MarkdownExtractor` | 從 markdown 中提取可翻譯的區段。 |
+| `HtmlTemplateExtractor` | 擷取並重新組合純 HTML 文件（文字與可翻譯屬性；`src` / `href` 保持原位）。 |
 | `JsonExtractor` | 從 Docusaurus JSON 標籤檔案中提取（UI 目錄，非 MDX 主體）。 |
 | `SvgExtractor` | 從 SVG 檔案中提取。 |
 | `LlmClient` | 向作用中的 LLM 提供者發出翻譯請求（`OpenRouterClient` 是已淘汰的別名）。 |

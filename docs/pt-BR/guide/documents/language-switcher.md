@@ -68,3 +68,8 @@ Para rótulos de endônimo (`label: "local"`), gere ou mantenha `ui-languages.js
 | Documentação VitePress (demonstração mínima) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 A linha imediatamente antes de `<small id="lang-list">` (por exemplo, `**Read in other languages:**`) é um segmento normal passível de tradução e é localizada em cada localidade de destino; apenas a linha de links dentro dos marcadores é regenerada literalmente, exceto por `href` e rótulos gerados pelo manifesto.
+
+<a id="html-pages"></a>
+## Páginas HTML
+
+Documentos HTML simples usam um par diferente de comentários, `<!-- ai-i18n:lang-list -->` e `<!-- ai-i18n:hreflang -->`. A lista de idiomas pode ser composta por links ou um `<select>`, e as alternativas hreflang são inseridas no código-fonte em inglês, bem como em cada arquivo de localidade. Consulte [Páginas HTML](/pt-BR/guide/documents/html-pages#language-list-and-hreflang).

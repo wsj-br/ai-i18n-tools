@@ -1,0 +1,20 @@
+{
+  "name": "plain-html-docs-example",
+  "version": "1.0.0",
+  "description": "Plain HTML pages translated as documents (one file per locale)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "i18n:translate-docs": "ai-i18n-tools translate-docs",
+    "i18n:sync": "ai-i18n-tools sync",
+    "i18n:clean": "rm -rf .translation-cache site/pt-BR"
+  },
+  "devDependencies": {
+    "ai-i18n-tools": "^1.10.0"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "license": "MIT"
+}

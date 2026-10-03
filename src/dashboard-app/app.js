@@ -19,6 +19,36 @@
     );
   }
 
+  let uiCatalogId = "";
+
+  function withUiCatalog(url) {
+    if (!uiCatalogId) return url;
+    const join = url.includes("?") ? "&" : "?";
+    return url + join + "catalog=" + encodeURIComponent(uiCatalogId);
+  }
+
+  async function ensureUiCatalogs() {
+    const res = await nativeFetch("/api/ui-catalogs");
+    const data = await res.json();
+    const catalogs = Array.isArray(data.catalogs) ? data.catalogs : [];
+    if (!uiCatalogId && catalogs[0]) uiCatalogId = String(catalogs[0].id);
+    for (const selectId of ["ui-catalog", "up-catalog"]) {
+      const select = document.getElementById(selectId);
+      const wrap = document.getElementById(selectId === "ui-catalog" ? "ui-catalog-wrap" : "up-catalog-wrap");
+      if (!select || !wrap) continue;
+      select.innerHTML = "";
+      for (const catalog of catalogs) {
+        const option = document.createElement("option");
+        option.value = String(catalog.id);
+        option.textContent = catalog.label || catalog.id;
+        if (option.value === uiCatalogId) option.selected = true;
+        select.appendChild(option);
+      }
+      wrap.classList.toggle("hidden-ui", catalogs.length < 2);
+    }
+    return catalogs;
+  }
+
   /**
    * Collapse insignificant whitespace so a multi-line / indented source text node yields the same key
    * the extractor computed. MUST stay identical to `normalizeI18nText` in
@@ -1419,7 +1449,7 @@
     const loc = uiState.editingLocale;
     const val = document.getElementById("ui-modal-textarea").value;
     try {
-      const res = await fetch(`/api/ui-strings/${encodeURIComponent(uiState.editingEntry.id)}`, {
+      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(uiState.editingEntry.id)}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ translated: { [loc]: val } }),
@@ -1436,7 +1466,7 @@
   async function uiDeleteRow(entry, locale) {
     if (!confirm(t("Delete this translation?"))) return;
     try {
-      const res = await fetch(`/api/ui-strings/${encodeURIComponent(entry.id)}`, {
+      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(entry.id)}`), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale }),
@@ -1457,7 +1487,7 @@
     }
     if (!confirm(t("Delete all {{count}} filtered translation row(s)?", { count }))) return;
     try {
-      const res = await fetch("/api/ui-strings/delete-rows", {
+      const res = await fetch(withUiCatalog("/api/ui-strings/delete-rows"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1500,7 +1530,8 @@
   async function loadUiStrings() {
     setStatus(document.getElementById("ui-status"), t("Loading\u2026"), false);
     try {
-      const meta = await fetch("/api/ui-strings/meta").then((r) => r.json());
+      await ensureUiCatalogs();
+      const meta = await fetch(withUiCatalog("/api/ui-strings/meta")).then((r) => r.json());
       uiState.meta = meta;
       document.getElementById("ui-meta").textContent = meta.available
         ? t("File: {{path}} \u2014 locales: {{locales}}", {
@@ -1541,7 +1572,7 @@
         modelSel.value = "";
         return;
       }
-      const data = await fetch("/api/ui-strings").then((r) => r.json());
+      const data = await fetch(withUiCatalog("/api/ui-strings")).then((r) => r.json());
       if (!data.entries) throw new Error(data.error || t("Bad response"));
       uiState.allEntries = data.entries
         .filter((e) => !e.plural)
@@ -1603,6 +1634,12 @@
   }
 
   function uiInitListeners() {
+    document.getElementById("ui-catalog").addEventListener("change", (e) => {
+      uiCatalogId = e.target.value;
+      const other = document.getElementById("up-catalog");
+      if (other) other.value = uiCatalogId;
+      loadUiStrings();
+    });
     document.getElementById("ui-btn-delete-filtered").addEventListener("click", uiDeleteFiltered);
     document.getElementById("ui-btn-clear").addEventListener("click", uiClearFilters);
     document.getElementById("ui-btn-apply").addEventListener("click", uiApplyAndRender);
@@ -1851,7 +1888,8 @@
   async function loadUiPlurals() {
     setStatus(document.getElementById("up-status"), t("Loading\u2026"), false);
     try {
-      const meta = await fetch("/api/ui-strings/meta").then((r) => r.json());
+      await ensureUiCatalogs();
+      const meta = await fetch(withUiCatalog("/api/ui-strings/meta")).then((r) => r.json());
       upState.meta = meta;
       document.getElementById("up-meta").textContent = meta.available
         ? t("File: {{path}} \u2014 plural locales: {{locales}}", {
@@ -1889,7 +1927,7 @@
           '<option value="">' + escapeHtml(t("All models")) + "</option>";
         return;
       }
-      const data = await fetch("/api/ui-strings").then((r) => r.json());
+      const data = await fetch(withUiCatalog("/api/ui-strings")).then((r) => r.json());
       if (!data.entries) throw new Error(data.error || t("Bad response"));
       upState.allEntries = data.entries
         .filter((e) => e.plural === true)
@@ -2094,7 +2132,7 @@
       if (id) payload[id] = ta.value;
     }
     try {
-      const res = await fetch(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`, {
+      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ translated: { [locale]: payload } }),
@@ -2111,7 +2149,7 @@
   async function upDeleteRow(entry, locale) {
     if (!confirm(t("Delete all plural forms for this locale?"))) return;
     try {
-      const res = await fetch(`/api/ui-strings/${encodeURIComponent(entry.id)}`, {
+      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(entry.id)}`), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale }),
@@ -2132,7 +2170,7 @@
     }
     if (!confirm(t("Delete all {{count}} filtered locale bucket(s)?", { count }))) return;
     try {
-      const res = await fetch("/api/ui-strings/delete-rows", {
+      const res = await fetch(withUiCatalog("/api/ui-strings/delete-rows"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2149,6 +2187,12 @@
   }
 
   function upInitListeners() {
+    document.getElementById("up-catalog").addEventListener("change", (e) => {
+      uiCatalogId = e.target.value;
+      const other = document.getElementById("ui-catalog");
+      if (other) other.value = uiCatalogId;
+      loadUiPlurals();
+    });
     document.getElementById("up-btn-delete-filtered").addEventListener("click", upDeleteFiltered);
     document.getElementById("up-btn-clear").addEventListener("click", upClearFilters);
     document.getElementById("up-btn-apply").addEventListener("click", upApplyAndRender);

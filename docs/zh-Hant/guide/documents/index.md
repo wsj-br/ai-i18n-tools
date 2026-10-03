@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # 文件
 
-主要為透過 `docs[]` 設定區塊管理的 **Markdown、MDX 和 `.astro` 文件**而設計。每個區塊的 `contentPaths` 欄位列出了要翻譯的檔案或資料夾。
+主要設計用於透過 `docs[]` 設定區塊管理的 **markdown、MDX、`.astro` 和純 HTML**。每個區塊的 `contentPaths` 欄位會列出要翻譯的檔案或資料夾。純 HTML 頁面（每個語系一個檔案）的說明請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。
 
 在 [Docusaurus](/zh-Hant/guide/integrations/docusaurus) 網站上，也請將 `docusaurusCatalogDir` 設定為您的 `write-translations` 目錄資料夾（例如 `docs-site/i18n/en`）。接著 `translate-docs` 也會包含 shell JSON — 導導覽列、頁尾及主題字串。
 
@@ -21,7 +21,7 @@
 
 與文件框架的殼層/主題字串無關的任意巢狀 UI JSON 套件應屬於 [JSON](/zh-Hant/guide/json) 管線，而非 `docs[]`。
 
-為了在 UI 與文件之間保持**術語一致性**，請將 `glossary.uiGlossary` 設定為您的 `strings.json` 路徑 — 當區段中出現相符的術語時，`translate-docs` 會重複使用現有的 UI 翻譯作為 LLM 提示詞中的提示。選用的 `glossary.userGlossary` 可新增產品術語的 CSV 覆寫 (與 `translate-ui` 和 `proofread-ui` 共用)。用於配合窄欄位的精簡 UI 標籤縮寫 (例如 `Size` → `Tam`) 仍可用於 UI 翻譯，但會從文件術語庫提示中省略。使用 `glossary-generate` 產生初始 CSV、在翻譯儀表板的 [術語庫](/zh-Hant/guide/translation-dashboard/glossary) 索引標籤中編輯列，或參閱 [設定 — `glossary`](/zh-Hant/reference/configuration#glossary) 與 [術語庫](/zh-Hant/guide/glossary)。
+每個 UI 區塊預設會將其 `strings.json` 作為文件的術語表提示（`uiGlossary`，預設為 `true`）。當區段中出現相符的術語時，`translate-docs` 會將這些翻譯重複用作 LLM 提示詞中的提示。對於不應納入文件提示詞的目錄，請將 `uiGlossary` 設定為 `false`。選用的 `glossary.userGlossary` 可新增產品術語的 CSV 覆寫（與 `translate-ui` 和 `proofread-ui` 共用）。為適應窄欄位而使用的精簡 UI 標籤縮寫（例如 `Size` → `Tam`）仍可用於 UI 翻譯，但會從文件術語表提示中省略。使用 `glossary-generate` 產生初始 CSV，在翻譯儀表板的 [術語表](/zh-Hant/guide/translation-dashboard/glossary) 索引標籤中編輯列，或參閱 [設定 — `glossary`](/zh-Hant/reference/configuration#glossary) 與 [術語表](/zh-Hant/guide/glossary)。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
@@ -38,6 +38,7 @@
 | Nextra 網站 | `init -t ui-nextra` + `nextraDictionaryPath` 用於字典（側邊欄 `_meta.ts` 為自動） - [Nextra](/zh-Hant/guide/integrations/nextra) |
 | Fumadocs 網站 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用於 UI（側邊欄 `meta.json` 為自動） - [Fumadocs](/zh-Hant/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/zh-Hant/guide/integrations/astro#astro-starlight) |
+| 純 HTML 頁面 | `init -t docs-plain-html` - [HTML 頁面](/zh-Hant/guide/documents/html-pages) |
 | 扁平文件（README、變更日誌等） | `docsOutput.style = "flat"` - [輸出佈局](/zh-Hant/guide/documents/output-layouts)、選用[語言切換器](/zh-Hant/guide/documents/language-switcher) |
 | 翻譯檔案的存放位置 | [輸出佈局](/zh-Hant/guide/documents/output-layouts) |
 | 跨頁面 `#anchor` 連結 | [錨點連結](/zh-Hant/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ ai-i18n-tools init -t ui-astro-website [-P <provider>]
 - `docs[].description` - 給維護者的可選簡短備註。設定後，會顯示在 `translate-docs` 標題與 `status` 區塊標頭中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 來源（以及 Docusaurus shell JSON 的可選 `docusaurusCatalogDir`）。
 - `docs[].outputDir` - 該區塊的翻譯輸出根目錄。
-- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（請參閱[輸出佈局](/zh-Hant/guide/documents/output-layouts)）。
-- `glossary.uiGlossary` - `strings.json` 的路徑，讓文件片段能從您的 UI 目錄取得術語提示（請參閱[設定 — `glossary`](/zh-Hant/reference/configuration#glossary)）。
-- `glossary.userGlossary` - 選用的 CSV，用於固定的產品術語翻譯；同時供 UI 管線使用，並可在[詞彙表](/zh-Hant/guide/translation-dashboard/glossary)儀表板分頁中編輯。
+- `docs[].docsOutput.style` - `"nested"`（預設）、`"flat"`、`"doc-system"`，或別名 `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（請參閱 [輸出配置](/zh-Hant/guide/documents/output-layouts)）。
+- `ui[].uiGlossary` - 當為 `true`（預設值）時，該區塊的 `strings.json` 會提供文件區段的術語提示（請參閱 [設定 — `ui`](/zh-Hant/reference/configuration#ui)）。
+- `glossary.userGlossary` - 用於固定產品術語翻譯的選用 CSV；亦由 UI 管線使用，並可在 [術語表](/zh-Hant/guide/translation-dashboard/glossary) 儀表板索引標籤中編輯。
 
 **主要與補充：** 專注於 `contentPaths` 以進行本地化頁面。當您也需要來自 `write-translations` 的 Docusaurus shell JSON 時，請設定 `docusaurusCatalogDir`。如果您只翻譯頁面，請省略 `docusaurusCatalogDir`。
 
@@ -135,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs` 會檢查每個翻譯片段是否保留了 Markdown 結構（包括從文件中解析出的強調標記），以及內部佔位符標記是否正確還原。在 `` `inline code` `` 周圍堆疊多個 `bold` 跨度、在粗體內嵌套反引號（例如範本字面值如 `` `fetch(\`/locales/${code}.json\`)` ``），或在長句中交織粗體與程式碼的段落非常脆弱：某些語言環境需要不同的語序，這可能會改變 `**` 和 `` ` `` 在翻譯後的對齊方式，並觸發如 `AST mismatch` 的 CLI 錯誤。
 
-還原後，`translate-docs` 亦會拒絕以下段落：HTML 標籤佔位符被重複使用或丟棄（導致還原後的標籤不再與來源映射相符），或模型捏造了來源中不存在的多餘雙花括號權杖（例如虛構的詞彙表風格權杖）。還原前檢查要求相同的 <code v-pre>{{…}}</code> 權杖多重集，以及相同的結構權杖有序子序列（<code v-pre>{{HTM_N}}</code>，提示標記）；內容權杖如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code>，以及強調標記如 <code v-pre>**</code> 可隨自然語序移動，前提是每個 id / 類型的計數仍相符。這些失敗情況使用與多餘官方內部權杖相同的模型回退路徑。
+還原後，`translate-docs` 亦會拒絕以下段落：HTML 標籤佔位符被重複使用或丟棄（導致還原後的標籤不再與來源映射相符），或模型捏造了來源中不存在的多餘雙花括號權杖（例如虛構的詞彙表風格權杖）。還原前檢查要求相同的 <code v-pre>{{…}}</code> 權杖多重集，以及相同的結構權杖有序子序列（<code v-pre>{{HTM_N}}</code>，提示標記）；內容權杖如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code>，以及強調標記如 `**` 可隨自然語序移動，前提是每個 id / 類型的計數仍相符。這些失敗情況使用與多餘官方內部權杖相同的模型回退路徑。
 
 **如果您遇到此類驗證失敗，請優先簡化來源語言文字** - 分割段落、將範例移至圍欄程式碼區塊中，或使用較少層層堆疊的粗體/程式碼配對來描述相同概念 - 而非期望每個模型和語系都能完美重現密集的行內標記。
 

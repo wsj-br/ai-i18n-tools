@@ -22,7 +22,7 @@
     "@types/node": "^26.6.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "ai-i18n-tools": "^1.9.0",
+    "ai-i18n-tools": "^1.10.0",
     "typescript": "^5.9.0"
   },
   "engines": {

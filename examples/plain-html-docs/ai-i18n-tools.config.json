@@ -1,0 +1,59 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": ["pt-BR"],
+  "concurrency": 2,
+  "batchConcurrency": 4,
+  "batchSize": 20,
+  "maxBatchChars": 4096,
+  "features": {
+    "translateUIStrings": false,
+    "translateDocs": true,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "providers": {
+    "openrouter": {
+      "translationModels": [
+        "openai/gpt-4o-mini",
+        "~anthropic/claude-haiku-latest",
+        "google/gemini-3.5-flash"
+      ],
+      "maxTokens": 8192,
+      "temperature": 0.2
+    }
+  },
+  "provider": "openrouter",
+  "ui": {
+    "sourceRoots": [],
+    "stringsJson": "strings.json",
+    "flatOutputDir": "locales"
+  },
+  "docs": [
+    {
+      "description": "Static HTML pages",
+      "contentPaths": ["site/"],
+      "outputDir": "site",
+      "addFrontmatter": false,
+      "docsOutput": {
+        "style": "nested",
+        "docsRoot": "site",
+        "localizedAssets": {
+          "include": ["img/**"],
+          "pattern": "{stem}-{locale}{ext}",
+          "onlyIfExists": true
+        },
+        "html": {
+          "languageList": {
+            "format": "links",
+            "label": "local"
+          },
+          "hreflang": {
+            "siteUrl": "https://example.com",
+            "xDefault": "en",
+            "stripIndexHtml": true
+          }
+        }
+      }
+    }
+  ]
+}

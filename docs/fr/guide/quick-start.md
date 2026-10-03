@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ Activez toutes les fonctionnalités dans une seule configuration pour exécuter 
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ Activez toutes les fonctionnalités dans une seule configuration pour exécuter 
 
 <br />
 
-`glossary.uiGlossary` dirige la traduction des documents vers le même catalogue `strings.json` que l'interface utilisateur afin de maintenir la cohérence terminologique ; `glossary.userGlossary` ajoute des substitutions CSV pour les termes du produit. Consultez le [Glossaire](/fr/guide/glossary).
+Les blocs d'interface utilisateur incluent par défaut leurs catalogues `strings.json` comme suggestions de glossaire pour la documentation (`uiGlossary`). `glossary.userGlossary` ajoute des surcharges CSV pour les termes du produit. Consultez le [Glossaire](/fr/guide/glossary).
 
 Exécutez `ai-i18n-tools sync` pour exécuter un pipeline : lorsque `features.translateUIStrings` est activé, **extrayez** puis **traduisez** les chaînes d’interface utilisateur ; **traduisez** éventuellement les SVG (blocs `features.translateSVG` + `svg`) ; **traduisez la documentation** (`docs[]` tel que configuré) ; puis **traduisez** éventuellement le JSON (`features.translateJson` + `json[]`). Ignorez des parties avec `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`. Les étapes de documentation et `json[]` acceptent `--dry-run`, `-p` / `--path`, `--force`, `--force-update` et `--check-cache` (les indicateurs de documentation uniquement sont ignorés lorsque `--no-docs` ; JSON utilise les mêmes indicateurs de cache lorsque `--no-json` n’est pas défini).
 

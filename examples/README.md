@@ -29,6 +29,7 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [fumadocs-docs](./fumadocs-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` |
 | [docusaurus-docs](./docusaurus-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/docusaurus-docs docusaurus-docs` |
 | [plain-html](./plain-html/) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` |
+| [plain-html-docs](./plain-html-docs/) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` |
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 | [intlayer-migration](./intlayer-migration/) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` |
@@ -55,6 +56,7 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [nextra-docs](./nextra-docs/)       | Workspace app      | Nextra 4 MDX + `_meta.ts` / dictionary `.ts` shell (`nextra` preset) | Next.js + Nextra              |
 | [fumadocs-docs](./fumadocs-docs/)   | Workspace app      | Fumadocs 4 MDX + `meta.json` / UI catalog (`fumadocs` preset, dot parser) | Next.js + Fumadocs         |
 | [plain-html](./plain-html/)         | Workspace app      | Plain HTML + `data-i18n*` markers + static locale JSON                  | Static HTML (no framework) |
+| [plain-html-docs](./plain-html-docs/) | Workspace app    | Plain HTML documents (one file per locale, localized images, hreflang) | Static HTML (no framework) |
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 | [intlayer-migration](./intlayer-migration/) | Workspace app | Intlayer `.content.ts` → `t()` migration (`migrate-intlayer`) | Vite + React (Intlayer shim → ai-i18n-tools/runtime) |
@@ -212,12 +214,28 @@ Minimal [**Fumadocs**](https://www.fumadocs.dev/) 4 documentation site (port **3
 
 - Marking HTML for translation without `t()` in markup
 - `mark-html`, `extract`, and `translate-ui` on `.html` sources
-- Runtime `applyStaticI18n` (aligned with `src/dashboard-app/app.js`)
+- Drop-in `i18n.js` (same file as `ai-i18n-tools/html-runtime/i18n.js`)
 - Language picker with `?locale=pt-BR` deep links
 
 **Good starting point if** you have a legacy or static HTML app and want the smallest runnable end-to-end demo of the plain-HTML workflow.
 
 → [plain-html/README.md](./plain-html/README.md)
+
+---
+
+## [plain-html-docs](./plain-html-docs/)
+
+**Static HTML documents** (port 3092). `translate-docs` writes `site/pt-BR/*.html` from the English pages in `site/`.
+
+**What it demonstrates**
+
+- HTML as a document template (text, `alt`, title, meta description)
+- Locale image rename when `img/trulli-pt-BR.jpg` exists, and a shared `logo.svg`
+- `<!-- ai-i18n:lang-list -->` and `<!-- ai-i18n:hreflang -->`, refreshed on the English source too
+
+**Good starting point if** each language should be its own HTML file rather than one page that swaps strings in the browser.
+
+→ [plain-html-docs/README.md](./plain-html-docs/README.md)
 
 ---
 
@@ -285,6 +303,7 @@ Practice **`migrate-intlayer`**: Intlayer `*.content.ts` dictionaries and `useIn
 | Nextra 4 docs site | [nextra-docs](./nextra-docs/) |
 | Fumadocs 4 docs site | [fumadocs-docs](./fumadocs-docs/) |
 | Plain HTML + `data-i18n*` markers | [plain-html](./plain-html/) |
+| Plain HTML, one file per locale | [plain-html-docs](./plain-html-docs/) |
 | Pick or benchmark an LLM provider | [multi-provider](./multi-provider/) |
 | Regression-test markdown / CJK translation | [test-markdown](./test-markdown/) |
 | Migrate Intlayer `.content.ts` to `t()` | [intlayer-migration](./intlayer-migration/) |

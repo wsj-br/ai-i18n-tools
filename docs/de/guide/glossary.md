@@ -5,8 +5,8 @@ Das Glossar stellt eine konsistente Produktterminologie über alle Übersetzunge
 
 Zwei Arten von Vorgaben werden an das Modell gesendet:
 
-- **Begriffszeilen** in `glossary.userGlossary` (und bei einigen Pipelines vorhandene UI-Übersetzungen aus `glossary.uiGlossary`). Eine Zeile wird nur einbezogen, wenn der Quellbegriff im zu übersetzenden Text vorkommt.
-- **Projektkontextdateien** in `glossary.contextFiles`. Das vollständige Briefing wird in jeden UI-, Dokumentations-, JSON-, SVG- und Korrekturlese-Prompt eingefügt. Dieser Abschnitt befindet sich [weiter unten](#project-context-files).
+- **Begriffszeilen** in `glossary.userGlossary` (und für Dokumentation, JSON und SVG vorhandene UI-Übersetzungen aus jedem `ui`-Block, bei dem `uiGlossary` aktiviert ist). Eine Zeile wird nur dann aufgenommen, wenn der entsprechende Quellbegriff im zu übersetzenden Text vorkommt.
+- **Projektkontextdateien** in `glossary.contextFiles`. Das vollständige Briefing wird in jeden UI-, Dokumentations-, JSON-, SVG- und Korrekturlese-Prompt eingefügt. Dieser Abschnitt folgt [unten](#project-context-files).
 
 <a id="how-the-glossary-works"></a>
 ## Funktionsweise des Glossars
@@ -16,12 +16,10 @@ Zwei Arten von Vorgaben werden an das Modell gesendet:
 
 | Quelle | Konfiguration | Verwendet von |
 | --- | --- | --- |
-| UI-Katalog | `glossary.uiGlossary` — normalerweise derselbe Pfad wie `ui.stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
+| UI-Kataloge | `ui[].uiGlossary` (boolesch, Standard `true`) — `stringsJson` dieses Blocks | `translate-docs`, `translate-json`, `translate-svg` |
 | Benutzer-CSV | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
-`uiGlossary` verwendet bereits in `strings.json` gespeicherte Übersetzungen als Hinweise, damit Dokumentation, JSON und SVG mit der Benutzeroberfläche übereinstimmen. `translate-ui` und `proofread-ui` lesen `uiGlossary` nicht – sie nutzen nur Hinweise aus der Benutzer-CSV, sodass eine fehlerhafte UI-Übersetzung nicht als bevorzugter Begriff zurückgespielt wird.
-
-Die Benutzer-CSV hat Vorrang vor dem UI-Katalog. Eine Zeile, deren `locale` ein bestimmter Code ist, ersetzt sowohl die Zeile in `*` als auch die UI-Katalog-Übersetzung für dieses Gebietsschema. Ein `locale` von `*` wendet dieselbe Übersetzung auf jeden `targetLocales`-Eintrag an, der noch keine aus dem UI-Katalog hat.
+Ein Block mit `uiGlossary: true` verwendet die bereits in seinem `strings.json` gespeicherten Übersetzungen als Hinweise, damit Dokumentation, JSON und SVG mit der UI synchron bleiben. `translate-ui` und `proofread-ui` lesen diese Kataloge nicht — sie beziehen Hinweise ausschließlich aus der Benutzer-CSV, damit eine fehlerhafte UI-Übersetzung nicht als bevorzugter Begriff zurück in den Prozess gelangt. Setzen Sie `uiGlossary` auf `false` für einen Block, der andere Pipelines nicht beeinflussen soll. Wenn mehrere Blöcke denselben Quellbegriff verwenden, füllt der erste Block eine Locale auf, und nachfolgende Blöcke ergänzen nur die noch fehlenden Locales. Die Benutzer-CSV hat stets Vorrang vor allen UI-Katalogen. Eine Zeile, deren `locale` ein spezifischer Code ist, ersetzt sowohl die `*`-Zeile als auch die Übersetzung aus dem UI-Katalog für diese Locale. Ein `locale` von `*` wendet dieselbe Übersetzung auf alle Ziel-Locales an, für die noch keine Übersetzung aus einem UI-Katalog vorliegt.
 
 Kompakte Abkürzungen für UI-Bezeichnungen (ein abschließender Punkt wie `Alm.` oder eine kurze Kompression in einem einzelnen Token wie `Size` → `Tam`) bleiben für die UI-Übersetzung verfügbar. Dokumentations-Prompts überspringen sie, damit sie Modelle nicht dazu verleiten, erfundene <code v-pre>{{…}}</code>-Tokens in Markdown oder MDX zu erzeugen.
 
@@ -52,7 +50,6 @@ Verweisen Sie in der Konfiguration auf die Datei:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Kombiniert mit einer Projektübersicht:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

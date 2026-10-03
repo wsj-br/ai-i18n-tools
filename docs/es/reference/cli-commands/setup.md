@@ -32,6 +32,8 @@ Escriba un archivo de configuración inicial (incluye `provider` / `providers`, 
 | `ui-nextra` | Documentos de Nextra (`docsOutput.style: "nextra"`) más `nextraDictionaryPath` para el diccionario de temas (la barra lateral `_meta.ts` se recopila automáticamente) |
 | `ui-fumadocs` | Documentos de Fumadocs (`docsOutput.style: "fumadocs"`) más `fumadocsUiCatalog` para anulaciones de la interfaz de usuario (la barra lateral `meta.json` se recopila automáticamente) |
 | `ui-astro-website` | Cadenas de interfaz de usuario del sitio web de Astro |
+| `ui-plain-html` | Catálogo HTML simple (marcadores `data-i18n*`, JSON de locale plano) |
+| `docs-plain-html` | Documentos HTML simples (un archivo por locale, lista de idiomas, hreflang) |
 | `ui-json-bundles` | JSON (solo `json[]`) |
 
 `--with-translate-ignore` crea un `.translate-ignore` inicial.

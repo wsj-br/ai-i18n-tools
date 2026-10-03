@@ -14,6 +14,10 @@
   box-sizing: border-box;
 }
 
+html.i18n-pending body {
+  visibility: hidden;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -64,6 +68,25 @@ body {
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.hero-figure {
+  margin: 0 0 1rem;
+}
+
+.hero-figure img {
+  display: block;
+  max-width: min(100%, 577px);
+  height: auto;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.hero-figure figcaption {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 

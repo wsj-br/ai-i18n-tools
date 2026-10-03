@@ -4,8 +4,8 @@
  * dist/i18n/locales so the compiled self-i18n runtime (dist/i18n/index.js) finds
  * `./locales/<code>.json` and `./locales/ui-languages.json` next to it.
  *
- * The bundles are produced by `pnpm run i18n:self` (extract + translate-ui against
- * ai-i18n-self.config.json) and committed; this script only copies them at build time.
+ * The bundles are produced by `pnpm run i18n:self` (extract + translate-ui for the
+ * CLI and dashboard ui block) and committed; this script only copies them at build time.
  */
 import fs from "node:fs";
 import path from "node:path";

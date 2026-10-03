@@ -9,6 +9,7 @@ packages:
   - "examples/nextra-docs"
   - "examples/fumadocs-docs"
   - "examples/plain-html"
+  - "examples/plain-html-docs"
   - "examples/docusaurus-docs"
   - "examples/intlayer-migration"
 allowBuilds:

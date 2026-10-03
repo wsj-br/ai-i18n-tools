@@ -39,6 +39,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `UIStringExtractor` | JS/TS 소스에서 `t("…")` 문자열 추출. |
 | `collectHtmlI18nStrings` / `markHtmlContent` | HTML에서 `data-i18n*` 마커 스캔/삽입 (`extract`용 `.html` 및 `mark-html` 명령 지원). |
 | `MarkdownExtractor` | 마크다운에서 번역 가능한 구문 추출. |
+| `HtmlTemplateExtractor` | 일반 HTML 문서 추출 및 재구성(텍스트 및 번역 가능한 속성; `src` / `href`는 제자리에 유지). |
 | `JsonExtractor` | Docusaurus JSON 레이블 파일(UI 카탈로그, MDX 본문 아님)에서 추출합니다. |
 | `SvgExtractor` | SVG 파일에서 추출. |
 | `LlmClient` | 활성 LLM 공급자에게 번역 요청을 합니다( `OpenRouterClient`는 더 이상 사용되지 않는 별칭). |

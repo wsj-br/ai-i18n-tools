@@ -167,7 +167,8 @@ export function computePerFileDepthPrefix(
   cwd: string,
   config: I18nDocTranslateConfig,
   locale: string,
-  sourceRelPath: string
+  sourceRelPath: string,
+  kind: "markdown" | "json" | "html" = "markdown"
 ): string {
   const normSource = normalizeMarkdownRelPath(sourceRelPath);
   const outputFilePath = resolveDocumentationOutputPath(
@@ -175,7 +176,7 @@ export function computePerFileDepthPrefix(
     cwd,
     locale,
     normSource,
-    "markdown"
+    kind
   );
   const outputDirAbs = path.dirname(path.resolve(outputFilePath));
   const sourceDirAbs = path.resolve(cwd, path.posix.dirname(normSource));

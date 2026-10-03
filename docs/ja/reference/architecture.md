@@ -65,11 +65,13 @@
 
 JS/TSファイル内の`t("literal")`および`i18n.t("literal")`呼び出しを見つけるために、`i18next-scanner`の`Parser.parseFuncFromString`を使用します。`.astro`ソース（`ui.uiExtractor.extensions`にリストされている場合）について、`ui-string-babel.ts`はフロントマターとテンプレート`{expression}`ブロックを`@babel/parser`で解析し、同じ`funcNames`ルールを適用します。関数名とファイル拡張子は`ui.uiExtractor`で設定可能です（`ui.reactExtractor`はサポートされているエイリアスです）。`extract` **また、非スキャナー入力を同じカタログにマージします：** `includePackageDescription`が有効な場合（デフォルト）のプロジェクト`package.json` `description`、および`includeUiLanguageEnglishNames`が`true`の場合のバンドルされたui-languagesマスターカタログ（`sourceLocale` + `targetLocales`から構築）からの各`englishName`（ソースで既に見つかった文字列が優先されます；`languagesManifestPath`は読み取りません）。`extract`は`languagesManifestPath`で`ui-languages.json`も再生成します。セグメントハッシュは、トリムされたソース文字列の**MD5の最初の8文字の16進数**です。これらは`strings.json`のキーになります。
 
-`.html` / `.htm` ソース（`ui.uiExtractor.extensions`にリストされている場合）の場合、`extract`はファイルを`html-i18n-marks.ts`経由でルーティングし、`data-i18n` / `data-i18n-title` / `data-i18n-placeholder`マーカー属性（`ui.uiExtractor.htmlI18nAttributes`で設定可能）をスキャンします。ベアマーカーは要素自身の`textContent` / `title` / `placeholder`からソーステキストを取得します。値を持つマーカー（`data-i18n="Key"`）は値を使用します。同じモジュールが`mark-html`コマンドにも使用されており、ベアマーカーを自動的に挿入します。HTMLファイルはBabel / i18next-scannerのパスには到達しません。
+`.html` / `.htm` ソース（`ui.uiExtractor.extensions` に記載されている場合）において、`extract` はファイルを `html-i18n-marks.ts` 経由でルーティングし、`data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` のマーカー属性（`ui.uiExtractor.htmlI18nAttributes` で設定可能）をスキャンします。ベアマーカーは、要素自身の `textContent` または属性からソーステキストを取得します。値付きマーカー（`data-i18n="Key"`）は、その値を使用します。`data-i18n-locale-src` および `data-i18n-locale-href` はブラウザーランタイム用に予約されており、抽出されることはありません。この同じモジュールは `mark-html` コマンドの機能も提供しており、ベアマーカー（`alt` および `aria-label` を含む）を自動的に挿入しますが、ロケール URL マーカーは挿入しません。HTML ファイルは、Babel / i18next-scanner の処理パスに到達することはありません。docs `outputDir` 配下に生成されたロケール HTML は、このスキャンの対象外となります。
 
 プレーンなAstro SSGサイトではi18nextをスキップし、ビルド時にフラットな`{locale}.json`を読み込み、ソーステキストキーで`t('English')`を解決できます（`examples/astro-website/src/i18n/t.ts`および[UI strings — Astro website](/ja/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)を参照してください）。
 
-プレーンなHTMLアプリは、`t()`呼び出しの代わりにマーカー属性を使用して同じカタログモデルに従います — [Marking HTML for translation](/ja/guide/ui-strings/plain-html#marking-html-for-translation)を参照してください。
+プレーンな HTML アプリは、`t()` 呼び出しの代わりにマーカー属性を使用する同じカタログモデルに従います。[翻訳用に HTML をマークする](/ja/guide/ui-strings/plain-html#marking-html-for-translation) を参照してください。ドロップインスクリプトは `ai-i18n-tools/html-runtime/i18n.js` です。
+
+ロケールごとに 1 つのファイルとなる静的 HTML は、このカタログではなくドキュメントパイプライン（`translate-docs` 内の `HtmlTemplateExtractor`）です。[HTML ページ](/ja/guide/documents/html-pages) を参照してください。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -191,7 +193,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 7. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`）- 保持されます。
 8. **Markdownの強調**（オプション、CJK/RTLロケールでは自動的に有効）- 強調デリミタがマスクされます。
 
-モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
+モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
 
 AstroテンプレートとMDX JSXの共有属性/キー保護は`src/processors/expression-attribute-protection.ts`で実装されており、`docs[].protectAttributes`と`docs[].protectKeys`によってブロックごとに駆動されます（[protectAttributes / protectKeys](/ja/reference/configuration#protectattributes-protectkeys)を参照）。
 
@@ -288,10 +290,10 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 
 ツールは、コマンドラインインターフェースのヘルプ、高トラフィックログ/サマリー/エラーメッセージ、および翻訳ダッシュボードを含む自身のUIを、翻訳対象のコンテンツとは別にローカライズします。
 
-- **ロケール解決** (`resolveUiLocale` in `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > ホスト OS ロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) から UI ロケールを選択します。候補は正規化され、出荷されたバンドルセットと完全に一致するか、最も近いバリエーション (例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`) で一致させ、ソースロケール (`en-GB`) にフォールバックします。CLI は、ヘルプが構築される前 (argv スキャンを事前解析) と、設定の読み込み後に再度解決されるため、`uiLanguage` が適用されます (フラグと環境変数が優先されます)。
-- **ランタイム** (`src/i18n/index.ts`): ```{{name}}``` 補間を備えた最小限の `t(source, vars)` で、`src/i18n/locales/<code>.json` 内のフラットなロケールごとのバンドルに対して英語のソース文字列をキーとしています (ビルド時に `dist/i18n/locales` にコピーされます)。不足しているキーまたはバンドルはソーステキストを返します。これは UI 文字列と同じキーをデフォルトとするモデルであり、ハッシュルックアップはありません。
-- **ダッシュボード**: サーバーは、解決された UI ロケールに対して `{ locale, dir, bundle }` を返す `GET /api/ui-i18n` を公開します。フロントエンドは `<html lang>` / `dir` を設定し、`data-i18n*` 属性を介して静的マークアップをローカライズします。
-- **ドッグフーディング**: バンドルは、パッケージ自身の抽出 → `translate-ui` パイプラインを `ai-i18n-self.config.json` (`pnpm i18n:self`) に対して実行することによって生成されます。カタログキーは、`src/cli/` および `src/i18n/` 全体の `t()` 呼び出しと、`src/dashboard-app/index.html` 内のダッシュボードの `data-i18n*` マーカーから取得されます。
+- **ロケール解決** (`src/core/ui-locale.ts`内の`resolveUiLocale`): UIロケールは、`-L` / `--ui-lang` > `AI_I18N_LANG` > 設定の`uiLanguage` > ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) の優先順位で決定されます。候補は正規化され、同梱されているバンドルセットに対して完全一致または最も近いバリエーションでマッチングされ (例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`)、一致しない場合はソースロケール (`en-GB`) にフォールバックします。CLIは、ヘルプが構築される前 (argvスキャンの事前解析) に1回解決し、設定の読み込み後に `uiLanguage` が適用されるよう再度解決します (フラグと環境変数が引き続き優先されます)。
+- **ランタイム** (`src/i18n/index.ts`): ```{{name}}``` 補間を備えた最小限の `t(source, vars)` であり、`src/i18n/locales/<code>.json` 内のロケールごとのフラットなバンドル (ビルド時に `dist/i18n/locales` にコピーされる) に対して、英語のソース文字列をキーとして使用します。キーまたはバンドルが見つからない場合は、ソーステキストが返されます。これはUI文字列と同じキーをデフォルト値とするモデルであり、ハッシュルックアップは行われません。
+- **ダッシュボード**: サーバーは、解決されたUIロケールに対して `{ locale, dir, bundle }` を返す `GET /api/ui-i18n` を公開し、フロントエンドは `<html lang>` / `dir` を設定し、`data-i18n*` 属性を介して静的マークアップをローカライズします。
+- **ドッグフーディング**: バンドルは `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) によって生成され、`ai-i18n-tools.config.json` 内のCLIおよびダッシュボードの `ui` ブロックを抽出して翻訳します。カタログキーは、`src/cli/` および `src/i18n/` 全体の `t()` 呼び出しと、`src/dashboard-app/index.html` 内のダッシュボードの `data-i18n*` マーカーから取得されます。
 
 ---
 
@@ -309,7 +311,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

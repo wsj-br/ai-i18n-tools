@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ Aktivieren Sie alle Funktionen in einer einzigen Konfiguration, um UI-Strings un
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ Aktivieren Sie alle Funktionen in einer einzigen Konfiguration, um UI-Strings un
 
 <br />
 
-`glossary.uiGlossary` verweist die Dokumentübersetzung auf denselben `strings.json`-Katalog wie die Benutzeroberfläche, damit die Terminologie konsistent bleibt; `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu. Siehe [Glossar](/de/guide/glossary).
+UI-Blöcke enthalten standardmäßig ihre `strings.json`-Kataloge als Glossarhinweise für die Dokumentation (`uiGlossary`). `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu. Siehe [Glossar](/de/guide/glossary).
 
 Führen Sie `ai-i18n-tools sync` aus, um eine Pipeline auszuführen: Wenn `features.translateUIStrings` aktiviert ist, werden UI-Strings **extrahiert** und dann **übersetzt**; optional **SVG übersetzen** (`features.translateSVG` + `svg`-Block); **Dokumentation übersetzen** (`docs[]` wie konfiguriert); dann optional **JSON übersetzen** (`features.translateJson` + `json[]`). Überspringen Sie Teile mit `--no-ui`, `--no-svg`, `--no-docs` oder `--no-json`. Die Schritte für Dokumentation und `json[]` akzeptieren `--dry-run`, `-p` / `--path`, `--force`, `--force-update` und `--check-cache` (nur für Dokumente geltende Flags werden ignoriert, wenn `--no-docs`; JSON verwendet dieselben Cache-Flags, wenn `--no-json` nicht festgelegt ist).
 

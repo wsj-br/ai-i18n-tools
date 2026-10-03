@@ -29,7 +29,7 @@
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath`（選用）
 
-根層級選用字串（未巢狀於 `ui` 之下）。`extract` 與 `generate-ui-languages` 寫入 `ui-languages.json` 資訊清單的路徑，CLI 亦從此路徑讀取以取得顯示名稱及進行語言列表後處理。省略時，預設為 `ui.flatOutputDir/ui-languages.json`，於設定載入時生效。
+根層級的選填字串。文件語言切換器會讀取此路徑。若省略，則預設為第一個 UI 區塊的資訊清單：該區塊的 `languagesManifestPath` 或 `{flatOutputDir}/ui-languages.json`。每個 UI 區塊都可以設定自己的 `languagesManifestPath`；當區塊省略自己的路徑時，區塊 0 會使用此根路徑。
 
 在以下情况下使用此选项：
 
@@ -235,34 +235,52 @@
 | 欄位                | 管道 | 說明                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | 將 `t("…")` / `i18n.t("…")` 提取到 `strings.json` 中，然後翻譯條目並寫入每個地區設定的平面 JSON（提取自動執行；使用獨立的 `extract` 僅重新整理目錄）。 |
-| `translateDocs`      | 2        | 翻譯 `.md` / `.mdx` / `.astro` 頁面；設定 `docs[].docusaurusCatalogDir` 時的 Docusaurus shell JSON；設定時的 Nextra `_meta` / 字典；設定 `docsOutput.vitepressThemeCatalog` 時的 VitePress 主題；當 `docsOutput.style` 為 `"fumadocs"` 時的 Fumadocs `meta.json` / UI 目錄。 |
+| `translateDocs`      | 2        | 翻譯 `.md` / `.mdx` / `.astro` / `.html` / `.htm` 頁面；已設定 `docs[].docusaurusCatalogDir` 時的 Docusaurus shell JSON；已設定時的 Nextra `_meta` / 字典；已設定 `docsOutput.vitepressThemeCatalog` 時的 VitePress 主題；當 `docsOutput.style` 為 `"fumadocs"` 時的 Fumadocs `meta.json` / UI 目錄。 |
 | `translateJson`      | 3        | `json[]`（`translate-json`）下的任意巢狀 JSON。                                                                                                           |
 | `translateSVG`       | —        | 翻譯 `.svg` 檔案（需要頂層的 `svg` 區塊）。                                                                                                       |
 
-**翻譯** SVG 檔案，當 `features.translateSVG` 為 true 且設定了頂層 `svg` 區塊時，使用 `translate-svg`。`sync` 命令會在兩者都設定時執行該步驟（除非設定了 `--no-svg`）。
+當省略索引鍵時，每個旗標預設為 `true`。若省略 `true` 且沒有需要翻譯的內容，則會跳過：沒有 UI 區塊具有 `sourceRoots`，沒有文件區塊具有 `contentPaths` 或 `docusaurusCatalogDir`，`json[]` 沒有 `contentPaths`，或 `svg` 未設定。當該管線沒有工作時，將旗標寫為 `true` 屬於設定錯誤。寫入 `false` 會針對 `sync` 關閉該管線，即使存在來源亦然。`--no-ui`、`--no-docs`、`--no-json` 和 `--no-svg` 會在單次執行時跳過該步驟。
+
+當 `features.translateSVG` 為 true 且已設定頂層 `svg` 區塊時，使用 `translate-svg` **翻譯** SVG 檔案。當旗標開啟且已設定 `svg` 時，`sync` 命令會執行該步驟（除非 `--no-svg`）。
 
 ---
 
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  掃描 `t("…")` 呼叫的目錄或全域模式（相對於目前工作目錄）。支援 `src/` 或 `["src/**/*.ts"]` 等模式。
-- `stringsJson`  
-  主目錄檔案的路徑。由 `extract` 更新。
-- `flatOutputDir`  
-  寫入每個語言環境 JSON 檔案的目錄（`de.json` 等）。
-- `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）  
-  要掃描的其他函數名稱（預設值：`["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（或舊版 `reactExtractor.extensions`）  
-  要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。為 Astro 前置內容和模板表達式新增 `.astro`。
-- `uiExtractor.includePackageDescription`（或舊版 `reactExtractor.includePackageDescription`）  
-  當 `true`（預設）時，`extract` 也會將 `package.json` `description` 作為 UI 字串包含在內（如果存在）。
-- `uiExtractor.packageJsonPath`（或舊版 `reactExtractor.packageJsonPath`）  
-  用於該可選描述提取的 `package.json` 檔案的自訂路徑。
+一個目錄物件，或一個目錄區塊陣列（與 `docs[]` 的概念相同）。載入時接受單一物件並將其包裝為單元素陣列；不會重新寫入磁碟上的檔案。剖析後，`config.ui` 一律為陣列。
+
+`extract`、`translate-ui`、`sync-ui`、`sync` 的 UI 階段、`proofread-ui`、`export-ui-xliff`、`generate-ui-languages` 和 `purge-locale` 會遍歷每個具有 `sourceRoots` 的區塊。傳遞具有以零為起始之索引的 `--ui-block`、區塊的 `description` 或其 `stringsJson` 路徑，以執行單一區塊。`status` 和 `statistics` 會列出每個具有來源或現有目錄的區塊。翻譯儀表板會列出所有此類目錄，並在有多個目錄時顯示選取器。
+
+已解析的 `stringsJson`、`flatOutputDir` 和資訊清單路徑在各區塊間必須是唯一的。設定 `description` 值時必須是唯一的，因為 `--ui-block` 會精確比對它們。
+
+- `description`
+  供閱讀設定的人員使用的選填備註（不會傳送至模型）。在命令標頭、`status`、`statistics` 和儀表板中顯示為 `ui[i] — description`。
+- `sourceRoots`
+  掃描 `t("…")` 呼叫的目錄或 glob 模式（相對於 cwd）。支援類似 `src/` 或 `["src/**/*.ts"]` 的模式。除非 `--ui-block` 指定具有空清單的區塊（這屬於錯誤），否則會跳過該區塊。
+- `stringsJson`
+  此區塊之主目錄檔案的路徑。由 `extract` 更新。
+- `flatOutputDir`
+  寫入此區塊各語言環境 JSON 檔案的目錄（`de.json` 等）。
+- `targetLocales`
+  此區塊的選填語言環境清單。若省略或為空，區塊會使用根 `targetLocales`。
+- `languagesManifestPath`
+  `extract` 和 `generate-ui-languages` 寫入此區塊之 `ui-languages.json` 的選填路徑。若省略，區塊 0 會使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續區塊預設為 `{flatOutputDir}/ui-languages.json`。
+- `uiGlossary`
+  當 `true`（預設值）時，此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的術語表提示來源。`translate-ui`、`proofread-ui` 和來源 linting 僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如不應引導文件的 CLI 字串目錄）。
+- `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）
+  要掃描的其他函式名稱（預設值：`["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（或舊版 `reactExtractor.extensions`）
+  要包含的副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。新增 `.astro` 以用於 Astro frontmatter 和範本運算式。
+- `uiExtractor.includePackageDescription`（或舊版 `reactExtractor.includePackageDescription`）
+  當 `true`（預設值）時，`extract` 也會在存在時將 `package.json` `description` 包含為 UI 字串。在額外區塊上設定 `false`，以免將相同的描述擷取到每個目錄中。
+- `uiExtractor.packageJsonPath`（或舊版 `reactExtractor.packageJsonPath`）
+  用於該選填描述擷取的 `package.json` 檔案的自訂路徑。
 - `uiExtractor.includeUiLanguageEnglishNames`（或舊版 `reactExtractor.includeUiLanguageEnglishNames`）
 
-當 `true`（預設 `false`）時，`extract` 亦會將內建 ui-languages 主目錄（由 `sourceLocale` + `targetLocales` 建構）中的每個 `englishName` 加入 `strings.json`，前提是來源掃描中尚未存在該項（使用相同雜湊鍵）。不會讀取 `languagesManifestPath`。
+當 `true`（預設 `false`）時，若來源掃描中尚未存在（相同的雜湊索引鍵），`extract` 也會將隨附的 ui-languages 主目錄（從 `sourceLocale` + 區塊的有效 `targetLocales` 建置）中的每個 `englishName` 新增至 `strings.json`。不會讀取 `languagesManifestPath`。
+
+不再接受 `glossary.uiGlossary` 和 `glossary.uiGlossaryFromStringsJson`。設定載入會失敗，且錯誤會說明取代方式：刪除該索引鍵。提示現在來自每個區塊的 `uiGlossary` 旗標（預設 `true`）。
 
 ---
 
@@ -311,7 +329,7 @@ SQLite 快取目錄（所有 `docs` 區塊共用）。預設 `.translation-cache
 | `features.translateMarkdown` | `features.translateDocs` |
 | `features.translateJSON` | 已移除（使用 `docs[].docusaurusCatalogDir` 或 `json[]`） |
 | `features.extractUIStrings` | 已移除（`extract` 在 UI 翻譯之前執行） |
-| `glossary.uiGlossaryFromStringsJson` | `glossary.uiGlossary` |
+| `glossary.uiGlossary` 與 `glossary.uiGlossaryFromStringsJson` | 已移除；設定載入失敗。請使用 `ui[].uiGlossary`（布林值，預設為 `true`） |
 | `ui.reactExtractor` | `ui.uiExtractor`（別名仍可接受） |
 | `svg.svgExtractor.forceLowercase` | `svg.forceLowercase` |
 
@@ -371,9 +389,13 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 - `docs[].fumadocsMetaGlob`
 當 `docsOutput.style` 為 `"fumadocs"` 時，用於 `meta.json` 集合的選用 glob。預設：在 `docsOutput.docsRoot` 下遞迴 `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
-在 Fumadocs `meta.json` 中其字串值被翻譯的屬性名稱（預設：`title`、`description`）。
+在 Fumadocs `meta.json` 中翻譯其字串值的屬性名稱（預設值：`title`、`description`）。
+- `docsOutput.localizedAssets`
+當存在語系檔案時，選擇性重新命名已翻譯 HTML 中的圖片與圖示 URL。欄位：`include`（預設 `img/**`）、`pattern`（預設 `{stem}-{locale}{ext}`）、`onlyIfExists`（預設 `true`）、`assetRoot`（用於測試根相對 URL 的目錄；預設為 HTML 檔案的目錄）。預留位置：`{stem}`、`{ext}`、`{basename}`、`{locale}`、`{llocale}`、`{LOCALE}`。CSS `url()` 不會被改寫。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages#links-and-images)。
+- `docsOutput.html`
+HTML 文件的選擇性語言清單與 hreflang。預設註解為 `<!-- ai-i18n:lang-list -->` … `<!-- /ai-i18n:lang-list -->` 與 `<!-- ai-i18n:hreflang -->` … `<!-- /ai-i18n:hreflang -->`。`languageList.format` 為 `links` 或 `select`。`languageList.label` 為 `local`、`english` 或 `both`。`hreflang.siteUrl` 為替代連結加上前綴；若省略，則連結為相對路徑並會記錄警告。`hreflang.xDefault` 預設為 `sourceLocale`。`hreflang.stripIndexHtml` 會將 `index.html` 轉換為目錄 URL。對於 HTML，在新增語系資料夾前會先移除 `docsRoot`（當 `docsRoot` 為 `site` 時，`site/index.html` → `site/{locale}/index.html`）。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。
 - `docsOutput.vitepressThemeCatalog`
-選填。在 `translate-docs` 內的 VitePress 主題/導覽/側邊欄目錄啟動程序 + 翻譯。欄位：`configPath`（帶有主題字串的 VitePress 設定）、`catalogPath`（生成的英文巢狀 JSON）、選填的 `outputPathTemplate`（預設：在 `catalogPath` 旁的 `theme.{locale}.json`）。
+選擇性。VitePress 主題/導覽/側邊欄目錄初始化 + `translate-docs` 內的翻譯。欄位：`configPath`（包含主題字串的 VitePress 設定）、`catalogPath`（產生的英文巢狀 JSON）、選擇性 `outputPathTemplate`（預設值：`catalogPath` 旁的 `theme.{locale}.json`）。
 
 **後處理**
 
@@ -484,15 +506,14 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 <a id="glossary"></a>
 ### `glossary`
 
-| 欄位          | 說明                                                                                                                                                                                                                                                              |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiGlossary`   | 指向 `strings.json` 的路徑 - 會從現有翻譯自動建構詞彙表。                                                                                                                                                                                          |
-| `userGlossary` | CSV 檔案路徑，包含欄位 `Original language string`（或 `en`）、`locale`、`Translation`、選填的 `Force` 與選填的 `Context` — 每個來源詞彙與目標地區各一列（`locale` 可為 `*` 以套用至所有目標）。 |
+| 欄位          | 說明                                                                                                                                                                 |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `userGlossary` | CSV 檔案的路徑，該檔案包含 `Original language string`（或 `en`）、`locale`、`Translation`、選用的 `Force` 及選用的 `Context` 欄位 - 每個來源詞彙與目標地區設定各佔一行（對於所有目標，`locale` 可為 `*`）。 |
 | `autoAddUserEditedToGlossary` | 當 `true` 時，對 UI 字串的儀表板編輯可以自動附加到使用者詞彙表中。 |
 | `contextFiles` | 選填的、相對於 cwd 的 Markdown 或純文字檔案（`.md`、`.markdown`、`.txt`），包含產品或功能說明。於指令啟動時載入，並注入至 UI、文件、JSON、SVG 及校對提示詞中。除非您也希望翻譯這些檔案，否則請勿將其置於 `docs[].contentPaths`。URL 會被拒絕。完整文字會傳送至已配置的 LLM 供應商，並可能出現在 `--debug-failed` 日誌中 — 請勿包含機密資訊或個人識別資訊（PII）。 |
 | `contextMaxChars` | 傳送至模型的串接上下文檔案文字之最大字元數（預設 `12000`，上限 `100000`）。超出部分會被截斷並發出警告。 |
 
-`translate-docs` 使用相同的詞彙表來提供術語提示，但會跳過精簡的 UI 標籤縮寫（帶有結尾句點的形式，例如 `Alm.`，或是簡短的單一標記壓縮，例如 `Size` → `Tam`），以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 標記。完整的產品術語與非縮寫的 UI 翻譯仍會提供提示。
+`translate-docs`、`translate-json` 和 `translate-svg` 也會從 `uiGlossary` 為 `true`（預設值）的每個 UI 區塊取得提示。這會重複使用已儲存在該區塊 `strings.json` 中的翻譯。在區塊上將 `uiGlossary` 設為 `false` 即可將其排除。`translate-ui` 和 `proofread-ui` 不會使用這些目錄作為提示。精簡的 UI 標籤縮寫（例如 `Alm.` 等尾端帶點格式，或 `Size` → `Tam` 等簡短單詞元壓縮格式）會被略過，以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 詞元。完整的產品詞彙與未縮寫的 UI 翻譯仍會作為提示。
 
 選填的 `Context` CSV 欄位為該詞彙的來源語言用法指引（定義、語法用途、產品含義）。僅在詞彙符合目前批次時才會納入。變更詞彙的 `Context` 註記或任何 `contextFiles` 內容，會使下一次執行時相符地區的快取區段與檔案追蹤列失效，因此翻譯會自動重新整理。僅變更偏好的 `Translation` 仍會使用現有快取，除非您傳入 `--force` / `--force-update`。儀表板中使用者編輯過的快取列會予以保留。
 

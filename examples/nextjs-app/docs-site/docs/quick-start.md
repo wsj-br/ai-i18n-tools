@@ -57,7 +57,6 @@ Open `ai-i18n-tools.config.json`. The relevant section for documentation transla
     "translateSVG": true
   },
   "glossary": {
-    "uiGlossary": "locales/strings.json",
     "userGlossary": "glossary-user.csv",
     "autoAddUserEditedToGlossary": true
   },

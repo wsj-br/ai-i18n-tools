@@ -1,13 +1,16 @@
 import { LlmClient, type LlmClientOptions } from "../api/llm-client.js";
 import { resolveTranslationModelsForLocale } from "../core/config.js";
-import type { I18nConfig, I18nDocTranslateConfig } from "../core/types.js";
+import type { I18nConfig, I18nDocTranslateConfig, I18nUiTranslateConfig } from "../core/types.js";
 import {
   filterTranslationModelsAgainstOpenRouterCatalog,
   MODELS_ALL_UNKNOWN_AFTER_FILTER,
   warnIgnoredUnknownOpenRouterModels,
 } from "./openrouter-catalog-model-filter.js";
 
-export type CreateFilteredLlmClientConfig = I18nConfig | I18nDocTranslateConfig;
+export type CreateFilteredLlmClientConfig =
+  | I18nConfig
+  | I18nDocTranslateConfig
+  | I18nUiTranslateConfig;
 
 export type CreateFilteredLlmClientOptions = {
   ui?: boolean;

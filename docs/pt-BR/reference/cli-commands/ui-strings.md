@@ -6,7 +6,7 @@
 
 **Sinopse:** `ai-i18n-tools extract`
 
-Atualiza `strings.json` a partir de literais `t("…")` / `i18n.t("…")`, descrição opcional `package.json` e entradas opcionais `englishName` do master empacotado quando `includeUiLanguageEnglishNames` está habilitado (veja `ui.uiExtractor`; não lê `languagesManifestPath`). Também regenera `ui-languages.json` em `languagesManifestPath`. Quando `.html` / `.htm` estão listados em `ui.uiExtractor.extensions`, também captura strings de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` do HTML. Requer `ui.sourceRoots` não vazio. Não chama um LLM.
+Atualiza `strings.json` a partir de literais `t("…")` / `i18n.t("…")`, descrição opcional `package.json` e entradas opcionais de bundled-master `englishName` quando `includeUiLanguageEnglishNames` está habilitado (consulte `ui.uiExtractor`; não lê `languagesManifestPath`). Também regenera o `ui-languages.json` de cada bloco. Quando `.html` / `.htm` estão listados em `ui.uiExtractor.extensions`, também captura strings de marcadores `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` do HTML. Percorre cada bloco `ui` que tenha `sourceRoots`. `--ui-block` limita a execução a um único bloco (índice, descrição ou caminho `stringsJson`). Não chama um LLM.
 
 **Veja também:** [Visão geral das strings da UI](/pt-BR/guide/ui-strings/), [Aplicativos HTML simples](/pt-BR/guide/ui-strings/plain-html)
 
@@ -32,7 +32,7 @@ O relatório é a transição de tudo o que `--write` deixa para trás, e termin
 
 **Sinopse:** `ai-i18n-tools mark-html [paths...] [--write]`
 
-Insere marcadores `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` puros no HTML para que o texto de origem seja escrito uma vez (no próprio elemento). Escaneia os arquivos/diretórios/globs fornecidos (padrão: `.html` / `.htm` em `ui.sourceRoots`). Execução a seco por padrão (relata contagens de adições por arquivo e quaisquer elementos de conteúdo misto que precisam de um `<span data-i18n>` manual); `--write` aplica as alterações. Idempotente, respeita `data-i18n-ignore` (ignora o elemento e sua subárvore), nunca toca em elementos semelhantes a código (`code`, `pre`, `kbd`, `samp`, `var`) ou texto vazio/apenas numérico, e nunca emite um marcador valorizado. Não chama um LLM.
+Insere marcadores simples `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` no HTML para que o texto de origem seja escrito apenas uma vez (no próprio elemento). Escaneia os arquivos/diretórios/globs fornecidos (padrão: `.html` / `.htm` sob o `sourceRoots` de cada bloco). Execução simulada por padrão (relata a contagem de adições por arquivo e quaisquer elementos de conteúdo misto que precisem de um `<span data-i18n>` manual); `--write` aplica as alterações. Idempotente, respeita `data-i18n-ignore` (ignora o elemento e sua subárvore), nunca altera elementos semelhantes a código (`code`, `pre`, `kbd`, `samp`, `var`) ou texto vazio/apenas numérico, e nunca emite um marcador com valor. Não chama um LLM.
 
 **Opções principais:** `--write`
 
@@ -78,7 +78,7 @@ Extrai e depois traduz strings de UI (requer `features.translateUIStrings`). Som
 
 **Sinopse:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Executa `extract` primeiro (requer `features.translateUIStrings`) para que `strings.json` corresponda à origem, depois revisão LLM de strings de UI do local de origem (ortografia, gramática). As dicas de terminologia vêm apenas do CSV `glossary.userGlossary` (mesmo escopo que `translate-ui` — não `strings.json` / `uiGlossary`, então cópias ruins não são reforçadas como glossário). Usa o provedor LLM ativo (sua variável de ambiente de chave de API).
+Executa `extract` primeiro (requer `features.translateUIStrings`) para que cada catálogo selecionado corresponda à origem, e depois faz a revisão por LLM das strings de UI do idioma de origem (ortografia, gramática). `--ui-block` limita a extração e a revisão a um único bloco. As dicas de terminologia vêm apenas do CSV `glossary.userGlossary` (mesmo escopo de `translate-ui` — os catálogos de UI não são realimentados, para que textos mal redigidos não sejam reforçados como glossário). Usa o provedor de LLM ativo (sua variável de ambiente de chave de API).
 
 Retorna **1** em caso de falha (feature flag ausente, falha na extração, catálogo ausente/inválido, chave de API ausente ou quando todos os lotes falham); retorna **0** quando a execução é concluída com sucesso (os resultados são consultivos). Grava `proofread-ui-results_<timestamp>.log` em `cacheDir` como um relatório legível (resumo, problemas, linhas não revisadas e linhas de OK por string); o terminal exibe apenas as contagens do resumo e os problemas (sem linhas `[ok]` por string). Um lote que falha, ou uma resposta do modelo que seja menor que o lote e não tenha um `index` utilizável em cada slot, considera essas strings como não revisadas. Os problemas delas são descartados para que um array curto não seja aplicado às strings erradas. Exibe o nome do arquivo de log na última linha. Com `--json`, a saída em formato legível é direcionada ao stderr. Os links usam `path:line` como o botão de link de strings da interface do painel.
 

@@ -30,8 +30,22 @@ type ThemeCatalog = {
 };
 
 function loadTheme(localeFile: string): ThemeCatalog {
-  const p = path.join(__dirname, "i18n", localeFile);
-  return JSON.parse(fs.readFileSync(p, "utf8")) as ThemeCatalog;
+  const read = (file: string) =>
+    JSON.parse(fs.readFileSync(path.join(__dirname, "i18n", file), "utf8")) as ThemeCatalog;
+  const en = read("theme.en.json");
+  if (localeFile === "theme.en.json") return en;
+  const local = read(localeFile);
+  return {
+    ...en,
+    ...local,
+    site: { ...en.site, ...local.site },
+    nav: { ...en.nav, ...local.nav },
+    sidebar: { ...en.sidebar, ...local.sidebar },
+    footer: { ...en.footer, ...local.footer },
+    docFooter: { ...en.docFooter, ...local.docFooter },
+    outline: { ...en.outline, ...local.outline },
+    search: { ...en.search, ...local.search },
+  };
 }
 
 function guideSidebar(t: ThemeCatalog) {
@@ -72,6 +86,7 @@ function guideSidebar(t: ThemeCatalog) {
               link: "/guide/documents/",
               items: [
                 { text: t.sidebar.overview, link: "/guide/documents/" },
+                { text: t.sidebar.documentsHtmlPages, link: "/guide/documents/html-pages" },
                 { text: t.sidebar.documentsOutputLayouts, link: "/guide/documents/output-layouts" },
                 { text: t.sidebar.documentsAnchorLinks, link: "/guide/documents/anchor-links" },
                 { text: t.sidebar.documentsLinkRewriting, link: "/guide/documents/link-rewriting" },

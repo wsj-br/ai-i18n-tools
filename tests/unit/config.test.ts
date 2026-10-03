@@ -1027,34 +1027,35 @@ describe("parseI18nConfig ui.uiExtractor alias", () => {
         },
       })
     );
-    expect(c.ui.uiExtractor?.extensions).toEqual([".astro"]);
-    expect(c.ui.reactExtractor?.extensions).toEqual([".astro"]);
+    expect(c.ui[0]?.uiExtractor?.extensions).toEqual([".astro"]);
+    expect(c.ui[0]?.reactExtractor?.extensions).toEqual([".astro"]);
   });
 });
 
 describe("parseI18nConfig glossary legacy field", () => {
-  it("maps glossary.uiGlossaryFromStringsJson to uiGlossary when uiGlossary is unset", () => {
-    const c = parseI18nConfig(
-      mergeWithDefaults({
-        sourceLocale: "en",
-        targetLocales: ["de"],
-        cacheDir: ".translation-cache",
-        docs: [{ contentPaths: [], outputDir: "./out" }],
-        ui: uiDefaults,
-        glossary: { uiGlossaryFromStringsJson: "strings.json" },
-        openrouter: {
-          baseUrl: "https://openrouter.ai/api/v1",
-          translationModels: ["m"],
-          maxTokens: 100,
-          temperature: 0.1,
-        },
-        features: {
-          translateUIStrings: true,
-          translateDocs: false,
-        },
-      })
-    );
-    expect(c.glossary?.uiGlossary).toBe("strings.json");
+  it("fails when glossary.uiGlossary or uiGlossaryFromStringsJson is set", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          targetLocales: ["de"],
+          cacheDir: ".translation-cache",
+          docs: [{ contentPaths: [], outputDir: "./out" }],
+          ui: uiDefaults,
+          glossary: { uiGlossary: "strings.json", uiGlossaryFromStringsJson: "other.json" },
+          openrouter: {
+            baseUrl: "https://openrouter.ai/api/v1",
+            translationModels: ["m"],
+            maxTokens: 100,
+            temperature: 0.1,
+          },
+          features: {
+            translateUIStrings: true,
+            translateDocs: false,
+          },
+        })
+      )
+    ).toThrow(/uiGlossary/);
   });
 
   it("accepts glossary.contextFiles and contextMaxChars", () => {

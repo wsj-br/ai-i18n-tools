@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Documents
 
-Designed primarily for **markdown, MDX, and `.astro` documentation** managed through `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate.
+Designed primarily for **markdown, MDX, `.astro`, and plain HTML** managed through `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
 
 On [Docusaurus](/guide/integrations/docusaurus) sites, also set `docusaurusCatalogDir` to your `write-translations` catalog folder (e.g. `docs-site/i18n/en`). Then `translate-docs` includes shell JSON too - navbar, footer, and theme strings.
 
@@ -21,7 +21,7 @@ For an optional **language switcher** block in README or docs, set `docsOutput.s
 
 Arbitrary nested UI JSON bundles unrelated to a documentation framework's shell/theme strings belong in the [JSON](/guide/json) pipeline, not in `docs[]`.
 
-For **terminology consistency** between UI and docs, set `glossary.uiGlossary` to your `strings.json` path — `translate-docs` reuses existing UI translations as hints in LLM prompts when matching terms appear in a segment. Optional `glossary.userGlossary` adds CSV overrides for product terms (shared with `translate-ui` and `proofread-ui`). Compact UI-label abbreviations used to fit narrow columns (for example `Size` → `Tam`) stay available for UI translation but are omitted from document glossary hints. Generate a starter CSV with `glossary-generate`, edit rows in the Translation Dashboard [Glossary](/guide/translation-dashboard/glossary) tab, or see [Configuration — `glossary`](/reference/configuration#glossary) and [Glossary](/guide/glossary).
+Each UI block includes its `strings.json` as glossary hints for documentation by default (`uiGlossary`, default `true`). `translate-docs` reuses those translations as hints in LLM prompts when matching terms appear in a segment. Set `uiGlossary` to `false` on a catalog that should stay out of document prompts. Optional `glossary.userGlossary` adds CSV overrides for product terms (shared with `translate-ui` and `proofread-ui`). Compact UI-label abbreviations used to fit narrow columns (for example `Size` → `Tam`) stay available for UI translation but are omitted from document glossary hints. Generate a starter CSV with `glossary-generate`, edit rows in the Translation Dashboard [Glossary](/guide/translation-dashboard/glossary) tab, or see [Configuration — `glossary`](/reference/configuration#glossary) and [Glossary](/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
@@ -38,6 +38,7 @@ For **terminology consistency** between UI and docs, set `glossary.uiGlossary` t
 | Nextra site | `init -t ui-nextra` + `nextraDictionaryPath` for dictionary (sidebar `_meta.ts` is automatic) - [Nextra](/guide/integrations/nextra) |
 | Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` for UI (sidebar `meta.json` is automatic) - [Fumadocs](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/guide/integrations/astro#astro-starlight) |
+| Plain HTML pages | `init -t docs-plain-html` - [HTML pages](/guide/documents/html-pages) |
 | Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` - [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
 | Where translated files land | [Output layouts](/guide/documents/output-layouts) |
 | Cross-page `#anchor` links | [Anchor links](/guide/documents/anchor-links) |
@@ -102,7 +103,7 @@ Edit the generated `ai-i18n-tools.config.json`:
 - `docs[].contentPaths` - markdown/MDX/`.astro` sources (and optional `docusaurusCatalogDir` for Docusaurus shell JSON).
 - `docs[].outputDir` - translated output root for that block.
 - `docs[].docsOutput.style` - `"nested"` (default), `"flat"`, `"doc-system"`, or aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (see [Output layouts](/guide/documents/output-layouts)).
-- `glossary.uiGlossary` - path to `strings.json` so document segments get terminology hints from your UI catalog (see [Configuration — `glossary`](/reference/configuration#glossary)).
+- `ui[].uiGlossary` - when `true` (the default), that block's `strings.json` supplies terminology hints for document segments (see [Configuration — `ui`](/reference/configuration#ui)).
 - `glossary.userGlossary` - optional CSV for fixed product-term translations; also used by UI pipelines and editable in the [Glossary](/guide/translation-dashboard/glossary) dashboard tab.
 
 **Primary vs supplementary:** Focus on `contentPaths` for localised pages. Set `docusaurusCatalogDir` when you also need Docusaurus shell JSON from `write-translations`. Omit `docusaurusCatalogDir` if you only translate pages.

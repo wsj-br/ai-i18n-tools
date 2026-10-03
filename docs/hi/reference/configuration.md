@@ -29,7 +29,7 @@
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (वैकल्पिक)
 
-रूट-लेवल वैकल्पिक स्ट्रिंग (`ui` के तहत नेस्टेड नहीं)। वह पाथ जहाँ `extract` और `generate-ui-languages` `ui-languages.json` मैनिफ़ेस्ट लिखते हैं, और जहाँ CLI इसे डिस्प्ले नामों और भाषा-सूची पोस्ट-प्रोसेसिंग के लिए पढ़ता है। जब छोड़ा जाता है, तो कॉन्फ़िग लोड पर `ui.flatOutputDir/ui-languages.json` पर डिफ़ॉल्ट होता है।
+रूट-स्तरीय वैकल्पिक स्ट्रिंग। डॉक्स भाषा स्विचर इस पथ को पढ़ता है। जब इसे छोड़ दिया जाता है, तो यह डिफ़ॉल्ट रूप से पहले UI ब्लॉक के मैनिफेस्ट पर सेट हो जाता है: उस ब्लॉक का `languagesManifestPath`, या `{flatOutputDir}/ui-languages.json`। प्रत्येक UI ब्लॉक अपना स्वयं का `languagesManifestPath` सेट कर सकता है; ब्लॉक 0 इस रूट पथ का उपयोग तब करता है जब ब्लॉक अपने स्वयं के पथ को छोड़ देता है।
 
 इसका उपयोग तब करें जब:
 
@@ -235,34 +235,52 @@
 | फ़ील्ड                | पाइपलाइन | विवरण                                                                                                                                                        |
 |----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `translateUIStrings` | 1        | `t("…")` / `i18n.t("…")` को `strings.json` में निकालें, फिर प्रविष्टियों का अनुवाद करें और प्रति-लोकेल फ़्लैट JSON लिखें (निष्कर्षण स्वचालित रूप से चलता है; केवल कैटलॉग को ताज़ा करने के लिए स्टैंडअलोन `extract` का उपयोग करें)। |
-| `translateDocs`      | 2        | `.md` / `.mdx` / `.astro` पृष्ठों का अनुवाद करें; जब `docs[].docusaurusCatalogDir` सेट हो तो Docusaurus शेल JSON; जब कॉन्फ़िगर किया गया हो तो Nextra `_meta` / डिक्शनरी; जब `docsOutput.vitepressThemeCatalog` सेट हो तो VitePress थीम; जब `docsOutput.style` `"fumadocs"` हो तो Fumadocs `meta.json` / UI कैटलॉग। |
+| `translateDocs`      | 2        | `.md` / `.mdx` / `.astro` / `.html` / `.htm` पृष्ठों का अनुवाद करें; जब `docs[].docusaurusCatalogDir` सेट हो तो Docusaurus शेल JSON; कॉन्फ़िगर होने पर Nextra `_meta` / शब्दकोश; जब `docsOutput.vitepressThemeCatalog` सेट हो तो VitePress थीम; जब `docsOutput.style` `"fumadocs"` हो तो Fumadocs `meta.json` / UI कैटलॉग। |
 | `translateJson`      | 3        | `json[]` (`translate-json`) के तहत मनमाना नेस्टेड JSON।                                                                                                           |
 | `translateSVG`       | —        | `.svg` फ़ाइलों का अनुवाद करें (शीर्ष-स्तरीय `svg` ब्लॉक की आवश्यकता है)।                                                                                                       |
 
-जब `features.translateSVG` सत्य हो और एक शीर्ष-स्तरीय `svg` ब्लॉक कॉन्फ़िगर किया गया हो तो `translate-svg` के साथ SVG फ़ाइलों का **अनुवाद करें**। `sync` कमांड उस चरण को चलाता है जब दोनों सेट होते हैं (जब तक कि `--no-svg` न हो)।
+जब कुंजी को छोड़ दिया जाता है तो प्रत्येक फ्लैग डिफ़ॉल्ट रूप से `true` हो जाता है। अनुवाद करने के लिए कुछ भी न होने पर छोड़े गए `true` को स्किप कर दिया जाता है: किसी भी UI ब्लॉक में `sourceRoots` नहीं है, किसी भी डॉक्स ब्लॉक में `contentPaths` या `docusaurusCatalogDir` नहीं है, `json[]` में कोई `contentPaths` नहीं है, या `svg` अनसेट है। जब उस पाइपलाइन में कोई कार्य न हो तो फ्लैग को `true` के रूप में लिखना एक कॉन्फ़िग त्रुटि है। `false` लिखने से स्रोत मौजूद होने पर भी `sync` के लिए वह पाइपलाइन बंद हो जाती है। `--no-ui`, `--no-docs`, `--no-json`, और `--no-svg` एक रन के लिए चरण को स्किप कर देते हैं।
+
+जब `features.translateSVG` सत्य हो और एक शीर्ष-स्तरीय `svg` ब्लॉक कॉन्फ़िगर किया गया हो, तो `translate-svg` के साथ SVG फ़ाइलों का **अनुवाद** करें। जब फ्लैग चालू हो और `svg` सेट हो (जब तक कि `--no-svg` न हो), तो `sync` कमांड उस चरण को चलाता है।
 
 ---
 
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  निर्देशिकाएँ या ग्लोब पैटर्न (cwd के सापेक्ष) `t("…")` कॉल के लिए स्कैन किए गए। `src/` या `["src/**/*.ts"]` जैसे पैटर्न का समर्थन करता है।
-- `stringsJson`  
-  मास्टर कैटलॉग फ़ाइल का पथ। `extract` द्वारा अपडेट किया गया।
-- `flatOutputDir`  
-  निर्देशिका जहाँ प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
-- `uiExtractor.funcNames` (या लेगेसी `reactExtractor.funcNames`)  
-  स्कैन करने के लिए अतिरिक्त फ़ंक्शन नाम (डिफ़ॉल्ट: `["t", "i18n.t"]`)।
-- `uiExtractor.extensions` (या लेगेसी `reactExtractor.extensions`)  
-  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्प्लेट एक्सप्रेशन के लिए `.astro` जोड़ें।
-- `uiExtractor.includePackageDescription` (या लेगेसी `reactExtractor.includePackageDescription`)  
-  जब `true` (डिफ़ॉल्ट), `extract` में `package.json` `description` भी शामिल होता है, जब मौजूद हो, तो एक UI स्ट्रिंग के रूप में।
-- `uiExtractor.packageJsonPath` (या लेगेसी `reactExtractor.packageJsonPath`)  
-  उस वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पथ।
-- `uiExtractor.includeUiLanguageEnglishNames` (या लेगेसी `reactExtractor.includeUiLanguageEnglishNames`)
+एक कैटलॉग ऑब्जेक्ट, या कैटलॉग ब्लॉकों की एक सरणी (`docs[]` जैसा ही विचार)। लोड होने पर एक एकल ऑब्जेक्ट स्वीकार किया जाता है और उसे एक-तत्व वाली सरणी में रैप किया जाता है; डिस्क पर मौजूद फ़ाइल को फिर से नहीं लिखा जाता है। पार्स करने के बाद, `config.ui` हमेशा एक सरणी होती है।
 
-जब `true` (डिफ़ॉल्ट `false`), `extract` बंडल किए गए ui-भाषाओं के मास्टर कैटलॉग (`sourceLocale` + `targetLocales` से निर्मित) से प्रत्येक `englishName` को `strings.json` में भी जोड़ता है, जब स्रोत स्कैन से पहले से मौजूद न हो (समान हैश कुंजियाँ)। `languagesManifestPath` नहीं पढ़ता है।
+`extract`, `translate-ui`, `sync-ui`, `sync` का UI चरण, `proofread-ui`, `export-ui-xliff`, `generate-ui-languages`, और `purge-locale` उन प्रत्येक ब्लॉक को पार करते हैं जिनमें `sourceRoots` है। एक ब्लॉक चलाने के लिए `--ui-block` को शून्य-आधारित इंडेक्स, ब्लॉक के `description`, या उसके `stringsJson` पथ के साथ पास करें। `status` और `statistics` उन प्रत्येक ब्लॉक को सूचीबद्ध करते हैं जिनमें स्रोत या मौजूदा कैटलॉग है। अनुवाद डैशबोर्ड ऐसे प्रत्येक कैटलॉग को सूचीबद्ध करता है और एक से अधिक होने पर एक चयनकर्ता दिखाता है।
+
+रिज़ॉल्व किए गए `stringsJson`, `flatOutputDir`, और मैनिफेस्ट पथ ब्लॉकों के बीच अद्वितीय होने चाहिए। सेट होने पर `description` मान अद्वितीय होने चाहिए, क्योंकि `--ui-block` उनसे बिल्कुल मेल खाता है।
+
+- `description`
+  कॉन्फ़िग पढ़ने वाले लोगों के लिए वैकल्पिक नोट (मॉडल को नहीं भेजा जाता)। कमांड हेडर, `status`, `statistics`, और डैशबोर्ड में `ui[i] — description` के रूप में दिखाया गया है।
+- `sourceRoots`
+  `t("…")` कॉल के लिए स्कैन की गई निर्देशिकाएँ या ग्लोब पैटर्न (cwd के सापेक्ष)। `src/` या `["src/**/*.ts"]` जैसे पैटर्न का समर्थन करता है। खाली सूची वाले ब्लॉक को स्किप कर दिया जाता है जब तक कि `--ui-block` इसे नाम न दे, जो कि एक त्रुटि है।
+- `stringsJson`
+  इस ब्लॉक की मास्टर कैटलॉग फ़ाइल का पथ। `extract` द्वारा अपडेट किया गया।
+- `flatOutputDir`
+  वह निर्देशिका जहाँ इस ब्लॉक की प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
+- `targetLocales`
+  इस ब्लॉक के लिए वैकल्पिक लोकेल सूची। जब छोड़ा जाता है या खाली होता है, तो ब्लॉक रूट `targetLocales` का उपयोग करता है।
+- `languagesManifestPath`
+  वैकल्पिक पथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। जब छोड़ा जाता है, तो ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं डिफ़ॉल्ट रूप से इस ब्लॉक के `{flatOutputDir}/ui-languages.json` पर सेट होता है)। बाद के ब्लॉक डिफ़ॉल्ट रूप से `{flatOutputDir}/ui-languages.json` पर सेट होते हैं।
+- `uiGlossary`
+  जब `true` (डिफ़ॉल्ट), इस ब्लॉक का `strings.json` `translate-docs`, `translate-json`, और `translate-svg` के लिए एक शब्दावली संकेत स्रोत होता है। `translate-ui`, `proofread-ui`, और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। उन संकेतों से कैटलॉग को बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जिसे दस्तावेज़ीकरण को निर्देशित नहीं करना चाहिए)।
+- `uiExtractor.funcNames` (या पुराना `reactExtractor.funcNames`)
+  स्कैन करने के लिए अतिरिक्त फ़ंक्शन नाम (डिफ़ॉल्ट: `["t", "i18n.t"]`)।
+- `uiExtractor.extensions` (या पुराना `reactExtractor.extensions`)
+  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्पलेट एक्सप्रेशन के लिए `.astro` जोड़ें।
+- `uiExtractor.includePackageDescription` (या पुराना `reactExtractor.includePackageDescription`)
+  जब `true` (डिफ़ॉल्ट), `extract` मौजूद होने पर `package.json` `description` को भी UI स्ट्रिंग के रूप में शामिल करता है। अतिरिक्त ब्लॉकों पर `false` सेट करें ताकि समान विवरण हर कैटलॉग में एक्सट्रैक्ट न हो।
+- `uiExtractor.packageJsonPath` (या पुराना `reactExtractor.packageJsonPath`)
+  उस वैकल्पिक विवरण एक्सट्रैक्शन के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पथ।
+- `uiExtractor.includeUiLanguageEnglishNames` (या पुराना `reactExtractor.includeUiLanguageEnglishNames`)
+
+जब `true` (डिफ़ॉल्ट `false`), `extract` बंडल किए गए ui-languages मास्टर कैटलॉग (`sourceLocale` + ब्लॉक के प्रभावी `targetLocales` से बनाया गया) से प्रत्येक `englishName` को `strings.json` में भी जोड़ता है जब वह स्रोत स्कैन से पहले से मौजूद न हो (समान हैश कुंजियाँ)। `languagesManifestPath` को नहीं पढ़ता है।
+
+`glossary.uiGlossary` और `glossary.uiGlossaryFromStringsJson` अब स्वीकार नहीं किए जाते हैं। कॉन्फ़िग लोड विफल हो जाता है और त्रुटि प्रतिस्थापन की व्याख्या करती है: कुंजी को हटा दें। संकेत अब प्रत्येक ब्लॉक के `uiGlossary` फ्लैग से आते हैं (डिफ़ॉल्ट `true`)।
 
 ---
 
@@ -311,7 +329,7 @@ SQLite कैश डायरेक्टरी (सभी `docs` ब्लॉ�
 | `features.translateMarkdown` | `features.translateDocs` |
 | `features.translateJSON` | हटा दिया गया (`docs[].docusaurusCatalogDir` या `json[]` का उपयोग करें) |
 | `features.extractUIStrings` | हटा दिया गया (`extract` UI अनुवाद से पहले चलता है) |
-| `glossary.uiGlossaryFromStringsJson` | `glossary.uiGlossary` |
+| `glossary.uiGlossary` और `glossary.uiGlossaryFromStringsJson` | हटाए गए; कॉन्फ़िग लोड विफल रहता है। `ui[].uiGlossary` (बूलियन, डिफ़ॉल्ट `true`) का उपयोग करें |
 | `ui.reactExtractor` | `ui.uiExtractor` (उपनाम अभी भी स्वीकार किया गया) |
 | `svg.svgExtractor.forceLowercase` | `svg.forceLowercase` |
 
@@ -371,9 +389,13 @@ Docusaurus लेआउट के लिए स्रोत डॉक्स र�
 - `docs[].fumadocsMetaGlob`
 जब `docsOutput.style` `"fumadocs"` हो तो `meta.json` संग्रह के लिए वैकल्पिक ग्लोब। डिफ़ॉल्ट: `docsOutput.docsRoot` के तहत पुनरावर्ती `meta.json`।
 - `docs[].fumadocsMetaTranslatableKeys`
-प्रॉपर्टी नाम जिनके स्ट्रिंग मान फ्यूमाडॉक्स `meta.json` में अनुवादित होते हैं (डिफ़ॉल्ट: `title`, `description`)।
+प्रॉपर्टी नाम जिनके स्ट्रिंग मानों का Fumadocs `meta.json` में अनुवाद किया जाता है (डिफ़ॉल्ट: `title`, `description`)।
+- `docsOutput.localizedAssets`
+जब कोई लोकेल फ़ाइल मौजूद हो तो अनुवादित HTML में छवि और आइकन URL का वैकल्पिक पुनर्नामकरण। फ़ील्ड: `include` (डिफ़ॉल्ट `img/**`), `pattern` (डिफ़ॉल्ट `{stem}-{locale}{ext}`), `onlyIfExists` (डिफ़ॉल्ट `true`), `assetRoot` (रूट-रिलेटिव URL का परीक्षण करने के लिए उपयोग की जाने वाली डायरेक्टरी; डिफ़ॉल्ट HTML फ़ाइल की डायरेक्टरी है)। प्लेसहोल्डर: `{stem}`, `{ext}`, `{basename}`, `{locale}`, `{llocale}`, `{LOCALE}`। CSS `url()` को फिर से नहीं लिखा जाता है। [HTML पृष्ठ](/hi/guide/documents/html-pages#links-and-images) देखें।
+- `docsOutput.html`
+HTML दस्तावेज़ों के लिए वैकल्पिक भाषा सूची और hreflang। डिफ़ॉल्ट टिप्पणियाँ `<!-- ai-i18n:lang-list -->` … `<!-- /ai-i18n:lang-list -->` और `<!-- ai-i18n:hreflang -->` … `<!-- /ai-i18n:hreflang -->` हैं। `languageList.format`, `links` या `select` है। `languageList.label`, `local`, `english`, या `both` है। `hreflang.siteUrl` वैकल्पिक लिंक को प्रीफ़िक्स करता है; जब इसे छोड़ दिया जाता है, तो लिंक रिलेटिव होते हैं और एक चेतावनी लॉग की जाती है। `hreflang.xDefault` डिफ़ॉल्ट रूप से `sourceLocale` होता है। `hreflang.stripIndexHtml`, `index.html` को डायरेक्टरी URL में बदल देता है। HTML के लिए, लोकेल फ़ोल्डर जोड़े जाने से पहले `docsRoot` को हटा दिया जाता है (जब `docsRoot`, `site` हो तो `site/index.html` → `site/{locale}/index.html`)। [HTML पृष्ठ](/hi/guide/documents/html-pages) देखें।
 - `docsOutput.vitepressThemeCatalog`
-वैकल्पिक। VitePress थीम/नेव/साइडबार कैटलॉग बूटस्ट्रैप + `translate-docs` के अंदर अनुवाद। फ़ील्ड: `configPath` (थीम स्ट्रिंग्स के साथ VitePress कॉन्फ़िग), `catalogPath` (जनरेटेड अंग्रेजी नेस्टेड JSON), वैकल्पिक `outputPathTemplate` (डिफ़ॉल्ट: `theme.{locale}.json` `catalogPath` के बगल में)।
+वैकल्पिक। `translate-docs` के अंदर VitePress थीम/नेव/साइडबार कैटलॉग बूटस्ट्रैप + अनुवाद। फ़ील्ड: `configPath` (थीम स्ट्रिंग के साथ VitePress कॉन्फ़िग), `catalogPath` (जनरेट किया गया अंग्रेज़ी नेस्टेड JSON), वैकल्पिक `outputPathTemplate` (डिफ़ॉल्ट: `catalogPath` के बगल में `theme.{locale}.json`)।
 
 **पोस्ट-प्रोसेसिंग**
 
@@ -486,13 +508,12 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 
 | फ़ील्ड          | विवरण                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiGlossary`   | `strings.json` का पाथ - मौजूदा अनुवादों से एक शब्दावली को स्वतः-बनाता है।                                                                                                 |
-| `userGlossary` | `Original language string` (या `en`), `locale`, `Translation`, वैकल्पिक `Force`, और वैकल्पिक `Context` कॉलम वाली CSV का पथ - प्रति स्रोत शब्द और लक्ष्य लोकेल एक पंक्ति (सभी लक्ष्यों के लिए `locale` `*` हो सकता है)। |
+| `userGlossary` | `Original language string` (या `en`), `locale`, `Translation`, वैकल्पिक `Force`, और वैकल्पिक `Context` कॉलम वाले CSV का पथ - प्रति स्रोत शब्द और लक्ष्य लोकेल एक पंक्ति (`locale` सभी लक्ष्यों के लिए `*` हो सकता है)। |
 | `autoAddUserEditedToGlossary` | जब `true` होता है, तो UI स्ट्रिंग्स में डैशबोर्ड संपादन स्वचालित रूप से उपयोगकर्ता शब्दावली में जोड़े जा सकते हैं। |
 | `contextFiles` | उत्पाद या सुविधा स्पष्टीकरण के साथ वैकल्पिक cwd-सापेक्ष मार्कडाउन या सादे-पाठ फ़ाइलें (`.md`, `.markdown`, `.txt`)। कमांड शुरू होने पर लोड की जाती हैं और UI, डॉक्स, JSON, SVG, और प्रूफरीड प्रॉम्प्ट में इंजेक्ट की जाती हैं। इन फ़ाइलों को `docs[].contentPaths` में न रखें जब तक कि आप उन्हें अनुवादित भी न करना चाहें। URL अस्वीकृत हैं। पूरा पाठ कॉन्फ़िगर किए गए LLM प्रदाता को भेजा जाता है और `--debug-failed` लॉग में दिखाई दे सकता है — रहस्य या PII शामिल न करें। |
 | `contextMaxChars` | मॉडल को भेजे गए संयोजित संदर्भ-फ़ाइल पाठ के अधिकतम वर्ण (डिफ़ॉल्ट `12000`, हार्ड कैप `100000`)। अतिरिक्त पाठ को चेतावनी के साथ छोटा कर दिया जाता है। |
 
-`translate-docs` शब्दावली संकेतों के लिए समान शब्दावली का उपयोग करता है, लेकिन कॉम्पैक्ट UI-लेबल संक्षिप्ताक्षरों (जैसे `Alm.` जैसे ट्रेलिंग-डॉट फ़ॉर्म, या `Size` → `Tam` जैसे छोटे सिंगल-टोकन संपीड़न) को छोड़ देता है ताकि दस्तावेज़ प्रॉम्प्ट को आविष्कार किए गए <code v-pre>{{…}}</code> टोकन की ओर निर्देशित न किया जाए। पूर्ण उत्पाद शब्द और गैर-संक्षिप्त UI अनुवाद अभी भी संकेतित हैं।
+`translate-docs`, `translate-json`, और `translate-svg` प्रत्येक UI ब्लॉक से संकेत लेते हैं जिनका `uiGlossary` `true` (डिफ़ॉल्ट) होता है। यह उस ब्लॉक के `strings.json` में पहले से संग्रहीत अनुवादों का पुन: उपयोग करता है। किसी ब्लॉक को छोड़ने के लिए उस पर `uiGlossary` को `false` पर सेट करें। `translate-ui` और `proofread-ui` उन कैटलॉग का उपयोग संकेतों के रूप में नहीं करते हैं। संक्षिप्त UI-लेबल संक्षेपाक्षर (ट्रेलिंग-डॉट रूप जैसे `Alm.`, या छोटे सिंगल-टोकन संपीड़न जैसे `Size` → `Tam`) को छोड़ दिया जाता है ताकि दस्तावेज़ प्रॉम्प्ट को आविष्कार किए गए <code v-pre>{{…}}</code> टोकन की ओर निर्देशित न किया जाए। पूर्ण उत्पाद शब्द और गैर-संक्षिप्त UI अनुवादों को अभी भी संकेत दिया जाता है।
 
 वैकल्पिक `Context` CSV कॉलम उस शब्द के लिए स्रोत-भाषा उपयोग मार्गदर्शन है (परिभाषा, व्याकरणिक उपयोग, उत्पाद अर्थ)। इसे तभी शामिल किया जाता है जब शब्द वर्तमान बैच से मेल खाता हो। किसी शब्द के `Context` नोट या किसी `contextFiles` सामग्री को बदलने से अगले रन पर मिलान करने वाले लोकेल के कैश किए गए सेगमेंट और फ़ाइल-ट्रैकिंग पंक्तियाँ अमान्य हो जाती हैं, इसलिए अनुवाद स्वचालित रूप से ताज़ा हो जाते हैं। केवल एक पसंदीदा `Translation` को बदलने से मौजूदा कैश का उपयोग तब भी होता है जब तक आप `--force` / `--force-update` पास नहीं करते। डैशबोर्ड उपयोगकर्ता-संपादित कैश पंक्तियों को रखा जाता है।
 

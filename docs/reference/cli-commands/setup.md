@@ -32,6 +32,8 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 | `ui-nextra` | Nextra docs (`docsOutput.style: "nextra"`) plus `nextraDictionaryPath` for the theme dictionary (sidebar `_meta.ts` is collected automatically) |
 | `ui-fumadocs` | Fumadocs docs (`docsOutput.style: "fumadocs"`) plus `fumadocsUiCatalog` for UI overrides (sidebar `meta.json` is collected automatically) |
 | `ui-astro-website` | Astro website UI strings |
+| `ui-plain-html` | Plain HTML catalog (`data-i18n*` markers, flat locale JSON) |
+| `docs-plain-html` | Plain HTML documents (one file per locale, language list, hreflang) |
 | `ui-json-bundles` | JSON (`json[]` only) |
 
 `--with-translate-ignore` creates a starter `.translate-ignore`.

@@ -5,8 +5,8 @@
 
 系统会向模型发送两种类型的指导：
 
-- `glossary.userGlossary` 中的**Term rows**（对于某些管道，还包括来自 `glossary.uiGlossary` 的现有 UI 翻译）。仅当正在翻译的文本中出现该源术语时，才会包含该行。
-- `glossary.contextFiles` 中的**Project context files**。完整的简报会注入到每个 UI、文档、JSON、SVG 和校对提示中。该部分在[下文](#project-context-files)。
+- `glossary.userGlossary` 中的**术语行**（对于文档、JSON 和 SVG，还包括启用了 `uiGlossary` 的每个 `ui` 块中的现有 UI 翻译）。仅当该源术语出现在待翻译文本中时，才会包含对应行。
+- `glossary.contextFiles` 中的**项目上下文文件**。完整说明会注入到每个 UI、文档、JSON、SVG 和校对提示中。该部分见[下文](#project-context-files)。
 
 <a id="how-the-glossary-works"></a>
 ## 术语表的工作原理
@@ -14,14 +14,12 @@
 <a id="where-terms-come-from"></a>
 ### 术语的来源
 
-| 来源 | 配置 | 使用者 |
+| 来源 | 配置 | 使用方 |
 | --- | --- | --- |
-| UI 目录 | `glossary.uiGlossary` — 通常与 `ui.stringsJson` 路径相同 | `translate-docs`、`translate-json`、`translate-svg` |
+| UI 目录 | `ui[].uiGlossary`（布尔值，默认值为 `true`）— 该块的 `stringsJson` | `translate-docs`、`translate-json`、`translate-svg` |
 | 用户 CSV | `glossary.userGlossary` | `translate-ui`、`proofread-ui`、`translate-docs`、`translate-json`、`translate-svg` |
 
-`uiGlossary` 会重用已存储在 `strings.json` 中的翻译作为提示，从而使文档、JSON 和 SVG 与 UI 保持一致。`translate-ui` 和 `proofread-ui` 不读取 `uiGlossary` — 它们仅从用户 CSV 获取提示，因此错误的 UI 翻译不会被作为首选术语反馈回去。
-
-用户 CSV 的优先级高于 UI 目录。如果某行的 `locale` 是特定代码，则会同时替换该区域的 `*` 行和 UI 目录翻译。当 `locale` 为 `*` 时，会将相同的翻译应用于尚未从 UI 目录获取翻译的每个 `targetLocales` 条目。
+启用了 `uiGlossary: true` 的块会复用已存储在其 `strings.json` 中的翻译作为提示，从而使文档、JSON 和 SVG 与 UI 保持一致。`translate-ui` 和 `proofread-ui` 不会读取这些目录——它们仅从用户 CSV 中获取提示，因此错误的 UI 翻译不会被作为首选术语反馈回去。对于不应影响其他流水线的块，请将 `uiGlossary` 设置为 `false`。当多个块共享同一个源术语时，排在前面的块会填充某个语言区域，而排在后面的块仅补充仍然缺失的语言区域。用户 CSV 的优先级高于任何 UI 目录。如果某行的 `locale` 为特定代码，则会同时替换该语言区域的 `*` 行和 UI 目录翻译。如果 `locale` 为 `*`，则会将同一翻译应用于所有尚未从 UI 目录获取翻译的目标语言区域。
 
 紧凑的 UI 标签缩写（如带有尾随点的 `Alm.`，或简短的单词元压缩如 `Size` → `Tam`）仍可用于 UI 翻译。文档提示会跳过它们，因此它们不会促使模型在 markdown 或 MDX 中生成虚构的 <code v-pre>{{…}}</code> 词元。
 
@@ -52,7 +50,6 @@ ai-i18n-tools glossary-generate
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Original language string,locale,Translation,Force,Context
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

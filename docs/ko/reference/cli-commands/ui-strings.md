@@ -6,7 +6,7 @@
 
 **개요:** `ai-i18n-tools extract`
 
-`strings.json`를 `t("…")` / `i18n.t("…")` 리터럴, 선택적 `package.json` 설명, 그리고 `includeUiLanguageEnglishNames`가 활성화된 경우 선택적 번들 마스터 `englishName` 항목에서 업데이트합니다(`ui.uiExtractor` 참조; `languagesManifestPath`는 읽지 않음). 또한 `languagesManifestPath`에서 `ui-languages.json`을(를) 재생성합니다. `.html` / `.htm`이(가) `ui.uiExtractor.extensions`에 나열된 경우, HTML에서 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커 문자열도 캡처합니다. 비어 있지 않은 `ui.sourceRoots`이(가) 필요합니다. LLM을 호출하지 않습니다.
+`includeUiLanguageEnglishNames`이(가) 활성화된 경우 `t("…")` / `i18n.t("…")` 리터럴, 선택적 `package.json` 설명 및 선택적 번들 마스터 `englishName` 항목에서 `strings.json`을(를) 업데이트합니다(`ui.uiExtractor` 참조; `languagesManifestPath`은(는) 읽지 않음). 또한 각 블록의 `ui-languages.json`을(를) 다시 생성합니다. `.html` / `.htm`이(가) `ui.uiExtractor.extensions`에 나열된 경우 HTML에서 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커 문자열도 캡처합니다. `sourceRoots`이(가) 있는 모든 `ui` 블록을 순회합니다. `--ui-block`은(는) 실행을 하나의 블록(인덱스, 설명 또는 `stringsJson` 경로)으로 제한합니다. LLM을 호출하지 않습니다.
 
 **참고 항목:** [UI 문자열 개요](/ko/guide/ui-strings/), [순수 HTML 앱](/ko/guide/ui-strings/plain-html)
 
@@ -32,7 +32,7 @@ Intlayer `*.content.ts` 사전을 `strings.json` 및 플랫 로케일 파일로 
 
 **개요:** `ai-i18n-tools mark-html [paths...] [--write]`
 
-소스 텍스트가 한 번만 작성되도록(요소 자체에) HTML에 단순 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커를 삽입합니다. 지정된 파일/디렉터리/글로브를 스캔합니다(기본값: `ui.sourceRoots` 아래의 `.html` / `.htm`). 기본적으로 드라이 런(파일별 추가 개수 및 수동 `<span data-i18n>`이(가) 필요한 혼합 콘텐츠 요소를 보고); `--write`이(가) 변경 사항을 적용합니다. 멱등성을 유지하며, `data-i18n-ignore`을(를) 존중하고(해당 요소와 하위 트리를 건너뜀), 코드 유사 요소(`code`, `pre`, `kbd`, `samp`, `var`)나 빈/숫자 전용 텍스트는 처리하지 않으며, 값이 있는 마커는 생성하지 않습니다. LLM을 호출하지 않습니다.
+소스 텍스트가 한 번만 작성되도록(요소 자체에) HTML에 단순 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커를 삽입합니다. 지정된 파일/디렉터리/글롭을 스캔합니다(기본값: 모든 블록의 `sourceRoots` 아래 `.html` / `.htm`). 기본적으로 드라이 런을 수행하며(파일별 추가 횟수 및 수동 `<span data-i18n>`이(가) 필요한 혼합 콘텐츠 요소 보고), `--write`은(는) 변경 사항을 적용합니다. 멱등성을 유지하며 `data-i18n-ignore`을(를) 준수하고(요소와 해당 하위 트리 건너뛰기), 코드 유사 요소(`code`, `pre`, `kbd`, `samp`, `var`)나 비어 있거나 숫자로만 이루어진 텍스트는 건드리지 않으며, 값이 있는 마커를 내보내지 않습니다. LLM을 호출하지 않습니다.
 
 **주요 옵션:** `--write`
 
@@ -78,7 +78,7 @@ UI 문자열을 추출한 다음 번역합니다(`features.translateUIStrings` �
 
 **개요:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-`strings.json`이(가) 소스와 일치하도록 먼저 `extract`을(를) 실행하고(`features.translateUIStrings` 필요), 그 다음 소스 로케일 UI 문자열(맞춤법, 문법)에 대한 LLM 검토를 수행합니다. 용어 힌트는 `glossary.userGlossary` CSV에서만 가져옵니다(`translate-ui`와 동일한 범위 — `strings.json` / `uiGlossary`이(가) 아니므로 잘못된 사본이 용어집으로 강화되지 않음). 활성 LLM 제공자(해당 API 키 환경 변수)를 사용합니다.
+각 선택된 카탈로그가 소스와 일치하도록 먼저 `extract`을(를) 실행하고(`features.translateUIStrings` 필요), 그 다음 소스 로캘 UI 문자열(맞춤법, 문법)에 대한 LLM 검토를 수행합니다. `--ui-block`은(는) 추출 및 검토를 하나의 블록으로 제한합니다. 용어 힌트는 `glossary.userGlossary` CSV에서만 가져옵니다(`translate-ui`와(과) 동일한 범위 — UI 카탈로그는 다시 전달되지 않으므로 잘못된 문구가 용어집으로 강화되지 않음). 활성 LLM 공급자(해당 API 키 환경 변수)를 사용합니다.
 
 실패 시(기능 플래그 누락, 추출 실패, 카탈로그 누락 또는 유효하지 않음, API 키 누락, 모든 배치 실패) **1**로 종료하고, 실행이 성공적으로 완료되면(결과는 권고 사항) **0**으로 종료합니다. `cacheDir` 아래에 `proofread-ui-results_<timestamp>.log`을(를) 사람이 읽을 수 있는 보고서(요약, 문제, 검토되지 않은 행, 문자열별 정상 행)로 작성합니다. 터미널에는 요약 개수와 문제만 출력되며(문자열당 `[ok]` 줄은 출력되지 않음), 실패한 배치나 배치보다 짧고 각 슬롯에 사용 가능한 `index`이(가) 없는 모델 응답의 경우 해당 문자열은 검토되지 않은 것으로 처리됩니다. 짧은 배열이 잘못된 문자열에 적용되는 것을 방지하기 위해 해당 문제는 삭제됩니다. 마지막 줄에 로그 파일 이름을 출력합니다. `--json`을(를) 사용하면 사용자 친화적 형식의 출력이 stderr로 전송됩니다. 링크는 대시보드 UI 문자열 링크 버튼과 마찬가지로 `path:line`을(를) 사용합니다.
 

@@ -3,7 +3,7 @@
   "targetLocales": ["de", "es", "fr", "hi", "ja", "ko", "pt-BR", "zh-Hans", "zh-Hant"],
   "concurrency": 4,
   "batchConcurrency": 4,
-  "uiBatchConcurrency": 4,
+  "uiBatchConcurrency": 5,
   "fileConcurrency": 2,
   "batchSize": 20,
   "maxBatchChars": 4096,
@@ -23,7 +23,7 @@
       ],
       "uiModels": [
         "~anthropic/claude-sonnet-latest",
-        "openai/gpt-5.4"
+        "qwen/qwen3.7-max"
       ],
       "maxTokens": 8192,
       "temperature": 0.2,
@@ -31,12 +31,22 @@
     }
   },
   "features": {
-    "translateUIStrings": false,
-    "translateDocs": true,
-    "translateJson": false,
-    "translateSVG": false
+    "translateDocs": true
   },
   "cacheDir": ".translation-cache",
+  "ui": {
+    "description": "CLI and dashboard",
+    "sourceRoots": ["src/cli", "src/server", "src/dashboard-app"],
+    "stringsJson": "src/i18n/strings.json",
+    "flatOutputDir": "src/i18n/locales",
+    "languagesManifestPath": "src/i18n/locales/ui-languages.json",
+    "uiGlossary": false,
+    "uiExtractor": {
+      "extensions": [".ts", ".js", ".html"],
+      "funcNames": ["t"],
+      "includePackageDescription": false
+    }
+  },
   "docs": [
     {
       "description": "README.md (flat, GitHub-facing translations)",

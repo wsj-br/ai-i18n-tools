@@ -4,6 +4,13 @@
 <a id="language-switcher-ui"></a>
 ## 언어 전환기 UI
 
+<a id="plain-html"></a>
+### 일반 HTML
+
+프레임워크가 없는 페이지의 경우, [`i18n.js`](/ko/guide/ui-strings/plain-html#obtain-the-runtime)을(를) 로드하고 `data-locale-select`을(를) `<select>`(으)로 지정합니다(또는 링크가 되어야 하는 요소에 `data-locale-list`을(를) 지정합니다). 이 스크립트는 `ui-languages.json`에서 컨트롤을 채우고, 현재 페이지에서 로캘을 전환한 후 `<html lang>` 및 `dir`을(를) 설정합니다. 브라우저 언어를 기반으로 두 번째 리디렉션을 추가하지 마십시오. 세부 정보, 마크업 및 전체 스크립트: [일반 HTML 앱](/ko/guide/ui-strings/plain-html#language-selector).
+
+로캘당 하나의 HTML 파일을 생성하는 정적 사이트의 경우, 이 런타임 대신 [HTML 페이지](/ko/guide/documents/html-pages)에서 생성된 언어 목록을 사용하십시오.
+
 언어 선택기를 빌드하려면 `ui-languages.json` 매니페스트를 사용하세요. `ai-i18n-tools`는 두 가지 표시 도우미를 내보냅니다. 서명은 [런타임 도우미 → 표시 도우미](/ko/guide/runtime-helpers#display-helpers)를 참조하세요.
 
 <details>

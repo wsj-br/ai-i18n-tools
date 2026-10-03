@@ -65,11 +65,13 @@ Tudo o que se destina ao uso programático é reexportado de `src/index.ts` ([AP
 
 Usa `i18next-scanner`'s `Parser.parseFuncFromString` para encontrar chamadas `t("literal")` e `i18n.t("literal")` em arquivos JS/TS. Para fontes `.astro` (quando listadas em `ui.uiExtractor.extensions`), `ui-string-babel.ts` analisa blocos de frontmatter e template `{expression}` com `@babel/parser` e aplica as mesmas regras `funcNames`. Os nomes de funções e extensões de arquivo são configuráveis via `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas não-scanner no mesmo catálogo:** o projeto `package.json` `description` quando `includePackageDescription` está habilitado (padrão), e cada `englishName` do catálogo master ui-languages embutido (construído a partir de `sourceLocale` + `targetLocales`) quando `includeUiLanguageEnglishNames` é `true` (strings já encontradas na fonte mantêm precedência; não lê `languagesManifestPath`). `extract` também regenera `ui-languages.json` em `languagesManifestPath`. Os hashes de segmento são **MD5 dos 8 primeiros caracteres hex** da string de origem trimada — esses se tornam as chaves em `strings.json`.
 
-Para fontes `.html` / `.htm` (quando listadas em `ui.uiExtractor.extensions`), `extract` em vez disso roteia o arquivo através de `html-i18n-marks.ts`, que escaneia atributos de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` (configurável via `ui.uiExtractor.htmlI18nAttributes`). Um marcador simples obtém seu texto de origem do próprio `textContent` / `title` / `placeholder` do elemento; um marcador com valor (`data-i18n="Key"`) usa o valor. O mesmo módulo alimenta o comando `mark-html`, que insere os marcadores simples automaticamente. Arquivos HTML nunca chegam às etapas do Babel / i18next-scanner.
+Para fontes `.html` / `.htm` (quando listadas em `ui.uiExtractor.extensions`), `extract` encaminha o arquivo através de `html-i18n-marks.ts`, que analisa os atributos de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` (configuráveis via `ui.uiExtractor.htmlI18nAttributes`). Um marcador simples obtém seu texto fonte do próprio `textContent` ou atributo do elemento; um marcador com valor (`data-i18n="Key"`) usa o valor. `data-i18n-locale-src` e `data-i18n-locale-href` são reservados para o ambiente de execução do navegador e nunca são extraídos. O mesmo módulo é a base do comando `mark-html`, que insere os marcadores simples automaticamente (incluindo `alt` e `aria-label`) e nunca insere os marcadores de URL de localidade. Arquivos HTML nunca chegam às etapas do Babel / i18next-scanner. O HTML de localidade gerado em uma `outputDir` de documentação é excluído desta análise.
 
 Sites Astro SSG simples podem pular o i18next: carregar `{locale}.json` plano no tempo de compilação e resolver `t('English')` por chave de texto-fonte (veja `examples/astro-website/src/i18n/t.ts` e [UI strings — Astro website](/pt-BR/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)).
 
-Aplicativos HTML simples seguem o mesmo modelo de catálogo com atributos de marcador em vez de chamadas `t()` — veja [Marking HTML for translation](/pt-BR/guide/ui-strings/plain-html#marking-html-for-translation).
+Aplicações HTML simples seguem o mesmo modelo de catálogo com atributos de marcador em vez de chamadas `t()` — consulte [Marcando HTML para tradução](/pt-BR/guide/ui-strings/plain-html#marking-html-for-translation). O script drop-in é `ai-i18n-tools/html-runtime/i18n.js`.
+
+HTML estático que deve se tornar um arquivo por localidade é um pipeline de documentos (`HtmlTemplateExtractor` dentro de `translate-docs`), não este catálogo. Consulte [Páginas HTML](/pt-BR/guide/documents/html-pages).
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -288,10 +290,10 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)`:
 
 A ferramenta localiza sua própria interface — ajuda da CLI, mensagens de log/resumo/erro de alto tráfego e o Painel de Tradução — separadamente do conteúdo que ela traduz para você.
 
-- **Resolução de localidade** (`resolveUiLocale` em `src/core/ui-locale.ts`): escolhe a localidade da UI de `-L` / `--ui-lang` > `AI_I18N_LANG` > configuração `uiLanguage` > localidade do SO host (`Intl.DateTimeFormat().resolvedOptions().locale`). O candidato é normalizado e comparado com o conjunto de pacotes enviados exatamente ou pela variação mais próxima (por exemplo, `pt-PT` → `pt-BR`, `en-US` → `en-GB`), retornando à localidade de origem (`en-GB`). A CLI resolve uma vez antes que a ajuda seja construída (verificação de argv pré-análise) e novamente após o carregamento da configuração para que `uiLanguage` se aplique (a flag e a variável de ambiente ainda prevalecem).
-- **Tempo de execução** (`src/i18n/index.ts`): um `t(source, vars)` mínimo com interpolação ```{{name}}```, indexado pela string de origem em inglês em relação a pacotes planos por localidade em `src/i18n/locales/<code>.json` (copiado para `dist/i18n/locales` na compilação). Chaves ou pacotes ausentes retornam o texto de origem. Este é o mesmo modelo de chave como padrão que as strings da UI — não há pesquisa de hash.
-- **Painel**: o servidor expõe `GET /api/ui-i18n` retornando `{ locale, dir, bundle }` para a localidade da UI resolvida; o frontend define `<html lang>` / `dir` e localiza a marcação estática via atributos `data-i18n*`.
-- **Dogfooding**: os pacotes são produzidos executando o próprio pipeline de extração → `translate-ui` do pacote contra `ai-i18n-self.config.json` (`pnpm i18n:self`). As chaves do catálogo vêm de chamadas `t()` em `src/cli/` e `src/i18n/`, além dos marcadores `data-i18n*` do painel em `src/dashboard-app/index.html`.
+- **Resolução de localidade** (`resolveUiLocale` em `src/core/ui-locale.ts`): seleciona a localidade da UI a partir de `-L` / `--ui-lang` > `AI_I18N_LANG` > configuração `uiLanguage` > localidade do SO host (`Intl.DateTimeFormat().resolvedOptions().locale`). A localidade candidata é normalizada e correspondida ao conjunto de pacotes distribuídos de forma exata ou pela variação mais próxima (ex.: `pt-PT` → `pt-BR`, `en-US` → `en-GB`), fazendo fallback para a localidade de origem (`en-GB`). A CLI resolve uma vez antes da compilação da ajuda (varredura pré-análise do argv) e novamente após o carregamento da configuração para que `uiLanguage` seja aplicado (a flag e a variável de ambiente ainda têm prioridade).
+- **Runtime** (`src/i18n/index.ts`): um `t(source, vars)` mínimo com interpolação ```{{name}}```, indexado pela string de origem em inglês em relação a pacotes planos por localidade em `src/i18n/locales/<code>.json` (copiados para `dist/i18n/locales` na compilação). Chaves ou pacotes ausentes retornam o texto de origem. Este é o mesmo modelo de chave como padrão das strings de UI — não há busca por hash.
+- **Dashboard**: o servidor expõe `GET /api/ui-i18n` retornando `{ locale, dir, bundle }` para a localidade da UI resolvida; o frontend define `<html lang>` / `dir` e localiza a marcação estática por meio de atributos `data-i18n*`.
+- **Dogfooding**: os pacotes são produzidos por `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`), que extrai e traduz o bloco `ui` da CLI e do dashboard em `ai-i18n-tools.config.json`. As chaves do catálogo vêm de chamadas `t()` em `src/cli/` e `src/i18n/`, além dos marcadores `data-i18n*` do dashboard em `src/dashboard-app/index.html`.
 
 ---
 
@@ -309,7 +311,7 @@ Adicione nomes não padrão de funções de tradução via configuração:
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

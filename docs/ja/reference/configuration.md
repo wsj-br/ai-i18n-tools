@@ -29,7 +29,7 @@
 <a id="languagesmanifestpath-optional"></a>
 ### `languagesManifestPath` (オプション)
 
-ルートレベルのオプション文字列（`ui` の下にネストされません）。`extract` と `generate-ui-languages` が `ui-languages.json` マニフェストを書き込むパスであり、CLI が表示名と言語リストの後処理のために読み取るパスです。省略した場合、設定の読み込み時に `ui.flatOutputDir/ui-languages.json` がデフォルトとして使用されます。
+ルートレベルのオプション文字列。ドキュメントの言語切り替え機能はこのパスを読み取ります。省略した場合、最初のUIブロックのマニフェスト、つまりそのブロックの `languagesManifestPath` または `{flatOutputDir}/ui-languages.json` がデフォルトになります。各UIブロックは独自の `languagesManifestPath` を設定できます。ブロック0は、そのブロックで省略されている場合にこのルートパスを使用します。
 
 以下のときに使用します：
 
@@ -235,34 +235,52 @@
 | フィールド | パイプライン | 説明 |
 |---|---|---|
 | `translateUIStrings` | 1 | `t("…")` / `i18n.t("…")` を `strings.json` に抽出し、エントリを翻訳してロケールごとのフラット JSON を書き込みます（抽出は自動的に実行されます。カタログのみを更新するには、スタンドアロンの `extract` を使用します）。 |
-| `translateDocs` | 2 | `.md` / `.mdx` / `.astro` ページを翻訳します。`docs[].docusaurusCatalogDir` が設定されている場合は Docusaurus シェル JSON を翻訳します。Nextra `_meta` / 設定されている場合は辞書を翻訳します。`docsOutput.vitepressThemeCatalog` が設定されている場合は VitePress テーマを翻訳します。`meta.json` / UI カタログは `docsOutput.style` が `"fumadocs"` の場合に翻訳します。 |
+| `translateDocs`      | 2        | `.md` / `.mdx` / `.astro` / `.html` / `.htm` ページを翻訳します。`docs[].docusaurusCatalogDir` が設定されている場合は Docusaurus のシェル JSON、設定されている場合は Nextra の `_meta` / 辞書、`docsOutput.vitepressThemeCatalog` が設定されている場合は VitePress テーマ、`docsOutput.style` が `"fumadocs"` の場合は Fumadocs の `meta.json` / UI カタログも翻訳します。 |
 | `translateJson` | 3 | `json[]` 配下の任意のネストされた JSON（`translate-json`）。 |
 | `translateSVG` | — | `.svg` ファイルを翻訳（トップレベルの `svg` ブロックが必要です）。 |
 
-`features.translateSVG` が true かつトップレベルの `svg` ブロックが設定されている場合、`translate-svg` で **SVG** ファイルを翻訳します。`sync` コマンドは、両方が設定されている場合にそのステップを実行します（`--no-svg` でない限り）。
+各フラグは、キーが省略されている場合、デフォルトで `true` になります。翻訳するものがない省略された `true` はスキップされます。UIブロックに `sourceRoots` がなく、ドキュメントブロックに `contentPaths` や `docusaurusCatalogDir` がなく、`json[]` に `contentPaths` がなく、または `svg` が設定されていない場合です。そのパイプラインに処理がない場合にフラグを `true` と記述すると、設定エラーになります。`false` と記述すると、ソースが存在する場合でも、`sync` に対してそのパイプラインがオフになります。`--no-ui`、`--no-docs`、`--no-json`、および `--no-svg` は、1回の実行に対してそのステップをスキップします。
+
+**Translate** は、`features.translateSVG` が true で、トップレベルの `svg` ブロックが設定されている場合、`translate-svg` を使用して SVG ファイルを翻訳します。`sync` コマンドは、フラグがオンで `svg` が設定されている場合にそのステップを実行します（`--no-svg` の場合を除く）。
 
 ---
 
 <a id="ui"></a>
 ### `ui`
 
-- `sourceRoots`  
-  `t("…")`呼び出しのためにスキャンされるディレクトリまたはグロブパターン（現在の作業ディレクトリからの相対パス）。`src/`や`["src/**/*.ts"]`のようなパターンをサポートします。
-- `stringsJson`  
-  マスターカタログファイルへのパス。`extract`によって更新されます。
-- `flatOutputDir`  
-  ロケールごとのJSONファイル（`de.json`など）が書き込まれるディレクトリ。
-- `uiExtractor.funcNames`（またはレガシー`reactExtractor.funcNames`）  
-  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（またはレガシー`reactExtractor.extensions`）  
-  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。Astroのフロントマターとテンプレート式には`.astro`を追加します。
-- `uiExtractor.includePackageDescription`（またはレガシー`reactExtractor.includePackageDescription`）  
-  `true`（デフォルト）の場合、`extract`は、存在する場合に`package.json` `description`もUI文字列として含めます。
-- `uiExtractor.packageJsonPath`（またはレガシー`reactExtractor.packageJsonPath`）  
-  オプションの説明抽出に使用される`package.json`ファイルへのカスタムパス。
-- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー`reactExtractor.includeUiLanguageEnglishNames`）
+1つのカタログオブジェクト、またはカタログブロックの配列（`docs[]` と同じ概念）。単一のオブジェクトは読み込み時に受け入れられ、1要素の配列にラップされます。ディスク上のファイルは書き換えられません。解析後、`config.ui` は常に配列になります。
 
-`true`（デフォルト `false`）の場合、`extract` はバンドルされた ui-languages マスターカタログ（`sourceLocale` + `targetLocales` から構築）の各 `englishName` を、ソーススキャンから既に存在しない場合（同じハッシュキー）、`strings.json` に追加します。`languagesManifestPath` は読み取りません。
+`extract`、`translate-ui`、`sync-ui`、`sync` のUIフェーズ、`proofread-ui`、`export-ui-xliff`、`generate-ui-languages`、および `purge-locale` は、`sourceRoots` を持つすべてのブロックを走査します。1つのブロックを実行するには、`--ui-block` に0始まりのインデックス、ブロックの `description`、またはその `stringsJson` パスを渡します。`status` と `statistics` は、ソースまたは既存のカタログを持つすべてのブロックをリストします。翻訳ダッシュボードは、そのようなすべてのカタログをリストし、複数ある場合はセレクターを表示します。
+
+解決された `stringsJson`、`flatOutputDir`、およびマニフェストパスは、ブロック間で一意である必要があります。`description` の値は、設定されている場合、一意である必要があります。これは、`--ui-block` がそれらを完全に一致させるためです。
+
+- `description`
+  設定を読む人向けのオプションのメモ（モデルには送信されません）。コマンドヘッダー、`status`、`statistics`、およびダッシュボードでは `ui[i] — description` として表示されます。
+- `sourceRoots`
+  `t("…")` 呼び出しのためにスキャンされるディレクトリまたは glob パターン（cwd からの相対パス）。`src/` や `["src/**/*.ts"]` のようなパターンをサポートします。空のリストを持つブロックは、`--ui-block` で指定されていない限りスキップされますが、指定するとエラーになります。
+- `stringsJson`
+  このブロックのマスターカタログファイルへのパス。`extract` によって更新されます。
+- `flatOutputDir`
+  このブロックのロケールごとの JSON ファイルが書き込まれるディレクトリ（`de.json` など）。
+- `targetLocales`
+  このブロックのオプションのロケールリスト。省略または空の場合、ブロックはルートの `targetLocales` を使用します。
+- `languagesManifestPath`
+  `extract` と `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパス。省略した場合、ブロック0はルートの `languagesManifestPath` を使用します（これ自体がデフォルトでこのブロックの `{flatOutputDir}/ui-languages.json` になります）。後のブロックはデフォルトで `{flatOutputDir}/ui-languages.json` になります。
+- `uiGlossary`
+  `true`（デフォルト）の場合、このブロックの `strings.json` は、`translate-docs`、`translate-json`、および `translate-svg` の用語集ヒントソースになります。`translate-ui`、`proofread-ui`、およびソースリントは `glossary.userGlossary` のみを使用します。`false` を設定すると、カタログをそれらのヒントから除外できます（たとえば、ドキュメントに影響を与えるべきではない CLI 文字列カタログなど）。
+- `uiExtractor.funcNames`（またはレガシーの `reactExtractor.funcNames`）
+  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（またはレガシーの `reactExtractor.extensions`）
+  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。Astro のフロントマターとテンプレート式には `.astro` を追加します。
+- `uiExtractor.includePackageDescription`（またはレガシーの `reactExtractor.includePackageDescription`）
+  `true`（デフォルト）の場合、`extract` は、存在する場合は `package.json` `description` も UI 文字列として含めます。同じ説明がすべてのカタログに抽出されないように、追加のブロックで `false` を設定します。
+- `uiExtractor.packageJsonPath`（またはレガシーの `reactExtractor.packageJsonPath`）
+  そのオプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。
+- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシーの `reactExtractor.includeUiLanguageEnglishNames`）
+
+`true`（デフォルトは `false`）の場合、`extract` は、ソーススキャンからまだ存在しない（同じハッシュキーの）各 `englishName` を、バンドルされた ui-languages マスターカタログ（`sourceLocale` + ブロックの有効な `targetLocales` から構築）から `strings.json` に追加します。`languagesManifestPath` は読み取りません。
+
+`glossary.uiGlossary` と `glossary.uiGlossaryFromStringsJson` は受け入れられなくなりました。設定の読み込みに失敗し、エラーで代替手段が説明されます。キーを削除してください。ヒントは現在、各ブロックの `uiGlossary` フラグ（デフォルトは `true`）から取得されます。
 
 ---
 
@@ -311,7 +329,7 @@ SQLiteキャッシュディレクトリ（すべての`docs`ブロックで共�
 | `features.translateMarkdown` | `features.translateDocs` |
 | `features.translateJSON` | 削除済み（`docs[].docusaurusCatalogDir`または`json[]`を使用） |
 | `features.extractUIStrings` | 削除済み（`extract`はUI翻訳の前に実行されます） |
-| `glossary.uiGlossaryFromStringsJson` | `glossary.uiGlossary` |
+| `glossary.uiGlossary` と `glossary.uiGlossaryFromStringsJson` | 削除されました。設定の読み込みに失敗します。`ui[].uiGlossary` (ブール値、デフォルトは `true`) を使用してください |
 | `ui.reactExtractor` | `ui.uiExtractor`（エイリアスは引き続き受け入れられます） |
 | `svg.svgExtractor.forceLowercase` | `svg.forceLowercase` |
 
@@ -371,9 +389,13 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 - `docs[].fumadocsMetaGlob`
 `docsOutput.style`が`"fumadocs"`の場合の`meta.json`コレクションのオプションのglob。デフォルト: `docsOutput.docsRoot`の下の再帰的な`meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
-Fumadocs `meta.json` で文字列値が翻訳されるプロパティ名 (デフォルト: `title`、`description`)。
+Fumadocs の `meta.json` で文字列値を翻訳するプロパティ名です（デフォルト: `title`、`description`）。
+- `docsOutput.localizedAssets`
+任意設定です。ロケールファイルが存在する場合に、翻訳後の HTML 内の画像およびアイコンの URL を置き換えます。フィールド: `include`（デフォルト `img/**`）、`pattern`（デフォルト `{stem}-{locale}{ext}`）、`onlyIfExists`（デフォルト `true`）、`assetRoot`（ルート相対 URL の確認に使用するディレクトリ。デフォルトは HTML ファイルのディレクトリ）。プレースホルダー: `{stem}`、`{ext}`、`{basename}`、`{locale}`、`{llocale}`、`{LOCALE}`。CSS の `url()` は書き換えられません。詳細は [HTML ページ](/ja/guide/documents/html-pages#links-and-images) を参照してください。
+- `docsOutput.html`
+HTML ドキュメント向けの、任意の言語リストおよび hreflang の設定です。デフォルトのコメントは `<!-- ai-i18n:lang-list -->` … `<!-- /ai-i18n:lang-list -->` および `<!-- ai-i18n:hreflang -->` … `<!-- /ai-i18n:hreflang -->` です。`languageList.format` は `links` または `select` です。`languageList.label` は `local`、`english`、`both` のいずれかです。`hreflang.siteUrl` は代替リンクの先頭に付加されます。省略した場合、リンクは相対リンクになり、警告がログに記録されます。`hreflang.xDefault` のデフォルトは `sourceLocale` です。`hreflang.stripIndexHtml` は `index.html` をディレクトリ URL に変換します。HTML の場合、ロケールフォルダーが追加される前に `docsRoot` が削除されます（`docsRoot` が `site` のとき、`site/index.html` → `site/{locale}/index.html`）。詳細は [HTML ページ](/ja/guide/documents/html-pages) を参照してください。
 - `docsOutput.vitepressThemeCatalog`
-オプション。VitePress テーマ/ナビゲーション/サイドバーカタログのブートストラップ + `translate-docs` 内の翻訳。フィールド: `configPath` (テーマ文字列を含む VitePress 設定)、`catalogPath` (生成された英語のネストされた JSON)、オプションの `outputPathTemplate` (デフォルト: `theme.{locale}.json` の横の `catalogPath`)。
+任意設定です。`translate-docs` 内で VitePress のテーマ/ナビゲーション/サイドバーのカタログを初期生成し、翻訳します。フィールド: `configPath`（テーマ文字列を含む VitePress 設定）、`catalogPath`（生成された英語のネストされた JSON）、任意の `outputPathTemplate`（デフォルト: `catalogPath` と同じ場所にある `theme.{locale}.json`）。
 
 **ポストプロセス**
 
@@ -484,15 +506,14 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 <a id="glossary"></a>
 ### `glossary`
 
-| フィールド | 説明 |
+| フィールド          | 説明                                                                                                                                                                 |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `uiGlossary`   | 既存の翻訳から自動的に用語集を生成するための `strings.json` へのパス。                                                                                                 |
-| `userGlossary` | 列`Original language string`（または`en`）、`locale`、`Translation`、任意の`Force`、任意の`Context`を持つCSVへのパス — ソース用語とターゲットロケールごとに1行（`locale`はすべてのターゲットについて`*`にできます）。 |
+| `userGlossary` | 列 `Original language string` (または `en`)、`locale`、`Translation`、任意の `Force`、および任意の `Context` を含む CSV へのパス - ソース用語とターゲットロケールごとに 1 行 (`locale` はすべてのターゲットで `*` にできます)。 |
 | `autoAddUserEditedToGlossary` | `true`の場合、UI文字列に対するダッシュボードの編集は、ユーザー用語集に自動的に追加できます。 |
 | `contextFiles` | 任意のcwd相対Markdownまたはプレーンテキストファイル（`.md`、`.markdown`、`.txt`）。製品や機能の説明を含みます。コマンド開始時にロードされ、UI、ドキュメント、JSON、SVG、および校正プロンプトに注入されます。翻訳対象にも含めたい場合を除き、これらのファイルを`docs[].contentPaths`に配置しないでください。URLは拒否されます。全文が設定されたLLMプロバイダーに送信され、`--debug-failed`ログに表示される可能性があります — 機密情報やPIIを含めないでください。 |
 | `contextMaxChars` | モデルに送信される結合済みコンテキストファイルテキストの最大文字数（デフォルト`12000`、ハード上限`100000`）。超過分のテキストは警告とともに切り詰められます。 |
 
-`translate-docs`は用語ヒントに同じ用語集を使用しますが、コンパクトなUIラベル略語（`Alm.`のような末尾ドット形式、または`Size` → `Tam`のような短い単一トークン圧縮）をスキップし、ドキュメントプロンプトが架空の<code v-pre>{{…}}</code>トークンへ誘導されないようにします。完全な製品用語および略語化されていないUI翻訳は引き続きヒントとして提供されます。
+`translate-docs`、`translate-json`、および `translate-svg` は、`uiGlossary` が `true` (デフォルト) である各 UI ブロックからもヒントを取得します。これにより、そのブロックの `strings.json` に既に保存されている翻訳が再利用されます。ブロックを除外するには、そのブロックで `uiGlossary` を `false` に設定します。`translate-ui` と `proofread-ui` は、これらのカタログをヒントとして使用しません。短縮形の UI ラベル略語 (`Alm.` のような末尾にドットが付く形式、または `Size` → `Tam` のような短い単一トークンの圧縮形式) は、ドキュメントプロンプトが作り出された <code v-pre>{{…}}</code> トークンに誘導されないようにスキップされます。完全な製品用語と省略されていない UI 翻訳は、引き続きヒントとして利用されます。
 
 任意の`Context` CSV列は、その用語のソース言語での使用ガイダンス（定義、文法的用法、製品上の意味）です。用語が現在のバッチに一致する場合にのみ含まれます。用語の`Context`ノートや`contextFiles`の内容を変更すると、次回実行時に該当ロケールのキャッシュされたセグメントとファイル追跡行が無効化され、翻訳が自動的に更新されます。優先する`Translation`のみを変更した場合は、`--force` / `--force-update`を渡さない限り既存のキャッシュが使用されます。ダッシュボードでユーザーが編集したキャッシュ行は保持されます。
 

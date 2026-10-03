@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Documentos
 
-Projetado principalmente para **documentação em markdown, MDX e `.astro`** gerenciada por meio de blocos de configuração `docs[]`. O campo `contentPaths` de cada bloco lista os arquivos ou pastas a serem traduzidos.
+Projetado principalmente para **markdown, MDX, `.astro` e HTML puro**, gerenciados por meio de blocos de configuração `docs[]`. O campo `contentPaths` de cada bloco lista os arquivos ou pastas a serem traduzidos. As páginas HTML puras (um arquivo por localidade) são descritas em [Páginas HTML](/pt-BR/guide/documents/html-pages).
 
 Em sites [Docusaurus](/pt-BR/guide/integrations/docusaurus), defina também `docusaurusCatalogDir` para sua pasta de catálogo `write-translations` (por exemplo, `docs-site/i18n/en`). Então `translate-docs` inclui JSON de shell também - navbar, rodapé e strings de tema.
 
@@ -21,7 +21,7 @@ Arquivos [SVG](/pt-BR/guide/svg-translation/) são traduzidos via [`translate-sv
 
 Pacotes JSON de UI aninhados arbitrários não relacionados às strings de shell/tema de um framework de documentação pertencem ao pipeline [JSON](/pt-BR/guide/json), não ao `docs[]`.
 
-Para garantir a **consistência da terminologia** entre a IU e a documentação, defina `glossary.uiGlossary` como o caminho de `strings.json` — `translate-docs` reutiliza as traduções existentes da IU como sugestões nos prompts do LLM quando termos correspondentes aparecem em um segmento. O `glossary.userGlossary` opcional adiciona substituições via CSV para termos do produto (compartilhadas com `translate-ui` e `proofread-ui`). As abreviações compactas de rótulos da IU, usadas para caber em colunas estreitas (por exemplo, `Size` → `Tam`), permanecem disponíveis para a tradução da IU, mas são omitidas das sugestões do glossário da documentação. Gere um CSV inicial com `glossary-generate`, edite as linhas na aba [Glossário](/pt-BR/guide/translation-dashboard/glossary) do Painel de Tradução ou consulte [Configuração — `glossary`](/pt-BR/reference/configuration#glossary) e [Glossário](/pt-BR/guide/glossary).
+Cada bloco de UI inclui seu `strings.json` como dicas de glossário para documentação por padrão (`uiGlossary`, padrão `true`). `translate-docs` reutiliza essas traduções como dicas em prompts de LLM quando termos correspondentes aparecem em um segmento. Defina `uiGlossary` como `false` em um catálogo que não deve ser incluído nos prompts de documentos. `glossary.userGlossary` opcional adiciona substituições em CSV para termos do produto (compartilhadas com `translate-ui` e `proofread-ui`). As abreviações compactas de rótulos de UI usadas para caber em colunas estreitas (por exemplo, `Size` → `Tam`) permanecem disponíveis para a tradução da UI, mas são omitidas das dicas do glossário de documentos. Gere um CSV inicial com `glossary-generate`, edite as linhas na aba [Glossário](/pt-BR/guide/translation-dashboard/glossary) do Painel de Tradução ou consulte [Configuração — `glossary`](/pt-BR/reference/configuration#glossary) e [Glossário](/pt-BR/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
@@ -38,6 +38,7 @@ Para garantir a **consistência da terminologia** entre a IU e a documentação,
 | Site Nextra | `init -t ui-nextra` + `nextraDictionaryPath` para dicionário (barra lateral `_meta.ts` é automática) - [Nextra](/pt-BR/guide/integrations/nextra) |
 | Site Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` para UI (barra lateral `meta.json` é automática) - [Fumadocs](/pt-BR/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/pt-BR/guide/integrations/astro#astro-starlight) |
+| Páginas HTML puras | `init -t docs-plain-html` - [Páginas HTML](/pt-BR/guide/documents/html-pages) |
 | Documentos planos (README, changelogs, etc.) | `docsOutput.style = "flat"` - [Layouts de saída](/pt-BR/guide/documents/output-layouts), [troca de idioma](/pt-BR/guide/documents/language-switcher) opcional |
 | Onde os arquivos traduzidos são salvos | [Layouts de saída](/pt-BR/guide/documents/output-layouts) |
 | Links `#anchor` entre páginas | [Links de âncora](/pt-BR/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ Edite o `ai-i18n-tools.config.json` gerado:
 - `docs[].description` - nota curta opcional para mantenedores. Quando definida, ela aparece no título `translate-docs` e nos cabeçalhos de seção `status`.
 - `docs[].contentPaths` - fontes markdown/MDX/`.astro` (e `docusaurusCatalogDir` opcional para JSON de shell Docusaurus).
 - `docs[].outputDir` - raiz de saída traduzida para esse bloco.
-- `docs[].docsOutput.style` - `"nested"` (padrão), `"flat"`, `"doc-system"`, ou aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (veja [Layouts de saída](/pt-BR/guide/documents/output-layouts)).
-- `glossary.uiGlossary` - caminho para `strings.json` para que os segmentos do documento recebam dicas de terminologia do seu catálogo de UI (veja [Configuração — `glossary`](/pt-BR/reference/configuration#glossary)).
-- `glossary.userGlossary` - CSV opcional para traduções de termos de produto fixos; também usado por pipelines de UI e editável na guia do painel [Glossário](/pt-BR/guide/translation-dashboard/glossary).
+- `docs[].docsOutput.style` - `"nested"` (padrão), `"flat"`, `"doc-system"` ou aliases `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts)).
+- `ui[].uiGlossary` - quando `true` (o padrão), o `strings.json` desse bloco fornece dicas de terminologia para segmentos de documentos (consulte [Configuração — `ui`](/pt-BR/reference/configuration#ui)).
+- `glossary.userGlossary` - CSV opcional para traduções fixas de termos do produto; também utilizado por pipelines de UI e editável na aba [Glossário](/pt-BR/guide/translation-dashboard/glossary) do painel.
 
 **Primário vs complementar:** Foque em `contentPaths` para páginas localizadas. Defina `docusaurusCatalogDir` quando também precisar do JSON do shell Docusaurus de `write-translations`. Omita `docusaurusCatalogDir` se estiver traduzindo apenas páginas.
 

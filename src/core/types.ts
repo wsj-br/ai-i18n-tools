@@ -538,33 +538,21 @@ const providerEntrySchema = z
 const providersConfigSchema = z.record(z.string().min(1), providerEntrySchema);
 
 const featuresSchema = z.object({
-  /** Scan `t()` / `i18n.t()` into `strings.json`, then translate flat locale bundles (extract runs automatically before translate). */
-  translateUIStrings: z.boolean().default(false),
-  /** MD / MDX / `.astro` page translation via `translate-docs`. */
-  translateDocs: z.boolean().default(false),
-  /** Arbitrary nested JSON under top-level `json[]` via `translate-json`. */
-  translateJson: z.boolean().default(false),
-  /**  SVG files via `translate-svg` / `sync` when `svg` is configured. */
-  translateSVG: z.boolean().default(false),
+  /**
+   * Scan `t()` / `i18n.t()` into `strings.json`, then translate flat locale bundles (extract runs automatically before translate).
+   * Omitted defaults to true. An explicit `false` leaves UI idle even when a block has `sourceRoots`.
+   */
+  translateUIStrings: z.boolean().default(true),
+  /** MD / MDX / `.astro` page translation via `translate-docs`. Omitted defaults to true. */
+  translateDocs: z.boolean().default(true),
+  /** Arbitrary nested JSON under top-level `json[]` via `translate-json`. Omitted defaults to true. */
+  translateJson: z.boolean().default(true),
+  /** SVG files via `translate-svg` / `sync` when `svg` is configured. Omitted defaults to true. */
+  translateSVG: z.boolean().default(true),
 });
 
-const glossarySchema = z.preprocess(
-  (raw) => {
-    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
-      const o = { ...(raw as Record<string, unknown>) };
-      const legacy = o.uiGlossaryFromStringsJson;
-      if (typeof legacy === "string" && o.uiGlossary === undefined) {
-        o.uiGlossary = legacy;
-      }
-      delete o.uiGlossaryFromStringsJson;
-      return o;
-    }
-    return raw;
-  },
-  z
-    .object({
-      /** Path to `strings.json` - auto-builds glossary hints from existing UI translations. */
-      uiGlossary: z.string().optional(),
+const glossarySchema = z
+  .object({
       userGlossary: z.string().optional(),
       autoAddUserEditedToGlossary: z.boolean().default(true),
       /**
@@ -578,8 +566,7 @@ const glossarySchema = z.preprocess(
        */
       contextMaxChars: z.number().int().positive().max(100_000).default(12_000),
     })
-    .strict()
-);
+    .strict();
 
 const uiExtractorSchema = z
   .object({
@@ -595,7 +582,9 @@ const uiExtractorSchema = z
     /**
      * HTML marker attributes scanned in `.html`/`.htm` sources (when listed in `extensions`). `data-i18n`
      * uses the element `textContent`; `data-i18n-<attr>` uses that attribute's value (e.g. `data-i18n-title`).
-     * Defaults to `["data-i18n", "data-i18n-title", "data-i18n-placeholder"]` when omitted.
+     * Defaults to `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, and
+     * `data-i18n-aria-label` when omitted. `data-i18n-locale-src` and `data-i18n-locale-href` are
+     * reserved for the plain-HTML runtime and are never extracted, even if listed here.
      */
     htmlI18nAttributes: z.array(z.string().min(1)).optional(),
   })
@@ -766,11 +755,68 @@ const docsOutputSchema = z
       .strict()
       .optional(),
     /**
+     * Optional rename of image and icon URLs in translated HTML when a locale-specific
+     * file exists. CSS `url()` is not rewritten.
+     */
+    localizedAssets: z
+      .object({
+        include: z.array(z.string().min(1)).default(["img/**"]),
+        /** Filename pattern. `{stem}-{locale}{ext}` turns `pic.jpg` into `pic-pt-BR.jpg`. */
+        pattern: z.string().min(1).default("{stem}-{locale}{ext}"),
+        onlyIfExists: z.boolean().default(true),
+        /** Directory used to test root-relative URLs. Defaults to the HTML file's directory. */
+        assetRoot: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
+    /**
+     * Plain-HTML document extras: a marker-bounded language list and hreflang alternates.
+     * Default comment markers apply even when the nested objects are omitted, whenever the
+     * comments are present in the source.
+     */
+    html: z
+      .object({
+        languageList: z
+          .object({
+            start: z.string().min(1).default("<!-- ai-i18n:lang-list -->"),
+            end: z.string().min(1).default("<!-- /ai-i18n:lang-list -->"),
+            format: z.enum(["links", "select"]).default("links"),
+            separator: z.string().default(" · "),
+            label: z.enum(["local", "english", "both"]).default("local"),
+          })
+          .strict()
+          .optional(),
+        hreflang: z
+          .object({
+            start: z.string().min(1).default("<!-- ai-i18n:hreflang -->"),
+            end: z.string().min(1).default("<!-- /ai-i18n:hreflang -->"),
+            siteUrl: z.string().optional(),
+            xDefault: z.string().optional(),
+            stripIndexHtml: z.boolean().default(false),
+          })
+          .strict()
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    /**
      * Optional post-processing run on translated markdown body after reassembly/link rewrite.
      */
     postProcessing: markdownPostProcessingSchema.optional(),
   })
   .strict();
+
+const uiBlockTargetLocalesSchema = z
+  .preprocess(
+    (v) => {
+      if (v === undefined || v === null) {
+        return undefined;
+      }
+      return coerceTargetLocalesField(v);
+    },
+    z.array(z.string().min(1)).optional()
+  )
+  .optional();
 
 const uiConfigSchema = z.preprocess(
   (raw) => {
@@ -785,12 +831,28 @@ const uiConfigSchema = z.preprocess(
   },
   z
     .object({
+      /** Optional note shown in CLI headers, status, and the dashboard. Not sent to the model. */
+      description: z.string().optional(),
       /** Roots scanned for `t()` / `i18n.t()` (e.g. `src/renderer/`). */
       sourceRoots: z.array(z.string().min(1)).default([]),
       /** Merged extract output (`strings.json`). */
       stringsJson: z.string().min(1).default("strings.json"),
       /** Directory for flat per-locale JSON (`de.json`, …). */
       flatOutputDir: z.string().min(1).default("./locales"),
+      /**
+       * Locales for this catalog only. When omitted or empty, root `targetLocales` is used.
+       */
+      targetLocales: uiBlockTargetLocalesSchema,
+      /**
+       * Where this block writes `ui-languages.json`. When omitted, block 0 uses root
+       * `languagesManifestPath` and every other block uses `{flatOutputDir}/ui-languages.json`.
+       */
+      languagesManifestPath: z.string().min(1).optional(),
+      /**
+       * When true (default), this block's `stringsJson` is loaded as glossary hints for
+       * docs, JSON, and SVG translation. `translate-ui` and `proofread-ui` do not read it.
+       */
+      uiGlossary: z.boolean().default(true),
       /** Scanner options (extensions, `funcNames`, …). Preferred over `reactExtractor`. */
       uiExtractor: uiExtractorSchema.optional(),
       /** @deprecated Use `uiExtractor` (still accepted). */
@@ -798,6 +860,20 @@ const uiConfigSchema = z.preprocess(
     })
     .strict()
 );
+
+function wrapUiConfigInput(raw: unknown): unknown {
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    return [raw];
+  }
+  return raw;
+}
+
+const defaultUiBlock = {
+  sourceRoots: [] as string[],
+  stringsJson: "strings.json",
+  flatOutputDir: "./locales",
+  uiGlossary: true,
+};
 
 const svgFilesConfigInnerSchema = z
   .object({
@@ -1003,20 +1079,19 @@ const i18nConfigSchemaInner = z
     /** Map of provider key -> provider block. Built-in keys carry presets; any other key needs `baseUrl`. */
     providers: providersConfigSchema.default({}),
     features: featuresSchema.default({
-      translateUIStrings: false,
-      translateDocs: false,
-      translateJson: false,
-      translateSVG: false,
+      translateUIStrings: true,
+      translateDocs: true,
+      translateJson: true,
+      translateSVG: true,
     }),
     glossary: glossarySchema.default({
       autoAddUserEditedToGlossary: true,
       contextMaxChars: 12_000,
     }),
-    ui: uiConfigSchema.default({
-      sourceRoots: [],
-      stringsJson: "strings.json",
-      flatOutputDir: "./locales",
-    }),
+    ui: z.preprocess(
+      wrapUiConfigInput,
+      z.array(uiConfigSchema).min(1).default([defaultUiBlock])
+    ),
     docs: z.array(docBlockSchema).default([
       {
         contentPaths: [],
@@ -1120,6 +1195,14 @@ export type SvgExtractorConfig = Pick<SvgFilesConfig, "forceLowercase">;
  */
 export type I18nDocTranslateConfig = Omit<I18nConfig, "docs"> & {
   doc: DocBlock;
+};
+
+/**
+ * View passed to UI extract/translate internals: one `ui` block plus root fields.
+ * Built from root config via `toUiTranslateConfig`.
+ */
+export type I18nUiTranslateConfig = Omit<I18nConfig, "ui"> & {
+  ui: UiConfig;
 };
 
 export type RawI18nConfigInput = z.input<typeof i18nConfigSchemaInner>;

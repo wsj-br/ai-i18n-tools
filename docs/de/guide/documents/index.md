@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Dokumente
 
-Primär für **Markdown-, MDX- und `.astro`-Dokumentation** konzipiert, die über `docs[]`-Konfigurationsblöcke verwaltet wird. Das Feld `contentPaths` jedes Blocks listet die zu übersetzenden Dateien oder Ordner auf.
+Hauptsächlich für **Markdown, MDX, `.astro` und reines HTML** konzipiert, die über `docs[]`-Konfigurationsblöcke verwaltet werden. Das `contentPaths`-Feld jedes Blocks listet die zu übersetzenden Dateien oder Ordner auf. Reine HTML-Seiten (eine Datei pro Locale) werden unter [HTML-Seiten](/de/guide/documents/html-pages) beschrieben.
 
 Auf [Docusaurus](/de/guide/integrations/docusaurus)-Websites stellen Sie auch `docusaurusCatalogDir` auf Ihren `write-translations`-Katalogordner ein (z. B. `docs-site/i18n/en`). Dann enthält `translate-docs` auch Shell-JSON – Navigationsleiste, Fußzeile und Theme-Strings.
 
@@ -21,7 +21,7 @@ Für einen optionalen **Sprachumschalter**-Block in README oder Docs setzen Sie 
 
 Beliebige verschachtelte UI-JSON-Bundles, die nicht mit den Shell-/Theme-Strings eines Dokumentations-Frameworks zusammenhängen, gehören in die [JSON](/de/guide/json)-Pipeline, nicht in `docs[]`.
 
-Für **Terminologiekonsistenz** zwischen UI und Dokumentation setzen Sie `glossary.uiGlossary` auf Ihren `strings.json`-Pfad — `translate-docs` nutzt bestehende UI-Übersetzungen als Hinweise in LLM-Prompts, wenn passende Begriffe in einem Segment vorkommen. Das optionale `glossary.userGlossary` fügt CSV-Überschreibungen für Produktbegriffe hinzu (gemeinsam genutzt mit `translate-ui` und `proofread-ui`). Kompakte UI-Label-Abkürzungen für schmale Spalten (z. B. `Size` → `Tam`) bleiben für die UI-Übersetzung verfügbar, werden aber aus den Glossar-Hinweisen der Dokumentation ausgelassen. Generieren Sie eine CSV-Vorlage mit `glossary-generate`, bearbeiten Sie Zeilen auf der Registerkarte [Glossar](/de/guide/translation-dashboard/glossary) im Translation Dashboard oder lesen Sie [Konfiguration — `glossary`](/de/reference/configuration#glossary) und [Glossar](/de/guide/glossary).
+Jeder UI-Block enthält standardmäßig die `strings.json` als Glossarhinweise für die Dokumentation (`uiGlossary`, Standard `true`). `translate-docs` verwendet diese Übersetzungen als Hinweise in LLM-Prompts wieder, wenn übereinstimmende Begriffe in einem Segment erscheinen. Setzen Sie `uiGlossary` auf `false` für einen Katalog, der aus Dokument-Prompts ausgeschlossen bleiben soll. Optional fügt `glossary.userGlossary` CSV-Überschreibungen für Produktbegriffe hinzu (gemeinsam genutzt mit `translate-ui` und `proofread-ui`). Kompakte Abkürzungen für UI-Labels, die für schmale Spalten verwendet werden (zum Beispiel `Size` → `Tam`), bleiben für die UI-Übersetzung verfügbar, werden aber aus den Glossarhinweisen für Dokumente ausgelassen. Generieren Sie eine Start-CSV mit `glossary-generate`, bearbeiten Sie Zeilen im Reiter [Glossar](/de/guide/translation-dashboard/glossary) des Übersetzungs-Dashboards oder lesen Sie [Konfiguration — `glossary`](/de/reference/configuration#glossary) und [Glossar](/de/guide/glossary).
 
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
@@ -38,6 +38,7 @@ Für **Terminologiekonsistenz** zwischen UI und Dokumentation setzen Sie `glossa
 | Nextra-Website | `init -t ui-nextra` + `nextraDictionaryPath` für Wörterbuch (Seitenleiste `_meta.ts` ist automatisch) - [Nextra](/de/guide/integrations/nextra) |
 | Fumadocs-Website | `init -t ui-fumadocs` + `fumadocsUiCatalog` für UI (Seitenleiste `meta.json` ist automatisch) - [Fumadocs](/de/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/de/guide/integrations/astro#astro-starlight) |
+| Reine HTML-Seiten | `init -t docs-plain-html` - [HTML-Seiten](/de/guide/documents/html-pages) |
 | Flache Dokumente (README, Changelogs usw.) | `docsOutput.style = "flat"` - [Ausgabe-Layouts](/de/guide/documents/output-layouts), optionaler [Sprachumschalter](/de/guide/documents/language-switcher) |
 | Wo übersetzte Dateien landen | [Ausgabe-Layouts](/de/guide/documents/output-layouts) |
 | Seitenübergreifende `#anchor`-Links | [Anker-Links](/de/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ Bearbeiten Sie die generierte `ai-i18n-tools.config.json`:
 - `docs[].description` – Optionale kurze Notiz für Wartungspersonal. Wenn festgelegt, erscheint sie in der Überschrift `translate-docs` und in den Abschnittsüberschriften `status`.
 - `docs[].contentPaths` – Markdown/MDX/`.astro`-Quellen (und optional `docusaurusCatalogDir` für Docusaurus-Shell-JSON).
 - `docs[].outputDir` – Übersetztes Ausgabe-Root für diesen Block.
-- `docs[].docsOutput.style` – `"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts)).
-- `glossary.uiGlossary` – Pfad zu `strings.json`, damit Dokumentsegmente Terminologiehinweise aus Ihrem UI-Katalog erhalten (siehe [Konfiguration — `glossary`](/de/reference/configuration#glossary)).
-- `glossary.userGlossary` – Optionale CSV für feste Produktbegriffsübersetzungen; wird auch von UI-Pipelines verwendet und ist im Dashboard-Tab [Glossar](/de/guide/translation-dashboard/glossary) bearbeitbar.
+- `docs[].docsOutput.style` - `"nested"` (Standard), `"flat"`, `"doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` (siehe [Ausgabelayouts](/de/guide/documents/output-layouts)).
+- `ui[].uiGlossary` - wenn `true` (Standard), liefert `strings.json` dieses Blocks Terminologiehinweise für Dokumentsegmente (siehe [Konfiguration — `ui`](/de/reference/configuration#ui)).
+- `glossary.userGlossary` - optionale CSV für Übersetzungen fester Produktbegriffe; wird auch von UI-Pipelines verwendet und kann im Dashboard-Reiter [Glossar](/de/guide/translation-dashboard/glossary) bearbeitet werden.
 
 **Primär vs. ergänzend:** Konzentrieren Sie sich auf `contentPaths` für lokalisierte Seiten. Legen Sie `docusaurusCatalogDir` fest, wenn Sie zusätzlich Docusaurus-Shell-JSON aus `write-translations` benötigen. Lassen Sie `docusaurusCatalogDir` weg, wenn Sie nur Seiten übersetzen.
 

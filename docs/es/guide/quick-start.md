@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ Habilite todas las funciones en una sola configuración para ejecutar cadenas de
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ Habilite todas las funciones en una sola configuración para ejecutar cadenas de
 
 <br />
 
-`glossary.uiGlossary` dirige la traducción de documentos al mismo catálogo de `strings.json` que la interfaz de usuario para mantener la coherencia terminológica; `glossary.userGlossary` añade reemplazos CSV para los términos del producto. Consulte el [Glosario](/es/guide/glossary).
+Los bloques de IU incluyen sus catálogos `strings.json` como sugerencias de glosario para la documentación de forma predeterminada (`uiGlossary`). `glossary.userGlossary` añade anulaciones CSV para los términos del producto. Consulte el [Glosario](/es/guide/glossary).
 
 Ejecute `ai-i18n-tools sync` para ejecutar una canalización: cuando `features.translateUIStrings` esté habilitado, **extraiga** y luego **traduzca las cadenas de la interfaz de usuario**; **traduzca SVG** opcionalmente (bloque `features.translateSVG` + `svg`); **traduzca la documentación** (`docs[]` según la configuración); luego **traduzca JSON** opcionalmente (`features.translateJson` + `json[]`). Omita partes con `--no-ui`, `--no-svg`, `--no-docs` o `--no-json`. Los pasos de documentos y `json[]` aceptan `--dry-run`, `-p` / `--path`, `--force`, `--force-update` y `--check-cache` (las banderas solo para documentos se ignoran cuando `--no-docs`; JSON usa las mismas banderas de caché cuando `--no-json` no está configurado).
 

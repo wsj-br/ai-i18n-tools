@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ Habilite todos os recursos em uma única configuração para executar strings de
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ Habilite todos os recursos em uma única configuração para executar strings de
 
 <br />
 
-`glossary.uiGlossary` direciona a tradução de documentos para o mesmo catálogo `strings.json` da IU, garantindo a consistência da terminologia; `glossary.userGlossary` adiciona sobrescritas em CSV para os termos do produto. Consulte o [Glossário](/pt-BR/guide/glossary).
+Os blocos de UI incluem seus catálogos `strings.json` como dicas de glossário para a documentação por padrão (`uiGlossary`). `glossary.userGlossary` adiciona substituições CSV para termos do produto. Consulte o [Glossário](/pt-BR/guide/glossary).
 
 Execute `ai-i18n-tools sync` para executar um pipeline: quando `features.translateUIStrings` estiver habilitado, **extraia** e depois **traduza** strings da UI; opcionalmente **traduza SVG** (bloco `features.translateSVG` + `svg`); **traduza a documentação** (`docs[]` conforme configurado); depois, opcionalmente, **traduza JSON** (`features.translateJson` + `json[]`). Pule partes com `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`. As etapas de documentação e `json[]` aceitam `--dry-run`, `-p` / `--path`, `--force`, `--force-update` e `--check-cache` (flags somente de documentação são ignoradas quando `--no-docs`; JSON usa as mesmas flags de cache quando `--no-json` não está definido).
 

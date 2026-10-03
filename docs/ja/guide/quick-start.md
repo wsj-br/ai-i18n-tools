@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ UI 文字列とドキュメントを一緒に実行するには、すべての�
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ UI 文字列とドキュメントを一緒に実行するには、すべての�
 
 <br />
 
-`glossary.uiGlossary`はドキュメント翻訳にUIと同じ`strings.json`カタログを指定して用語の一貫性を保ち、`glossary.userGlossary`は製品用語に対するCSVオーバーライドを追加します。詳細は[用語集](/ja/guide/glossary)を参照してください。
+UIブロックには、デフォルトでドキュメント用の用語集ヒントとして`strings.json`カタログが含まれます（`uiGlossary`）。`glossary.userGlossary`は、製品用語のCSVオーバーライドを追加します。[用語集](/ja/guide/glossary)を参照してください。
 
 1つのパイプラインを実行するには`ai-i18n-tools sync`を実行します。`features.translateUIStrings`が有効な場合は、**extract**した後、**translate UI**文字列を処理します。任意で**translate SVG**（`features.translateSVG` + `svg`ブロック）、**translate documentation**（設定に従って`docs[]`）、その後任意で**translate-json**（`features.translateJson` + `json[]`）を実行します。`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`で該当部分をスキップします。ドキュメントおよび`json[]`の各ステップは`--dry-run`、`-p` / `--path`、`--force`、`--force-update`、`--check-cache`を受け付けます（`--no-docs`の場合はドキュメント専用フラグが無視され、`--no-json`が未設定の場合はJSONが同じキャッシュフラグを使用します）。
 

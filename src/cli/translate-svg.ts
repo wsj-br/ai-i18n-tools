@@ -9,6 +9,7 @@ import {
   resolveTranslationModelsForLocale,
 } from "../core/config.js";
 import { relPathUnderSvgSource } from "../core/svg-asset-paths.js";
+import { resolveUiGlossaryPaths } from "../core/ui-blocks.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
 import { TranslationCache } from "../core/cache.js";
@@ -113,9 +114,7 @@ async function runTranslateSvgBody(
   const resolvedModels = resolveTranslationModels(config);
   const needsApi = !opts.dryRun && hasNonSourceTarget && resolvedModels.length > 0;
 
-  const glossaryUi = config.glossary?.uiGlossary
-    ? path.join(opts.cwd, config.glossary.uiGlossary)
-    : undefined;
+  const glossaryUi = resolveUiGlossaryPaths(config, opts.cwd);
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(opts.cwd, config.glossary.userGlossary)
     : undefined;

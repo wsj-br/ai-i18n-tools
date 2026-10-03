@@ -5,8 +5,8 @@
 
 系統會將兩種指引傳送給模型：
 
-- `glossary.userGlossary` 中的 **Term rows**（以及某些管線中來自 `glossary.uiGlossary` 的現有 UI 翻譯）。只有當該來源術語出現在正在翻譯的文字中時，才會包含該列。
-- `glossary.contextFiles` 中的 **Project context files**。完整的簡要說明會注入到每個 UI、文件、JSON、SVG 和校對提示中。該區段位於[下方](#project-context-files)。
+- **術語列**於 `glossary.userGlossary` 中（針對文件、JSON 和 SVG，亦包含來自每個 `ui` 區塊的現有 UI 翻譯，且 `uiGlossary` 保持開啟）。僅當該來源術語出現在正在翻譯的文字中時，才會納入該列。
+- **專案內容檔案**於 `glossary.contextFiles` 中。完整的專案簡述會注入至每個 UI、文件、JSON、SVG 和校對提示中。該區段位於[下方](#project-context-files)。
 
 <a id="how-the-glossary-works"></a>
 ## 術語表的運作方式
@@ -16,12 +16,10 @@
 
 | 來源 | 設定 | 使用於 |
 | --- | --- | --- |
-| UI 目錄 | `glossary.uiGlossary` — 通常與 `ui.stringsJson` 路徑相同 | `translate-docs`、`translate-json`、`translate-svg` |
+| UI 目錄 | `ui[].uiGlossary`（布林值，預設為 `true`）— 該區塊的 `stringsJson` | `translate-docs`、`translate-json`、`translate-svg` |
 | 使用者 CSV | `glossary.userGlossary` | `translate-ui`、`proofread-ui`、`translate-docs`、`translate-json`、`translate-svg` |
 
-`uiGlossary` 會重複使用已儲存在 `strings.json` 中的翻譯作為提示，使文件、JSON 和 SVG 與 UI 保持一致。`translate-ui` 和 `proofread-ui` 不會讀取 `uiGlossary` — 它們僅從使用者 CSV 取得提示，因此錯誤的 UI 翻譯不會被回饋為偏好術語。
-
-使用者 CSV 的優先順序高於 UI 目錄。若某列的 `locale` 為特定代碼，則會同時取代該地區設定的 `*` 列與 UI 目錄翻譯。若 `locale` 為 `*`，則會將相同的翻譯套用至每個尚未從 UI 目錄取得翻譯的 `targetLocales` 項目。
+具有 `uiGlossary: true` 的區塊會重複使用已儲存在其 `strings.json` 中的翻譯作為提示，使文件、JSON 和 SVG 與 UI 保持一致。`translate-ui` 和 `proofread-ui` 不會讀取這些目錄 — 它們僅從使用者 CSV 取得提示，因此錯誤的 UI 翻譯不會被回饋為首選術語。對於不應引導其他管線的區塊，請將 `uiGlossary` 設定為 `false`。當多個區塊共用同一個來源術語時，較早的區塊會填入某個語言區域，而較晚的區塊僅新增仍然缺少的語言區域。使用者 CSV 的優先順序高於所有 UI 目錄。若某列的 `locale` 為特定代碼，則會同時取代該語言區域的 `*` 列和 UI 目錄翻譯。若 `locale` 為 `*`，則會將相同的翻譯套用於所有尚未從 UI 目錄取得翻譯的目標語言區域。
 
 精簡的 UI 標籤縮寫（例如結尾帶點的 `Alm.`，或簡短的單一權杖壓縮如 `Size` → `Tam`）仍可用於 UI 翻譯。文件提示會略過它們，因此不會促使模型在 markdown 或 MDX 中產生虛構的 <code v-pre>{{…}}</code> 權杖。
 
@@ -52,7 +50,6 @@ ai-i18n-tools glossary-generate
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Original language string,locale,Translation,Force,Context
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

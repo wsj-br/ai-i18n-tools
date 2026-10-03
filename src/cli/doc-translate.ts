@@ -4,6 +4,7 @@ import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import chalk from "chalk";
 import { t } from "../i18n/index.js";
+import { resolveUiGlossaryPaths } from "../core/ui-blocks.js";
 import type {
   DocSegmentTranslation,
   DocBlock,
@@ -32,6 +33,7 @@ import {
   AstroTemplateExtractor,
   computeImportDepthDelta,
 } from "../extractors/astro-template-extractor.js";
+import { HtmlTemplateExtractor } from "../extractors/html-template-extractor.js";
 import type { MarkdownExtractOptions } from "../extractors/markdown-extractor.js";
 import { JsonExtractor } from "../extractors/json-extractor.js";
 import { SvgExtractor } from "../extractors/svg-extractor.js";
@@ -65,7 +67,19 @@ import {
   validateTranslation,
   type TranslationCheckSnapshot,
 } from "../processors/validator.js";
-import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
+import {
+  collectPreRestorePlaceholderErrors,
+  compareHtmlTagKindSequences,
+} from "../processors/placeholder-integrity.js";
+import { rewriteHtmlLinks } from "../processors/html-link-rewrite.js";
+import {
+  applyHtmlMarkerBlocks,
+  defaultHreflang,
+  defaultLanguageList,
+  type HtmlHreflangConfig,
+  type HtmlLanguageListConfig,
+} from "../processors/html-marker-blocks.js";
+import { getTextDirection } from "../runtime/i18next-helpers.js";
 import {
   computeFlatLinkRewritePrefixes,
   computePerFileDepthPrefix,
@@ -199,7 +213,7 @@ export interface TranslateRunOptions {
   noCache: boolean;
   verbose: boolean;
   pathFilter?: string;
-  typeFilter?: "markdown" | "json" | "astro";
+  typeFilter?: "markdown" | "json" | "astro" | "html";
   jsonOnly?: boolean;
   noJson?: boolean;
   /** Path to the active log file (printed in the header block). */
@@ -434,7 +448,7 @@ export function shouldRunMarkdown(
   if (!config.features.translateDocs) {
     return false;
   }
-  if (opts.typeFilter === "json" || opts.typeFilter === "astro") {
+  if (opts.typeFilter === "json" || opts.typeFilter === "astro" || opts.typeFilter === "html") {
     return false;
   }
   if (opts.jsonOnly) {
@@ -447,7 +461,20 @@ export function shouldRunAstro(opts: TranslateRunOptions, config: I18nDocTransla
   if (!config.features.translateDocs) {
     return false;
   }
-  if (opts.typeFilter === "json" || opts.typeFilter === "markdown") {
+  if (opts.typeFilter === "json" || opts.typeFilter === "markdown" || opts.typeFilter === "html") {
+    return false;
+  }
+  if (opts.jsonOnly) {
+    return false;
+  }
+  return true;
+}
+
+export function shouldRunHtml(opts: TranslateRunOptions, config: I18nDocTranslateConfig): boolean {
+  if (!config.features.translateDocs) {
+    return false;
+  }
+  if (opts.typeFilter === "json" || opts.typeFilter === "markdown" || opts.typeFilter === "astro") {
     return false;
   }
   if (opts.jsonOnly) {
@@ -463,7 +490,7 @@ export function shouldRunJson(opts: TranslateRunOptions, config: I18nDocTranslat
   if (opts.noJson) {
     return false;
   }
-  if (opts.typeFilter === "markdown") {
+  if (opts.typeFilter === "markdown" || opts.typeFilter === "html") {
     return false;
   }
   return true;
@@ -526,6 +553,7 @@ export function normalizePathFilterForProjectRoot(
 
 const DOC_MARKDOWN_EXTENSIONS = [".md", ".mdx"] as const;
 const DOC_ASTRO_EXTENSIONS = [".astro"] as const;
+const DOC_HTML_EXTENSIONS = [".html", ".htm"] as const;
 
 /**
  * True if `relPosix` (project-relative, forward slashes) is under one of the block's
@@ -764,6 +792,113 @@ export function augmentAstroFilesFromPathFilter(
   }
 
   return { astro: [...new Set(astro)].sort(), warnings };
+}
+
+/**
+ * Expand a normalized project-root `--path` / `--file` to concrete `.html` / `.htm` paths.
+ */
+export function expandPathFilterToHtmlPaths(
+  projectRoot: string,
+  pathFilter: string | undefined
+): string[] {
+  if (!pathFilter?.trim()) {
+    return [];
+  }
+  const abs = path.resolve(projectRoot, pathFilter);
+  if (!fs.existsSync(abs)) {
+    return [];
+  }
+  const st = fs.statSync(abs);
+  if (st.isFile()) {
+    const ext = path.extname(abs).toLowerCase();
+    if (ext === ".html" || ext === ".htm") {
+      return [path.relative(projectRoot, abs).split(path.sep).join("/")];
+    }
+    return [];
+  }
+  if (st.isDirectory()) {
+    return collectFilesByExtension([abs], [...DOC_HTML_EXTENSIONS], projectRoot);
+  }
+  return [];
+}
+
+export interface AugmentHtmlFromPathFilterResult {
+  html: string[];
+  warnings: string[];
+}
+
+/**
+ * When the user passes `--path` / `--file`, include matching HTML that normal discovery skipped.
+ * Paths outside every `contentPaths` are only attached to `documentations[0]`.
+ */
+export function augmentHtmlFilesFromPathFilter(
+  projectRoot: string,
+  pathFilter: string | undefined,
+  documentationBlockIndex: number,
+  docs: Array<{ contentPaths: string[] }>,
+  htmlDiscovered: string[]
+): AugmentHtmlFromPathFilterResult {
+  const warnings: string[] = [];
+  if (!pathFilter?.trim() || docs.length === 0) {
+    return { html: htmlDiscovered, warnings };
+  }
+
+  const block = docs[documentationBlockIndex];
+  if (!block) {
+    return { html: htmlDiscovered, warnings };
+  }
+
+  const candidates = expandPathFilterToHtmlPaths(projectRoot, pathFilter);
+  if (candidates.length === 0) {
+    return { html: htmlDiscovered, warnings };
+  }
+
+  const seen = new Set(htmlDiscovered);
+  let html = htmlDiscovered;
+
+  for (const rel of candidates) {
+    if (seen.has(rel)) {
+      continue;
+    }
+    const abs = path.join(projectRoot, rel);
+    if (!fs.existsSync(abs)) {
+      continue;
+    }
+
+    const underThis = isProjectRelUnderBlockContentPath(projectRoot, rel, block);
+    const underAny = isProjectRelUnderAnyDocumentationContentPath(projectRoot, rel, docs);
+
+    if (underThis) {
+      if (!html.includes(rel)) {
+        html = [...html, rel];
+        seen.add(rel);
+        warnings.push(
+          t(
+            "{{path}}: explicit --path/--file was not in the discovered HTML set; translating with docs[{{index}}].",
+            { path: rel, index: documentationBlockIndex }
+          )
+        );
+      }
+      continue;
+    }
+
+    if (underAny) {
+      continue;
+    }
+
+    if (documentationBlockIndex === 0) {
+      html = [...html, rel];
+      seen.add(rel);
+      warnings.push(
+        t(
+          "{{path}} is outside every docs[].contentPaths — translating HTML with docs[0] output settings.",
+          { path: rel }
+        )
+      );
+    }
+  }
+
+  return { html: [...new Set(html)].sort(), warnings };
 }
 
 async function withCacheMutex<T>(mutex: AsyncMutex | undefined, fn: () => T): Promise<T> {
@@ -2393,6 +2528,391 @@ export async function translateAstroFile(
   return { skipped: false, totals };
 }
 
+function htmlMarkerConfig(config: I18nDocTranslateConfig): {
+  languageList: HtmlLanguageListConfig;
+  hreflang: HtmlHreflangConfig;
+} {
+  const html = config.doc.docsOutput.html;
+  return {
+    languageList: { ...defaultLanguageList(), ...html?.languageList },
+    hreflang: { ...defaultHreflang(), ...html?.hreflang },
+  };
+}
+
+/** Mix language-list, hreflang, and asset config into the file-tracking hash, not the segment key. */
+function htmlFileTrackingHash(content: string, config: I18nDocTranslateConfig): string {
+  const extra = JSON.stringify({
+    sourceLocale: config.sourceLocale,
+    targetLocales: [...config.targetLocales].sort(),
+    html: config.doc.docsOutput.html ?? null,
+    localizedAssets: config.doc.docsOutput.localizedAssets ?? null,
+    style: config.doc.docsOutput.style ?? null,
+  });
+  return hashFileContent(`${content}\n${extra}`);
+}
+
+export async function translateHtmlFile(
+  absSource: string,
+  relPath: string,
+  locale: string,
+  config: I18nDocTranslateConfig,
+  cache: TranslationCache | null,
+  client: LlmClient | null,
+  glossary: Glossary,
+  opts: TranslateRunOptions,
+  hitKeys: Set<string>,
+  translatedHtmlRelPaths: ReadonlySet<string>,
+  fileContentCache?: FileContentCache
+): Promise<{ skipped: boolean; totals: TranslateTotals }> {
+  const totals: TranslateTotals = {
+    filesWritten: 0,
+    filesSkipped: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    costUsd: 0,
+  };
+
+  const fileData = fileContentCache
+    ? fileContentCache.readFile(absSource)
+    : {
+        content: fs.readFileSync(absSource, "utf8"),
+        hash: hashFileContent(fs.readFileSync(absSource, "utf8")),
+        mtime: fs.statSync(absSource).mtime.toISOString(),
+      };
+  const content = fileData.content;
+  const fileHash = htmlFileTrackingHash(content, config);
+  const sourceFileMtime = fileData.mtime;
+  const promptContextHash = promptContextHashFor(glossary, locale, opts);
+  const translationFilepathMeta = relPath.split(path.sep).join("/");
+  const outPath = resolveTranslatedOutputPath(config, opts.cwd, locale, relPath, "html");
+  const blockIdx = opts.documentationBlockIndex ?? 0;
+  const fileTrackingKey = documentationFileTrackingKey(blockIdx, relPath);
+
+  if (opts.force && cache && !opts.noCache) {
+    await withCacheMutex(opts.cacheMutex, () => cache.clearFile(fileTrackingKey, locale));
+  }
+
+  const fileTrackingMatches =
+    cache && !opts.noCache
+      ? await withCacheMutex(opts.cacheMutex, () =>
+          cache.fileTrackingMatches(fileTrackingKey, locale, fileHash, promptContextHash)
+        )
+      : false;
+
+  if (
+    !opts.force &&
+    !opts.forceUpdate &&
+    cache &&
+    !opts.noCache &&
+    canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
+    fileTrackingMatches &&
+    translatedOutputIsCurrent(outPath, sourceFileMtime)
+  ) {
+    if (opts.verbose) {
+      console.log(
+        chalk.gray(
+          t("⏭️  {{ts}} - {{locale}}  {{path}} (unchanged)", {
+            ts: timestamp(),
+            locale,
+            path: relPath,
+          })
+        )
+      );
+    }
+    totals.filesSkipped = 1;
+    totals.filesProcessed = 0;
+    return { skipped: true, totals };
+  }
+
+  const fileStartTime = Date.now();
+  const expressionProtection = documentationExpressionProtection(config.doc);
+  const html = new HtmlTemplateExtractor();
+  const segments = html.extract(content, relPath);
+  for (const warning of html.charsetWarnings) {
+    console.warn(
+      chalk.yellow(
+        t("⚠️  {{path}}: HTML charset is not utf-8 ({{detail}})", {
+          path: relPath,
+          detail: warning,
+        })
+      )
+    );
+  }
+  html.setReassembleContext({ locale, dir: getTextDirection(locale) });
+
+  const translatableCount = segments.filter((s) => s.translatable).length;
+  console.log(
+    chalk.yellow(
+      t("📄 {{locale}} {{path}}: {{count}} segment(s) ({{translatable}} translatable) [html]", {
+        locale,
+        path: relPath,
+        count: segments.length,
+        translatable: translatableCount,
+      })
+    )
+  );
+
+  const translations = new Map<string, DocSegmentTranslation>();
+  const placeholderById = new Map<string, ProtectState>();
+  const originalContentByHash = new Map<string, string>();
+  const toBatch: Segment[] = [];
+  const segmentIndicesInDoc: number[] = [];
+  const clearedFailureHashes = new Set<string>();
+  const failureTracker: FailureTracker | undefined =
+    !opts.dryRun && cache && !opts.noCache
+      ? {
+          clearSegmentFailures: async (sourceHash: string, targetLocale: string) => {
+            await withCacheMutex(opts.cacheMutex, () =>
+              cache.clearSegmentFailures(sourceHash, targetLocale)
+            );
+          },
+          addSegmentFailures: async (rows: TranslationFailureInsert[]) => {
+            await withCacheMutex(opts.cacheMutex, () => cache.addSegmentFailures(rows));
+          },
+        }
+      : undefined;
+
+  let segmentsCached = 0;
+  const translatableSegments: { s: Segment; docIdx: number }[] = [];
+  for (let docIdx = 0; docIdx < segments.length; docIdx++) {
+    const s = segments[docIdx]!;
+    if (s.translatable) {
+      translatableSegments.push({ s, docIdx });
+    }
+  }
+
+  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
+    const hashes = translatableSegments.map(({ s }) => s.hash);
+    batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
+      cache.getSegmentsBatch(hashes, locale, promptContextHash)
+    );
+  }
+
+  for (const { s, docIdx } of translatableSegments) {
+    const cached = batchCacheHits?.get(s.hash);
+    if (cached) {
+      const quality = await validateDocTranslatePair(s, cached.text);
+      const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
+      const tagIssue = compareHtmlTagKindSequences(s.content, cached.text);
+      if (quality.ok && !scriptIssue && !tagIssue) {
+        const modelUsed = cached.model?.trim();
+        translations.set(s.hash, {
+          text: cached.text,
+          ...(modelUsed ? { modelUsed } : {}),
+        });
+        hitKeys.add(`${s.hash}|${locale}`);
+        segmentsCached++;
+        if (failureTracker) {
+          await failureTracker.clearSegmentFailures(s.hash, locale);
+        }
+        continue;
+      } else if (opts.verbose) {
+        console.warn(
+          chalk.yellow(
+            t(
+              "  ⚠️  {{path}} ({{locale}}): cache rejected for segment (hash {{hash}}): {{errors}}",
+              {
+                path: relPath,
+                locale,
+                hash: s.hash,
+                errors: [
+                  ...quality.errors,
+                  ...(scriptIssue ? [scriptIssue.message] : []),
+                  ...(tagIssue ? [tagIssue] : []),
+                ].join("; "),
+              }
+            )
+          )
+        );
+      }
+    }
+
+    if (failureTracker && !clearedFailureHashes.has(s.hash)) {
+      await failureTracker.clearSegmentFailures(s.hash, locale);
+      clearedFailureHashes.add(s.hash);
+    }
+    originalContentByHash.set(s.hash, s.content);
+    const { text: protectedText, state: st } = protectSegmentForTranslation(
+      s.content,
+      glossary,
+      locale,
+      true,
+      false,
+      expressionProtection
+    );
+    placeholderById.set(s.id, st);
+    toBatch.push({ ...s, content: protectedText });
+    segmentIndicesInDoc.push(docIdx);
+  }
+
+  const batchSize = config.batchSize ?? 20;
+  const maxBatchChars = config.maxBatchChars ?? 4096;
+  const batchConcurrency = opts.batchConcurrency ?? config.batchConcurrency ?? 4;
+  const splitCfg = segmentSplittingSchema.parse(config.doc.segmentSplitting ?? {});
+
+  const {
+    map,
+    inTok,
+    outTok,
+    cost,
+    segmentValidationFailures: segValFail,
+    individualSegmentTranslations: indivSeg,
+    segmentQualitySplitRetries: qualitySplitRetries,
+  } = await translateSegmentsBatched(
+    toBatch,
+    placeholderById,
+    originalContentByHash,
+    locale,
+    glossary,
+    client,
+    opts.dryRun,
+    opts.verbose,
+    batchSize,
+    maxBatchChars,
+    "html",
+    batchConcurrency,
+    translatePromptFormatToResponseFormat(opts.promptFormat),
+    {
+      relativePath: relPath,
+      totalSegments: segments.length,
+      segmentIndicesInDoc,
+    },
+    translationFailureLogDir(opts, config.cacheDir),
+    failureTracker,
+    { filepath: translationFilepathMeta },
+    {
+      qualityRetrySplit: splitCfg.qualityRetrySplit,
+      maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
+      emphasisPlaceholders: false,
+      expressionProtection,
+    },
+    opts.abortSignal
+  );
+
+  for (const [h, translated] of map) {
+    translations.set(h, translated);
+  }
+  totals.inputTokens += inTok;
+  totals.outputTokens += outTok;
+  totals.costUsd = (totals.costUsd ?? 0) + cost;
+  totals.segmentValidationFailures = (totals.segmentValidationFailures ?? 0) + segValFail;
+  totals.individualSegmentTranslations = (totals.individualSegmentTranslations ?? 0) + indivSeg;
+  totals.segmentQualitySplitRetries =
+    (totals.segmentQualitySplitRetries ?? 0) + qualitySplitRetries;
+
+  for (const s of segments) {
+    if (s.translatable && translations.has(s.hash)) {
+      hitKeys.add(`${s.hash}|${locale}`);
+    }
+  }
+
+  let output = html.reassemble(segments, translations);
+  const assets = config.doc.docsOutput.localizedAssets;
+  output = rewriteHtmlLinks(output, {
+    cwd: opts.cwd,
+    config,
+    locale,
+    sourceRelPath: relPath,
+    translatedHtmlRelPaths,
+    ...(assets ? { localizedAssets: assets } : {}),
+  });
+  const availableLocales = new Set([config.sourceLocale, ...config.targetLocales]);
+  output = applyHtmlMarkerBlocks(output, {
+    cwd: opts.cwd,
+    config,
+    locale,
+    sourceRelPath: relPath,
+    absCurrentFile: outPath,
+    availableLocales,
+    ...htmlMarkerConfig(config),
+    verbose: opts.verbose,
+  });
+
+  if (!opts.dryRun) {
+    throwIfAbortSignal(opts.abortSignal);
+    writeAtomicUtf8(outPath, output);
+    if (cache && !opts.noCache) {
+      await withCacheMutex(opts.cacheMutex, () => {
+        cache.setFileStatus(fileTrackingKey, locale, fileHash, promptContextHash);
+        for (const s of segments) {
+          if (!s.translatable) {
+            continue;
+          }
+          const entry = translations.get(s.hash);
+          if (entry === undefined || entry.modelUsed === undefined) {
+            continue;
+          }
+          cache.setSegment(
+            s.hash,
+            locale,
+            s.content,
+            entry.text,
+            entry.modelUsed,
+            translationFilepathMeta,
+            s.startLine ?? null,
+            promptContextHash
+          );
+        }
+      });
+    }
+    totals.filesWritten = 1;
+  }
+
+  const segmentsNew = translatableCount - segmentsCached;
+  totals.segmentsCached = segmentsCached;
+  totals.segmentsTranslated = segmentsNew;
+  totals.filesProcessed = 1;
+  logTranslateFileComplete(
+    relPath,
+    outPath,
+    segmentsCached,
+    segmentsNew,
+    Date.now() - fileStartTime,
+    totals.costUsd ?? 0,
+    opts.abortSignal
+  );
+
+  return { skipped: false, totals };
+}
+
+export function rewriteSourceHtmlMarkerBlocks(
+  config: I18nDocTranslateConfig,
+  opts: TranslateRunOptions,
+  htmlFiles: string[]
+): number {
+  if (opts.dryRun || !shouldRunHtml(opts, config)) {
+    return 0;
+  }
+  const availableLocales = new Set([config.sourceLocale, ...config.targetLocales]);
+  const markers = htmlMarkerConfig(config);
+  let rewritten = 0;
+  for (const relPath of htmlFiles) {
+    if (!matchesPathFilter(relPath, opts.pathFilter)) {
+      continue;
+    }
+    const absSource = path.join(opts.cwd, relPath);
+    const input = fs.readFileSync(absSource, "utf8");
+    const output = applyHtmlMarkerBlocks(input, {
+      cwd: opts.cwd,
+      config,
+      locale: config.sourceLocale,
+      sourceRelPath: relPath,
+      absCurrentFile: absSource,
+      availableLocales,
+      ...markers,
+      verbose: opts.verbose,
+    });
+    if (output === input) {
+      continue;
+    }
+    writeAtomicUtf8(absSource, output);
+    rewritten++;
+    console.log(chalk.green(t("✅ {{path}}: Source language lists refreshed", { path: relPath })));
+  }
+  return rewritten;
+}
+
 export async function translateJsonFile(
   absSource: string,
   relPath: string,
@@ -3002,6 +3522,7 @@ export async function runTranslate(
     markdown: string[];
     json: string[];
     astro: string[];
+    html?: string[];
   },
   jsonAbsRoot: string
 ): Promise<TranslateTotals> {
@@ -3042,9 +3563,7 @@ export async function runTranslate(
 
   const needsApi = !opts.dryRun && config.features.translateDocs;
 
-  const glossaryUi = config.glossary?.uiGlossary
-    ? path.join(opts.cwd, config.glossary.uiGlossary)
-    : undefined;
+  const glossaryUi = resolveUiGlossaryPaths(config, opts.cwd);
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(opts.cwd, config.glossary.userGlossary)
     : undefined;
@@ -3071,7 +3590,9 @@ export async function runTranslate(
     );
   }
 
-  const totalFileCount = files.markdown.length + files.json.length + files.astro.length;
+  const htmlFiles = files.html ?? [];
+  const totalFileCount =
+    files.markdown.length + files.json.length + files.astro.length + htmlFiles.length;
   const displayModels = dedupeOrderedModelIds(
     ...locales.map((loc) => resolveTranslationModelsForLocale(config, loc))
   );
@@ -3334,6 +3855,50 @@ export async function runTranslate(
         }
       }
 
+      if (shouldRunHtml(opts, config)) {
+        const htmlFilesToProcess = htmlFiles.filter((rel) =>
+          matchesPathFilter(rel, opts.pathFilter)
+        );
+        const translatedHtmlRelPaths = new Set(htmlFilesToProcess);
+
+        const processHtmlFile = async (rel: string) => {
+          const abs = path.join(opts.cwd, rel);
+          const { skipped, totals } = await translateHtmlFile(
+            abs,
+            rel,
+            locale,
+            config,
+            cache,
+            client,
+            glossary,
+            runOpts,
+            hitKeys,
+            translatedHtmlRelPaths,
+            fileContentCache
+          );
+          return { skipped, totals };
+        };
+
+        if (fileConcurrencyEffective > 1) {
+          const results = await runMapWithConcurrency(
+            htmlFilesToProcess,
+            fileConcurrencyEffective,
+            processHtmlFile,
+            runOpts.abortSignal
+          );
+          for (const { skipped, totals } of results) {
+            await recordFileTotals(partial, skipped, totals);
+          }
+        } else {
+          for (const rel of htmlFilesToProcess) {
+            throwIfAbortSignal(runOpts.abortSignal);
+            const { skipped, totals } = await processHtmlFile(rel);
+            await recordFileTotals(partial, skipped, totals);
+            await yieldToEventLoop();
+          }
+        }
+      }
+
       if (shouldRunAstro(opts, config)) {
         const astroFilesToProcess = files.astro.filter((rel) =>
           matchesPathFilter(rel, opts.pathFilter)
@@ -3567,6 +4132,7 @@ export async function runTranslate(
     }
 
     rewriteSourceMarkdownLanguageListBlocks(config, runOpts, files.markdown);
+    rewriteSourceHtmlMarkerBlocks(config, runOpts, htmlFiles);
 
     throwIfAbortSignal(runOpts.abortSignal);
 

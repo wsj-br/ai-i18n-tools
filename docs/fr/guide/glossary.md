@@ -5,8 +5,8 @@ Le glossaire garantit une terminologie produit cohérente dans toutes les traduc
 
 Deux types d'indications sont envoyés au modèle :
 
-- Les **lignes de terme** dans `glossary.userGlossary` (et, pour certains pipelines, les traductions d'interface existantes issues de `glossary.uiGlossary`). Une ligne n'est incluse que si le terme source correspondant apparaît dans le texte en cours de traduction.
-- Les **fichiers de contexte de projet** dans `glossary.contextFiles`. Le brief complet est injecté dans chaque prompt d'interface, de documentation, JSON, SVG et de relecture. Cette section est [ci-dessous](#project-context-files).
+- **Lignes de termes** dans `glossary.userGlossary` (et, pour la documentation, le JSON et le SVG, les traductions d'interface utilisateur existantes de chaque bloc `ui` avec `uiGlossary` laissé activé). Une ligne n'est incluse que lorsque ce terme source apparaît dans le texte en cours de traduction.
+- **Fichiers de contexte du projet** dans `glossary.contextFiles`. Le brief complet est injecté dans chaque invite d'interface utilisateur, de documentation, de JSON, de SVG et de relecture. Cette section se trouve [ci-dessous](#project-context-files).
 
 <a id="how-the-glossary-works"></a>
 ## Fonctionnement du glossaire
@@ -14,14 +14,12 @@ Deux types d'indications sont envoyés au modèle :
 <a id="where-terms-come-from"></a>
 ### D'où viennent les termes
 
-| Source | Config | Utilisé par |
+| Source | Configuration | Utilisé par |
 | --- | --- | --- |
-| Catalogue d'interface | `glossary.uiGlossary` — généralement le même chemin que `ui.stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
+| Catalogues d'interface utilisateur | `ui[].uiGlossary` (booléen, valeur par défaut `true`) — `stringsJson` de ce bloc | `translate-docs`, `translate-json`, `translate-svg` |
 | CSV utilisateur | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
-`uiGlossary` réutilise comme indications les traductions déjà stockées dans `strings.json`, afin que la documentation, le JSON et le SVG restent alignés avec l'interface. `translate-ui` et `proofread-ui` ne lisent pas `uiGlossary` — ils ne prennent des indications que du CSV utilisateur, de sorte qu'une mauvaise traduction d'interface n'est pas réinjectée comme terme préféré.
-
-Le CSV utilisateur prime sur le catalogue d'interface. Une ligne dont le `locale` est un code spécifique remplace à la fois la ligne `*` et la traduction du catalogue d'interface pour cette locale. Un `locale` de `*` applique la même traduction à chaque entrée `targetLocales` qui n'en possède pas déjà une provenant du catalogue d'interface.
+Un bloc avec `uiGlossary: true` réutilise les traductions déjà stockées dans son `strings.json` comme suggestions, afin que la documentation, le JSON et le SVG restent alignés avec l'interface utilisateur. `translate-ui` et `proofread-ui` ne lisent pas ces catalogues — ils ne prennent que les suggestions du CSV utilisateur, de sorte qu'une mauvaise traduction d'interface n'est pas réinjectée comme terme préféré. Définissez `uiGlossary` sur `false` pour un bloc qui ne doit pas influencer les autres pipelines. Lorsque plusieurs blocs partagent un terme source, le premier bloc remplit une locale et les blocs suivants n'ajoutent que les locales encore manquantes. Le CSV utilisateur l'emporte sur tous les catalogues d'interface. Une ligne dont le `locale` est un code spécifique remplace à la fois la ligne `*` et la traduction du catalogue d'interface pour cette locale. Un `locale` de `*` applique la même traduction à chaque locale cible qui n'en possède pas déjà une provenant d'un catalogue d'interface.
 
 Les abréviations compactes des libellés d'interface (un point final tel que `Alm.`, ou une compression courte en un seul mot telle que `Size` → `Tam`) restent disponibles pour la traduction d'interface. Les prompts de documentation les ignorent, afin de ne pas pousser les modèles à inventer des jetons <code v-pre>{{…}}</code> dans le markdown ou le MDX.
 
@@ -52,7 +50,6 @@ Faites pointer la config vers le fichier :
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -96,7 +93,6 @@ Combiné à un brief de projet :
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

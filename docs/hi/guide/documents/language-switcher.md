@@ -68,3 +68,8 @@
 | VitePress डॉक्स (न्यूनतम डेमो) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` से ठीक पहले वाली पंक्ति (उदाहरण के लिए `**Read in other languages:**`) एक सामान्य अनुवाद योग्य खंड है और प्रत्येक लक्ष्य स्थान में स्थानीयकृत है; मार्करों के अंदर की लिंक पंक्ति को `href` और मैनिफेस्ट-संचालित लेबल के अलावा शब्दशः पुनर्जीवित किया जाता है।
+
+<a id="html-pages"></a>
+## एचटीएमएल पृष्ठ
+
+सादे एचटीएमएल दस्तावेज़ टिप्पणियों के एक अलग जोड़े, `<!-- ai-i18n:lang-list -->` और `<!-- ai-i18n:hreflang -->` का उपयोग करते हैं। भाषा सूची लिंक या `<select>` हो सकती है, और hreflang विकल्प अंग्रेज़ी स्रोत के साथ-साथ प्रत्येक लोकेल फ़ाइल में भी लिखे जाते हैं। [एचटीएमएल पृष्ठ](/hi/guide/documents/html-pages#language-list-and-hreflang) देखें।

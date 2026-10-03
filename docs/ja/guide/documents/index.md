@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # ドキュメント
 
-主に**Markdown、MDX、および`.astro`ドキュメント**用に設計されており、`docs[]`設定ブロックを通じて管理されます。各ブロックの`contentPaths`フィールドには、翻訳するファイルまたはフォルダーがリストされます。
+主に**markdown、MDX、`.astro`、およびプレーンHTML**用に設計されており、`docs[]`設定ブロックを通じて管理されます。各ブロックの`contentPaths`フィールドには、翻訳対象のファイルまたはフォルダーがリストされています。プレーンHTMLページ（ロケールごとに1つのファイル）については、[HTMLページ](/ja/guide/documents/html-pages)で説明しています。
 
 [Docusaurus](/ja/guide/integrations/docusaurus) サイトでは、`docusaurusCatalogDir` を `write-translations` カタログフォルダ（例: `docs-site/i18n/en`）に設定します。これにより、`translate-docs` にはナビバー、フッター、テーマ文字列などのシェル JSON も含まれます。
 
@@ -21,7 +21,7 @@ README またはドキュメント内のオプションの **言語スイッチ�
 
 ドキュメントフレームワークのシェル/テーマ文字列とは無関係な任意のネストされたUI JSONバンドルは、`docs[]`ではなく、[JSON](/ja/guide/json)パイプラインに属します。
 
-UIとドキュメント間の**用語の一貫性**を確保するため、`glossary.uiGlossary`を`strings.json`パスに設定します。— `translate-docs`は、セグメントに一致する用語が含まれている場合、既存のUI翻訳をLLMプロンプトのヒントとして再利用します。オプションの`glossary.userGlossary`は、製品用語のCSVオーバーライドを追加します（`translate-ui`および`proofread-ui`と共有されます）。狭い列に合わせるために使用されるコンパクトなUIラベル略語（例：`Size` → `Tam`）は、UI翻訳では引き続き使用できますが、ドキュメントの用語集ヒントからは除外されます。`glossary-generate`を使用してスターターCSVを生成し、翻訳ダッシュボードの[用語集](/ja/guide/translation-dashboard/glossary)タブで行を編集するか、または[設定 — `glossary`](/ja/reference/configuration#glossary)および[用語集](/ja/guide/glossary)を参照してください。
+各UIブロックには、デフォルトでドキュメント用の用語集ヒントとして`strings.json`が含まれます（`uiGlossary`、デフォルトは`true`）。`translate-docs`は、セグメントに一致する用語が登場した際に、それらの翻訳をLLMプロンプトのヒントとして再利用します。ドキュメントプロンプトに含めないカタログでは、`uiGlossary`を`false`に設定します。オプションの`glossary.userGlossary`により、製品用語のCSVオーバーライドが追加されます（`translate-ui`および`proofread-ui`と共有）。狭い列に収めるために使用されるコンパクトなUIラベル略語（例：`Size` → `Tam`）は、UI翻訳では引き続き使用できますが、ドキュメントの用語集ヒントからは除外されます。`glossary-generate`でスターターCSVを生成し、翻訳ダッシュボードの[用語集](/ja/guide/translation-dashboard/glossary)タブで行を編集するか、[設定 — `glossary`](/ja/reference/configuration#glossary)および[用語集](/ja/guide/glossary)を参照してください。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
@@ -38,6 +38,7 @@ UIとドキュメント間の**用語の一貫性**を確保するため、`glos
 | Nextra サイト | 辞書用に `init -t ui-nextra` + `nextraDictionaryPath` (サイドバー `_meta.ts` は自動) - [Nextra](/ja/guide/integrations/nextra) |
 | Fumadocs サイト | UI 用に `init -t ui-fumadocs` + `fumadocsUiCatalog` (サイドバー `meta.json` は自動) - [Fumadocs](/ja/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/ja/guide/integrations/astro#astro-starlight) |
+| プレーンHTMLページ | `init -t docs-plain-html` - [HTMLページ](/ja/guide/documents/html-pages) |
 | フラットなドキュメント (README、変更履歴など) | `docsOutput.style = "flat"` - [出力レイアウト](/ja/guide/documents/output-layouts)、オプションの [言語スイッチャー](/ja/guide/documents/language-switcher) |
 | 翻訳されたファイルの保存場所 | [出力レイアウト](/ja/guide/documents/output-layouts) |
 | ページ間の`#anchor`リンク | [アンカーリンク](/ja/guide/documents/anchor-links) |
@@ -101,9 +102,9 @@ ai-i18n-tools init -t ui-astro-website [-P <provider>]
 - `docs[].description` - メンテナ向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
 - `docs[].contentPaths` - markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
 - `docs[].outputDir` - そのブロックの翻訳出力ルート。
-- `docs[].docsOutput.style` - `"nested"` (デフォルト), `"flat"`, `"doc-system"`, またはエイリアス `"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"` ([出力レイアウト](/ja/guide/documents/output-layouts) を参照)。
-- `glossary.uiGlossary` - `strings.json` へのパス。これにより、ドキュメントセグメントは UI カタログから用語のヒントを得られます ([設定 — `glossary`](/ja/reference/configuration#glossary) を参照)。
-- `glossary.userGlossary` - 固定の製品用語翻訳用のオプション CSV。UI パイプラインでも使用され、[用語集](/ja/guide/translation-dashboard/glossary) ダッシュボードタブで編集可能です。
+- `docs[].docsOutput.style` - `"nested"`（デフォルト）、`"flat"`、`"doc-system"`、またはエイリアス`"docusaurus"` / `"astro-starlight"` / `"vitepress"` / `"nextra"` / `"fumadocs"`（[出力レイアウト](/ja/guide/documents/output-layouts)を参照）。
+- `ui[].uiGlossary` - `true`（デフォルト）の場合、そのブロックの`strings.json`がドキュメントセグメントの用語ヒントを提供します（[設定 — `ui`](/ja/reference/configuration#ui)を参照）。
+- `glossary.userGlossary` - 固定された製品用語翻訳用のオプションCSV。UIパイプラインでも使用され、ダッシュボードの[用語集](/ja/guide/translation-dashboard/glossary)タブで編集可能です。
 
 **プライマリ対サプライメンタリ：** ローカライズされたページには `contentPaths` を使用してください。`write-translations` から Docusaurus シェルの JSON も必要な場合は、`docusaurusCatalogDir` を設定します。ページの翻訳のみを行う場合は、`docusaurusCatalogDir` を省略してください。
 
@@ -135,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs`は、翻訳された各セグメントがMarkdownの構造（ドキュメントから解析された強調を含む）を保持し、内部のプレースホルダートークンが正しく復元されるかどうかをチェックします。`` `inline code` ``の周囲に多数の`bold`スパンを重ねたり、太字の中にバッククォートをネストしたり（例えば`` `fetch(\`/locales/${code}.json\`)` ``のようなテンプレートリテラル）、1つの長い文の中に太字とコードを織り交ぜたりする段落は脆弱です。一部のロケールでは異なる語順が必要になるため、翻訳後に`**`と`` ` ``の並びが変わり、`AST mismatch`のようなCLIエラーがトリガーされる可能性があります。
 
-復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および<code v-pre>**</code>のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
+復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および`**`のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
 
 **そのような検証エラーが発生した場合は、ソース言語のテキストを簡略化することをお勧めします** - 段落を分割する、例をコードブロックに移動する、または階層化された太字/コードのペアを減らして同じ概念を説明するなど - すべてのモデルとロケールが密集したインラインマークアップを完全に再現することを期待するのではなく。
 

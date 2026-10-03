@@ -35,7 +35,7 @@ export {
  *
  * Prompt **content** lives in `prompts.ts`; this module handles assembly and parsing only.
  */
-export type DocumentPromptContentType = "markdown" | "json" | "svg";
+export type DocumentPromptContentType = "markdown" | "json" | "svg" | "html";
 export type DocumentBatchResponseFormat = "xml-tags" | "json-array" | "json-object";
 
 export type { PromptStrings, DocumentPromptStrings, UIPromptStrings, ProofreadUIPromptStrings };
@@ -181,9 +181,20 @@ ${buildMarkdownPreservation(kinds)}`;
 }
 
 function contentTypeAddendum(contentType: DocumentPromptContentType): string {
-  if (contentType === "json") return PROMPTS.document.jsonSegmentAddendum;
-  if (contentType === "svg") return PROMPTS.document.svgSegmentAddendum;
-  return "";
+  switch (contentType) {
+    case "json":
+      return PROMPTS.document.jsonSegmentAddendum;
+    case "svg":
+      return PROMPTS.document.svgSegmentAddendum;
+    case "html":
+      return PROMPTS.document.htmlSegmentAddendum;
+    case "markdown":
+      return "";
+    default: {
+      const _exhaustive: never = contentType;
+      return _exhaustive;
+    }
+  }
 }
 
 // ── Document prompt builders ──────────────────────────────────────────────

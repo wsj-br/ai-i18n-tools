@@ -65,11 +65,13 @@
 
 `i18next-scanner`의 `Parser.parseFuncFromString`를 사용하여 JS/TS 파일에서 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `.astro` 소스(`ui.uiExtractor.extensions`에 나열된 경우)의 경우, `ui-string-babel.ts`는 `@babel/parser`로 프론트매터 및 템플릿 `{expression}` 블록을 파싱하고 동일한 `funcNames` 규칙을 적용합니다. 함수 이름과 파일 확장자는 `ui.uiExtractor`을 통해 구성할 수 있습니다(`ui.reactExtractor`는 지원되는 별칭입니다). `extract` **또한 비 스캐너 입력을 동일한 카탈로그로 병합합니다:** `includePackageDescription`가 활성화된 경우(기본값) 프로젝트 `package.json` `description`, 그리고 `includeUiLanguageEnglishNames`가 `true`일 때 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로 구축됨)의 각 `englishName` (소스에서 이미 찾은 문자열이 우선합니다; `languagesManifestPath`를 읽지 않습니다). `extract`는 또한 `languagesManifestPath`에서 `ui-languages.json`를 재생성합니다. 세그먼트 해시는 잘라낸 소스 문자열의 **MD5 첫 8자리 16진수 문자**이며 — 이는 `strings.json`의 키가 됩니다.
 
-`.html` / `.htm` 소스(`ui.uiExtractor.extensions`에 나열된 경우)에 대해, `extract`은 대신 파일을 `html-i18n-marks.ts`로 라우팅하여 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 마커 속성( `ui.uiExtractor.htmlI18nAttributes`을 통해 구성 가능)을 스캔한다. 빈 마커는 해당 요소의 자신의 `textContent` / `title` / `placeholder`에서 소스 텍스트를 가져온다. 값이 있는 마커(`data-i18n="Key"`)는 값을 사용한다. 동일한 모듈이 자동으로 빈 마커를 삽입하는 `mark-html` 명령을 구동한다. HTML 파일은 바벨 / i18next-스캐너 패스를 통과하지 않는다.
+`.html` / `.htm` 소스의 경우(`ui.uiExtractor.extensions`에 나열된 경우), `extract`은(는) 대신 파일을 `html-i18n-marks.ts`을(를) 통해 라우팅하며, 이는 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 마커 속성(`ui.uiExtractor.htmlI18nAttributes`을(를) 통해 구성 가능)을 스캔합니다. 빈 마커는 요소 자체의 `textContent` 또는 속성에서 소스 텍스트를 가져오고, 값이 있는 마커(`data-i18n="Key"`)는 해당 값을 사용합니다. `data-i18n-locale-src` 및 `data-i18n-locale-href`은(는) 브라우저 런타임을 위해 예약되어 있으며 절대 추출되지 않습니다. 동일한 모듈이 `mark-html` 명령을 구동하며, 이 명령은 빈 마커를 자동으로 삽입하고(`alt` 및 `aria-label` 포함) 로케일 URL 마커는 절대 삽입하지 않습니다. HTML 파일은 Babel / i18next-scanner 패스에 도달하지 않습니다. docs `outputDir` 아래에 생성된 로케일 HTML은 이 스캔에서 제외됩니다.
 
 순수 Astro SSG 사이트는 i18next를 생략할 수 있습니다: 빌드 시점에 플랫 `{locale}.json`을(를) 로드하고 소스 텍스트 키로 `t('English')`을(를) 해석합니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/ko/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) 참조).
 
-순수 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다 — [번역을 위한 HTML 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요.
+일반 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다. [번역을 위한 HTML 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요. 드롭인 스크립트는 `ai-i18n-tools/html-runtime/i18n.js`입니다.
+
+로케일당 하나의 파일이 되어야 하는 정적 HTML은 이 카탈로그가 아닌 문서 파이프라인(`translate-docs` 내부의 `HtmlTemplateExtractor`)입니다. [HTML 페이지](/ko/guide/documents/html-pages)를 참조하세요.
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -191,7 +193,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 7. **인라인 코드 스팬** (`` `code` ``) 및 **굵게 처리된 인라인 코드** (`**`code`**`) - 보존됩니다.
 8. **마크다운 강조** (선택 사항, CJK/RTL 로케일에서 자동 활성화) - 강조 구분자가 마스킹됩니다.
 
-모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
+모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
@@ -288,10 +290,10 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 
 도구는 사용자가 번역한 콘텐츠와 별개로 자체 UI — CLI 도움말, 고交通 로그/요약/오류 메시지 및 번역 대시보드를 지역화합니다.
 
-- **로케일 확인(Locale resolution)**(`resolveUiLocale` in `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`)에서 UI 로케일을 선택합니다. 후보는 정규화되고 배송된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 일치하며, 소스 로케일(`en-GB`)로 대체됩니다. CLI는 도움말이 빌드되기 전에 한 번(argv 스캔 사전 구문 분석) 그리고 구성 로드 후에 다시 한 번 확인하여 `uiLanguage`가 적용됩니다(플래그 및 환경 변수가 여전히 우선합니다).
-- **런타임(Runtime)**(`src/i18n/index.ts`): ```{{name}}``` 보간이 포함된 최소 `t(source, vars)`로, `src/i18n/locales/<code>.json`의 플랫 로케일별 번들에 대해 영어 소스 문자열로 키가 지정됩니다(빌드 시 `dist/i18n/locales`로 복사됨). 누락된 키 또는 번들은 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일한 키-기본 모델입니다. 해시 조회는 없습니다.
-- **대시보드(Dashboard)**: 서버는 확인된 UI 로케일에 대해 `{ locale, dir, bundle }`를 반환하는 `GET /api/ui-i18n`를 노출합니다. 프런트엔드는 `<html lang>` / `dir`를 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
-- **자사 제품 사용(Dogfooding)**: 번들은 `ai-i18n-self.config.json`(`pnpm i18n:self`)에 대해 패키지 자체의 추출 → `translate-ui` 파이프라인을 실행하여 생성됩니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`의 대시보드 `data-i18n*` 마커에서 가져옵니다.
+- **로케일 확인** (`resolveUiLocale` 내 `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`) 순서로 UI 로케일을 선택합니다. 선택된 후보는 정규화되어 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 매칭되며, 일치하지 않으면 소스 로케일(`en-GB`)로 폴백합니다. CLI는 도움말 생성 전(argv 파싱 전 스캔) 한 번, 그리고 구성 로드 후 `uiLanguage`이(가) 적용되도록 다시 한 번 로케일을 확인합니다(플래그와 환경 변수가 여전히 우선합니다).
+- **런타임** (`src/i18n/index.ts`): ```{{name}}``` 보간을 사용하는 최소한의 `t(source, vars)`로, 영문 소스 문자열을 키로 사용하여 `src/i18n/locales/<code>.json`의 로케일별 플랫 번들(빌드 시 `dist/i18n/locales`에 복사됨)과 매칭됩니다. 키나 번들이 누락된 경우 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일하게 키를 기본값으로 사용하는 모델로, 해시 조회를 사용하지 않습니다.
+- **대시보드**: 서버는 확인된 UI 로케일에 대해 `{ locale, dir, bundle }`을(를) 반환하는 `GET /api/ui-i18n`을(를) 노출하며, 프론트엔드는 `<html lang>` / `dir`을(를) 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
+- **독푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`에 있는 대시보드의 `data-i18n*` 마커에서 가져옵니다.
 
 ---
 
@@ -309,7 +311,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

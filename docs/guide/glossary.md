@@ -6,7 +6,7 @@ The glossary ensures consistent product terminology across translations. Users c
 
 Two kinds of guidance are sent to the model:
 
-- **Term rows** in `glossary.userGlossary` (and, for some pipelines, existing UI translations from `glossary.uiGlossary`). A row is included only when that source term appears in the text being translated.
+- **Term rows** in `glossary.userGlossary` (and, for documentation, JSON, and SVG, existing UI translations from each `ui` block with `uiGlossary` left on). A row is included only when that source term appears in the text being translated.
 - **Project context files** in `glossary.contextFiles`. The full brief is injected into every UI, docs, JSON, SVG, and proofread prompt. That section is [below](#project-context-files).
 
 <a id="how-the-glossary-works"></a>
@@ -17,12 +17,10 @@ Two kinds of guidance are sent to the model:
 
 | Source | Config | Used by |
 | --- | --- | --- |
-| UI catalog | `glossary.uiGlossary` — usually the same path as `ui.stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
+| UI catalogs | `ui[].uiGlossary` (boolean, default `true`) — that block's `stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
 | User CSV | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
-`uiGlossary` reuses translations already stored in `strings.json` as hints, so documentation, JSON, and SVG stay aligned with the UI. `translate-ui` and `proofread-ui` do not read `uiGlossary` — they only take hints from the user CSV, so a bad UI translation is not fed back in as the preferred term.
-
-The user CSV wins over the UI catalog. A row whose `locale` is a specific code replaces both the `*` row and the UI-catalog translation for that locale. A `locale` of `*` applies the same translation to every `targetLocales` entry that does not already have one from the UI catalog.
+A block with `uiGlossary: true` reuses translations already stored in its `strings.json` as hints, so documentation, JSON, and SVG stay aligned with the UI. `translate-ui` and `proofread-ui` do not read those catalogs — they only take hints from the user CSV, so a bad UI translation is not fed back in as the preferred term. Set `uiGlossary` to `false` on a block that should not steer other pipelines. When several blocks share a source term, the earlier block fills a locale and later blocks add only locales that are still missing. The user CSV wins over every UI catalog. A row whose `locale` is a specific code replaces both the `*` row and the UI-catalog translation for that locale. A `locale` of `*` applies the same translation to every target locale that does not already have one from a UI catalog.
 
 Compact UI-label abbreviations (a trailing dot such as `Alm.`, or a short single-token compression such as `Size` → `Tam`) stay available for UI translation. Document prompts skip them, so they do not push models toward invented <code v-pre>{{…}}</code> tokens in markdown or MDX.
 
@@ -53,7 +51,6 @@ Point config at the file:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv"
   }
 }
@@ -98,7 +95,6 @@ Combined with a project brief:
 ```json
 {
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md"],
     "contextMaxChars": 12000

@@ -11,6 +11,7 @@ export {
   type ReactExtractorConfig,
   type SvgExtractorConfig,
   type UiConfig,
+  type I18nUiTranslateConfig,
   type DocBlock,
   type I18nDocTranslateConfig,
   type MarkdownOutputConfig,
@@ -205,6 +206,7 @@ export { loadTranslateIgnore, isIgnored } from "./utils/ignore-parser.js";
 export { BaseExtractor } from "./extractors/base-extractor.js";
 export { classifySegmentType } from "./extractors/classify-segment.js";
 export { MarkdownExtractor, type MarkdownExtractOptions } from "./extractors/markdown-extractor.js";
+export { HtmlTemplateExtractor } from "./extractors/html-template-extractor.js";
 export { JsonExtractor } from "./extractors/json-extractor.js";
 export { SvgExtractor, type SvgExtractorOptions } from "./extractors/svg-extractor.js";
 export { UIStringExtractor } from "./extractors/ui-string-extractor.js";
@@ -229,7 +231,9 @@ export {
 } from "./extractors/intlayer-usage-codemod.js";
 export {
   HTML_I18N_MARKERS,
+  HTML_I18N_LOCALE_URL_MARKERS,
   HTML_I18N_IGNORE_ATTR,
+  isNonCatalogHtmlMarker,
   normalizeI18nText,
   decodeBasicHtmlEntities,
   collectHtmlI18nStrings,

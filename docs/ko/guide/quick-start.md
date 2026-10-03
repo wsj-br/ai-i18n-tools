@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ UI 문자열과 문서를 함께 실행하려면 단일 구성에서 모든 기�
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ UI 문자열과 문서를 함께 실행하려면 단일 구성에서 모든 기�
 
 <br />
 
-`glossary.uiGlossary`은 문서 번역 시 UI와 동일한 `strings.json` 카탈로그를 사용하도록 지정하여 용어의 일관성을 유지하며, `glossary.userGlossary`는 제품 용어에 대한 CSV 재정의를 추가합니다. [용어집](/ko/guide/glossary)을 참조하십시오.
+UI 블록은 기본적으로 문서화를 위한 용어집 힌트로 `strings.json` 카탈로그를 포함합니다(`uiGlossary`). `glossary.userGlossary`는 제품 용어에 대한 CSV 재정의를 추가합니다. [용어집](/ko/guide/glossary)을 참조하세요.
 
 하나의 파이프라인을 실행하려면 `ai-i18n-tools sync`를 실행하십시오: `features.translateUIStrings`이(가) 활성화된 경우 **추출**한 다음 **UI 번역** 문자열을 번역합니다; 선택적 **SVG 번역** (`features.translateSVG` + `svg` 블록); **문서 번역** (구성된 대로 `docs[]`); 그 다음 선택적 **translate-json** (`features.translateJson` + `json[]`). `--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`으로 부분을 건너뜁니다. 문서 및 `json[]` 단계는 `--dry-run`, `-p` / `--path`, `--force`, `--force-update` 및 `--check-cache`을(를) 허용합니다 (`--no-docs`일 때 문서 전용 플래그는 무시됩니다; `--no-json`이(가) 설정되지 않은 경우 JSON은 동일한 캐시 플래그를 사용합니다).
 

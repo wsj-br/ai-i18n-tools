@@ -67,6 +67,8 @@ ai-i18n-tools init -t ui-docusaurus -P openai
 # Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
 # Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 # Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
@@ -123,7 +125,6 @@ UI स्ट्रिंग और दस्तावेज़ों को ए�
     "translateSVG": false
   },
   "glossary": {
-    "uiGlossary": "src/locales/strings.json",
     "userGlossary": "glossary-user.csv"
   },
   "ui": {
@@ -146,7 +147,7 @@ UI स्ट्रिंग और दस्तावेज़ों को ए�
 
 <br />
 
-`glossary.uiGlossary` दस्तावेज़ अनुवाद को यूआई के समान `strings.json` कैटलॉग पर निर्देशित करता है ताकि शब्दावली सुसंगत रहे; `glossary.userGlossary` उत्पाद शब्दों के लिए सीएसवी ओवरराइड जोड़ता है। [शब्दावली](/hi/guide/glossary) देखें।
+UI ब्लॉक डिफ़ॉल्ट रूप से दस्तावेज़ीकरण के लिए शब्दावली संकेतों के रूप में अपने `strings.json` कैटलॉग शामिल करते हैं (`uiGlossary`)। `glossary.userGlossary` उत्पाद शब्दों के लिए CSV ओवरराइड जोड़ता है। [शब्दावली](/hi/guide/glossary) देखें।
 
 एक पाइपलाइन चलाने के लिए `ai-i18n-tools sync` चलाएँ: जब `features.translateUIStrings` सक्षम हो, तो UI स्ट्रिंग को **निकालें** फिर **अनुवादित करें**; वैकल्पिक **SVG का अनुवाद करें** (`features.translateSVG` + `svg` ब्लॉक); **दस्तावेज़ों का अनुवाद करें** (`docs[]` जैसा कॉन्फ़िगर किया गया है); फिर वैकल्पिक **JSON का अनुवाद करें** (`features.translateJson` + `json[]`)। `--no-ui`, `--no-svg`, `--no-docs`, या `--no-json` के साथ भागों को छोड़ दें। दस्तावेज़ और `json[]` चरण `--dry-run`, `-p` / `--path`, `--force`, `--force-update`, और `--check-cache` स्वीकार करते हैं (जब `--no-docs` हो तो केवल दस्तावेज़ों के फ़्लैग को अनदेखा किया जाता है; जब `--no-json` सेट नहीं होता है तो JSON समान कैश फ़्लैग का उपयोग करता है)।
 

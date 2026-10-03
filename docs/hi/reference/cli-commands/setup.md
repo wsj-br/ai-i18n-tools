@@ -32,6 +32,8 @@
 | `ui-nextra` | नेक्सट्रा डॉक्स (`docsOutput.style: "nextra"`) प्लस थीम डिक्शनरी के लिए `nextraDictionaryPath` (साइडबार `_meta.ts` स्वचालित रूप से एकत्र किया जाता है) |
 | `ui-fumadocs` | फ़्यूमाडॉक्स डॉक्स (`docsOutput.style: "fumadocs"`) प्लस यूआई ओवरराइड के लिए `fumadocsUiCatalog` (साइडबार `meta.json` स्वचालित रूप से एकत्र किया जाता है) |
 | `ui-astro-website` | एस्ट्रो वेबसाइट यूआई स्ट्रिंग्स |
+| `ui-plain-html` | सादा HTML कैटलॉग (`data-i18n*` मार्कर, फ्लैट लोकेल JSON) |
+| `docs-plain-html` | सादे HTML दस्तावेज़ (प्रति लोकेल एक फ़ाइल, भाषा सूची, hreflang) |
 | `ui-json-bundles` | JSON (केवल `json[]`) |
 
 `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है।

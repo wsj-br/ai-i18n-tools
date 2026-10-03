@@ -21,7 +21,8 @@ import {
   type ManualReviewSite,
   type SafeRewrite,
 } from "../extractors/intlayer-usage-codemod.js";
-import { resolveLanguagesManifestAbsPath } from "../core/ui-languages.js";
+import { effectiveUiManifestRel, selectUiBlocks } from "../core/ui-blocks.js";
+import type { UiConfig } from "../core/types.js";
 import { collectFilesByExtension } from "./file-utils.js";
 import { resolveStringsJsonPath, writeAtomicUtf8 } from "./helpers.js";
 import {
@@ -41,6 +42,8 @@ export interface RunMigrateIntlayerOptions {
   reportPath?: string;
   tImport?: string;
   verbose?: boolean;
+  /** Index, description, or stringsJson path. Defaults to block 0. */
+  uiBlock?: string;
 }
 
 export interface MigrateIntlayerSummary {
@@ -58,12 +61,23 @@ export interface MigrateIntlayerSummary {
 const CONTENT_SUFFIX = ".content.ts";
 const USAGE_EXT = [".ts", ".tsx", ".js", ".jsx"];
 
-function defaultRoots(config: I18nConfig, paths: string[] | undefined): string[] {
+function migrateUiBlock(config: I18nConfig, selector?: string): { block: UiConfig; index: number } {
+  if (!selector?.trim()) {
+    const block = config.ui[0];
+    if (!block) {
+      throw new Error("Config has no ui block.");
+    }
+    return { block, index: 0 };
+  }
+  const selected = selectUiBlocks(config, selector);
+  return { block: selected[0]!.block, index: selected[0]!.index };
+}
+
+function defaultRoots(block: UiConfig, paths: string[] | undefined): string[] {
   if (paths && paths.length > 0) {
     return paths;
   }
-  const roots = config.ui?.sourceRoots ?? [];
-  return roots.length > 0 ? roots : ["."];
+  return block.sourceRoots.length > 0 ? block.sourceRoots : ["."];
 }
 
 function isContentFile(rel: string): boolean {
@@ -154,10 +168,11 @@ function applyInterpolationConversions(
 function seedStringsAndFlat(
   cwd: string,
   config: I18nConfig,
+  block: UiConfig,
   leaves: IntlayerLeaf[],
   write: boolean
 ): { stringsJsonPath: string; imported: number } {
-  const stringsJsonPath = resolveStringsJsonPath(config, cwd);
+  const stringsJsonPath = resolveStringsJsonPath(block, cwd);
   const extractor = new UIStringExtractor(undefined, { cwd });
   const seen = new Map<string, IntlayerLeaf>();
   for (const leaf of leaves) {
@@ -198,7 +213,7 @@ function seedStringsAndFlat(
 
   if (write) {
     writeAtomicUtf8(stringsJsonPath, body);
-    const outDir = path.join(cwd, config.ui.flatOutputDir);
+    const outDir = path.join(cwd, block.flatOutputDir);
     fs.mkdirSync(outDir, { recursive: true });
     const parsed = JSON.parse(body) as Record<
       string,
@@ -233,7 +248,8 @@ function seedStringsAndFlat(
  */
 export function runMigrateIntlayer(opts: RunMigrateIntlayerOptions): MigrateIntlayerSummary {
   const { cwd, config, write } = opts;
-  const roots = defaultRoots(config, opts.paths);
+  const chosen = migrateUiBlock(config, opts.uiBlock);
+  const roots = defaultRoots(chosen.block, opts.paths);
   void opts.contentGlob;
   const contentFiles = collectContentFiles(cwd, roots);
   const usageFiles = collectUsageFiles(cwd, roots);
@@ -369,14 +385,15 @@ export function runMigrateIntlayer(opts: RunMigrateIntlayerOptions): MigrateIntl
     }
   }
 
-  const seeded = seedStringsAndFlat(cwd, config, allLeaves, write);
+  const seeded = seedStringsAndFlat(cwd, config, chosen.block, allLeaves, write);
   const reportRel = opts.reportPath ?? "migrate-intlayer-report.md";
   const reportAbs = path.isAbsolute(reportRel) ? reportRel : path.join(cwd, reportRel);
   const stringsJsonPath = path.relative(cwd, seeded.stringsJsonPath) || seeded.stringsJsonPath;
   const bootstrapFile = bootstrap ?? "src/i18n.ts";
-  const manifestAbs =
-    resolveLanguagesManifestAbsPath(config, cwd) ??
-    path.join(cwd, config.ui.flatOutputDir, "ui-languages.json");
+  const manifestAbs = path.resolve(
+    cwd,
+    effectiveUiManifestRel(config, chosen.block, chosen.index)
+  );
   const stringsRel = projectRelative(cwd, seeded.stringsJsonPath);
   const manifestRel = projectRelative(cwd, manifestAbs);
   const localeDirRel = path.posix.dirname(stringsRel);
@@ -398,7 +415,7 @@ export function runMigrateIntlayer(opts: RunMigrateIntlayerOptions): MigrateIntl
     filesChanged,
     filesScanned: usageFiles.length,
     stringsJsonPath,
-    flatOutputDir: config.ui.flatOutputDir,
+    flatOutputDir: chosen.block.flatOutputDir,
     reportPath: path.relative(cwd, reportAbs) || reportAbs,
     contentFiles: dictionaries.map((dictionary) => dictionary.file),
     leftovers,

@@ -68,3 +68,8 @@
 | VitePress 문서 (최소 데모) | [examples/vitepress-docs/ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json) (`docsOutput.style = "vitepress"` + `vitepressThemeCatalog`) |
 
 `<small id="lang-list">` 바로 이전 줄(예: `**Read in other languages:**`)은 일반적인 번역 가능한 구문이며 각 대상 로케일에서 현지화되며, 마커 내부의 링크 행은 `href` 및 매니페스트 기반 레이블을 제외하고는 원본 그대로 재생성됩니다.
+
+<a id="html-pages"></a>
+## HTML 페이지
+
+일반 HTML 문서는 `<!-- ai-i18n:lang-list -->` 및 `<!-- ai-i18n:hreflang -->`이라는 다른 주석 쌍을 사용합니다. 언어 목록은 링크 또는 `<select>`일 수 있으며, hreflang 대체 항목은 영어 소스뿐만 아니라 각 로캘 파일에도 작성됩니다. [HTML 페이지](/ko/guide/documents/html-pages#language-list-and-hreflang)를 참조하세요.

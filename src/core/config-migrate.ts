@@ -160,7 +160,77 @@ export function preprocessLegacyConfigInput(raw: unknown): unknown {
     delete o.uiLanguagesPath;
   }
 
+  throwIfLegacyGlossaryUiPath(o);
+
   return o;
+}
+
+function normLegacyPath(value: string): string {
+  return value.trim().replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+$/, "");
+}
+
+function rawUiStringsJsonPaths(raw: Record<string, unknown>): string[] {
+  const ui = raw.ui;
+  const fromBlock = (item: unknown): string => {
+    if (item && typeof item === "object" && !Array.isArray(item)) {
+      const stringsJson = (item as Record<string, unknown>).stringsJson;
+      if (typeof stringsJson === "string" && stringsJson.trim()) {
+        return stringsJson.trim();
+      }
+    }
+    return "strings.json";
+  };
+  if (Array.isArray(ui)) {
+    return ui.length > 0 ? ui.map(fromBlock) : ["strings.json"];
+  }
+  if (ui && typeof ui === "object") {
+    return [fromBlock(ui)];
+  }
+  return ["strings.json"];
+}
+
+function legacyGlossaryUiPathMessage(key: string, value: unknown, paths: string[]): string {
+  const shown = typeof value === "string" ? value : JSON.stringify(value);
+  const normVal = typeof value === "string" ? normLegacyPath(value) : "";
+  const index = paths.findIndex((item) => normLegacyPath(item) === normVal);
+  if (index >= 0) {
+    const catalog = paths[index];
+    return (
+      `glossary.${key} is no longer supported (found ${JSON.stringify(shown)}). ` +
+      `Remove "glossary.${key}" from the config. That catalog is already ui[${index}].stringsJson, ` +
+      `and ui[].uiGlossary (boolean, default true) now includes it in glossary hints. ` +
+      `Set "uiGlossary": false on that block to exclude it. ` +
+      `Before: "glossary": { "${key}": ${JSON.stringify(shown)} }. ` +
+      `After: delete that key. Optional: "ui": [{ "stringsJson": ${JSON.stringify(catalog)}, "uiGlossary": false }].`
+    );
+  }
+  const catalog = typeof value === "string" && value.trim() ? value.trim() : "path/to/strings.json";
+  return (
+    `glossary.${key} is no longer supported (found ${JSON.stringify(shown)}). ` +
+    `Remove "glossary.${key}" and declare the catalog as a UI block: ` +
+    `"ui": [{ "stringsJson": ${JSON.stringify(catalog)} }] (empty sourceRoots is fine; the catalog is used for hints without being extracted). ` +
+    `Keep any existing ui block and add this one to the array. ` +
+    `Before: "glossary": { "${key}": ${JSON.stringify(shown)} }. ` +
+    `After: "ui": [{ "stringsJson": ${JSON.stringify(catalog)}, "sourceRoots": [] }].`
+  );
+}
+
+function throwIfLegacyGlossaryUiPath(raw: Record<string, unknown>): void {
+  const glossary = raw.glossary;
+  if (!glossary || typeof glossary !== "object" || Array.isArray(glossary)) {
+    return;
+  }
+  const record = glossary as Record<string, unknown>;
+  const keys = (["uiGlossary", "uiGlossaryFromStringsJson"] as const).filter((key) =>
+    Object.prototype.hasOwnProperty.call(record, key)
+  );
+  if (keys.length === 0) {
+    return;
+  }
+  const paths = rawUiStringsJsonPaths(raw);
+  throw new ConfigValidationError(
+    keys.map((key) => legacyGlossaryUiPathMessage(key, record[key], paths)).join(" ")
+  );
 }
 
 const LEGACY_FEATURE_KEYS = new Set(["translateMarkdown", "translateJSON", "extractUIStrings"]);

@@ -291,8 +291,8 @@ The docs site deploys to GitHub Pages on release via `.github/workflows/docs.yml
 | Command                      | Description                                                                                               |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `pnpm i18n:self`             | Regenerate the tool's own UI bundles (`src/i18n/locales/`) via `sync-ui`                                  |
-| `pnpm i18n:sync`             | `sync --path docs/index.md` (docs landing + theme JSON; README and index are independent)               |
-| `pnpm i18n:translate:sync`   | Run full `sync` against the root config (extract → translate-ui/svg/docs/json as configured)                |
+| `pnpm i18n:sync`             | `sync --no-ui --path docs/index.md` (docs landing + theme JSON; README and index are independent) |
+| `pnpm i18n:translate:sync`   | Run `sync --no-ui` against the root config (docs, and svg/json when those blocks have work) |
 | `pnpm i18n:update-headings`  | Run `write-heading-ids` — insert or refresh HTML anchor lines before ATX headings in configured doc paths |
 | `pnpm i18n:status`           | Run `status`                                                                                              |
 | `pnpm i18n:dashboard`        | Run `dashboard`                                                                                           |

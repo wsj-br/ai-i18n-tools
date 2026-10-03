@@ -10,6 +10,7 @@ export const DEFAULT_CONTEXT_MAX_CHARS = 12_000;
 export const CONTEXT_MAX_CHARS_HARD_LIMIT = 100_000;
 
 /** `file_tracking` key for UI catalog guidance (locale-wide). */
+/** @deprecated Guidance rows now use `ui-block:{stringsJson}` from `uiBlockFileTrackingKey`. */
 export const UI_STRINGS_TRACKING_KEY = "ui-strings";
 
 const CONTEXT_FILE_EXTENSIONS = new Set([".md", ".markdown", ".txt", ".text"]);

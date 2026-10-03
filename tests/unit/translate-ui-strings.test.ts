@@ -19,7 +19,6 @@ function buildConfig() {
       sourceLocale: "en",
       targetLocales: ["de"],
       glossary: {
-        uiGlossary: "strings.json",
         userGlossary: "glossary-user.csv",
       },
       ui: {
@@ -258,7 +257,6 @@ describe("runTranslateUI", () => {
         sourceLocale: "en",
         targetLocales: ["hi"],
         glossary: {
-          uiGlossary: "strings.json",
           userGlossary: "glossary-user.csv",
         },
         ui: {

@@ -65,11 +65,13 @@
 
 使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。对于 `.astro` 源（当在 `ui.uiExtractor.extensions` 中列出时），`ui-string-babel.ts` 使用 `@babel/parser` 解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名和文件扩展名可通过 `ui.uiExtractor` 配置（`ui.reactExtractor` 是受支持的别名）。`extract` **还会将非扫描器输入合并到同一目录中：** 当启用 `includePackageDescription`（默认）时的项目 `package.json` `description`，以及当 `includeUiLanguageEnglishNames` 为 `true` 时来自捆绑的 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）的每个 `englishName`（已在源中找到的字符串保持优先级；不读取 `languagesManifestPath`）。`extract` 还会在 `languagesManifestPath` 处重新生成 `ui-languages.json`。段哈希是修剪后的源字符串的 **MD5 前 8 个十六进制字符** —— 它们成为 `strings.json` 中的键。
 
-对于 `.html` / `.htm` 源（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件路由到 `html-i18n-marks.ts`，后者会扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素的自身 `textContent` / `title` / `placeholder` 获取源文本；带值的标记（`data-i18n="Key"`）使用该值。相同的模块也支持 `mark-html` 命令，该命令会自动插入裸标记。HTML 文件永远不会到达 Babel / i18next-scanner 阶段。
+对于 `.html` / `.htm` 源文件（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件转而路由至 `html-i18n-marks.ts`，由其扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素自身的 `textContent` 或属性中获取源文本；有值标记（`data-i18n="Key"`）则使用该值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 为浏览器运行时保留，永远不会被提取。同一模块还驱动 `mark-html` 命令，该命令会自动插入裸标记（包括 `alt` 和 `aria-label`），且从不插入语言环境 URL 标记。HTML 文件永远不会进入 Babel / i18next-scanner 处理阶段。在文档 `outputDir` 下生成的语言环境 HTML 会被排除在此扫描之外。
 
 纯 Astro SSG 站点可以跳过 i18next：在构建时加载扁平化的 `{locale}.json`，并按源文本键解析 `t('English')`（参见 `examples/astro-website/src/i18n/t.ts` 和 [UI 字符串 — Astro 网站](/zh-Hans/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
 
-纯 HTML 应用遵循相同的目录模型，使用标记属性代替 `t()` 调用 — 参见[为翻译标记 HTML](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)。
+纯 HTML 应用遵循相同的目录模型，使用标记属性代替 `t()` 调用——请参阅[标记 HTML 以进行翻译](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)。即插即用脚本为 `ai-i18n-tools/html-runtime/i18n.js`。
+
+应转换为每个语言环境一个文件的静态 HTML 属于文档管道（`translate-docs` 内的 `HtmlTemplateExtractor`），而非此目录。请参阅 [HTML 页面](/zh-Hans/guide/documents/html-pages)。
 
 <a id="stringsjson"></a>
 ### `strings.json`
@@ -191,7 +193,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 7. **行内代码段**（`` `code` ``）和**加粗包裹的行内代码**（`**`code`**`）——保留。
 8. **Markdown 强调**（可选，对 CJK/RTL 区域设置自动启用）——强调分隔符被屏蔽。
 
-在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
+在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
 
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
@@ -288,10 +290,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 该工具会将其自身的 UI（CLI 帮助、高流量日志/摘要/错误消息以及翻译仪表板）与其为您翻译的内容分开进行本地化。
 
-- **区域设置解析** (`resolveUiLocale` 在 `src/core/ui-locale.ts` 中)：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统区域设置 (`Intl.DateTimeFormat().resolvedOptions().locale`) 中选择 UI 区域设置。候选区域设置被规范化并与已发布的捆绑包集精确匹配或通过最接近的变体匹配 (例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`)，回退到源区域设置 (`en-GB`)。CLI 在构建帮助之前解析一次 (预解析 argv 扫描)，并在配置加载后再次解析，因此 `uiLanguage` 适用 (该标志和环境变量仍然优先)。
-- **运行时** (`src/i18n/index.ts`)：一个最小的 `t(source, vars)`，带有 ```{{name}}``` 插值，通过英文源字符串与 `src/i18n/locales/<code>.json` 中的平面每区域设置捆绑包进行键控 (在构建时复制到 `dist/i18n/locales`)。缺失的键或捆绑包返回源文本。这与 UI 字符串的键即默认模型相同 — 没有哈希查找。
-- **仪表板**：服务器公开 `GET /api/ui-i18n`，返回已解析 UI 区域设置的 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性本地化静态标记。
-- **内部测试**：捆绑包是通过对 `ai-i18n-self.config.json` (`pnpm i18n:self`) 运行包自己的提取 → `translate-ui` 管道生成的。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用以及 `src/dashboard-app/index.html` 中仪表板的 `data-i18n*` 标记。
+- **区域设置解析**（`resolveUiLocale` 位于 `src/core/ui-locale.ts`）：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统区域设置（`Intl.DateTimeFormat().resolvedOptions().locale`）中选取 UI 区域设置。候选值会被规范化，并与随附的资源包集合进行精确匹配或最接近的变体匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），若均不匹配则回退到源区域设置（`en-GB`）。CLI 在构建帮助信息前解析一次（预解析 argv 扫描），并在加载配置后再次解析，以便应用 `uiLanguage`（标志和环境变量仍具有最高优先级）。
+- **运行时**（`src/i18n/index.ts`）：一个包含 ```{{name}}``` 插值的最小化 `t(source, vars)`，以英文源字符串为键，对照 `src/i18n/locales/<code>.json` 中扁平化的各区域设置资源包（在构建时复制到 `dist/i18n/locales`）进行查找。如果缺少键或资源包，则返回源文本。这与 UI 字符串采用的“键即默认值”模型相同——没有哈希查找。
+- **仪表板**：服务器公开 `GET /api/ui-i18n`，为解析后的 UI 区域设置返回 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir`，并通过 `data-i18n*` 属性对静态标记进行本地化。
+- **内部试用**：资源包由 `pnpm i18n:self`（`sync-ui --ui-block src/i18n/strings.json`）生成，该工具会提取并翻译 `ai-i18n-tools.config.json` 中 CLI 和仪表板的 `ui` 代码块。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用，以及仪表板在 `src/dashboard-app/index.html` 中的 `data-i18n*` 标记。
 
 ---
 
@@ -309,7 +311,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
     "uiExtractor": {
       "funcNames": ["t", "i18n.t", "translate", "i18n.translate"],
       "extensions": [".js", ".jsx", ".ts", ".tsx", ".astro", ".html"],
-      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder"]
+      "htmlI18nAttributes": ["data-i18n", "data-i18n-title", "data-i18n-placeholder", "data-i18n-alt", "data-i18n-aria-label"]
     }
   }
 }

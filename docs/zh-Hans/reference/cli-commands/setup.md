@@ -32,6 +32,8 @@
 | `ui-nextra` | Nextra 文档（`docsOutput.style: "nextra"`）加上用于主题字典的 `nextraDictionaryPath`（侧边栏 `_meta.ts` 会自动收集） |
 | `ui-fumadocs` | Fumadocs 文档（`docsOutput.style: "fumadocs"`）加上用于 UI 覆盖的 `fumadocsUiCatalog`（侧边栏 `meta.json` 会自动收集） |
 | `ui-astro-website` | Astro 网站 UI 字符串 |
+| `ui-plain-html` | 纯 HTML 目录（`data-i18n*` 标记，扁平化区域设置 JSON） |
+| `docs-plain-html` | 纯 HTML 文档（每个区域设置一个文件，语言列表，hreflang） |
 | `ui-json-bundles` | JSON（仅 `json[]`） |
 
 `--with-translate-ignore` 创建一个初始 `.translate-ignore`。

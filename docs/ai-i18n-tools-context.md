@@ -32,7 +32,9 @@ The CLI auto-loads a `.env` file from the working directory (does not override v
 
 `sync` runs enabled steps in order (skip with `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`): UI → SVG → docs → `json[]`. Full guide: [Quick start](/guide/quick-start) (JSON: [JSON](/guide/json); SVG: [SVG translation](/guide/svg-translation/)).
 
-**Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`); `languagesManifestPath` (not `uiLanguagesPath`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation). The legacy `features.translateJSON` flag is gone — Docusaurus catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set; standalone nested locale JSON uses `features.translateJson` with top-level `json[]` (JSON).
+`ui` is one catalog or an array of catalogs. Each block has its own `sourceRoots`, `stringsJson`, and `flatOutputDir`. A single object is still accepted and wrapped to an array at load. `pnpm i18n:self` translates the CLI and dashboard block (`sync-ui --ui-block src/i18n/strings.json`). Document sync scripts pass `--no-ui` so they stay docs-only. Feature flags default to `true` when omitted; an omitted flag with no sources for that pipeline is skipped.
+
+**Config naming (current):** top-level `docs[]` (not `documentations[]`); `docs[].docsOutput` (not `markdownOutput`); `docs[].docusaurusCatalogDir` (not `jsonSource`); `languagesManifestPath` (not `uiLanguagesPath`). Legacy keys still load via preprocess and are rewritten when the config file is writable. There is no `features.extractUIStrings` (extract runs automatically before UI translation). The legacy `features.translateJSON` flag is gone — Docusaurus catalog JSON runs inside `translate-docs` when `docusaurusCatalogDir` is set; standalone nested locale JSON uses `features.translateJson` with top-level `json[]` (JSON). `glossary.uiGlossary` is no longer accepted; each UI block's `uiGlossary` boolean (default `true`) includes that catalog as hints for docs, JSON, and SVG.
 
 ---
 
@@ -44,7 +46,7 @@ The CLI auto-loads a `.env` file from the working directory (does not override v
 
 ## Code patterns
 
-Extract only sees string literals in `t` / `i18n.t` (and names in `ui.uiExtractor.funcNames`, or legacy `ui.reactExtractor.funcNames`), plus bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` markers in `.html` / `.htm` when those extensions are listed in `ui.uiExtractor.extensions`. Variables as keys are not extracted. Use `ai-i18n-tools mark-html` to auto-insert HTML markers (dry run by default; `--write` to apply).
+Extract only sees string literals in `t` / `i18n.t` (and names in `ui.uiExtractor.funcNames`, or legacy `ui.reactExtractor.funcNames`), plus bare `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` markers in `.html` / `.htm` when those extensions are listed in `ui.uiExtractor.extensions`. Variables as keys are not extracted. `data-i18n-locale-src` and `data-i18n-locale-href` are runtime-only (image filename suffix and `?locale=` links) and are never extracted. Use `ai-i18n-tools mark-html` to auto-insert HTML markers (dry run by default; `--write` to apply). The drop-in browser script is `ai-i18n-tools/html-runtime/i18n.js`. Static per-locale HTML files are a Documents feature (`docs[]` with `.html` sources), not this catalog.
 
 ```js
 t("Save");
@@ -306,7 +308,7 @@ Full config field reference: [Configuration](/reference/configuration).
 
 When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`. Optional `Context` cells and `glossary.contextFiles` add extra source-language guidance for all pipelines.
 
-- **Scaffold config:** `ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>]`
+- **Scaffold config:** `ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles] [-o path] [-P <provider>]`
 - **Validate model ids:** `ai-i18n-tools check-models` (validates the union of `translationModels`, `uiModels`, and `localeModels`)
 - **List available models:** `ai-i18n-tools list-models` (use `-P` / `--provider` to inspect another configured provider)
 - **Benchmark models:** `ai-i18n-tools bench-models` (one sample translation per model; `--model` to override the configured list)
