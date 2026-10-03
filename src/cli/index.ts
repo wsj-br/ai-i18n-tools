@@ -1037,7 +1037,13 @@ program
   .action(
     (
       paths: string[],
-      opts: { write?: boolean; report?: string; contentGlob?: string; tImport?: string; uiBlock?: string },
+      opts: {
+        write?: boolean;
+        report?: string;
+        contentGlob?: string;
+        tImport?: string;
+        uiBlock?: string;
+      },
       cmd
     ) => {
       const { configFlag, cwd, providerOverride } = withConfig(cmd);
@@ -2579,7 +2585,9 @@ program
           console.log();
         };
 
-        console.log(chalk.bold.cyan(`\n${t("📊 UI strings status")} — ${formatUiBlockLabel(index, block)}`));
+        console.log(
+          chalk.bold.cyan(`\n${t("📊 UI strings status")} — ${formatUiBlockLabel(index, block)}`)
+        );
         console.log(chalk.gray(`(${stringsPath})\n`));
         printUiSubset(t("Plain UI strings"), plainKeys);
         printUiSubset(t("Plural UI string groups"), pluralKeys);
@@ -2843,137 +2851,139 @@ program
         targetLocales: effectiveUiTargetLocales(config, catalog.block),
       }).uiStrings;
 
-    console.log(
-      chalk.bold.cyan(
-        `\n${t("📊 UI strings (strings.json)")} — ${formatUiBlockLabel(catalog.index, catalog.block)}`
-      )
-    );
-    console.log(chalk.gray(`(${stringsPath})\n`));
-
-    if (!ui.available) {
-      console.log(chalk.gray(`${t("strings.json not configured or missing.")}\n`));
-    } else {
       console.log(
-        chalk.gray(
-          `${t("{{total}} entries ({{plain}} plain, {{plural}} plural)", {
-            total: ui.totalEntries,
-            plain: ui.plainTotal,
-            plural: ui.pluralTotal,
-          })}\n`
+        chalk.bold.cyan(
+          `\n${t("📊 UI strings (strings.json)")} — ${formatUiBlockLabel(catalog.index, catalog.block)}`
         )
       );
-      const uiCardLabelW = 22;
-      const uiCardLines: [string, string][] = [
-        [t("Plain entries"), String(ui.plainTotal)],
-        [t("Plural groups"), String(ui.pluralTotal)],
-      ];
-      for (const [label, val] of uiCardLines) {
-        console.log(`${padVis(chalk.magenta(label + ":"), uiCardLabelW)} ${val}`);
-      }
-      console.log();
+      console.log(chalk.gray(`(${stringsPath})\n`));
 
-      const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
-      const uiModelHeaders = [
-        chalk.bold(t("Model")),
-        chalk.bold(t("Entries")),
-        chalk.bold(t("% of total")),
-      ];
-      const uiModelRows: string[][] = ui.byModel.map((row) => [
-        row.model,
-        String(row.count),
-        totalUiModelUsage === 0 ? "—" : `${pctPart(row.count, totalUiModelUsage)}`,
-      ]);
-      const wUiModel = Math.max(
-        visWidth(uiModelHeaders[0]!),
-        ...uiModelRows.map((r) => visWidth(r[0]!)),
-        5
-      );
-      const wUiEnt = Math.max(
-        visWidth(uiModelHeaders[1]!),
-        ...uiModelRows.map((r) => visWidth(r[1]!)),
-        8
-      );
-      const wUiPct = Math.max(
-        visWidth(uiModelHeaders[2]!),
-        ...uiModelRows.map((r) => visWidth(r[2]!)),
-        10
-      );
-      const uiSep = (cols: string[]) => cols.join(" | ");
-      console.log(chalk.magenta.bold(t("By model")));
-      console.log(
-        uiSep([
-          padVis(uiModelHeaders[0]!, wUiModel),
-          padVis(uiModelHeaders[1]!, wUiEnt),
-          padVis(uiModelHeaders[2]!, wUiPct),
-        ])
-      );
-      console.log(
-        uiSep([
-          chalk.bold("-".repeat(wUiModel)),
-          chalk.bold("-".repeat(wUiEnt)),
-          chalk.bold("-".repeat(wUiPct)),
-        ])
-      );
-      for (const r of uiModelRows) {
-        console.log(uiSep([padVis(r[0]!, wUiModel), padVis(r[1]!, wUiEnt), padVis(r[2]!, wUiPct)]));
-      }
-      console.log(
-        uiSep([
-          padVis(chalk.bold(t("Total")), wUiModel),
-          padVis(String(totalUiModelUsage), wUiEnt),
-          padVis(totalUiModelUsage === 0 ? "—" : "100.0%", wUiPct),
-        ])
-      );
-      console.log();
-
-      const uiMlMap = new Map<string, number>();
-      for (const r of ui.byModelLocale) {
-        uiMlMap.set(`${r.model}\0${r.locale}`, r.count);
-      }
-      const uiLocTotals = new Map(
-        ui.plainByLocale.map((row) => [row.locale, row.translated + row.missing] as const)
-      );
-
-      const printUiMatrixChunk = (chunkLocales: string[]) => {
-        const headers = [chalk.bold(t("Model")), ...chunkLocales.map((loc) => chalk.bold(loc))];
-        const colWidths = headers.map((h, i) =>
-          Math.max(
-            visWidth(h),
-            ...ui.byModel.map((mRow) => {
-              if (i === 0) return visWidth(mRow.model);
-              const cnt = uiMlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
-              const tot = uiLocTotals.get(chunkLocales[i - 1]!) ?? 0;
-              const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
-              return visWidth(cell);
-            })
+      if (!ui.available) {
+        console.log(chalk.gray(`${t("strings.json not configured or missing.")}\n`));
+      } else {
+        console.log(
+          chalk.gray(
+            `${t("{{total}} entries ({{plain}} plain, {{plural}} plural)", {
+              total: ui.totalEntries,
+              plain: ui.plainTotal,
+              plural: ui.pluralTotal,
+            })}\n`
           )
         );
-        const sep = (cols: string[]) =>
-          cols.map((cell, i) => padVis(cell, colWidths[i]!)).join(" | ");
-        console.log(sep(headers.map((h) => String(h))));
-        console.log(sep(headers.map((_, i) => chalk.bold("-".repeat(colWidths[i]!)))));
-        for (const mRow of ui.byModel) {
-          const cells = [mRow.model];
-          for (const loc of chunkLocales) {
-            const cnt = uiMlMap.get(`${mRow.model}\0${loc}`) ?? 0;
-            const tot = uiLocTotals.get(loc) ?? 0;
-            cells.push(
-              cnt === 0 ? chalk.gray("—") : `${cnt} ${chalk.gray(`(${pctPart(cnt, tot)})`)}`
-            );
-          }
-          console.log(sep(cells));
+        const uiCardLabelW = 22;
+        const uiCardLines: [string, string][] = [
+          [t("Plain entries"), String(ui.plainTotal)],
+          [t("Plural groups"), String(ui.pluralTotal)],
+        ];
+        for (const [label, val] of uiCardLines) {
+          console.log(`${padVis(chalk.magenta(label + ":"), uiCardLabelW)} ${val}`);
         }
         console.log();
-      };
 
-      const uiLocalesList = ui.plainByLocale.map((r) => r.locale);
-      if (uiLocalesList.length === 0) {
-        console.log(chalk.magenta.bold(t("By model and locale")));
-        console.log(chalk.gray(`  ${t("(no locale rows)")}\n`));
-      } else {
-        console.log(chalk.magenta.bold(t("By model and locale")));
-        runChunkedLocaleTables(uiLocalesList, printUiMatrixChunk);
-      }
+        const totalUiModelUsage = ui.byModel.reduce((sum, r) => sum + r.count, 0);
+        const uiModelHeaders = [
+          chalk.bold(t("Model")),
+          chalk.bold(t("Entries")),
+          chalk.bold(t("% of total")),
+        ];
+        const uiModelRows: string[][] = ui.byModel.map((row) => [
+          row.model,
+          String(row.count),
+          totalUiModelUsage === 0 ? "—" : `${pctPart(row.count, totalUiModelUsage)}`,
+        ]);
+        const wUiModel = Math.max(
+          visWidth(uiModelHeaders[0]!),
+          ...uiModelRows.map((r) => visWidth(r[0]!)),
+          5
+        );
+        const wUiEnt = Math.max(
+          visWidth(uiModelHeaders[1]!),
+          ...uiModelRows.map((r) => visWidth(r[1]!)),
+          8
+        );
+        const wUiPct = Math.max(
+          visWidth(uiModelHeaders[2]!),
+          ...uiModelRows.map((r) => visWidth(r[2]!)),
+          10
+        );
+        const uiSep = (cols: string[]) => cols.join(" | ");
+        console.log(chalk.magenta.bold(t("By model")));
+        console.log(
+          uiSep([
+            padVis(uiModelHeaders[0]!, wUiModel),
+            padVis(uiModelHeaders[1]!, wUiEnt),
+            padVis(uiModelHeaders[2]!, wUiPct),
+          ])
+        );
+        console.log(
+          uiSep([
+            chalk.bold("-".repeat(wUiModel)),
+            chalk.bold("-".repeat(wUiEnt)),
+            chalk.bold("-".repeat(wUiPct)),
+          ])
+        );
+        for (const r of uiModelRows) {
+          console.log(
+            uiSep([padVis(r[0]!, wUiModel), padVis(r[1]!, wUiEnt), padVis(r[2]!, wUiPct)])
+          );
+        }
+        console.log(
+          uiSep([
+            padVis(chalk.bold(t("Total")), wUiModel),
+            padVis(String(totalUiModelUsage), wUiEnt),
+            padVis(totalUiModelUsage === 0 ? "—" : "100.0%", wUiPct),
+          ])
+        );
+        console.log();
+
+        const uiMlMap = new Map<string, number>();
+        for (const r of ui.byModelLocale) {
+          uiMlMap.set(`${r.model}\0${r.locale}`, r.count);
+        }
+        const uiLocTotals = new Map(
+          ui.plainByLocale.map((row) => [row.locale, row.translated + row.missing] as const)
+        );
+
+        const printUiMatrixChunk = (chunkLocales: string[]) => {
+          const headers = [chalk.bold(t("Model")), ...chunkLocales.map((loc) => chalk.bold(loc))];
+          const colWidths = headers.map((h, i) =>
+            Math.max(
+              visWidth(h),
+              ...ui.byModel.map((mRow) => {
+                if (i === 0) return visWidth(mRow.model);
+                const cnt = uiMlMap.get(`${mRow.model}\0${chunkLocales[i - 1]!}`) ?? 0;
+                const tot = uiLocTotals.get(chunkLocales[i - 1]!) ?? 0;
+                const cell = cnt === 0 ? "—" : `${cnt} (${pctPart(cnt, tot)})`;
+                return visWidth(cell);
+              })
+            )
+          );
+          const sep = (cols: string[]) =>
+            cols.map((cell, i) => padVis(cell, colWidths[i]!)).join(" | ");
+          console.log(sep(headers.map((h) => String(h))));
+          console.log(sep(headers.map((_, i) => chalk.bold("-".repeat(colWidths[i]!)))));
+          for (const mRow of ui.byModel) {
+            const cells = [mRow.model];
+            for (const loc of chunkLocales) {
+              const cnt = uiMlMap.get(`${mRow.model}\0${loc}`) ?? 0;
+              const tot = uiLocTotals.get(loc) ?? 0;
+              cells.push(
+                cnt === 0 ? chalk.gray("—") : `${cnt} ${chalk.gray(`(${pctPart(cnt, tot)})`)}`
+              );
+            }
+            console.log(sep(cells));
+          }
+          console.log();
+        };
+
+        const uiLocalesList = ui.plainByLocale.map((r) => r.locale);
+        if (uiLocalesList.length === 0) {
+          console.log(chalk.magenta.bold(t("By model and locale")));
+          console.log(chalk.gray(`  ${t("(no locale rows)")}\n`));
+        } else {
+          console.log(chalk.magenta.bold(t("By model and locale")));
+          runChunkedLocaleTables(uiLocalesList, printUiMatrixChunk);
+        }
       }
     }
 
@@ -3569,7 +3579,9 @@ program
     try {
       const selected = selectUiBlocks(config, opts.uiBlock);
       if (selected.length === 0) {
-        console.log(chalk.gray(t("No UI blocks with sourceRoots to write a language manifest for.")));
+        console.log(
+          chalk.gray(t("No UI blocks with sourceRoots to write a language manifest for."))
+        );
         return;
       }
       for (const item of selected) {

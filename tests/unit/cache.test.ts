@@ -365,6 +365,32 @@ describe("TranslationCache", () => {
     cache.close();
   });
 
+  it("resetLastHitAtForUnhitMarkdownInScope chunks hit keys past SQLite's variable limit", () => {
+    const cache = new TranslationCache(":memory:");
+    cache.setSegment("keep-first", "de", "a", "b", "m", "docs/a.md", 1);
+    cache.setSegment("keep-last", "de", "a", "b", "m", "docs/a.md", 1);
+    cache.setSegment("stale", "de", "c", "d", "m", "docs/a.md", 1);
+    cache.setSegment("outside", "de", "e", "f", "m", "other.md", 1);
+    // Two binds per key. 16384 keys is 32768 parameters, over MAX_VARIABLE_NUMBER (32766).
+    const keys = new Set<string>(["keep-first|de"]);
+    for (let i = 0; i < 16384; i++) {
+      keys.add(`pad${i}|de`);
+    }
+    keys.add("keep-last|de");
+
+    const n = cache.resetLastHitAtForUnhitMarkdownInScope(keys, ["docs/a.md"]);
+    expect(n).toBe(1);
+    const nullHits = cache.listTranslations({ last_hit_at_null: true, limit: 50, offset: 0 });
+    const active = cache.listTranslations({ last_hit_at_not_null: true, limit: 50, offset: 0 });
+    expect(nullHits.rows.map((r) => r.source_hash)).toEqual(["stale"]);
+    expect(active.rows.map((r) => r.source_hash).sort()).toEqual([
+      "keep-first",
+      "keep-last",
+      "outside",
+    ]);
+    cache.close();
+  });
+
   it("global dedupe: setSegment upserts single row per source_hash and locale", () => {
     const cache = new TranslationCache(":memory:");
     cache.setSegment("shared", "de", "a", "b", "m", "first.md", 1);

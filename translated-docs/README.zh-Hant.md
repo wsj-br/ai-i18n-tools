@@ -11,17 +11,17 @@
 
 **使用您選擇的 AI 模型翻譯您的應用程式與文件 — 無供應商綁定，無需重寫。**
 
-CLI 與工具套件，用於將 JavaScript/TypeScript 應用程式及文件網站國際化。擷取 `t()` 字串，翻譯 Markdown/MDX 頁面、JSON 套件與 SVG 標籤——全部透過單一設定檔完成，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 及任何相容 OpenAI 之 API 的預設配置。可依專案或地區設定切換供應商或模型，無需變更您的程式碼庫。
+用於將 JavaScript/TypeScript 應用程式與文件網站國際化的 CLI 與工具包。提取 `t()` 字串、翻譯 Markdown、MDX 與 HTML 頁面、JSON 套件組合以及 SVG 標籤——全部透過單一設定檔完成，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 及任何 OpenAI 相容 API 的預設配置。可依專案或地區設定切換供應商或模型，無需修改程式碼庫。
 
-支援 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/) 與純 Markdown。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
+適用於 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、純 Markdown 與純 HTML。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
 
 <a id="features"></a>
 ## 功能
 
 | | |
 | --- | --- |
-| **UI 字串** | 從 JS/TS/Astro（以及 HTML 中的 `data-i18n*`）提取 `t("…")` → 扁平化的按語言環境 JSON |
-| **文件** | 為主要文件框架翻譯 Markdown、MDX 與 `.astro` 頁面 |
+| **UI 字串** | 從 JS/TS/Astro 提取 `t("…")`，或從單一 HTML 檔案提取 `data-i18n*` → 每個地區設定對應一個扁平化 JSON |
+| **文件** | 翻譯 Markdown、MDX、`.astro` 與 HTML 頁面（每個地區設定一個檔案） |
 | **JSON** | 當文案位於 `t()` 呼叫之外時，翻譯巢狀的語言環境套件 |
 | **SVG** | 透過 `translate-svg` 翻譯插圖式 SVG 標籤 |
 | **智慧快取** | 共享的 SQLite 快取 — 僅有新增或變更的段落會呼叫模型 |
@@ -30,10 +30,10 @@ CLI 與工具套件，用於將 JavaScript/TypeScript 應用程式及文件網�
 <a id="which-pipeline"></a>
 ## 哪個管線？
 
-| 您的內容 | 指令 |
+| 您的內容 | 命令 |
 | --- | --- |
-| 原始碼使用 `t()` 或 HTML 標記 | **UI 字串** — `extract` / `translate-ui` |
-| 本地化頁面或文件網站 | **文件** — `translate-docs` |
+| 來源使用 `t()`，或單一 HTML 檔案搭配 `data-i18n*` 標記 | **UI 字串** — `extract` / `translate-ui` |
+| 當地語系化頁面、文件網站，或每個地區設定一個 HTML 檔案 | **文件** — `translate-docs` |
 | 獨立的巢狀 JSON 語言檔 | **JSON** — `translate-json` |
 | 帶有 SVG 標籤的圖表或插圖 | **SVG** — `translate-svg` |
 
@@ -65,7 +65,7 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-以文件為導向的框架模板：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website` 或 `ui-json-bundles`。
+其他鷹架：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html` 或 `ui-json-bundles`。
 
 建議優先使用 `sync`，而非串聯個別的翻譯指令。完整逐步指南：[快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start)。
 
@@ -73,8 +73,8 @@ ai-i18n-tools sync                   # extract + translate per features
 ## 文件
 
 - [文件網站](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/) — 指南、整合與參考資料
-- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [提供者與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
-- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
+- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [供應商與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
+- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [純 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/plain-html) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [HTML 頁面](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
 - [整合](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
 - [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/configuration) · [執行期輔助工具](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/runtime-helpers)
 - [範例](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/examples) — 可執行的示範（`npx degit …`）

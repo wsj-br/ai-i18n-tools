@@ -9,10 +9,11 @@ hero:
   name: ai-i18n-tools
   text: Traduza aplicativos e documentos com qualquer LLM
   tagline: >-
-    Extraia strings t(), traduza Markdown, MDX, pacotes JSON e rótulos SVG —
-    tudo a partir de uma única configuração, com OpenAI, Anthropic, Gemini,
-    OpenRouter, Ollama ou qualquer API compatível com OpenAI. Alterne modelos
-    por projeto ou por localidade sem reescrever sua base de código.
+    Extraia strings t(), traduza páginas Markdown, MDX, HTML, pacotes JSON e
+    rótulos SVG — tudo a partir de uma única configuração, com OpenAI,
+    Anthropic, Gemini, OpenRouter, Ollama ou qualquer API compatível com OpenAI.
+    Alterne modelos por projeto ou por localidade sem reescrever sua base de
+    código.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: Logotipo ai-i18n-tools
@@ -30,12 +31,13 @@ features:
   - icon: 🌐
     title: Strings da UI
     details: >-
-      Extraia chamadas t() de JS, TS e Astro. Gere JSON plano por localidade
-      para i18next ou pesquisa SSG estática.
+      Extraia chamadas t() de JS, TS e Astro, ou marcadores data-i18n em um
+      único arquivo HTML. Gere JSON plano por localidade para i18next ou um
+      runtime de navegador.
   - icon: 📄
     title: Documentos
     details: >-
-      Traduza páginas Markdown, MDX e Astro para VitePress, Starlight,
+      Traduza páginas Markdown, MDX, Astro e HTML para VitePress, Starlight,
       Docusaurus, Nextra, Fumadocs e sites estáticos simples.
   - icon: 📦
     title: Pacotes JSON
@@ -87,8 +89,8 @@ Consulte [Instalação](/pt-BR/guide/installation) para [configurar o comando CL
 
 | Seu conteúdo | Comando |
 | --- | --- |
-| O código-fonte usa `t()` | **Strings de UI** — `extract` / `translate-ui` |
-| Páginas localizadas ou sites de documentos | **Documentos** — `translate-docs` |
+| O código-fonte usa `t()`, ou um único arquivo HTML com marcadores | **Strings de UI** — `extract` / `translate-ui` |
+| Páginas localizadas, sites de documentação ou um arquivo HTML por localidade | **Documentos** — `translate-docs` |
 | Arquivos de localidade JSON aninhados autônomos | **JSON** — `translate-json` |
 
 As ilustrações SVG usam um caminho `translate-svg` separado — não `docs[].contentPaths`. Consulte [O que é ai-i18n-tools?](/pt-BR/guide/what-is-ai-i18n-tools) para uma comparação completa.
@@ -100,9 +102,9 @@ As ilustrações SVG usam um caminho `translate-svg` separado — não `docs[].c
 - [**Integrações**](/pt-BR/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus e Astro
 - [**Provedores e modelos**](/pt-BR/guide/providers-and-models) — predefinições, cadeias de fallback e substituições `-P`
 - [**Referência da CLI**](/pt-BR/reference/cli-commands/) — todos os comandos, sinalizadores e fluxos de trabalho
-- [**Configuração**](/pt-BR/reference/configuration) — esquema `ai-i18n-tools.config.json` completo
-- [**Exemplos**](/pt-BR/examples) — doze projetos de demonstração executáveis com `npx degit`
-- [**Arquitetura**](/pt-BR/reference/architecture) — detalhes internos, API programática e pontos de extensão
+- [**Configuração**](/pt-BR/reference/configuration) — esquema completo de `ai-i18n-tools.config.json`
+- [**Exemplos**](/pt-BR/examples) — treze projetos de demonstração executáveis com `npx degit`
+- [**Arquitetura**](/pt-BR/reference/architecture) — funcionamento interno, API programática e pontos de extensão
 
 Integrando o pacote em seu próprio projeto? Comece com [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). O [README do repositório](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) é uma página de destino curta do GitHub/npm que direciona para cá para obter detalhes.
 

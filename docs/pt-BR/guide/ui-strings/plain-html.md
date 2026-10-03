@@ -104,6 +104,7 @@ Prefira marcadores simples. O texto de origem em inglês permanece no elemento, 
 
 Um elemento pode conter vários desses. Cada marcador é sua própria entrada de catálogo.
 
+<a id="text"></a>
 ### Texto
 
 Coloque `data-i18n` em um elemento cujo conteúdo seja apenas texto:
@@ -119,7 +120,8 @@ Coloque `data-i18n` em um elemento cujo conteúdo seja apenas texto:
 
 O runtime também define `document.title` a partir do elemento `<title>`. Não coloque `data-i18n` em um contêiner de conteúdo misto: o runtime atribui `textContent`, o que removeria seus elementos filhos.
 
-### Tooltip
+<a id="tooltip"></a>
+### Dica de ferramenta
 
 ```html
 <select title="Filter by locale" data-i18n-title></select>
@@ -131,6 +133,7 @@ Um controle pode traduzir seu rótulo e seu tooltip como duas chaves:
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### Placeholder
 
 ```html
@@ -149,12 +152,14 @@ Placeholder e tooltip no mesmo campo:
 />
 ```
 
+<a id="alt-text"></a>
 ### Texto alternativo
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### Nome acessível
 
 ```html
@@ -163,6 +168,7 @@ Placeholder e tooltip no mesmo campo:
 
 O rótulo do botão `×` não tem `data-i18n`, então permanece como escrito. O nome acessível é a string que é traduzida.
 
+<a id="mixed-content"></a>
 ### Conteúdo misto
 
 `data-i18n` lê todo o `textContent` do elemento. Quando uma frase compartilha seu pai com outro elemento, envolva cada sequência de texto:
@@ -178,6 +184,7 @@ O rótulo do botão `×` não tem `data-i18n`, então permanece como escrito. O 
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### Apenas idioma de origem
 
 `data-i18n-ignore` ignora esse elemento e seus descendentes tanto para `mark-html` quanto para `extract` de strings de UI. Use-o para linhas de exemplo, identificadores e nomes de marcas:
@@ -198,6 +205,7 @@ O rótulo do botão `×` não tem `data-i18n`, então permanece como escrito. O 
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### Uma chave de catálogo diferente
 
 Um marcador com valor nomeia a chave do catálogo. O runtime ainda grava a tradução no elemento (ou no atributo nomeado):
@@ -211,7 +219,7 @@ Um marcador com valor nomeia a chave do catálogo. O runtime ainda grava a tradu
 
 O runtime registra cada chave de origem em um atributo `data-i18n-source` interno na primeira execução, para que uma troca posterior de localidade ainda busque a string em inglês. Esses atributos não são extraídos.
 
-<a id="locale-assets"></a>
+<a id="locale-specific-images-and-links"></a>
 ## Imagens e links específicos da localidade
 
 Esses marcadores nunca são enviados ao tradutor. `mark-html` não os adiciona.

@@ -4,8 +4,8 @@ title: Funktionsübersicht der Übersetzung
 description: >-
   Ein Referenzdokument, das jedes Markdown-Element demonstriert, das
   ai-i18n-tools übersetzen kann.
-translation_last_updated: '2026-09-14T19:52:43.971Z'
-source_file_mtime: '2026-09-14T18:37:46.358Z'
+translation_last_updated: '2026-10-03T22:27:55.874Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: de
 source_file_path: docs/feature-showcase.md
@@ -105,13 +105,13 @@ Dies stellt sicher, dass Dokumente und Schnittstellen korrekt aussehen, unabhän
 
 ### Verschachtelte Listen {#nested}
 
-- **Dokumenten-Pipeline**
-  - Quelle: jede `.md`- oder `.mdx`-Datei
+- **Dokumente-Pipeline**
+  - Quelle: beliebige `.md`- oder `.mdx`-Datei
   - Ausgabe: Docusaurus `i18n/`-Baum oder flache übersetzte Kopien
   - Cache: SQLite, indiziert nach Dateipfad + Segment-Hash
 - **UI-Strings-Pipeline**
   - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich Pluralformen über `{ plurals: true, count }`)
-  - Ausgabe: pro-Gebietsschema flaches JSON (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Pluralkategorien, falls zutreffend
+  - Ausgabe: flaches JSON pro Gebietsschema (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
   - Cache: der Master-`strings.json`-Katalog selbst
 
 ---

@@ -180,6 +180,7 @@ Bei jeder Ausführung ersetzt die Pipeline nur den Inhalt zwischen den einzelnen
 
 Die Standardkommentare funktionieren auch dann, wenn `docsOutput.html` weggelassen wird. Legen Sie `languageList.start` / `end` oder `hreflang.start` / `end` nur fest, wenn die Quelle einen anderen Markertext verwendet.
 
+<a id="visible-language-navigation"></a>
 ### Sichtbare Sprachnavigation
 
 - `format: "links"` schreibt `<a>`-Elemente. Innerhalb eines `<ul>`, `<ol>` oder `<nav>` wird jeder Link in `<li>` umbrochen; andernorts verbindet `separator` die Links.
@@ -188,6 +189,7 @@ Die Standardkommentare funktionieren auch dann, wenn `docsOutput.html` weggelass
 
 Ein Marker-Block verwendet ein Format. Die generierten Links enthalten `lang`, `hreflang` und `aria-current`; die generierte Option für die aktuelle Seite hat `selected`.
 
+<a id="search-engine-alternates"></a>
 ### Suchmaschinen-Alternativen
 
 `hreflang.siteUrl` stellt alternativen URLs ein Präfix voran. Setzen Sie es vor der Bereitstellung auf den öffentlichen Ursprung der Website. Wenn es weggelassen wird, schreibt die Pipeline relative alternative Links und protokolliert eine Warnung.

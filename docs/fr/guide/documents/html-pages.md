@@ -180,6 +180,7 @@ Placez une paire de liste de langues là où la navigation visible doit apparaî
 
 Les commentaires par défaut fonctionnent même lorsque `docsOutput.html` est omis. Définissez `languageList.start` / `end` ou `hreflang.start` / `end` uniquement lorsque la source utilise un texte de marqueur différent.
 
+<a id="visible-language-navigation"></a>
 ### Navigation linguistique visible
 
 - `format: "links"` écrit les éléments `<a>`. À l'intérieur d'un `<ul>`, `<ol>` ou `<nav>`, chaque lien est encapsulé dans `<li>` ; ailleurs, `separator` joint les liens.
@@ -188,6 +189,7 @@ Les commentaires par défaut fonctionnent même lorsque `docsOutput.html` est om
 
 Un bloc de marqueurs utilise un seul format. Les liens générés incluent `lang`, `hreflang` et `aria-current` ; l'option générée pour la page actuelle possède `selected`.
 
+<a id="search-engine-alternates"></a>
 ### Alternatives pour les moteurs de recherche
 
 `hreflang.siteUrl` préfixe les URL alternatives. Définissez-le sur l'origine publique du site avant le déploiement. Lorsqu'il est omis, le pipeline écrit des liens alternatifs relatifs et journalise un avertissement.

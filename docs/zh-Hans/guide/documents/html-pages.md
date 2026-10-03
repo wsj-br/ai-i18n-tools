@@ -180,6 +180,7 @@ HTML 提取器会翻译：
 
 即使省略 `docsOutput.html`，默认注释也能正常工作。仅当源使用不同的标记文本时，才设置 `languageList.start` / `end` 或 `hreflang.start` / `end`。
 
+<a id="visible-language-navigation"></a>
 ### 可见语言导航
 
 - `format: "links"` 写入 `<a>` 元素。在 `<ul>`、`<ol>` 或 `<nav>` 内，每个链接都包裹在 `<li>` 中；在其他位置，`separator` 用于连接链接。
@@ -188,7 +189,8 @@ HTML 提取器会翻译：
 
 一个标记块使用一种格式。生成的链接包含 `lang`、`hreflang` 和 `aria-current`；为当前页面生成的选项具有 `selected`。
 
-### 搜索引擎备用链接
+<a id="search-engine-alternates"></a>
+### 搜索引擎替代链接
 
 `hreflang.siteUrl` 为备用 URL 添加前缀。在部署前将其设置为站点的公共源。省略它时，管道会写入相对备用链接并记录警告。
 

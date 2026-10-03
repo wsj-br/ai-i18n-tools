@@ -180,7 +180,8 @@ HTML 추출기는 다음을 번역합니다:
 
 기본 주석은 `docsOutput.html`이 생략된 경우에도 작동합니다. 소스에서 다른 마커 텍스트를 사용하는 경우에만 `languageList.start` / `end` 또는 `hreflang.start` / `end`를 설정하세요.
 
-### 표시되는 언어 탐색
+<a id="visible-language-navigation"></a>
+### 표시 언어 내비게이션
 
 - `format: "links"`은 `<a>` 요소를 작성합니다. `<ul>`, `<ol>` 또는 `<nav>` 내부에서는 각 링크가 `<li>`로 래핑되며, 다른 곳에서는 `separator`이 링크를 연결합니다.
 - `format: "select"`은 `<option>` 행을 작성합니다. 마커를 고유한 `<select data-lang-select>` 내부에 배치하고, `node_modules/ai-i18n-tools/dist/html-runtime/lang-select.js`을 사이트에 복사한 다음 해당 클래식 스크립트를 로드하세요. 선택한 옵션의 생성된 URL로 이동합니다.
@@ -188,7 +189,8 @@ HTML 추출기는 다음을 번역합니다:
 
 하나의 마커 블록은 하나의 형식을 사용합니다. 생성된 링크에는 `lang`, `hreflang` 및 `aria-current`이 포함되며, 현재 페이지에 대해 생성된 옵션에는 `selected`이 있습니다.
 
-### 검색 엔진 대체 링크
+<a id="search-engine-alternates"></a>
+### 검색 엔진 대체
 
 `hreflang.siteUrl`은 대체 URL의 접두사입니다. 배포 전에 사이트의 공개 오리진으로 설정하세요. 생략하면 파이프라인은 상대적 대체 링크를 작성하고 경고를 기록합니다.
 

@@ -21,15 +21,15 @@ function translate(html: string, map: Record<string, string>): string {
 
 describe("HtmlTemplateExtractor", () => {
   const fixtures = [
-    "<!doctype html>\n<html lang=\"en\">\n<body><p>Hello</p></body>\n</html>\n",
+    '<!doctype html>\n<html lang="en">\n<body><p>Hello</p></body>\n</html>\n',
     "<!-- comment -->\n<p>Hi</p>\n",
     "<pre>keep <b>this</b></pre>\n<p>After</p>\n",
-    "<script>const x = \"<div>nope</div>\";</script><p>Yes</p>",
+    '<script>const x = "<div>nope</div>";</script><p>Yes</p>',
     "<p>Tom &amp; Jerry</p>\r\n<p>Next</p>\r\n",
     "<p>Run <code>build</code> now.</p>\n",
-    "<img alt=\"Italian Trulli\" src=\"pic_trulli.jpg\">\n",
-    "<meta charset=\"utf-8\">\n<title>Home</title>\n<meta name=\"description\" content=\"A page\">\n",
-    "<input type=\"submit\" value=\"Send\">\n",
+    '<img alt="Italian Trulli" src="pic_trulli.jpg">\n',
+    '<meta charset="utf-8">\n<title>Home</title>\n<meta name="description" content="A page">\n',
+    '<input type="submit" value="Send">\n',
     "<p>Hello\n",
   ];
 

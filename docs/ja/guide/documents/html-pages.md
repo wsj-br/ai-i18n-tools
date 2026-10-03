@@ -180,7 +180,8 @@ HTML エクストラクターは以下を翻訳します:
 
 デフォルトのコメントは、`docsOutput.html`が省略されていても機能します。`languageList.start` / `end`または`hreflang.start` / `end`は、ソースで異なるマーカーテキストが使用されている場合にのみ設定してください。
 
-### 表示される言語ナビゲーション
+<a id="visible-language-navigation"></a>
+### 表示言語ナビゲーション
 
 - `format: "links"`は`<a>`要素を書き込みます。`<ul>`、`<ol>`、または`<nav>`内では、各リンクは`<li>`でラップされ、それ以外の場所では`separator`がリンクを結合します。
 - `format: "select"`は`<option>`行を書き込みます。独自の`<select data-lang-select>`内にマーカーを配置し、`node_modules/ai-i18n-tools/dist/html-runtime/lang-select.js`をサイトにコピーして、その従来のスクリプトを読み込みます。これにより、選択されたオプションの生成されたURLに移動します。
@@ -188,7 +189,8 @@ HTML エクストラクターは以下を翻訳します:
 
 1つのマーカーブロックでは1つのフォーマットを使用します。生成されたリンクには`lang`、`hreflang`、および`aria-current`が含まれ、現在のページ用に生成されたオプションには`selected`が含まれます。
 
-### 検索エンジン用の代替リンク
+<a id="search-engine-alternates"></a>
+### 検索エンジン代替
 
 `hreflang.siteUrl`は代替URLのプレフィックスです。デプロイ前にサイトのパブリックオリジンに設定します。省略すると、パイプラインは相対代替リンクを書き込み、警告をログに記録します。
 

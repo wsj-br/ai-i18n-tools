@@ -60,4 +60,46 @@ describe("resolveContentPathEntries", () => {
       })
     ).toThrow(ConfigValidationError);
   });
+
+  it("walks nested directories and skips blank entries", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "rcp-"));
+    tmpDirs.push(root);
+    fs.mkdirSync(path.join(root, "a", "b"), { recursive: true });
+    fs.writeFileSync(path.join(root, "a", "b", "deep.json"), "{}", "utf8");
+    const rel = resolveContentPathEntries(["a", "  "], {
+      projectRoot: root,
+      extensions: [".json"],
+    });
+    expect(rel).toEqual(["a/b/deep.json"]);
+  });
+
+  it("ignores files with non-matching extensions and paths outside project root", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "rcp-"));
+    tmpDirs.push(root);
+    fs.writeFileSync(path.join(root, "note.txt"), "x", "utf8");
+    expect(
+      resolveContentPathEntries(["note.txt"], { projectRoot: root, extensions: [".json"] })
+    ).toEqual([]);
+    const outside = path.join(os.tmpdir(), "outside-only.json");
+    fs.writeFileSync(outside, "{}", "utf8");
+    try {
+      expect(
+        resolveContentPathEntries([outside], { projectRoot: root, extensions: [".json"] })
+      ).toEqual([]);
+    } finally {
+      fs.rmSync(outside, { force: true });
+    }
+  });
+
+  it("throws when glob or directory matches no files", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "rcp-"));
+    tmpDirs.push(root);
+    fs.mkdirSync(path.join(root, "empty"), { recursive: true });
+    expect(() =>
+      resolveContentPathEntries(["missing/*.json"], { projectRoot: root, extensions: [".json"] })
+    ).toThrow(/glob matched no files/);
+    expect(() =>
+      resolveContentPathEntries(["empty"], { projectRoot: root, extensions: [".json"] })
+    ).toThrow(/contains no files/);
+  });
 });

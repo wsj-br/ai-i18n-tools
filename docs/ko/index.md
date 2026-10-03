@@ -8,9 +8,9 @@ hero:
   name: ai-i18n-tools
   text: 모든 LLM으로 앱과 문서를 번역하세요
   tagline: >-
-    t() 문자열을 추출하고 Markdown, MDX, JSON 번들 및 SVG 레이블을 번역하세요. OpenAI, Anthropic,
-    Gemini, OpenRouter, Ollama 또는 임의의 OpenAI 호환 API를 사용하여 단일 설정에서 이 모든 작업을 수행할 수
-    있습니다. 코드베이스를 다시 작성하지 않고도 프로젝트별 또는 로캘별로 모델을 전환할 수 있습니다.
+    t() 문자열을 추출하고, Markdown, MDX, HTML 페이지, JSON 번들, SVG 레이블을 번역합니다. 이 모든 것을 하나의
+    구성으로 OpenAI, Anthropic, Gemini, OpenRouter, Ollama 또는 OpenAI 호환 API를 사용하여
+    처리할 수 있습니다. 코드베이스를 다시 작성하지 않고도 프로젝트별 또는 로캘별로 모델을 전환할 수 있습니다.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 로고
@@ -28,13 +28,13 @@ features:
   - icon: 🌐
     title: UI 문자열
     details: >-
-      JS, TS 및 Astro에서 t() 호출을 추출합니다. i18next 또는 정적 SSG 조회를 위한 로케일별 플랫 JSON을
-      생성합니다.
+      JS, TS, Astro에서 t() 호출을 추출하거나, 단일 HTML 파일에서 data-i18n 마커를 추출합니다. i18next나
+      브라우저 런타임용 로캘별 플랫 JSON을 생성합니다.
   - icon: 📄
     title: 문서
     details: >-
-      VitePress, Starlight, Docusaurus, Nextra, Fumadocs 및 일반 정적 사이트용 Markdown,
-      MDX 및 Astro 페이지를 번역합니다.
+      VitePress, Starlight, Docusaurus, Nextra, Fumadocs 및 일반 정적 사이트를 위한
+      Markdown, MDX, Astro, HTML 페이지를 번역합니다.
   - icon: 📦
     title: JSON 번들
     details: UI 복사가 소스 t() 호출 외부에 있을 때 중첩된 로케일 JSON — 테마 레이블, 카탈로그 및 앱 오버라이드.
@@ -77,10 +77,10 @@ ai-i18n-tools sync
 <a id="which-pipeline-should-i-use"></a>
 ## 어떤 파이프라인을 사용해야 하나요?
 
-| 콘텐츠 | 명령 |
+| 콘텐츠 | 명령어 |
 | --- | --- |
-| 소스 코드에서 `t()` 사용 | **UI 문자열** — `extract` / `translate-ui` |
-| 현지화된 페이지 또는 문서 사이트 | **문서** — `translate-docs` |
+| 소스 코드에서 `t()`을(를) 사용하거나 마커가 있는 단일 HTML 파일 | **UI 문자열** — `extract` / `translate-ui` |
+| 지역화된 페이지, 문서 사이트 또는 로캘당 하나의 HTML 파일 | **문서** — `translate-docs` |
 | 독립형 중첩 JSON 로케일 파일 | **JSON** — `translate-json` |
 
 SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다 — `docs[].contentPaths`이(가) 아닙니다. 전체 비교는 [ai-i18n-tools란?](/ko/guide/what-is-ai-i18n-tools)을 참조하세요.
@@ -93,8 +93,8 @@ SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다
 - [**제공자 및 모델**](/ko/guide/providers-and-models) — 프리셋, 폴백 체인 및 `-P` 재정의
 - [**CLI 참조**](/ko/reference/cli-commands/) — 모든 명령, 플래그 및 워크플로
 - [**구성**](/ko/reference/configuration) — 전체 `ai-i18n-tools.config.json` 스키마
-- [**예제**](/ko/examples) — `npx degit`이 포함된 실행 가능한 12개의 데모 프로젝트
-- [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 API 및 확장 포인트
+- [**예시**](/ko/examples) — `npx degit`을(를) 포함한 13개의 실행 가능한 데모 프로젝트
+- [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 방식 API 및 확장 포인트
 
 패키지를 자체 프로젝트에 통합하시나요? [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)부터 시작하세요. [저장소 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)는 자세한 내용을 위해 이곳으로 연결되는 짧은 GitHub/npm 랜딩 페이지입니다.
 

@@ -4,8 +4,8 @@ title: Exemple de fonctionnalité de traduction
 description: >-
   Un document de référence démontrant chaque élément Markdown que ai-i18n-tools
   sait traduire.
-translation_last_updated: '2026-09-14T19:52:52.057Z'
-source_file_mtime: '2026-09-14T18:37:46.367Z'
+translation_last_updated: '2026-10-03T22:27:57.583Z'
+source_file_mtime: '2026-09-17T22:21:18.235Z'
 source_file_hash: ab62a8c7eafe5b18776b41e28c22c18b609913597cf062f6774b98aeb0178084
 translation_language: fr
 source_file_path: docs-site/docs/feature-showcase.md
@@ -108,12 +108,12 @@ Cela garantit que les documents et interfaces s'affichent correctement, quelle q
 
 - **Pipeline de documents**
   - Source : tout fichier `.md` ou `.mdx`
-  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites plates
-  - Cache : SQLite, indexé par chemin de fichier + hachage du segment
-- **Pipeline des chaînes d'interface**
-  - Source : fichiers JS/TS avec appels à `t("…")` (y compris les pluriels via `{ plurals: true, count }`)
-  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …) avec clés suffixées selon les catégories de pluriel le cas échéant
-  - Cache : le catalogue maître `strings.json` lui-même
+  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites à plat
+  - Cache : SQLite, indexé par chemin de fichier + hachage de segment
+- **Pipeline de chaînes d’interface utilisateur**
+  - Source : fichiers JS/TS avec appels `t("…")` (y compris les pluriels via `{ plurals: true, count }`)
+  - Sortie : JSON plat par locale (`de.json`, `fr.json`,…) avec des clés suffixées pour les catégories de pluriel, le cas échéant
+  - Cache : le catalogue `strings.json` principal lui-même
 
 ---
 

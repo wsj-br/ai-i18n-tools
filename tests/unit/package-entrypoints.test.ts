@@ -17,6 +17,11 @@ describe("src/index.ts public API", () => {
     expect(main.interpolateTemplate("x {{a}}", { a: 1 })).toBe("x 1");
     expect(main.getTextDirection("ar")).toBe("rtl");
   });
+
+  it("re-exports errors and glossary matcher", () => {
+    expect(main.I18nToolsError).toBeDefined();
+    expect(new main.GlossaryMatcher(new main.Glossary(undefined, undefined, []))).toBeDefined();
+  });
 });
 
 describe("src/runtime/index.ts", () => {
@@ -29,5 +34,6 @@ describe("src/runtime/index.ts", () => {
       )
     ).toBe("German");
     expect(runtime.defaultI18nInitOptions("en").lng).toBe("en");
+    expect(runtime.default.wrapT).toBe(runtime.wrapT);
   });
 });

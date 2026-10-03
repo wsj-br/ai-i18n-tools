@@ -69,7 +69,25 @@ const API_TOTALS_CREATE_SQL = `
 `;
 
 const SCHEMA_VERSION = 6;
+/**
+ * Bound parameters per statement. `node:sqlite` compiles SQLite with
+ * `MAX_VARIABLE_NUMBER=32766` (older builds used 999). A full docs sync records
+ * one `(source_hash, locale)` hit key per segment per locale, which overflows
+ * a single INSERT.
+ */
+const SQL_MAX_BOUND_PARAMS = 500;
 const require = createRequire(import.meta.url);
+
+function runBindChunks<T>(
+  items: readonly T[],
+  paramsPerItem: number,
+  fn: (chunk: readonly T[]) => void
+): void {
+  const size = Math.max(1, Math.floor(SQL_MAX_BOUND_PARAMS / paramsPerItem));
+  for (let i = 0; i < items.length; i += size) {
+    fn(items.slice(i, i + size));
+  }
+}
 
 type SqliteModule = typeof Sqlite;
 
@@ -381,11 +399,10 @@ export class TranslationCache {
       return result;
     }
 
-    // SQLite has a limit on the number of parameters (usually 999 or 32766)
-    // Process in chunks to stay well below limits
-    const CHUNK_SIZE = 500;
-    for (let i = 0; i < sourceHashes.length; i += CHUNK_SIZE) {
-      const chunk = sourceHashes.slice(i, i + CHUNK_SIZE);
+    // One extra parameter for `locale`, so the hash chunk stays within SQL_MAX_BOUND_PARAMS.
+    const hashChunkSize = Math.max(1, SQL_MAX_BOUND_PARAMS - 1);
+    for (let i = 0; i < sourceHashes.length; i += hashChunkSize) {
+      const chunk = sourceHashes.slice(i, i + hashChunkSize);
       const placeholders = chunk.map(() => "?").join(",");
       const stmt = this.db.prepare(`
         SELECT source_hash, translated_text, model, prompt_context_hash
@@ -767,14 +784,9 @@ export class TranslationCache {
     if (hitKeys.size === 0) {
       return 0;
     }
-    const keys = Array.from(hitKeys);
-    const flatParams = keys.flatMap((k) => {
-      const [h, l] = k.split("|");
-      return [h, l];
-    });
-    this.db.exec("CREATE TEMP TABLE IF NOT EXISTS _hit_keys (source_hash TEXT, locale TEXT)");
-    const insertPlaceholders = keys.map(() => "(?, ?)").join(", ");
-    this.db.prepare(`INSERT INTO _hit_keys VALUES ${insertPlaceholders}`).run(...flatParams);
+    this.db.exec("DROP TABLE IF EXISTS _hit_keys");
+    this.db.exec("CREATE TEMP TABLE _hit_keys (source_hash TEXT, locale TEXT)");
+    this.insertHitKeys(hitKeys);
     const result = this.db
       .prepare(
         `UPDATE translations SET last_hit_at = NULL
@@ -828,20 +840,16 @@ export class TranslationCache {
     filepathPredicateSql: string,
     allowedRelPaths: readonly string[]
   ): number {
-    const keys = Array.from(hitKeys);
-    const flatParams = keys.flatMap((k) => {
-      const [h, l] = k.split("|");
-      return [h, l];
-    });
     this.db.exec("DROP TABLE IF EXISTS _hit_keys");
     this.db.exec("CREATE TEMP TABLE _hit_keys (source_hash TEXT, locale TEXT)");
-    const insertPlaceholders = keys.map(() => "(?, ?)").join(", ");
-    this.db.prepare(`INSERT INTO _hit_keys VALUES ${insertPlaceholders}`).run(...flatParams);
+    this.insertHitKeys(hitKeys);
 
     this.db.exec("DROP TABLE IF EXISTS _scope_paths");
     this.db.exec("CREATE TEMP TABLE _scope_paths (filepath TEXT PRIMARY KEY)");
-    const scopePlaceholders = allowedRelPaths.map(() => "(?)").join(", ");
-    this.db.prepare(`INSERT INTO _scope_paths VALUES ${scopePlaceholders}`).run(...allowedRelPaths);
+    this.insertValuesChunked(
+      "INSERT INTO _scope_paths VALUES ",
+      allowedRelPaths.map((filepath) => [filepath])
+    );
 
     const result = this.db
       .prepare(
@@ -854,6 +862,29 @@ export class TranslationCache {
     this.db.exec("DROP TABLE IF EXISTS _hit_keys");
     this.db.exec("DROP TABLE IF EXISTS _scope_paths");
     return Number(result.changes);
+  }
+
+  /** `keys` entries are `sourceHash|locale`. Inserts in chunks so the bind list stays under SQLite's cap. */
+  private insertHitKeys(keys: ReadonlySet<string>): void {
+    const rows: string[][] = [];
+    for (const key of keys) {
+      const [sourceHash, locale] = key.split("|");
+      if (sourceHash && locale) {
+        rows.push([sourceHash, locale]);
+      }
+    }
+    this.insertValuesChunked("INSERT INTO _hit_keys VALUES ", rows);
+  }
+
+  private insertValuesChunked(sqlPrefix: string, rows: ReadonlyArray<readonly string[]>): void {
+    if (rows.length === 0) {
+      return;
+    }
+    const width = rows[0]!.length;
+    runBindChunks(rows, width, (chunk) => {
+      const placeholders = chunk.map((row) => `(${row.map(() => "?").join(", ")})`).join(", ");
+      this.db.prepare(`${sqlPrefix}${placeholders}`).run(...chunk.flat());
+    });
   }
 
   cleanupStaleTranslations(dryRun = false): {
@@ -1162,15 +1193,19 @@ export class TranslationCache {
     }
 
     if (dryRun) {
-      const placeholders = keysToDelete.map(() => "(?, ?)").join(", ");
-      const params = keysToDelete.flatMap((k) => [k.source_hash, k.locale]);
-      const countRow = this.db
-        .prepare(
-          `SELECT COUNT(*) as c FROM translation_failures
+      let count = 0;
+      runBindChunks(keysToDelete, 2, (chunk) => {
+        const placeholders = chunk.map(() => "(?, ?)").join(", ");
+        const params = chunk.flatMap((k) => [k.source_hash, k.locale]);
+        const countRow = this.db
+          .prepare(
+            `SELECT COUNT(*) as c FROM translation_failures
            WHERE (source_hash, locale) IN (${placeholders})`
-        )
-        .get(...params) as { c: number };
-      return Number(countRow.c);
+          )
+          .get(...params) as { c: number };
+        count += Number(countRow.c);
+      });
+      return count;
     }
 
     let removed = 0;

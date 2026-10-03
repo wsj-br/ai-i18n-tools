@@ -11,17 +11,17 @@
 
 **अपनी पसंद के AI मॉडल के साथ अपने ऐप और दस्तावेज़ का अनुवाद करें — कोई लॉक-इन नहीं, कोई पुनर्लेखन नहीं।**
 
-CLI और JavaScript/TypeScript ऐप्स तथा दस्तावेज़ीकरण साइटों के अंतर्राष्ट्रीयकरण के लिए टूलकिट। `t()` स्ट्रिंग्स निकालें, Markdown/MDX पेज, JSON बंडल्स, और SVG लेबल्स का अनुवाद करें — सब कुछ एक ही कॉन्फ़िगरेशन से, OpenAI, Anthropic, Gemini, OpenRouter, Ollama, और किसी भी OpenAI-संगत API के लिए बिल्ट-इन प्रीसेट के साथ। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल बदलें।
+JavaScript/TypeScript ऐप्स और दस्तावेज़ीकरण साइटों के अंतर्राष्ट्रीयकरण के लिए CLI और टूलकिट। `t()` स्ट्रिंग्स निकालें, Markdown, MDX, और HTML पेज, JSON बंडल, और SVG लेबल का अनुवाद करें — सब कुछ एक ही कॉन्फ़िग से, OpenAI, Anthropic, Gemini, OpenRouter, Ollama, और किसी भी OpenAI-संगत API के लिए बिल्ट-इन प्रीसेट के साथ। अपने कोडबेस को बदले बिना प्रति प्रोजेक्ट या प्रति लोकेल प्रदाता या मॉडल बदलें।
 
-यह [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), और सादे मार्कडाउन के साथ काम करता है। यह आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को बनाए रखता है, और `migrate-intlayer` का उपयोग करके [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को माइग्रेट करता है।
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), सादा Markdown, और सादे HTML के साथ काम करता है। आपके मौजूदा [i18next](https://www.i18next.com/) कैटलॉग (नेमस्पेस JSON या `t()` स्रोत स्ट्रिंग्स) को सुरक्षित रखता है, और `migrate-intlayer` के साथ [Intlayer](https://intlayer.org/) प्रोजेक्ट्स को माइग्रेट करता है।
 
 <a id="features"></a>
 ## विशेषताएँ
 
 | | |
 | --- | --- |
-| **यूआई स्ट्रिंग्स** | जेएस/टीएस/एस्ट्रो से `t("…")` (और एचटीएमएल में `data-i18n*`) निकालें → प्रति-लोकेल JSON |
-| **दस्तावेज़** | प्रमुख दस्तावेज़ फ़्रेमवर्क के लिए मार्कडाउन, एमडीएक्स और `.astro` पृष्ठों का अनुवाद करें |
+| **UI स्ट्रिंग्स** | JS/TS/Astro से `t("…")` निकालें, या एक HTML फ़ाइल में `data-i18n*` → फ्लैट प्रति-लोकेल JSON |
+| **दस्तावेज़** | Markdown, MDX, `.astro`, और HTML पेजों का अनुवाद करें (प्रति लोकेल एक फ़ाइल) |
 | **JSON** | नेस्टेड लोकेल बंडलों का अनुवाद करें जब कॉपी `t()` कॉल के बाहर रहती है |
 | **SVG** | `translate-svg` के माध्यम से सचित्र SVG लेबलों का अनुवाद करें |
 | **स्मार्ट कैश** | साझा SQLite कैश — केवल नए या बदले हुए सेगमेंट मॉडल को हिट करते हैं |
@@ -32,8 +32,8 @@ CLI और JavaScript/TypeScript ऐप्स तथा दस्तावेज
 
 | आपकी सामग्री | कमांड |
 | --- | --- |
-| स्रोत `t()` या एचटीएमएल मार्कर का उपयोग करता है | **यूआई स्ट्रिंग्स** — `extract` / `translate-ui` |
-| स्थानीयकृत पृष्ठ या डॉक्स साइटें | **दस्तावेज़** — `translate-docs` |
+| स्रोत `t()` का उपयोग करता है, या `data-i18n*` मार्करों के साथ एक HTML फ़ाइल | **UI स्ट्रिंग्स** — `extract` / `translate-ui` |
+| लोकेलाइज़ किए गए पेज, डॉक्स साइटें, या प्रति लोकेल एक HTML फ़ाइल | **दस्तावेज़** — `translate-docs` |
 | स्टैंडअलोन नेस्टेड JSON लोकेल फ़ाइलें | **JSON** — `translate-json` |
 | SVG में लेबल वाले आरेख या चित्रण | **SVG** — `translate-svg` |
 
@@ -65,17 +65,17 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-दस्तावेज़-उन्मुख स्कैफोल्ड: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, या `ui-json-bundles`।
+अन्य स्कैफोल्ड्स: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, या `ui-json-bundles`।
 
 व्यक्तिगत ट्रांसलेट कमांड्स को चेन करने के बजाय `sync` को प्राथमिकता दें। पूर्ण विवरण: [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start)।
 
 <a id="documentation"></a>
 ## दस्तावेज़
 
-- [डॉक्यूमेंटेशन साइट](https://wsj-br.github.io/ai-i18n-tools/hi/) — गाइड्स, इंटीग्रेशंस, और रेफरेंस
-- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [प्रोवाइडर्स और मॉडल्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models)
-- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [डॉक्यूमेंट्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
-- [इंटीग्रेशंस](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [दस्तावेज़ीकरण साइट](https://wsj-br.github.io/ai-i18n-tools/hi/) — गाइड, इंटीग्रेशन्स, और संदर्भ
+- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [त्वरित प्रारंभ](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [प्रदाता और मॉडल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models)
+- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [सादा HTML](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/plain-html) · [दस्तावेज़](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [HTML पेज](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
+- [इंटीग्रेशन्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [CLI रेफरेंस](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/hi/reference/configuration) · [रनटाइम हेल्पर्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/runtime-helpers)
 - [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/hi/examples) — रन करने योग्य डेमो (`npx degit …`)
 - [AI एजेंट कॉन्टेक्स्ट](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — कंज्यूमर रेपो में असिस्टेंट्स के लिए इंटीग्रेशन गाइड

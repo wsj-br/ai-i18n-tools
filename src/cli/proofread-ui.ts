@@ -389,9 +389,7 @@ export async function runProofreadUI(
       };
     }
     if (!config.features.translateUIStrings) {
-      const stringsPathEarly = selected[0]
-        ? resolveStringsJsonPath(selected[0].block, cwd)
-        : "";
+      const stringsPathEarly = selected[0] ? resolveStringsJsonPath(selected[0].block, cwd) : "";
       return {
         report: emptyReport(config, cwd, stringsPathEarly),
         logFilePath: "",
@@ -411,11 +409,7 @@ export async function runProofreadUI(
       runExtract(config, cwd, opts.uiBlock);
     } catch (e) {
       return {
-        report: emptyReport(
-          config,
-          cwd,
-          resolveStringsJsonPath(selected[0]!.block, cwd)
-        ),
+        report: emptyReport(config, cwd, resolveStringsJsonPath(selected[0]!.block, cwd)),
         logFilePath: "",
         exitWithError: e instanceof Error ? e.message : String(e),
       };

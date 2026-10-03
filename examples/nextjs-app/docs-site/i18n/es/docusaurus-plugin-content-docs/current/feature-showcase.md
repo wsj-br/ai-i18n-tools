@@ -4,8 +4,8 @@ title: Muestra de funciones de traducción
 description: >-
   Un documento de referencia que muestra cada elemento de Markdown que
   ai-i18n-tools sabe cómo traducir.
-translation_last_updated: '2026-09-14T19:52:52.207Z'
-source_file_mtime: '2026-09-14T18:37:46.367Z'
+translation_last_updated: '2026-10-03T22:27:57.739Z'
+source_file_mtime: '2026-09-17T22:21:18.235Z'
 source_file_hash: ab62a8c7eafe5b18776b41e28c22c18b609913597cf062f6774b98aeb0178084
 translation_language: es
 source_file_path: docs-site/docs/feature-showcase.md
@@ -109,10 +109,10 @@ Esto garantiza que los documentos y las interfaces se vean correctamente, indepe
 - **Canalización de documentos**
   - Origen: cualquier archivo `.md` o `.mdx`
   - Salida: árbol `i18n/` de Docusaurus o copias traducidas planas
-  - Caché: SQLite, indexada por ruta del archivo + hash del segmento
-- **Canalización de cadenas de interfaz**
-  - Origen: archivos JS/TS con llamadas a `t("…")` (incluyendo plurales mediante `{ plurals: true, count }`)
-  - Salida: JSON plano por configuración regional (`de.json`, `fr.json`, …) con claves sufijadas para categorías plurales cuando corresponda
+  - Caché: SQLite, con clave por ruta de archivo + hash de segmento
+- **Canalización de cadenas de interfaz de usuario**
+  - Origen: archivos JS/TS con llamadas a `t("…")` (incluidos plurales a través de `{ plurals: true, count }`)
+  - Salida: JSON plano por configuración regional (`de.json`, `fr.json`, …) con claves con sufijo para categorías plurales cuando corresponda
   - Caché: el propio catálogo maestro `strings.json`
 
 ---

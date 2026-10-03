@@ -180,6 +180,7 @@ HTML 擷取器會翻譯：
 
 即使省略 `docsOutput.html`，預設註解也能正常運作。只有在來源使用不同的標記文字時，才設定 `languageList.start` / `end` 或 `hreflang.start` / `end`。
 
+<a id="visible-language-navigation"></a>
 ### 可見語言導覽
 
 - `format: "links"` 會寫入 `<a>` 元素。在 `<ul>`、`<ol>` 或 `<nav>` 內，每個連結都會包裝在 `<li>` 中；在其他地方，`separator` 會連接這些連結。
@@ -188,7 +189,8 @@ HTML 擷取器會翻譯：
 
 一個標記區塊使用一種格式。產生的連結包含 `lang`、`hreflang` 和 `aria-current`；目前頁面產生的選項具有 `selected`。
 
-### 搜尋引擎替代連結
+<a id="search-engine-alternates"></a>
+### 搜尋引擎替代選項
 
 `hreflang.siteUrl` 會作為替代 URL 的前綴。在部署前，將其設定為網站的公開來源。省略時，管線會寫入相對替代連結並記錄警告。
 

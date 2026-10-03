@@ -5,8 +5,8 @@ description: >-
   كيفية ترجمتها.
 sidebar:
   order: 1
-translation_last_updated: '2026-09-14T19:52:28.259Z'
-source_file_mtime: '2026-09-14T18:37:46.349Z'
+translation_last_updated: '2026-10-03T22:27:50.467Z'
+source_file_mtime: '2026-09-17T22:21:18.227Z'
 source_file_hash: b32c160c44692bd8c4f0b577fdcf50e2da8d4791ba2ad6f63ad20ffa5427bd6c
 translation_language: ar
 source_file_path: src/content/docs/feature-showcase.mdx
@@ -118,14 +118,14 @@ import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
 
 <a id="nested"></a>
 
-### متداخلة
-- **خط أنابيب المستندات**
+### متداخل
+- **مسار عمل المستندات**
   - المصدر: أي ملف `.md` أو `.mdx`
-  - المخرجات: شجرة لغوية `doc-system` (أو أسماء مستعارة `docusaurus` / `astro-starlight`) أو نسخ مترجمة مسطحة
-  - ذاكرة التخزين المؤقت: SQLite، مفتاحها هو مسار الملف + تجزئة المقطع
-- **خط أنابيب سلاسل واجهة المستخدم**
-  - المصدر: ملفات JS/TS تحتوي على استدعاءات `t("…")` (بما في ذلك الأعداد الجمعية عبر `{ plurals: true, count }`)
-  - المخرجات: ملفات JSON مسطحة لكل لغة (`de.json`, `fr.json`، ...) بمفاتيح مرفقة بلاحقة لفئات الجمع عند الحاجة
+  - المخرجات: شجرة لغة `doc-system` (أسماء مستعارة `docusaurus` / `astro-starlight`) أو نسخ مترجمة مسطحة
+  - ذاكرة التخزين المؤقت: SQLite، مفتاحها مسار الملف + تجزئة المقطع
+- **مسار عمل سلاسل واجهة المستخدم**
+  - المصدر: ملفات JS/TS مع استدعاءات `t("…")` (بما في ذلك صيغ الجمع عبر `{ plurals: true, count }`)
+  - المخرجات: JSON مسطح لكل لغة (`de.json`، `fr.json`، ...) مع مفاتيح لاحقة لفئات الجمع عند الاقتضاء
   - ذاكرة التخزين المؤقت: كتالوج `strings.json` الرئيسي نفسه
 
 ---

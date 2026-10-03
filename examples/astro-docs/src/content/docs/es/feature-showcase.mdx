@@ -5,8 +5,8 @@ description: >-
   ai-i18n-tools sabe cómo traducir.
 sidebar:
   order: 1
-translation_last_updated: '2026-09-14T19:52:27.886Z'
-source_file_mtime: '2026-09-14T18:37:46.349Z'
+translation_last_updated: '2026-10-03T22:27:50.387Z'
+source_file_mtime: '2026-09-17T22:21:18.227Z'
 source_file_hash: b32c160c44692bd8c4f0b577fdcf50e2da8d4791ba2ad6f63ad20ffa5427bd6c
 translation_language: es
 source_file_path: src/content/docs/feature-showcase.mdx
@@ -119,15 +119,15 @@ Esto asegura que los documentos y las interfaces se vean correctos, independient
 
 <a id="nested"></a>
 
-### Anidadas
-- **Tubería de documentos**
-  - Fuente: cualquier archivo `.md` o `.mdx`
-  - Salida: árbol de localidad `doc-system` (`docusaurus` / `astro-starlight` alias) o copias traducidas planas
-  - Caché: SQLite, indexada por ruta de archivo + hash de segmento
-- **Tubería de cadenas de UI**
-  - Fuente: archivos JS/TS con llamadas `t("…")` (incluyendo plurales a través de `{ plurals: true, count }`)
-  - Salida: JSON plano por localidad (`de.json`, `fr.json`, …) con claves sufijadas para categorías plurales cuando sea aplicable
-  - Caché: el catálogo maestro `strings.json` en sí
+### Anidado
+- **Pipeline de documentos**
+  - Origen: cualquier archivo `.md` o `.mdx`
+  - Salida: árbol de configuración regional `doc-system` (alias `docusaurus` / `astro-starlight`) o copias traducidas planas
+  - Caché: SQLite, con clave por ruta de archivo + hash de segmento
+- **Pipeline de cadenas de interfaz de usuario**
+  - Origen: archivos JS/TS con llamadas `t("…")` (incluidos plurales a través de `{ plurals: true, count }`)
+  - Salida: JSON plano por configuración regional (`de.json`, `fr.json`, …) con claves con sufijo para categorías plurales cuando corresponda
+  - Caché: el propio catálogo maestro `strings.json`
 
 ---
 

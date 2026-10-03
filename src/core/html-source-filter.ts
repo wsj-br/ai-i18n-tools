@@ -26,7 +26,11 @@ export function isGeneratedHtmlOutput(
   if (localeKeys.has(first)) return true;
   const base = rest.split("/").pop()?.toLowerCase() ?? "";
   for (const locale of localeKeys) {
-    if (base.includes(`.${locale}.`) || base.endsWith(`.${locale}.html`) || base.endsWith(`.${locale}.htm`)) {
+    if (
+      base.includes(`.${locale}.`) ||
+      base.endsWith(`.${locale}.html`) ||
+      base.endsWith(`.${locale}.htm`)
+    ) {
       return true;
     }
   }
@@ -52,7 +56,10 @@ export function overlappingHtmlSources(
   return uiHtmlFiles.filter((rel) => docs.has(toPosix(rel)));
 }
 
-export function htmlOutputLocales(sourceLocale: string, targetLocales: readonly string[]): string[] {
+export function htmlOutputLocales(
+  sourceLocale: string,
+  targetLocales: readonly string[]
+): string[] {
   return [...new Set([sourceLocale, ...targetLocales].filter((locale) => locale.trim() !== ""))];
 }
 

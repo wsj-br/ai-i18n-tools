@@ -104,6 +104,7 @@ Prefiera marcadores simples. El texto de origen en inglés permanece en el eleme
 
 Un elemento puede contener varios de estos. Cada marcador es su propia entrada de catálogo.
 
+<a id="text"></a>
 ### Texto
 
 Coloque `data-i18n` en un elemento cuyo contenido sea solo texto:
@@ -119,6 +120,7 @@ Coloque `data-i18n` en un elemento cuyo contenido sea solo texto:
 
 El entorno de ejecución también establece `document.title` desde el elemento `<title>`. No coloque `data-i18n` en un contenedor de contenido mixto: el entorno de ejecución asigna `textContent`, lo que eliminaría sus elementos secundarios.
 
+<a id="tooltip"></a>
 ### Tooltip
 
 ```html
@@ -131,6 +133,7 @@ Un control puede traducir su etiqueta y su información sobre herramientas como 
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### Marcador de posición
 
 ```html
@@ -149,12 +152,14 @@ Marcador de posición e información sobre herramientas en el mismo campo:
 />
 ```
 
+<a id="alt-text"></a>
 ### Texto alternativo
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### Nombre accesible
 
 ```html
@@ -163,6 +168,7 @@ Marcador de posición e información sobre herramientas en el mismo campo:
 
 La etiqueta del botón `×` no tiene `data-i18n`, por lo que se mantiene como está escrita. El nombre accesible es la cadena que se traduce.
 
+<a id="mixed-content"></a>
 ### Contenido mixto
 
 `data-i18n` lee todo el `textContent` del elemento. Cuando una oración comparte su elemento padre con otro elemento, envuelva cada fragmento de texto:
@@ -178,6 +184,7 @@ La etiqueta del botón `×` no tiene `data-i18n`, por lo que se mantiene como es
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### Solo idioma de origen
 
 `data-i18n-ignore` omite ese elemento y sus descendientes tanto para `mark-html` como para la `extract` de cadenas de UI. Úselo para filas de ejemplo, identificadores y nombres de marcas:
@@ -198,6 +205,7 @@ La etiqueta del botón `×` no tiene `data-i18n`, por lo que se mantiene como es
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### Una clave de catálogo diferente
 
 Un marcador con valor especifica la clave del catálogo. El entorno de ejecución sigue escribiendo la traducción en el elemento (o en el atributo especificado):
@@ -211,7 +219,7 @@ Un marcador con valor especifica la clave del catálogo. El entorno de ejecució
 
 El entorno de ejecución registra cada clave de origen en un atributo `data-i18n-source` interno la primera vez que se ejecuta, por lo que un cambio posterior de configuración regional sigue buscando la cadena en inglés. Esos atributos no se extraen.
 
-<a id="locale-assets"></a>
+<a id="locale-specific-images-and-links"></a>
 ## Imágenes y enlaces específicos de la configuración regional
 
 Estos marcadores nunca se envían al traductor. `mark-html` no los añade.

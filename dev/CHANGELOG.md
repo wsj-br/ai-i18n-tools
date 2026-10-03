@@ -9,14 +9,16 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+
+## [1.10.0] - 2026-10-03
+
+- **Fixed**: cache — last-hit resets insert hit keys in chunks. A full docs sync records one `(source_hash, locale)` key per segment per locale, and a single INSERT of that list exceeds SQLite's bound-parameter cap (`too many SQL variables`), which aborted `cleanup` / `sync` after the VitePress docs block.
 - **Security**: examples — removed standalone `examples/astro-website/pnpm-lock.yaml`. It still pinned Astro 4 and `devalue@5.8.1` while `package.json` asks for `astro` `^7.3.5`, and the workspace lockfile already resolves `devalue@5.9.4`. Dependabot treated that file as its own manifest and reported `security_update_not_possible` (latest resolvable `5.8.1`, earliest fixed `5.9.3`).
 - **Security**: dependencies — patched transitive `braces@3.0.3` (`patches/braces@3.0.3.patch`, GHSA-vfj7-8cjw-p6xm) so nesting deeper than 100 throws instead of overflowing the stack, and transitive `http-cache-semantics@4.2.0` (`patches/http-cache-semantics@4.2.0.patch`, GHSA-ch52-4w7c-c8xp) so a `max-stale` request cannot reuse a shared-cache response that is `no-cache`, `proxy-revalidate`, or a `Set-Cookie` response without `public`. Neither package has a release outside the advisory range, so `auditConfig.ignoreGhsas` lists those two ids; `pnpm audit` otherwise keeps matching the version.
 - **Changed**: examples — `nextra-docs` `typescript` `^5.9.0` → `^6.0.3`. TypeScript 7 ships no compiler API, and Nextra's twoslash loader crashes on `ts.sys` during `next build`. `upgrade-dependencies` now skips `typescript` in packages that depend on `nextra`, the same way the root package skips it for `typescript-eslint`.
 - **Fixed**: examples — `intlayer-migration` `tsconfig.json` drops `baseUrl` and uses relative `paths`. TypeScript 7 removed `baseUrl`, so `pnpm build` in that example failed before dependency upgrades could run.
 - **Changed**: examples — `intlayer-migration` `vite` `^7.1.7` → `^8.3.2` and `@vitejs/plugin-react` `^5.0.3` → `^6.1.1`.
-
-## [1.10.0] - 2026-10-03
-
 - **Added**: config — `ui` may be several catalog blocks (each with `sourceRoots`, `stringsJson`, `flatOutputDir`, optional `description`, `targetLocales`, `languagesManifestPath`, and `uiGlossary`). A single `ui` object still loads and is wrapped to a one-element array. `--ui-block` selects one block by index, description, or `stringsJson` path on extract, translate-ui, sync-ui, sync (UI phase), proofread-ui, export-ui-xliff, generate-ui-languages, and purge-locale.
 - **Changed**: config — parsed `I18nConfig.ui` is always an array. UI guidance cache rows are keyed `ui-block:{stringsJson}` instead of `ui-strings`. Omitted `features` flags default to `true`; an omitted flag with no work for that pipeline is skipped, and an explicit `true` with no work is still an error.
 - **Changed**: glossary — `ui[].uiGlossary` (boolean, default `true`) includes that block's `strings.json` as hints for `translate-docs`, `translate-json`, and `translate-svg`. `translate-ui` and `proofread-ui` stay on the user CSV only.

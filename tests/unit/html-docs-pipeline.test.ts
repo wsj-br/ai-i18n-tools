@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { translateHtmlFile, rewriteSourceHtmlMarkerBlocks } from "../../src/cli/doc-translate.js";
 import { TranslationCache } from "../../src/core/cache.js";
 import { mergeWithDefaults, parseI18nConfig, toDocTranslateConfig } from "../../src/core/config.js";
@@ -112,6 +112,43 @@ describe("HTML link rewrite", () => {
     expect(html).toContain('src="../logo.svg"');
     expect(html).toContain('src="/img/pic-pt-BR.jpg"');
   });
+
+  it("rewrites og:image meta content and leaves unmatched localized assets", () => {
+    const cwd = tmp();
+    fs.mkdirSync(path.join(cwd, "site", "img"), { recursive: true });
+    fs.writeFileSync(path.join(cwd, "site", "img", "pic-pt-BR.jpg"), "x");
+    const config = docConfig({
+      style: "nested",
+      docsRoot: "site",
+      localizedAssets: {
+        include: ["img/**"],
+        pattern: "{stem}-{locale}{ext}",
+        onlyIfExists: true,
+      },
+    });
+    const ctx = {
+      cwd,
+      config,
+      locale: "pt-BR",
+      sourceRelPath: "site/index.html",
+      translatedHtmlRelPaths: new Set<string>(),
+      localizedAssets: config.doc.docsOutput.localizedAssets,
+    };
+    const meta = rewriteHtmlLinks('<meta property="og:image" content="img/pic.jpg">', ctx);
+    expect(meta).toContain('content="../img/pic-pt-BR.jpg"');
+    const css = rewriteHtmlLinks('<link rel="stylesheet" href="styles/main.css">', ctx);
+    expect(css).toContain('href="../styles/main.css"');
+    const skip = rewriteHtmlLinks('<img src="img/other.png">', {
+      ...ctx,
+      localizedAssets: {
+        include: ["[invalid"],
+        pattern: "{stem}-{locale}{ext}",
+        onlyIfExists: true,
+      },
+    });
+    expect(skip).toContain('src="../img/other.png"');
+    expect(skip).not.toContain("other-pt-BR");
+  });
 });
 
 describe("HTML marker blocks", () => {
@@ -201,6 +238,94 @@ describe("HTML marker blocks", () => {
     expect(out).toContain("selected");
     expect(out).not.toContain("https://");
     expect(out).toContain('rel="alternate"');
+  });
+
+  it("warns when verbose and markers are missing", () => {
+    const cwd = tmp();
+    const rel = "site/empty.html";
+    fs.mkdirSync(path.join(cwd, "site"), { recursive: true });
+    fs.writeFileSync(path.join(cwd, rel), "<html><body></body></html>");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const config = docConfig({ style: "nested", docsRoot: "site" });
+    applyHtmlMarkerBlocks("<html><body></body></html>", {
+      cwd,
+      config,
+      locale: "en",
+      sourceRelPath: rel,
+      absCurrentFile: path.join(cwd, rel),
+      availableLocales: new Set(["en"]),
+      languageList: {
+        format: "links",
+        label: "local",
+        separator: " · ",
+        start: "<!-- ai-i18n:lang-list -->",
+        end: "<!-- /ai-i18n:lang-list -->",
+      },
+      hreflang: {
+        start: "<!-- ai-i18n:hreflang -->",
+        end: "<!-- /ai-i18n:hreflang -->",
+        siteUrl: "https://example.com",
+        stripIndexHtml: false,
+      },
+      verbose: true,
+    });
+    expect(warn.mock.calls.length).toBeGreaterThanOrEqual(2);
+    warn.mockRestore();
+  });
+
+  it("treats markers as outside a list when the source file is missing", () => {
+    const cwd = tmp();
+    const rel = "site/missing-on-disk.html";
+    const config = docConfig({ style: "nested", docsRoot: "site" });
+    const html = `<!-- ai-i18n:lang-list --><!-- /ai-i18n:lang-list -->`;
+    const out = applyHtmlMarkerBlocks(html, {
+      cwd,
+      config,
+      locale: "en",
+      sourceRelPath: rel,
+      absCurrentFile: path.join(cwd, rel),
+      availableLocales: new Set(["en", "pt-BR"]),
+      languageList: {
+        format: "links",
+        label: "local",
+        separator: " · ",
+        start: "<!-- ai-i18n:lang-list -->",
+        end: "<!-- /ai-i18n:lang-list -->",
+      },
+    });
+    expect(out).toContain("<a ");
+    expect(out).not.toContain("<li>");
+  });
+
+  it("rethrows read errors other than ENOENT when detecting list context", () => {
+    const cwd = tmp();
+    const rel = "site/broken.html";
+    fs.mkdirSync(path.join(cwd, "site"), { recursive: true });
+    const config = docConfig({ style: "nested", docsRoot: "site" });
+    const read = vi.spyOn(fs, "readFileSync").mockImplementation(() => {
+      const err = new Error("EACCES") as NodeJS.ErrnoException;
+      err.code = "EACCES";
+      throw err;
+    });
+    const html = `<nav><ul><!-- ai-i18n:lang-list --><!-- /ai-i18n:lang-list --></ul></nav>`;
+    expect(() =>
+      applyHtmlMarkerBlocks(html, {
+        cwd,
+        config,
+        locale: "en",
+        sourceRelPath: rel,
+        absCurrentFile: path.join(cwd, rel),
+        availableLocales: new Set(["en"]),
+        languageList: {
+          format: "links",
+          label: "local",
+          separator: " · ",
+          start: "<!-- ai-i18n:lang-list -->",
+          end: "<!-- /ai-i18n:lang-list -->",
+        },
+      })
+    ).toThrow("EACCES");
+    read.mockRestore();
   });
 });
 

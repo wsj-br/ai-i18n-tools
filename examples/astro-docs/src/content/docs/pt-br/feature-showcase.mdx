@@ -5,8 +5,8 @@ description: >-
   ai-i18n-tools sabe traduzir.
 sidebar:
   order: 1
-translation_last_updated: '2026-09-14T19:52:28.390Z'
-source_file_mtime: '2026-09-14T18:37:46.349Z'
+translation_last_updated: '2026-10-03T22:27:50.637Z'
+source_file_mtime: '2026-09-17T22:21:18.227Z'
 source_file_hash: b32c160c44692bd8c4f0b577fdcf50e2da8d4791ba2ad6f63ad20ffa5427bd6c
 translation_language: pt-BR
 source_file_path: src/content/docs/feature-showcase.mdx
@@ -119,15 +119,15 @@ Isso garante que documentos e interfaces pareçam corretos, independentemente do
 
 <a id="nested"></a>
 
-### Aninhadas
+### Aninhado
 - **Pipeline de documentos**
-  - Fonte: qualquer arquivo `.md` ou `.mdx`
-  - Saída: árvore de localidade `doc-system` (`docusaurus` / `astro-starlight` aliases) ou cópias traduzidas planas
+  - Origem: qualquer arquivo `.md` ou `.mdx`
+  - Saída: árvore de localidade `doc-system` (aliases `docusaurus` / `astro-starlight`) ou cópias traduzidas planas
   - Cache: SQLite, indexado por caminho do arquivo + hash do segmento
-- **Pipeline de strings de UI**
-  - Fonte: arquivos JS/TS com chamadas `t("…")` (incluindo plurais via `{ plurals: true, count }`)
-  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias plurais quando aplicável
-  - Cache: o catálogo mestre `strings.json` em si
+- **Pipeline de strings da UI**
+  - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais via `{ plurals: true, count }`)
+  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias de plural, quando aplicável
+  - Cache: o próprio catálogo mestre `strings.json`
 
 ---
 

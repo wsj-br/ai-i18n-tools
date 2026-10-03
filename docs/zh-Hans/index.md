@@ -6,9 +6,9 @@ hero:
   name: ai-i18n-tools
   text: 使用任意 LLM 翻译应用和文档
   tagline: >-
-    提取 t() 字符串，翻译 Markdown、MDX、JSON 语言包和 SVG 标签——只需一份配置文件，即可接入
+    提取 t() 字符串，翻译 Markdown、MDX、HTML 页面、JSON 资源包和 SVG 标签——只需一份配置，支持
     OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何兼容 OpenAI 的
-    API。无需重写代码库，即可按项目或按区域设置切换模型。
+    API。可按项目或语言区域切换模型，无需重写代码库。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 标志
@@ -25,12 +25,14 @@ hero:
 features:
   - icon: 🌐
     title: UI 字符串
-    details: 从 JS、TS 和 Astro 中提取 t() 调用。为 i18next 或静态 SSG 查找生成每个区域设置的扁平化 JSON。
+    details: >-
+      从 JS、TS 和 Astro 中提取 t() 调用，或从单个 HTML 文件中提取 data-i18n 标记。为 i18next
+      或浏览器运行时生成扁平化的按语言区域 JSON。
   - icon: 📄
     title: 文档
     details: >-
-      翻译适用于 VitePress、Starlight、Docusaurus、Nextra、Fumadocs 和普通静态站点的 Markdown、MDX
-      和 Astro 页面。
+      为 VitePress、Starlight、Docusaurus、Nextra、Fumadocs 以及普通静态站点翻译
+      Markdown、MDX、Astro 和 HTML 页面。
   - icon: 📦
     title: JSON 包
     details: 当 UI 文案位于源代码 t() 调用之外时使用嵌套的区域设置 JSON —— 主题标签、目录和应用覆盖。
@@ -73,10 +75,10 @@ ai-i18n-tools sync
 <a id="which-pipeline-should-i-use"></a>
 ## 我应该使用哪个流水线？
 
-| 你的内容 | 命令 |
+| 您的内容 | 命令 |
 | --- | --- |
-| 源代码使用 `t()` | **UI 字符串** — `extract` / `translate-ui` |
-| 本地化页面或文档站点 | **文档** — `translate-docs` |
+| 源代码使用 `t()`，或包含标记的单个 HTML 文件 | **UI 字符串** — `extract` / `translate-ui` |
+| 本地化页面、文档站点或每个语言区域一个 HTML 文件 | **文档** — `translate-docs` |
 | 独立的嵌套 JSON 语言环境文件 | **JSON** — `translate-json` |
 
 SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPaths`。有关完整比较，请参阅[什么是 ai-i18n-tools？](/zh-Hans/guide/what-is-ai-i18n-tools)。
@@ -89,8 +91,8 @@ SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPa
 - [**提供商和模型**](/zh-Hans/guide/providers-and-models) — 预设、回退链和 `-P` 覆盖
 - [**CLI 参考**](/zh-Hans/reference/cli-commands/) — 每个命令、标志和工作流
 - [**配置**](/zh-Hans/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 模式
-- [**示例**](/zh-Hans/examples) — 十二个包含 `npx degit` 的可运行演示项目
-- [**架构**](/zh-Hans/reference/architecture) — 内部机制、编程 API 及扩展点
+- [**示例**](/zh-Hans/examples) — 十三个使用 `npx degit` 的可运行演示项目
+- [**架构**](/zh-Hans/reference/architecture) — 内部机制、编程 API 和扩展点
 
 要将该包集成到你自己的项目中？请从 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 开始。[仓库 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一个简短的 GitHub/npm 着陆页，链接到此处以获取详细信息。
 

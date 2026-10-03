@@ -93,7 +93,10 @@ export function isUiBlockTrackingKey(filepath: string): boolean {
 }
 
 /** `ui-block:src/i18n/strings.json` → absolute catalog path. */
-export function resolveUiBlockTrackingKeyToAbs(projectRoot: string, filepath: string): string | null {
+export function resolveUiBlockTrackingKeyToAbs(
+  projectRoot: string,
+  filepath: string
+): string | null {
   if (!isUiBlockTrackingKey(filepath)) {
     return null;
   }

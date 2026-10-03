@@ -455,10 +455,7 @@ export function augmentConfigWithUiLanguagesMaster(config: I18nConfig): I18nConf
   }
 }
 
-function explicitOrAll(
-  config: I18nConfig,
-  explicit?: ExplicitFeatureFlags
-): ExplicitFeatureFlags {
+function explicitOrAll(config: I18nConfig, explicit?: ExplicitFeatureFlags): ExplicitFeatureFlags {
   return (
     explicit ??
     explicitFeaturesByConfig.get(config) ?? {

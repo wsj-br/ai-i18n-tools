@@ -11,17 +11,17 @@
 
 **원하는 AI 모델로 앱과 문서를 번역하세요 — 벤더 종속성 없음, 재작성 불필요.**
 
-JavaScript/TypeScript 앱 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. `t()` 문자열을 추출하고 Markdown/MDX 페이지, JSON 번들 및 SVG 레이블을 번역합니다. 이 모든 작업을 단일 구성으로 처리할 수 있으며 OpenAI, Anthropic, Gemini, OpenRouter, Ollama를 비롯한 모든 OpenAI 호환 API에 대한 기본 프리셋이 제공됩니다. 코드베이스를 변경하지 않고도 프로젝트별 또는 로캘별로 공급자나 모델을 전환할 수 있습니다.
+JavaScript/TypeScript 앱 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. `t()` 문자열을 추출하고, Markdown, MDX, HTML 페이지, JSON 번들, SVG 레이블을 번역합니다. 이 모든 것을 단일 구성에서 수행할 수 있으며, OpenAI, Anthropic, Gemini, OpenRouter, Ollama 및 모든 OpenAI 호환 API에 대한 기본 제공 프리셋이 포함되어 있습니다. 코드베이스를 변경하지 않고도 프로젝트별 또는 로캘별로 공급자나 모델을 전환할 수 있습니다.
 
-[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/) 및 일반 마크다운을 지원합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지하고, `migrate-intlayer`로 [Intlayer](https://intlayer.org/) 프로젝트를 마이그레이션합니다.
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), 일반 Markdown 및 일반 HTML과 함께 작동합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지하고, `migrate-intlayer`을(를) 사용하여 [Intlayer](https://intlayer.org/) 프로젝트를 마이그레이션합니다.
 
 <a id="features"></a>
 ## 기능
 
 | | |
 | --- | --- |
-| **UI 문자열** | JS/TS/Astro(및 HTML의 `data-i18n*`)에서 `t("…")` 추출 → 로케일별 평면 JSON |
-| **문서** | 주요 문서 프레임워크를 위한 Markdown, MDX 및 `.astro` 페이지 번역 |
+| **UI 문자열** | JS/TS/Astro에서 `t("…")` 추출, 또는 하나의 HTML 파일에서 `data-i18n*` 추출 → 로캘별 플랫 JSON |
+| **문서** | Markdown, MDX, `.astro` 및 HTML 페이지 번역(로캘당 하나의 파일) |
 | **JSON** | 텍스트가 `t()` 호출 외부에 있을 때 중첩된 로케일 번들 번역 |
 | **SVG** | `translate-svg`를 통해 일러스트레이션 SVG 라벨 번역 |
 | **스마트 캐시** | 공유 SQLite 캐시 — 새롭거나 변경된 세그먼트만 모델을 호출함 |
@@ -32,8 +32,8 @@ JavaScript/TypeScript 앱 및 문서 사이트를 국제화하기 위한 CLI 및
 
 | 콘텐츠 | 명령 |
 | --- | --- |
-| 소스가 `t()` 또는 HTML 마커를 사용함 | **UI 문자열** — `extract` / `translate-ui` |
-| 현지화된 페이지 또는 문서 사이트 | **문서** — `translate-docs` |
+| 소스에서 `t()` 사용, 또는 `data-i18n*` 마커가 있는 하나의 HTML 파일 | **UI 문자열** — `extract` / `translate-ui` |
+| 지역화된 페이지, 문서 사이트 또는 로캘당 하나의 HTML 파일 | **문서** — `translate-docs` |
 | 독립형 중첩 JSON 로케일 파일 | **JSON** — `translate-json` |
 | SVG로 레이블이 지정된 다이어그램 또는 일러스트레이션 | **SVG** — `translate-svg` |
 
@@ -65,7 +65,7 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-문서 중심 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` 또는 `ui-json-bundles`.
+기타 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html` 또는 `ui-json-bundles`.
 
 개별 번역 명령을 연결하는 것보다 `sync`을(를) 사용하는 것이 좋습니다. 전체 가이드: [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start).
 
@@ -74,7 +74,7 @@ ai-i18n-tools sync                   # extract + translate per features
 
 - [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/) — 가이드, 통합 및 레퍼런스
 - [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [공급자 및 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models)
-- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
+- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
 - [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [CLI 레퍼런스](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 헬퍼](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
 - [예제](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모(`npx degit …`)

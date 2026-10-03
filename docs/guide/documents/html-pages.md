@@ -180,6 +180,7 @@ On every run, the pipeline replaces only the content between each pair. It updat
 
 The default comments work even when `docsOutput.html` is omitted. Set `languageList.start` / `end` or `hreflang.start` / `end` only when the source uses different marker text.
 
+<a id="visible-language-navigation"></a>
 ### Visible language navigation
 
 - `format: "links"` writes `<a>` elements. Inside a `<ul>`, `<ol>`, or `<nav>`, each link is wrapped in `<li>`; elsewhere, `separator` joins the links.
@@ -188,6 +189,7 @@ The default comments work even when `docsOutput.html` is omitted. Set `languageL
 
 One marker block uses one format. The generated links include `lang`, `hreflang`, and `aria-current`; the generated option for the current page has `selected`.
 
+<a id="search-engine-alternates"></a>
 ### Search-engine alternates
 
 `hreflang.siteUrl` prefixes alternate URLs. Set it to the site's public origin before deployment. When it is omitted, the pipeline writes relative alternate links and logs a warning.

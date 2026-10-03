@@ -5,7 +5,9 @@ description: 任意のLLMプロバイダーを使用して、JavaScript/TypeScri
 hero:
   name: ai-i18n-tools
   text: 任意のLLMでアプリとドキュメントを翻訳
-  tagline: t()文字列を抽出し、Markdown、MDX、JSONバンドル、SVGラベルを翻訳します。これらすべてを単一の設定で、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、または任意のOpenAI互換APIを使用して実行できます。コードベースを書き換えることなく、プロジェクトごとまたはロケールごとにモデルを切り替えられます。
+  tagline: >-
+    t()
+    文字列の抽出、Markdown、MDX、HTMLページ、JSONバンドル、SVGラベルの翻訳を、1つの設定ファイルから、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、または任意のOpenAI互換APIを使用して行えます。コードベースを書き換えることなく、プロジェクトごとまたはロケールごとにモデルを切り替えられます。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools ロゴ
@@ -22,10 +24,12 @@ hero:
 features:
   - icon: 🌐
     title: UI文字列
-    details: JS、TS、Astroから t() 呼び出しを抽出し、i18nextや静的SSGルックアップ向けにロケールごとのフラットなJSONを生成します。
+    details: >-
+      JS、TS、Astroからの t() 呼び出しの抽出、または単一HTMLファイル内の data-i18n
+      マーカーの抽出を行います。i18nextやブラウザランタイム向けに、ロケールごとのフラットなJSONを生成します。
   - icon: 📄
     title: ドキュメント
-    details: VitePress、Starlight、Docusaurus、Nextra、Fumadocs、および通常の静的サイト向けにMarkdown、MDX、Astroページを翻訳します。
+    details: VitePress、Starlight、Docusaurus、Nextra、Fumadocs、および通常の静的サイト向けのMarkdown、MDX、Astro、HTMLページを翻訳します。
   - icon: 📦
     title: JSONバンドル
     details: ソースの t() 呼び出し以外にUIコピーが存在する場合（テーマラベル、カタログ、アプリの上書きなど）に使用する、ネストされたロケールJSON。
@@ -68,8 +72,8 @@ ai-i18n-tools sync
 
 | コンテンツ | コマンド |
 | --- | --- |
-| ソースコードで`t()`を使用 | **UI文字列** — `extract` / `translate-ui` |
-| ローカライズされたページやドキュメントサイト | **ドキュメント** — `translate-docs` |
+| ソースコードで `t()` を使用、またはマーカー付きの単一HTMLファイル | **UI文字列** — `extract` / `translate-ui` |
+| ローカライズされたページ、ドキュメントサイト、またはロケールごとの1つのHTMLファイル | **ドキュメント** — `translate-docs` |
 | スタンドアロンのネストされたJSONロケールファイル | **JSON** — `translate-json` |
 
 SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パスを使用します。完全な比較については[ai-i18n-toolsとは？](/ja/guide/what-is-ai-i18n-tools)を参照してください。
@@ -81,8 +85,8 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 - [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、および Astro
 - [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、および `-P` のオーバーライド
 - [**CLIリファレンス**](/ja/reference/cli-commands/) — すべてのコマンド、フラグ、ワークフロー
-- [**設定**](/ja/reference/configuration) — 完全な`ai-i18n-tools.config.json`スキーマ
-- [**サンプル**](/ja/examples) — `npx degit`を使用した12の実行可能なデモプロジェクト
+- [**設定**](/ja/reference/configuration) — `ai-i18n-tools.config.json` の完全なスキーマ
+- [**サンプル**](/ja/examples) — `npx degit` を使用した13の実行可能なデモプロジェクト
 - [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラムAPI、および拡張ポイント
 
 パッケージを自分のプロジェクトに組み込む場合は、[AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) から始めてください。[リポジトリの README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) は短い GitHub/npm ランディングページであり、詳細についてはここへリンクしています。

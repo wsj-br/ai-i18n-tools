@@ -4,8 +4,8 @@ title: Présentation des fonctionnalités de traduction
 description: >-
   Un document de référence présentant tous les éléments Markdown que
   ai-i18n-tools sait traduire.
-translation_last_updated: '2026-09-14T19:52:43.608Z'
-source_file_mtime: '2026-09-14T18:37:46.358Z'
+translation_last_updated: '2026-10-03T22:27:55.783Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: fr
 source_file_path: docs/feature-showcase.md
@@ -107,12 +107,12 @@ Cela garantit que les documents et les interfaces s'affichent correctement, quel
 
 - **Pipeline de documents**
   - Source : tout fichier `.md` ou `.mdx`
-  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites plates
+  - Sortie : arborescence Docusaurus `i18n/` ou copies traduites à plat
   - Cache : SQLite, indexé par chemin de fichier + hachage de segment
-- **Pipeline de chaînes d'interface utilisateur**
+- **Pipeline de chaînes d’interface utilisateur**
   - Source : fichiers JS/TS avec appels `t("…")` (y compris les pluriels via `{ plurals: true, count }`)
-  - Sortie : JSON plat par locale (`de.json`, `fr.json`, …) avec des clés suffixées pour les catégories de pluriels le cas échéant
-  - Cache : le catalogue maître `strings.json` lui-même
+  - Sortie : JSON plat par locale (`de.json`, `fr.json`, …) avec des clés suffixées pour les catégories de pluriel, le cas échéant
+  - Cache : le catalogue `strings.json` maître lui-même
 
 ---
 

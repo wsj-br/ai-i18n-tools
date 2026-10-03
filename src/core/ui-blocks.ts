@@ -110,7 +110,9 @@ export function resolveLocalesForUiBlock(
   cliLocalesRaw?: string | null
 ): string[] {
   const src = normalizeLocale(config.sourceLocale);
-  const allowed = new Set(effectiveUiTargetLocales(config, block).map((locale) => normalizeLocale(locale)));
+  const allowed = new Set(
+    effectiveUiTargetLocales(config, block).map((locale) => normalizeLocale(locale))
+  );
 
   let list: string[];
   if (cliLocalesRaw?.trim()) {

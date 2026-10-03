@@ -11,17 +11,17 @@
 
 **Traduza seu aplicativo e documentação com o modelo de IA de sua escolha — sem bloqueio, sem reescritas.**
 
-CLI e kit de ferramentas para internacionalizar aplicativos JavaScript/TypeScript e sites de documentação. Extraia strings `t()`, traduza páginas Markdown/MDX, pacotes JSON e rótulos SVG — tudo a partir de uma única configuração, com predefinições integradas para OpenAI, Anthropic, Gemini, OpenRouter, Ollama e qualquer API compatível com OpenAI. Alterne o provedor ou modelo por projeto ou por localidade sem alterar sua base de código.
+CLI e conjunto de ferramentas para internacionalizar aplicativos JavaScript/TypeScript e sites de documentação. Extraia strings `t()`, traduza páginas Markdown, MDX e HTML, pacotes JSON e rótulos SVG — tudo a partir de uma única configuração, com predefinições integradas para OpenAI, Anthropic, Gemini, OpenRouter, Ollama e qualquer API compatível com OpenAI. Altere o provedor ou modelo por projeto ou por localidade sem alterar sua base de código.
 
-Funciona com [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/) e Markdown puro. Mantém seus catálogos existentes do [i18next](https://www.i18next.com/) (JSON de namespace ou strings de origem `t()`) e migra projetos do [Intlayer](https://intlayer.org/) com `migrate-intlayer`.
+Funciona com [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), Markdown puro e HTML puro. Mantém seus catálogos [i18next](https://www.i18next.com/) existentes (JSON de namespace ou strings de origem `t()`) e migra projetos [Intlayer](https://intlayer.org/) com `migrate-intlayer`.
 
 <a id="features"></a>
 ## Recursos
 
 | | |
 | --- | --- |
-| **Strings de UI** | Extraia `t("…")` de JS/TS/Astro (e `data-i18n*` em HTML) → JSON plano por localidade |
-| **Documentos** | Traduza páginas Markdown, MDX e `.astro` para os principais frameworks de documentação |
+| **Strings de UI** | Extraia `t("…")` de JS/TS/Astro, ou `data-i18n*` em um único arquivo HTML → JSON plano por localidade |
+| **Documentos** | Traduza páginas Markdown, MDX, `.astro` e HTML (um arquivo por localidade) |
 | **JSON** | Traduza pacotes de localidade aninhados quando a cópia estiver fora das chamadas `t()` |
 | **SVG** | Traduza rótulos SVG ilustrados via `translate-svg` |
 | **Cache inteligente** | Cache SQLite compartilhado — apenas segmentos novos ou alterados atingem o modelo |
@@ -32,8 +32,8 @@ Funciona com [VitePress](https://vitepress.dev/), [Starlight](https://starlight.
 
 | Seu conteúdo | Comando |
 | --- | --- |
-| A fonte usa `t()` ou marcadores HTML | **Strings de UI** — `extract` / `translate-ui` |
-| Páginas localizadas ou sites de documentos | **Documentos** — `translate-docs` |
+| A origem usa `t()`, ou um único arquivo HTML com marcadores `data-i18n*` | **Strings de UI** — `extract` / `translate-ui` |
+| Páginas localizadas, sites de documentação ou um arquivo HTML por localidade | **Documentos** — `translate-docs` |
 | Arquivos de localidade JSON aninhados autônomos | **JSON** — `translate-json` |
 | Diagramas ou ilustrações com rótulos em SVG | **SVG** — `translate-svg` |
 
@@ -65,7 +65,7 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-Scaffolds orientados a documentos: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website` ou `ui-json-bundles`.
+Outros scaffolds: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html` ou `ui-json-bundles`.
 
 Prefira `sync` em vez de encadear comandos de tradução individuais. Passo a passo completo: [Início rápido](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/quick-start).
 
@@ -74,7 +74,7 @@ Prefira `sync` em vez de encadear comandos de tradução individuais. Passo a pa
 
 - [Site de documentação](https://wsj-br.github.io/ai-i18n-tools/pt-BR/) — guias, integrações e referência
 - [Instalação](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/installation) · [Início rápido](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/quick-start) · [Provedores e modelos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/providers-and-models)
-- [Strings de UI](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/ui-strings/) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/svg-translation/)
+- [Strings de UI](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/ui-strings/) · [HTML puro](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/ui-strings/plain-html) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/documents/) · [Páginas HTML](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/svg-translation/)
 - [Integrações](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [Referência da CLI](https://wsj-br.github.io/ai-i18n-tools/pt-BR/reference/cli-commands/) · [Configuração](https://wsj-br.github.io/ai-i18n-tools/pt-BR/reference/configuration) · [Helpers de runtime](https://wsj-br.github.io/ai-i18n-tools/pt-BR/guide/runtime-helpers)
 - [Exemplos](https://wsj-br.github.io/ai-i18n-tools/pt-BR/examples) — demos executáveis (`npx degit …`)

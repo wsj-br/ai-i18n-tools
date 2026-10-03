@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   convertIntlayerPlaceholders,
   extractIntlayerContentFile,
+  isIntlayerSourceLocaleKey,
   mapIntlayerLocaleToConfig,
   pickIntlayerSourceText,
 } from "../../src/extractors/intlayer-content-extractor.js";
@@ -54,6 +55,14 @@ describe("convertIntlayerPlaceholders", () => {
     expect(convertIntlayerPlaceholders("Help for {{pageName}}", ["pageName"])).toBe(
       "Help for {{pageName}}"
     );
+    expect(convertIntlayerPlaceholders("x", [""])).toBe("x");
+  });
+});
+
+describe("isIntlayerSourceLocaleKey", () => {
+  it("detects the source locale key", () => {
+    expect(isIntlayerSourceLocaleKey("en", "en-GB")).toBe(true);
+    expect(isIntlayerSourceLocaleKey("de", "en-GB")).toBe(false);
   });
 });
 
@@ -81,5 +90,56 @@ describe("extractIntlayerContentFile", () => {
     const result = extractIntlayerContentFile(src, "x.content.ts", "en");
     expect(result.leaves).toEqual([]);
     expect(result.unsupported[0]?.reason).toBe("missing-source-locale");
+  });
+
+  it("accepts template literals and intlayer.t calls", () => {
+    const src = `
+import intlayer from 'intlayer';
+export default {
+  key: 'k',
+  content: {
+    tpl: t({ en: \`Hi\` }),
+    member: intlayer.t({ en: 'Via member' }),
+  },
+};`;
+    const result = extractIntlayerContentFile(src, "k.content.ts", "en");
+    expect(result.leaves.map((l) => l.dotPath).sort()).toEqual(["member", "tpl"]);
+  });
+
+  it("reports invalid t() args and spread content", () => {
+    const badT = `export default { key: 'k', content: { a: t('not-object') } };`;
+    expect(extractIntlayerContentFile(badT, "k.content.ts", "en").unsupported[0]?.reason).toBe(
+      "non-literal-t-call"
+    );
+    const spread = `export default { key: 'k', content: { ...other } };`;
+    expect(extractIntlayerContentFile(spread, "k.content.ts", "en").unsupported[0]?.reason).toBe(
+      "spread-in-content"
+    );
+    const computed = `export default { key: 'k', content: { a: t({ en: 'x', de: other }) } };`;
+    expect(extractIntlayerContentFile(computed, "k.content.ts", "en").unsupported[0]?.reason).toBe(
+      "non-literal-t-call"
+    );
+  });
+
+  it("reports structural dictionary problems", () => {
+    expect(
+      extractIntlayerContentFile(`export const x = 1;`, "f.ts", "en").unsupported[0]?.reason
+    ).toBe("no-default-export-object");
+    expect(
+      extractIntlayerContentFile(`export default { content: {} };`, "f.ts", "en").unsupported[0]
+        ?.reason
+    ).toBe("missing-dict-key");
+    expect(
+      extractIntlayerContentFile(`export default { key: 'k' };`, "f.ts", "en").unsupported[0]
+        ?.reason
+    ).toBe("missing-content");
+    expect(
+      extractIntlayerContentFile(`export default { key: 'k', content: 42 };`, "f.ts", "en")
+        .unsupported[0]?.reason
+    ).toBe("content-not-object");
+    expect(
+      extractIntlayerContentFile(`export default { key: 'k', content: { a: {{{`, "f.ts", "en")
+        .unsupported[0]?.reason
+    ).toMatch(/^parse-error:/);
   });
 });

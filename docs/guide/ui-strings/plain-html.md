@@ -103,6 +103,7 @@ Prefer bare markers. The English source text stays on the element, and that text
 
 One element can carry several of these. Each marker is its own catalog entry.
 
+<a id="text"></a>
 ### Text
 
 Put `data-i18n` on an element whose content is only text:
@@ -118,6 +119,7 @@ Put `data-i18n` on an element whose content is only text:
 
 The runtime also sets `document.title` from the `<title>` element. Do not put `data-i18n` on a mixed-content container: the runtime assigns `textContent`, which would remove its child elements.
 
+<a id="tooltip"></a>
 ### Tooltip
 
 ```html
@@ -130,6 +132,7 @@ A control can translate its label and its tooltip as two keys:
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### Placeholder
 
 ```html
@@ -148,12 +151,14 @@ Placeholder and tooltip on the same field:
 />
 ```
 
+<a id="alt-text"></a>
 ### Alt text
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### Accessible name
 
 ```html
@@ -162,6 +167,7 @@ Placeholder and tooltip on the same field:
 
 The button label `×` has no `data-i18n`, so it stays as written. The accessible name is the string that is translated.
 
+<a id="mixed-content"></a>
 ### Mixed content
 
 `data-i18n` reads the element's whole `textContent`. When a sentence shares its parent with another element, wrap each text run:
@@ -177,6 +183,7 @@ The button label `×` has no `data-i18n`, so it stays as written. The accessible
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### Source language only
 
 `data-i18n-ignore` skips that element and its descendants for both `mark-html` and UI-string `extract`. Use it for sample rows, identifiers, and brand names:
@@ -197,6 +204,7 @@ The button label `×` has no `data-i18n`, so it stays as written. The accessible
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### A different catalog key
 
 A valued marker names the catalog key. The runtime still writes the translation onto the element (or onto the named attribute):
@@ -210,7 +218,7 @@ A valued marker names the catalog key. The runtime still writes the translation 
 
 The runtime records each source key on an internal `data-i18n-source` attribute the first time it runs, so a later locale switch still looks up the English string. Those attributes are not extracted.
 
-<a id="locale-assets"></a>
+<a id="locale-specific-images-and-links"></a>
 ## Locale-specific images and links
 
 These markers are never sent to the translator. `mark-html` does not add them.

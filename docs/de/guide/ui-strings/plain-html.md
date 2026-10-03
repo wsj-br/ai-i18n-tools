@@ -104,6 +104,7 @@ Bevorzugen Sie einfache Marker. Der englische Quelltext verbleibt auf dem Elemen
 
 Ein Element kann mehrere dieser Marker tragen. Jeder Marker ist ein eigener Katalogeintrag.
 
+<a id="text"></a>
 ### Text
 
 Setzen Sie `data-i18n` auf ein Element, dessen Inhalt ausschließlich Text ist:
@@ -119,6 +120,7 @@ Setzen Sie `data-i18n` auf ein Element, dessen Inhalt ausschließlich Text ist:
 
 Die Runtime setzt zudem `document.title` basierend auf dem `<title>`-Element. Verwenden Sie `data-i18n` nicht bei einem Container mit gemischtem Inhalt: Die Runtime weist `textContent` zu, wodurch dessen Kindelemente entfernt würden.
 
+<a id="tooltip"></a>
 ### Tooltip
 
 ```html
@@ -131,6 +133,7 @@ Ein Steuerelement kann seine Beschriftung und seinen Tooltip als zwei Schlüssel
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### Platzhalter
 
 ```html
@@ -149,13 +152,15 @@ Platzhalter und Tooltip für dasselbe Feld:
 />
 ```
 
-### Alt-Text
+<a id="alt-text"></a>
+### Alternativtext
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
-### Barrierefreier Name
+<a id="accessible-name"></a>
+### Zugänglicher Name
 
 ```html
 <button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
@@ -163,6 +168,7 @@ Platzhalter und Tooltip für dasselbe Feld:
 
 Die Schaltflächenbeschriftung `×` hat kein `data-i18n`, daher bleibt sie unverändert. Der barrierefreie Name ist der String, der übersetzt wird.
 
+<a id="mixed-content"></a>
 ### Gemischter Inhalt
 
 `data-i18n` liest den gesamten `textContent` des Elements. Wenn ein Satz sein übergeordnetes Element mit einem anderen Element teilt, umschließen Sie jeden Textabschnitt:
@@ -178,7 +184,8 @@ Die Schaltflächenbeschriftung `×` hat kein `data-i18n`, daher bleibt sie unver
 </label>
 ```
 
-### Nur Quellsprache
+<a id="source-language-only"></a>
+### Nur Ausgangssprache
 
 `data-i18n-ignore` überspringt dieses Element und seine untergeordneten Elemente sowohl für `mark-html` als auch für UI-String-`extract`. Verwenden Sie dies für Beispielzeilen, Bezeichner und Markennamen:
 
@@ -198,6 +205,7 @@ Die Schaltflächenbeschriftung `×` hat kein `data-i18n`, daher bleibt sie unver
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### Ein anderer Katalogschlüssel
 
 Ein Marker mit Wert benennt den Katalogschlüssel. Die Laufzeitumgebung schreibt die Übersetzung weiterhin in das Element (oder in das benannte Attribut):
@@ -211,8 +219,8 @@ Ein Marker mit Wert benennt den Katalogschlüssel. Die Laufzeitumgebung schreibt
 
 Die Laufzeitumgebung zeichnet bei der ersten Ausführung jeden Quellschlüssel in einem internen `data-i18n-source`-Attribut auf, sodass bei einem späteren Wechsel der Locale weiterhin die englische Zeichenfolge nachgeschlagen wird. Diese Attribute werden nicht extrahiert.
 
-<a id="locale-assets"></a>
-## Locale-spezifische Bilder und Links
+<a id="locale-specific-images-and-links"></a>
+## Gebietsschemaspezifische Bilder und Links
 
 Diese Marker werden niemals an den Übersetzer gesendet. `mark-html` fügt sie nicht hinzu.
 

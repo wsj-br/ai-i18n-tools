@@ -171,13 +171,7 @@ export function computePerFileDepthPrefix(
   kind: "markdown" | "json" | "html" = "markdown"
 ): string {
   const normSource = normalizeMarkdownRelPath(sourceRelPath);
-  const outputFilePath = resolveDocumentationOutputPath(
-    config,
-    cwd,
-    locale,
-    normSource,
-    kind
-  );
+  const outputFilePath = resolveDocumentationOutputPath(config, cwd, locale, normSource, kind);
   const outputDirAbs = path.dirname(path.resolve(outputFilePath));
   const sourceDirAbs = path.resolve(cwd, path.posix.dirname(normSource));
   const rel = toPosix(path.relative(outputDirAbs, sourceDirAbs));

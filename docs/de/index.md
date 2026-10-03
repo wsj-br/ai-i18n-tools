@@ -9,9 +9,9 @@ hero:
   name: ai-i18n-tools
   text: Apps & Docs mit jedem LLM übersetzen
   tagline: >-
-    Extrahieren Sie t()-Strings, übersetzen Sie Markdown, MDX, JSON-Bundles und
-    SVG-Labels — alles aus einer einzigen Konfiguration heraus, mit OpenAI,
-    Anthropic, Gemini, OpenRouter, Ollama oder einer beliebigen
+    Extrahieren Sie t()-Strings, übersetzen Sie Markdown-, MDX- und HTML-Seiten,
+    JSON-Bundles und SVG-Labels – alles über eine einzige Konfiguration mit
+    OpenAI, Anthropic, Gemini, OpenRouter, Ollama oder einer beliebigen
     OpenAI-kompatiblen API. Wechseln Sie Modelle pro Projekt oder pro Locale,
     ohne Ihre Codebasis umschreiben zu müssen.
   image:
@@ -31,13 +31,14 @@ features:
   - icon: 🌐
     title: UI-Strings
     details: >-
-      Extrahieren Sie t()-Aufrufe aus JS, TS und Astro. Generieren Sie flaches
-      JSON pro Gebietsschema für i18next oder statische SSG-Suche.
+      Extrahieren Sie t()-Aufrufe aus JS, TS und Astro oder data-i18n-Marker aus
+      einer einzelnen HTML-Datei. Generieren Sie flache JSON-Dateien pro Locale
+      für i18next oder eine Browser-Runtime.
   - icon: 📄
     title: Dokumente
     details: >-
-      Übersetzen Sie Markdown-, MDX- und Astro-Seiten für VitePress, Starlight,
-      Docusaurus, Nextra, Fumadocs und einfache statische Websites.
+      Übersetzen Sie Markdown-, MDX-, Astro- und HTML-Seiten für VitePress,
+      Starlight, Docusaurus, Nextra, Fumadocs und einfache statische Websites.
   - icon: 📦
     title: JSON-Bundles
     details: >-
@@ -90,10 +91,10 @@ Siehe [Installation](/de/guide/installation) zum [Konfigurieren des reinen CLI-B
 <a id="which-pipeline-should-i-use"></a>
 ## Welche Pipeline soll ich verwenden?
 
-| Ihr Inhalt | Befehl |
+| Ihre Inhalte | Befehl |
 | --- | --- |
-| Quellcode verwendet `t()` | **UI-Strings** — `extract` / `translate-ui` |
-| Lokalisierte Seiten oder Dokumentationsseiten | **Dokumente** — `translate-docs` |
+| Quellcode verwendet `t()` oder eine einzelne HTML-Datei mit Markern | **UI-Strings** — `extract` / `translate-ui` |
+| Lokalisierte Seiten, Dokumentationsseiten oder eine HTML-Datei pro Locale | **Dokumente** — `translate-docs` |
 | Eigenständige verschachtelte JSON-Gebietsschemadateien | **JSON** — `translate-json` |
 
 SVG-Illustrationen verwenden einen separaten `translate-svg`-Pfad – nicht `docs[].contentPaths`. Einen vollständigen Vergleich finden Sie unter [Was ist ai-i18n-tools?](/de/guide/what-is-ai-i18n-tools).
@@ -106,7 +107,7 @@ SVG-Illustrationen verwenden einen separaten `translate-svg`-Pfad – nicht `doc
 - [**Anbieter und Modelle**](/de/guide/providers-and-models) – Voreinstellungen, Fallback-Ketten und `-P`-Überschreibungen
 - [**CLI-Referenz**](/de/reference/cli-commands/) – jeder Befehl, jedes Flag und jeder Workflow
 - [**Konfiguration**](/de/reference/configuration) — vollständiges `ai-i18n-tools.config.json`-Schema
-- [**Beispiele**](/de/examples) — zwölf ausführbare Demoprojekte mit `npx degit`
+- [**Beispiele**](/de/examples) — dreizehn ausführbare Demoprojekte mit `npx degit`
 - [**Architektur**](/de/reference/architecture) — Interna, programmatische API und Erweiterungspunkte
 
 Möchten Sie das Paket in Ihr eigenes Projekt integrieren? Beginnen Sie mit [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). Die [Repository-README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) ist eine kurze GitHub/npm-Landingpage, die für Details hierher verlinkt.

@@ -3,7 +3,17 @@ import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
 import { ConfigValidationError } from "../../src/core/errors.js";
 import { uiBlockFileTrackingKey } from "../../src/core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../../src/core/cache-tracking-keys.js";
-import { selectUiBlocks } from "../../src/core/ui-blocks.js";
+import {
+  collectUiTargetLocales,
+  configHasDocWork,
+  configHasJsonWork,
+  configHasUiWork,
+  effectiveUiTargetLocales,
+  resolveLocalesForUiBlock,
+  resolveUiBlockPaths,
+  resolveUiGlossaryPaths,
+  selectUiBlocks,
+} from "../../src/core/ui-blocks.js";
 
 const provider = {
   provider: "openrouter",
@@ -128,5 +138,110 @@ describe("ui blocks", () => {
     const key = uiBlockFileTrackingKey("src/i18n/strings.json");
     expect(key).toBe("ui-block:src/i18n/strings.json");
     expect(resolveCacheTrackingKeyToAbs("/work", key)).toBe("/work/src/i18n/strings.json");
+  });
+
+  it("resolves block paths and glossary paths", () => {
+    const config = load({
+      languagesManifestPath: "root-manifest.json",
+      ui: [
+        {
+          sourceRoots: ["src/"],
+          stringsJson: "locales/app.json",
+          flatOutputDir: "locales/app",
+          languagesManifestPath: "locales/app/ui-languages.json",
+        },
+        {
+          sourceRoots: ["site/"],
+          stringsJson: "locales/site.json",
+          flatOutputDir: "locales/site",
+          uiGlossary: false,
+        },
+      ],
+    });
+    const cwd = "/proj";
+    const block0 = resolveUiBlockPaths(config, config.ui[0]!, 0, cwd);
+    expect(block0.languagesManifest).toBe("/proj/locales/app/ui-languages.json");
+    const block1 = resolveUiBlockPaths(config, config.ui[1]!, 1, cwd);
+    expect(block1.languagesManifest).toBe("/proj/locales/site/ui-languages.json");
+    const rootOnly = load({
+      ui: {
+        sourceRoots: ["src/"],
+        stringsJson: "locales/strings.json",
+        flatOutputDir: "locales",
+      },
+      languagesManifestPath: "manifest.json",
+    });
+    const rootPaths = resolveUiBlockPaths(rootOnly, rootOnly.ui[0]!, 0, cwd);
+    expect(rootPaths.languagesManifest).toBe("/proj/manifest.json");
+    expect(resolveUiGlossaryPaths(config, cwd)).toEqual(["/proj/locales/app.json"]);
+    expect(resolveUiGlossaryPaths({}, cwd)).toEqual([]);
+  });
+
+  it("resolves locales per block and collects targets", () => {
+    const config = load({
+      targetLocales: ["de", "fr"],
+      ui: [
+        {
+          sourceRoots: ["src/"],
+          stringsJson: "a.json",
+          flatOutputDir: "locales/a",
+          targetLocales: ["de"],
+        },
+        {
+          sourceRoots: ["site/"],
+          stringsJson: "b.json",
+          flatOutputDir: "locales/b",
+        },
+      ],
+    });
+    expect(effectiveUiTargetLocales(config, config.ui[0]!)).toEqual(["de"]);
+    expect(effectiveUiTargetLocales(config, config.ui[1]!)).toEqual(["de", "fr"]);
+    expect(resolveLocalesForUiBlock(config, config.ui[0]!, "/p", "de fr")).toEqual(["de"]);
+    expect(collectUiTargetLocales(config, "/p")).toEqual(["de", "fr"]);
+    expect(configHasUiWork(config)).toBe(true);
+    expect(configHasDocWork(config)).toBe(true);
+    expect(
+      configHasJsonWork(
+        load({
+          json: [{ contentPaths: ["data/"], outputPathTemplate: "{locale}.json" }],
+        })
+      )
+    ).toBe(true);
+  });
+
+  it("selectUiBlocks by index and rejects bad selectors", () => {
+    const config = {
+      ...load({
+        ui: {
+          description: "App",
+          sourceRoots: ["src/"],
+          stringsJson: "locales/app.json",
+          flatOutputDir: "locales/app",
+        },
+      }),
+      ui: [
+        {
+          description: "Dup",
+          sourceRoots: ["src/"],
+          stringsJson: "locales/app.json",
+          flatOutputDir: "locales/app",
+          uiGlossary: true,
+        },
+        {
+          description: "Dup",
+          sourceRoots: ["site/"],
+          stringsJson: "locales/site.json",
+          flatOutputDir: "locales/site",
+          uiGlossary: true,
+        },
+      ],
+    };
+    expect(selectUiBlocks(config, "0")[0]?.index).toBe(0);
+    expect(() => selectUiBlocks(config, "missing")).toThrow(/Unknown --ui-block/);
+    expect(() => selectUiBlocks(config, "Dup")).toThrow(/more than one/);
+    const empty = load({
+      ui: { sourceRoots: [], stringsJson: "x.json", flatOutputDir: "locales" },
+    });
+    expect(() => selectUiBlocks(empty, "x.json")).toThrow(/no sourceRoots/);
   });
 });

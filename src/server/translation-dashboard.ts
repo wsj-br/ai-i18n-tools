@@ -531,7 +531,10 @@ export function createTranslationDashboardApp(
   };
   const absCatalogPath = (catalogPath: string): string =>
     path.isAbsolute(catalogPath) ? catalogPath : path.join(opts.cwd, catalogPath);
-  const catalogIdFrom = (req: { query: { catalog?: unknown }; body?: unknown }): string | undefined => {
+  const catalogIdFrom = (req: {
+    query: { catalog?: unknown };
+    body?: unknown;
+  }): string | undefined => {
     const queryId = req.query.catalog;
     if (typeof queryId === "string" && queryId.trim()) {
       return queryId.trim();

@@ -553,20 +553,20 @@ const featuresSchema = z.object({
 
 const glossarySchema = z
   .object({
-      userGlossary: z.string().optional(),
-      autoAddUserEditedToGlossary: z.boolean().default(true),
-      /**
-       * Optional cwd-relative Markdown/plain-text files with project or feature context.
-       * Loaded at command start and injected into every translation/proofread prompt.
-       */
-      contextFiles: z.array(z.string().min(1)).optional(),
-      /**
-       * Maximum characters of concatenated context-file text sent to the model (default 12000).
-       * Hard-capped at 100000.
-       */
-      contextMaxChars: z.number().int().positive().max(100_000).default(12_000),
-    })
-    .strict();
+    userGlossary: z.string().optional(),
+    autoAddUserEditedToGlossary: z.boolean().default(true),
+    /**
+     * Optional cwd-relative Markdown/plain-text files with project or feature context.
+     * Loaded at command start and injected into every translation/proofread prompt.
+     */
+    contextFiles: z.array(z.string().min(1)).optional(),
+    /**
+     * Maximum characters of concatenated context-file text sent to the model (default 12000).
+     * Hard-capped at 100000.
+     */
+    contextMaxChars: z.number().int().positive().max(100_000).default(12_000),
+  })
+  .strict();
 
 const uiExtractorSchema = z
   .object({
@@ -1088,10 +1088,7 @@ const i18nConfigSchemaInner = z
       autoAddUserEditedToGlossary: true,
       contextMaxChars: 12_000,
     }),
-    ui: z.preprocess(
-      wrapUiConfigInput,
-      z.array(uiConfigSchema).min(1).default([defaultUiBlock])
-    ),
+    ui: z.preprocess(wrapUiConfigInput, z.array(uiConfigSchema).min(1).default([defaultUiBlock])),
     docs: z.array(docBlockSchema).default([
       {
         contentPaths: [],

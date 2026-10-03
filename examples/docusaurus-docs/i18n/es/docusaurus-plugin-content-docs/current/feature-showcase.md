@@ -4,8 +4,8 @@ title: Muestra de características de traducción
 description: >-
   Un documento de referencia que demuestra cada elemento de Markdown que
   ai-i18n-tools sabe traducir.
-translation_last_updated: '2026-09-14T19:52:43.714Z'
-source_file_mtime: '2026-09-14T18:37:46.358Z'
+translation_last_updated: '2026-10-03T22:27:56.024Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: es
 source_file_path: docs/feature-showcase.md
@@ -105,14 +105,14 @@ Esto garantiza que los documentos y las interfaces se vean correctamente, indepe
 
 ### Anidadas {#nested}
 
-- **Canalización de documentos**
+- **Pipeline de documentos**
   - Origen: cualquier archivo `.md` o `.mdx`
   - Salida: árbol `i18n/` de Docusaurus o copias traducidas planas
   - Caché: SQLite, con clave por ruta de archivo + hash de segmento
-- **Canalización de cadenas de interfaz de usuario**
+- **Pipeline de cadenas de interfaz de usuario**
   - Origen: archivos JS/TS con llamadas a `t("…")` (incluidos plurales a través de `{ plurals: true, count }`)
   - Salida: JSON plano por configuración regional (`de.json`, `fr.json`, …) con claves con sufijo para categorías plurales cuando corresponda
-  - Caché: el propio catálogo maestro `strings.json`
+  - Caché: el propio catálogo maestro de `strings.json`
 
 ---
 

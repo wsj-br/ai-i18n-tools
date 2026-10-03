@@ -22,6 +22,9 @@ describe("GlossaryMatcher", () => {
       const text = "The alpha version.";
       expect(matcher.findTermsInText(text, "de")).toEqual(glossary.findTermsInText(text, "de"));
       expect(matcher.findTermsInText(text, "de").length).toBeGreaterThan(0);
+      expect(matcher.findTermHintsInText(text, "de")).toEqual(
+        glossary.findTermHintsInText(text, "de")
+      );
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

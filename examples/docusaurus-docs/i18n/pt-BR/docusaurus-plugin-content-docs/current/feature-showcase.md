@@ -4,8 +4,8 @@ title: Demonstração de Recurso de Tradução
 description: >-
   Um documento de referência que demonstra cada elemento Markdown que o
   ai-i18n-tools sabe traduzir.
-translation_last_updated: '2026-09-14T19:52:44.367Z'
-source_file_mtime: '2026-09-14T18:37:46.358Z'
+translation_last_updated: '2026-10-03T22:27:56.087Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: pt-BR
 source_file_path: docs/feature-showcase.md
@@ -108,12 +108,12 @@ Isso garante que os documentos e interfaces sejam exibidos corretamente, indepen
 
 - **Pipeline de documentos**
   - Origem: qualquer arquivo `.md` ou `.mdx`
-  - Saída: árvore Docusaurus `i18n/` ou cópias traduzidas planas
+  - Saída: árvore Docusaurus `i18n/` ou cópias traduzidas simples
   - Cache: SQLite, indexado por caminho do arquivo + hash do segmento
-- **Pipeline de cadeias de interface**
+- **Pipeline de strings da UI**
   - Origem: arquivos JS/TS com chamadas `t("…")` (incluindo plurais via `{ plurals: true, count }`)
-  - Saída: JSON plano por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias plurais quando aplicável
-  - Cache: o catálogo mestre `strings.json` em si
+  - Saída: JSON simples por localidade (`de.json`, `fr.json`, …) com chaves sufixadas para categorias de plural, quando aplicável
+  - Cache: o próprio catálogo mestre `strings.json`
 
 ---
 

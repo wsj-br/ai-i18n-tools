@@ -104,6 +104,7 @@ ai-i18n-tools sync-ui
 
 一個元素可以帶有多個這類標記。每個標記都是其自己的目錄項目。
 
+<a id="text"></a>
 ### 文字
 
 將 `data-i18n` 放在內容僅為文字的元素上：
@@ -119,6 +120,7 @@ ai-i18n-tools sync-ui
 
 執行階段也會從 `<title>` 元素設定 `document.title`。請勿將 `data-i18n` 放在混合內容的容器上：執行階段會指派 `textContent`，這會移除其子元素。
 
+<a id="tooltip"></a>
 ### 工具提示
 
 ```html
@@ -131,6 +133,7 @@ ai-i18n-tools sync-ui
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### 預留位置
 
 ```html
@@ -149,12 +152,14 @@ ai-i18n-tools sync-ui
 />
 ```
 
+<a id="alt-text"></a>
 ### 替代文字
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### 無障礙名稱
 
 ```html
@@ -163,6 +168,7 @@ ai-i18n-tools sync-ui
 
 按鈕標籤 `×` 沒有 `data-i18n`，因此會維持原樣。無障礙名稱是會被翻譯的字串。
 
+<a id="mixed-content"></a>
 ### 混合內容
 
 `data-i18n` 會讀取元素的整個 `textContent`。當句子與其他元素共用同一個父元素時，請將每個文字片段包裝起來：
@@ -178,6 +184,7 @@ ai-i18n-tools sync-ui
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### 僅限來源語言
 
 `data-i18n-ignore` 會在 `mark-html` 和 UI 字串 `extract` 中略過該元素及其子元素。請將其用於範例列、識別碼和品牌名稱：
@@ -198,6 +205,7 @@ ai-i18n-tools sync-ui
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### 不同的目錄索引鍵
 
 具值標記會命名目錄索引鍵。執行階段仍會將翻譯寫入元素（或命名的屬性）上：
@@ -211,8 +219,8 @@ ai-i18n-tools sync-ui
 
 執行階段在首次執行時，會將每個來源索引鍵記錄在內部的 `data-i18n-source` 屬性上，因此後續切換地區設定時仍會查詢英文字串。這些屬性不會被擷取。
 
-<a id="locale-assets"></a>
-## 地區設定專屬的圖片與連結
+<a id="locale-specific-images-and-links"></a>
+## 特定區域設定的圖片與連結
 
 這些標記絕不會傳送給翻譯者。`mark-html` 不會新增這些標記。
 

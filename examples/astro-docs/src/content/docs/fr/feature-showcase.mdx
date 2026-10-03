@@ -5,8 +5,8 @@ description: >-
   sait traduire.
 sidebar:
   order: 1
-translation_last_updated: '2026-09-14T19:52:28.017Z'
-source_file_mtime: '2026-09-14T18:37:46.349Z'
+translation_last_updated: '2026-10-03T22:27:50.579Z'
+source_file_mtime: '2026-09-17T22:21:18.227Z'
 source_file_hash: b32c160c44692bd8c4f0b577fdcf50e2da8d4791ba2ad6f63ad20ffa5427bd6c
 translation_language: fr
 source_file_path: src/content/docs/feature-showcase.mdx
@@ -118,15 +118,15 @@ Cela garantit que les documents et interfaces s'affichent correctement, quelle q
 
 <a id="nested"></a>
 
-### Imbriquées
+### Imbrication
 - **Pipeline de documents**
   - Source : tout fichier `.md` ou `.mdx`
-  - Sortie : arborescence des langues `doc-system` (alias `docusaurus` / `astro-starlight`) ou copies plates traduites
-  - Cache : SQLite, indexé par chemin de fichier + hachage du segment
-- **Pipeline des chaînes d'interface**
-  - Source : fichiers JS/TS avec appels à `t("…")` (y compris les pluriels via `{ plurals: true, count }`)
-  - Sortie : JSON plat par langue (`de.json`, `fr.json`, …) avec des clés suffixées pour les catégories de pluriel le cas échéant
-  - Cache : le catalogue maître `strings.json` lui-même
+  - Sortie : arborescence de locales `doc-system` (alias `docusaurus` / `astro-starlight`) ou copies traduites à plat
+  - Cache : SQLite, indexé par chemin de fichier + hachage de segment
+- **Pipeline de chaînes d’interface utilisateur**
+  - Source : fichiers JS/TS avec appels `t("…")` (y compris les pluriels via `{ plurals: true, count }`)
+  - Sortie : JSON plat par locale (`de.json`, `fr.json`, …) avec des clés suffixées pour les catégories de pluriels, le cas échéant
+  - Cache : le catalogue `strings.json` maître lui-même
 
 ---
 

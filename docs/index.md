@@ -8,7 +8,7 @@ hero:
   name: ai-i18n-tools
   text: Translate apps & docs with any LLM
   tagline: >-
-    Extract t() strings, translate Markdown, MDX, JSON bundles, and SVG labels —
+    Extract t() strings, translate Markdown, MDX, HTML pages, JSON bundles, and SVG labels —
     all from one config, with OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or
     any OpenAI-compatible API. Switch models per project or per locale without
     rewriting your codebase.
@@ -29,12 +29,12 @@ features:
   - icon: 🌐
     title: UI strings
     details: >-
-      Extract t() calls from JS, TS, and Astro. Generate flat per-locale JSON
-      for i18next or static SSG lookup.
+      Extract t() calls from JS, TS, and Astro, or data-i18n markers in one HTML
+      file. Generate flat per-locale JSON for i18next or a browser runtime.
   - icon: 📄
     title: Documents
     details: >-
-      Translate Markdown, MDX, and Astro pages for VitePress, Starlight,
+      Translate Markdown, MDX, Astro, and HTML pages for VitePress, Starlight,
       Docusaurus, Nextra, Fumadocs, and plain static sites.
   - icon: 📦
     title: JSON bundles
@@ -84,8 +84,8 @@ See [Installation](/guide/installation) for [configuring the bare CLI command](/
 
 | Your content | Command |
 | --- | --- |
-| Source code uses `t()` | **UI strings** — `extract` / `translate-ui` |
-| Localized pages or docs sites | **Documents** — `translate-docs` |
+| Source code uses `t()`, or one HTML file with markers | **UI strings** — `extract` / `translate-ui` |
+| Localized pages, docs sites, or one HTML file per locale | **Documents** — `translate-docs` |
 | Standalone nested JSON locale files | **JSON** — `translate-json` |
 
 SVG illustrations use a separate `translate-svg` path — not `docs[].contentPaths`. See [What is ai-i18n-tools?](/guide/what-is-ai-i18n-tools) for a full comparison.
@@ -98,7 +98,7 @@ SVG illustrations use a separate `translate-svg` path — not `docs[].contentPat
 - [**Providers and models**](/guide/providers-and-models) — presets, fallback chains, and `-P` overrides
 - [**CLI reference**](/reference/cli-commands/) — every command, flag, and workflow
 - [**Configuration**](/reference/configuration) — full `ai-i18n-tools.config.json` schema
-- [**Examples**](/examples) — twelve runnable demo projects with `npx degit`
+- [**Examples**](/examples) — thirteen runnable demo projects with `npx degit`
 - [**Architecture**](/reference/architecture) — internals, programmatic API, and extension points
 
 Integrating the package into your own project? Start with [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). The [repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) is a short GitHub/npm landing page that links here for detail.

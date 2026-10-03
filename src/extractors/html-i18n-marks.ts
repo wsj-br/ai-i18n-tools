@@ -26,7 +26,10 @@ export const HTML_I18N_MARKERS = [
  * URL markers applied by the plain-HTML runtime (`i18n.js`). They are never catalog keys:
  * a valued `data-i18n-<attr>` would send the URL to the translator.
  */
-export const HTML_I18N_LOCALE_URL_MARKERS = ["data-i18n-locale-src", "data-i18n-locale-href"] as const;
+export const HTML_I18N_LOCALE_URL_MARKERS = [
+  "data-i18n-locale-src",
+  "data-i18n-locale-href",
+] as const;
 
 /** Runtime bookkeeping attributes (`data-i18n-source`, `*-base`). Not catalog keys. */
 const RUNTIME_INTERNAL_ATTR = /^data-i18n-source(?:-|$)|-base$/;

@@ -5,8 +5,8 @@ description: >-
   übersetzen kann.
 sidebar:
   order: 1
-translation_last_updated: '2026-09-14T19:52:28.117Z'
-source_file_mtime: '2026-09-14T18:37:46.349Z'
+translation_last_updated: '2026-10-03T22:27:50.525Z'
+source_file_mtime: '2026-09-17T22:21:18.227Z'
 source_file_hash: b32c160c44692bd8c4f0b577fdcf50e2da8d4791ba2ad6f63ad20ffa5427bd6c
 translation_language: de
 source_file_path: src/content/docs/feature-showcase.mdx
@@ -118,14 +118,14 @@ Dies stellt sicher, dass Dokumente und Benutzeroberflächen korrekt aussehen, un
 
 <a id="nested"></a>
 
-### Geschachtelt
+### Verschachtelt
 - **Dokumenten-Pipeline**
   - Quelle: beliebige `.md`- oder `.mdx`-Datei
-  - Ausgabe: `doc-system`-Lokalisierungsstruktur (`docusaurus` / `astro-starlight`-Aliase) oder flache übersetzte Kopien
+  - Ausgabe: `doc-system`-Locale-Baum (`docusaurus` / `astro-starlight`-Aliase) oder flache übersetzte Kopien
   - Cache: SQLite, indiziert nach Dateipfad + Segment-Hash
-- **UI-Texte-Pipeline**
+- **UI-Strings-Pipeline**
   - Quelle: JS/TS-Dateien mit `t("…")`-Aufrufen (einschließlich Pluralformen über `{ plurals: true, count }`)
-  - Ausgabe: flache JSON-Dateien pro Lokalisierung (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Pluralkategorien, falls zutreffend
+  - Ausgabe: flaches JSON pro Locale (`de.json`, `fr.json`, …) mit angehängten Schlüsseln für Plural-Kategorien, falls zutreffend
   - Cache: der Master-`strings.json`-Katalog selbst
 
 ---

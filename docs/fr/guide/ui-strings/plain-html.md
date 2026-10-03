@@ -104,6 +104,7 @@ Préférez les marqueurs nus. Le texte source en anglais reste sur l'élément, 
 
 Un élément peut en comporter plusieurs. Chaque marqueur constitue une entrée distincte du catalogue.
 
+<a id="text"></a>
 ### Texte
 
 Placez `data-i18n` sur un élément dont le contenu est uniquement du texte :
@@ -119,6 +120,7 @@ Placez `data-i18n` sur un élément dont le contenu est uniquement du texte :
 
 L'environnement d'exécution définit également `document.title` à partir de l'élément `<title>`. Ne placez pas `data-i18n` sur un conteneur à contenu mixte : l'environnement d'exécution assigne `textContent`, ce qui supprimerait ses éléments enfants.
 
+<a id="tooltip"></a>
 ### Info-bulle
 
 ```html
@@ -131,6 +133,7 @@ Un contrôle peut traduire son libellé et son info-bulle sous forme de deux cl�
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### Texte de remplacement
 
 ```html
@@ -149,12 +152,14 @@ Texte de remplacement et info-bulle sur le même champ :
 />
 ```
 
+<a id="alt-text"></a>
 ### Texte alternatif
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### Nom accessible
 
 ```html
@@ -163,6 +168,7 @@ Texte de remplacement et info-bulle sur le même champ :
 
 Le libellé du bouton `×` n'a pas de `data-i18n`, il reste donc tel quel. Le nom accessible est la chaîne qui est traduite.
 
+<a id="mixed-content"></a>
 ### Contenu mixte
 
 `data-i18n` lit l'intégralité du `textContent` de l'élément. Lorsqu'une phrase partage son parent avec un autre élément, encapsulez chaque segment de texte :
@@ -178,6 +184,7 @@ Le libellé du bouton `×` n'a pas de `data-i18n`, il reste donc tel quel. Le no
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### Langue source uniquement
 
 `data-i18n-ignore` ignore cet élément et ses descendants à la fois pour `mark-html` et pour les chaînes d'interface utilisateur `extract`. Utilisez-le pour les lignes d'exemple, les identifiants et les noms de marque :
@@ -198,6 +205,7 @@ Le libellé du bouton `×` n'a pas de `data-i18n`, il reste donc tel quel. Le no
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### Une clé de catalogue différente
 
 Un marqueur valué nomme la clé de catalogue. L'environnement d'exécution écrit tout de même la traduction sur l'élément (ou sur l'attribut nommé) :
@@ -211,8 +219,8 @@ Un marqueur valué nomme la clé de catalogue. L'environnement d'exécution écr
 
 L'environnement d'exécution enregistre chaque clé source sur un attribut `data-i18n-source` interne lors de sa première exécution, afin qu'un changement ultérieur de locale recherche toujours la chaîne en anglais. Ces attributs ne sont pas extraits.
 
-<a id="locale-assets"></a>
-## Images et liens spécifiques à la locale
+<a id="locale-specific-images-and-links"></a>
+## Images et liens spécifiques aux paramètres régionaux
 
 Ces marqueurs ne sont jamais envoyés au traducteur. `mark-html` ne les ajoute pas.
 

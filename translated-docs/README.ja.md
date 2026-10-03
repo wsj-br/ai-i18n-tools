@@ -11,17 +11,17 @@
 
 **お好みのAIモデルでアプリとドキュメントを翻訳 — ロックインなし、書き直し不要。**
 
-JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化するためのCLIおよびツールキット。`t()`文字列の抽出、Markdown/MDXページ、JSONバンドル、SVGラベルの翻訳を単一の構成から実行でき、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、およびOpenAI互換API用の組み込みプリセットを備えています。コードベースを変更することなく、プロジェクトごとまたはロケールごとにプロバイダーやモデルを切り替えられます。
+JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化するためのCLIおよびツールキット。`t()`文字列の抽出、Markdown、MDX、HTMLページ、JSONバンドル、SVGラベルの翻訳を、1つの設定ファイルから行えます。OpenAI、Anthropic、Gemini、OpenRouter、Ollama、およびOpenAI互換APIの組み込みプリセットを備えています。コードベースを変更することなく、プロジェクトごとまたはロケールごとにプロバイダーやモデルを切り替えられます。
 
-[VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、およびプレーンMarkdownに対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）は保持され、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行します。
+[VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、プレーンMarkdown、およびプレーンHTMLに対応しています。既存の[i18next](https://www.i18next.com/)カタログ（名前空間JSONまたは`t()`ソース文字列）を保持し、`migrate-intlayer`を使用して[Intlayer](https://intlayer.org/)プロジェクトを移行できます。
 
 <a id="features"></a>
 ## 機能
 
 | | |
 | --- | --- |
-| **UI文字列** | JS/TS/Astroから`t("…")`を抽出（およびHTML内の`data-i18n*`）→ ロケールごとのフラットなJSON |
-| **ドキュメント** | 主要なドキュメントフレームワーク向けにMarkdown、MDX、および`.astro`ページを翻訳 |
+| **UI文字列** | JS/TS/Astroから`t("…")`を抽出、または1つのHTMLファイル内の`data-i18n*`を抽出 → ロケールごとのフラットなJSON |
+| **ドキュメント** | Markdown、MDX、`.astro`、およびHTMLページを翻訳（ロケールごとに1ファイル） |
 | **JSON** | テキストが`t()`呼び出しの外にある場合、ネストされたロケールバンドルを翻訳 |
 | **SVG** | `translate-svg`を介してイラスト付きSVGラベルを翻訳 |
 | **スマートキャッシュ** | 共有SQLiteキャッシュ — 新規または変更されたセグメントのみがモデルにアクセス |
@@ -32,8 +32,8 @@ JavaScript/TypeScriptアプリおよびドキュメントサイトを国際化�
 
 | コンテンツ | コマンド |
 | --- | --- |
-| ソースが`t()`またはHTMLマーカーを使用している | **UI文字列** — `extract` / `translate-ui` |
-| ローカライズされたページやドキュメントサイト | **ドキュメント** — `translate-docs` |
+| ソースが`t()`を使用、または`data-i18n*`マーカーを含む1つのHTMLファイル | **UI文字列** — `extract` / `translate-ui` |
+| ローカライズされたページ、ドキュメントサイト、またはロケールごとの1つのHTMLファイル | **ドキュメント** — `translate-docs` |
 | スタンドアロンのネストされたJSONロケールファイル | **JSON** — `translate-json` |
 | SVGでラベル付けされた図表またはイラスト | **SVG** — `translate-svg` |
 
@@ -65,7 +65,7 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-ドキュメント指向のスキャフォールド: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, または `ui-json-bundles`。
+その他のスキャフォールド: `-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html`、または`ui-json-bundles`。
 
 個々の翻訳コマンドを連続して実行するよりも、`sync`を使用することをお勧めします。詳細な手順：[クイックスタート](https://wsj-br.github.io/ai-i18n-tools/ja/guide/quick-start)。
 
@@ -74,7 +74,7 @@ ai-i18n-tools sync                   # extract + translate per features
 
 - [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/ja/) — ガイド、統合、およびリファレンス
 - [インストール](https://wsj-br.github.io/ai-i18n-tools/ja/guide/installation) · [クイックスタート](https://wsj-br.github.io/ai-i18n-tools/ja/guide/quick-start) · [プロバイダーとモデル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/providers-and-models)
-- [UI文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ja/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ja/guide/svg-translation/)
+- [UI文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) · [プレーンHTML](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/plain-html) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/) · [HTMLページ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ja/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ja/guide/svg-translation/)
 - [統合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
 - [CLIリファレンス](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/ja/reference/configuration) · [ランタイムヘルパー](https://wsj-br.github.io/ai-i18n-tools/ja/guide/runtime-helpers)
 - [例](https://wsj-br.github.io/ai-i18n-tools/ja/examples) — 実行可能なデモ（`npx degit …`）

@@ -4,9 +4,9 @@ title: Primeiros Passos
 description: >-
   Obtenha seu primeiro documento traduzido em menos de cinco minutos usando
   ai-i18n-tools com este projeto de exemplo Next.js.
-translation_last_updated: '2026-09-14T19:52:52.538Z'
-source_file_mtime: '2026-09-14T18:37:46.367Z'
-source_file_hash: e34ee98fed8efd780f0d40a5bd9d9d33307cb5bf12700487e6cb4054acd45660
+translation_last_updated: '2026-10-03T22:27:57.883Z'
+source_file_mtime: '2026-10-03T01:51:02.952Z'
+source_file_hash: 04db03d5c1768b2fc27b7594418322242ccb8daa0eee82bc280e020c89ce6979
 translation_language: pt-BR
 source_file_path: docs-site/docs/quick-start.md
 translation_models:
@@ -68,7 +68,6 @@ Abra `ai-i18n-tools.config.json`. A seção relevante para a tradução da docum
     "translateSVG": true
   },
   "glossary": {
-    "uiGlossary": "locales/strings.json",
     "userGlossary": "glossary-user.csv",
     "autoAddUserEditedToGlossary": true
   },

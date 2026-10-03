@@ -2,8 +2,8 @@
 sidebar_position: 1
 title: عرض ميزة الترجمة
 description: مستند مرجعي يوضح كل عنصر Markdown يعرف ai-i18n-tools كيفية ترجمته.
-translation_last_updated: '2026-09-14T19:52:43.837Z'
-source_file_mtime: '2026-09-14T18:37:46.358Z'
+translation_last_updated: '2026-10-03T22:27:55.949Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: ad61e5d62a39cb332852533980c1de8417791746e8053814b32c4d3785e41215
 translation_language: ar
 source_file_path: docs/feature-showcase.md
@@ -103,14 +103,14 @@ import TabItem from '@theme/TabItem';
 
 ### متداخلة {#nested}
 
-- **مسار المستندات**
+- **مسار مستندات**
   - المصدر: أي ملف `.md` أو `.mdx`
-  - الإخراج: شجرة Docusaurus `i18n/` أو نسخ مترجمة مسطحة
-  - ذاكرة التخزين المؤقت: SQLite، مفتاحها مسار الملف + تجزئة الجزء
+  - المخرجات: شجرة Docusaurus `i18n/` أو نسخ مترجمة مسطحة
+  - ذاكرة التخزين المؤقت: SQLite، مفتاحها مسار الملف + تجزئة المقطع
 - **مسار سلاسل واجهة المستخدم**
   - المصدر: ملفات JS/TS مع استدعاءات `t("…")` (بما في ذلك صيغ الجمع عبر `{ plurals: true, count }`)
-  - الإخراج: JSON مسطح لكل لغة (`de.json`، `fr.json`، ...) مع مفاتيح لاحقة لفئات الجمع عند الاقتضاء
-  - ذاكرة التخزين المؤقت: فهرس `strings.json` الرئيسي نفسه
+  - المخرجات: JSON مسطح لكل لغة (`de.json`، `fr.json`، ...) مع مفاتيح لاحقة لفئات الجمع عند الاقتضاء
+  - ذاكرة التخزين المؤقت: كتالوج `strings.json` الرئيسي نفسه
 
 ---
 

@@ -8,9 +8,7 @@ import {
 } from "./openrouter-catalog-model-filter.js";
 
 export type CreateFilteredLlmClientConfig =
-  | I18nConfig
-  | I18nDocTranslateConfig
-  | I18nUiTranslateConfig;
+  I18nConfig | I18nDocTranslateConfig | I18nUiTranslateConfig;
 
 export type CreateFilteredLlmClientOptions = {
   ui?: boolean;

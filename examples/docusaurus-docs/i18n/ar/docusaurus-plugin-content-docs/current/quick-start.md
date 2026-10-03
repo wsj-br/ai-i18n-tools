@@ -4,8 +4,8 @@ title: بدء سريع
 description: >-
   احصل على أول مستند مترجم لك في أقل من خمس دقائق باستخدام ai-i18n-tools مع
   مشروع Docusaurus التجريبي هذا.
-translation_last_updated: '2026-09-14T19:52:43.905Z'
-source_file_mtime: '2026-09-14T18:37:46.359Z'
+translation_last_updated: '2026-10-03T22:27:55.963Z'
+source_file_mtime: '2026-09-17T22:21:18.232Z'
 source_file_hash: bb346aef23ab36ff210d39e8af7bbe4359fe6fcc88ad584942ebe6504f2a0f7f
 translation_language: ar
 source_file_path: docs/quick-start.md

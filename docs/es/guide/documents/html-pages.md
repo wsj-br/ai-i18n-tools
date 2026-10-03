@@ -180,7 +180,8 @@ En cada ejecución, la canalización reemplaza solo el contenido entre cada par.
 
 Los comentarios predeterminados funcionan incluso cuando se omite `docsOutput.html`. Configure `languageList.start` / `end` o `hreflang.start` / `end` solo cuando el origen utilice un texto de marcador diferente.
 
-### Navegación de idiomas visible
+<a id="visible-language-navigation"></a>
+### Navegación de idioma visible
 
 - `format: "links"` escribe elementos `<a>`. Dentro de un `<ul>`, `<ol>` o `<nav>`, cada enlace se envuelve en `<li>`; en otros lugares, `separator` une los enlaces.
 - `format: "select"` escribe filas `<option>`. Coloque los marcadores dentro de su propio `<select data-lang-select>`, copie `node_modules/ai-i18n-tools/dist/html-runtime/lang-select.js` en el sitio y cargue ese script clásico. Navega a la URL generada de la opción seleccionada.
@@ -188,6 +189,7 @@ Los comentarios predeterminados funcionan incluso cuando se omite `docsOutput.ht
 
 Un bloque de marcador utiliza un formato. Los enlaces generados incluyen `lang`, `hreflang` y `aria-current`; la opción generada para la página actual tiene `selected`.
 
+<a id="search-engine-alternates"></a>
 ### Alternativas para motores de búsqueda
 
 `hreflang.siteUrl` añade prefijos a las URL alternativas. Configúrelo con el origen público del sitio antes de la implementación. Cuando se omite, la canalización escribe enlaces alternativos relativos y registra una advertencia.

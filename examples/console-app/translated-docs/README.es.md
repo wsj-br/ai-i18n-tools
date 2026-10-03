@@ -1,6 +1,6 @@
 ---
-translation_last_updated: '2026-09-14T19:52:38.128Z'
-source_file_mtime: '2026-09-14T19:41:20.670Z'
+translation_last_updated: '2026-10-03T22:27:55.330Z'
+source_file_mtime: '2026-09-17T22:21:18.231Z'
 source_file_hash: 6dd907fbf677c7f74b4b338263c315239bdf5b35ae40fe1b462c93766b0a54e9
 translation_language: es
 source_file_path: README.md

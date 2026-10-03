@@ -4,6 +4,9 @@
     "translated": {
       "pt-BR": "ai-i18n-tools — Demonstração de HTML simples"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
@@ -13,75 +16,75 @@
         "file": "public/index.html",
         "line": 13
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "4994a8ff": {
     "source": "Language",
     "translated": {
       "pt-BR": "Idioma"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 16
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "38b9ec9e": {
     "source": "Switch UI language",
     "translated": {
       "pt-BR": "Mudar idioma da interface"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 17
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "f3f43e30": {
     "source": "Filters",
     "translated": {
       "pt-BR": "Filtros"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 45
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "fd69c5cf": {
     "source": "Results",
     "translated": {
       "pt-BR": "Resultados"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 46
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "3cfa960c": {
     "source": "Sample usage chart",
     "translated": {
       "pt-BR": "Gráfico de uso de exemplo"
+    },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
     },
     "locations": [
       {
@@ -92,354 +95,351 @@
         "file": "public/index.html",
         "line": 61
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "a4f3875d": {
     "source": "Filter demo — static HTML with data-i18n markers, no t() calls in the markup.",
     "translated": {
       "pt-BR": "Demonstração de filtro — HTML estático com marcadores data-i18n, sem chamadas t() na marcação."
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 63
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "c5301693": {
     "source": "Run",
     "translated": {
       "pt-BR": "Executar"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 67
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "b982d4e2": {
     "source": "to add bare markers, then",
     "translated": {
       "pt-BR": "para adicionar marcadores simples, então"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 68
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "be5d5d37": {
     "source": "and",
     "translated": {
       "pt-BR": "e"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 69
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "5058f1af": {
     "source": ".",
     "translated": {
       "pt-BR": "."
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 69
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "ea217ea1": {
     "source": "Filter by locale",
     "translated": {
       "pt-BR": "Filtrar por localidade"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 74
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "261b3119": {
     "source": "All locales",
     "translated": {
       "pt-BR": "Todas as localidades"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 75
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "26d5352e": {
     "source": "Portuguese (Brazil)",
     "translated": {
       "pt-BR": "Português (Brasil)"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 76
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "5dd5cd66": {
     "source": "Filter by status",
     "translated": {
       "pt-BR": "Filtrar por status"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 78
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "881fa484": {
     "source": "All entries",
     "translated": {
       "pt-BR": "Todas as entradas"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 79
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "4d3d769b": {
     "source": "Active",
     "translated": {
       "pt-BR": "Ativo"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 80
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "f1ac273d": {
     "source": "Stale",
     "translated": {
       "pt-BR": "Obsoleto"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 81
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "990f0b1a": {
     "source": "Filter by filepath",
     "translated": {
       "pt-BR": "Filtrar por caminho do arquivo"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 83
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "daedd894": {
     "source": "Filename (partial)",
     "translated": {
       "pt-BR": "Nome do arquivo (parcial)"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 83
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "dc30bc0c": {
     "source": "Clear",
     "translated": {
       "pt-BR": "Limpar"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 91
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "9639e32c": {
     "source": "Apply",
     "translated": {
       "pt-BR": "Aplicar"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 92
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "97f5fce4": {
     "source": "Sample results — English source text is the catalog key.",
     "translated": {
       "pt-BR": "Resultados de exemplo — o texto fonte em inglês é a chave do catálogo."
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 99
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "6e1da65a": {
     "source": "Filepath",
     "translated": {
       "pt-BR": "Caminho do arquivo"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 104
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "911f0f24": {
     "source": "Locale",
     "translated": {
       "pt-BR": "Localidade"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 105
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "e831bffe": {
     "source": "Source text",
     "translated": {
       "pt-BR": "Texto fonte"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 106
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "d91c1c51": {
     "source": "Translated text",
     "translated": {
       "pt-BR": "Texto traduzido"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 107
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "ec53a8c4": {
     "source": "Status",
     "translated": {
       "pt-BR": "Status"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 108
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   },
   "2691af56": {
     "source": "Plain HTML example — static locale bundles under public/locales/",
     "translated": {
       "pt-BR": "Exemplo de HTML simples — pacotes de localidade estáticos em public/locales/"
     },
+    "models": {
+      "pt-BR": "openai/gpt-4o-mini"
+    },
     "locations": [
       {
         "file": "public/index.html",
         "line": 140
       }
-    ],
-    "models": {
-      "pt-BR": "openai/gpt-4o-mini"
-    }
+    ]
   }
 }

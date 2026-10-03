@@ -390,10 +390,7 @@ export function runMigrateIntlayer(opts: RunMigrateIntlayerOptions): MigrateIntl
   const reportAbs = path.isAbsolute(reportRel) ? reportRel : path.join(cwd, reportRel);
   const stringsJsonPath = path.relative(cwd, seeded.stringsJsonPath) || seeded.stringsJsonPath;
   const bootstrapFile = bootstrap ?? "src/i18n.ts";
-  const manifestAbs = path.resolve(
-    cwd,
-    effectiveUiManifestRel(config, chosen.block, chosen.index)
-  );
+  const manifestAbs = path.resolve(cwd, effectiveUiManifestRel(config, chosen.block, chosen.index));
   const stringsRel = projectRelative(cwd, seeded.stringsJsonPath);
   const manifestRel = projectRelative(cwd, manifestAbs);
   const localeDirRel = path.posix.dirname(stringsRel);

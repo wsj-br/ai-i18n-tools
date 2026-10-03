@@ -104,6 +104,7 @@ ai-i18n-tools sync-ui
 
 하나의 요소에 이러한 마커를 여러 개 포함할 수 있습니다. 각 마커는 고유한 카탈로그 항목이 됩니다.
 
+<a id="text"></a>
 ### 텍스트
 
 콘텐츠가 텍스트로만 이루어진 요소에 `data-i18n`을(를) 배치합니다:
@@ -119,6 +120,7 @@ ai-i18n-tools sync-ui
 
 런타임은 `<title>` 요소의 `document.title`도 설정합니다. 혼합 콘텐츠 컨테이너에 `data-i18n`을(를) 배치하지 마십시오. 런타임이 `textContent`을(를) 할당하여 하위 요소를 제거하게 됩니다.
 
+<a id="tooltip"></a>
 ### 도구 설명
 
 ```html
@@ -131,6 +133,7 @@ ai-i18n-tools sync-ui
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### 자리 표시자
 
 ```html
@@ -149,13 +152,15 @@ ai-i18n-tools sync-ui
 />
 ```
 
+<a id="alt-text"></a>
 ### 대체 텍스트
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
-### 접근성 이름
+<a id="accessible-name"></a>
+### 접근 가능한 이름
 
 ```html
 <button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
@@ -163,6 +168,7 @@ ai-i18n-tools sync-ui
 
 버튼 레이블 `×`에는 `data-i18n`이(가) 없으므로 입력된 그대로 유지됩니다. 접근성 이름은 번역되는 문자열입니다.
 
+<a id="mixed-content"></a>
 ### 혼합 콘텐츠
 
 `data-i18n`은 요소의 전체 `textContent`을 읽습니다. 문장이 다른 요소와 같은 부모를 공유할 경우 각 텍스트 런을 다음처럼 래핑합니다:
@@ -178,7 +184,8 @@ ai-i18n-tools sync-ui
 </label>
 ```
 
-### 소스 언어 전용
+<a id="source-language-only"></a>
+### 소스 언어만
 
 `data-i18n-ignore`은 `mark-html` 및 UI 문자열 `extract` 모두에 대해 해당 요소와 하위 요소를 건너뜁니다. 샘플 행, 식별자, 브랜드 이름에 사용합니다:
 
@@ -198,6 +205,7 @@ ai-i18n-tools sync-ui
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### 다른 카탈로그 키
 
 값이 지정된 마커는 카탈로그 키를 명명합니다. 런타임은 여전히 번역을 요소(또는 명명된 속성)에 작성합니다:
@@ -211,8 +219,8 @@ ai-i18n-tools sync-ui
 
 런타임은 처음 실행될 때 각 소스 키를 내부 `data-i18n-source` 속성에 기록하므로, 나중에 로케일을 전환해도 여전히 영어 문자열을 조회합니다. 이러한 속성은 추출되지 않습니다.
 
-<a id="locale-assets"></a>
-## 로케일별 이미지 및 링크
+<a id="locale-specific-images-and-links"></a>
+## 로캘별 이미지 및 링크
 
 이러한 마커는 번역기로 전송되지 않습니다. `mark-html`은 이를 추가하지 않습니다.
 

@@ -180,7 +180,8 @@ A cada execução, o pipeline substitui apenas o conteúdo entre cada par. Ele a
 
 Os comentários padrão funcionam mesmo quando `docsOutput.html` é omitido. Defina `languageList.start` / `end` ou `hreflang.start` / `end` apenas quando a origem usar um texto de marcador diferente.
 
-### Navegação de idioma visível
+<a id="visible-language-navigation"></a>
+### Navegação visível de idiomas
 
 - `format: "links"` escreve elementos `<a>`. Dentro de um `<ul>`, `<ol>` ou `<nav>`, cada link é envolto em `<li>`; nos demais casos, `separator` une os links.
 - `format: "select"` escreve linhas `<option>`. Coloque os marcadores dentro do seu próprio `<select data-lang-select>`, copie `node_modules/ai-i18n-tools/dist/html-runtime/lang-select.js` para o site e carregue esse script clássico. Ele navega para a URL gerada da opção selecionada.
@@ -188,7 +189,8 @@ Os comentários padrão funcionam mesmo quando `docsOutput.html` é omitido. Def
 
 Um bloco de marcador usa um formato. Os links gerados incluem `lang`, `hreflang` e `aria-current`; a opção gerada para a página atual tem `selected`.
 
-### Alternativos para mecanismos de busca
+<a id="search-engine-alternates"></a>
+### Alternativas para mecanismos de busca
 
 `hreflang.siteUrl` prefixa URLs alternativas. Defina-o como a origem pública do site antes da implantação. Quando omitido, o pipeline escreve links alternativos relativos e registra um aviso.
 

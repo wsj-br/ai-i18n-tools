@@ -6,9 +6,9 @@ hero:
   name: ai-i18n-tools
   text: 使用任何 LLM 翻譯應用程式與文件
   tagline: >-
-    擷取 t() 字串，翻譯 Markdown、MDX、JSON 套件與 SVG 標籤——全部只需透過單一設定檔即可完成，並支援
-    OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何 OpenAI 相容
-    API。可依專案或語系切換模型，無需重寫您的程式碼庫。
+    擷取 t() 字串，翻譯 Markdown、MDX、HTML 頁面、JSON 套件與 SVG 標籤——全部只需單一設定檔，支援
+    OpenAI、Anthropic、Gemini、OpenRouter、Ollama 或任何相容於 OpenAI 的
+    API。可依專案或語系切換模型，無需重寫程式碼庫。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 標誌
@@ -25,12 +25,14 @@ hero:
 features:
   - icon: 🌐
     title: UI 字串
-    details: 從 JS、TS 與 Astro 中提取 t() 呼叫。為 i18next 或靜態 SSG 查詢產生各語系的扁平化 JSON。
+    details: >-
+      從 JS、TS 和 Astro 擷取 t() 呼叫，或從單一 HTML 檔案擷取 data-i18n 標記。產生適用於 i18next
+      或瀏覽器執行階段的各語系扁平化 JSON。
   - icon: 📄
     title: 文件
     details: >-
-      翻譯適用於 VitePress、Starlight、Docusaurus、Nextra、Fumadocs 與純靜態網站的 Markdown、MDX
-      與 Astro 頁面。
+      翻譯適用於 VitePress、Starlight、Docusaurus、Nextra、Fumadocs 及純靜態網站的
+      Markdown、MDX、Astro 和 HTML 頁面。
   - icon: 📦
     title: JSON 包
     details: 當 UI 文案位於原始碼 t() 呼叫之外時的巢狀語系 JSON — 主題標籤、目錄與應用程式覆寫。
@@ -73,10 +75,10 @@ ai-i18n-tools sync
 <a id="which-pipeline-should-i-use"></a>
 ## 我應該使用哪個管線？
 
-| 您的內容 | 指令 |
+| 您的內容 | 命令 |
 | --- | --- |
-| 原始碼使用 `t()` | **UI 字串** — `extract` / `translate-ui` |
-| 本地化頁面或文件網站 | **文件** — `translate-docs` |
+| 原始碼使用 `t()`，或單一包含標記的 HTML 檔案 | **UI 字串** — `extract` / `translate-ui` |
+| 當地語系化頁面、文件網站，或每個地區設定一個 HTML 檔案 | **文件** — `translate-docs` |
 | 獨立的巢狀 JSON 語言檔 | **JSON** — `translate-json` |
 
 SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths`。如需完整比較，請參閱[什麼是 ai-i18n-tools？](/zh-Hant/guide/what-is-ai-i18n-tools)。
@@ -89,8 +91,8 @@ SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths
 - [**供應商與模型**](/zh-Hant/guide/providers-and-models) — 預設、後備鏈與 `-P` 覆寫
 - [**CLI 參考**](/zh-Hant/reference/cli-commands/) — 每個指令、旗標與工作流程
 - [**設定**](/zh-Hant/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 結構描述
-- [**範例**](/zh-Hant/examples) — 十二個可執行的示範專案，內含 `npx degit`
-- [**架構**](/zh-Hant/reference/architecture) — 內部實作、程式化 API 與擴充點
+- [**範例**](/zh-Hant/examples) — 十三個可執行的示範專案，包含 `npx degit`
+- [**架構**](/zh-Hant/reference/architecture) — 內部運作、程式化 API 與擴充點
 
 要將套件整合到您自己的專案中嗎？請從 [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) 開始。[repository README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 是一個簡短的 GitHub/npm 首頁，它會連結至此以取得詳細資訊。
 

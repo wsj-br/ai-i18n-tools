@@ -104,6 +104,7 @@ ai-i18n-tools sync-ui
 
 1つの要素にこれらのマーカーを複数含めることができます。各マーカーは個別のカタログエントリとなります。
 
+<a id="text"></a>
 ### テキスト
 
 コンテンツがテキストのみの要素に`data-i18n`を配置します:
@@ -119,6 +120,7 @@ ai-i18n-tools sync-ui
 
 ランタイムは`<title>`要素から`document.title`も設定します。混合コンテンツのコンテナに`data-i18n`を配置しないでください。ランタイムが`textContent`を割り当て、子要素が削除されてしまいます。
 
+<a id="tooltip"></a>
 ### ツールチップ
 
 ```html
@@ -131,6 +133,7 @@ ai-i18n-tools sync-ui
 <button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
 ```
 
+<a id="placeholder"></a>
 ### プレースホルダー
 
 ```html
@@ -149,12 +152,14 @@ ai-i18n-tools sync-ui
 />
 ```
 
+<a id="alt-text"></a>
 ### 代替テキスト
 
 ```html
 <img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
 ```
 
+<a id="accessible-name"></a>
 ### アクセシブル名
 
 ```html
@@ -163,6 +168,7 @@ ai-i18n-tools sync-ui
 
 ボタンラベル`×`には`data-i18n`がないため、記述されたままになります。アクセシブル名は翻訳される文字列です。
 
+<a id="mixed-content"></a>
 ### 混合コンテンツ
 
 `data-i18n`は要素の`textContent`全体を読み取ります。文が他の要素と親を共有している場合は、各テキストランをラップします:
@@ -178,6 +184,7 @@ ai-i18n-tools sync-ui
 </label>
 ```
 
+<a id="source-language-only"></a>
 ### ソース言語のみ
 
 `data-i18n-ignore`は、`mark-html`とUI文字列の`extract`の両方について、その要素とその子孫をスキップします。サンプル行、識別子、ブランド名に使用します:
@@ -198,6 +205,7 @@ ai-i18n-tools sync-ui
 </tbody>
 ```
 
+<a id="a-different-catalog-key"></a>
 ### 別のカタログキー
 
 値付きマーカーはカタログキーを指定します。ランタイムは引き続き要素（または指定された属性）に翻訳を書き込みます:
@@ -211,7 +219,7 @@ ai-i18n-tools sync-ui
 
 ランタイムは、最初の実行時に各ソースキーを内部の `data-i18n-source` 属性に記録するため、後でロケールを切り替えても英語の文字列が検索されます。これらの属性は抽出されません。
 
-<a id="locale-assets"></a>
+<a id="locale-specific-images-and-links"></a>
 ## ロケール固有の画像とリンク
 
 これらのマーカーが翻訳者に送信されることはありません。`mark-html` によって追加されることもありません。

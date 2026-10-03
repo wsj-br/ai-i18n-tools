@@ -278,7 +278,8 @@ export function runExportUIXliff(
       if (!combined.locales.includes(locale)) {
         combined.locales.push(locale);
       }
-      combined.unitsPerLocale[locale] = (combined.unitsPerLocale[locale] ?? 0) + (one.unitsPerLocale[locale] ?? 0);
+      combined.unitsPerLocale[locale] =
+        (combined.unitsPerLocale[locale] ?? 0) + (one.unitsPerLocale[locale] ?? 0);
     }
     combined.filesWritten.push(...one.filesWritten);
   }
