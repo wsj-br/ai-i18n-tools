@@ -8,19 +8,24 @@ For a static site that should emit one translated HTML file per locale (no runti
 <a id="quick-start"></a>
 ## Quick start
 
-1. Mark the English HTML (or let `mark-html` do it).
-2. Point `ui.sourceRoots` and `ui.uiExtractor.extensions` at those files.
-3. Run `extract`, then `translate-ui`.
-4. Copy `i18n.js` next to the page and load it before your own script.
-5. Serve the folder over HTTP. `file://` cannot `fetch` the locale JSON.
+1. Scaffold with `ai-i18n-tools init -t ui-plain-html`, or add the config below.
+2. Mark the source HTML (or let `mark-html` do it).
+3. Point `ui.sourceRoots` and `ui.uiExtractor.extensions` at those files.
+4. Run `extract`, then `translate-ui` (or run both with `sync-ui`).
+5. Copy `i18n.js` next to the page and load it before your own script.
+6. Serve the folder over HTTP. `file://` cannot `fetch` the locale JSON.
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+Example `ai-i18n-tools.config.json`:
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir` is where `translate-ui` writes `{locale}.json` and `ui-languages.json`. The script's `data-locales-base` must be that directory as a URL relative to `i18n.js` (not the page). A base of `./locales` on `public/i18n.js` loads `public/locales/pt-BR.json`. Use a relative base so the site still works under a subpath.
+The scaffold also adds the LLM [provider configuration](/guide/providers-and-models) used by `translate-ui`; it is omitted above to keep the HTML-specific settings visible.
+
+`extract` owns `strings.json` and writes `ui-languages.json`; `translate-ui` owns the target-locale JSON files. Do not edit those generated files by hand.
+
+`flatOutputDir` is where the generated locale files live. The script's `data-locales-base` must point to that directory as a URL relative to `i18n.js` (not the page). A base of `./locales` on `public/i18n.js` loads `public/locales/pt-BR.json`. Use a relative base so the site still works under a deployment subpath.
 
 <a id="obtain-the-runtime"></a>
 ## Obtain the runtime
@@ -68,6 +77,7 @@ Load it at the end of `<body>`, then your own script. Put `class="i18n-pending"`
   </body>
 </html>
 ```
+Adjust the script attributes to your needs:
 
 | Attribute | Default | Role |
 | --- | --- | --- |
@@ -78,12 +88,12 @@ Load it at the end of `<body>`, then your own script. Put `class="i18n-pending"`
 | `data-locale-list` | (none) | CSS selector of an element to fill with language links |
 | `data-label-mode` | `native` | `native` (manifest `label`), `english` (`englishName`), or `both` (`englishName / label` when they differ) |
 
-`window.i18n` exposes `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)`, and `ready` (a promise). Call `apply()` after you insert new marked elements.
+`window.i18n` exposes `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)`, and `ready` (a promise). Await `ready` before your own script depends on the resolved locale or translated values. Call `apply()` after inserting new marked elements.
 
 <a id="marking-html-for-translation"></a>
 ## Marking HTML for translation
 
-Prefer bare markers. The source text is read from the element, so it is written once:
+Prefer bare markers. The English source text stays on the element, and that text is the catalog key. `extract` reads it; the runtime writes the translation back onto the same property.
 
 - `data-i18n` — key is `textContent`. The runtime sets `textContent`.
 - `data-i18n-title` — key is `title`.
@@ -91,15 +101,112 @@ Prefer bare markers. The source text is read from the element, so it is written 
 - `data-i18n-alt` — key is `alt`.
 - `data-i18n-aria-label` — key is `aria-label`.
 
-`mark-html` inserts those bare markers. It is a dry run unless you pass `--write`. It skips `data-i18n-ignore` subtrees, code-like elements (`code`, `pre`, `kbd`, `samp`, `var`), and empty or numeric-only text.
+One element can carry several of these. Each marker is its own catalog entry.
 
-Bare `data-i18n` is for a leaf text node. For `Run <code>build</code> now.`, wrap each text run:
+### Text
+
+Put `data-i18n` on an element whose content is only text:
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-Use a valued marker (`data-i18n="Some key"`) only when the key must differ from the visible text.
+The runtime also sets `document.title` from the `<title>` element. Do not put `data-i18n` on a mixed-content container: the runtime assigns `textContent`, which would remove its child elements.
+
+### Tooltip
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+A control can translate its label and its tooltip as two keys:
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### Placeholder
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+Placeholder and tooltip on the same field:
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### Alt text
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### Accessible name
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+The button label `×` has no `data-i18n`, so it stays as written. The accessible name is the string that is translated.
+
+### Mixed content
+
+`data-i18n` reads the element's whole `textContent`. When a sentence shares its parent with another element, wrap each text run:
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### Source language only
+
+`data-i18n-ignore` skips that element and its descendants for both `mark-html` and UI-string `extract`. Use it for sample rows, identifiers, and brand names:
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### A different catalog key
+
+A valued marker names the catalog key. The runtime still writes the translation onto the element (or onto the named attribute):
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html` inserts the bare markers above. It is a dry run unless you pass `--write`. It skips `data-i18n-ignore` subtrees, code-like elements (`code`, `pre`, `kbd`, `samp`, `var`), and empty or numeric-only text. It reports mixed-content parents and leaves them for you to wrap in `<span data-i18n>`. It never writes a valued marker.
 
 The runtime records each source key on an internal `data-i18n-source` attribute the first time it runs, so a later locale switch still looks up the English string. Those attributes are not extracted.
 
@@ -108,15 +215,20 @@ The runtime records each source key on an internal `data-i18n-source` attribute 
 
 These markers are never sent to the translator. `mark-html` does not add them.
 
-- `data-i18n-locale-src` — bare: `pic_trulli.jpg` becomes `pic_trulli-pt-BR.jpg` (the locale code is inserted before the extension). Valued: the value is a template, for example `img/{locale}/pic_trulli.jpg`.
+- `data-i18n-locale-src` — bare: `chart.png` becomes `chart-pt-BR.png` (the locale code is inserted before the extension). Valued: the value is a template. [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) uses `chart_{locale}.png`, which becomes `chart_pt-BR.png`.
 - `data-i18n-locale-href` — appends `?locale=` so the link stays on the same HTML file.
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-The source locale keeps the original URL. Absolute URLs, `data:` URLs, and `#` fragments are left alone. Query strings and fragments on an image path stay in place. If the localized image 404s, the runtime restores the original `src` once. You ship `pic_trulli-pt-BR.jpg` yourself; the script does not create it.
+The source locale keeps the original URL. For a bare `data-i18n-locale-src`, absolute URLs, protocol-relative URLs, `data:` URLs, and `#` fragments are left alone; query strings and fragments stay in place. A valued marker uses its template for every non-source locale and replaces only `{locale}`. If the localized image 404s, the runtime restores the original `src` once. You ship `chart_pt-BR.png` yourself; the script does not create it.
 
 `data-i18n-locale-href` is for this catalog model. A link to `about.pt-BR.html` belongs to the [HTML pages](/guide/documents/html-pages) pipeline.
 
@@ -125,7 +237,57 @@ The source locale keeps the original URL. Absolute URLs, `data:` URLs, and `#` f
 
 Point `data-locale-select` at an empty `<select>`. The runtime fills one `<option>` per row of `ui-languages.json` (`code`, `label`, `englishName`, `direction`). Changing the select calls `setLocale`, which stores the choice, updates `?locale=` with `history.pushState` (no reload), fetches the bundle, reapplies every marker, and sets `<html lang>` and `dir`. The Back button reapplies the locale in the URL.
 
-`data-locale-list` does the same with links (`lang`, `hreflang`, and `aria-current` on the active one). Those links switch the catalog page; they are not the per-file links written by the document pipeline.
+`data-locale-list` does the same with links (`lang`, `hreflang`, and `aria-current` on the active one). Those links switch the catalog page; they are not the per-file links written by the document pipeline. One script tag can set both selectors:
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+Leave both controls empty. For this manifest, `data-label-mode="native"` labels Portuguese as `Português (Brasil)`. `english` labels it `Portuguese (Brazil)`. `both` labels it `Portuguese (Brazil) / Português (Brasil)`, because the two names differ, see the snippet below from `ui-languages.json`:
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+With `?locale=pt-BR`, the runtime replaces the select's options and the list's children. Attributes you set on those elements stay:
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+A `"direction": "rtl"` row sets `dir="rtl"` on `<html>` when that locale is active.
 
 Do not auto-redirect by `navigator.language` on top of this. The runtime already uses the browser language only when the URL and `localStorage` have no choice. A redirect that ignores the URL makes it hard to share a locale and to crawl the page.
 
@@ -136,14 +298,15 @@ Do not auto-redirect by `navigator.language` on top of this. The runtime already
 
 | Symptom | What to check |
 | --- | --- |
-| Network error, empty page | Open the site with a local server. `file://` blocks `fetch`. |
+| Locale files do not load | Open the site with a local server. `file://` blocks `fetch`; the runtime falls back to source text. |
 | 404 on `ui-languages.json` | `data-locales-base` is relative to `i18n.js`. It must match `flatOutputDir`. |
+| 404 on `{locale}.json` | Run `translate-ui` for that locale and check that the locale code matches its filename exactly. |
 | Strings stay English under `/docs/` | Same base-path issue. Avoid a leading `/` unless the locales directory is at the host root. |
 | English flashes, then translates | Add `class="i18n-pending"` on `<html>` and the visibility rule above. |
 | Second switch shows the translated string as the key | Load the shipped `i18n.js`. It stores `data-i18n-source` before replacing text. |
 | RTL layout does not flip | The manifest row needs `"direction": "rtl"`. The runtime sets `dir` on `<html>` only. |
 | New DOM nodes stay English | Call `window.i18n.apply()` after inserting them. |
-| Image stays `pic_trulli.jpg` in Portuguese | The element needs `data-i18n-locale-src`, and the locale must not be the source locale. |
+| Image stays `chart.png` in Portuguese | The element needs `data-i18n-locale-src`, and the locale must not be the source locale. |
 
 `normalizeI18nText` in the runtime matches `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): trim, then collapse whitespace. Because the English source text is the catalog key, a missing translation falls back to English.
 

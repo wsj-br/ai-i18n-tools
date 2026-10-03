@@ -8,19 +8,24 @@
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
 
-1. अंग्रेज़ी HTML को चिह्नित करें (या `mark-html` को इसे करने दें)।
-2. `ui.sourceRoots` और `ui.uiExtractor.extensions` को उन फ़ाइलों की ओर इंगित करें।
-3. `extract` चलाएँ, फिर `translate-ui`।
-4. `i18n.js` को पृष्ठ के बगल में कॉपी करें और इसे अपनी स्क्रिप्ट से पहले लोड करें।
-5. फ़ोल्डर को HTTP पर सर्व करें। `file://` लोकेल JSON को `fetch` नहीं कर सकता।
+1. `ai-i18n-tools init -t ui-plain-html` के साथ स्कैफोल्ड करें, या नीचे दिया गया कॉन्फ़िगरेशन जोड़ें।
+2. स्रोत HTML को मार्क करें (या `mark-html` को इसे करने दें)।
+3. `ui.sourceRoots` और `ui.uiExtractor.extensions` को उन फ़ाइलों की ओर इंगित करें।
+4. `extract` चलाएँ, फिर `translate-ui` (या दोनों को `sync-ui` के साथ चलाएँ)।
+5. `i18n.js` को पेज के बगल में कॉपी करें और इसे अपनी स्क्रिप्ट से पहले लोड करें।
+6. फ़ोल्डर को HTTP पर सर्व करें। `file://` लोकेल JSON को `fetch` नहीं कर सकता।
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+उदाहरण `ai-i18n-tools.config.json`:
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir` वह स्थान है जहाँ `translate-ui` `{locale}.json` और `ui-languages.json` लिखता है। स्क्रिप्ट का `data-locales-base` उस निर्देशिका को `i18n.js` (पृष्ठ नहीं) के सापेक्ष URL के रूप में होना चाहिए। `public/i18n.js` पर `./locales` का आधार `public/locales/pt-BR.json` को लोड करता है। एक सापेक्ष आधार का उपयोग करें ताकि साइट उप-पथ (subpath) के अंतर्गत भी काम करती रहे।
+स्कैफोल्ड `translate-ui` द्वारा उपयोग किए जाने वाले LLM [प्रदाता कॉन्फ़िगरेशन](/hi/guide/providers-and-models) को भी जोड़ता है; HTML-विशिष्ट सेटिंग्स को दृश्यमान रखने के लिए इसे ऊपर छोड़ दिया गया है।
+
+`extract` `strings.json` को प्रबंधित करता है और `ui-languages.json` लिखता है; `translate-ui` लक्ष्य-लोकेल JSON फ़ाइलों को प्रबंधित करता है। उन जनरेट की गई फ़ाइलों को हाथ से संपादित न करें।
+
+`flatOutputDir` वह स्थान है जहाँ जनरेट की गई लोकेल फ़ाइलें होती हैं। स्क्रिप्ट का `data-locales-base` उस निर्देशिका की ओर `i18n.js` के सापेक्ष URL के रूप में इंगित करना चाहिए (पेज के नहीं)। `public/i18n.js` पर `./locales` का बेस `public/locales/pt-BR.json` को लोड करता है। सापेक्ष बेस का उपयोग करें ताकि साइट डिप्लॉयमेंट सबपाथ के अंतर्गत भी काम करती रहे।
 
 <a id="obtain-the-runtime"></a>
 ## रनटाइम प्राप्त करें
@@ -69,6 +78,8 @@ ai-i18n-tools translate-ui
 </html>
 ```
 
+स्क्रिप्ट विशेषताओं को अपनी आवश्यकतानुसार समायोजित करें:
+
 | विशेषता | डिफ़ॉल्ट | भूमिका |
 | --- | --- | --- |
 | `data-source-locale` | `en` | वह लोकेल जो अंग्रेज़ी HTML रखता है और बंडल फ़ेच को छोड़ देता है |
@@ -78,12 +89,12 @@ ai-i18n-tools translate-ui
 | `data-locale-list` | (कोई नहीं) | भाषा लिंक से भरने के लिए एक तत्व का CSS चयनकर्ता |
 | `data-label-mode` | `native` | `native` (मैनिफेस्ट `label`), `english` (`englishName`), या `both` (`englishName / label` जब वे भिन्न हों) |
 
-`window.i18n` `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)`, और `ready` (एक प्रॉमिस) को एक्सपोज़ करता है। नए चिह्नित तत्वों को सम्मिलित करने के बाद `apply()` को कॉल करें।
+`window.i18n` `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)`, और `ready` (एक प्रॉमिस) को एक्सपोज़ करता है। अपनी स्क्रिप्ट के रिज़ॉल्व किए गए लोकेल या अनुवादित मानों पर निर्भर होने से पहले `ready` की प्रतीक्षा करें। नए मार्क किए गए एलिमेंट्स डालने के बाद `apply()` को कॉल करें।
 
 <a id="marking-html-for-translation"></a>
 ## अनुवाद के लिए HTML को चिह्नित करना
 
-बेयर मार्करों को प्राथमिकता दें। स्रोत टेक्स्ट तत्व से पढ़ा जाता है, इसलिए इसे एक बार लिखा जाता है:
+बेयर मार्कर्स को प्राथमिकता दें। अंग्रेज़ी स्रोत टेक्स्ट एलिमेंट पर ही रहता है, और वही टेक्स्ट कैटलॉग कुंजी होता है। `extract` इसे पढ़ता है; रनटाइम अनुवाद को वापस उसी प्रॉपर्टी पर लिखता है।
 
 - `data-i18n` — कुंजी `textContent` है। रनटाइम `textContent` सेट करता है।
 - `data-i18n-title` — कुंजी `title` है।
@@ -91,15 +102,112 @@ ai-i18n-tools translate-ui
 - `data-i18n-alt` — कुंजी `alt` है।
 - `data-i18n-aria-label` — कुंजी `aria-label` है।
 
-`mark-html` उन बेयर मार्करों को सम्मिलित करता है। यह एक ड्राई रन है जब तक कि आप `--write` पास नहीं करते। यह `data-i18n-ignore` सबट्री, कोड-जैसे तत्वों (`code`, `pre`, `kbd`, `samp`, `var`), और खाली या केवल संख्यात्मक टेक्स्ट को छोड़ देता है।
+एक एलिमेंट इनमें से कई को वहन कर सकता है। प्रत्येक मार्कर अपनी स्वयं की कैटलॉग प्रविष्टि होता है।
 
-सादा `data-i18n` एक लीफ टेक्स्ट नोड के लिए है। `Run <code>build</code> now.` के लिए, प्रत्येक टेक्स्ट रन को रैप करें:
+### टेक्स्ट
+
+`data-i18n` को ऐसे एलिमेंट पर रखें जिसकी सामग्री केवल टेक्स्ट हो:
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-एक मानयुक्त मार्कर (`data-i18n="Some key"`) का उपयोग केवल तभी करें जब कुंजी को दृश्यमान टेक्स्ट से भिन्न होना आवश्यक हो।
+रनटाइम `<title>` एलिमेंट से `document.title` भी सेट करता है। मिश्रित-सामग्री वाले कंटेनर पर `data-i18n` न रखें: रनटाइम `textContent` असाइन करता है, जो इसके चाइल्ड एलिमेंट्स को हटा देगा।
+
+### टूलटिप
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+एक कंट्रोल अपने लेबल और अपने टूलटिप का अनुवाद दो कुंजियों के रूप में कर सकता है:
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### प्लेसहोल्डर
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+एक ही फ़ील्ड पर प्लेसहोल्डर और टूलटिप:
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### ऑल्ट टेक्स्ट
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### एक्सेसिबल नाम
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+बटन लेबल `×` में कोई `data-i18n` नहीं है, इसलिए यह लिखे अनुसार ही रहता है। एक्सेसिबल नाम वह स्ट्रिंग है जिसका अनुवाद किया जाता है।
+
+### मिश्रित सामग्री
+
+`data-i18n` तत्व की संपूर्ण `textContent` को पढ़ता है। जब कोई वाक्य किसी अन्य तत्व के साथ अपना पैरेंट साझा करता है, तो प्रत्येक टेक्स्ट रन को रैप करें:
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### केवल स्रोत भाषा
+
+`data-i18n-ignore` उस तत्व और उसके वंशजों को `mark-html` और UI-स्ट्रिंग `extract` दोनों के लिए छोड़ देता है। इसका उपयोग नमूना पंक्तियों, पहचानकर्ताओं और ब्रांड नामों के लिए करें:
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### एक अलग कैटलॉग कुंजी
+
+एक मानयुक्त मार्कर कैटलॉग कुंजी का नाम बताता है। रनटाइम अभी भी अनुवाद को तत्व पर (या नामित विशेषता पर) लिखता है:
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html` ऊपर दिए गए बेयर मार्कर डालता है। यह एक ड्राई रन है जब तक कि आप `--write` पास नहीं करते। यह `data-i18n-ignore` सबट्री, कोड-जैसे तत्वों (`code`, `pre`, `kbd`, `samp`, `var`), और खाली या केवल संख्यात्मक टेक्स्ट को छोड़ देता है। यह मिश्रित-सामग्री वाले पैरेंट की रिपोर्ट करता है और उन्हें `<span data-i18n>` में रैप करने के लिए आपके लिए छोड़ देता है। यह कभी भी मानयुक्त मार्कर नहीं लिखता है।
 
 रनटाइम पहली बार चलने पर प्रत्येक स्रोत कुंजी को एक आंतरिक `data-i18n-source` विशेषता पर रिकॉर्ड करता है, ताकि बाद में लोकैल स्विच करने पर भी अंग्रेजी स्ट्रिंग को देखा जा सके। उन विशेषताओं को एक्सट्रैक्ट नहीं किया जाता है।
 
@@ -108,15 +216,20 @@ ai-i18n-tools translate-ui
 
 ये मार्कर कभी भी अनुवादक को नहीं भेजे जाते हैं। `mark-html` इन्हें जोड़ता नहीं है।
 
-- `data-i18n-locale-src` — सादा: `pic_trulli.jpg`, `pic_trulli-pt-BR.jpg` बन जाता है (लोकैल कोड एक्सटेंशन से पहले डाला जाता है)। मानयुक्त: मान एक टेम्पलेट है, उदाहरण के लिए `img/{locale}/pic_trulli.jpg`।
+- `data-i18n-locale-src` — बेयर: `chart.png`, `chart-pt-BR.png` बन जाता है (लोकेल कोड एक्सटेंशन से पहले डाला जाता है)। मानयुक्त: मान एक टेम्पलेट है। [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) `chart_{locale}.png` का उपयोग करता है, जो `chart_pt-BR.png` बन जाता है।
 - `data-i18n-locale-href` — `?locale=` को जोड़ता है ताकि लिंक उसी HTML फ़ाइल पर बना रहे।
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-स्रोत लोकैल मूल URL को बनाए रखता है। पूर्ण URL, `data:` URL, और `#` फ्रैगमेंट्स को वैसे का वैसा ही छोड़ दिया जाता है। छवि पथ पर क्वेरी स्ट्रिंग्स और फ्रैगमेंट्स अपने स्थान पर बने रहते हैं। यदि लोकैलाइज़ की गई छवि 404 देती है, तो रनटाइम मूल `src` को एक बार पुनर्स्थापित करता है। आप `pic_trulli-pt-BR.jpg` को स्वयं शिप करते हैं; स्क्रिप्ट इसे बनाती नहीं है।
+स्रोत लोकेल मूल URL को बनाए रखता है। एक बेयर `data-i18n-locale-src` के लिए, पूर्ण URL, प्रोटोकॉल-सापेक्ष URL, `data:` URL, और `#` फ्रैगमेंट को छोड़ दिया जाता है; क्वेरी स्ट्रिंग और फ्रैगमेंट अपने स्थान पर बने रहते हैं। एक मानयुक्त मार्कर प्रत्येक गैर-स्रोत लोकेल के लिए अपने टेम्पलेट का उपयोग करता है और केवल `{locale}` को बदलता है। यदि स्थानीयकृत छवि 404 देती है, तो रनटाइम मूल `src` को एक बार पुनर्स्थापित करता है। आप `chart_pt-BR.png` को स्वयं शिप करते हैं; स्क्रिप्ट इसे नहीं बनाती है।
 
 `data-i18n-locale-href` इस कैटलॉग मॉडल के लिए है। `about.pt-BR.html` का लिंक [HTML पृष्ठों](/hi/guide/documents/html-pages) की पाइपलाइन से संबंधित है।
 
@@ -125,7 +238,57 @@ ai-i18n-tools translate-ui
 
 `data-locale-select` को एक खाली `<select>` पर इंगित करें। रनटाइम `ui-languages.json` (`code`, `label`, `englishName`, `direction`) की प्रत्येक पंक्ति के लिए एक `<option>` भरता है। सेलेक्ट को बदलने पर `setLocale` कॉल होता है, जो विकल्प को स्टोर करता है, `?locale=` को `history.pushState` के साथ अपडेट करता है (कोई रीलोड नहीं), बंडल को फेच करता है, प्रत्येक मार्कर को पुनः लागू करता है, और `<html lang>` और `dir` को सेट करता है। बैक बटन URL में लोकैल को पुनः लागू करता है।
 
-`data-locale-list` लिंक के साथ भी यही करता है (सक्रिय वाले पर `lang`, `hreflang`, और `aria-current`)। वे लिंक कैटलॉग पृष्ठ को स्विच करते हैं; वे दस्तावेज़ पाइपलाइन द्वारा लिखे गए प्रति-फ़ाइल लिंक नहीं हैं।
+`data-locale-list` लिंक के साथ भी यही करता है (`lang`, `hreflang`, और सक्रिय वाले पर `aria-current`)। वे लिंक कैटलॉग पेज को स्विच करते हैं; वे दस्तावेज़ पाइपलाइन द्वारा लिखे गए प्रति-फ़ाइल लिंक नहीं हैं। एक स्क्रिप्ट टैग दोनों चयनकर्ताओं को सेट कर सकता है:
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+दोनों नियंत्रणों को खाली छोड़ दें। इस मैनिफेस्ट के लिए, `data-label-mode="native"` पुर्तगाली को `Português (Brasil)` के रूप में लेबल करता है। `english` इसे `Portuguese (Brazil)` लेबल करता है। `both` इसे `Portuguese (Brazil) / Português (Brasil)` लेबल करता है, क्योंकि दोनों नाम भिन्न हैं, `ui-languages.json` से नीचे दिया गया स्निपेट देखें:
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+`?locale=pt-BR` के साथ, रनटाइम सेलेक्ट के विकल्पों और सूची के चाइल्ड को बदल देता है। आपके द्वारा उन तत्वों पर सेट की गई विशेषताएं बनी रहती हैं:
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+एक `"direction": "rtl"` पंक्ति `<html>` पर `dir="rtl"` सेट करती है जब वह लोकेल सक्रिय होता है।
 
 इसके ऊपर `navigator.language` द्वारा ऑटो-रीडायरेक्ट न करें। रनटाइम ब्राउज़र भाषा का उपयोग पहले से ही केवल तभी करता है जब URL और `localStorage` के पास कोई विकल्प न हो। URL को अनदेखा करने वाला रीडायरेक्ट लोकैल साझा करना और पृष्ठ को क्रॉल करना कठिन बना देता है।
 
@@ -134,16 +297,17 @@ ai-i18n-tools translate-ui
 <a id="troubleshooting"></a>
 ## समस्या निवारण
 
-| लक्षण | क्या जाँचें |
+| लक्षण | क्या जांचें |
 | --- | --- |
-| नेटवर्क त्रुटि, खाली पृष्ठ | साइट को स्थानीय सर्वर के साथ खोलें। `file://`, `fetch` को ब्लॉक करता है। |
+| लोकेल फ़ाइलें लोड नहीं होती हैं | साइट को स्थानीय सर्वर के साथ खोलें। `file://` `fetch` को ब्लॉक करता है; रनटाइम स्रोत टेक्स्ट पर फॉल बैक करता है। |
 | `ui-languages.json` पर 404 | `data-locales-base`, `i18n.js` के सापेक्ष है। इसे `flatOutputDir` से मेल खाना चाहिए। |
+| `{locale}.json` पर 404 | उस लोकेल के लिए `translate-ui` चलाएं और जांचें कि लोकेल कोड उसके फ़ाइलनाम से बिल्कुल मेल खाता है। |
 | `/docs/` के अंतर्गत स्ट्रिंग्स अंग्रेजी में रहती हैं | वही बेस-पाथ समस्या। शुरुआती `/` से बचें जब तक कि लोकैल निर्देशिका होस्ट रूट पर न हो। |
 | अंग्रेजी फ्लैश होती है, फिर अनुवादित होती है | `<html>` पर `class="i18n-pending"` और ऊपर दिया गया दृश्यता नियम जोड़ें। |
 | दूसरा स्विच अनुवादित स्ट्रिंग को कुंजी के रूप में दिखाता है | शिप किए गए `i18n.js` को लोड करें। यह टेक्स्ट को बदलने से पहले `data-i18n-source` को स्टोर करता है। |
 | RTL लेआउट फ्लिप नहीं होता है | मैनिफेस्ट पंक्ति को `"direction": "rtl"` की आवश्यकता है। रनटाइम `dir` को केवल `<html>` पर सेट करता है। |
 | नए DOM नोड्स अंग्रेजी में रहते हैं | उन्हें सम्मिलित करने के बाद `window.i18n.apply()` को कॉल करें। |
-| छवि पुर्तगाली में `pic_trulli.jpg` बनी रहती है | तत्व को `data-i18n-locale-src` की आवश्यकता है, और लोकेल स्रोत लोकेल नहीं होना चाहिए। |
+| पुर्तगाली में छवि `chart.png` रहती है | तत्व को `data-i18n-locale-src` की आवश्यकता है, और लोकेल स्रोत लोकेल नहीं होना चाहिए। |
 
 रनटाइम में `normalizeI18nText`, [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) में `normalizeI18nText` से मेल खाता है: ट्रिम करें, फिर रिक्त स्थान को संकुचित करें। चूँकि अंग्रेज़ी स्रोत टेक्स्ट कैटलॉग कुंजी है, इसलिए अनुपलब्ध अनुवाद अंग्रेज़ी पर फ़ॉल बैक हो जाता है।
 

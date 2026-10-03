@@ -8,19 +8,24 @@
 <a id="quick-start"></a>
 ## 빠른 시작
 
-1. 영어 HTML에 마커를 지정합니다(또는 `mark-html`이(가) 수행하도록 합니다).
-2. `ui.sourceRoots` 및 `ui.uiExtractor.extensions`의 대상을 해당 파일로 지정합니다.
-3. `extract`을(를) 실행한 다음 `translate-ui`을(를) 실행합니다.
-4. `i18n.js`을(를) 페이지와 동일한 위치에 복사하고 자체 스크립트보다 먼저 로드합니다.
-5. HTTP를 통해 폴더를 서비스합니다. `file://`은(는) 로캘 JSON을 `fetch`할 수 없습니다.
+1. `ai-i18n-tools init -t ui-plain-html`(으)로 스캐폴딩하거나 아래 구성을 추가합니다.
+2. 소스 HTML에 마크를 지정합니다(또는 `mark-html`이 처리하게 둡니다).
+3. `ui.sourceRoots` 및 `ui.uiExtractor.extensions`의 대상을 해당 파일로 지정합니다.
+4. `extract`을(를) 실행한 다음 `translate-ui`을(를) 실행합니다(또는 `sync-ui`(으)로 둘 다 실행).
+5. 페이지와 동일한 디렉터리에 `i18n.js`을(를) 복사하고 자체 스크립트보다 먼저 로드합니다.
+6. HTTP를 통해 폴더를 서비스합니다. `file://`은(는) 로캘 JSON을 `fetch`할 수 없습니다.
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+`ai-i18n-tools.config.json` 예제:
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir`은(는) `translate-ui`이(가) `{locale}.json` 및 `ui-languages.json`을(를) 기록하는 위치입니다. 스크립트의 `data-locales-base`은(는) `i18n.js`(페이지가 아님) 기준 상대 URL로 해당 디렉터리를 가리켜야 합니다. `public/i18n.js`에서 `./locales` 기준 경로는 `public/locales/pt-BR.json`을(를) 로드합니다. 사이트가 하위 경로에서도 계속 작동하도록 상대 기준 경로를 사용하십시오.
+스캐폴드는 `translate-ui`에서 사용하는 LLM [공급자 구성](/ko/guide/providers-and-models)도 추가합니다. HTML 전용 설정이 잘 보이도록 위 예제에서는 생략했습니다.
+
+`extract`은(는) `strings.json`을(를) 관리하고 `ui-languages.json`을(를) 기록합니다. `translate-ui`은(는) 대상 로캘 JSON 파일을 관리합니다. 생성된 이러한 파일을 수동으로 편집하지 마십시오.
+
+`flatOutputDir`은(는) 생성된 로캘 파일이 저장되는 위치입니다. 스크립트의 `data-locales-base`은(는) 해당 디렉터리를 `i18n.js`(페이지가 아님) 기준 상대 URL로 가리켜야 합니다. `public/i18n.js`에서 `./locales` 기준 경로를 사용하면 `public/locales/pt-BR.json`을(를) 로드합니다. 배포 하위 경로에서도 사이트가 정상적으로 작동하도록 상대 기준 경로를 사용하십시오.
 
 <a id="obtain-the-runtime"></a>
 ## 런타임 가져오기
@@ -69,6 +78,8 @@ ai-i18n-tools translate-ui
 </html>
 ```
 
+필요에 따라 스크립트 속성을 조정하십시오:
+
 | 속성 | 기본값 | 역할 |
 | --- | --- | --- |
 | `data-source-locale` | `en` | 영어 HTML을 유지하고 번들 가져오기를 건너뛰는 로캘 |
@@ -78,12 +89,12 @@ ai-i18n-tools translate-ui
 | `data-locale-list` | (없음) | 언어 링크로 채울 요소의 CSS 선택기 |
 | `data-label-mode` | `native` | `native`(매니페스트 `label`), `english`(`englishName`) 또는 `both`(다른 경우 `englishName / label`) |
 
-`window.i18n`은(는) `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)` 및 `ready`(Promise)를 노출합니다. 마커가 지정된 새 요소를 삽입한 후 `apply()`을(를) 호출하십시오.
+`window.i18n`은(는) `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)` 및 `ready`(Promise)를 노출합니다. 자체 스크립트에서 확인된 로캘이나 번역된 값에 의존하기 전에 `ready`을(를) 대기하십시오. 마킹된 새 요소를 삽입한 후 `apply()`을(를) 호출하십시오.
 
 <a id="marking-html-for-translation"></a>
 ## 번역을 위한 HTML 마킹
 
-기본 마커를 사용하는 것이 좋습니다. 원본 텍스트는 요소에서 읽히므로 한 번만 작성하면 됩니다.
+기본 마커 사용을 권장합니다. 영어 원본 텍스트는 요소에 그대로 유지되며, 해당 텍스트가 카탈로그 키가 됩니다. `extract`이(가) 이를 읽고, 런타임이 번역문을 동일한 속성에 다시 기록합니다.
 
 - `data-i18n` — 키는 `textContent`입니다. 런타임이 `textContent`을(를) 설정합니다.
 - `data-i18n-title` — 키는 `title`입니다.
@@ -91,15 +102,112 @@ ai-i18n-tools translate-ui
 - `data-i18n-alt` — 키는 `alt`입니다.
 - `data-i18n-aria-label` — 키는 `aria-label`입니다.
 
-`mark-html`은(는) 이러한 기본 마커를 삽입합니다. `--write`을(를) 전달하지 않는 한 시험 실행으로 간주됩니다. `data-i18n-ignore` 하위 트리, 코드 유사 요소(`code`, `pre`, `kbd`, `samp`, `var`) 및 비어 있거나 숫자로만 구성된 텍스트는 건너뜁니다.
+하나의 요소에 이러한 마커를 여러 개 포함할 수 있습니다. 각 마커는 고유한 카탈로그 항목이 됩니다.
 
-기본 `data-i18n`은 리프 텍스트 노드용입니다. `Run <code>build</code> now.`의 경우 각 텍스트 런을 래핑합니다:
+### 텍스트
+
+콘텐츠가 텍스트로만 이루어진 요소에 `data-i18n`을(를) 배치합니다:
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-값이 있는 마커(`data-i18n="Some key"`)는 키가 표시되는 텍스트와 달라야 할 때만 사용하십시오.
+런타임은 `<title>` 요소의 `document.title`도 설정합니다. 혼합 콘텐츠 컨테이너에 `data-i18n`을(를) 배치하지 마십시오. 런타임이 `textContent`을(를) 할당하여 하위 요소를 제거하게 됩니다.
+
+### 도구 설명
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+컨트롤은 레이블과 도구 설명을 두 개의 키로 번역할 수 있습니다:
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### 자리 표시자
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+동일한 필드의 자리 표시자 및 도구 설명:
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### 대체 텍스트
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### 접근성 이름
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+버튼 레이블 `×`에는 `data-i18n`이(가) 없으므로 입력된 그대로 유지됩니다. 접근성 이름은 번역되는 문자열입니다.
+
+### 혼합 콘텐츠
+
+`data-i18n`은 요소의 전체 `textContent`을 읽습니다. 문장이 다른 요소와 같은 부모를 공유할 경우 각 텍스트 런을 다음처럼 래핑합니다:
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### 소스 언어 전용
+
+`data-i18n-ignore`은 `mark-html` 및 UI 문자열 `extract` 모두에 대해 해당 요소와 하위 요소를 건너뜁니다. 샘플 행, 식별자, 브랜드 이름에 사용합니다:
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### 다른 카탈로그 키
+
+값이 지정된 마커는 카탈로그 키를 명명합니다. 런타임은 여전히 번역을 요소(또는 명명된 속성)에 작성합니다:
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html`은 위의 베어 마커를 삽입합니다. `--write`을 전달하지 않는 한 드라이 런으로 실행됩니다. `data-i18n-ignore` 하위 트리, 코드 유사 요소(`code`, `pre`, `kbd`, `samp`, `var`), 그리고 비어 있거나 숫자로만 이루어진 텍스트는 건너뜁니다. 혼합 콘텐츠 부모를 보고하고 사용자가 `<span data-i18n>`(으)로 래핑할 수 있도록 남겨둡니다. 값이 지정된 마커는 절대 작성하지 않습니다.
 
 런타임은 처음 실행될 때 각 소스 키를 내부 `data-i18n-source` 속성에 기록하므로, 나중에 로케일을 전환해도 여전히 영어 문자열을 조회합니다. 이러한 속성은 추출되지 않습니다.
 
@@ -108,15 +216,20 @@ ai-i18n-tools translate-ui
 
 이러한 마커는 번역기로 전송되지 않습니다. `mark-html`은 이를 추가하지 않습니다.
 
-- `data-i18n-locale-src` — 기본: `pic_trulli.jpg`은 `pic_trulli-pt-BR.jpg`이 됩니다(로케일 코드가 확장자 앞에 삽입됨). 값 지정: 값은 템플릿이며, 예를 들어 `img/{locale}/pic_trulli.jpg`입니다.
-- `data-i18n-locale-href` — `?locale=`을 추가하여 링크가 동일한 HTML 파일에 유지되도록 합니다.
+- `data-i18n-locale-src` — 베어: `chart.png`은 `chart-pt-BR.png`(으)로 변환됩니다(로캘 코드가 확장자 앞에 삽입됨). 값 지정: 값은 템플릿입니다. [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)은 `chart_{locale}.png`을(를) 사용하며, 이는 `chart_pt-BR.png`(으)로 변환됩니다.
+- `data-i18n-locale-href` — `?locale=`을(를) 추가하여 링크가 동일한 HTML 파일에 유지되도록 합니다.
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-소스 로케일은 원본 URL을 유지합니다. 절대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지됩니다. 이미지 경로의 쿼리 문자열과 프래그먼트는 제자리에 유지됩니다. 지역화된 이미지에서 404 오류가 발생하면 런타임이 원본 `src`을 한 번 복원합니다. `pic_trulli-pt-BR.jpg`은 직접 배포해야 하며 스크립트에서 생성하지 않습니다.
+소스 로캘은 원본 URL을 유지합니다. 베어 `data-i18n-locale-src`의 경우 절대 URL, 프로토콜 상대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지되며 쿼리 문자열과 프래그먼트도 제자리에 유지됩니다. 값이 지정된 마커는 소스가 아닌 모든 로캘에 대해 해당 템플릿을 사용하고 `{locale}`만 대체합니다. 지역화된 이미지가 404 오류를 반환하면 런타임이 원본 `src`을(를) 한 번 복원합니다. `chart_pt-BR.png`은(는) 사용자가 직접 제공해야 하며 스크립트에서 생성하지 않습니다.
 
 `data-i18n-locale-href`은 이 카탈로그 모델용입니다. `about.pt-BR.html`에 대한 링크는 [HTML 페이지](/ko/guide/documents/html-pages) 파이프라인에 속합니다.
 
@@ -125,7 +238,57 @@ ai-i18n-tools translate-ui
 
 `data-locale-select`을 빈 `<select>`에 지정합니다. 런타임은 `ui-languages.json`의 행당 하나의 `<option>`을 채웁니다(`code`, `label`, `englishName`, `direction`). 선택 항목을 변경하면 `setLocale`이 호출되어 선택 항목을 저장하고, `?locale=`을 `history.pushState`으로 업데이트하며(다시 로드 없음), 번들을 가져오고, 모든 마커를 다시 적용하고, `<html lang>` 및 `dir`를 설정합니다. 뒤로 버튼은 URL의 로케일을 다시 적용합니다.
 
-`data-locale-list`은 링크(`lang`, `hreflang` 및 활성 링크의 `aria-current`)에 대해서도 동일한 작업을 수행합니다. 이러한 링크는 카탈로그 페이지를 전환하며, 문서 파이프라인에서 작성된 파일별 링크가 아닙니다.
+`data-locale-list`은 링크(`lang`, `hreflang` 및 활성 링크의 `aria-current`)에 대해서도 동일한 작업을 수행합니다. 이러한 링크는 카탈로그 페이지를 전환하며 문서 파이프라인에서 작성하는 파일별 링크가 아닙니다. 하나의 스크립트 태그로 두 선택기를 모두 설정할 수 있습니다:
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+두 컨트롤을 모두 비워 둡니다. 이 매니페스트에서 `data-label-mode="native"`은 포르투갈어를 `Português (Brasil)`(으)로 레이블링합니다. `english`은 `Portuguese (Brazil)`(으)로 레이블링합니다. `both`은 두 이름이 다르므로 `Portuguese (Brazil) / Português (Brasil)`(으)로 레이블링합니다. `ui-languages.json`의 아래 스니펫을 참조하세요:
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+`?locale=pt-BR`을 사용하면 런타임이 select의 옵션과 목록의 하위 요소를 대체합니다. 해당 요소에 설정한 속성은 그대로 유지됩니다:
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+`"direction": "rtl"` 행은 해당 로캘이 활성 상태일 때 `<html>`에 `dir="rtl"`을(를) 설정합니다.
 
 이 외에 `navigator.language`을 통한 자동 리디렉션을 설정하지 마십시오. 런타임은 URL과 `localStorage`에 선택 항목이 없을 때만 브라우저 언어를 사용하도록 이미 설정되어 있습니다. URL을 무시하는 리디렉션은 로케일 공유 및 페이지 크롤링을 어렵게 만듭니다.
 
@@ -136,14 +299,15 @@ ai-i18n-tools translate-ui
 
 | 증상 | 확인할 사항 |
 | --- | --- |
-| 네트워크 오류, 빈 페이지 | 로컬 서버로 사이트를 엽니다. `file://`이 `fetch`을 차단합니다. |
+| 로캘 파일이 로드되지 않음 | 로컬 서버로 사이트를 엽니다. `file://`이 `fetch`을(를) 차단하면 런타임이 소스 텍스트로 폴백합니다. |
 | `ui-languages.json`에서 404 오류 | `data-locales-base`은 `i18n.js`에 대한 상대 경로입니다. `flatOutputDir`과 일치해야 합니다. |
+| `{locale}.json`에서 404 오류 발생 | 해당 로캘에 대해 `translate-ui`을(를) 실행하고 로캘 코드가 파일 이름과 정확히 일치하는지 확인합니다. |
 | `/docs/`에서 문자열이 영어로 유지됨 | 동일한 기본 경로 문제입니다. 로케일 디렉토리가 호스트 루트에 있지 않은 한 선행 `/`을 사용하지 마십시오. |
 | 영어가 잠깐 표시된 후 번역됨 | `<html>`에 `class="i18n-pending"`을 추가하고 위의 가시성 규칙을 적용합니다. |
 | 두 번째 전환 시 번역된 문자열이 키로 표시됨 | 배포된 `i18n.js`을 로드하십시오. 텍스트를 대체하기 전에 `data-i18n-source`을 저장합니다. |
 | RTL 레이아웃이 반전되지 않음 | 매니페스트 행에 `"direction": "rtl"`이 필요합니다. 런타임은 `<html>`에만 `dir`을 설정합니다. |
 | 새 DOM 노드가 영어로 유지됨 | 노드를 삽입한 후 `window.i18n.apply()`을 호출하십시오. |
-| 포르투갈어에서 이미지가 `pic_trulli.jpg`로 유지됨 | 요소에 `data-i18n-locale-src`이(가) 필요하며, 로케일은 소스 로케일이 아니어야 합니다. |
+| 포르투갈어에서 이미지가 `chart.png`(으)로 유지됨 | 요소에 `data-i18n-locale-src`이(가) 필요하며 로캘은 소스 로캘이 아니어야 합니다. |
 
 런타임의 `normalizeI18nText`이(가) [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts)의 `normalizeI18nText`과(와) 일치합니다: 공백을 트리밍한 다음 연속 공백을 축소합니다. 영어 소스 텍스트가 카탈로그 키로 사용되므로, 번역이 누락된 경우 영어로 폴백됩니다.
 

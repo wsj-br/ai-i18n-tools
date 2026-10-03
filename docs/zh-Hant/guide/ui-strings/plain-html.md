@@ -8,19 +8,24 @@
 <a id="quick-start"></a>
 ## 快速開始
 
-1. 標記英文 HTML（或讓 `mark-html` 執行此動作）。
-2. 將 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向這些檔案。
-3. 執行 `extract`，然後執行 `translate-ui`。
-4. 將 `i18n.js` 複製到頁面旁邊，並在您自己的指令碼之前載入它。
-5. 透過 HTTP 提供該資料夾。`file://` 無法 `fetch` 語言區域 JSON。
+1. 使用 `ai-i18n-tools init -t ui-plain-html` 建立脚手架，或新增下方的設定。
+2. 標記來源 HTML（或讓 `mark-html` 自動處理）。
+3. 將 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向這些檔案。
+4. 執行 `extract`，然後執行 `translate-ui`（或使用 `sync-ui` 同時執行兩者）。
+5. 將 `i18n.js` 複製到網頁旁邊，並在您自己的指令碼之前載入它。
+6. 透過 HTTP 提供該資料夾。`file://` 無法 `fetch` 地區設定 JSON。
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+`ai-i18n-tools.config.json` 範例：
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir` 是 `translate-ui` 寫入 `{locale}.json` 和 `ui-languages.json` 的位置。指令碼的 `data-locales-base` 必須是該目錄，作為相對於 `i18n.js`（而非頁面）的 URL。在 `public/i18n.js` 上使用 `./locales` 的基底會載入 `public/locales/pt-BR.json`。請使用相對基底，以便網站在子路徑下仍能正常運作。
+脚手架也會新增 `translate-ui` 所使用的 LLM [提供者設定](/zh-Hant/guide/providers-and-models)；上方已將其省略，以便讓 HTML 專屬設定保持可見。
+
+`extract` 擁有 `strings.json` 並寫入 `ui-languages.json`；`translate-ui` 擁有目標地區設定 JSON 檔案。請勿手動編輯這些產生的檔案。
+
+`flatOutputDir` 是產生的地區設定檔案所在的位置。指令碼的 `data-locales-base` 必須將該目錄指向為相對於 `i18n.js`（而非網頁）的 URL。在 `public/i18n.js` 上使用 `./locales` 的基底會載入 `public/locales/pt-BR.json`。請使用相對基底，以便網站在部署子路徑下仍能正常運作。
 
 <a id="obtain-the-runtime"></a>
 ## 取得執行階段
@@ -69,6 +78,8 @@ ai-i18n-tools translate-ui
 </html>
 ```
 
+請根據您的需求調整指令碼屬性：
+
 | 屬性 | 預設值 | 角色 |
 | --- | --- | --- |
 | `data-source-locale` | `en` | 保留英文 HTML 並略過套件組合擷取的語言區域 |
@@ -78,12 +89,12 @@ ai-i18n-tools translate-ui
 | `data-locale-list` | (無) | 要以語言連結填入之元素的 CSS 選取器 |
 | `data-label-mode` | `native` | `native`（資訊清單 `label`）、`english`（`englishName`）或 `both`（當它們不同時為 `englishName / label`） |
 
-`window.i18n` 會公開 `t(key)`、`locale`、`dir`、`apply()`、`setLocale(code)` 和 `ready`（一個 Promise）。在插入新的標記元素後，請呼叫 `apply()`。
+`window.i18n` 會公開 `t(key)`、`locale`、`dir`、`apply()`、`setLocale(code)` 和 `ready`（一個 Promise）。在您自己的指令碼依賴已解析的地區設定或翻譯值之前，請先等待 `ready`。插入新的標記元素後，請呼叫 `apply()`。
 
 <a id="marking-html-for-translation"></a>
 ## 標記 HTML 以進行翻譯
 
-建議使用裸標記。來源文字是從元素讀取的，因此只需寫入一次：
+建議使用純標記。英文來源文字會保留在元素上，且該文字即為目錄索引鍵。`extract` 會讀取它；執行階段會將翻譯寫回相同的屬性。
 
 - `data-i18n` — 索引鍵為 `textContent`。執行階段會設定 `textContent`。
 - `data-i18n-title` — 索引鍵為 `title`。
@@ -91,15 +102,112 @@ ai-i18n-tools translate-ui
 - `data-i18n-alt` — 索引鍵為 `alt`。
 - `data-i18n-aria-label` — 索引鍵為 `aria-label`。
 
-`mark-html` 會插入這些裸標記。除非您傳遞 `--write`，否則這是一次試執行。它會略過 `data-i18n-ignore` 子樹狀結構、類似程式碼的元素（`code`、`pre`、`kbd`、`samp`、`var`），以及空白或僅含數字的文字。
+一個元素可以帶有多個這類標記。每個標記都是其自己的目錄項目。
 
-單純的 `data-i18n` 用於葉文字節點。對於 `Run <code>build</code> now.`，請包覆每個文字片段：
+### 文字
+
+將 `data-i18n` 放在內容僅為文字的元素上：
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-僅當索引鍵必須與可見文字不同時，才使用帶值標記 (`data-i18n="Some key"`)。
+執行階段也會從 `<title>` 元素設定 `document.title`。請勿將 `data-i18n` 放在混合內容的容器上：執行階段會指派 `textContent`，這會移除其子元素。
+
+### 工具提示
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+控制項可以將其標籤和工具提示翻譯為兩個索引鍵：
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### 預留位置
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+相同欄位上的預留位置與工具提示：
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### 替代文字
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### 無障礙名稱
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+按鈕標籤 `×` 沒有 `data-i18n`，因此會維持原樣。無障礙名稱是會被翻譯的字串。
+
+### 混合內容
+
+`data-i18n` 會讀取元素的整個 `textContent`。當句子與其他元素共用同一個父元素時，請將每個文字片段包裝起來：
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### 僅限來源語言
+
+`data-i18n-ignore` 會在 `mark-html` 和 UI 字串 `extract` 中略過該元素及其子元素。請將其用於範例列、識別碼和品牌名稱：
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### 不同的目錄索引鍵
+
+具值標記會命名目錄索引鍵。執行階段仍會將翻譯寫入元素（或命名的屬性）上：
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html` 會插入上述的無值標記。除非您傳遞 `--write`，否則這只是一次試執行。它會略過 `data-i18n-ignore` 子樹、類似程式碼的元素（`code`、`pre`、`kbd`、`samp`、`var`），以及空白或純數字的文字。它會回報混合內容的父元素，並留給您使用 `<span data-i18n>` 進行包裝。它絕不會寫入具值標記。
 
 執行階段在首次執行時，會將每個來源索引鍵記錄在內部的 `data-i18n-source` 屬性上，因此後續切換地區設定時仍會查詢英文字串。這些屬性不會被擷取。
 
@@ -108,15 +216,20 @@ ai-i18n-tools translate-ui
 
 這些標記絕不會傳送給翻譯者。`mark-html` 不會新增這些標記。
 
-- `data-i18n-locale-src` — 單純：`pic_trulli.jpg` 會變成 `pic_trulli-pt-BR.jpg` (地區設定代碼會插入在副檔名之前)。帶值：值為範本，例如 `img/{locale}/pic_trulli.jpg`。
-- `data-i18n-locale-href` — 附加 `?locale=`，讓連結維持指向同一個 HTML 檔案。
+- `data-i18n-locale-src` — 無值：`chart.png` 會變成 `chart-pt-BR.png`（地區設定代碼會插入在副檔名之前）。具值：該值為範本。[`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) 會使用 `chart_{locale}.png`，並變成 `chart_pt-BR.png`。
+- `data-i18n-locale-href` — 會附加 `?locale=`，使連結維持在相同的 HTML 檔案上。
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-來源地區設定會保留原始 URL。絕對 URL、`data:` URL 和 `#` 片段皆維持原樣。圖片路徑上的查詢字串與片段會保留在原位。若當地語系化的圖片發生 404 錯誤，執行階段會還原原始的 `src` 一次。您必須自行提供 `pic_trulli-pt-BR.jpg`；指令碼不會自動建立。
+來源地區設定會保留原始 URL。對於無值 `data-i18n-locale-src`，絕對 URL、通訊協定相對 URL、`data:` URL 和 `#` 片段會保持不變；查詢字串和片段也會維持原位。具值標記會對每個非來源地區設定使用其範本，並僅取代 `{locale}`。如果在在地化影像出現 404 錯誤，執行階段會還原原始 `src` 一次。您必須自行提供 `chart_pt-BR.png`；指令碼不會建立它。
 
 `data-i18n-locale-href` 適用於此目錄模型。指向 `about.pt-BR.html` 的連結屬於 [HTML 頁面](/zh-Hant/guide/documents/html-pages) 管線。
 
@@ -125,7 +238,57 @@ ai-i18n-tools translate-ui
 
 將 `data-locale-select` 指向空的 `<select>`。執行階段會為 `ui-languages.json` 的每一列填入一個 `<option>` (`code`、`label`、`englishName`、`direction`)。變更選取項目會呼叫 `setLocale`，該函數會儲存選項、使用 `history.pushState` 更新 `?locale=` (不重新載入)、擷取套件組合、重新套用每個標記，並設定 `<html lang>` 與 `dir`。「返回」按鈕會重新套用 URL 中的地區設定。
 
-`data-locale-list` 對連結執行相同動作 (`lang`、`hreflang`，以及作用中連結上的 `aria-current`)。這些連結會切換目錄頁面；它們並非由文件管線所寫入的各檔案連結。
+`data-locale-list` 對連結執行相同動作（`lang`、`hreflang`，以及作用中連結上的 `aria-current`）。這些連結會切換目錄頁面；它們不是由文件管線寫入的逐檔案連結。一個指令碼標籤可以設定這兩個選取器：
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+將這兩個控制項保持空白。對於此資訊清單，`data-label-mode="native"` 會將葡萄牙語標記為 `Português (Brasil)`。`english` 會將其標記為 `Portuguese (Brazil)`。`both` 會將其標記為 `Portuguese (Brazil) / Português (Brasil)`，因為這兩個名稱不同，請參閱下方來自 `ui-languages.json` 的程式碼片段：
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+使用 `?locale=pt-BR` 時，執行階段會取代 select 元素的選項和清單的子元素。您在這些元素上設定的屬性會保留：
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+當該地區設定處於作用中狀態時，`"direction": "rtl"` 列會在 `<html>` 上設定 `dir="rtl"`。
 
 請勿在此機制之外額外透過 `navigator.language` 進行自動重新導向。執行階段僅在 URL 與 `localStorage` 未指定選項時，才會使用瀏覽器語言。忽略 URL 的重新導向會導致難以分享地區設定及爬取頁面。
 
@@ -136,14 +299,15 @@ ai-i18n-tools translate-ui
 
 | 問題現象 | 檢查項目 |
 | --- | --- |
-| 網路錯誤、空白頁面 | 使用本機伺服器開啟網站。`file://` 會封鎖 `fetch`。 |
+| 地區設定檔案未載入 | 使用本機伺服器開啟網站。`file://` 會封鎖 `fetch`；執行階段會退回到來源文字。 |
 | `ui-languages.json` 出現 404 錯誤 | `data-locales-base` 是相對於 `i18n.js`。它必須符合 `flatOutputDir`。 |
+| `{locale}.json` 出現 404 錯誤 | 針對該地區設定執行 `translate-ui`，並檢查地區設定代碼是否與其檔案名稱完全相符。 |
 | 字串在 `/docs/` 下維持英文 | 同樣的基底路徑問題。請避免在開頭使用 `/`，除非地區設定目錄位於主機根目錄。 |
 | 英文短暫閃現後才顯示翻譯 | 在 `<html>` 上新增 `class="i18n-pending"` 以及上述的可見度規則。 |
 | 第二次切換時將翻譯後的字串顯示為索引鍵 | 載入已發佈的 `i18n.js`。它會在取代文字前先儲存 `data-i18n-source`。 |
 | RTL 版面配置未翻轉 | 資訊清單列需要 `"direction": "rtl"`。執行階段僅會在 `<html>` 上設定 `dir`。 |
 | 新的 DOM 節點維持英文 | 請在插入這些節點後呼叫 `window.i18n.apply()`。 |
-| 圖片在葡萄牙文中維持 `pic_trulli.jpg` | 該元素需要 `data-i18n-locale-src`，且地區設定不得為來源地區設定。 |
+| 影像在葡萄牙語中維持 `chart.png` | 該元素需要 `data-i18n-locale-src`，且地區設定不得為來源地區設定。 |
 
 執行階段的 `normalizeI18nText` 會比對 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText`：先去除首尾空白，再合併空白字元。由於英文來源文字是目錄鍵，缺少的翻譯會回退至英文。
 

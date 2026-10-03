@@ -206,6 +206,17 @@ _doctor_upgrade_dir() {
     upgrade_warn "   ↳ [${label}] excluding typescript from ncu (typescript-eslint does not support TS 7.0)."
   fi
 
+  # nextra loads twoslash at module init, which calls ts.sys. TypeScript 7
+  # exports no compiler API, so the Nextra build dies before any page renders.
+  if _is_direct_dep "$dir" "nextra"; then
+    if [ -n "$ncu_reject" ]; then
+      ncu_reject="${ncu_reject},typescript"
+    else
+      ncu_reject="typescript"
+    fi
+    upgrade_warn "   ↳ [${label}] excluding typescript from ncu (nextra/twoslash does not support TS 7.0)."
+  fi
+
   # Example packages declare a published caret range matching the (possibly
   # unpublished) root version. ncu would rewrite that pin to the latest npm
   # release, which would undo the workspace:* override intent.

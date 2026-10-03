@@ -8,19 +8,24 @@
 <a id="quick-start"></a>
 ## クイックスタート
 
-1. 英語のHTMLにマークを付けます（または`mark-html`に任せます）。
-2. `ui.sourceRoots`と`ui.uiExtractor.extensions`をそれらのファイルに向けます。
-3. `extract`を実行し、次に`translate-ui`を実行します。
-4. `i18n.js`をページの隣にコピーし、独自のスクリプトより前に読み込みます。
-5. フォルダーをHTTP経由で配信します。`file://`はロケールJSONを`fetch`できません。
+1. `ai-i18n-tools init -t ui-plain-html`でスキャフォールディングを行うか、以下の設定を追加します。
+2. ソースHTMLにマークを付けます（または`mark-html`に任せます）。
+3. `ui.sourceRoots`と`ui.uiExtractor.extensions`をそれらのファイルに向けます。
+4. `extract`を実行し、次に`translate-ui`を実行します（または`sync-ui`で両方を実行します）。
+5. `i18n.js`をページと同じディレクトリにコピーし、独自のスクリプトより前に読み込みます。
+6. フォルダをHTTP経由で配信します。`file://`はロケールJSONを`fetch`できません。
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+`ai-i18n-tools.config.json`の例:
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir`は、`translate-ui`が`{locale}.json`と`ui-languages.json`を書き込む場所です。スクリプトの`data-locales-base`は、`i18n.js`（ページではありません）に対する相対URLとしてのそのディレクトリである必要があります。`public/i18n.js`上の`./locales`のベースは`public/locales/pt-BR.json`を読み込みます。サイトがサブパス下でも引き続き機能するように、相対ベースを使用してください。
+スキャフォールドでは、`translate-ui`が使用するLLMの[プロバイダー設定](/ja/guide/providers-and-models)も追加されます。HTML固有の設定を見やすくするため、上記では省略されています。
+
+`extract`は`strings.json`を管理し、`ui-languages.json`を書き込みます。`translate-ui`はターゲットロケールのJSONファイルを管理します。これらの生成されたファイルを手動で編集しないでください。
+
+`flatOutputDir`は、生成されたロケールファイルが格納される場所です。スクリプトの`data-locales-base`は、`i18n.js`（ページではなく）からの相対URLとしてそのディレクトリを指す必要があります。`public/i18n.js`上の`./locales`のベースは`public/locales/pt-BR.json`を読み込みます。デプロイメントのサブパス下でもサイトが正常に動作するように、相対ベースを使用してください。
 
 <a id="obtain-the-runtime"></a>
 ## ランタイムの取得
@@ -69,6 +78,8 @@ ai-i18n-tools translate-ui
 </html>
 ```
 
+必要に応じてスクリプトの属性を調整してください:
+
 | 属性 | デフォルト | 役割 |
 | --- | --- | --- |
 | `data-source-locale` | `en` | 英語のHTMLを保持し、バンドルのフェッチをスキップするロケール |
@@ -78,12 +89,12 @@ ai-i18n-tools translate-ui
 | `data-locale-list` | （なし） | 言語リンクを入力する要素のCSSセレクター |
 | `data-label-mode` | `native` | `native`（マニフェスト`label`）、`english`（`englishName`）、または`both`（異なる場合は`englishName / label`） |
 
-`window.i18n`は、`t(key)`、`locale`、`dir`、`apply()`、`setLocale(code)`、および`ready`（プロミス）を公開します。新しいマーク付き要素を挿入した後に`apply()`を呼び出します。
+`window.i18n`は、`t(key)`、`locale`、`dir`、`apply()`、`setLocale(code)`、および`ready`（プロミス）を公開します。独自のスクリプトが解決されたロケールまたは翻訳された値に依存する前に、`ready`を待機してください。新しいマーク付き要素を挿入した後に、`apply()`を呼び出します。
 
 <a id="marking-html-for-translation"></a>
 ## 翻訳のためのHTMLのマーク付け
 
-ベアマーカーを優先します。ソーステキストは要素から読み取られるため、1回だけ記述されます。
+ベアマーカーを優先してください。英語のソーステキストは要素に残り、そのテキストがカタログキーとなります。`extract`がそれを読み取り、ランタイムが同じプロパティに翻訳を書き戻します。
 
 - `data-i18n` — キーは`textContent`です。ランタイムが`textContent`を設定します。
 - `data-i18n-title` — キーは`title`です。
@@ -91,15 +102,112 @@ ai-i18n-tools translate-ui
 - `data-i18n-alt` — キーは`alt`です。
 - `data-i18n-aria-label` — キーは`aria-label`です。
 
-`mark-html`はそれらのベアマーカーを挿入します。`--write`を渡さない限り、ドライランとなります。`data-i18n-ignore`サブツリー、コードのような要素（`code`、`pre`、`kbd`、`samp`、`var`）、および空または数値のみのテキストをスキップします。
+1つの要素にこれらのマーカーを複数含めることができます。各マーカーは個別のカタログエントリとなります。
 
-値を持たない `data-i18n` はリーフテキストノード用です。`Run <code>build</code> now.` の場合は、各テキストランを次のようにラップします。
+### テキスト
+
+コンテンツがテキストのみの要素に`data-i18n`を配置します:
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-値付きマーカー (`data-i18n="Some key"`) は、キーが表示テキストと異なる必要がある場合にのみ使用します。
+ランタイムは`<title>`要素から`document.title`も設定します。混合コンテンツのコンテナに`data-i18n`を配置しないでください。ランタイムが`textContent`を割り当て、子要素が削除されてしまいます。
+
+### ツールチップ
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+コントロールは、ラベルとツールチップを2つのキーとして翻訳できます:
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### プレースホルダー
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+同じフィールド上のプレースホルダーとツールチップ:
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### 代替テキスト
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### アクセシブル名
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+ボタンラベル`×`には`data-i18n`がないため、記述されたままになります。アクセシブル名は翻訳される文字列です。
+
+### 混合コンテンツ
+
+`data-i18n`は要素の`textContent`全体を読み取ります。文が他の要素と親を共有している場合は、各テキストランをラップします:
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### ソース言語のみ
+
+`data-i18n-ignore`は、`mark-html`とUI文字列の`extract`の両方について、その要素とその子孫をスキップします。サンプル行、識別子、ブランド名に使用します:
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### 別のカタログキー
+
+値付きマーカーはカタログキーを指定します。ランタイムは引き続き要素（または指定された属性）に翻訳を書き込みます:
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html`は上記のベアマーカーを挿入します。`--write`を渡さない限り、これはドライランです。`data-i18n-ignore`サブツリー、コードのような要素（`code`、`pre`、`kbd`、`samp`、`var`）、および空または数値のみのテキストをスキップします。混合コンテンツの親を報告し、`<span data-i18n>`でラップするために残します。値付きマーカーを書き込むことはありません。
 
 ランタイムは、最初の実行時に各ソースキーを内部の `data-i18n-source` 属性に記録するため、後でロケールを切り替えても英語の文字列が検索されます。これらの属性は抽出されません。
 
@@ -108,15 +216,20 @@ ai-i18n-tools translate-ui
 
 これらのマーカーが翻訳者に送信されることはありません。`mark-html` によって追加されることもありません。
 
-- `data-i18n-locale-src` — 値なし: `pic_trulli.jpg` は `pic_trulli-pt-BR.jpg` になります（ロケールコードが拡張子の前に挿入されます）。値あり: 値はテンプレートです（例: `img/{locale}/pic_trulli.jpg`）。
-- `data-i18n-locale-href` — `?locale=` を追加して、リンクが同じ HTML ファイル内にとどまるようにします。
+- `data-i18n-locale-src` — ベア: `chart.png`は`chart-pt-BR.png`になります（ロケールコードは拡張子の前に挿入されます）。値付き: 値はテンプレートです。[`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)は`chart_{locale}.png`を使用し、`chart_pt-BR.png`になります。
+- `data-i18n-locale-href` — リンクが同じHTMLファイルに留まるように`?locale=`を追加します。
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-ソースロケールでは元の URL が保持されます。絶対 URL、`data:` URL、および `#` フラグメントはそのままにしておきます。画像パスのクエリ文字列とフラグメントもそのまま維持されます。ローカライズされた画像で 404 エラーが発生した場合、ランタイムは元の `src` を一度だけ復元します。`pic_trulli-pt-BR.jpg` は自分でデプロイします。スクリプトによって作成されることはありません。
+ソースロケールは元のURLを保持します。ベアの`data-i18n-locale-src`の場合、絶対URL、プロトコル相対URL、`data:` URL、および`#`フラグメントはそのまま残され、クエリ文字列とフラグメントも元の位置に留まります。値付きマーカーは、ソース以外のすべてのロケールに対してそのテンプレートを使用し、`{locale}`のみを置換します。ローカライズされた画像が404を返す場合、ランタイムは元の`src`を一度だけ復元します。`chart_pt-BR.png`は自分で出荷します。スクリプトはそれを作成しません。
 
 `data-i18n-locale-href` はこのカタログモデル用です。`about.pt-BR.html` へのリンクは [HTML ページ](/ja/guide/documents/html-pages) パイプラインに属します。
 
@@ -125,7 +238,57 @@ ai-i18n-tools translate-ui
 
 `data-locale-select` を空の `<select>` に向けます。ランタイムは `ui-languages.json` の各行に対して 1 つの `<option>` を生成します（`code`、`label`、`englishName`、`direction`）。セレクトボックスを変更すると `setLocale` が呼び出され、選択内容が保存され、`?locale=` が `history.pushState` で更新され（リロードなし）、バンドルがフェッチされ、すべてのマーカーが再適用され、`<html lang>` と `dir` が設定されます。戻るボタンは URL 内のロケールを再適用します。
 
-`data-locale-list` はリンクでも同様の処理を行います（`lang`、`hreflang`、およびアクティブなリンク上の `aria-current`）。これらのリンクはカタログページを切り替えるものであり、ドキュメントパイプラインによって書き込まれるファイルごとのリンクではありません。
+`data-locale-list`はリンク（`lang`、`hreflang`、およびアクティブなものの`aria-current`）に対しても同じことを行います。これらのリンクはカタログページを切り替えるものであり、ドキュメントパイプラインによって書き込まれるファイルごとのリンクではありません。1つのスクリプトタグで両方のセレクターを設定できます:
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+両方のコントロールを空のままにします。このマニフェストでは、`data-label-mode="native"`はポルトガル語に`Português (Brasil)`というラベルを付けます。`english`は`Portuguese (Brazil)`というラベルを付けます。`both`は`Portuguese (Brazil) / Português (Brasil)`というラベルを付けます。2つの名前が異なるため、`ui-languages.json`からの以下のスニペットを参照してください:
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+`?locale=pt-BR`を使用すると、ランタイムはセレクトのオプションとリストの子を置換します。これらの要素に設定した属性は保持されます:
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+`"direction": "rtl"`行は、そのロケールがアクティブなときに`<html>`に`dir="rtl"`を設定します。
 
 これに加えて `navigator.language` による自動リダイレクトは行わないでください。ランタイムは、URL と `localStorage` に選択肢がない場合にのみ、すでにブラウザの言語を使用しています。URL を無視するリダイレクトを行うと、ロケールの共有やページのクロールが困難になります。
 
@@ -136,14 +299,15 @@ ai-i18n-tools translate-ui
 
 | 症状 | 確認事項 |
 | --- | --- |
-| ネットワークエラー、空白のページ | ローカルサーバーでサイトを開きます。`file://` は `fetch` をブロックします。 |
+| ロケールファイルが読み込まれない | ローカルサーバーでサイトを開きます。`file://`は`fetch`をブロックし、ランタイムはソーステキストにフォールバックします。 |
 | `ui-languages.json` で 404 エラー | `data-locales-base` は `i18n.js` に対する相対パスです。`flatOutputDir` と一致する必要があります。 |
+| `{locale}.json`で404エラー | そのロケールに対して`translate-ui`を実行し、ロケールコードがファイル名と完全に一致していることを確認します。 |
 | `/docs/` の下で文字列が英語のままになる | 同じベースパスの問題です。ロケールディレクトリがホストのルートにない限り、先頭の `/` は避けてください。 |
 | 英語が一瞬表示されてから翻訳される | `<html>` に `class="i18n-pending"` と上記の可視性ルールを追加します。 |
 | 2 回目の切り替えで翻訳された文字列がキーとして表示される | デプロイされた `i18n.js` を読み込みます。テキストを置換する前に `data-i18n-source` を保存します。 |
 | RTL レイアウトが反転しない | マニフェスト行に `"direction": "rtl"` が必要です。ランタイムは `<html>` に対してのみ `dir` を設定します。 |
 | 新しい DOM ノードが英語のままになる | それらを挿入した後に `window.i18n.apply()` を呼び出します。 |
-| ポルトガル語で画像が `pic_trulli.jpg` のままになる | 要素には `data-i18n-locale-src` が必要であり、ロケールはソースロケール以外である必要があります。 |
+| ポルトガル語で画像が`chart.png`のままになる | 要素には`data-i18n-locale-src`が必要であり、ロケールはソースロケールであってはなりません。 |
 
 ランタイムの `normalizeI18nText` は [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) の `normalizeI18nText` と一致します: トリムしてから、連続する空白を1つにまとめます。英語のソーステキストがカタログキーであるため、翻訳が欠落している場合は英語にフォールバックします。
 

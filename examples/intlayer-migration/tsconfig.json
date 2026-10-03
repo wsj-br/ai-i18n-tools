@@ -11,10 +11,9 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "types": ["vite/client"],
-    "baseUrl": ".",
     "paths": {
-      "intlayer": ["src/shim/intlayer.ts"],
-      "react-intlayer": ["src/shim/react-intlayer.tsx"]
+      "intlayer": ["./src/shim/intlayer.ts"],
+      "react-intlayer": ["./src/shim/react-intlayer.tsx"]
     }
   },
   "include": ["src"],

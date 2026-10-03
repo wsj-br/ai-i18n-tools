@@ -8,19 +8,24 @@ Para un sitio estático que debe generar un archivo HTML traducido por configura
 <a id="quick-start"></a>
 ## Inicio rápido
 
-1. Marque el HTML en inglés (o deje que `mark-html` lo haga).
-2. Apunte `ui.sourceRoots` y `ui.uiExtractor.extensions` a esos archivos.
-3. Ejecute `extract`, y luego `translate-ui`.
-4. Copie `i18n.js` junto a la página y cárguelo antes que su propio script.
-5. Sirva la carpeta a través de HTTP. `file://` no puede `fetch` el JSON de configuración regional.
+1. Genere la estructura con `ai-i18n-tools init -t ui-plain-html`, o añada la configuración a continuación.
+2. Marque el HTML de origen (o deje que `mark-html` lo haga).
+3. Apunte `ui.sourceRoots` y `ui.uiExtractor.extensions` a esos archivos.
+4. Ejecute `extract` y luego `translate-ui` (o ejecute ambos con `sync-ui`).
+5. Copie `i18n.js` junto a la página y cárguelo antes de su propio script.
+6. Sirva la carpeta a través de HTTP. `file://` no puede `fetch` el JSON de configuración regional.
 
 ```bash
 ai-i18n-tools mark-html public/index.html --write
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+# Equivalent to the previous two commands:
+ai-i18n-tools sync-ui
 ```
 
-```jsonc
+Ejemplo de `ai-i18n-tools.config.json`:
+
+```json
 {
   "sourceLocale": "en",
   "targetLocales": ["es", "fr", "pt-BR"],
@@ -34,7 +39,11 @@ ai-i18n-tools translate-ui
 }
 ```
 
-`flatOutputDir` es donde `translate-ui` escribe `{locale}.json` y `ui-languages.json`. La `data-locales-base` del script debe ser ese directorio como una URL relativa a `i18n.js` (no a la página). Una base de `./locales` en `public/i18n.js` carga `public/locales/pt-BR.json`. Utilice una base relativa para que el sitio siga funcionando bajo una subruta.
+La estructura generada también añade la [configuración del proveedor](/es/guide/providers-and-models) de LLM utilizada por `translate-ui`; se omite arriba para mantener visibles las configuraciones específicas de HTML.
+
+`extract` controla `strings.json` y genera `ui-languages.json`; `translate-ui` controla los archivos JSON de la configuración regional de destino. No edite manualmente estos archivos generados.
+
+`flatOutputDir` es donde se almacenan los archivos de configuración regional generados. El `data-locales-base` del script debe apuntar a ese directorio como una URL relativa a `i18n.js` (no a la página). Una base de `./locales` en `public/i18n.js` carga `public/locales/pt-BR.json`. Utilice una base relativa para que el sitio siga funcionando bajo una subruta de implementación.
 
 <a id="obtain-the-runtime"></a>
 ## Obtener el tiempo de ejecución
@@ -69,6 +78,8 @@ Cárguelo al final de `<body>`, y luego su propio script. Ponga `class="i18n-pen
 </html>
 ```
 
+Ajuste los atributos del script según sus necesidades:
+
 | Atributo | Valor predeterminado | Función |
 | --- | --- | --- |
 | `data-source-locale` | `en` | Configuración regional que mantiene el HTML en inglés y omite la obtención del paquete |
@@ -78,12 +89,12 @@ Cárguelo al final de `<body>`, y luego su propio script. Ponga `class="i18n-pen
 | `data-locale-list` | (ninguno) | Selector CSS de un elemento para rellenar con enlaces de idioma |
 | `data-label-mode` | `native` | `native` (`label` del manifiesto), `english` (`englishName`), o `both` (`englishName / label` cuando difieren) |
 
-`window.i18n` expone `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)` y `ready` (una promesa). Llame a `apply()` después de insertar nuevos elementos marcados.
+`window.i18n` expone `t(key)`, `locale`, `dir`, `apply()`, `setLocale(code)` y `ready` (una promesa). Espere a `ready` antes de que su propio script dependa de la configuración regional resuelta o de los valores traducidos. Llame a `apply()` después de insertar nuevos elementos marcados.
 
 <a id="marking-html-for-translation"></a>
 ## Marcar HTML para traducción
 
-Prefiera marcadores simples. El texto de origen se lee desde el elemento, por lo que se escribe una sola vez:
+Prefiera marcadores simples. El texto de origen en inglés permanece en el elemento, y ese texto es la clave del catálogo. `extract` lo lee; el entorno de ejecución escribe la traducción de vuelta en la misma propiedad.
 
 - `data-i18n` — la clave es `textContent`. El tiempo de ejecución establece `textContent`.
 - `data-i18n-title` — la clave es `title`.
@@ -91,15 +102,112 @@ Prefiera marcadores simples. El texto de origen se lee desde el elemento, por lo
 - `data-i18n-alt` — la clave es `alt`.
 - `data-i18n-aria-label` — la clave es `aria-label`.
 
-`mark-html` inserta esos marcadores simples. Es una ejecución de prueba a menos que pase `--write`. Omite los subárboles de `data-i18n-ignore`, los elementos similares a código (`code`, `pre`, `kbd`, `samp`, `var`) y el texto vacío o solo numérico.
+Un elemento puede contener varios de estos. Cada marcador es su propia entrada de catálogo.
 
-Un `data-i18n` simple es para un nodo de texto hoja. Para `Run <code>build</code> now.`, envuelva cada fragmento de texto:
+### Texto
+
+Coloque `data-i18n` en un elemento cuyo contenido sea solo texto:
 
 ```html
-<p><span data-i18n>Run</span> <code>build</code> <span data-i18n>now.</span></p>
+<title data-i18n>Plain HTML demo</title>
+<h1 data-i18n>Plain HTML demo</h1>
+<button type="button" data-i18n>Apply</button>
+<option value="" data-i18n>All locales</option>
+<th data-i18n>Filepath</th>
+<figcaption data-i18n>Sample usage chart</figcaption>
 ```
 
-Utilice un marcador con valor (`data-i18n="Some key"`) solo cuando la clave deba diferir del texto visible.
+El entorno de ejecución también establece `document.title` desde el elemento `<title>`. No coloque `data-i18n` en un contenedor de contenido mixto: el entorno de ejecución asigna `textContent`, lo que eliminaría sus elementos secundarios.
+
+### Tooltip
+
+```html
+<select title="Filter by locale" data-i18n-title></select>
+```
+
+Un control puede traducir su etiqueta y su información sobre herramientas como dos claves:
+
+```html
+<button type="button" title="Clear the filters" data-i18n data-i18n-title>Clear</button>
+```
+
+### Marcador de posición
+
+```html
+<input type="search" placeholder="Filename (partial)" data-i18n-placeholder />
+```
+
+Marcador de posición e información sobre herramientas en el mismo campo:
+
+```html
+<input
+  type="text"
+  placeholder="Filename (partial)"
+  title="Filter by filepath"
+  data-i18n-placeholder
+  data-i18n-title
+/>
+```
+
+### Texto alternativo
+
+```html
+<img src="chart.png" alt="Sample usage chart" width="577" height="139" data-i18n-alt />
+```
+
+### Nombre accesible
+
+```html
+<button type="button" aria-label="Close dialog" data-i18n-aria-label>×</button>
+```
+
+La etiqueta del botón `×` no tiene `data-i18n`, por lo que se mantiene como está escrita. El nombre accesible es la cadena que se traduce.
+
+### Contenido mixto
+
+`data-i18n` lee todo el `textContent` del elemento. Cuando una oración comparte su elemento padre con otro elemento, envuelva cada fragmento de texto:
+
+```html
+<p>
+  <span data-i18n>Run</span> <code>mark-html</code>
+  <span data-i18n>to add bare markers.</span>
+</p>
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select"></select>
+</label>
+```
+
+### Solo idioma de origen
+
+`data-i18n-ignore` omite ese elemento y sus descendientes tanto para `mark-html` como para la `extract` de cadenas de UI. Úselo para filas de ejemplo, identificadores y nombres de marcas:
+
+```html
+<a
+  href="https://github.com/wsj-br/ai-i18n-tools"
+  aria-label="wsj-br/ai-i18n-tools on GitHub"
+  data-i18n-ignore
+>
+  <span>wsj-br/ai-i18n-tools</span>
+</a>
+<tbody data-i18n-ignore>
+  <tr>
+    <td>public/index.html</td>
+    <td>pt-BR</td>
+  </tr>
+</tbody>
+```
+
+### Una clave de catálogo diferente
+
+Un marcador con valor especifica la clave del catálogo. El entorno de ejecución sigue escribiendo la traducción en el elemento (o en el atributo especificado):
+
+```html
+<button type="button" data-i18n="Save changes">Save</button>
+<img src="chart.png" alt="Chart" data-i18n-alt="Sample usage chart" />
+```
+
+`mark-html` inserta los marcadores simples anteriores. Es una ejecución de prueba a menos que pase `--write`. Omite los subárboles de `data-i18n-ignore`, los elementos similares a código (`code`, `pre`, `kbd`, `samp`, `var`) y el texto vacío o solo numérico. Informa sobre los padres con contenido mixto y los deja para que los envuelva en `<span data-i18n>`. Nunca escribe un marcador con valor.
 
 El entorno de ejecución registra cada clave de origen en un atributo `data-i18n-source` interno la primera vez que se ejecuta, por lo que un cambio posterior de configuración regional sigue buscando la cadena en inglés. Esos atributos no se extraen.
 
@@ -108,15 +216,20 @@ El entorno de ejecución registra cada clave de origen en un atributo `data-i18n
 
 Estos marcadores nunca se envían al traductor. `mark-html` no los añade.
 
-- `data-i18n-locale-src` — simple: `pic_trulli.jpg` se convierte en `pic_trulli-pt-BR.jpg` (el código de configuración regional se inserta antes de la extensión). Con valor: el valor es una plantilla, por ejemplo `img/{locale}/pic_trulli.jpg`.
+- `data-i18n-locale-src` — simple: `chart.png` se convierte en `chart-pt-BR.png` (el código de configuración regional se inserta antes de la extensión). Con valor: el valor es una plantilla. [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) usa `chart_{locale}.png`, que se convierte en `chart_pt-BR.png`.
 - `data-i18n-locale-href` — añade `?locale=` para que el enlace permanezca en el mismo archivo HTML.
 
 ```html
-<img src="pic_trulli.jpg" alt="Italian Trulli" data-i18n-alt data-i18n-locale-src />
+<img
+  src="chart.png"
+  alt="Sample usage chart"
+  data-i18n-alt
+  data-i18n-locale-src="chart_{locale}.png"
+/>
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-La configuración regional de origen mantiene la URL original. Las URL absolutas, las URL `data:` y los fragmentos `#` se dejan intactos. Las cadenas de consulta y los fragmentos en la ruta de una imagen permanecen en su lugar. Si la imagen localizada devuelve un error 404, el entorno de ejecución restaura la `src` original una vez. Usted mismo distribuye `pic_trulli-pt-BR.jpg`; el script no la crea.
+La configuración regional de origen mantiene la URL original. Para un `data-i18n-locale-src` simple, las URL absolutas, las URL relativas al protocolo, las URL de `data:` y los fragmentos de `#` se dejan intactos; las cadenas de consulta y los fragmentos permanecen en su lugar. Un marcador con valor usa su plantilla para cada configuración regional que no sea la de origen y reemplaza solo `{locale}`. Si la imagen localizada da un error 404, el entorno de ejecución restaura la `src` original una vez. Usted mismo proporciona `chart_pt-BR.png`; el script no la crea.
 
 `data-i18n-locale-href` es para este modelo de catálogo. Un enlace a `about.pt-BR.html` pertenece a la canalización de [páginas HTML](/es/guide/documents/html-pages).
 
@@ -125,7 +238,57 @@ La configuración regional de origen mantiene la URL original. Las URL absolutas
 
 Apunte `data-locale-select` a un `<select>` vacío. El entorno de ejecución rellena un `<option>` por cada fila de `ui-languages.json` (`code`, `label`, `englishName`, `direction`). Cambiar la selección llama a `setLocale`, que almacena la elección, actualiza `?locale=` con `history.pushState` (sin recargar), obtiene el paquete, reaplica cada marcador y establece `<html lang>` y `dir`. El botón Atrás reaplica la configuración regional en la URL.
 
-`data-locale-list` hace lo mismo con los enlaces (`lang`, `hreflang` y `aria-current` en el activo). Esos enlaces cambian la página del catálogo; no son los enlaces por archivo escritos por la canalización de documentos.
+`data-locale-list` hace lo mismo con los enlaces (`lang`, `hreflang` y `aria-current` en el activo). Esos enlaces cambian la página del catálogo; no son los enlaces por archivo escritos por la canalización de documentos. Una etiqueta de script puede establecer ambos selectores:
+
+```html
+<label for="locale-select">
+  <span data-i18n>Language</span>
+  <select id="locale-select" title="Switch UI language" data-i18n-title></select>
+</label>
+<nav id="locale-list"></nav>
+<script
+  src="i18n.js"
+  data-source-locale="en"
+  data-locales-base="./locales"
+  data-locale-select="#locale-select"
+  data-locale-list="#locale-list"
+  data-label-mode="native"
+></script>
+```
+
+Deje ambos controles vacíos. Para este manifiesto, `data-label-mode="native"` etiqueta el portugués como `Português (Brasil)`. `english` lo etiqueta como `Portuguese (Brazil)`. `both` lo etiqueta como `Portuguese (Brazil) / Português (Brasil)`, porque los dos nombres difieren, vea el siguiente fragmento de `ui-languages.json`:
+
+```json
+[
+  {
+    "code": "en",
+    "label": "English",
+    "englishName": "English",
+    "direction": "ltr"
+  },
+  {
+    "code": "pt-BR",
+    "label": "Português (Brasil)",
+    "englishName": "Portuguese (Brazil)",
+    "direction": "ltr"
+  }
+]
+```
+
+Con `?locale=pt-BR`, el entorno de ejecución reemplaza las opciones del selector y los elementos secundarios de la lista. Los atributos que establezca en esos elementos se mantienen:
+
+```html
+<select id="locale-select" title="Switch UI language" data-i18n-title>
+  <option value="en" lang="en">English</option>
+  <option value="pt-BR" lang="pt-BR" selected>Português (Brasil)</option>
+</select>
+<nav id="locale-list">
+  <a href="#" lang="en" hreflang="en">English</a>
+  <a href="#" lang="pt-BR" hreflang="pt-BR" aria-current="true">Português (Brasil)</a>
+</nav>
+```
+
+Una fila de `"direction": "rtl"` establece `dir="rtl"` en `<html>` cuando esa configuración regional está activa.
 
 No realice redirecciones automáticas por `navigator.language` además de esto. El entorno de ejecución ya utiliza el idioma del navegador solo cuando la URL y `localStorage` no tienen opción. Una redirección que ignora la URL dificulta compartir una configuración regional y rastrear la página.
 
@@ -136,14 +299,15 @@ No realice redirecciones automáticas por `navigator.language` además de esto. 
 
 | Síntoma | Qué comprobar |
 | --- | --- |
-| Error de red, página vacía | Abra el sitio con un servidor local. `file://` bloquea `fetch`. |
+| Los archivos de configuración regional no se cargan | Abra el sitio con un servidor local. `file://` bloquea `fetch`; el entorno de ejecución recurre al texto de origen. |
 | Error 404 en `ui-languages.json` | `data-locales-base` es relativo a `i18n.js`. Debe coincidir con `flatOutputDir`. |
+| Error 404 en `{locale}.json` | Ejecute `translate-ui` para esa configuración regional y compruebe que el código de configuración regional coincida exactamente con su nombre de archivo. |
 | Las cadenas permanecen en inglés bajo `/docs/` | Mismo problema de ruta base. Evite una `/` inicial a menos que el directorio de configuraciones regionales esté en la raíz del host. |
 | El inglés parpadea y luego se traduce | Añada `class="i18n-pending"` en `<html>` y la regla de visibilidad anterior. |
 | El segundo cambio muestra la cadena traducida como clave | Cargue el `i18n.js` distribuido. Almacena `data-i18n-source` antes de reemplazar el texto. |
 | El diseño RTL no se invierte | La fila del manifiesto necesita `"direction": "rtl"`. El entorno de ejecución establece `dir` solo en `<html>`. |
 | Los nuevos nodos DOM permanecen en inglés | Llame a `window.i18n.apply()` después de insertarlos. |
-| La imagen se mantiene `pic_trulli.jpg` en portugués | El elemento requiere `data-i18n-locale-src` y la configuración regional no debe ser la configuración regional de origen. |
+| La imagen permanece `chart.png` en portugués | El elemento necesita `data-i18n-locale-src` y la configuración regional no debe ser la de origen. |
 
 `normalizeI18nText` en el entorno de ejecución coincide con `normalizeI18nText` en [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): recortar y luego contraer los espacios en blanco. Dado que el texto de origen en inglés es la clave del catálogo, una traducción faltante recurre al inglés.
 

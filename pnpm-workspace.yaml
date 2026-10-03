@@ -52,8 +52,8 @@ minimumReleaseAgeExclude:
   - "@ai-sdk/gateway@4.0.74"
   - ai@7.0.92
   - ignore@7.0.8
-  - fumadocs-core@16.15.5 || 16.15.13
-  - fumadocs-ui@16.15.5 || 16.15.13
+  - fumadocs-core@16.15.5 || 16.15.13 || 16.16.0
+  - fumadocs-ui@16.15.5 || 16.15.13 || 16.16.0
   - "@docusaurus/babel@3.10.2"
   - "@docusaurus/bundler@3.10.2"
   - "@docusaurus/core@3.10.2"
@@ -101,6 +101,7 @@ minimumReleaseAgeExclude:
   - "@next/swc-win32-x64-msvc@16.3.6"
   - next@16.3.6
   - react-i18next@17.0.15
+  - mdast-util-from-markdown@2.1.0
 overrides:
   ai-i18n-tools: workspace:*
   postcss@<8.5.10: ^8.5.10
@@ -138,3 +139,12 @@ overrides:
   webpack-dev-server@<=5.2.5: ^5.2.6
 patchedDependencies:
   nextra-theme-docs@4.6.1: patches/nextra-theme-docs@4.6.1.patch
+  # No upstream release past the advisory ranges (braces <=3.0.3, http-cache-semantics <=4.2.0).
+  braces@3.0.3: patches/braces@3.0.3.patch
+  http-cache-semantics@4.2.0: patches/http-cache-semantics@4.2.0.patch
+# The advisories match the version, and no fixed release exists. The patches above
+# are the fix; ignore the GHSA ids so `pnpm audit` does not keep reporting them.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-vfj7-8cjw-p6xm
+    - GHSA-ch52-4w7c-c8xp
