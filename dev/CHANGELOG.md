@@ -9,6 +9,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Added**: notices — `pnpm notices:write` appends `manualNotices` from `scripts/write-third-party-notices.json` for languagebench (CC BY-SA 4.0), the LMArena Arena Score (CC BY 4.0), and models.dev (MIT). Each notice states that the application uses the data at runtime and does not ship it.
 - **Fixed**: docs — `pnpm docs:dev` ignores generated and out-of-tree paths (`src`, `coverage`, `dist`, `dist-sea`, `.translation-cache`, `.vitepress/dist`) so Vite does not exhaust Linux inotify instances after the VitePress 2 upgrade.
 - **Added**: dashboard — the Models tab accepts the same output-price cap and index gap as `suggest-models --max-output-price` and `--min-delta`.
 - **Added**: cli — `suggest-models --max-output-price` keeps models at or below an output USD-per-1M cap, and `--min-delta` keeps a model only when its index is at least that many points below the previous kept model.

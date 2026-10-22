@@ -18,6 +18,11 @@
  *      declared), else
  *   4. nothing (just the SPDX identifier).
  *
+ * `manualNotices` in the same JSON are appended after the dependency blocks. They
+ * cover data this application reads at runtime and does not ship (benchmarks, price
+ * lists). Each entry is `{ name, license, text }` with `text` a string or an array
+ * of lines. The script does not special-case those sources.
+ *
  * `write-third-party-notices.json` reuses entries from the transrewrt project where
  * the same packages appear in this workspace (see wsj-br/transrewrt on GitHub). Add an
  * `spdxLicenseTexts` entry for a new SPDX id, or a `packageOverrides` entry, when a
@@ -224,6 +229,33 @@ function asPlainVertical(sorted) {
     .join("\n\n");
 }
 
+/** Renders `manualNotices` in JSON order. `text` is a string or an array of lines. */
+function manualNoticeBlocks(notices) {
+  if (notices == null) return "";
+  if (!Array.isArray(notices)) {
+    throw new Error("manualNotices must be an array");
+  }
+  return notices
+    .map((notice, index) => {
+      const where = `manualNotices[${index}]`;
+      if (!notice || typeof notice !== "object") {
+        throw new Error(`${where} must be an object`);
+      }
+      if (typeof notice.name !== "string" || notice.name.trim().length === 0) {
+        throw new Error(`${where} is missing a name`);
+      }
+      if (typeof notice.license !== "string" || notice.license.trim().length === 0) {
+        throw new Error(`${where} (${notice.name}) is missing a license`);
+      }
+      const text = Array.isArray(notice.text) ? notice.text.join("\n") : notice.text;
+      if (typeof text !== "string" || text.trim().length === 0) {
+        throw new Error(`${where} (${notice.name}) is missing text`);
+      }
+      return `---\n\n${notice.name.trim()}\n${notice.license.trim()}\n${text.trimEnd()}`;
+    })
+    .join("\n\n");
+}
+
 const outFile = path.join(root, "NOTICES");
 const clarificationsFile = path.join(__dirname, "write-third-party-notices.json");
 const clarifications = JSON.parse(fs.readFileSync(clarificationsFile, "utf8"));
@@ -260,5 +292,12 @@ for (const key of sortedKeys) sorted[key] = modules[key];
 const preamble = ["Third-party notices for ai-i18n-tools and its examples.", ""].join("\n");
 
 const body = asPlainVertical(sorted);
-fs.writeFileSync(outFile, `${preamble}\n${body}`, "utf8");
-console.log(`Wrote ${path.relative(root, outFile)} (${sortedKeys.length} packages)`);
+const extra = manualNoticeBlocks(clarifications.manualNotices);
+const output = extra ? `${preamble}\n${body}\n\n${extra}\n` : `${preamble}\n${body}`;
+fs.writeFileSync(outFile, output, "utf8");
+const manualCount = Array.isArray(clarifications.manualNotices)
+  ? clarifications.manualNotices.length
+  : 0;
+console.log(
+  `Wrote ${path.relative(root, outFile)} (${sortedKeys.length} packages, ${manualCount} manual notices)`
+);
