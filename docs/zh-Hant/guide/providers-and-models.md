@@ -26,6 +26,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (無) |
 
 對於任何**非預設**鍵，請在設定中明確設定 `baseUrl` 和 `apiKeyEnv`。
@@ -94,7 +95,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 npx ai-i18n-tools check-models
 ```
 
-`check-models` 呼叫提供者的 `GET /models` 端點，驗證來自 `translationModels`、`uiModels` 和 `localeModels` 的每一個 id，報告缺失或已過 `expiration_date` 的 id，並在任何配置的 id 無效時以非零值退出。當提供者返回價格（OpenRouter 會這樣做時），它還會顯示每 1M 標記的預估 USD。
+`check-models` 會呼叫提供者的 `GET /models` 端點，驗證來自 `translationModels`、`uiModels` 和 `localeModels` 的每個 id，報告缺失或已過 `expiration_date` 的 id，並在任何已設定的 id 無效時以非零狀態碼退出。當提供者回傳定價資訊時（OpenRouter 和 Cheaper Inference 會回傳），它也會顯示每 100 萬個 token 的美元價格。
 
 瀏覽供應商宣傳的完整目錄：
 
@@ -107,6 +108,19 @@ npx ai-i18n-tools list-models
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+要求一個排序後的簡短清單（預設為品質，或 `--price`），並可選擇將頂部的 id 寫入 `translationModels`。[模型標籤頁](/zh-Hant/guide/translation-dashboard/models) 顯示相同的排名、篩選器和設定更新。
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+表格欄位為排名、模型 id、索引、測得的 ChrF、測得的競技場分數（Arena Score），以及每 100 萬個 token 的輸入/輸出美元價格。缺失的測量值顯示為 `—`。`--list` 會列印已存在於 `translationModels` 中的模型之對應欄位。`--max-output-price` 會保留輸出價格低於或等於該每 100 萬個 token 美元價格的模型，並排除沒有輸出價格的模型。`--min-delta` 僅在模型的索引比前一個保留的模型至少低該數值時才保留該模型。`--top`（預設為 5）會在這些篩選器之後限制表格、`--json` 和 `--apply`。`--apply` 僅取代 `translationModels`。`--refresh` 會重新下載 7 天基準測試快取。選用的權重為 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion)。請參閱 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 覆寫樣本文字、語言環境或模型列表：
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每個提供者區塊可定義自己的 `translationModels`、選用的 `uiModels` 和 `localeModels`、`maxTokens`、`temperature`，以及 `requestTimeout`（秒）或 `requestTimeoutMs`。提供者上的逾時會覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。舊式頂層 `openrouter` 區塊仍會被接受，並在載入時自動遷移至 `providers.openrouter`。
 
-當提供者省略 `usage.cost` 時，選用的 `pricing` 和 `modelPricing` 可設定每 1,000,000 個 token 的美元價格（`inputPerMTokens` 和 `outputPerMTokens`）。`pricing` 是整個提供者的預設值；`modelPricing` 項目會針對單一模型 ID 覆寫此設定。OpenRouter 本身就會傳回每次呼叫的成本，因此對於該提供者，請將兩者保持未設定。提供者回報的成本會照原樣保留。該金額會包含在翻譯摘要、[`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 以及[使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 中。
+當提供者省略 `usage.cost` 時，選用的 `pricing` 和 `modelPricing` 可設定每 1,000,000 個 token 的美元價格（`inputPerMTokens` 和 `outputPerMTokens`）。`pricing` 是全提供者的預設值；`modelPricing` 項目會覆寫特定模型 id 的設定。OpenRouter 和 Cheaper Inference 已經會回傳每次呼叫的成本，因此在這些提供者上請勿設定這兩項。提供者回傳的成本將按原樣保留。該金額會包含在翻譯摘要、[`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 以及 [使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 中。
 
 在同一份文件上使用四個供應商的可執行範例，包含範例費率：[`examples/multi-provider`](/zh-Hant/examples#multi-provider)。
 

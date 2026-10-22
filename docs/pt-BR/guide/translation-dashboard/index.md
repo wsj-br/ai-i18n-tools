@@ -37,6 +37,7 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 | Bloquear terminologia para tradução da UI | **Glossário** | [Glossário](/pt-BR/guide/translation-dashboard/glossary) |
 | Ver cobertura de cache e uso do modelo | **Estatísticas** | [Estatísticas](/pt-BR/guide/translation-dashboard/statistics) |
 | Ver tokens e custo de chamadas de API | **Uso e custos** | [Uso e custos](/pt-BR/guide/translation-dashboard/usage) |
+| Escolha modelos de tradução | **Modelos** | [Modelos](/pt-BR/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## Depois de editar

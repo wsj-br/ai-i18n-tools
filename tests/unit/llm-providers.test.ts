@@ -44,6 +44,13 @@ describe("resolveActiveProvider", () => {
 });
 
 describe("resolveProviderSettings", () => {
+  it("inherits Cheaper Inference baseUrl and API-key env var", () => {
+    const s = resolveProviderSettings("cheaperinference", { providers: { cheaperinference: {} } });
+    expect(s.baseUrl).toBe("https://api.cheaperinference.com/v1");
+    expect(s.apiKeyEnv).toBe("CHEAPERINFERENCE_API_KEY");
+    expect(s.requiresApiKey).toBe(true);
+  });
+
   it("inherits baseUrl and apiKeyEnv from a built-in preset", () => {
     const s = resolveProviderSettings("groq", { providers: { groq: {} } });
     expect(s.baseUrl).toBe(PROVIDER_PRESETS.groq!.baseUrl);
@@ -208,6 +215,7 @@ describe("translationModelsForProvider / presets", () => {
       "nvidia",
       "alibaba",
       "apifun",
+      "cheaperinference",
       "ollama",
     ]) {
       expect(isPresetProvider(name)).toBe(true);

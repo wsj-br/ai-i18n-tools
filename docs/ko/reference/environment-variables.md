@@ -4,7 +4,7 @@
 | Variable               | Description                                                |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | `openrouter` 공급자의 API 키(활성화 상태일 때 필수). 기본 `init` 사전 설정. |
-| 다른 제공자 키    | 각 제공자는 자체 키 환경 변수를 읽습니다: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`(Ollama는 필요 없음). `providers.<name>.apiKeyEnv`로 제공자별로 재정의합니다. |
+| 기타 공급자 키 | 각 공급자는 자체 키 환경 변수를 읽습니다: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`, `CHEAPERINFERENCE_API_KEY` (Ollama는 필요하지 않음). `providers.<name>.apiKeyEnv`를 사용하여 공급자별로 재정의하십시오. |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl`(해당 제공자가 구성된 경우에만)를 재정의합니다. |
 | `AI_I18N_LANG`         | 도구 자체 UI(CLI 도움말, 로그, 대시보드)의 언어입니다. `-L` / `--ui-lang`에 의해 재정의되며, 설정 `uiLanguage`을 재정의합니다. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요. |

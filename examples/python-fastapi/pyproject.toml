@@ -1,0 +1,9 @@
+[project]
+name = "python-fastapi-example"
+version = "0.1.0"
+description = "FastAPI demo localized with English-key JSON."
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.115.0", "uvicorn>=0.30.0"]
+
+[tool.ai-i18n-tools]
+template = "ui-python"

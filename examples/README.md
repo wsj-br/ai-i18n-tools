@@ -33,6 +33,10 @@ Replace `<name>` with one of the folders below. Each example README repeats the 
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 | [intlayer-migration](./intlayer-migration/) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` |
+| [python-streamlit](./python-streamlit/) | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` |
+| [python-flask](./python-flask/) | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` |
+| [python-fastapi](./python-fastapi/) | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` |
+| [python-gettext](./python-gettext/) | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` |
 
 ### From the full ai-i18n-tools repository
 
@@ -60,8 +64,24 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 | [intlayer-migration](./intlayer-migration/) | Workspace app | Intlayer `.content.ts` → `t()` migration (`migrate-intlayer`) | Vite + React (Intlayer shim → ai-i18n-tools/runtime) |
+| [python-streamlit](./python-streamlit/) | Python app | UI strings, `t()` / `_()`, English-key JSON | Streamlit |
+| [python-flask](./python-flask/) | Python app | UI strings, `t()` / `_()`, Jinja, English-key JSON | Flask |
+| [python-fastapi](./python-fastapi/) | Python app | UI strings, `t()` / `_()`, English-key JSON | FastAPI |
+| [python-gettext](./python-gettext/) | Python app | Existing GNU gettext CLI, `.po` / `.mo` | stdlib `gettext` |
 
 Each example has its own README with setup, commands, and project layout. Use the links above for full walkthroughs.
+
+### Python examples
+
+`python-streamlit`, `python-flask`, `python-fastapi`, and `python-gettext` are not workspace packages. They do not use `npx` or `pnpm install`. The first three need a virtualenv and `requirements.txt`. `python-gettext` uses only the standard library.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+To re-run extraction without Node.js, use the standalone `ai-i18n-tools` binary from the GitHub Release. The same four directories are attached as `ai-i18n-tools-python-examples.zip`. They are not inside the npm tarball or the executable. From this repository, `node ../../bin/ai-i18n-tools.mjs` works after `pnpm build`. `pnpm update-all` does not run `cleanup` / `sync` inside these directories, so it will not call the translation API on the committed catalogs.
 
 ---
 

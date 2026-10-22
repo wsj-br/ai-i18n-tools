@@ -10,10 +10,8 @@ process.on("warning", (w) => {
   if (w.name === "ExperimentalWarning" && w.message.includes("SQLite")) return;
   process.stderr.write(`${w.name}: ${w.message}\n`);
 });
-import express from "express";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "node:url";
 import http from "http";
 import { exec, execFile } from "node:child_process";
 import chalk from "chalk";
@@ -37,6 +35,10 @@ import {
   selectUiBlocks,
 } from "../core/ui-blocks.js";
 import { scaffoldVitepressInitFiles } from "./vitepress-init-scaffold.js";
+import {
+  pythonScaffoldOptionsForTemplate,
+  renderPythonI18nHelper,
+} from "./python-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
@@ -48,15 +50,17 @@ import {
 } from "../core/ui-languages.js";
 import { jsonBlockFileTrackingKey } from "../core/doc-file-tracking.js";
 import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
-import { expandJsonBlockOutputPath } from "./translate-json-run.js";
+import { expandJsonBlockOutputPath, runTranslateJson } from "./translate-json-run.js";
 import {
   loadConfigOrExit,
+  resolveConfigFileLocation,
   resolveStringsJsonPath,
   hashFileContent,
   resolveTranslatedOutputPath,
   writeAtomicUtf8,
 } from "./helpers.js";
 import { normalizeLocale } from "../core/config.js";
+import { resolveActiveProvider } from "../core/llm-providers.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
 import { filterFumadocsDotMarkdownSources } from "../core/fumadocs-dot-source-filter.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
@@ -64,6 +68,7 @@ import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
 import { runMarkHtml } from "./mark-html.js";
 import { runMigrateIntlayer } from "./migrate-intlayer.js";
+import { runMigratePythonI18n } from "./migrate-python-i18n.js";
 import {
   runTranslate,
   shouldRunJson,
@@ -109,15 +114,18 @@ import {
 } from "../utils/run-interrupt.js";
 import {
   createTranslationDashboardApp,
+  createDashboardStaticMiddleware,
   resolveDashboardAppStaticDir,
 } from "../server/translation-dashboard.js";
 import { pluralTranslatedLocaleHasContent } from "../core/plural-forms.js";
+import { bundledMasterAvailable, isRunningInSea } from "../core/sea-assets.js";
 import { isPluralStringsEntry, type I18nConfig } from "../core/types.js";
-import { BUILD_TIMESTAMP_ISO } from "../build-info.generated.js";
+import { BUILD_TIMESTAMP_ISO, PACKAGE_VERSION } from "../build-info.generated.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
 import { runListModels } from "./list-models.js";
+import { runSuggestModels } from "./suggest-models.js";
 import { runBenchModels } from "./bench-models.js";
 import { runListLanguages } from "./list-languages.js";
 import { runCleanTemp } from "./clean-temp.js";
@@ -187,17 +195,7 @@ function listenTranslationDashboardServer(
   attempt();
 }
 
-const pkgPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "package.json");
-let version = "0.0.0";
-try {
-  const raw = fs.readFileSync(pkgPath, "utf8");
-  const pkg = JSON.parse(raw) as { version?: string };
-  if (pkg.version) {
-    version = pkg.version;
-  }
-} catch {
-  /* keep default */
-}
+const version = PACKAGE_VERSION || "0.0.0";
 
 function formatVersionOutput(): string {
   const build = BUILD_TIMESTAMP_ISO.trim() !== "" ? BUILD_TIMESTAMP_ISO.trim() : "unknown";
@@ -613,6 +611,99 @@ program
   );
 
 program
+  .command("suggest-models")
+  .description(
+    t(
+      "Rank the active provider's chat models by translation quality or price and optionally write the top ids to translationModels"
+    )
+  )
+  .option("--quality", t("Rank for translation quality (default)"), false)
+  .option("--price", t("Rank for lower price, keeping a quality floor"), false)
+  .option("--top <n>", t("How many models to show, print, and apply"), "5")
+  .option(
+    "--json",
+    t("Write a translationModels JSON fragment to stdout (the table goes to stderr)"),
+    false
+  )
+  .option("--apply", t("Replace providers.<active>.translationModels with the top models"), false)
+  .option(
+    "--list",
+    t("Print the score table for the configured translationModels instead of the top suggestions"),
+    false
+  )
+  .option(
+    "--max-output-price <usd>",
+    t("Keep models whose output price per 1M tokens is at most this many USD")
+  )
+  .option(
+    "--min-delta <points>",
+    t("Keep a model only when its index is at least this many points below the previous kept model")
+  )
+  .option(
+    "--refresh",
+    t("Redownload languagebench, Arena, and models.dev instead of using the 7-day cache"),
+    false
+  )
+  .action(
+    async (
+      opts: {
+        quality?: boolean;
+        price?: boolean;
+        top?: string;
+        json?: boolean;
+        apply?: boolean;
+        refresh?: boolean;
+        list?: boolean;
+        maxOutputPrice?: string;
+        minDelta?: string;
+      },
+      cmd: Command
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+      let configPath: string;
+      try {
+        configPath = resolveConfigFileLocation(configFlag, cwd);
+      } catch (e) {
+        console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+        process.exitCode = 1;
+        return;
+      }
+      const top = Number(opts.top);
+      const maxOutputPrice =
+        opts.maxOutputPrice === undefined ? undefined : Number(opts.maxOutputPrice);
+      const minDelta = opts.minDelta === undefined ? undefined : Number(opts.minDelta);
+      try {
+        const { exitCode } = await runSuggestModels(config, projectRoot, configPath, {
+          quality: opts.quality === true,
+          price: opts.price === true,
+          top: Number.isFinite(top) ? top : Number.NaN,
+          json: opts.json === true,
+          apply: opts.apply === true,
+          refresh: opts.refresh === true,
+          list: opts.list === true,
+          ...(maxOutputPrice !== undefined ? { maxOutputPrice } : {}),
+          ...(minDelta !== undefined ? { minDelta } : {}),
+        });
+        process.exitCode = exitCode;
+      } catch (e) {
+        console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+        process.exitCode = 1;
+      }
+    }
+  )
+  .addHelpText(
+    "after",
+    `\n${t(`Examples:
+  ai-i18n-tools suggest-models
+  ai-i18n-tools suggest-models --price --top 5 --json
+  ai-i18n-tools suggest-models --quality --apply
+  ai-i18n-tools suggest-models --list
+  ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+  ai-i18n-tools suggest-models --refresh`)}\n`
+  );
+
+program
   .command("bench-models")
   .description(
     t(
@@ -692,7 +783,7 @@ program
   .option(
     "-t, --template <name>",
     t(
-      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html"
+      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | ui-python | ui-python-gettext | ui-python-django | ui-python-flask"
     ),
     "ui-markdown"
   )
@@ -736,12 +827,16 @@ Built-in presets for -P / --provider:
         "ui-plain-html": "uiPlainHtml",
         "docs-plain-html": "docsPlainHtml",
         "ui-json-bundles": "uiJsonBundles",
+        "ui-python": "uiPython",
+        "ui-python-gettext": "uiPythonGettext",
+        "ui-python-django": "uiPythonDjango",
+        "ui-python-flask": "uiPythonFlask",
       };
       const key = templateMap[tpl];
       if (!key) {
         console.error(
           t(
-            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", or "ui-json-bundles".'
+            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", "ui-json-bundles", "ui-python", "ui-python-gettext", "ui-python-django", or "ui-python-flask".'
           )
         );
         process.exitCode = 1;
@@ -758,12 +853,38 @@ Built-in presets for -P / --provider:
       if (key === "uiVitepress") {
         scaffoldVitepressInitFiles(process.cwd());
       }
+      if (tpl === "ui-python" || tpl === "ui-python-gettext" || tpl === "ui-python-flask") {
+        const helperPath = path.join(process.cwd(), "i18n.py");
+        if (!fs.existsSync(helperPath)) {
+          fs.writeFileSync(
+            helperPath,
+            renderPythonI18nHelper(pythonScaffoldOptionsForTemplate(tpl)),
+            "utf8"
+          );
+          console.log(t("Wrote i18n.py"));
+        }
+      }
       if (opts.withTranslateIgnore) {
         const ignorePath = path.join(process.cwd(), ".translate-ignore");
         if (!fs.existsSync(ignorePath)) {
           fs.writeFileSync(
             ignorePath,
-            ["node_modules/", ".git/", "*.min.js", "dist/", ""].join("\n"),
+            [
+              "node_modules/",
+              ".git/",
+              "*.min.js",
+              "dist/",
+              ".venv/",
+              "venv/",
+              "__pycache__/",
+              ".tox/",
+              ".nox/",
+              ".pytest_cache/",
+              ".mypy_cache/",
+              ".ruff_cache/",
+              "*.pyc",
+              "",
+            ].join("\n"),
             "utf8"
           );
           console.log(t("Wrote .translate-ignore"));
@@ -1096,6 +1217,72 @@ program
     }
   );
 
+program
+  .command("migrate-python-i18n")
+  .description(
+    t(
+      "Rewrite unsafe Python f-string, modulo, and format lookups into t() calls, or into formatting that runs after lookup. Dry run by default."
+    )
+  )
+  .option("--write", t("Apply safe rewrites to disk (default: dry run)"), false)
+  .option(
+    "--report <path>",
+    t("Write the manual-review report to this path (default: migrate-python-i18n-report.md)")
+  )
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to scan: zero-based index, description, or strings.json path (default: every block)"
+    )
+  )
+  .action((opts: { write?: boolean; report?: string; uiBlock?: string }, cmd: Command) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+    try {
+      const sum = runMigratePythonI18n({
+        cwd: projectRoot,
+        config,
+        write: Boolean(opts.write),
+        reportPath: opts.report,
+        uiBlock: opts.uiBlock,
+      });
+      console.log(
+        chalk.green(
+          sum.written
+            ? t(
+                "✅ migrate-python-i18n: {{changed}}/{{scanned}} file(s) updated, {{edits}} rewrite(s), {{reviews}} manual-review site(s) — see {{report}}",
+                {
+                  changed: sum.filesChanged,
+                  scanned: sum.filesScanned,
+                  edits: sum.edits,
+                  reviews: sum.reviews,
+                  report: sum.reportPath,
+                }
+              )
+            : t(
+                "✅ migrate-python-i18n (dry run): {{changed}}/{{scanned}} file(s) would change, {{edits}} rewrite(s), {{reviews}} manual-review site(s); re-run with --write to apply — see {{report}}",
+                {
+                  changed: sum.filesChanged,
+                  scanned: sum.filesScanned,
+                  edits: sum.edits,
+                  reviews: sum.reviews,
+                  report: sum.reportPath,
+                }
+              )
+        )
+      );
+    } catch (e) {
+      console.error(
+        chalk.red(
+          t("❌ [migrate-python-i18n] {{error}}", {
+            error: e instanceof Error ? e.message : String(e),
+          })
+        )
+      );
+      process.exitCode = 1;
+    }
+  });
+
 function parsePositiveInt(optionLabel: string, value: string): number {
   const n = Number.parseInt(value, 10);
   if (!Number.isFinite(n) || n < 1) {
@@ -1410,7 +1597,6 @@ async function runSyncPipeline(args: {
     }
     if (!noJson && config.features.translateJson && configHasJsonWork(config)) {
       try {
-        const { runTranslateJson } = await import("./translate-json-run.js");
         await runTranslateJson(config, projectRoot, sharedOpts);
       } catch (e) {
         if (isRunInterruptedError(e)) {
@@ -1769,7 +1955,6 @@ program
       process.exit(1);
     }
     try {
-      const { runTranslateJson } = await import("./translate-json-run.js");
       await runTranslateJson(config, projectRoot, translateOpts);
     } catch (e) {
       if (exitIfRunInterrupted(e)) {
@@ -3135,7 +3320,7 @@ program
   )
   .option("--dry-run", t("With --clear, report how many rows would be deleted without deleting"))
   .action(
-    (
+    async (
       opts: {
         since?: string;
         provider?: string;
@@ -3148,7 +3333,7 @@ program
         dryRun?: boolean;
       },
       cmd
-    ) => {
+    ): Promise<void> => {
       const { configFlag, cwd, providerOverride } = withConfig(cmd);
       const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
       const outcomeRaw = opts.outcome?.trim();
@@ -3160,7 +3345,7 @@ program
         console.error(chalk.red(t("--older-than requires --clear.")));
         process.exit(1);
       }
-      runUsage(config, projectRoot, {
+      await runUsage(config, projectRoot, {
         since: opts.since,
         provider: opts.provider,
         model: opts.model,
@@ -3438,6 +3623,18 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
   // Resolve the dashboard's OWN UI locale (the singleton was already reinitialized with config
   // `uiLanguage` during loadConfigOrExit); ship the matching flat bundle + direction to the browser.
   const uiLocale = getUiLocale();
+  let activeProvider = "";
+  try {
+    activeProvider = resolveActiveProvider(config);
+  } catch (e) {
+    console.warn(
+      chalk.yellow(
+        t("Dashboard models tab has no active provider: {{message}}", {
+          message: e instanceof Error ? e.message : String(e),
+        })
+      )
+    );
+  }
   let triggerShutdown: () => void = () => {};
   const app = createTranslationDashboardApp(cache, {
     cwd: projectRoot,
@@ -3454,11 +3651,18 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
       bundle: loadUiBundle(uiLocale),
     },
     providerPricing: collectProviderPricing(config.providers),
+    suggestion: {
+      config,
+      projectRoot,
+      configPath: resolveConfigFileLocation(configFlag, cwd),
+      activeProvider,
+      providerNames: Object.keys(config.providers),
+    },
   });
 
   const staticDir = resolveDashboardAppStaticDir();
-  if (fs.existsSync(staticDir)) {
-    app.use(express.static(staticDir));
+  if (fs.existsSync(staticDir) || isRunningInSea()) {
+    app.use(createDashboardStaticMiddleware(staticDir));
   } else {
     console.warn(t("[dashboard] Static dir missing: {{dir}}", { dir: staticDir }));
   }
@@ -3572,7 +3776,7 @@ program
     const masterPath = opts.master
       ? path.resolve(cwd, opts.master)
       : resolveDefaultUiLanguagesMasterPath();
-    if (!fs.existsSync(masterPath)) {
+    if (!bundledMasterAvailable(masterPath)) {
       console.error(chalk.red(t("Master file not found: {{path}}", { path: masterPath })));
       process.exit(1);
     }
@@ -3653,4 +3857,4 @@ program
 
 program.addHelpText("after", ROOT_CLI_HELP_AFTER);
 
-program.parse();
+void program.parseAsync();

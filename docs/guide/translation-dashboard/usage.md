@@ -19,10 +19,11 @@ After a command that called the API finishes, rows older than **seven full UTC c
 
 Each call, summary card, and table shows **one** USD cost:
 
-1. The provider's `usage.cost` when the response included it (OpenRouter today).
+1. The provider's `usage.cost` when the response included it (OpenRouter and Cheaper Inference today). A reported cost, including `0`, is never replaced.
 2. Otherwise the amount from `providers.<name>.modelPricing` or the provider-wide `pricing` default, applied to that call's input and output tokens.
+3. Otherwise the models.dev list price for that model id (input and output USD per 1M tokens), from the same cache `suggest-models` maintains. `suggest-models --refresh` updates that cache. A translation or this report does not download languagebench or Arena just to price a call.
 
-New calls store that amount on the `api_calls` row. Older rows that were stored without a cost are priced the same way when the report is opened, then added into the same Cost figure — they are not shown as a second column. If neither source applies, the cell is `—`, never `$0.00`. Changing the configured rates later does not rewrite rows that already have a stored cost. Monthly rollups still keep a count of calls that stored a cost (`ncost_acc` / `ncost_dis`) so `$0.00` stays distinct from “unknown” after compaction.
+New calls store that amount on the `api_calls` row. Older rows that were stored without a cost are priced the same way when the report is opened, then added into the same Cost figure — they are not shown as a second column. If none of the three sources apply, the cell is `—`, never `$0.00`. Changing the configured rates or a later models.dev refresh does not rewrite rows that already have a stored cost. Monthly rollups still keep a count of calls that stored a cost (`ncost_acc` / `ncost_dis`) so `$0.00` stays distinct from “unknown” after compaction.
 
 <a id="filters"></a>
 ## Filters

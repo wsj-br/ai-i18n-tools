@@ -1,0 +1,62 @@
+{
+  "f4c6f851": {
+    "source": "Notes",
+    "translated": {
+      "es": "Notas",
+      "pt-BR": "Notas"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 30
+      }
+    ]
+  },
+  "c84e0129": {
+    "source": "Hello, %s!",
+    "translated": {
+      "es": "Hola, %s!",
+      "pt-BR": "Olá, %s!"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 31
+      }
+    ]
+  },
+  "1f92ae3e": {
+    "plural": true,
+    "source": "1 note",
+    "pluralSource": "%(count)s notes",
+    "translated": {
+      "es": {
+        "one": "1 nota",
+        "other": "%(count)s notas"
+      },
+      "pt-BR": {
+        "one": "1 nota",
+        "other": "%(count)s notas"
+      }
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 32
+      }
+    ]
+  },
+  "b6521e2d": {
+    "source": "Notes CLI that already uses GNU gettext.",
+    "translated": {
+      "es": "CLI de notas que ya usa GNU gettext.",
+      "pt-BR": "CLI de notas que já usa GNU gettext."
+    },
+    "locations": [
+      {
+        "file": "pyproject.toml",
+        "line": 4
+      }
+    ]
+  }
+}

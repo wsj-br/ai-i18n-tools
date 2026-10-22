@@ -43,7 +43,7 @@
 
 **概要:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
 
-記録されたモデルAPI呼び出しの統計（呼び出し回数、トークン数、および単一のUSDコスト）を出力します。コストは、存在する場合はプロバイダーの`usage.cost`、それ以外の場合は`providers.<name>.modelPricing`からの金額、またはプロバイダー全体の`providers.<name>.pricing`デフォルト値です（新しい呼び出し時に保存され、保存されたコストがない古い行にはレポート時に適用されます）。翻訳ダッシュボード → 使用量とコストと同じ集計結果です。UTCの暦日で7日より古い詳細行は月次の`api_totals`にロールアップされます。レポートは両方のテーブルを結合します。`--since`は`YYYY-MM-DD`、期間（`30m`、`1h`、`6h`、`12h`、`24h`、`7d`、`30d`）、または暦月のウィンドウ（`1mo`、`2mo`、`3mo`）を受け入れます。`--clear`は詳細行と月次合計を削除します（`--older-than`は`1mo`、`2mo`、`3mo`、`6mo`、`1y`、または`all`です。`--dry-run`は削除せずにカウントを報告します）。
+記録されたモデルのAPI呼び出し統計（呼び出し回数、トークン数、および単一のUSDコスト）を出力します。コストは、存在する場合はプロバイダーの`usage.cost`（`0`を含む）が使用され、それ以外の場合はそのモデルの`providers.<name>.modelPricing`、それ以外の場合はプロバイダー全体の`providers.<name>.pricing`デフォルト、それ以外の場合はそのモデルIDに対するmodels.devの入出力リスト価格が使用されます。報告済みのコストおよび明示的な設定レートは置き換えられません。不明なコストは`—`のままとなり、`$0.00`になることはありません。新しい呼び出しは金額を保存します。トークン数はあるが保存されたコストがない古い行は、レポート実行時に推定されます。集計は「Translation Dashboard → Usage & costs」と同じです。UTCで7暦日以上経過した詳細行は月次の`api_totals`にまとめられ、レポートは両方のテーブルを結合します。`--since`は、`YYYY-MM-DD`、期間（`30m`、`1h`、`6h`、`12h`、`24h`、`7d`、`30d`）、または暦月の期間（`1mo`、`2mo`、`3mo`）を受け付けます。`--clear`は詳細行と月次合計を削除します（`--older-than`は`1mo`、`2mo`、`3mo`、`6mo`、`1y`、または`all`です。`--dry-run`は削除せずに件数を報告します）。
 
 **主なオプション:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
 

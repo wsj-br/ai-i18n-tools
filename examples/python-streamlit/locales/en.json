@@ -1,0 +1,7 @@
+{
+  "Dashboard": "Dashboard",
+  "Welcome back, {user_name}!": "Welcome back, {user_name}!",
+  "Total revenue: ${revenue:,.2f}": "Total revenue: ${revenue:,.2f}",
+  "Selected metric: %s": "Selected metric: %s",
+  "Showing %d rows": "Showing %d rows"
+}

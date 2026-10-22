@@ -130,13 +130,13 @@ Chaque bloc `providers.<name>` accepte :
 - `temperature`
   Température d'échantillonnage. Par défaut : `0.2`.
 - `requestTimeout`
-  Délai d'attente maximum en secondes pour chaque requête vers ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `45` secondes. Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
+  Durée maximale en secondes à attendre pour chaque requête vers ce fournisseur. Remplace `requestTimeout` / `requestTimeoutMs` au niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'expiration, la valeur par défaut est `45` secondes. Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
 - `requestTimeoutMs`
-  Délai d'attente maximum en millisecondes pour chaque requête vers ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `45000` (45 secondes). Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
-- `pricing` (facultatif)
-  Tarif global du fournisseur en USD pour 1 000 000 de jetons : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé ne comporte pas de `usage.cost` signalé par le fournisseur (la plupart des fournisseurs autres qu'OpenRouter), ce tarif est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de la traduction et stocké sur la ligne `api_calls`. Une entrée `modelPricing` correspondante remplace cette valeur par défaut. Un coût signalé par le fournisseur n'est jamais remplacé. Les lignes qui ont été stockées sans coût peuvent tout de même être estimées ultérieurement par [`usage`](/fr/reference/cli-commands/workflows#usage) et [Utilisation et coûts](/fr/guide/translation-dashboard/usage).
-- `modelPricing` (facultatif)
-  Tarif par modèle en USD pour 1 000 000 de jetons : `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Remplace `pricing` pour cet identifiant de modèle. Appliqué au moment de l'appel lorsque le fournisseur a omis `usage.cost`, et stocké avec l'appel.
+  Durée maximale en millisecondes à attendre pour chaque requête vers ce fournisseur. Remplace `requestTimeout` / `requestTimeoutMs` au niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'expiration, la valeur par défaut est `45000` (45 secondes). Ne définissez qu'un seul des paramètres `requestTimeout` et `requestTimeoutMs` sur le même objet.
+- `pricing` (optionnel)
+  Coût en USD par 1 000 000 de jetons pour l'ensemble du fournisseur : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé ne contient pas de `usage.cost` rapporté par le fournisseur (la plupart des fournisseurs en dehors d'OpenRouter et Cheaper Inference), ce tarif est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de traduction et stocké sur la ligne `api_calls`. Une entrée `modelPricing` correspondante remplace cette valeur par défaut. Un coût rapporté par le fournisseur n'est jamais remplacé. Lorsque aucun tarif de configuration ne correspond, les outils utilisent le prix catalogue models.dev pour cet identifiant de modèle (USD par 1M de jetons en entrée et en sortie). Les lignes stockées sans coût peuvent toujours être estimées ultérieurement via [`usage`](/fr/reference/cli-commands/workflows#usage) et [Usage & costs](/fr/guide/translation-dashboard/usage). Si aucune de ces sources ne s'applique, le coût reste inconnu (`—`), jamais `$0.00`.
+- `modelPricing` (optionnel)
+  Coût en USD par 1 000 000 de jetons par modèle : `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Remplace `pricing` pour cet identifiant de modèle. Appliqué au moment de l'appel lorsque le fournisseur a omis `usage.cost`, et stocké avec l'appel.
 
 Préréglages de fournisseurs intégrés (clé — URL de base — variable d'environnement de la clé API) :
 
@@ -154,6 +154,7 @@ Préréglages de fournisseurs intégrés (clé — URL de base — variable d'en
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (aucun) |
 
 Un bloc `openrouter` de niveau supérieur hérité (avec `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement ; `defaultModel` / `fallbackModel` se replient dans `translationModels`.
@@ -262,21 +263,25 @@ Les chemins résolus `stringsJson`, `flatOutputDir` et de manifeste doivent êtr
   Chemin vers le fichier de catalogue principal de ce bloc. Mis à jour par `extract`.
 - `flatOutputDir`
   Répertoire où les fichiers JSON par locale de ce bloc sont écrits (`de.json`, etc.).
+- `flatOutput`
+  Lorsque `true` (valeur par défaut), `translate-ui` écrit un fichier JSON plat par locale. Définissez `false` pour un bloc gettext uniquement. Un bloc avec `flatOutput: false` doit définir `gettext`.
+- `gettext`
+  Sortie GNU gettext optionnelle pour ce bloc. `outputDir` (par défaut `./locales`) reçoit `<locale>/LC_MESSAGES/<domain>.po` et, lorsque `compileMo` est vrai (valeur par défaut), le `.mo` correspondant. `domain` a pour valeur par défaut `messages`. `potPath` est le catalogue de modèles. `ingestExistingPo` (par défaut `true`) remplit les emplacements `strings.json` vides à partir des valeurs `msgstr` non approximatives durant `extract` et ne remplace pas une traduction non vide ou modifiée par l'utilisateur. `localeFormat` est `posix` (par défaut, `pt_BR`) ou `bcp47` (`pt-BR`). Les lignes contextuelles utilisent le séparateur gettext `\u0004`. La même source anglaise dans deux contextes ne partage pas d'identifiant de catalogue.
 - `targetLocales`
-  Liste de locales optionnelle pour ce bloc. Lorsqu'elle est omise ou vide, le bloc utilise la `targetLocales` racine.
+  Liste de locales optionnelle pour ce bloc. Lorsqu'elle est omise ou vide, le bloc utilise la racine `targetLocales`.
 - `languagesManifestPath`
-  Chemin optionnel où `extract` et `generate-ui-languages` écrivent la `ui-languages.json` de ce bloc. Lorsqu'il est omis, le bloc 0 utilise la `languagesManifestPath` racine (qui elle-même prend par défaut la `{flatOutputDir}/ui-languages.json` de ce bloc). Les blocs suivants prennent `{flatOutputDir}/ui-languages.json` par défaut.
+  Chemin optionnel où `extract` et `generate-ui-languages` écrivent le `ui-languages.json` de ce bloc. Lorsqu'il est omis, le bloc 0 utilise la racine `languagesManifestPath` (qui a elle-même pour valeur par défaut le `{flatOutputDir}/ui-languages.json` de ce bloc). Les blocs suivants utilisent par défaut `{flatOutputDir}/ui-languages.json`.
 - `uiGlossary`
-  Lorsque `true` (valeur par défaut), la `strings.json` de ce bloc est une source d'indices de glossaire pour `translate-docs`, `translate-json` et `translate-svg`. `translate-ui`, `proofread-ui` et le linting de source utilisent uniquement `glossary.userGlossary`. Définissez `false` pour exclure un catalogue de ces indices (par exemple, un catalogue de chaînes CLI qui ne devrait pas influencer la documentation).
-- `uiExtractor.funcNames` (ou `reactExtractor.funcNames` hérité)
+  Lorsque `true` (valeur par défaut), le `strings.json` de ce bloc est une source d'indices de glossaire pour `translate-docs`, `translate-json` et `translate-svg`. `translate-ui`, `proofread-ui` et la vérification de la source utilisent uniquement `glossary.userGlossary`. Définissez `false` pour exclure un catalogue de ces indices (par exemple, un catalogue de chaînes CLI qui ne devrait pas influencer la documentation).
+- `uiExtractor.funcNames` (ou hérité `reactExtractor.funcNames`)
   Noms de fonctions supplémentaires à analyser (par défaut : `["t", "i18n.t"]`).
-- `uiExtractor.extensions` (ou `reactExtractor.extensions` hérité)
-  Extensions de fichier à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`). Ajoutez `.astro` pour le frontmatter Astro et les expressions de modèle.
-- `uiExtractor.includePackageDescription` (ou `reactExtractor.includePackageDescription` hérité)
-  Lorsque `true` (par défaut), `extract` inclut également `package.json` `description` en tant que chaîne d'interface utilisateur lorsqu'il est présent. Définissez `false` sur les blocs supplémentaires afin que la même description ne soit pas extraite dans chaque catalogue.
-- `uiExtractor.packageJsonPath` (ou `reactExtractor.packageJsonPath` hérité)
+- `uiExtractor.extensions` (ou hérité `reactExtractor.extensions`)
+  Extensions de fichiers à inclure (par défaut : `[".js", ".jsx", ".ts", ".tsx"]`). Ajoutez `.astro` pour le frontmatter Astro et les expressions de modèle.
+- `uiExtractor.includePackageDescription` (ou hérité `reactExtractor.includePackageDescription`)
+  Lorsque `true` (valeur par défaut), `extract` inclut également `package.json` `description` en tant que chaîne d'interface utilisateur lorsqu'elle est présente. Définissez `false` sur les blocs supplémentaires afin que la même description ne soit pas extraite dans chaque catalogue.
+- `uiExtractor.packageJsonPath` (ou hérité `reactExtractor.packageJsonPath`)
   Chemin personnalisé vers le fichier `package.json` utilisé pour cette extraction de description optionnelle.
-- `uiExtractor.includeUiLanguageEnglishNames` (ou `reactExtractor.includeUiLanguageEnglishNames` hérité)
+- `uiExtractor.includeUiLanguageEnglishNames` (ou hérité `reactExtractor.includeUiLanguageEnglishNames`)
 
 Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englishName` du catalogue principal ui-languages intégré (construit à partir de `sourceLocale` + la `targetLocales` effective du bloc) à `strings.json` lorsqu'il n'est pas déjà présent lors de l'analyse de la source (mêmes clés de hachage). Ne lit pas `languagesManifestPath`.
 
@@ -288,7 +293,7 @@ Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englis
 ### `cacheDir`
 
 - `cacheDir`
-Répertoire du cache SQLite (partagé par tous les blocs `docs`). Par défaut `.translation-cache`. Réutiliser entre les exécutions. Si vous migrez depuis un cache de traduction de documents personnalisé, archivez-le ou supprimez-le — `cacheDir` crée sa propre base de données SQLite et n'est pas compatible avec d'autres schémas.
+Répertoire de cache SQLite (partagé par tous les blocs `docs`). Par défaut `.translation-cache`. Réutilisation entre les exécutions. Si vous migrez depuis un cache de traduction de documentation personnalisé, archivez-le ou supprimez-le — `cacheDir` crée sa propre base de données SQLite et n'est pas compatible avec d'autres schémas. `suggest-models` stocke également les agrégats de benchmark dans `<cacheDir>/benchmark-scores.json`. Ce fichier est un cache, comme le reste du répertoire, et ne fait pas partie du package publié.
 
 <a id="best-practice-for-git-exclusions"></a>
 #### Bonnes pratiques pour les exclusions git :
@@ -500,6 +505,25 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 | `pathTemplate`   | Chemin de sortie personnalisé pour les fichiers SVG. Espaces réservés : <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | Lorsque `true`, les modèles SVG intégrés `flat` / `nested` utilisent des segments de paramètres régionaux en minuscules. Les valeurs personnalisées de `pathTemplate` restent inchangées ; utilisez `{llocale}` pour des segments en minuscules. |
 | `forceLowercase` | Texte traduit en minuscules lors du réassemblage du SVG. Utile pour les designs qui reposent sur des libellés entièrement en minuscules.                                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (facultatif)
+
+Pondérations pour [`suggest-models`](/fr/reference/cli-commands/models#suggest-models) et l'[onglet Modèles du tableau de bord](/fr/guide/translation-dashboard/models). Omettez le bloc, ou omettez un profil, et ce profil conservera les pondérations intégrées. Le bloc n'est pas réécrit par `--apply` ou **Mettre à jour la configuration** ; ces derniers écrivent uniquement les identifiants de modèle.
+
+- `quality` — ChrF par défaut `0.45/0.95`, Arena `0.35/0.95`, prix `0.15/0.95`, seuil de qualité `0.7`
+- `price` — ChrF par défaut `0.25`, Arena `0.10`, prix `0.65`, seuil de qualité `0.6`
+
+Chaque objet de profil nécessite `chrf`, `arena` et `price`. Chaque valeur est finie et au moins égale à `0`, et au moins l'une d'entre elles est supérieure à `0`. Elles sont normalisées pour totaliser 1, de sorte que `45`, `35` et `15` correspondent aux valeurs par défaut de qualité. `qualityFloor` est facultatif, compris dans la plage `(0, 1]`, et représente la fraction du meilleur ChrF dans le pool de candidats. Les modèles en dessous du seuil, y compris tout modèle sans mesure ChrF, sont triés après ceux qui le dépassent.
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

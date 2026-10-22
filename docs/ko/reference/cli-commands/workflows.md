@@ -43,7 +43,7 @@
 
 **개요:** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
 
-기록된 모델 API 호출 통계(호출 수, 토큰 수, 단일 USD 비용)를 인쇄합니다. 비용은 제공자의 `usage.cost`가 있는 경우 해당 값을 사용하고, 그렇지 않으면 `providers.<name>.modelPricing`의 금액 또는 제공자 전체의 `providers.<name>.pricing` 기본값을 사용합니다(새 호출에 저장됨; 저장된 비용이 없는 이전 행의 경우 보고서 작성 시 적용됨). 번역 대시보드 → 사용량 및 비용과 동일한 집계입니다. 7 UTC 달력일보다 오래된 세부 행은 월간 `api_totals`로 통합됩니다; 보고서는 두 테이블을 모두 결합합니다. `--since`는 `YYYY-MM-DD`, 기간(`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`) 또는 달력 월 창(`1mo`, `2mo`, `3mo`)을 허용합니다. `--clear`은 세부 행과 월간 합계를 삭제합니다(`--older-than`은 `1mo`, `2mo`, `3mo`, `6mo`, `1y` 또는 `all`입니다; `--dry-run`는 삭제하지 않고 개수를 보고합니다).
+기록된 모델 API 호출 통계(호출 횟수, 토큰, 단일 USD 비용)를 출력합니다. 비용은 제공업체의 `usage.cost`가 존재할 경우( `0` 포함) 해당 값을 사용하며, 그렇지 않으면 해당 모델의 `providers.<name>.modelPricing`, 그 다음으로는 제공업체 전체 `providers.<name>.pricing` 기본값, 마지막으로 해당 모델 ID에 대한 models.dev 입출력 정가를 사용합니다. 보고된 비용과 명시적 구성 요율은 절대 대체되지 않습니다. 알 수 없는 비용은 `—`로 유지되며 `$0.00`로 표시되지 않습니다. 새 호출은 금액을 저장하며, 토큰은 있지만 저장된 비용이 없는 이전 행은 보고서 실행 시 추정됩니다. Translation Dashboard → Usage & costs와 동일한 집계 방식을 사용합니다. 7일(UTC 기준)이 지난 세부 행은 월별 `api_totals`으로 통합되며, 보고서는 두 테이블을 모두 결합합니다. `--since`은 `YYYY-MM-DD`, 기간(`30m`, `1h`, `6h`, `12h`, `24h`, `7d`, `30d`), 또는 달력 기준 월 단위(`1mo`, `2mo`, `3mo`)를 허용합니다. `--clear`는 세부 행과 월별 합계를 삭제합니다(`--older-than`은 `1mo`, `2mo`, `3mo`, `6mo`, `1y` 또는 `all`입니다. `--dry-run`은 삭제하지 않고 개수만 보고합니다).
 
 **주요 옵션:** `--since`, `--provider`, `--model`, `--operation`, `-l` / `--locale`, `--outcome`, `--clear`, `--older-than`, `--dry-run`
 

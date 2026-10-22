@@ -884,3 +884,39 @@ td.last-hit-at.stale {
   vertical-align: baseline;
   white-space: nowrap;
 }
+
+.models-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: 1rem;
+  align-items: start;
+}
+
+#models-selected ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+#models-selected li {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+#models-selected .models-id {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#models-table table {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .models-layout {
+    grid-template-columns: 1fr;
+  }
+}

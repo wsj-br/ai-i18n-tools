@@ -37,6 +37,7 @@ ai-i18n-tools dashboard
 | UI翻訳の用語をロックする | **用語集** | [用語集](/ja/guide/translation-dashboard/glossary) |
 | キャッシュのカバレッジとモデルの使用状況を確認する | **統計** | [統計](/ja/guide/translation-dashboard/statistics) |
 | API呼び出しトークンとコストを参照 | **使用量とコスト** | [使用量とコスト](/ja/guide/translation-dashboard/usage) |
+| 翻訳モデルを選択 | **モデル** | [モデル](/ja/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## 編集後

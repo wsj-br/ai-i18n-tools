@@ -19,7 +19,7 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 
 **Key options:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` selects which **built-in preset** to scaffold (`openrouter` when omitted). Must be one of: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
+`-P` / `--provider` selects which **built-in preset** to scaffold (`openrouter` when omitted). Must be one of: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Templates (`-t`):**
 
@@ -35,8 +35,16 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 | `ui-plain-html` | Plain HTML catalog (`data-i18n*` markers, flat locale JSON) |
 | `docs-plain-html` | Plain HTML documents (one file per locale, language list, hreflang) |
 | `ui-json-bundles` | JSON (`json[]` only) |
+| `ui-python` | Python UI strings, flat English-key JSON, and `i18n.py` |
+| `ui-python-gettext` | Python UI strings with flat JSON and GNU `.po` / `.mo`, plus `i18n.py` |
+| `ui-python-django` | Django `gettext` / `{% blocktrans %}` catalogs (`flatOutput: false`, domain `django`, no `i18n.py`) |
+| `ui-python-flask` | Flask / Jinja catalogs under `translations/` (`flatOutput: false`) plus `i18n.py` |
 
-`--with-translate-ignore` creates a starter `.translate-ignore`.
+`--with-translate-ignore` creates a starter `.translate-ignore` (including Python virtualenv and cache directories).
+
+`ui-python`, `ui-python-gettext`, and `ui-python-flask` also write `i18n.py` when that file is missing. Django projects keep Django's own gettext runtime, so `ui-python-django` does not write `i18n.py`.
+
+`migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) into lookup-before-format calls. The default is a dry run. Pass `--write` to edit files, and read `migrate-python-i18n-report.md` for review notes. Generated `i18n.py` files are skipped.
 
 ---
 

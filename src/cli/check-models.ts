@@ -9,8 +9,8 @@ import {
   resolveProviderSettings,
 } from "../core/llm-providers.js";
 import {
+  catalogUsdPerMillionDisplay,
   fetchProviderModelsCatalog,
-  formatUsdPerMillionTokens,
   isExpirationDatePast,
   modelDisplayName,
   type ProviderModelEntry,
@@ -18,14 +18,6 @@ import {
 
 export interface RunCheckModelsResult {
   exitCode: number;
-}
-
-/** True when any valid entry carries OpenAI-compatible pricing fields (`pricing.prompt`/`completion`). */
-function hasPricing(entry: ProviderModelEntry): boolean {
-  return (
-    (typeof entry.pricing?.prompt === "string" && entry.pricing.prompt !== "") ||
-    (typeof entry.pricing?.completion === "string" && entry.pricing.completion !== "")
-  );
 }
 
 export async function runCheckModels(config: I18nConfig): Promise<RunCheckModelsResult> {
@@ -137,7 +129,7 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   }
 
   if (ok.length > 0) {
-    const showPricing = ok.some(({ entry }) => hasPricing(entry));
+    const showPricing = ok.some(({ entry }) => catalogUsdPerMillionDisplay(entry) !== undefined);
     console.log(
       chalk.green.bold(
         showPricing
@@ -150,8 +142,9 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
       const label = modelDisplayName(entry);
       const name = label.length > 0 ? chalk.gray(` (${label})`) : "";
       if (showPricing) {
-        const input = formatUsdPerMillionTokens(entry.pricing?.prompt);
-        const output = formatUsdPerMillionTokens(entry.pricing?.completion);
+        const rates = catalogUsdPerMillionDisplay(entry);
+        const input = rates?.input ?? "—";
+        const output = rates?.output ?? "—";
         console.log(
           `  ${id.padEnd(idW)}   input: ${input.padStart(8)}   output: ${output.padStart(8)}  ${name}`
         );

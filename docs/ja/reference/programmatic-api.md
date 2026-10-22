@@ -43,6 +43,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `JsonExtractor` | DocusaurusのJSONラベルファイルから抽出（UIカタログ、MDX本文ではない）。 |
 | `SvgExtractor` | SVG ファイルから抽出します。 |
 | `LlmClient` | アクティブな LLM プロバイダーに翻訳リクエストを行います（`OpenRouterClient` は非推奨のエイリアスです）。 |
+| `rankProviderModels` / `resolveSuggestionWeights` | `suggest-models` が使用する品質または価格プロファイルに基づいて、ランク 1 プロバイダーのチャットカタログをランク付けします。設定の出力や書き込みは行いません。 |
 | `PlaceholderHandler` | 翻訳前後にMarkdown構文（HTMLタグ、注記、アンカー、MDXコメント/JSX/波括弧、URL、インラインコード、強調）を保護・復元します。 |
 | `protectMdx` / `restoreMdx` | MDXコメント、JSXタグ、波括弧式、JSX文字列属性を保護・復元します（`PlaceholderHandler`から呼び出され、直接使用するためにエクスポートもされます）。 |
 | `splitTranslatableIntoBatches` | セグメントを LLM 向けのバッチサイズにグループ化します。 |

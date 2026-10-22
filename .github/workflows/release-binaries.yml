@@ -1,0 +1,117 @@
+# Build unsigned Node.js SEA binaries and attach them to a GitHub Release.
+# Runner labels: ubuntu-latest (linux-x64), ubuntu-24.04-arm (linux-arm64),
+# macos-latest (macos-arm64), macos-15-intel (macos-x64), windows-latest (win-x64).
+# macos-15-intel is a GitHub-hosted Intel macOS 15 larger runner.
+name: Release binaries
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to upload binaries to (for example v1.10.0)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux-x64
+          - os: ubuntu-24.04-arm
+            name: linux-arm64
+          - os: macos-latest
+            name: macos-arm64
+          - os: macos-15-intel
+            name: macos-x64
+          - os: windows-latest
+            name: win-x64
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+
+      - name: Enable pnpm via corepack
+        run: corepack enable && corepack prepare --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build standalone binary
+        run: pnpm build:binary
+
+      - name: Checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist-sea
+          file=$(find . -maxdepth 1 -type f -name 'ai-i18n-tools-*' ! -name '*.blob' | head -n 1)
+          base=$(basename "$file")
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum "$base" > "SHA256-${{ matrix.name }}.txt"
+          else
+            shasum -a 256 "$base" > "SHA256-${{ matrix.name }}.txt"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.name }}
+          path: |
+            dist-sea/ai-i18n-tools-*
+            dist-sea/SHA256-*.txt
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: binary-*
+          path: dist-sea/release
+          merge-multiple: true
+
+      - name: Resolve release tag
+        id: tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "value=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Assemble checksums and the Python examples archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="${{ steps.tag.outputs.value }}"
+          cd dist-sea/release
+          cat SHA256-*.txt | sort -u > SHA256SUMS.txt
+          cd "$GITHUB_WORKSPACE"
+          zip -r dist-sea/release/ai-i18n-tools-python-examples.zip \
+            examples/python-streamlit \
+            examples/python-flask \
+            examples/python-fastapi \
+            examples/python-gettext \
+            -x '*/__pycache__/*' '*.pyc' '*/.venv/*'
+          cd dist-sea/release
+          gh release upload "$tag" ai-i18n-tools-* SHA256SUMS.txt ai-i18n-tools-python-examples.zip \
+            --clobber
+          echo "Uploaded unsigned binaries. They are not notarized or Authenticode-signed."

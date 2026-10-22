@@ -1,0 +1,9 @@
+[project]
+name = "python-flask-example"
+version = "0.1.0"
+description = "Flask shop demo localized with English-key JSON."
+requires-python = ">=3.10"
+dependencies = ["flask>=3.0.0"]
+
+[tool.ai-i18n-tools]
+template = "ui-python"

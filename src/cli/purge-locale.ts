@@ -11,6 +11,7 @@ import { collectFilesByExtension } from "./file-utils.js";
 import { filterGeneratedHtmlOutputs, htmlOutputLocales } from "../core/html-source-filter.js";
 import { resolveStringsJsonPath, resolveTranslatedOutputPath, writeAtomicUtf8 } from "./helpers.js";
 import { selectUiBlocks } from "../core/ui-blocks.js";
+import { toGettextLocale } from "../core/gettext-codec.js";
 
 type StringsFile = Record<string, StringsJsonEntry>;
 
@@ -170,8 +171,25 @@ function flatLocaleFiles(
       continue;
     }
     const filePath = path.join(projectRoot, flatDir, `${locale}.json`);
-    if (fs.existsSync(filePath)) {
+    if (item.block.flatOutput !== false && fs.existsSync(filePath)) {
       files.push(filePath);
+    }
+    const gettext = item.block.gettext;
+    if (gettext) {
+      const dirLocale = toGettextLocale(locale, gettext.localeFormat);
+      const base = path.join(
+        projectRoot,
+        gettext.outputDir,
+        dirLocale,
+        "LC_MESSAGES",
+        gettext.domain
+      );
+      for (const ext of [".po", ".mo"]) {
+        const candidate = `${base}${ext}`;
+        if (fs.existsSync(candidate)) {
+          files.push(candidate);
+        }
+      }
     }
   }
   return files;

@@ -11,6 +11,11 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
+<a id="standalone-executables"></a>
+### Eigenständige ausführbare Dateien
+
+GitHub Releases enthalten einen Node.js Single-Executable-Build für Linux (`x64`, `arm64`), macOS (`arm64`, `x64`) und Windows (`x64`). Python-Projekte können `extract` und `translate-ui` mit dieser Binärdatei ausführen und benötigen kein installiertes Node.js. Die Binärdateien sind weder notariell beglaubigt noch mit Authenticode signiert. Das npm-Tarball und die ausführbare Datei enthalten keine Python-Beispiele. Diese Beispiele verbleiben im Repository und sind zusätzlich als `ai-i18n-tools-python-examples.zip` angehängt.
+
 ai-i18n-tools enthält einen eigenen String-Extraktor. Wenn Sie zuvor `i18next-scanner`, `babel-plugin-i18next-extract` oder Ähnliches verwendet haben, können Sie diese Entwicklungsabhängigkeiten nach der Migration entfernen. Bestehende i18next **Namespace-JSON**-Dateien können in der [JSON-Pipeline](/de/guide/json#i18next-namespace-files) verbleiben. Intlayer `.content.ts`-Wörterbücher können mit `migrate-intlayer` importiert werden – siehe [Migration von Intlayer](/de/guide/migrating-from-intlayer).
 
 <a id="using-the-cli"></a>

@@ -25,6 +25,45 @@ Lista todos os modelos que o provedor ativo anuncia através de sua lista `GET /
 
 ---
 
+<a id="suggest-models"></a>
+### `suggest-models`
+
+**Sinopse:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+
+Classifica os modelos de chat do provedor ativo e exibe os principais (padrão 5). As colunas da tabela, em ordem, são: classificação, ID do modelo, índice (a pontuação ponderada vezes 100, com uma casa decimal), ChrF do languagebench medido, Arena Score medido e preço de entrada e saída em USD por 1 milhão de tokens. Uma medição ausente é `—`. O comando requer a chave de API desse provedor (nenhuma para provedores sem chave, como o Ollama). O provedor ativo segue a configuração `provider`; substitua-a com `-P` / `--provider`.
+
+Os candidatos vêm da lista `GET /models` do provedor. Linhas expiradas e linhas que não são de chat (embeddings, fala, imagem, vídeo, moderação, rerankers) são deixadas de fora. Se essa solicitação de catálogo falhar, o comando encerra com código 1.
+
+`--quality` é o padrão. Ele pondera o ChrF e o Arena Score acima do preço. `--price` pondera o preço acima dessas pontuações e ainda mantém um limite mínimo de qualidade, para que um modelo barato não medido não salte na lista. Passar ambos os sinalizadores é um erro. Não passar nenhum significa qualidade. Pesos opcionais `modelSuggestion` na configuração substituem qualquer perfil. Consulte [Configuração](/pt-BR/reference/configuration#modelsuggestion). Os mesmos pesos são usados pela [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models).
+
+ChrF é a média das linhas `translation_from` e `translation_to` do languagebench cuja métrica é `chrf`, limitada a `sourceLocale` e `targetLocales` deste projeto. As localidades mapeiam para um código de idioma do languagebench (o subtag primário, com alguns aliases como `pt-BR` para `pt` e `zh-Hant` para `zh` e `yue`). Um conjunto vazio usa `en`. Arena é o Arena Score geral do LMArena, não o Elo. O preço de classificação é `(3 × input + output) / 4` USD por 1 milhão de tokens. A fonte do preço é uma taxa de catálogo diferente de zero, seguida pelas taxas de entrada e saída do models.dev e, por fim, o valor de custo único do languagebench. Um preço de catálogo de `0` não tem preço definido, não é gratuito. Um preço desconhecido é neutro no perfil de qualidade e o pior no perfil de preço. Um ChrF ausente é classificado abaixo do limite mínimo de qualidade. Os substitutos `0.35` e `0.45` usados para um ChrF ou Arena ausente afetam apenas o índice; a tabela imprime `—` em seu lugar.
+
+As linhas que superam o limite mínimo vêm primeiro, seguidas por um índice maior e, depois, um preço misto mais barato. `--top` (padrão `5`, um número inteiro de pelo menos 1) limita a tabela, o fragmento `--json` e `--apply` juntos, após os filtros abaixo.
+
+`--list` imprime as mesmas colunas para os `translationModels` configurados do provedor ativo, nessa ordem, e ignora `--top`. A coluna de classificação ainda é a posição de cada modelo na classificação completa. Um ID configurado que esteja ausente do catálogo, expirado ou que não seja um modelo de chat ainda é listado, com `—` para as medições. `--list` não pode ser combinado com `--apply`.
+
+`--max-output-price` mantém modelos cujo preço de saída por 1 milhão de tokens é menor ou igual a esse valor em USD. Um modelo sem preço de saída é deixado de fora. `--min-delta` então percorre as linhas restantes e mantém um modelo apenas quando seu índice está pelo menos esse número de pontos abaixo do modelo mantido anteriormente. O primeiro modelo restante é sempre mantido. Um delta de `0` não descarta linhas. Linhas sem índice são deixadas de fora quando o delta é maior que `0`. Os números de classificação permanecem os da lista completa. Com `--list`, o percurso segue a ordem `translationModels`. Ambos os filtros também se aplicam a `--json` e `--apply`. A [aba Modelos](/pt-BR/guide/translation-dashboard/models) possui os mesmos dois controles.
+
+`--json` grava este objeto na saída padrão (cole-o dentro do bloco do provedor) e envia a tabela e o rodapé de atribuição para a saída de erro padrão:
+
+```json
+{
+  "translationModels": ["model-a", "model-b"]
+}
+```
+
+`--apply` substitui `providers.<active>.translationModels` por esses IDs. `uiModels` e `localeModels` permanecem inalterados. As pontuações não são gravadas no arquivo de configuração.
+
+Os dados de benchmark são armazenados em cache em `<cacheDir>/benchmark-scores.json` (geralmente `.translation-cache/benchmark-scores.json`) por 7 dias. Os conjuntos de dados brutos são baixados em tempo de execução e não são enviados no pacote. `--refresh` baixa novamente o languagebench, o Arena e o models.dev. Uma fonte que falha durante `--refresh` não é preenchida a partir do cache anterior. Sem `--refresh`, um download com falha reutiliza a fatia armazenada em cache. Se um dos componentes, languagebench ou Arena, falhar, o comando classifica com o outro e informa qual fonte falhou. Se ambos falharem, ele encerra com código 1. Uma falha no models.dev mantém os preços do catálogo. O painel não possui controle de atualização; execute `--refresh` a partir da CLI e, em seguida, recarregue a guia Models.
+
+O rodapé atribui o languagebench (CC BY-SA 4.0), o LMArena Arena Score (CC BY 4.0) e o models.dev (MIT).
+
+**Opções principais:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
+
+**Veja também:** [Provedores de LLM](/pt-BR/guide/providers-and-models), [Guia Models](/pt-BR/guide/translation-dashboard/models)
+
+---
+
 <a id="bench-models"></a>
 ### `bench-models`
 

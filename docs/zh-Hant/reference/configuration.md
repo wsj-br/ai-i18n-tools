@@ -130,13 +130,13 @@
 - `temperature`
   取樣溫度。預設值：`0.2`。
 - `requestTimeout`
-  向此供應商發送每個請求時等待的最長時間（以秒為單位）。覆寫頂層 `requestTimeout` / `requestTimeoutMs`。若此供應商與頂層設定皆未設定逾時，預設為 `45` 秒。在同一物件上僅能設定 `requestTimeout` 或 `requestTimeoutMs` 其中之一。
+  等待對此提供者發出的每個請求的最長時間（以秒為單位）。這會覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此提供者和頂層設定都沒有設定逾時時，預設為 `45` 秒。在同一個物件上，只能設定 `requestTimeout` 和 `requestTimeoutMs` 其中一個。
 - `requestTimeoutMs`
-  向此供應商發送每個請求時等待的最長時間（以毫秒為單位）。覆寫頂層 `requestTimeout` / `requestTimeoutMs`。若此供應商與頂層設定皆未設定逾時，預設為 `45000`（45 秒）。在同一物件上僅能設定 `requestTimeout` 或 `requestTimeoutMs` 其中之一。
+  等待對此提供者發出的每個請求的最長時間（以毫秒為單位）。這會覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此提供者和頂層設定都沒有設定逾時時，預設為 `45000`（45 秒）。在同一個物件上，只能設定 `requestTimeout` 和 `requestTimeoutMs` 其中一個。
 - `pricing`（選用）
-  供應商層級每 1,000,000 個 token 的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有供應商回報的 `usage.cost` 時（OpenRouter 以外的大多數供應商），此費率將套用至該呼叫的輸入與輸出 token。此金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。相符的 `modelPricing` 項目會覆寫此預設值。供應商回報的成本絕不會被取代。儲存時未包含成本的列，稍後仍可透過 [`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 與 [使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 進行估算。
+  提供者範圍內每 1,000,000 個權杖的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有提供者報告的 `usage.cost`（大多數提供者，除了 OpenRouter 和 Cheaper Inference）時，此費率會套用到該呼叫的輸入和輸出權杖。此金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。相符的 `modelPricing` 項目會覆寫此預設值。提供者報告的費用永遠不會被取代。當沒有設定費率相符時，工具會使用 models.dev 針對該模型 ID 的定價（輸入和輸出每 1M 權杖的美元費用）。沒有儲存費用的列仍可稍後透過 [`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 和 [使用量與費用](/zh-Hant/guide/translation-dashboard/usage) 進行估算。如果這些來源都不適用，費用將保持未知 (`—`)，永遠不會是 `$0.00`。
 - `modelPricing`（選用）
-  每個模型每 1,000,000 個 token 的美元費用：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆寫該模型 ID 的 `pricing`。當供應商省略 `usage.cost` 時，會在呼叫時套用，並與該呼叫一起儲存。
+  每個模型每 1,000,000 個權杖的美元費用：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。這會覆寫該模型 ID 的 `pricing`。當提供者省略 `usage.cost` 時，會在呼叫時套用並與呼叫一起儲存。
 
 內建提供者預設值（金鑰 — 基本 URL — API 金鑰環境變數）：
 
@@ -154,6 +154,7 @@
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (無) |
 
 舊版頂層 `openrouter` 區塊（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍受支援，並會在載入時自動遷移至 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 會摺疊進 `translationModels`。
@@ -262,20 +263,24 @@
   此區塊之主目錄檔案的路徑。由 `extract` 更新。
 - `flatOutputDir`
   寫入此區塊各語言環境 JSON 檔案的目錄（`de.json` 等）。
+- `flatOutput`
+  當 `true`（預設值）時，`translate-ui` 會為每個語系寫入一個扁平的 JSON 檔案。將 `false` 設定為僅限 gettext 區塊。具有 `flatOutput: false` 的區塊必須設定 `gettext`。
+- `gettext`
+  此區塊的選用 GNU gettext 輸出。`outputDir`（預設值 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，並且當 `compileMo` 為 true（預設值）時，接收相符的 `.mo`。`domain` 預設為 `messages`。`potPath` 是範本目錄。`ingestExistingPo`（預設值 `true`）在 `extract` 期間從非模糊的 `msgstr` 值填補空的 `strings.json` 槽位，並且不會取代非空或使用者編輯的翻譯。`localeFormat` 是 `posix`（預設值，`pt_BR`）或 `bcp47` (`pt-BR`)。上下文相關的列使用 gettext `\u0004` 分隔符。兩個上下文中的相同英文來源不共用目錄 ID。
 - `targetLocales`
-  此區塊的選填語言環境清單。若省略或為空，區塊會使用根 `targetLocales`。
+  此區塊的選用語系清單。省略或為空時，區塊使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 寫入此區塊之 `ui-languages.json` 的選填路徑。若省略，區塊 0 會使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續區塊預設為 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 寫入此區塊 `ui-languages.json` 的選用路徑。省略時，區塊 0 使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續區塊預設為 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
-  當 `true`（預設值）時，此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的術語表提示來源。`translate-ui`、`proofread-ui` 和來源 linting 僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如不應引導文件的 CLI 字串目錄）。
+  當 `true`（預設值）時，此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的詞彙提示來源。`translate-ui`、`proofread-ui` 和來源 linting 僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如，不應引導文件說明的 CLI 字串目錄）。
 - `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）
-  要掃描的其他函式名稱（預設值：`["t", "i18n.t"]`）。
+  要掃描的其他函數名稱（預設值：`["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（或舊版 `reactExtractor.extensions`）
-  要包含的副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。新增 `.astro` 以用於 Astro frontmatter 和範本運算式。
+  要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。為 Astro frontmatter 和範本表達式新增 `.astro`。
 - `uiExtractor.includePackageDescription`（或舊版 `reactExtractor.includePackageDescription`）
-  當 `true`（預設值）時，`extract` 也會在存在時將 `package.json` `description` 包含為 UI 字串。在額外區塊上設定 `false`，以免將相同的描述擷取到每個目錄中。
+  當 `true`（預設值）時，`extract` 也會將 `package.json` `description` 作為 UI 字串（如果存在）包含在內。在額外區塊上設定 `false`，這樣相同的描述就不會被提取到每個目錄中。
 - `uiExtractor.packageJsonPath`（或舊版 `reactExtractor.packageJsonPath`）
-  用於該選填描述擷取的 `package.json` 檔案的自訂路徑。
+  用於選用描述提取的 `package.json` 檔案的自訂路徑。
 - `uiExtractor.includeUiLanguageEnglishNames`（或舊版 `reactExtractor.includeUiLanguageEnglishNames`）
 
 當 `true`（預設 `false`）時，若來源掃描中尚未存在（相同的雜湊索引鍵），`extract` 也會將隨附的 ui-languages 主目錄（從 `sourceLocale` + 區塊的有效 `targetLocales` 建置）中的每個 `englishName` 新增至 `strings.json`。不會讀取 `languagesManifestPath`。
@@ -288,7 +293,7 @@
 ### `cacheDir`
 
 - `cacheDir`
-SQLite 快取目錄（所有 `docs` 區塊共用）。預設 `.translation-cache`。跨執行重複使用。如果您正在從自訂文件翻譯快取遷移，請封存或刪除它 — `cacheDir` 會建立自己的 SQLite 資料庫，並且與其他架構不相容。
+SQLite 快取目錄（由所有 `docs` 區塊共用）。預設值 `.translation-cache`。跨執行重複使用。如果您正在從自訂文件翻譯快取遷移，請封存或刪除它 — `cacheDir` 會建立自己的 SQLite 資料庫，並且與其他架構不相容。`suggest-models` 也會將基準測試彙總儲存在 `<cacheDir>/benchmark-scores.json` 中。該檔案是一個快取，就像目錄的其餘部分一樣，並且不屬於已發布套件的一部分。
 
 <a id="best-practice-for-git-exclusions"></a>
 #### git 排除的最佳實踐：
@@ -500,6 +505,25 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 | `pathTemplate`   | 自訂 SVG 輸出路徑。佔位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
 | `localePathLowercase` | 當 `true` 為 true 時，內建的 `flat` / `nested` SVG 佈局會使用小寫的地區設定區段。自訂 `pathTemplate` 值保持不變；請使用 `{llocale}` 來進行小寫區段。 |
 | `forceLowercase` | 在重新組合 SVG 時將翻譯後的文字轉為小寫。對於依賴全小寫標籤的設計很有用。                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion`（選填）
+
+用於 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 與 [儀表板模型分頁](/zh-Hant/guide/translation-dashboard/models) 的權重。若省略此區塊或省略其中一個設定檔，該設定檔將保留內建權重。此區塊不會被 `--apply` 或 **更新設定** 所覆寫；這些操作僅會寫入模型 ID。
+
+- `quality` — 預設 ChrF `0.45/0.95`、Arena `0.35/0.95`、價格 `0.15/0.95`、品質下限 `0.7`
+- `price` — 預設 ChrF `0.25`、Arena `0.10`、價格 `0.65`、品質下限 `0.6`
+
+每個設定檔物件皆須包含 `chrf`、`arena` 與 `price`。每個數值皆須為有限數且至少為 `0`，且至少有一個數值大於 `0`。這些數值會被正規化以使其總和為 1，因此 `45`、`35` 與 `15` 會符合品質預設值。`qualityFloor` 為選填項目，範圍為 `(0, 1]`，代表候選池中最佳 ChrF 的分數比例。低於品質下限的模型（包含任何沒有 ChrF 測量值的模型）將會排在通過下限的模型之後。
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

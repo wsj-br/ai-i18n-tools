@@ -1,4 +1,7 @@
 import type { Heading, Root } from "mdast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { gfmFromMarkdown } from "mdast-util-gfm";
+import { gfm } from "micromark-extension-gfm";
 import type { Node } from "unist";
 import { visit } from "unist-util-visit";
 import type { Segment } from "../core/types.js";
@@ -12,31 +15,19 @@ export interface ValidationResult {
   errors: string[];
 }
 
-/** Lazy ESM loads (mdast stack is ESM-only; dynamic import works in Vitest + Node). */
+/** Markdown parser modules. Imported statically so the SEA bundle includes them. */
 type MarkdownParserModules = {
   fromMarkdown: (value: string, options?: Record<string, unknown>) => Root;
   gfm: (options?: unknown) => unknown;
   gfmFromMarkdown: () => unknown[];
 };
 
-let parserPromise: Promise<MarkdownParserModules> | null = null;
-
 function loadMarkdownParser(): Promise<MarkdownParserModules> {
-  if (!parserPromise) {
-    parserPromise = Promise.all([
-      import("mdast-util-from-markdown"),
-      import("micromark-extension-gfm"),
-      import("mdast-util-gfm"),
-    ]).then(([fromMarkdownMod, gfmMod, gfmMdMod]) => ({
-      fromMarkdown: fromMarkdownMod.fromMarkdown as (
-        value: string,
-        options?: Record<string, unknown>
-      ) => Root,
-      gfm: gfmMod.gfm as (options?: unknown) => unknown,
-      gfmFromMarkdown: gfmMdMod.gfmFromMarkdown as () => unknown[],
-    }));
-  }
-  return parserPromise;
+  return Promise.resolve({
+    fromMarkdown: fromMarkdown as (value: string, options?: Record<string, unknown>) => Root,
+    gfm: gfm as (options?: unknown) => unknown,
+    gfmFromMarkdown: gfmFromMarkdown as () => unknown[],
+  });
 }
 
 /** Structural counts derived from mdast (GFM). Used to compare source vs translated segment text. */

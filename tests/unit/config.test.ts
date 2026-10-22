@@ -4,7 +4,12 @@ import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   applyEnvOverrides,
+  applyInitProvider,
   assertPresetInitProvider,
+  assertSvgCommandConfig,
+  defaultInitModelsForProvider,
+  initConfigTemplates,
+  listPresetInitProviderKeys,
   loadI18nConfigFromFile,
   mergeWithDefaults,
   normalizeLocale,
@@ -15,6 +20,7 @@ import {
   resolveUITranslationModels,
   resolveAllConfiguredModelIds,
   dedupeOrderedModelIds,
+  toDocTranslateConfig,
   validateI18nBusinessRules,
   writeInitConfigFile,
 } from "../../src/core/config.js";
@@ -998,6 +1004,107 @@ describe("writeInitConfigFile", () => {
   it("rejects unknown init provider keys", () => {
     expect(() => assertPresetInitProvider("notreal")).toThrow(ConfigValidationError);
     expect(() => assertPresetInitProvider("notreal")).toThrow(/built-in preset/);
+  });
+
+  it("writes a parseable config for every init template", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-all-"));
+    try {
+      const keys = Object.keys(initConfigTemplates) as (keyof typeof initConfigTemplates)[];
+      expect(keys.length).toBeGreaterThan(10);
+      for (const key of keys) {
+        const out = path.join(dir, key, "ai-i18n-tools.config.json");
+        writeInitConfigFile(out, key, dir);
+        const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+          provider?: string;
+          features?: Record<string, boolean>;
+        };
+        expect(raw.provider).toBe("openrouter");
+        expect(raw.features).toBeDefined();
+      }
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("init provider helpers", () => {
+  it("lists presets and returns default models for known and unknown keys", () => {
+    const keys = listPresetInitProviderKeys();
+    expect(keys).toContain("openrouter");
+    expect(keys).toContain("anthropic");
+    expect(keys).toContain("cheaperinference");
+    expect(defaultInitModelsForProvider("openai")[0]).toBe("gpt-4o-mini");
+    expect(defaultInitModelsForProvider("cheaperinference")).toEqual([
+      "deepseek-v4.1-flash",
+      "glm-5.3-flash",
+    ]);
+    expect(defaultInitModelsForProvider("not-a-preset")).toEqual(
+      defaultInitModelsForProvider("openrouter")
+    );
+  });
+
+  it("copies explicit feature flags when applying a provider to a template", () => {
+    const raw = applyInitProvider(mergeWithDefaults(initConfigTemplates.uiPython()), "groq");
+    expect(raw.provider).toBe("groq");
+    expect(raw.providers?.groq).toBeDefined();
+    expect(() => parseI18nConfig(raw)).not.toThrow();
+  });
+});
+
+describe("toDocTranslateConfig", () => {
+  it("lifts one docs block onto the root config view", () => {
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        features: { translateUIStrings: false, translateDocs: true },
+        docs: [{ contentPaths: ["docs/"], outputDir: "./out" }],
+      })
+    );
+    const view = toDocTranslateConfig(config, config.docs[0]!);
+    expect(view.doc.contentPaths).toEqual(["docs/"]);
+    expect("docs" in view).toBe(false);
+    expect(view.sourceLocale).toBe("en");
+  });
+});
+
+describe("assertSvgCommandConfig", () => {
+  it("requires an svg block", () => {
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        features: { translateUIStrings: false, translateDocs: false, translateSVG: false },
+      })
+    );
+    expect(() => assertSvgCommandConfig(config)).toThrow(/svg block/);
+  });
+
+  it("accepts svg translation when models are configured", () => {
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        providers: { openrouter: { translationModels: ["m"] } },
+        features: { translateUIStrings: false, translateDocs: false, translateSVG: true },
+        svg: { sourcePath: "assets/logo.svg", outputDir: "i18n/svg", style: "flat" },
+      })
+    );
+    expect(() => assertSvgCommandConfig(config)).not.toThrow();
+  });
+
+  it("rejects non-source svg locales when translationModels is empty", () => {
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        providers: { openrouter: { translationModels: ["m"] } },
+        features: { translateUIStrings: false, translateDocs: false, translateSVG: true },
+        svg: { sourcePath: "assets/logo.svg", outputDir: "i18n/svg", style: "flat" },
+      })
+    );
+    config.providers.openrouter = { ...config.providers.openrouter, translationModels: [] };
+    expect(() => assertSvgCommandConfig(config)).toThrow(/translationModels/);
   });
 });
 

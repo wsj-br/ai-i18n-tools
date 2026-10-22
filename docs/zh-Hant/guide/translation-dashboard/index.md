@@ -37,6 +37,7 @@ ai-i18n-tools dashboard
 | 鎖定 UI 翻譯的術語 | **詞彙表** | [詞彙表](/zh-Hant/guide/translation-dashboard/glossary) |
 | 查看快取覆蓋率和模型使用情況 | **統計資料** | [統計資料](/zh-Hant/guide/translation-dashboard/statistics) |
 | 查看 API 呼叫權杖與費用 | **用量與費用** | [用量與費用](/zh-Hant/guide/translation-dashboard/usage) |
+| 選擇翻譯模型 | **模型** | [模型](/zh-Hant/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## 編輯後

@@ -81,10 +81,10 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 <a id="explore-the-documentation"></a>
 ## ドキュメントを探索する
 
-- [**ガイド**](/ja/guide/what-is-ai-i18n-tools) — 翻訳モード、インストール、クイックスタート、フレームワークの統合
-- [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、および Astro
-- [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、および `-P` のオーバーライド
-- [**CLIリファレンス**](/ja/reference/cli-commands/) — すべてのコマンド、フラグ、ワークフロー
+- [**ガイド**](/ja/guide/what-is-ai-i18n-tools) — 翻訳モード、インストール、クイックスタート、およびフレームワーク統合
+- [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、およびAstro
+- [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、ランク付けされた提案（`suggest-models`）、および`-P`のオーバーライド
+- [**CLIリファレンス**](/ja/reference/cli-commands/) — すべてのコマンド、フラグ、およびワークフロー
 - [**設定**](/ja/reference/configuration) — `ai-i18n-tools.config.json` の完全なスキーマ
 - [**サンプル**](/ja/examples) — `npx degit` を使用した13の実行可能なデモプロジェクト
 - [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラムAPI、および拡張ポイント

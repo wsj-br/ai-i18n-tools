@@ -37,6 +37,7 @@ La interfaz de usuario del panel de control utiliza la misma resolución de conf
 | Bloquear la terminología para la traducción de la interfaz de usuario | **Glosario** | [Glosario](/es/guide/translation-dashboard/glossary) |
 | Ver la cobertura de la caché y el uso del modelo | **Estadísticas** | [Estadísticas](/es/guide/translation-dashboard/statistics) |
 | Ver tokens y coste de llamadas a la API | **Uso y costes** | [Uso y costes](/es/guide/translation-dashboard/usage) |
+| Seleccionar modelos de traducción | **Modelos** | [Modelos](/es/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## Después de editar

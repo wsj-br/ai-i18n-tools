@@ -1,8 +1,8 @@
 diff --git a/index.js b/index.js
-index f01e9a1..5903041 100644
+index 56c2602..4bf2992 100644
 --- a/index.js
 +++ b/index.js
-@@ -394,8 +394,8 @@ module.exports = class CachePolicy {
+@@ -395,8 +395,8 @@ module.exports = class CachePolicy {
      evaluateRequest(req) {
          this._assertRequestHasHeaders(req);
  
@@ -13,7 +13,7 @@ index f01e9a1..5903041 100644
              return this._evaluateRequestMissResult(req);
          }
  
-@@ -596,19 +596,25 @@ module.exports = class CachePolicy {
+@@ -619,19 +619,25 @@ module.exports = class CachePolicy {
       * Returns the maximum age (freshness lifetime) of the response in seconds.
       * @returns {number} The max-age value in seconds.
       */
@@ -51,7 +51,7 @@ index f01e9a1..5903041 100644
              return 0;
          }
  
-@@ -617,9 +623,6 @@ module.exports = class CachePolicy {
+@@ -640,9 +646,6 @@ module.exports = class CachePolicy {
          }
  
          if (this._isShared) {

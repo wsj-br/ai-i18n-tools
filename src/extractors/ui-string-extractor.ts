@@ -9,6 +9,7 @@ import type {
 import { isPluralStringsEntry, segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 import { extractUiCallsFromFileContent } from "./ui-string-babel.js";
+import { uiCatalogHash } from "./ui-string-locations.js";
 
 const DEFAULT_EXT = [".js", ".jsx", ".ts", ".tsx"];
 const DEFAULT_FUNCS = ["t", "i18n.t"];
@@ -61,7 +62,7 @@ export class UIStringExtractor extends BaseExtractor {
       if (!str) {
         continue;
       }
-      const hash = this.computeHash(str);
+      const hash = uiCatalogHash(str, call.context);
       if (!found.has(hash)) {
         found.set(hash, {
           id: `ui-${i++}`,
@@ -72,6 +73,8 @@ export class UIStringExtractor extends BaseExtractor {
           startLine: call.line,
           ...(call.plurals === true ? { plurals: true } : {}),
           ...(call.zeroDigit === true ? { zeroDigit: true } : {}),
+          ...(call.pluralSource ? { pluralSource: call.pluralSource } : {}),
+          ...(call.context ? { context: call.context } : {}),
         });
       }
     }

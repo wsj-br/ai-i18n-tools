@@ -48,6 +48,10 @@ export interface Segment {
   plurals?: boolean;
   /** Tooling-only; stripped before `i18next.t`. Phrasing hint for `_zero` in Step 0 / Pass B. */
   zeroDigit?: boolean;
+  /** English plural literal (`ngettext`, `{% pluralize %}`, `msgid_plural`). */
+  pluralSource?: string;
+  /** Gettext context (`pgettext`, Qt `comment`, `msgctxt`). */
+  context?: string;
 }
 
 /** CLDR cardinal plural categories used by i18next JSON v4 suffixes (`_zero` … `_other`). */
@@ -57,6 +61,8 @@ export type CldrPluralForm = "zero" | "one" | "two" | "few" | "many" | "other";
 export interface StringsJsonPlainEntry {
   plural?: false;
   source: string;
+  /** Gettext `msgctxt`. Contextual catalog ids hash `context + "\\u0004" + source`. */
+  context?: string;
   translated: Record<string, string>;
   models?: Record<string, string>;
   locations?: Array<{ file: string; line: number }>;
@@ -66,6 +72,10 @@ export interface StringsJsonPlainEntry {
 export interface StringsJsonPluralEntry {
   plural: true;
   source: string;
+  /** English plural literal from `ngettext` / template plural blocks / `msgid_plural`. */
+  pluralSource?: string;
+  /** Gettext `msgctxt`. Contextual catalog ids hash `context + "\\u0004" + source`. */
+  context?: string;
   /** When true, `_zero` source uses literal Arabic `0`; when false, natural phrasing in that language. */
   zeroDigit?: boolean;
   translated: Record<string, Partial<Record<CldrPluralForm, string>>>;
@@ -575,6 +585,11 @@ const uiExtractorSchema = z
     includePackageDescription: z.boolean().default(true),
     packageJsonPath: z.string().optional(),
     /**
+     * `pyproject.toml` read for `[project].description` / `[tool.poetry].description`
+     * when `includePackageDescription` is true. Defaults to `pyproject.toml`.
+     */
+    pyprojectTomlPath: z.string().optional(),
+    /**
      * When true, `extract` also adds each `englishName` from the bundled master catalog for `sourceLocale` +
      * `targetLocales` into `strings.json` when not already present from source scan (same MD5-8 keys).
      */
@@ -818,6 +833,22 @@ const uiBlockTargetLocalesSchema = z
   )
   .optional();
 
+const gettextConfigSchema = z
+  .object({
+    /** Directory for `{locale}/LC_MESSAGES/{domain}.po`. */
+    outputDir: z.string().min(1).default("./locales"),
+    domain: z.string().min(1).default("messages"),
+    /** Optional `.pot` path. Ingested on extract and updated in place on translate-ui. */
+    potPath: z.string().min(1).optional(),
+    /** Compile a binary GNU `.mo` next to each `.po`. */
+    compileMo: z.boolean().default(true),
+    /** Read existing `.pot` / `.po` catalogs into `strings.json` during extract. */
+    ingestExistingPo: z.boolean().default(true),
+    /** `posix` writes `pt_BR`; `bcp47` writes `pt-BR`. */
+    localeFormat: z.enum(["posix", "bcp47"]).default("posix"),
+  })
+  .strict();
+
 const uiConfigSchema = z.preprocess(
   (raw) => {
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
@@ -839,6 +870,13 @@ const uiConfigSchema = z.preprocess(
       stringsJson: z.string().min(1).default("strings.json"),
       /** Directory for flat per-locale JSON (`de.json`, …). */
       flatOutputDir: z.string().min(1).default("./locales"),
+      /**
+       * When true (default), `translate-ui` writes flat `{locale}.json` bundles.
+       * Set false to emit Gettext `.po`/`.mo` only. At least one of flat JSON or `gettext` is required.
+       */
+      flatOutput: z.boolean().default(true),
+      /** GNU Gettext / Babel output and optional ingest of existing `.po` catalogs. */
+      gettext: gettextConfigSchema.optional(),
       /**
        * Locales for this catalog only. When omitted or empty, root `targetLocales` is used.
        */
@@ -872,6 +910,7 @@ const defaultUiBlock = {
   sourceRoots: [] as string[],
   stringsJson: "strings.json",
   flatOutputDir: "./locales",
+  flatOutput: true,
   uiGlossary: true,
 };
 
@@ -1051,6 +1090,41 @@ const jsonBlockSchema = z
   })
   .strict();
 
+const suggestionProfileWeightsSchema = z
+  .object({
+    /** ChrF weight. Normalized with `arena` and `price` so the three sum to 1. */
+    chrf: z.number().nonnegative(),
+    /** Arena Score weight. Normalized with `chrf` and `price` so the three sum to 1. */
+    arena: z.number().nonnegative(),
+    /** Price weight (lower blended USD per 1M tokens scores higher). */
+    price: z.number().nonnegative(),
+    /**
+     * Fraction of the best ChrF in the candidate pool. Models under this floor sort after
+     * those that clear it. Omit for the profile default (`0.7` quality, `0.6` price).
+     */
+    qualityFloor: z.number().gt(0).max(1).optional(),
+  })
+  .strict()
+  .superRefine((weights, ctx) => {
+    if (weights.chrf + weights.arena + weights.price <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "modelSuggestion weights must include at least one positive chrf, arena, or price value",
+      });
+    }
+  });
+
+/**
+ * Optional overrides for `suggest-models`. Omit a profile to keep its built-in weights.
+ */
+const modelSuggestionSchema = z
+  .object({
+    quality: suggestionProfileWeightsSchema.optional(),
+    price: suggestionProfileWeightsSchema.optional(),
+  })
+  .strict();
+
 const i18nConfigSchemaInner = z
   .object({
     sourceLocale: z.string().min(1),
@@ -1141,6 +1215,11 @@ const i18nConfigSchemaInner = z
      * Default `1` (sequential) when unset to preserve existing behavior.
      */
     fileConcurrency: z.number().int().positive().optional(),
+    /**
+     * Optional weights for `suggest-models`. Omit the block, or one profile, to keep the
+     * built-in quality and price heuristics.
+     */
+    modelSuggestion: modelSuggestionSchema.optional(),
   })
   .strict()
   .superRefine((config, ctx) => {
@@ -1180,6 +1259,7 @@ export type DocumentationBlock = DocBlock;
 export type JsonKeyPolicyConfig = z.infer<typeof jsonKeyPolicySchema>;
 export type JsonBlock = z.infer<typeof jsonBlockSchema>;
 export type SvgFilesConfig = z.infer<typeof SvgFilesConfigSchema>;
+export type ModelSuggestionConfig = z.infer<typeof modelSuggestionSchema>;
 /**
  * @deprecated Nested `svg.svgExtractor` was removed; use top-level `svg.forceLowercase` in config.
  * Alias kept for packages that referenced this shape.

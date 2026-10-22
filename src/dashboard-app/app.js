@@ -34,7 +34,9 @@
     if (!uiCatalogId && catalogs[0]) uiCatalogId = String(catalogs[0].id);
     for (const selectId of ["ui-catalog", "up-catalog"]) {
       const select = document.getElementById(selectId);
-      const wrap = document.getElementById(selectId === "ui-catalog" ? "ui-catalog-wrap" : "up-catalog-wrap");
+      const wrap = document.getElementById(
+        selectId === "ui-catalog" ? "ui-catalog-wrap" : "up-catalog-wrap"
+      );
       if (!select || !wrap) continue;
       select.innerHTML = "";
       for (const catalog of catalogs) {
@@ -1449,11 +1451,14 @@
     const loc = uiState.editingLocale;
     const val = document.getElementById("ui-modal-textarea").value;
     try {
-      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(uiState.editingEntry.id)}`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ translated: { [loc]: val } }),
-      });
+      const res = await fetch(
+        withUiCatalog(`/api/ui-strings/${encodeURIComponent(uiState.editingEntry.id)}`),
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { [loc]: val } }),
+        }
+      );
       const pj = await res.json();
       if (!res.ok) throw new Error(pj.error || res.statusText);
       uiCloseModal();
@@ -2132,11 +2137,14 @@
       if (id) payload[id] = ta.value;
     }
     try {
-      const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ translated: { [locale]: payload } }),
-      });
+      const res = await fetch(
+        withUiCatalog(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`),
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { [locale]: payload } }),
+        }
+      );
       const pj = await res.json();
       if (!res.ok) throw new Error(pj.error || res.statusText);
       upCloseModal();
@@ -3098,6 +3106,265 @@
     }
   }
 
+  // ---------- Models ----------
+  const modelsState = {
+    provider: "",
+    providers: [],
+    priority: "quality",
+    rows: [],
+    selected: [],
+    attribution: "",
+  };
+
+  function modelsSetStatus(message, isError) {
+    const el = document.getElementById("models-status");
+    el.textContent = message || "";
+    el.style.color = isError ? "var(--danger)" : "";
+  }
+
+  function modelsFormatMeasure(value, digits) {
+    return typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
+  }
+
+  function modelsFormatUsd(value) {
+    return typeof value === "number" && Number.isFinite(value) ? "$" + value.toFixed(3) : "—";
+  }
+
+  function modelsRenderSelected() {
+    const host = document.getElementById("models-selected");
+    const items = modelsState.selected
+      .map((id, index) => {
+        return (
+          '<li><span class="models-id">' +
+          escapeHtml(id) +
+          '</span><button type="button" data-move="up" data-index="' +
+          index +
+          '">↑</button><button type="button" data-move="down" data-index="' +
+          index +
+          '">↓</button></li>'
+        );
+      })
+      .join("");
+    host.innerHTML =
+      "<h3>" +
+      escapeHtml(t("Selected order")) +
+      "</h3><ol>" +
+      (items || "<li>" + escapeHtml(t("None selected")) + "</li>") +
+      "</ol>";
+    host.querySelectorAll("button[data-move]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const index = Number(btn.getAttribute("data-index"));
+        const dir = btn.getAttribute("data-move") === "up" ? -1 : 1;
+        const next = index + dir;
+        if (next < 0 || next >= modelsState.selected.length) return;
+        const copy = modelsState.selected.slice();
+        const swapped = copy[index];
+        copy[index] = copy[next];
+        copy[next] = swapped;
+        modelsState.selected = copy;
+        modelsRenderSelected();
+      });
+    });
+  }
+
+  function modelsRenderTable() {
+    const host = document.getElementById("models-table");
+    const head =
+      "<tr><th></th><th>" +
+      escapeHtml(t("Rank")) +
+      "</th><th>" +
+      escapeHtml(t("Model")) +
+      "</th><th>" +
+      escapeHtml(t("Index")) +
+      "</th><th>ChrF</th><th>Arena</th><th>" +
+      escapeHtml(t("Input")) +
+      "</th><th>" +
+      escapeHtml(t("Output")) +
+      "</th></tr>";
+    const body = modelsState.rows
+      .map((row) => {
+        const checked = modelsState.selected.indexOf(row.id) >= 0 ? " checked" : "";
+        return (
+          '<tr><td><input type="checkbox" data-model-id="' +
+          escapeHtml(row.id) +
+          '"' +
+          checked +
+          " /></td><td>" +
+          row.rank +
+          "</td><td>" +
+          escapeHtml(row.id) +
+          "</td><td>" +
+          modelsFormatMeasure(row.index, 1) +
+          "</td><td>" +
+          modelsFormatMeasure(row.chrf, 3) +
+          "</td><td>" +
+          modelsFormatMeasure(row.arenaScore, 1) +
+          "</td><td>" +
+          modelsFormatUsd(row.inputPerMTokens) +
+          "</td><td>" +
+          modelsFormatUsd(row.outputPerMTokens) +
+          "</td></tr>"
+        );
+      })
+      .join("");
+    host.innerHTML =
+      '<table class="stats-table"><thead>' + head + "</thead><tbody>" + body + "</tbody></table>";
+    host.querySelectorAll("input[data-model-id]").forEach((box) => {
+      box.addEventListener("change", () => {
+        const id = box.getAttribute("data-model-id");
+        if (box.checked) {
+          if (modelsState.selected.indexOf(id) < 0) modelsState.selected.push(id);
+        } else {
+          modelsState.selected = modelsState.selected.filter((item) => item !== id);
+        }
+        modelsRenderSelected();
+      });
+    });
+    modelsRenderSelected();
+  }
+
+  function modelsApplyTop() {
+    const raw = Number(document.getElementById("models-top").value);
+    const n = Number.isInteger(raw) && raw >= 1 ? raw : 5;
+    modelsState.selected = modelsState.rows.slice(0, n).map((row) => row.id);
+    modelsRenderTable();
+  }
+
+  function modelsOptionalNumber(id) {
+    const raw = document.getElementById(id).value.trim();
+    if (raw === "") return { ok: true };
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n < 0) return { ok: false };
+    return { ok: true, value: n };
+  }
+
+  let modelsLoadSeq = 0;
+
+  async function modelsLoad() {
+    const provider = document.getElementById("models-provider").value || modelsState.provider;
+    const priority = document.getElementById("models-priority").value || "quality";
+    const maxOutputPrice = modelsOptionalNumber("models-max-output-price");
+    const minDelta = modelsOptionalNumber("models-min-delta");
+    if (!maxOutputPrice.ok) {
+      modelsSetStatus(t("--max-output-price must be a number >= 0."), true);
+      return;
+    }
+    if (!minDelta.ok) {
+      modelsSetStatus(t("--min-delta must be a number >= 0."), true);
+      return;
+    }
+    const seq = ++modelsLoadSeq;
+    modelsState.priority = priority;
+    modelsSetStatus(t("Loading model suggestions…"), false);
+    const params = new URLSearchParams();
+    if (provider) params.set("provider", provider);
+    params.set("priority", priority);
+    if (maxOutputPrice.value !== undefined) {
+      params.set("maxOutputPrice", String(maxOutputPrice.value));
+    }
+    if (minDelta.value !== undefined) params.set("minDelta", String(minDelta.value));
+    try {
+      const res = await fetch("/api/model-suggestions?" + params.toString());
+      if (seq !== modelsLoadSeq) return;
+      const body = await res.json();
+      if (seq !== modelsLoadSeq) return;
+      if (!res.ok) throw new Error(body.error || res.statusText);
+      modelsState.providers = Array.isArray(body.providers) ? body.providers : [];
+      modelsState.provider = body.provider || provider;
+      modelsState.rows = Array.isArray(body.models) ? body.models : [];
+      const select = document.getElementById("models-provider");
+      const providerWrap = document.getElementById("models-provider-wrap");
+      if (providerWrap) providerWrap.hidden = modelsState.providers.length < 2;
+      select.innerHTML = modelsState.providers
+        .map((name) => {
+          const selected = name === modelsState.provider ? " selected" : "";
+          return (
+            '<option value="' +
+            escapeHtml(name) +
+            '"' +
+            selected +
+            ">" +
+            escapeHtml(name) +
+            "</option>"
+          );
+        })
+        .join("");
+      const attr = body.attribution || {};
+      const lb = attr.languagebench || {};
+      const arena = attr.arena || {};
+      const md = attr.modelsDev || {};
+      document.getElementById("models-attribution").textContent = t(
+        "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: models.dev ({{mdLicense}}, {{mdUrl}}).",
+        {
+          lbLicense: lb.license || "",
+          lbUrl: lb.url || "",
+          arenaLicense: arena.license || "",
+          arenaUrl: arena.url || "",
+          mdLicense: md.license || "",
+          mdUrl: md.url || "",
+        }
+      );
+      const warnings = Array.isArray(body.warnings) ? body.warnings : [];
+      modelsSetStatus(warnings.join(" "), warnings.length > 0);
+      modelsApplyTop();
+    } catch (e) {
+      if (seq !== modelsLoadSeq) return;
+      modelsSetStatus(e instanceof Error ? e.message : String(e), true);
+    }
+  }
+
+  function modelsInit() {
+    document.getElementById("models-btn-reload").addEventListener("click", () => {
+      void modelsLoad();
+    });
+    document.getElementById("models-btn-top").addEventListener("click", () => {
+      modelsApplyTop();
+    });
+    document.getElementById("models-priority").addEventListener("change", () => {
+      void modelsLoad();
+    });
+    document.getElementById("models-provider").addEventListener("change", () => {
+      void modelsLoad();
+    });
+    document.getElementById("models-max-output-price").addEventListener("change", () => {
+      void modelsLoad();
+    });
+    document.getElementById("models-min-delta").addEventListener("change", () => {
+      void modelsLoad();
+    });
+    document.getElementById("models-btn-apply").addEventListener("click", async () => {
+      if (modelsState.selected.length === 0) {
+        modelsSetStatus(t("Select at least one model."), true);
+        return;
+      }
+      modelsSetStatus(t("Updating config…"), false);
+      try {
+        const res = await fetch("/api/model-suggestions/apply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            provider: modelsState.provider,
+            models: modelsState.selected,
+          }),
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error || res.statusText);
+        modelsSetStatus(t("Updated translationModels."), false);
+      } catch (e) {
+        modelsSetStatus(e instanceof Error ? e.message : String(e), true);
+      }
+    });
+    document.getElementById("models-btn-copy").addEventListener("click", async () => {
+      const text = JSON.stringify({ translationModels: modelsState.selected }, null, 2);
+      try {
+        await navigator.clipboard.writeText(text);
+        modelsSetStatus(t("Copied translationModels JSON."), false);
+      } catch (e) {
+        modelsSetStatus(e instanceof Error ? e.message : String(e), true);
+      }
+    });
+  }
+
   // ---------- Tabs ----------
   document.querySelectorAll(".tabs button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -3119,6 +3386,7 @@
       if (tab === "glossary") loadGlossary();
       if (tab === "stats") loadStats();
       if (tab === "usage") loadUsage();
+      if (tab === "models") void modelsLoad();
     });
   });
 
@@ -3129,5 +3397,6 @@
   upInitListeners();
   glInitListeners();
   usageInit();
+  modelsInit();
   loadUiI18n();
 })();

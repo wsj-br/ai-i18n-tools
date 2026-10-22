@@ -86,10 +86,10 @@ SVG 插圖使用獨立的 `translate-svg` 路徑 — 而非 `docs[].contentPaths
 <a id="explore-the-documentation"></a>
 ## 探索文件
 
-- [**指南**](/zh-Hant/guide/what-is-ai-i18n-tools) — 翻譯模式、安裝、快速入門與框架整合
-- [**整合**](/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus 與 Astro
-- [**供應商與模型**](/zh-Hant/guide/providers-and-models) — 預設、後備鏈與 `-P` 覆寫
-- [**CLI 參考**](/zh-Hant/reference/cli-commands/) — 每個指令、旗標與工作流程
+- [**指南**](/zh-Hant/guide/what-is-ai-i18n-tools) — 翻譯模式、安裝、快速入門以及框架整合
+- [**整合**](/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus 和 Astro
+- [**提供者與模型**](/zh-Hant/guide/providers-and-models) — 預設集、備援鏈、排名建議 (`suggest-models`) 以及 `-P` 覆寫
+- [**CLI 參考**](/zh-Hant/reference/cli-commands/) — 所有指令、旗標與工作流程
 - [**設定**](/zh-Hant/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 結構描述
 - [**範例**](/zh-Hant/examples) — 十三個可執行的示範專案，包含 `npx degit`
 - [**架構**](/zh-Hant/reference/architecture) — 內部運作、程式化 API 與擴充點

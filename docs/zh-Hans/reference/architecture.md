@@ -257,10 +257,12 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 基于 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）构建的提供商无关的聊天客户端。它从 `provider` / `providers` 解析活动提供商，为该提供商的 `baseUrl` + API 密钥构建一个 OpenAI 兼容的客户端（`createOpenAICompatible`），并通过 `generateText` 路由所有调用。`OpenRouterClient` 保留为已弃用的别名。关键行为：
 
-- **模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时回退。每个目标区域设置都有其自己的已解析链：配置时首先使用 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 流水线），接着是 `translationModels`。文档、JSON 和 SVG 翻译会使用非 UI 链为每个区域设置创建一个客户端。`bench-models` 命令则为每个配置的 id 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便它可以独立地对每个模型进行计时和定价。
-- **请求超时**：活动提供程序上的 `requestTimeout`（秒）或 `requestTimeoutMs`，否则为配置顶部的相同键（默认 45 秒），通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供程序）加载提供程序的模型列表时，相同的值适用于 `GET /models`。丢弃未知模型 id 的可选预检过滤器仅在活动提供程序为 OpenRouter 时运行。
-- **OpenRouter 额外功能**（仅当 `openrouter` 处于活动状态时）：通过 `provider` 请求字段、`HTTP-Referer` / `X-Title` 标头进行吞吐量路由，以及从 `usage.cost` 读取的精确美元成本。每个提供程序都会报告令牌使用情况。当提供程序省略 `usage.cost` 时，美元成本根据 `providers.<name>.modelPricing` 或提供程序范围的 `pricing` 默认值计算，并存储在 `api_calls` 行上。提供程序报告的成本永远不会被替换。
-- **调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件中（编程方式）。CLI `--debug-failed` 在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示词、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供程序 API / 空正文失败会在控制台上打印，而不是转储仅包含提示词的文件。
+- ****模型回退**：按顺序尝试已解析列表中的每个模型；在请求或解析失败时进行回退。每个目标语言环境都有其各自的解析链：配置时优先使用 `localeModels(locale)`，然后是 `uiModels`（仅限 UI 流水线），最后是 `translationModels`。文档、JSON 和 SVG 翻译会创建一个使用非 UI 链的特定语言环境客户端。而 `bench-models` 命令则为每个已配置的 ID 构建一个单模型客户端（`translationModels`、`uiModels` 和 `localeModels` 的并集；`translationModels: [id]`，无回退），以便能够独立地对每个模型进行计时和定价。
+- ****请求超时**：活动提供程序上的 `requestTimeout`（秒）或 `requestTimeoutMs`，否则使用配置顶部的相同键（默认 45 秒），通过 `AbortSignal.timeout` 中止每个请求。当 CLI 为 `check-models`（任何提供程序）加载提供程序的模型列表时，相同的值也适用于 `GET /models`。仅当活动提供程序为 OpenRouter 时，才会运行用于丢弃未知模型 ID 的可选预检过滤器。
+- ****OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段以及 `HTTP-Referer` / `X-Title` 标头进行吞吐量路由。每个提供程序都会报告令牌使用情况。OpenRouter 和 Cheaper Inference 还会返回计费的美元金额（`usage.cost`；Cheaper Inference 会回退到 `cheaper_inference.billing.billed_cost_usd`）。当提供程序省略该金额时，美元成本将根据 `providers.<name>.modelPricing`、然后是提供程序范围的 `pricing` 默认值、最后是 models.dev 的输入和输出列表价格进行计算，并存储在 `api_calls` 行中。提供程序报告的成本（包括 `0`）永远不会被替换。未知成本保持未设置状态。对调用进行定价时仅读取 `<cacheDir>/benchmark-scores.json` 的 models.dev 切片；它不会下载 languagebench 或 Arena 文件。
+- ****调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件（程序化）。CLI `--debug-failed` 会在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示词、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供程序 API / 空主体失败会打印在控制台上，而不是转储仅包含提示词的文件。
+
+`suggest-models` 和仪表板的 Models 选项卡不会调用 LLM。它们使用 languagebench ChrF、LMArena Arena Score 和 models.dev 价格对活动提供程序的聊天目录进行排名，然后选择性地替换 `providers.<name>.translationModels`。聚合数据位于 `<cacheDir>/benchmark-scores.json` 中。请参阅 [suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
 <a id="config-loading"></a>
 ### 加载配置
@@ -278,7 +280,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 9. `augmentConfigWithUiLanguagesMaster` - 从捆绑的主目录中附加清单显示名称。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 在适用时根据主目录验证区域设置代码。
 
-`init` 会从 `initConfigTemplates` 写入初始配置：`ui-markdown`（UI + 可选的应用 markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文档 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文档 + `nextraDictionaryPath`）、`ui-astro-website`（纯 Astro UI；添加 `docs[]` 以进行 `.astro` 页面翻译）、`ui-json-bundles`（仅 JSON `json[]`）。参见[快速入门 — 初始化](/zh-Hans/guide/quick-start#step-1-initialise)。
+`init` 从 `initConfigTemplates` 写入启动配置：`ui-markdown`（UI + 可选的应用 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文档 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文档 + `nextraDictionaryPath`）、`ui-astro-website`（纯 Astro UI；为 `.astro` 页面翻译添加 `docs[]`）、`ui-json-bundles`（仅限 JSON `json[]`）、`ui-python`、`ui-python-gettext`、`ui-python-django` 和 `ui-python-flask`。请参阅 [Quick start — Initialise](/zh-Hans/guide/quick-start#step-1-initialise) 和 [Python applications](/zh-Hans/guide/ui-strings/python)。
 
 <a id="logger"></a>
 ### 日志记录器

@@ -6,9 +6,36 @@ import { extractUiCallsFromFileContent } from "./ui-string-babel.js";
 
 export type UiStringLocation = { file: string; line: number };
 
+/** GNU Gettext context separator. Contextual catalog ids hash `context + SEP + source`. */
+export const GETTEXT_CONTEXT_SEPARATOR = "\u0004";
+
 /** MD5 first 8 hex - must match {@link UIStringExtractor} / strings.json keys. */
 export function uiStringHash(content: string): string {
   return crypto.createHash("md5").update(content).digest("hex").slice(0, 8);
+}
+
+/**
+ * Catalog id for a UI string. Context-free rows stay `MD5-8(trimmed source)`.
+ * Contextual rows (`pgettext`, Qt comment, `msgctxt`) use
+ * `MD5-8(trimmed context + "\\u0004" + trimmed source)` so identical English
+ * strings in different contexts do not collide.
+ */
+export function uiCatalogHash(source: string, context?: string): string {
+  const trimmed = source.trim();
+  const ctx = context?.trim();
+  if (!ctx) {
+    return uiStringHash(trimmed);
+  }
+  return uiStringHash(`${ctx}${GETTEXT_CONTEXT_SEPARATOR}${trimmed}`);
+}
+
+/** Flat JSON key. Contextual rows use `context + "\\u0004" + English source`. */
+export function flatMessageKey(source: string, context?: string): string {
+  const ctx = context?.trim();
+  if (!ctx) {
+    return source;
+  }
+  return `${ctx}${GETTEXT_CONTEXT_SEPARATOR}${source}`;
 }
 
 /**
@@ -28,7 +55,7 @@ export function collectUiStringLocationsFromSource(
     if (!str) {
       continue;
     }
-    const h = uiStringHash(str);
+    const h = uiCatalogHash(str, call.context);
     const dedupeKey = `${h}:${relNorm}:${call.line}`;
     if (seen.has(dedupeKey)) {
       continue;

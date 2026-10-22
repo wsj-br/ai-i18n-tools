@@ -78,14 +78,14 @@ export function buildPluralPlaceholderConstraint(originalLiteral: string): strin
   const tokens = extractUiPlaceholderTokens(originalLiteral);
   if (tokens.length === 0) {
     return (
-      "PLACEHOLDERS in the original string: none. Noun-only inflection: do not insert {{count}}, {{n}}, %d, {0}, " +
+      "PLACEHOLDERS in the original string: none. Noun-only inflection: do not insert {{count}}, {{n}}, %d, {0}, {count}, %(count)d, " +
       "or any digit. Runtime count only selects the category; a separate control may already show the number."
     );
   }
   const listed = tokens.join(", ");
   return (
     'PLACEHOLDERS in the original string (copy character-for-character into EVERY category value, including "one"; ' +
-    `do not add any other {{…}} / %d / {n} tokens): ${listed}`
+    `do not add any other {{…}} / {name} / %d / %(name)s / %{name} / {n} tokens; keep format specs): ${listed}`
   );
 }
 

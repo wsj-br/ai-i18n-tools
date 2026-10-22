@@ -13,19 +13,19 @@
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "dependencies": {
-    "fumadocs-core": "^16.16.0",
-    "fumadocs-mdx": "^15.4.6",
-    "fumadocs-ui": "^16.16.0",
-    "next": "^16.3.8",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "fumadocs-core": "^16.17.7",
+    "fumadocs-mdx": "^15.4.9",
+    "fumadocs-ui": "^16.17.7",
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@types/mdx": "^2.0.14",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "ai-i18n-tools": "^1.10.0",
+    "ai-i18n-tools": "^1.11.0",
     "@tailwindcss/postcss": "^4.3.3",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2"

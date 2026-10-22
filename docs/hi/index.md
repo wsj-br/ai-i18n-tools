@@ -96,10 +96,10 @@ ai-i18n-tools sync
 <a id="explore-the-documentation"></a>
 ## दस्तावेज़ों का अन्वेषण करें
 
-- [**गाइड**](/hi/guide/what-is-ai-i18n-tools) — अनुवाद मोड, इंस्टॉलेशन, त्वरित शुरुआत और फ्रेमवर्क एकीकरण
-- [**एकीकरण**](/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, और Astro
-- [**प्रदाता और मॉडल**](/hi/guide/providers-and-models) — प्रीसेट, फॉलबैक चेन, और `-P` ओवरराइड
-- [**सीएलआई संदर्भ**](/hi/reference/cli-commands/) — हर कमांड, फ्लैग और वर्कफ़्लो
+- [**गाइड**](/hi/guide/what-is-ai-i18n-tools) — अनुवाद मोड, इंस्टॉलेशन, क्विक स्टार्ट, और फ्रेमवर्क इंटीग्रेशन
+- [**इंटीग्रेशन**](/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, और Astro
+- [**प्रोवाइडर और मॉडल**](/hi/guide/providers-and-models) — प्रीसेट, फॉलबैक चेन, रैंक किए गए सुझाव (`suggest-models`), और `-P` ओवरराइड
+- [**CLI संदर्भ**](/hi/reference/cli-commands/) — प्रत्येक कमांड, फ्लैग, और वर्कफ़्लो
 - [**कॉन्फ़िगरेशन**](/hi/reference/configuration) — पूर्ण `ai-i18n-tools.config.json` स्कीमा
 - [**उदाहरण**](/hi/examples) — `npx degit` के साथ तेरह रन करने योग्य डेमो प्रोजेक्ट्स
 - [**आर्किटेक्चर**](/hi/reference/architecture) — इंटरनल्स, प्रोग्रामेटिक API, और एक्सटेंशन पॉइंट्स

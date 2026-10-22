@@ -257,10 +257,12 @@ SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` �
 
 Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プロバイダーに依存しないチャットクライアント。アクティブなプロバイダーを `provider` / `providers` から解決し、そのプロバイダーの `baseUrl` + API キー用の OpenAI 互換クライアント (`createOpenAICompatible`) を構築し、すべての呼び出しを `generateText` 経由でルーティングします。`OpenRouterClient` は非推奨のエイリアスとして保持されます。主な動作:
 
-- **モデルフォールバック**: 解決済みリスト内の各モデルを順番に試行し、リクエストまたは解析の失敗時にフォールバックします。各ターゲットロケールは独自の解決済みチェーンを持ちます。設定されている場合は `localeModels(locale)` が最初、次に `uiModels`（UIパイプラインのみ）、次に `translationModels` となります。ドキュメント、JSON、SVGの翻訳は非UIチェーンを使用してロケールごとのクライアントを作成します。一方、`bench-models` コマンドは、設定された各IDごとに単一モデルのクライアントを構築します（`translationModels`、`uiModels`、`localeModels` の和集合、`translationModels: [id]`、フォールバックなし）。これにより各モデルを個別に計測および価格評価できます。
-- **リクエストタイムアウト**: アクティブなプロバイダーの `requestTimeout`（秒）または `requestTimeoutMs`、それ以外の場合は設定ファイルの最上位にある同じキー（デフォルト45秒）が、`AbortSignal.timeout` を介して各リクエストを中止します。CLIが `check-models`（任意のプロバイダー）用にプロバイダーのモデルリストを読み込む際、`GET /models` にも同じ値が適用されます。未知のモデルIDを除外するオプションのプレフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合のみ実行されます。
-- **OpenRouter拡張機能**（`openrouter` がアクティブな場合のみ）: `provider` リクエストフィールドによるスループットルーティング、`HTTP-Referer` / `X-Title` ヘッダー、および `usage.cost` から読み取った正確なUSDコスト。トークン使用量はすべてのプロバイダーで報告されます。プロバイダーが `usage.cost` を省略した場合、USDコストは `providers.<name>.modelPricing` またはプロバイダー全体の `pricing` デフォルトから計算され、`api_calls` 行に保存されます。プロバイダーから報告されたコストは置き換えられません。
-- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONをファイルに追記します（プログラマティック）。CLIの `--debug-failed` は、`cacheDir` 配下に `FAILED-TRANSLATION` ファイルを書き出します。これには、失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対するシステム/ユーザープロンプト、生のアシスタント応答、および検証エラーが含まれます。プロバイダーAPI / 空ボディの失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
+- **モデルのフォールバック**: 解決されたリスト内の各モデルを順番に試行します。リクエストまたは解析が失敗した場合はフォールバックします。各ターゲットロケールには独自の解決済みチェーンが割り当てられます。設定されている場合は `localeModels(locale)` が最初に使用され、次に `uiModels` (UIパイプラインのみ)、その後に `translationModels` が続きます。ドキュメント、JSON、およびSVGの翻訳では、UI以外のチェーンを使用してロケールごとのクライアントが作成されます。一方、`bench-models` コマンドは、設定されたIDごとに単一モデルのクライアントを構築します (`translationModels`、`uiModels`、および `localeModels` の和集合。`translationModels: [id]`、フォールバックなし)。これにより、各モデルの所要時間と価格を個別に測定できます。
+- **リクエストタイムアウト**: アクティブなプロバイダー上の `requestTimeout` (秒) または `requestTimeoutMs` が使用されます。それ以外の場合は設定の最上位にある同じキーが使用され (デフォルトは45秒)、`AbortSignal.timeout` を介して各リクエストが中断されます。CLIが `check-models` (任意のプロバイダー) 用にプロバイダーのモデルリストを読み込む際にも、同じ値が `GET /models` に適用されます。不明なモデルIDを除外するオプションのプリフライトフィルターは、アクティブなプロバイダーがOpenRouterの場合にのみ実行されます。
+- **OpenRouterの追加機能** (`openrouter` がアクティブな場合のみ): `provider` リクエストフィールドおよび `HTTP-Referer` / `X-Title` ヘッダーを介したスループットルーティング。トークン使用量はすべてのプロバイダーについて報告されます。OpenRouterおよびCheaper Inferenceは、請求されるUSD金額も返します (`usage.cost`。Cheaper Inferenceは `cheaper_inference.billing.billed_cost_usd` にフォールバックします)。プロバイダーがその金額を省略した場合、USDコストは `providers.<name>.modelPricing` から計算され、次にプロバイダー全体の `pricing` デフォルト値、その次に models.dev の入力および出力リスト価格から計算され、`api_calls` 行に保存されます。プロバイダーが報告したコスト (`0` を含む) が置き換えられることはありません。不明なコストは設定されないままとなります。呼び出しの価格設定では `<cacheDir>/benchmark-scores.json` の models.dev スライスのみが読み取られ、languagebenchやArenaファイルはダウンロードされません。
+- **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONがファイルに追記されます (プログラムによる)。CLI `--debug-failed` は、システム/ユーザープロンプト、生のAI応答、および失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対する検証エラーを含む `FAILED-TRANSLATION` ファイルを `cacheDir` 配下に書き込みます。プロバイダーAPIまたは空のボディによる失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
+
+`suggest-models` およびダッシュボードの「Models」タブはLLMを呼び出しません。これらは、languagebenchのChrF、LMArenaのArena Score、およびmodels.devの価格を使用してアクティブなプロバイダーのチャットカタログをランク付けし、必要に応じて `providers.<name>.translationModels` を置き換えます。集計データは `<cacheDir>/benchmark-scores.json` に存在します。[suggest-models](/ja/reference/cli-commands/models#suggest-models) を参照してください。
 
 <a id="config-loading"></a>
 ### 設定の読み込み
@@ -278,7 +280,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 9. `augmentConfigWithUiLanguagesMaster` - バンドルされたマスターカタログからマニフェスト表示名を添付します。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 該当する場合、マスターカタログに対してロケールコードを検証します。
 
-`init` は `initConfigTemplates` からスターター構成を書き込みます: `ui-markdown` (UI + オプションのアプリマークダウン)、`ui-docusaurus`、`ui-starlight`、`ui-vitepress` (VitePress ドキュメント + `vitepressThemeCatalog`)、`ui-nextra` (Nextra ドキュメント + `nextraDictionaryPath`)、`ui-astro-website` (プレーンな Astro UI。`docs[]` を追加して `.astro` ページを翻訳)、`ui-json-bundles` (JSON `json[]` のみ)。[クイックスタート — 初期化](/ja/guide/quick-start#step-1-initialise) を参照してください。
+`init` は `initConfigTemplates` からスターター設定を書き込みます：`ui-markdown`（UI + オプションのアプリMarkdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePressドキュメント + `vitepressThemeCatalog`）、`ui-nextra`（Nextraドキュメント + `nextraDictionaryPath`）、`ui-astro-website`（プレーンなAstro UI。`.astro` ページの翻訳には `docs[]` を追加）、`ui-json-bundles`（JSON `json[]` のみ）、`ui-python`、`ui-python-gettext`、`ui-python-django`、および `ui-python-flask`。[Quick start — Initialise](/ja/guide/quick-start#step-1-initialise) および [Python applications](/ja/guide/ui-strings/python) を参照してください。
 
 <a id="logger"></a>
 ### ロガー

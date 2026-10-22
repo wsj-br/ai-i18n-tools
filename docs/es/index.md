@@ -100,10 +100,10 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 <a id="explore-the-documentation"></a>
 ## Explorar la documentación
 
-- [**Guía**](/es/guide/what-is-ai-i18n-tools) — modos de traducción, instalación, inicio rápido e integraciones de frameworks
+- [**Guía**](/es/guide/what-is-ai-i18n-tools) — modos de traducción, instalación, inicio rápido e integraciones con frameworks
 - [**Integraciones**](/es/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus y Astro
-- [**Proveedores y modelos**](/es/guide/providers-and-models) — preajustes, cadenas de respaldo y anulaciones de `-P`
-- [**Referencia de la CLI**](/es/reference/cli-commands/) — cada comando, bandera y flujo de trabajo
+- [**Proveedores y modelos**](/es/guide/providers-and-models) — preajustes, cadenas de reserva, sugerencias clasificadas (`suggest-models`) y anulaciones de `-P`
+- [**Referencia de la CLI**](/es/reference/cli-commands/) — todos los comandos, flags y flujos de trabajo
 - [**Configuración**](/es/reference/configuration) — esquema completo de `ai-i18n-tools.config.json`
 - [**Ejemplos**](/es/examples) — trece proyectos de demostración ejecutables con `npx degit`
 - [**Arquitectura**](/es/reference/architecture) — funcionamiento interno, API programática y puntos de extensión

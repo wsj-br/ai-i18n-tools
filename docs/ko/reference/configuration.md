@@ -130,13 +130,13 @@
 - `temperature`
   샘플링 온도입니다. 기본값: `0.2`.
 - `requestTimeout`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs`을(를) 재정의합니다. 이 공급자나 최상위 구성 모두에서 시간 초과를 설정하지 않은 경우 기본값은 `45`초입니다. 동일한 객체에는 `requestTimeout` 및 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs` 설정을 재정의합니다. 이 공급자와 최상위 구성 모두에서 제한 시간을 설정하지 않은 경우, 기본값은 `45`초입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `requestTimeoutMs`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs`을(를) 재정의합니다. 이 공급자나 최상위 구성 모두에서 시간 초과를 설정하지 않은 경우 기본값은 `45000`(45초)입니다. 동일한 객체에는 `requestTimeout` 및 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs` 설정을 재정의합니다. 이 공급자와 최상위 구성 모두에서 제한 시간을 설정하지 않은 경우, 기본값은 `45000`(45초)입니다. 동일한 객체에 `requestTimeout`과 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `pricing` (선택 사항)
-  공급자 전체 토큰 1,000,000개당 USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`이(가) 없는 경우(OpenRouter 외의 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다. 일치하는 `modelPricing` 항목이 이 기본값을 재정의합니다. 공급자가 보고한 비용은 절대 대체되지 않습니다. 비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)을(를) 통해 여전히 추정할 수 있습니다.
+  공급자 전체 1,000,000 토큰당 USD 비용: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`가 없는 경우(OpenRouter 및 Cheaper Inference 외 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 이 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다. 일치하는 `modelPricing` 항목이 있으면 이 기본값을 재정의합니다. 공급자가 보고한 비용은 절대 대체되지 않습니다. 구성된 요율이 일치하지 않는 경우, 도구는 해당 모델 ID에 대한 models.dev 정가(100만 토큰당 입력 및 출력 USD)를 사용합니다. 비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [Usage & costs](/ko/guide/translation-dashboard/usage)를 통해 추정할 수 있습니다. 해당 소스가 적용되지 않는 경우, 비용은 알 수 없음(`—`)으로 유지되며 절대 `$0.00`되지 않습니다.
 - `modelPricing` (선택 사항)
-  모델별 토큰 1,000,000개당 USD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대해 `pricing`을(를) 재정의합니다. 공급자가 `usage.cost`을(를) 생략한 경우 호출 시점에 적용되며 호출과 함께 저장됩니다.
+  모델별 1,000,000 토큰당 USD 비용: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대해 `pricing`를 재정의합니다. 공급자가 `usage.cost`을 생략했을 때 호출 시점에 적용되며 호출과 함께 저장됩니다.
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
 
@@ -154,6 +154,7 @@
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
 
 레거시 최상위 `openrouter` 블록(`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` 포함)은 여전히 허용되며, 로드 시 `providers.openrouter`(`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`는 `translationModels`로 병합됩니다.
@@ -262,21 +263,25 @@
   이 블록의 마스터 카탈로그 파일 경로입니다. `extract`에 의해 업데이트됩니다.
 - `flatOutputDir`
   이 블록의 로캘별 JSON 파일이 기록되는 디렉터리입니다(`de.json` 등).
+- `flatOutput`
+  `true`(기본값)인 경우, `translate-ui`는 로캘당 하나의 평면 JSON 파일을 작성합니다. gettext 전용 블록을 사용하려면 `false`을 설정하십시오. `flatOutput: false`가 있는 블록은 반드시 `gettext`를 설정해야 합니다.
+- `gettext`
+  이 블록에 대한 선택적 GNU gettext 출력입니다. `outputDir`(기본값 `./locales`)은 `<locale>/LC_MESSAGES/<domain>.po`를 수신하며, `compileMo`이 true(기본값)인 경우 일치하는 `.mo`을 수신합니다. `domain`의 기본값은 `messages`입니다. `potPath`는 템플릿 카탈로그입니다. `ingestExistingPo`(기본값 `true`)는 `extract` 중에 비어 있는 `strings.json` 슬롯을 비퍼지(non-fuzzy) `msgstr` 값으로 채우며, 비어 있지 않거나 사용자가 편집한 번역은 대체하지 않습니다. `localeFormat`은 `posix`(기본값, `pt_BR`) 또는 `bcp47`(`pt-BR`)입니다. 컨텍스트 행은 gettext `\u0004` 구분 기호를 사용합니다. 두 컨텍스트에서 동일한 영어 소스는 카탈로그 ID를 공유하지 않습니다.
 - `targetLocales`
-  이 블록의 선택적 로캘 목록입니다. 생략하거나 비어 있으면 블록은 루트 `targetLocales`을(를) 사용합니다.
+  이 블록에 대한 선택적 로캘 목록입니다. 생략하거나 비워두면 블록은 루트 `targetLocales`을 사용합니다.
 - `languagesManifestPath`
-  `extract` 및 `generate-ui-languages`이(가) 이 블록의 `ui-languages.json`을(를) 기록하는 선택적 경로입니다. 생략하면 블록 0은 루트 `languagesManifestPath`을(를) 사용하며(이 값의 기본값은 이 블록의 `{flatOutputDir}/ui-languages.json`), 이후 블록은 기본적으로 `{flatOutputDir}/ui-languages.json`을(를) 사용합니다.
+  `extract` 및 `generate-ui-languages`이 이 블록의 `ui-languages.json`을 작성하는 선택적 경로입니다. 생략하면 블록 0은 루트 `languagesManifestPath`(자체적으로 이 블록의 `{flatOutputDir}/ui-languages.json`으로 기본 설정됨)를 사용합니다. 이후 블록은 `{flatOutputDir}/ui-languages.json`로 기본 설정됩니다.
 - `uiGlossary`
-  `true`(기본값)이면 이 블록의 `strings.json`이(가) `translate-docs`, `translate-json`, `translate-svg`의 용어집 힌트 소스로 사용됩니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 이러한 힌트에서 제외하려면(예: 문서에 영향을 주지 않아야 하는 CLI 문자열 카탈로그) `false`을(를) 설정하십시오.
-- `uiExtractor.funcNames`(또는 레거시 `reactExtractor.funcNames`)
-  검색할 추가 함수 이름입니다(기본값: `["t", "i18n.t"]`).
-- `uiExtractor.extensions`(또는 레거시 `reactExtractor.extensions`)
-  포함할 파일 확장자입니다(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프런트매터와 템플릿 표현식을 사용하려면 `.astro`을(를) 추가하십시오.
-- `uiExtractor.includePackageDescription`(또는 레거시 `reactExtractor.includePackageDescription`)
-  `true`(기본값)이면 `extract`은(는) 존재하는 경우 `package.json` `description`도 UI 문자열로 포함합니다. 동일한 설명이 모든 카탈로그에 추출되지 않도록 추가 블록에는 `false`을(를) 설정하십시오.
-- `uiExtractor.packageJsonPath`(또는 레거시 `reactExtractor.packageJsonPath`)
-  선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로입니다.
-- `uiExtractor.includeUiLanguageEnglishNames`(또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
+  `true`(기본값)인 경우, 이 블록의 `strings.json`는 `translate-docs`, `translate-json`, `translate-svg`를 위한 용어집 힌트 소스가 됩니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 해당 힌트에서 제외하려면(예: 문서화를 유도해서는 안 되는 CLI 문자열 카탈로그) `false`를 설정하십시오.
+- `uiExtractor.funcNames` (또는 레거시 `reactExtractor.funcNames`)
+  스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
+- `uiExtractor.extensions` (또는 레거시 `reactExtractor.extensions`)
+  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프런트매터 및 템플릿 표현식을 위해 `.astro`을 추가하십시오.
+- `uiExtractor.includePackageDescription` (또는 레거시 `reactExtractor.includePackageDescription`)
+  `true`(기본값)인 경우, `extract`은 존재할 때 `package.json` `description`를 UI 문자열로도 포함합니다. 동일한 설명이 모든 카탈로그로 추출되지 않도록 추가 블록에 `false`을 설정하십시오.
+- `uiExtractor.packageJsonPath` (또는 레거시 `reactExtractor.packageJsonPath`)
+  해당 선택적 설명 추출에 사용되는 `package.json` 파일에 대한 사용자 지정 경로입니다.
+- `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
 `true`(기본값 `false`)이면 `extract`은(는) 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`에서 빌드됨)의 각 `englishName`도 소스 검색에서 아직 없는 경우(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`은(는) 읽지 않습니다.
 
@@ -288,7 +293,7 @@
 ### `cacheDir`
 
 - `cacheDir`
-SQLite 캐시 디렉터리(모든 `docs` 블록에서 공유). 기본값 `.translation-cache`. 여러 실행에서 재사용합니다. 사용자 지정 문서 번역 캐시에서 마이그레이션하는 경우, 아카이브하거나 삭제하십시오. `cacheDir`는 자체 SQLite 데이터베이스를 생성하며 다른 스키마와 호환되지 않습니다.
+SQLite 캐시 디렉터리(모든 `docs` 블록이 공유). 기본값 `.translation-cache`. 실행 간에 재사용됩니다. 사용자 지정 문서 번역 캐시에서 마이그레이션하는 경우, 해당 캐시를 보관하거나 삭제하십시오. `cacheDir`은 자체 SQLite 데이터베이스를 생성하며 다른 스키마와 호환되지 않습니다. `suggest-models`는 벤치마크 집계도 `<cacheDir>/benchmark-scores.json`에 저장합니다. 해당 파일은 디렉터리의 나머지 부분과 마찬가지로 캐시이며, 게시된 패키지의 일부가 아닙니다.
 
 <a id="best-practice-for-git-exclusions"></a>
 #### git 제외를 위한 모범 사례:
@@ -500,6 +505,25 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | `pathTemplate`   | 사용자 지정 SVG 출력 경로. 사용 가능한 자리 표시자: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | `true`인 경우, 기본 제공 `flat` / `nested` SVG 레이아웃은 소문자 로케일 세그먼트를 사용합니다. 사용자 지정 `pathTemplate` 값은 변경되지 않으며, 소문자 세그먼트가 필요한 경우 `{llocale}`을(를) 사용하십시오. |
 | `forceLowercase` | SVG 재조합 시 소문자로 변환된 텍스트입니다. 모두 소문자 레이블에 의존하는 디자인에 유용합니다.                                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (선택 사항)
+
+[`suggest-models`](/ko/reference/cli-commands/models#suggest-models) 및 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에 대한 가중치입니다. 이 블록을 생략하거나 하나의 프로필을 생략하면 해당 프로필은 기본 제공 가중치를 유지합니다. 이 블록은 `--apply` 또는 **구성 업데이트**에 의해 다시 작성되지 않습니다. 해당 작업은 모델 ID만 작성합니다.
+
+- `quality` — 기본값 ChrF `0.45/0.95`, Arena `0.35/0.95`, 가격 `0.15/0.95`, 품질 하한선 `0.7`
+- `price` — 기본값 ChrF `0.25`, Arena `0.10`, 가격 `0.65`, 품질 하한선 `0.6`
+
+각 프로필 객체에는 `chrf`, `arena` 및 `price`가 필요합니다. 각 값은 유한하며 최소 `0` 이상이어야 하고, 하나 이상의 값은 `0`보다 커야 합니다. 이 값들은 합계가 1이 되도록 정규화되므로 `45`, `35` 및 `15`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며 `(0, 1]` 범위 내에 있고, 후보 풀에서 가장 높은 ChrF의 비율을 나타냅니다. 하한선 미만의 모델(ChrF 측정값이 없는 모델 포함)은 하한선을 통과한 모델 뒤로 정렬됩니다.
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

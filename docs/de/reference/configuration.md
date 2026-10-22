@@ -130,13 +130,13 @@ Jeder `providers.<name>`-Block akzeptiert:
 - `temperature`
   Sampling-Temperatur. Standard: `0.2`.
 - `requestTimeout`
-  Maximale Wartezeit in Sekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, ist der Standardwert `45` Sekunden. Legen Sie für dasselbe Objekt nur `requestTimeout` oder `requestTimeoutMs` fest.
+  Maximale Zeit in Sekunden, die für jede Anfrage an diesen Anbieter gewartet werden soll. Überschreibt das übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegen, beträgt der Standardwert `45` Sekunden. Legen Sie für dasselbe Objekt nur entweder `requestTimeout` oder `requestTimeoutMs` fest.
 - `requestTimeoutMs`
-  Maximale Wartezeit in Millisekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, ist der Standardwert `45000` (45 Sekunden). Legen Sie für dasselbe Objekt nur `requestTimeout` oder `requestTimeoutMs` fest.
+  Maximale Zeit in Millisekunden, die für jede Anfrage an diesen Anbieter gewartet werden soll. Überschreibt das übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegen, beträgt der Standardwert `45000` (45 Sekunden). Legen Sie für dasselbe Objekt nur entweder `requestTimeout` oder `requestTimeoutMs` fest.
 - `pricing` (optional)
-  Anbieterweite USD pro 1.000.000 Token: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf keine vom Anbieter gemeldeten `usage.cost` aufweist (die meisten Anbieter außer OpenRouter), wird dieser Satz auf die Eingabe- und Ausgabe-Token dieses Aufrufs angewendet. Der Betrag wird in die Übersetzungszusammenfassung aufgenommen und in der `api_calls`-Zeile gespeichert. Ein übereinstimmender `modelPricing`-Eintrag überschreibt diesen Standardwert. Vom Anbieter gemeldete Kosten werden niemals ersetzt. Zeilen, die ohne Kosten gespeichert wurden, können später weiterhin durch [`usage`](/de/reference/cli-commands/workflows#usage) und [Nutzung und Kosten](/de/guide/translation-dashboard/usage) geschätzt werden.
+  Anbieterweite USD pro 1.000.000 Token: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf kein vom Anbieter gemeldetes `usage.cost` aufweist (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabetoken dieses Aufrufs angewendet. Der Betrag ist in der Übersetzungszusammenfassung enthalten und wird in der Zeile `api_calls` gespeichert. Ein übereinstimmender `modelPricing`-Eintrag überschreibt diesen Standardwert. Ein vom Anbieter gemeldeter Preis wird niemals ersetzt. Wenn kein Konfigurationssatz übereinstimmt, verwenden die Tools den models.dev-Listenpreis für diese Modell-ID (Eingabe- und Ausgabe-USD pro 1 Mio. Token). Zeilen, die ohne Kosten gespeichert wurden, können später noch durch [`usage`](/de/reference/cli-commands/workflows#usage) und [Usage & costs](/de/guide/translation-dashboard/usage) geschätzt werden. Wenn keine dieser Quellen zutrifft, bleiben die Kosten unbekannt (`—`), niemals `$0.00`.
 - `modelPricing` (optional)
-  Modellspezifische USD pro 1.000.000 Token: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zur Aufrufzeit angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
+  Modellspezifische USD pro 1.000.000 Token: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zum Zeitpunkt des Aufrufs angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
 
 Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebungsvariable):
 
@@ -154,6 +154,7 @@ Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebu
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (keine) |
 
 Ein veralteter übergeordneter `openrouter`-Block (mit `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) wird weiterhin akzeptiert und beim Laden automatisch zu `providers.openrouter` (mit `provider: "openrouter"`) migriert; `defaultModel` / `fallbackModel` werden in `translationModels` zusammengeführt.
@@ -262,18 +263,22 @@ Aufgelöste `stringsJson`-, `flatOutputDir`- und Manifest-Pfade müssen blocküb
   Pfad zur Master-Katalogdatei dieses Blocks. Wird von `extract` aktualisiert.
 - `flatOutputDir`
   Verzeichnis, in das die gebietsschemaspezifischen JSON-Dateien dieses Blocks geschrieben werden (`de.json` usw.).
+- `flatOutput`
+  Bei `true` (Standard) schreibt `translate-ui` eine flache JSON-Datei pro Gebietsschema. Setzen Sie `false` für einen reinen gettext-Block. Ein Block mit `flatOutput: false` muss `gettext` festlegen.
+- `gettext`
+  Optionale GNU gettext-Ausgabe für diesen Block. `outputDir` (Standard `./locales`) empfängt `<locale>/LC_MESSAGES/<domain>.po` und, wenn `compileMo` wahr ist (Standard), das übereinstimmende `.mo`. `domain` ist standardmäßig `messages`. `potPath` ist der Vorlagenkatalog. `ingestExistingPo` (Standard `true`) füllt leere `strings.json`-Slots aus nicht-fuzzy `msgstr`-Werten während `extract` und ersetzt keine nicht leere oder vom Benutzer bearbeitete Übersetzung. `localeFormat` ist `posix` (Standard, `pt_BR`) oder `bcp47` (`pt-BR`). Kontextbezogene Zeilen verwenden das gettext `\u0004`-Trennzeichen. Dieselbe englische Quelle in zwei Kontexten teilt sich keine Katalog-ID.
 - `targetLocales`
-  Optionale Liste der Gebietsschemas für diesen Block. Wenn weggelassen oder leer, verwendet der Block das Root-`targetLocales`.
+  Optionale Liste der Gebietsschemas für diesen Block. Wenn weggelassen oder leer, verwendet der Block das Stammverzeichnis `targetLocales`.
 - `languagesManifestPath`
-  Optionaler Pfad, in den `extract` und `generate-ui-languages` die `ui-languages.json` dieses Blocks schreiben. Wenn weggelassen, verwendet Block 0 das Root-`languagesManifestPath` (das selbst standardmäßig auf die `{flatOutputDir}/ui-languages.json` dieses Blocks verweist). Spätere Blöcke verwenden standardmäßig `{flatOutputDir}/ui-languages.json`.
+  Optionaler Pfad, in den `extract` und `generate-ui-languages` das `ui-languages.json` dieses Blocks schreiben. Wenn weggelassen, verwendet Block 0 das Stammverzeichnis `languagesManifestPath` (das standardmäßig auf `{flatOutputDir}/ui-languages.json` dieses Blocks eingestellt ist). Spätere Blöcke verwenden standardmäßig `{flatOutputDir}/ui-languages.json`.
 - `uiGlossary`
-  Wenn `true` (der Standard), ist die `strings.json` dieses Blocks eine Glossar-Hinweisquelle für `translate-docs`, `translate-json` und `translate-svg`. `translate-ui`, `proofread-ui` und das Source-Linting verwenden nur `glossary.userGlossary`. Setzen Sie `false`, um einen Katalog aus diesen Hinweisen herauszuhalten (z. B. einen CLI-String-Katalog, der die Dokumentation nicht beeinflussen soll).
+  Bei `true` (Standard) ist das `strings.json` dieses Blocks eine Glossar-Hinweisquelle für `translate-docs`, `translate-json` und `translate-svg`. `translate-ui`, `proofread-ui` und Quell-Linting verwenden nur `glossary.userGlossary`. Setzen Sie `false`, um einen Katalog aus diesen Hinweisen herauszuhalten (zum Beispiel einen CLI-String-Katalog, der die Dokumentation nicht steuern sollte).
 - `uiExtractor.funcNames` (oder veraltet `reactExtractor.funcNames`)
   Zusätzliche zu scannende Funktionsnamen (Standard: `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (oder veraltet `reactExtractor.extensions`)
-  Einzubindende Dateierweiterungen (Standard: `[".js", ".jsx", ".ts", ".tsx"]`). Fügen Sie `.astro` für Astro-Frontmatter und Template-Ausdrücke hinzu.
+  Einzuschließende Dateierweiterungen (Standard: `[".js", ".jsx", ".ts", ".tsx"]`). Fügen Sie `.astro` für Astro-Frontmatter und Vorlagenausdrücke hinzu.
 - `uiExtractor.includePackageDescription` (oder veraltet `reactExtractor.includePackageDescription`)
-  Wenn `true` (Standard), schließt `extract` auch `package.json` `description` als UI-String ein, sofern vorhanden. Setzen Sie `false` bei zusätzlichen Blöcken, damit dieselbe Beschreibung nicht in jeden Katalog extrahiert wird.
+  Bei `true` (Standard) schließt `extract` auch `package.json` `description` als UI-String ein, sofern vorhanden. Setzen Sie `false` für zusätzliche Blöcke, damit dieselbe Beschreibung nicht in jeden Katalog extrahiert wird.
 - `uiExtractor.packageJsonPath` (oder veraltet `reactExtractor.packageJsonPath`)
   Benutzerdefinierter Pfad zur `package.json`-Datei, die für diese optionale Beschreibungsextraktion verwendet wird.
 - `uiExtractor.includeUiLanguageEnglishNames` (oder veraltet `reactExtractor.includeUiLanguageEnglishNames`)
@@ -288,7 +293,7 @@ Wenn `true` (Standard `false`), fügt `extract` zudem jeden `englishName` aus de
 ### `cacheDir`
 
 - `cacheDir`
-SQLite-Cache-Verzeichnis (wird von allen `docs`-Blöcken gemeinsam genutzt). Standard `.translation-cache`. Wiederverwendung über mehrere Ausführungen hinweg. Wenn Sie von einem benutzerdefinierten Dokumentübersetzungs-Cache migrieren, archivieren oder löschen Sie ihn – `cacheDir` erstellt eine eigene SQLite-Datenbank und ist nicht mit anderen Schemata kompatibel.
+SQLite-Cache-Verzeichnis (wird von allen `docs`-Blöcken gemeinsam genutzt). Standard `.translation-cache`. Wiederverwendung über Durchläufe hinweg. Wenn Sie von einem benutzerdefinierten Dokument-Übersetzungscache migrieren, archivieren oder löschen Sie diesen – `cacheDir` erstellt eine eigene SQLite-Datenbank und ist nicht mit anderen Schemas kompatibel. `suggest-models` speichert auch Benchmark-Aggregate in `<cacheDir>/benchmark-scores.json`. Diese Datei ist ein Cache, wie der Rest des Verzeichnisses, und ist nicht Teil des veröffentlichten Pakets.
 
 <a id="best-practice-for-git-exclusions"></a>
 #### Best Practice für git-Ausschlüsse:
@@ -500,6 +505,25 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 | `pathTemplate`   | Benutzerdefinierter SVG-Ausgabepfad. Platzhalter: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | Wenn `true`, verwenden integrierte `flat` / `nested` SVG-Layouts kleingeschriebene Gebietsschema-Abschnitte. Benutzerdefinierte `pathTemplate`-Werte bleiben unverändert; verwenden Sie `{llocale}` für klein geschriebene Abschnitte. |
 | `forceLowercase` | Kleinschreibung bei der Übersetzung beim erneuten Zusammensetzen des SVG. Nützlich für Designs, die auf vollständig kleingeschriebenen Beschriftungen basieren.                                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (optional)
+
+Gewichtungen für [`suggest-models`](/de/reference/cli-commands/models#suggest-models) und den [Dashboard-Tab „Models“](/de/guide/translation-dashboard/models). Lassen Sie den Block oder ein Profil weg, dann behält dieses Profil die integrierten Gewichtungen bei. Der Block wird nicht durch `--apply` oder **Update config** überschrieben; diese schreiben nur Modell-IDs.
+
+- `quality` — Standard ChrF `0.45/0.95`, Arena `0.35/0.95`, Preis `0.15/0.95`, Qualitätsuntergrenze `0.7`
+- `price` — Standard ChrF `0.25`, Arena `0.10`, Preis `0.65`, Qualitätsuntergrenze `0.6`
+
+Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und beträgt mindestens `0`, wobei mindestens einer größer als `0` ist. Sie werden so normalisiert, dass sie sich auf 1 summieren, sodass `45`, `35` und `15` den Qualitätsstandards entsprechen. `qualityFloor` ist optional, liegt im Bereich `(0, 1]` und entspricht dem Bruchteil des besten ChrF im Kandidatenpool. Modelle unterhalb der Untergrenze, einschließlich aller Modelle ohne ChrF-Messung, werden nach denjenigen sortiert, die diese erreichen.
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

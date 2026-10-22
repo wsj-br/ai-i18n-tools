@@ -56,6 +56,7 @@
           <button type="button" data-tab="md-issues" data-i18n>Markdown issues</button>
           <button type="button" data-tab="stats" data-i18n>Statistics</button>
           <button type="button" data-tab="usage" data-i18n>Usage &amp; costs</button>
+          <button type="button" data-tab="models" data-i18n>Models</button>
           <button
             type="button"
             id="dashboard-close"
@@ -684,7 +685,7 @@
             <span data-i18n
               >Every billed model API call is recorded here, including retries that were discarded.
               One cost is shown: the provider amount when it reports one, otherwise the configured
-              pricing rate.</span
+              pricing rate, otherwise the models.dev list price.</span
             >
           </p>
           <div class="filters">
@@ -734,13 +735,59 @@
                 <option value="1y" data-i18n>> 1 year</option>
                 <option value="all" data-i18n>all data (clear)</option>
               </select>
-              <button type="button" id="usage-btn-delete-data" class="seg-btn-clear" disabled data-i18n>
+              <button
+                type="button"
+                id="usage-btn-delete-data"
+                class="seg-btn-clear"
+                disabled
+                data-i18n
+              >
                 Delete data
               </button>
             </div>
           </div>
           <div id="usage-status" class="status"></div>
           <div id="usage-content"></div>
+        </section>
+
+        <section id="panel-models" class="panel">
+          <p class="hint" data-i18n>
+            Rank the active provider's chat models. Check the ones you want, set their order, then
+            update translationModels or copy the JSON. Max output price is USD per 1M output tokens.
+            Min index delta keeps a later model only when its index is at least that far below the
+            previous kept model. Leave either box empty to skip that filter.
+          </p>
+          <div class="filters">
+            <div class="filter-row">
+              <span id="models-provider-wrap">
+                <label for="models-provider" data-i18n>Provider</label>
+                <select id="models-provider"></select>
+              </span>
+              <label for="models-priority" data-i18n>Priority</label>
+              <select id="models-priority">
+                <option value="quality" data-i18n>Quality</option>
+                <option value="price" data-i18n>Price</option>
+              </select>
+              <label for="models-max-output-price" data-i18n>Max output price</label>
+              <input id="models-max-output-price" type="number" min="0" step="any" />
+              <label for="models-min-delta" data-i18n>Min index delta</label>
+              <input id="models-min-delta" type="number" min="0" step="0.1" />
+              <label for="models-top" data-i18n>Use top</label>
+              <input id="models-top" type="number" min="1" value="5" />
+              <button type="button" id="models-btn-top" data-i18n>Select top</button>
+              <button type="button" id="models-btn-reload" data-i18n>Reload</button>
+            </div>
+            <div class="filter-row">
+              <button type="button" id="models-btn-apply" data-i18n>Update config</button>
+              <button type="button" id="models-btn-copy" data-i18n>Copy JSON</button>
+            </div>
+          </div>
+          <div id="models-status" class="status"></div>
+          <div class="models-layout">
+            <div id="models-table"></div>
+            <div id="models-selected"></div>
+          </div>
+          <p id="models-attribution" class="hint"></p>
         </section>
       </main>
 

@@ -1,0 +1,8 @@
+{
+  "Dashboard": "Panel",
+  "Welcome back, {user_name}!": "Bienvenido de nuevo, {user_name}!",
+  "Total revenue: ${revenue:,.2f}": "Ingresos totales: ${revenue:,.2f}",
+  "Selected metric: %s": "Métrica seleccionada: %s",
+  "Showing %d rows": "Mostrando %d filas",
+  "Streamlit analytics dashboard localized with English-key JSON.": "Panel de analítica de Streamlit localizado con JSON de claves en inglés."
+}

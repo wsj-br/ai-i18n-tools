@@ -37,6 +37,7 @@ The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` 
 | Lock terminology for UI translation | **Glossary** | [Glossary](/guide/translation-dashboard/glossary) |
 | See cache coverage and model usage | **Statistics** | [Statistics](/guide/translation-dashboard/statistics) |
 | See API-call tokens and cost | **Usage & costs** | [Usage & costs](/guide/translation-dashboard/usage) |
+| Pick translation models | **Models** | [Models](/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## After you edit

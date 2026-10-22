@@ -15,6 +15,7 @@ import {
   loadUiLanguagesMaster,
   resolveBundledUiLanguagesCompletePath,
 } from "../core/ui-languages-catalog.js";
+import { bundledMasterAvailable } from "../core/sea-assets.js";
 import { normalizeManifestLocaleKey } from "../core/locale-utils.js";
 import { loadUiLanguageEntries, resolveLanguagesManifestAbsPath } from "../core/ui-languages.js";
 
@@ -197,7 +198,7 @@ export function buildLanguageSwitcherRows(
 
   // Fallback: use bundled master labels so defaults work without a project `ui-languages.json`.
   const masterPath = resolveBundledUiLanguagesCompletePath();
-  if (fs.existsSync(masterPath)) {
+  if (bundledMasterAvailable(masterPath)) {
     const master = loadUiLanguagesMaster(masterPath);
     const src = normalizeLocale(config.sourceLocale);
     const doc = config.doc.targetLocales;

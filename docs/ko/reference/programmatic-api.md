@@ -43,6 +43,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `JsonExtractor` | Docusaurus JSON 레이블 파일(UI 카탈로그, MDX 본문 아님)에서 추출합니다. |
 | `SvgExtractor` | SVG 파일에서 추출. |
 | `LlmClient` | 활성 LLM 공급자에게 번역 요청을 합니다( `OpenRouterClient`는 더 이상 사용되지 않는 별칭). |
+| `rankProviderModels` / `resolveSuggestionWeights` | `suggest-models`에서 사용하는 품질 또는 가격 프로필을 기준으로 1순위 제공업체의 채팅 카탈로그를 나열합니다. 구성을 출력하거나 기록하지 않습니다. |
 | `PlaceholderHandler` | 번역 주위의 마크다운 구문 보호/복원 (HTML 태그, 주석, 앵커, MDX 주석/JSX/중괄호, URL, 인라인 코드, 강조). |
 | `protectMdx` / `restoreMdx` | MDX 주석, JSX 태그, 중괄호 표현식 및 JSX 문자열 속성 보호/복원 (`PlaceholderHandler`에 의해 호출됨; 직접 사용을 위해 내보내기도 함). |
 | `splitTranslatableIntoBatches` | 구문을 LLM 크기의 배치로 그룹화. |

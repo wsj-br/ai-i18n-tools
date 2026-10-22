@@ -10,6 +10,27 @@ const MAX_GLOB_STARS = 10;
 /** Timeout in milliseconds for regex matching operations. */
 const REGEX_EXECUTION_TIMEOUT_MS = 1000;
 
+/** Directories that are never scanned (JS installs and Python virtualenvs/caches). */
+const SKIPPED_SCAN_DIRS = new Set([
+  "node_modules",
+  ".git",
+  ".venv",
+  "venv",
+  "env",
+  "site-packages",
+  "__pycache__",
+  ".tox",
+  ".nox",
+  ".pytest_cache",
+  ".mypy_cache",
+  ".ruff_cache",
+  ".eggs",
+]);
+
+export function isSkippedScanDir(name: string): boolean {
+  return SKIPPED_SCAN_DIRS.has(name);
+}
+
 /** Error thrown when a glob pattern fails security validation. */
 export class GlobPatternError extends Error {
   constructor(message: string) {
@@ -192,7 +213,7 @@ export function collectFilesByExtension(
       return;
     }
     for (const ent of fs.readdirSync(abs, { withFileTypes: true })) {
-      if (ent.name === "node_modules" || ent.name === ".git") {
+      if (isSkippedScanDir(ent.name)) {
         continue;
       }
       walk(path.join(abs, ent.name));
@@ -239,7 +260,7 @@ export function collectFilesByExtension(
           return;
         }
         for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
-          if (ent.name === "node_modules" || ent.name === ".git") {
+          if (isSkippedScanDir(ent.name)) {
             continue;
           }
           const fullPath = path.join(dir, ent.name);
@@ -264,7 +285,7 @@ export function collectFilesByExtension(
         const st = fs.statSync(dirPart);
         if (st.isDirectory()) {
           for (const ent of fs.readdirSync(dirPart, { withFileTypes: true })) {
-            if (ent.name === "node_modules" || ent.name === ".git") {
+            if (isSkippedScanDir(ent.name)) {
               continue;
             }
             const fullPath = path.join(dirPart, ent.name);
@@ -314,7 +335,7 @@ export function collectFilesRelativeToRoot(root: string, extensions: string[]): 
       return;
     }
     for (const ent of fs.readdirSync(abs, { withFileTypes: true })) {
-      if (ent.name === "node_modules" || ent.name === ".git") {
+      if (isSkippedScanDir(ent.name)) {
         continue;
       }
       walk(path.join(abs, ent.name));

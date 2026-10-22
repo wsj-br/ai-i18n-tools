@@ -19,7 +19,7 @@ Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers
 
 **Wichtige Optionen:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` wählt das **eingebaute Preset** aus, das als Gerüst dienen soll (`openrouter`, wenn weggelassen). Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
+`-P` / `--provider` wählt aus, welche **integrierte Voreinstellung** für das Scaffolding verwendet werden soll (`openrouter`, falls weggelassen). Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Vorlagen (`-t`):**
 
@@ -35,8 +35,16 @@ Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers
 | `ui-plain-html` | Einfacher HTML-Katalog (`data-i18n*`-Marker, flaches Locale-JSON) |
 | `docs-plain-html` | Einfache HTML-Dokumente (eine Datei pro Locale, Sprachliste, hreflang) |
 | `ui-json-bundles` | JSON (nur `json[]`) |
+| `ui-python` | Python-UI-Strings, flaches JSON mit englischen Schlüsseln und `i18n.py` |
+| `ui-python-gettext` | Python-UI-Strings mit flachem JSON und GNU `.po` / `.mo` sowie `i18n.py` |
+| `ui-python-django` | Django `gettext` / `{% blocktrans %}`-Kataloge (`flatOutput: false`, Domain `django`, kein `i18n.py`) |
+| `ui-python-flask` | Flask- / Jinja-Kataloge unter `translations/` (`flatOutput: false`) sowie `i18n.py` |
 
-`--with-translate-ignore` erstellt eine Starter-`.translate-ignore`.
+`--with-translate-ignore` erstellt ein Starter-`.translate-ignore` (einschließlich Python-Virtualenv- und Cache-Verzeichnissen).
+
+`ui-python`, `ui-python-gettext` und `ui-python-flask` schreiben außerdem `i18n.py`, wenn diese Datei fehlt. Django-Projekte behalten die eigene gettext-Laufzeitumgebung von Django bei, daher schreibt `ui-python-django` kein `i18n.py`.
+
+`migrate-python-i18n` schreibt unsichere, vorab ausgewertete Aufrufe (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) in „Lookup-before-format“-Aufrufe um. Standardmäßig erfolgt ein Probelauf (Dry Run). Übergeben Sie `--write`, um Dateien zu bearbeiten, und lesen Sie `migrate-python-i18n-report.md` für Überprüfungshinweise. Generierte `i18n.py`-Dateien werden übersprungen.
 
 ---
 

@@ -11,6 +11,11 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
+<a id="standalone-executables"></a>
+### स्टैंडअलोन निष्पादन योग्य (Standalone executables)
+
+GitHub Releases में Linux (`x64`, `arm64`), macOS (`arm64`, `x64`), और Windows (`x64`) के लिए Node.js सिंगल-एक्जीक्यूटेबल बिल्ड संलग्न होते हैं। Python प्रोजेक्ट उस बाइनरी के साथ `extract` और `translate-ui` चला सकते हैं और उन्हें Node.js इंस्टॉल करने की आवश्यकता नहीं है। ये बाइनरी नोटराइज़्ड या Authenticode-साइन नहीं की गई हैं। npm टारबॉल और निष्पादन योग्य फ़ाइल में Python उदाहरण शामिल नहीं हैं। वे उदाहरण रिपॉजिटरी में ही रहते हैं और उन्हें `ai-i18n-tools-python-examples.zip` के रूप में भी संलग्न किया गया है।
+
 ai-i18n-tools में इसका अपना स्ट्रिंग एक्सट्रैक्टर शामिल है। यदि आपने पहले `i18next-scanner`, `babel-plugin-i18next-extract`, या इसी तरह के अन्य का उपयोग किया है, तो माइग्रेट करने के बाद आप उन देव डिपेंडेंसी को हटा सकते हैं। मौजूदा i18next **नेमस्पेस JSON** फ़ाइलें [JSON पाइपलाइन](/hi/guide/json#i18next-namespace-files) पर रह सकती हैं। इंटलेयर `.content.ts` डिक्शनरी को `migrate-intlayer` के साथ इम्पोर्ट किया जा सकता है — [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) देखें।
 
 <a id="using-the-cli"></a>

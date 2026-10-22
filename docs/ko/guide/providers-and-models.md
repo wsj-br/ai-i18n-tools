@@ -26,6 +26,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
 
 **사전 설정이 아닌** 키의 경우, 구성에서 `baseUrl` 및 `apiKeyEnv`을 명시적으로 설정합니다.
@@ -94,7 +95,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 npx ai-i18n-tools check-models
 ```
 
-`check-models`는 제공업체의 `GET /models` 엔드포인트를 호출하고, `translationModels`, `uiModels`, `localeModels`의 모든 ID를 검증하며, 누락되거나 `expiration_date`를 초과한 ID를 보고하고, 구성된 ID가 유효하지 않으면 0이 아닌 값으로 종료합니다. 제공업체가 가격을 반환하는 경우(OpenRouter의 경우), 100만 토큰당 예상 USD도 표시합니다.
+`check-models`은(는) 공급자의 `GET /models` 엔드포인트를 호출하고, `translationModels`, `uiModels`, `localeModels`의 모든 ID를 검증하며, 누락되었거나 `expiration_date`를 지난 ID를 보고하고, 구성된 ID 중 하나라도 유효하지 않으면 0이 아닌 값으로 종료합니다. 공급자가 가격을 반환할 때(OpenRouter 및 Cheaper Inference가 해당됨), 100만 토큰당 USD 가격도 표시합니다.
 
 공급자가 광고하는 전체 카탈로그를 탐색합니다.
 
@@ -107,6 +108,19 @@ npx ai-i18n-tools list-models
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+순위가 매겨진 최종 후보 목록(기본값은 품질, 또는 `--price`)을 요청하고 선택적으로 상위 ID를 `translationModels`에 기록합니다. [Models tab](/ko/guide/translation-dashboard/models)에서 동일한 순위, 필터 및 구성 업데이트를 확인할 수 있습니다.
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+테이블 열은 순위, 모델 ID, 인덱스, 측정된 ChrF, 측정된 Arena Score, 그리고 100만 토큰당 입력/출력 USD입니다. 측정값이 누락된 경우 `—`으로 표시됩니다. `--list`은(는) 이미 `translationModels`에 있는 모델에 대해 해당 열을 출력합니다. `--max-output-price`은(는) 100만 토큰당 출력 USD가 해당 값 이하인 모델을 유지하고 출력 가격이 없는 모델은 제외합니다. `--min-delta`는 인덱스가 이전 유지 모델보다 최소한 해당 포인트만큼 낮은 경우에만 모델을 유지합니다. `--top`(기본값 5)는 해당 필터 이후의 테이블, `--json` 및 `--apply`을 제한합니다. `--apply`은(는) `translationModels`만 대체합니다. `--refresh`은(는) 7일 벤치마크 캐시를 다시 다운로드합니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion)을 참조하세요. [suggest-models](/ko/reference/cli-commands/models#suggest-models)을 확인하세요.
 
 샘플 텍스트, 로케일 또는 모델 목록을 재정의합니다.
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 각 프로바이더 블록은 자체 `translationModels`, 선택적 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeout`(초) 또는 `requestTimeoutMs`을 정의할 수 있습니다. 프로바이더의 타임아웃은 최상위 `requestTimeout` / `requestTimeoutMs`을 재정의합니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`으로 자동 마이그레이션됩니다.
 
-선택적 `pricing` 및 `modelPricing`은(는) 제공자가 `usage.cost`을(를) 생략할 때 1,000,000토큰당 USD(`inputPerMTokens` 및 `outputPerMTokens`)를 설정합니다. `pricing`은(는) 제공자 전체 기본값이며, `modelPricing` 항목은 단일 모델 id에 대해 이 값을 재정의합니다. OpenRouter는 이미 호출당 비용을 반환하므로 해당 제공자에서는 둘 다 설정하지 않은 상태로 두십시오. 제공자가 보고한 비용은 반환된 값 그대로 사용됩니다. 이 금액은 번역 요약, [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)에 포함됩니다.
+공급자가 `usage.cost`를 생략할 경우 선택적 `pricing` 및 `modelPricing`이 100만 토큰당 USD(`inputPerMTokens` 및 `outputPerMTokens`)를 설정합니다. `pricing`은(는) 공급자 전체 기본값이며, `modelPricing` 항목은 특정 모델 ID에 대해 이를 재정의합니다. OpenRouter 및 Cheaper Inference는 이미 호출당 비용을 반환하므로 해당 공급자에서는 두 항목 모두 설정하지 마세요. 공급자가 보고한 비용은 반환된 그대로 유지됩니다. 해당 금액은 번역 요약, [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [Usage & costs](/ko/guide/translation-dashboard/usage)에 포함됩니다.
 
 샘플 요금을 포함하여 동일한 문서에서 4개의 제공자를 사용하는 실행 가능한 예제: [`examples/multi-provider`](/ko/examples#multi-provider).
 

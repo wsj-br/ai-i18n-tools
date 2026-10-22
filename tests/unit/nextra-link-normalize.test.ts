@@ -64,6 +64,25 @@ describe("normalizeOneNextraLink", () => {
       "/guide/getting-started"
     );
   });
+
+  it("covers empty, protocol-relative, mailto, and sibling markdown links", () => {
+    expect(normalizeOneNextraLink("   ", ctx())).toBe("");
+    expect(normalizeOneNextraLink("mailto:docs@example.com", ctx())).toBe(
+      "mailto:docs@example.com"
+    );
+    expect(normalizeOneNextraLink("//cdn.example.com/x", ctx())).toBe("//cdn.example.com/x");
+    expect(normalizeOneNextraLink("content/pt/guide.mdx", ctx())).toBe("/content/pt/guide");
+    expect(
+      normalizeOneNextraLink("getting-started.mdx", ctx({ relPath: "content/en/guide/page.mdx" }))
+    ).toBe("/guide/getting-started");
+    expect(normalizeOneNextraLink("notes/extra.md", ctx({ relPath: "index.mdx" }))).toBe(
+      "/notes/extra"
+    );
+    expect(normalizeOneNextraLink("../README.md", ctx({ relPath: "content/en/guide/page.mdx" }))).toBe(
+      "/README"
+    );
+    expect(docsPathToNextraRoute("content/en", "content/en")).toBe("/");
+  });
 });
 
 describe("normalizeNextraDocLinks", () => {

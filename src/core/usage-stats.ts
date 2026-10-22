@@ -1,3 +1,5 @@
+import type { ModelsDevRate } from "./model-benchmarks.js";
+import { modelsDevRateForModel } from "./model-suggestion.js";
 import type {
   ApiCallBreakdownRow,
   ApiCallStatsResult,
@@ -182,6 +184,13 @@ export function resolveModelPricing(
   return entry.models[model] ?? entry.default;
 }
 
+function costFromRates(inputTokens: number, outputTokens: number, rates: LlmModelPricing): number {
+  return (
+    (inputTokens / TOKENS_PER_MILLION) * rates.inputPerMTokens +
+    (outputTokens / TOKENS_PER_MILLION) * rates.outputPerMTokens
+  );
+}
+
 export function estimateCostUsd(
   provider: string,
   model: string,
@@ -193,25 +202,50 @@ export function estimateCostUsd(
   if (!rates) {
     return undefined;
   }
-  return (
-    (inputTokens / TOKENS_PER_MILLION) * rates.inputPerMTokens +
-    (outputTokens / TOKENS_PER_MILLION) * rates.outputPerMTokens
-  );
+  return costFromRates(inputTokens, outputTokens, rates);
+}
+
+/**
+ * Config `modelPricing` / `pricing` first, then models.dev split rates.
+ * A missing models.dev rate leaves the cost unknown.
+ */
+export function estimateCostWithModelsDev(
+  provider: string,
+  model: string,
+  inputTokens: number,
+  outputTokens: number,
+  pricing: ProviderPricingTable,
+  modelsDev: Record<string, ModelsDevRate> | undefined
+): number | undefined {
+  const configured = estimateCostUsd(provider, model, inputTokens, outputTokens, pricing);
+  if (configured !== undefined) {
+    return configured;
+  }
+  if (!modelsDev) {
+    return undefined;
+  }
+  const rates = modelsDevRateForModel(modelsDev, model);
+  if (!rates) {
+    return undefined;
+  }
+  return costFromRates(inputTokens, outputTokens, rates);
 }
 
 function withRowEstimate<T extends ApiCallBreakdownRow & { provider: string; model: string }>(
   row: T,
-  pricing: ProviderPricingTable
+  pricing: ProviderPricingTable,
+  modelsDev: Record<string, ModelsDevRate> | undefined
 ): T {
   if (row.inputTokensWithoutCost === 0 && row.outputTokensWithoutCost === 0) {
     return row;
   }
-  const estimated = estimateCostUsd(
+  const estimated = estimateCostWithModelsDev(
     row.provider,
     row.model,
     row.inputTokensWithoutCost,
     row.outputTokensWithoutCost,
-    pricing
+    pricing,
+    modelsDev
   );
   return estimated === undefined ? row : { ...row, estimatedCostUsd: estimated };
 }
@@ -234,12 +268,14 @@ export function resolvedCostUsd(
 /** Attach report-time estimated costs (only for calls stored without `cost_usd`). */
 export function withEstimatedCosts(
   stats: ApiCallStatsResult,
-  pricing: ProviderPricingTable
+  pricing: ProviderPricingTable,
+  modelsDev?: Record<string, ModelsDevRate>
 ): ApiCallStatsResult {
-  if (!hasAnyProviderPricing(pricing)) {
+  const hasModelsDev = modelsDev !== undefined && Object.keys(modelsDev).length > 0;
+  if (!hasAnyProviderPricing(pricing) && !hasModelsDev) {
     return stats;
   }
-  const byModel = stats.byModel.map((row) => withRowEstimate(row, pricing));
+  const byModel = stats.byModel.map((row) => withRowEstimate(row, pricing, modelsDev));
   const byProvider = stats.byProvider.map((row) => {
     const models = byModel.filter((m) => m.provider === row.provider);
     const estimated = models.reduce((sum, m) => sum + (m.estimatedCostUsd ?? 0), 0);

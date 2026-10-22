@@ -65,7 +65,9 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-Otras estructuras: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html` o `ui-json-bundles`.
+Otros andamiajes: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, `ui-json-bundles`, `ui-python`, `ui-python-gettext`, `ui-python-django` o `ui-python-flask`.
+
+Las aplicaciones de Python pueden omitir la instalación de Node.js y ejecutar el ejecutable independiente adjunto a cada versión de GitHub (Linux x64/arm64, macOS arm64/x64, Windows x64). Esos binarios no están notariados ni firmados con Authenticode. Los ejemplos de Python se encuentran en el repositorio y en `ai-i18n-tools-python-examples.zip` en la versión. No están dentro del tarball de npm ni del ejecutable.
 
 Prefiera usar `sync` en lugar de encadenar comandos de traducción individuales. Guía completa: [Inicio rápido](https://wsj-br.github.io/ai-i18n-tools/es/guide/quick-start).
 
@@ -74,7 +76,7 @@ Prefiera usar `sync` en lugar de encadenar comandos de traducción individuales.
 
 - [Sitio de documentación](https://wsj-br.github.io/ai-i18n-tools/es/) — guías, integraciones y referencia
 - [Instalación](https://wsj-br.github.io/ai-i18n-tools/es/guide/installation) · [Inicio rápido](https://wsj-br.github.io/ai-i18n-tools/es/guide/quick-start) · [Proveedores y modelos](https://wsj-br.github.io/ai-i18n-tools/es/guide/providers-and-models)
-- [Cadenas de UI](https://wsj-br.github.io/ai-i18n-tools/es/guide/ui-strings/) · [HTML simple](https://wsj-br.github.io/ai-i18n-tools/es/guide/ui-strings/plain-html) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/es/guide/documents/) · [Páginas HTML](https://wsj-br.github.io/ai-i18n-tools/es/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/es/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/es/guide/svg-translation/)
+- [Cadenas de la IU](https://wsj-br.github.io/ai-i18n-tools/es/guide/ui-strings/) · [HTML sin formato](https://wsj-br.github.io/ai-i18n-tools/es/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/es/guide/ui-strings/python) · [Documentos](https://wsj-br.github.io/ai-i18n-tools/es/guide/documents/) · [Páginas HTML](https://wsj-br.github.io/ai-i18n-tools/es/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/es/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/es/guide/svg-translation/)
 - [Integraciones](https://wsj-br.github.io/ai-i18n-tools/es/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [Referencia de CLI](https://wsj-br.github.io/ai-i18n-tools/es/reference/cli-commands/) · [Configuración](https://wsj-br.github.io/ai-i18n-tools/es/reference/configuration) · [Funciones auxiliares de tiempo de ejecución](https://wsj-br.github.io/ai-i18n-tools/es/guide/runtime-helpers)
 - [Ejemplos](https://wsj-br.github.io/ai-i18n-tools/es/examples) — demos ejecutables (`npx degit …`)

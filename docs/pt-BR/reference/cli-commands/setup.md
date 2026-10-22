@@ -19,7 +19,7 @@ Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `
 
 **Opções principais:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` seleciona qual **predefinição integrada** para scaffolding (`openrouter` quando omitido). Deve ser um dos seguintes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
+`-P` / `--provider` seleciona qual **predefinição integrada** usar para o scaffold (`openrouter` quando omitido). Deve ser um dos seguintes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Modelos (`-t`):**
 
@@ -35,8 +35,16 @@ Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `
 | `ui-plain-html` | Catálogo HTML simples (marcadores `data-i18n*`, JSON de localidade plano) |
 | `docs-plain-html` | Documentos HTML simples (um arquivo por localidade, lista de idiomas, hreflang) |
 | `ui-json-bundles` | JSON (somente `json[]`) |
+| `ui-python` | Strings de interface em Python, JSON simples com chaves em inglês e `i18n.py` |
+| `ui-python-gettext` | Strings de interface em Python com JSON simples e `.po` / `.mo` do GNU, além de `i18n.py` |
+| `ui-python-django` | Catálogos `gettext` / `{% blocktrans %}` do Django (`flatOutput: false`, domínio `django`, sem `i18n.py`) |
+| `ui-python-flask` | Catálogos Flask / Jinja em `translations/` (`flatOutput: false`) além de `i18n.py` |
 
-`--with-translate-ignore` cria um `.translate-ignore` inicial.
+`--with-translate-ignore` cria um `.translate-ignore` inicial (incluindo virtualenv Python e diretórios de cache).
+
+`ui-python`, `ui-python-gettext` e `ui-python-flask` também escrevem `i18n.py` quando esse arquivo está ausente. Projetos Django mantêm o próprio runtime gettext do Django, portanto `ui-python-django` não escreve `i18n.py`.
+
+`migrate-python-i18n` reescreve chamadas pré-avaliadas inseguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) para chamadas de busca antes da formatação. O padrão é uma simulação (dry run). Use `--write` para editar arquivos e leia `migrate-python-i18n-report.md` para notas de revisão. Arquivos `i18n.py` gerados são ignorados.
 
 ---
 

@@ -65,16 +65,18 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-その他のスキャフォールド: `-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html`、または`ui-json-bundles`。
+その他のスキャフォールド: `-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html`、`ui-json-bundles`、`ui-python`、`ui-python-gettext`、`ui-python-django`、または `ui-python-flask`。
+
+Python アプリケーションでは Node.js のインストールをスキップし、各 GitHub Release に添付されているスタンドアロン実行可能ファイル（Linux x64/arm64、macOS arm64/x64、Windows x64）を実行できます。これらのバイナリは公証や Authenticode 署名が行われていません。Python の例はリポジトリ内およびリリースの `ai-i18n-tools-python-examples.zip` にあります。これらは npm tarball や実行可能ファイルの中には含まれていません。
 
 個々の翻訳コマンドを連続して実行するよりも、`sync`を使用することをお勧めします。詳細な手順：[クイックスタート](https://wsj-br.github.io/ai-i18n-tools/ja/guide/quick-start)。
 
 <a id="documentation"></a>
 ## ドキュメント
 
-- [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/ja/) — ガイド、統合、およびリファレンス
+- [ドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/ja/) — ガイド、統合、リファレンス
 - [インストール](https://wsj-br.github.io/ai-i18n-tools/ja/guide/installation) · [クイックスタート](https://wsj-br.github.io/ai-i18n-tools/ja/guide/quick-start) · [プロバイダーとモデル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/providers-and-models)
-- [UI文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) · [プレーンHTML](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/plain-html) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/) · [HTMLページ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ja/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ja/guide/svg-translation/)
+- [UI 文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) · [プレーン HTML](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/python) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/) · [HTML ページ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ja/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ja/guide/svg-translation/)
 - [統合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
 - [CLIリファレンス](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/ja/reference/configuration) · [ランタイムヘルパー](https://wsj-br.github.io/ai-i18n-tools/ja/guide/runtime-helpers)
 - [例](https://wsj-br.github.io/ai-i18n-tools/ja/examples) — 実行可能なデモ（`npx degit …`）

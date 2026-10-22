@@ -34,6 +34,7 @@ import {
   loadUiLanguagesMaster,
   resolveBundledUiLanguagesCompletePath,
 } from "./ui-languages-catalog.js";
+import { bundledMasterAvailable } from "./sea-assets.js";
 import {
   assertTargetLocalesAreLocaleCodes,
   expandDocTargetLocalesInRawInput,
@@ -119,6 +120,7 @@ export const DEFAULT_INIT_MODELS_BY_PROVIDER: Readonly<Record<string, readonly s
   nvidia: ["meta/llama-3.1-8b-instruct", "openai/gpt-oss-20b"],
   alibaba: ["qwen-plus", "qwen-flash"],
   apifun: ["gpt-4o-mini"],
+  cheaperinference: ["deepseek-v4.1-flash", "glm-5.3-flash"],
   ollama: ["llama3.2:3b", "mistral-nemo:12b"],
 } as const;
 
@@ -435,7 +437,7 @@ export const applyDefaultUiLanguagesPathToRawInput = applyDefaultLanguagesManife
 /** Merge `englishName` hints from the bundled master catalog (`sourceLocale` + `targetLocales`), not from project `ui-languages.json`. */
 export function augmentConfigWithUiLanguagesMaster(config: I18nConfig): I18nConfig {
   const masterPath = resolveBundledUiLanguagesCompletePath();
-  if (!fs.existsSync(masterPath)) {
+  if (!bundledMasterAvailable(masterPath)) {
     return config;
   }
   try {
@@ -479,6 +481,7 @@ function assertUniqueUiPaths(config: I18nConfig): void {
     }
     seen.set(key, label);
   };
+  const gettextKeys = new Map<string, string>();
   config.ui.forEach((block, index) => {
     const paths = {
       stringsJson: resolveConfigPath(process.cwd(), block.stringsJson),
@@ -486,8 +489,27 @@ function assertUniqueUiPaths(config: I18nConfig): void {
       manifest: resolveConfigPath(process.cwd(), effectiveUiManifestRel(config, block, index)),
     };
     claim(paths.stringsJson, `ui[${index}].stringsJson`);
-    claim(paths.flatOutputDir, `ui[${index}].flatOutputDir`);
+    if (block.flatOutput !== false) {
+      claim(paths.flatOutputDir, `ui[${index}].flatOutputDir`);
+    }
     claim(paths.manifest, `ui[${index}] manifest`);
+    if (block.gettext) {
+      const dir = resolveConfigPath(process.cwd(), block.gettext.outputDir);
+      const key = `${dir.split("\\").join("/")}\0${block.gettext.domain}`;
+      const label = `ui[${index}].gettext`;
+      const prev = gettextKeys.get(key);
+      if (prev) {
+        throw new ConfigValidationError(
+          `UI blocks must use distinct Gettext output. ${label} and ${prev} both use domain ${JSON.stringify(block.gettext.domain)} in ${dir}.`
+        );
+      }
+      gettextKeys.set(key, label);
+    }
+    if (block.flatOutput === false && !block.gettext) {
+      throw new ConfigValidationError(
+        `ui[${index}] must enable flat JSON output or configure gettext.`
+      );
+    }
   });
 }
 
@@ -1157,7 +1179,109 @@ export const initConfigTemplates = {
       },
     ],
   }),
+
+  uiPython: (): RawI18nConfigInput => pythonUiTemplate(),
+
+  uiPythonGettext: (): RawI18nConfigInput =>
+    pythonUiTemplate({
+      gettext: {
+        outputDir: "locales",
+        domain: "messages",
+        potPath: "locales/messages.pot",
+        compileMo: true,
+        ingestExistingPo: true,
+        localeFormat: "posix",
+      },
+    }),
+
+  uiPythonDjango: (): RawI18nConfigInput =>
+    pythonUiTemplate({
+      flatOutput: false,
+      extensions: [".py", ".html", ".htm", ".txt"],
+      gettext: {
+        outputDir: "locale",
+        domain: "django",
+        potPath: "locale/django.pot",
+        compileMo: true,
+        ingestExistingPo: true,
+        localeFormat: "posix",
+      },
+    }),
+
+  uiPythonFlask: (): RawI18nConfigInput =>
+    pythonUiTemplate({
+      flatOutput: false,
+      extensions: [".py", ".html", ".htm", ".jinja", ".jinja2", ".j2"],
+      gettext: {
+        outputDir: "translations",
+        domain: "messages",
+        potPath: "translations/messages.pot",
+        compileMo: true,
+        ingestExistingPo: true,
+        localeFormat: "posix",
+      },
+    }),
 } as const;
+
+function pythonUiTemplate(
+  options: {
+    flatOutput?: boolean;
+    extensions?: string[];
+    gettext?: {
+      outputDir: string;
+      domain: string;
+      potPath: string;
+      compileMo: boolean;
+      ingestExistingPo: boolean;
+      localeFormat: "posix" | "bcp47";
+    };
+  } = {}
+): RawI18nConfigInput {
+  const flatOutput = options.flatOutput ?? true;
+  const catalogDir = !flatOutput && options.gettext ? options.gettext.outputDir : "locales";
+  return {
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en",
+    targetLocales: ["es", "pt-BR", "de"],
+    features: {
+      translateUIStrings: true,
+      translateDocs: false,
+      translateJson: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: ["."],
+      stringsJson: `${catalogDir}/strings.json`,
+      flatOutputDir: catalogDir,
+      flatOutput,
+      ...(options.gettext ? { gettext: options.gettext } : {}),
+      uiExtractor: {
+        extensions: options.extensions ?? [
+          ".py",
+          ".html",
+          ".htm",
+          ".jinja",
+          ".jinja2",
+          ".j2",
+          ".txt",
+          ".ui",
+        ],
+        funcNames: ["_", "t", "translate", "i18n.t", "gettext", "ngettext", "pgettext", "self.tr"],
+        includePackageDescription: true,
+        pyprojectTomlPath: "pyproject.toml",
+      },
+    },
+    concurrency: 4,
+    uiBatchConcurrency: 2,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [],
+  };
+}
 
 /**
  * Write a starter config JSON for `ai-i18n-tools init [-P <provider>]`.

@@ -86,10 +86,10 @@ SVG 插图使用单独的 `translate-svg` 路径 — 而不是 `docs[].contentPa
 <a id="explore-the-documentation"></a>
 ## 探索文档
 
-- [**指南**](/zh-Hans/guide/what-is-ai-i18n-tools) — 翻译模式、安装、快速入门和框架集成
+- [**指南**](/zh-Hans/guide/what-is-ai-i18n-tools) — 翻译模式、安装、快速入门以及框架集成
 - [**集成**](/zh-Hans/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus 和 Astro
-- [**提供商和模型**](/zh-Hans/guide/providers-and-models) — 预设、回退链和 `-P` 覆盖
-- [**CLI 参考**](/zh-Hans/reference/cli-commands/) — 每个命令、标志和工作流
+- [**提供商与模型**](/zh-Hans/guide/providers-and-models) — 预设、回退链、排名建议 (`suggest-models`) 以及 `-P` 覆盖
+- [**CLI 参考**](/zh-Hans/reference/cli-commands/) — 所有命令、标志和工作流程
 - [**配置**](/zh-Hans/reference/configuration) — 完整的 `ai-i18n-tools.config.json` 模式
 - [**示例**](/zh-Hans/examples) — 十三个使用 `npx degit` 的可运行演示项目
 - [**架构**](/zh-Hans/reference/architecture) — 内部机制、编程 API 和扩展点

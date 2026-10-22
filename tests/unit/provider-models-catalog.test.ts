@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  catalogUsdPerMillionDisplay,
   fetchOpenRouterModelsCatalog,
+  formatListedUsdPerMillion,
   formatUsdPerMillionTokens,
   isExpirationDatePast,
   parseModelsListResponse,
@@ -55,6 +57,50 @@ describe("formatUsdPerMillionTokens", () => {
     expect(formatUsdPerMillionTokens("0")).toBe("$0.000");
     expect(formatUsdPerMillionTokens(undefined)).toBe("—");
     expect(formatUsdPerMillionTokens("")).toBe("—");
+  });
+});
+
+describe("catalogUsdPerMillionDisplay", () => {
+  it("formats Cheaper Inference per-million rates without scaling", () => {
+    expect(formatListedUsdPerMillion("0.080000")).toBe("$0.080");
+    expect(formatListedUsdPerMillion(1.25)).toBe("$1.250");
+    expect(formatListedUsdPerMillion(undefined)).toBe("—");
+    const map = parseModelsListResponse({
+      data: [
+        {
+          id: "deepseek-v4.1-flash",
+          pricing: { input_per_million: "0.080000", output_per_million: "0.330000" },
+        },
+      ],
+    });
+    expect(catalogUsdPerMillionDisplay(map.get("deepseek-v4.1-flash")!)).toEqual({
+      input: "$0.080",
+      output: "$0.330",
+    });
+  });
+
+  it("prefers OpenRouter per-token rates when both shapes are present", () => {
+    const map = parseModelsListResponse({
+      data: [
+        {
+          id: "x",
+          pricing: {
+            prompt: "0.0000001",
+            completion: "0.0000002",
+            input_per_million: "9",
+          },
+        },
+      ],
+    });
+    expect(catalogUsdPerMillionDisplay(map.get("x")!)).toEqual({
+      input: "$0.100",
+      output: "$0.200",
+    });
+  });
+
+  it("returns undefined when the row has no token rates", () => {
+    const map = parseModelsListResponse({ data: [{ id: "x" }] });
+    expect(catalogUsdPerMillionDisplay(map.get("x")!)).toBeUndefined();
   });
 });
 

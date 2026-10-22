@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="{{ current_locale() }}" dir="{{ direction() }}">
+  <body>
+    <h1>{{ _("Welcome to the shop") }}</h1>
+    <p>{{ t("Hello, {name}!", name=name) }}</p>
+    <p>{{ selected }}</p>
+    <p>{{ t("{count} items in the cart", count=count) }}</p>
+  </body>
+</html>

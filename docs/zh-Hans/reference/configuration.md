@@ -130,13 +130,13 @@
 - `temperature`
   采样温度。默认值：`0.2`。
 - `requestTimeout`
-  向该提供商发送每个请求时的最长等待时间（秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45` 秒。在同一对象上只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待对此提供商的每个请求的最长时间（秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45` 秒。在同一对象上，只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `requestTimeoutMs`
-  向该提供商发送每个请求时的最长等待时间（毫秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45000`（45 秒）。在同一对象上只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待对此提供商的每个请求的最长时间（毫秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45000`（45 秒）。在同一对象上，只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `pricing`（可选）
-  提供商全局费率（美元/1,000,000 token）：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供商报告的 `usage.cost` 时（除 OpenRouter 外的大多数提供商），此费率将应用于该调用的输入和输出 token。该金额包含在翻译摘要中，并存储在 `api_calls` 行上。匹配的 `modelPricing` 条目会覆盖此默认值。提供商报告的成本永远不会被替换。存储时未包含成本的行，稍后仍可通过 [`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和[用量与成本](/zh-Hans/guide/translation-dashboard/usage) 进行估算。
+  提供商范围内的每百万个令牌的美元成本：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供商报告的 `usage.cost`（除 OpenRouter 和 Cheaper Inference 之外的大多数提供商）时，此费率将应用于该调用的输入和输出令牌。此金额包含在翻译摘要中，并存储在 `api_calls` 行中。匹配的 `modelPricing` 条目会覆盖此默认值。提供商报告的成本永远不会被替换。当没有配置费率匹配时，工具会使用 models.dev 中该模型 ID 的标价（每百万个令牌的输入和输出美元成本）。未存储成本的行仍可通过 [`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [使用情况和成本](/zh-Hans/guide/translation-dashboard/usage) 进行估算。如果这些来源均不适用，则成本保持未知 (`—`)，绝不会为 `$0.00`。
 - `modelPricing`（可选）
-  每模型费率（美元/1,000,000 token）：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆盖该模型 ID 的 `pricing`。当提供商省略 `usage.cost` 时在调用时应用，并与调用一起存储。
+  每百万个令牌的每模型美元成本：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆盖该模型 ID 的 `pricing`。在提供商省略 `usage.cost` 时在调用时应用，并随调用一起存储。
 
 内置提供商预设（键 — 基本 URL — API 密钥环境变量）：
 
@@ -154,6 +154,7 @@
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (无) |
 
 旧版顶层 `openrouter` 块（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍然受支持，并在加载时自动迁移到 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 合并到 `translationModels`。
@@ -262,20 +263,24 @@
   此区块的主目录文件的路径。由 `extract` 更新。
 - `flatOutputDir`
   写入此区块的各语言区域 JSON 文件的目录（`de.json` 等）。
+- `flatOutput`
+  当 `true`（默认值）时，`translate-ui` 为每个区域设置写入一个扁平的 JSON 文件。将 `false` 设置为仅限 gettext 的块。具有 `flatOutput: false` 的块必须设置 `gettext`。
+- `gettext`
+  此块的可选 GNU gettext 输出。`outputDir`（默认 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，并且当 `compileMo` 为 true（默认值）时，接收匹配的 `.mo`。`domain` 默认为 `messages`。`potPath` 是模板目录。`ingestExistingPo`（默认 `true`）在 `extract` 期间用非模糊的 `msgstr` 值填充空的 `strings.json` 插槽，并且不替换非空或用户编辑的翻译。`localeFormat` 是 `posix`（默认值，`pt_BR`）或 `bcp47` (`pt-BR`)。上下文行使用 gettext `\u0004` 分隔符。两个上下文中相同的英文源不共享目录 ID。
 - `targetLocales`
-  此区块的可选语言区域列表。如果省略或为空，该区块将使用根 `targetLocales`。
+  此块的可选区域设置列表。省略或为空时，此块使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 写入此区块 `ui-languages.json` 的可选路径。如果省略，区块 0 将使用根 `languagesManifestPath`（其本身默认为此区块的 `{flatOutputDir}/ui-languages.json`）。后续区块默认为 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 写入此块的 `ui-languages.json` 的可选路径。省略时，块 0 使用根 `languagesManifestPath`（其本身默认为此块的 `{flatOutputDir}/ui-languages.json`）。后续块默认为 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
-  当为 `true`（默认值）时，此区块的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的术语表提示源。`translate-ui`、`proofread-ui` 和源代码检查仅使用 `glossary.userGlossary`。设置 `false` 可将某个目录排除在这些提示之外（例如，不应引导文档的 CLI 字符串目录）。
+  当 `true`（默认值）时，此块的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的词汇表提示源。`translate-ui`、`proofread-ui` 和源 linting 仅使用 `glossary.userGlossary`。设置 `false` 以将目录排除在这些提示之外（例如，不应引导文档的 CLI 字符串目录）。
 - `uiExtractor.funcNames`（或旧版 `reactExtractor.funcNames`）
-  要扫描的附加函数名（默认值：`["t", "i18n.t"]`）。
+  要扫描的其他函数名称（默认值：`["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（或旧版 `reactExtractor.extensions`）
-  要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。为 Astro 前言和模板表达式添加 `.astro`。
+  要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。为 Astro frontmatter 和模板表达式添加 `.astro`。
 - `uiExtractor.includePackageDescription`（或旧版 `reactExtractor.includePackageDescription`）
-  当为 `true`（默认值）时，如果存在，`extract` 还会将 `package.json` `description` 作为 UI 字符串包含在内。在额外区块上设置 `false`，以免将相同的描述提取到每个目录中。
+  当 `true`（默认值）时，如果存在，`extract` 还会将 `package.json` `description` 作为 UI 字符串包含在内。在额外的块上设置 `false`，这样相同的描述就不会被提取到每个目录中。
 - `uiExtractor.packageJsonPath`（或旧版 `reactExtractor.packageJsonPath`）
-  用于该可选描述提取的 `package.json` 文件的自定义路径。
+  用于可选描述提取的 `package.json` 文件的自定义路径。
 - `uiExtractor.includeUiLanguageEnglishNames`（或旧版 `reactExtractor.includeUiLanguageEnglishNames`）
 
 当为 `true`（默认 `false`）时，如果源扫描中尚未存在（相同的哈希键），`extract` 还会将捆绑的 ui-languages 主目录（由 `sourceLocale` + 区块的有效 `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`。不读取 `languagesManifestPath`。
@@ -288,7 +293,7 @@
 ### `cacheDir`
 
 - `cacheDir`
-SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`。跨运行重用。如果您正在从自定义文档翻译缓存迁移，请归档或删除它 — `cacheDir` 创建自己的 SQLite 数据库，并且与其他架构不兼容。
+SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`。跨运行重用。如果您正在从自定义文档翻译缓存迁移，请将其存档或删除 — `cacheDir` 会创建自己的 SQLite 数据库，并且与其他架构不兼容。`suggest-models` 还会将基准测试聚合存储在 `<cacheDir>/benchmark-scores.json` 中。该文件是一个缓存，与目录的其余部分一样，不属于已发布的包。
 
 <a id="best-practice-for-git-exclusions"></a>
 #### git 排除的最佳实践：
@@ -500,6 +505,25 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 | `pathTemplate`   | 自定义 SVG 输出路径。占位符：<code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
 | `localePathLowercase` | 当 `true` 时，内置的 `flat` / `nested` SVG 布局使用小写区域设置段。自定义 `pathTemplate` 值保持不变；使用 `{llocale}` 来获取小写段。 |
 | `forceLowercase` | 在重新组装 SVG 时将翻译文本转换为小写。对于依赖全小写标签的设计很有用。                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion`（可选）
+
+[`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 和 [仪表板模型选项卡](/zh-Hans/guide/translation-dashboard/models) 的权重。省略该代码块或省略其中一个配置文件，该配置文件将保留内置权重。该代码块不会被 `--apply` 或 **更新配置** 重写；它们仅写入模型 ID。
+
+- `quality` — 默认 ChrF `0.45/0.95`、Arena `0.35/0.95`、价格 `0.15/0.95`、质量下限 `0.7`
+- `price` — 默认 ChrF `0.25`、Arena `0.10`、价格 `0.65`、质量下限 `0.6`
+
+每个配置文件对象都需要 `chrf`、`arena` 和 `price`。每个值都必须是有限数且至少为 `0`，并且至少有一个值大于 `0`。它们会被归一化以使其总和为 1，因此 `45`、`35` 和 `15` 与质量默认值相匹配。`qualityFloor` 是可选的，范围在 `(0, 1]` 之间，表示候选池中最佳 ChrF 的分数。低于下限的模型（包括任何没有 ChrF 测量的模型）将排在达到该下限的模型之后。
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

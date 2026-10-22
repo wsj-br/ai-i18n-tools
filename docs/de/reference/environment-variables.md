@@ -4,7 +4,7 @@
 | Variable               | Beschreibung                                                |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | API-Schlüssel für den `openrouter`-Anbieter (erforderlich, wenn dieser aktiv ist). Standard-Voreinstellung `init`. |
-| Andere Anbieter-Schlüssel    | Jeder Anbieter liest seine eigene Schlüssel-Umgebungsvariable: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama benötigt keinen). Überschreiben pro Anbieter mit `providers.<name>.apiKeyEnv`. |
+| Andere Anbieter-Schlüssel | Jeder Anbieter liest seine eigene Umgebungsvariable für den Schlüssel: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`, `CHEAPERINFERENCE_API_KEY` (Ollama benötigt keine). Überschreiben Sie diese pro Anbieter mit `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Überschreibt `providers.openrouter.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
 | `OLLAMA_BASE_URL`      | Überschreibt `providers.ollama.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
 | `AI_I18N_LANG`         | Sprache für die Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle, Dashboard). Wird durch `-L` / `--ui-lang` überschrieben; überschreibt die Konfiguration `uiLanguage`. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |

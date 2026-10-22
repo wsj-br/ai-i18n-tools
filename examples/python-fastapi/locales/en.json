@@ -1,0 +1,7 @@
+{
+  "Hello, {name}!": "Hello, {name}!",
+  "Order #%d status: %s": "Order #%d status: %s",
+  "paid": "paid",
+  "Service is running": "Service is running",
+  "{count} items": "{count} items"
+}

@@ -22,6 +22,7 @@
 |---------|---------|
 | [`check-models`](models#check-models) | सक्रिय प्रदाता के विरुद्ध कॉन्फ़िगर किए गए मॉडल आईडी को मान्य करें। |
 | [`list-models`](models#list-models) | सक्रिय प्रदाता द्वारा विज्ञापित मॉडल सूचीबद्ध करें। |
+| [`suggest-models`](models#suggest-models) | अनुवाद गुणवत्ता या मूल्य के आधार पर चैट मॉडल को रैंक करें और वैकल्पिक रूप से `translationModels` लिखें। |
 | [`bench-models`](models#bench-models) | एक नमूना अनुवाद पर कॉन्फ़िगर किए गए मॉडल का बेंचमार्क करें। |
 | [`list-languages`](models#list-languages) | बंडल किए गए यूआई भाषाओं के कैटलॉग को सूचीबद्ध करें। |
 
@@ -88,10 +89,12 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

@@ -48,8 +48,14 @@ pnpm install
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | एक LLM प्रदाता चुनें या बेंचमार्क करें (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | रिग्रेशन-टेस्ट मार्कडाउन / CJK अनुवाद (देवनागरी, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | इंटलेयर `.content.ts` → `t()` (`migrate-intlayer`, रीसेट + AI-एजेंट रिपोर्ट) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit डैशबोर्ड, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar लोकेल, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | मौजूदा GNU gettext CLI; `extract` / `translate-ui` रिफ्रेश `.po` और `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 प्रत्येक **उदाहरण** नाम पूर्ण सेटअप, कमांड और प्रोजेक्ट लेआउट के साथ अपने GitHub README से लिंक करता है — या [रिपॉजिटरी में उदाहरण इंडेक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) ब्राउज़ करें।
+
+`python-streamlit`, `python-flask`, और `python-fastapi` में `venv` और `pip` का उपयोग होता है, न कि `pnpm` का। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। एक रिलीज़ में उन लोगों के लिए `ai-i18n-tools-python-examples.zip` भी संलग्न होता है जो स्टैंडअलोन एक्ज़ीक्यूटेबल डाउनलोड करते हैं और जिनके पास Node.js नहीं है। वह ज़िप npm पैकेज का हिस्सा नहीं है।
 
 <br/>
 

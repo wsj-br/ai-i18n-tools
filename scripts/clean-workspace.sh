@@ -23,7 +23,8 @@ Usage: ./scripts/clean-workspace.sh [--dry-run]
 
 Removes install and build artifacts produced by pnpm install / pnpm build:
   - node_modules/ (entire workspace)
-  - dist/, build/, coverage/, .nyc_output/
+  - dist/, dist-sea/, build/, coverage/, .nyc_output/
+  - Python: __pycache__/, .venv/, *.pyc
   - Next.js: .next/, out/
   - Docusaurus: .docusaurus/
   - Astro: .astro/
@@ -51,7 +52,10 @@ done
 ARTIFACT_DIR_NAMES=(
   node_modules
   dist
+  dist-sea
   build
+  __pycache__
+  .venv
   coverage
   .nyc_output
   .next
@@ -108,6 +112,7 @@ done < <(
       -name '*.tsbuildinfo' \
       -o -name '*.log' \
       -o -name '*.tmp' \
+      -o -name '*.pyc' \
       -o -name 'cache.db.backup*.sqlite' \
     \) \
     -type f \

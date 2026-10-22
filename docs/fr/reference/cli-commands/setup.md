@@ -19,7 +19,7 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 
 **Options clés :** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` sélectionne le **préréglage intégré** à échafauder (`openrouter` si omis). Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`.
+`-P` / `--provider` sélectionne le **préréglage intégré** à échafauder (`openrouter` par défaut). Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Modèles (`-t`) :**
 
@@ -35,8 +35,16 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 | `ui-plain-html` | Catalogue HTML simple (marqueurs `data-i18n*`, JSON plat des locales) |
 | `docs-plain-html` | Documents HTML simples (un fichier par locale, liste des langues, hreflang) |
 | `ui-json-bundles` | JSON (`json[]` uniquement) |
+| `ui-python` | Chaînes d'interface utilisateur Python, JSON à clés anglaises plates et `i18n.py` |
+| `ui-python-gettext` | Chaînes d'interface utilisateur Python avec JSON plat et `.po` / `.mo` GNU, plus `i18n.py` |
+| `ui-python-django` | Catalogues `gettext` / `{% blocktrans %}` Django (`flatOutput: false`, domaine `django`, sans `i18n.py`) |
+| `ui-python-flask` | Catalogues Flask / Jinja sous `translations/` (`flatOutput: false`) plus `i18n.py` |
 
-`--with-translate-ignore` crée un `.translate-ignore` de démarrage.
+`--with-translate-ignore` crée un `.translate-ignore` de démarrage (incluant les répertoires virtualenv Python et de cache).
+
+`ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent également `i18n.py` lorsque ce fichier est manquant. Les projets Django conservent le runtime gettext propre à Django, donc `ui-python-django` n'écrit pas `i18n.py`.
+
+`migrate-python-i18n` réécrit les appels pré-évalués non sécurisés (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) en appels de recherche avant formatage. Le comportement par défaut est une simulation (dry run). Passez `--write` pour modifier les fichiers, et consultez `migrate-python-i18n-report.md` pour les notes de révision. Les fichiers `i18n.py` générés sont ignorés.
 
 ---
 

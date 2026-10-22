@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { TranslationCache } from "../core/cache.js";
 import { GLOSSARY_USER_HEADERS, parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
-import type { ApiCallFilters, ApiCallOutcome, CldrPluralForm } from "../core/types.js";
+import type { ApiCallFilters, ApiCallOutcome, CldrPluralForm, I18nConfig } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import {
   isKnownCldrPluralFormKey,
@@ -22,6 +22,11 @@ import {
   type ProviderPricingTable,
 } from "../core/usage-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
+import { replaceProviderTranslationModels } from "../core/apply-translation-models.js";
+import { benchmarkCachePath, ensureModelsDevPricing } from "../core/model-benchmarks.js";
+import { suggestProviderModels } from "../core/suggest-provider-models.js";
+import { selectSuggestRows } from "../cli/suggest-models.js";
+import { isRunningInSea, readSeaAsset } from "../core/sea-assets.js";
 import { docBlockFileTrackingKeyToRelPath } from "../core/doc-file-tracking.js";
 
 function csvEscapeCell(s: string): string {
@@ -29,6 +34,20 @@ function csvEscapeCell(s: string): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
+}
+
+function optionalNonNegativeQuery(value: unknown): { ok: true; value?: number } | { ok: false } {
+  if (value === undefined) {
+    return { ok: true };
+  }
+  if (typeof value !== "string" || value.trim() === "") {
+    return { ok: true };
+  }
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) {
+    return { ok: false };
+  }
+  return { ok: true, value: n };
 }
 
 function serializeGlossaryCsv(headers: string[], rows: string[][]): string {
@@ -193,6 +212,17 @@ export interface TranslationDashboardOptions {
   };
   /** Optional `providers.<name>.pricing` used to estimate cost for rows stored without `cost_usd`. */
   providerPricing?: ProviderPricingTable;
+  /**
+   * Loaded config, project root, and config file path. Required for the Models tab
+   * (`GET/POST /api/model-suggestions`). Usage cost also reads models.dev from `cacheDir`.
+   */
+  suggestion?: {
+    config: I18nConfig;
+    projectRoot: string;
+    configPath: string;
+    activeProvider: string;
+    providerNames: string[];
+  };
 }
 
 function parseUsageFiltersFromQuery(query: Record<string, unknown>): ApiCallFilters {
@@ -967,11 +997,104 @@ export function createTranslationDashboardApp(
     }
   });
 
-  app.get("/api/usage", (req, res) => {
+  app.get("/api/model-suggestions", async (req, res) => {
+    const suggestion = opts.suggestion;
+    if (!suggestion) {
+      res.status(503).json({ error: "Model suggestions are not configured for this dashboard." });
+      return;
+    }
+    const providerRaw = req.query.provider;
+    const provider =
+      typeof providerRaw === "string" && providerRaw.trim()
+        ? providerRaw.trim()
+        : suggestion.activeProvider;
+    if (!suggestion.providerNames.includes(provider)) {
+      res.status(400).json({ error: `Unknown provider "${provider}".` });
+      return;
+    }
+    const priorityRaw = req.query.priority;
+    const priority = priorityRaw === "price" ? "price" : "quality";
+    const maxOutputPrice = optionalNonNegativeQuery(req.query.maxOutputPrice);
+    if (!maxOutputPrice.ok) {
+      res.status(400).json({ error: "--max-output-price must be a number >= 0." });
+      return;
+    }
+    const minDelta = optionalNonNegativeQuery(req.query.minDelta);
+    if (!minDelta.ok) {
+      res.status(400).json({ error: "--min-delta must be a number >= 0." });
+      return;
+    }
+    try {
+      const result = await suggestProviderModels({
+        config: suggestion.config,
+        projectRoot: suggestion.projectRoot,
+        provider,
+        profile: priority,
+      });
+      const models = selectSuggestRows(result.models, {
+        ...(maxOutputPrice.value !== undefined ? { maxOutputPrice: maxOutputPrice.value } : {}),
+        ...(minDelta.value !== undefined ? { minDelta: minDelta.value } : {}),
+      });
+      res.json({
+        ...result,
+        models,
+        providers: suggestion.providerNames,
+        activeProvider: suggestion.activeProvider,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(err);
+      res.status(500).json({ error: msg });
+    }
+  });
+
+  app.post("/api/model-suggestions/apply", (req, res) => {
+    const suggestion = opts.suggestion;
+    if (!suggestion) {
+      res.status(503).json({ error: "Model suggestions are not configured for this dashboard." });
+      return;
+    }
+    const body = (req.body ?? {}) as { provider?: unknown; models?: unknown };
+    const provider = typeof body.provider === "string" ? body.provider.trim() : "";
+    if (!provider || !suggestion.providerNames.includes(provider)) {
+      res.status(400).json({ error: `Unknown provider "${provider}".` });
+      return;
+    }
+    if (!Array.isArray(body.models) || body.models.some((id) => typeof id !== "string")) {
+      res.status(400).json({ error: "models must be an array of model ids." });
+      return;
+    }
+    try {
+      replaceProviderTranslationModels(suggestion.configPath, provider, body.models);
+      res.json({
+        ok: true,
+        provider,
+        translationModels: body.models.map((id) => id.trim()),
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ error: msg });
+    }
+  });
+
+  app.get("/api/usage", async (req, res) => {
     try {
       const filters = parseUsageFiltersFromQuery(req.query as Record<string, unknown>);
       const pricing = opts.providerPricing ?? {};
-      const stats = withEstimatedCosts(cache.getApiCallStats(filters), pricing);
+      let modelsDev: Awaited<ReturnType<typeof ensureModelsDevPricing>> | undefined;
+      if (opts.suggestion) {
+        const resolved = benchmarkCachePath(
+          opts.suggestion.projectRoot,
+          opts.suggestion.config.cacheDir
+        );
+        try {
+          modelsDev = await ensureModelsDevPricing(resolved);
+        } catch (e) {
+          console.error(e);
+          modelsDev = undefined;
+        }
+      }
+      const stats = withEstimatedCosts(cache.getApiCallStats(filters), pricing, modelsDev);
       res.json(stats);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -1055,4 +1178,27 @@ export function createTranslationDashboardApp(
 
 export function resolveDashboardAppStaticDir(): string {
   return path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "dashboard-app");
+}
+
+/** Serve dashboard files from the SEA blob, or from `staticDir` under Node. */
+export function createDashboardStaticMiddleware(staticDir: string): express.RequestHandler {
+  if (!isRunningInSea()) {
+    return express.static(staticDir);
+  }
+  return (req, res, next) => {
+    const raw = (req.path || "/").split("?")[0] ?? "/";
+    const decoded = decodeURIComponent(raw);
+    const rel = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
+    if (rel.includes("..")) {
+      next();
+      return;
+    }
+    const asset = readSeaAsset(`dashboard-app/${rel}`);
+    if (!asset) {
+      next();
+      return;
+    }
+    res.type(path.extname(rel) || ".html");
+    res.send(asset);
+  };
 }

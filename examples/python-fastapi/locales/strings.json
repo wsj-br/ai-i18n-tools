@@ -1,0 +1,82 @@
+{
+  "e01a0328": {
+    "source": "Service is running",
+    "translated": {
+      "en": "Service is running",
+      "es": "El servicio está en ejecución",
+      "pt-BR": "O serviço está em execução"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 30
+      }
+    ]
+  },
+  "613969df": {
+    "source": "Hello, {name}!",
+    "translated": {
+      "en": "Hello, {name}!",
+      "es": "Hola, {name}!",
+      "pt-BR": "Olá, {name}!"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 35
+      },
+      {
+        "file": "tstring_314.py",
+        "line": 10
+      }
+    ]
+  },
+  "76e08477": {
+    "source": "paid",
+    "translated": {
+      "en": "paid",
+      "es": "pagado",
+      "pt-BR": "pago"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 40
+      }
+    ]
+  },
+  "c982de35": {
+    "source": "Order #%d status: %s",
+    "translated": {
+      "en": "Order #%d status: %s",
+      "es": "Pedido #%d estado: %s",
+      "pt-BR": "Pedido #%d status: %s"
+    },
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 42
+      }
+    ]
+  },
+  "ad3da129": {
+    "source": "{count} items",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 43
+      }
+    ]
+  },
+  "51fa49e7": {
+    "source": "FastAPI demo localized with English-key JSON.",
+    "translated": {},
+    "locations": [
+      {
+        "file": "pyproject.toml",
+        "line": 4
+      }
+    ]
+  }
+}

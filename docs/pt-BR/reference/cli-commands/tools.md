@@ -6,7 +6,7 @@
 
 **Sinopse:** `ai-i18n-tools dashboard [-p <port>] [--no-open]`
 
-Inicie o Painel de Tradução (interface web local para segmentos de cache, `strings.json`, glossário, falhas, estatísticas e uso). Porta padrão **8675** (tenta a próxima porta se indisponível). Com `--no-open`, o navegador padrão não é aberto automaticamente. `dash` é um alias equivalente. O alias obsoleto `editor` ainda funciona, mas exibe um aviso.
+Inicie o Painel de Tradução (interface web local para segmentos de cache, `strings.json`, glossário, falhas, estatísticas, uso e sugestões de modelo). A porta padrão é **8675** (tenta a próxima porta caso esteja indisponível). Com `--no-open`, o navegador padrão não é aberto automaticamente. `dash` é um alias equivalente. O alias obsoleto `editor` ainda funciona, mas exibe um aviso.
 
 **Opções principais:** `-p` / `--port`, `--no-open`
 

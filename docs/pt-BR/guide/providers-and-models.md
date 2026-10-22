@@ -26,6 +26,7 @@ As chaves de provedor predefinidas precisam apenas de `translationModels` — UR
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (nenhum) |
 
 Para qualquer chave **não predefinida**, defina `baseUrl` e `apiKeyEnv` explicitamente na configuração.
@@ -94,7 +95,7 @@ Antes de alterar `translationModels`, confirme se cada ID ainda está disponíve
 npx ai-i18n-tools check-models
 ```
 
-`check-models` chama o endpoint `GET /models` do provedor, valida cada id de `translationModels`, `uiModels` e `localeModels`, relata ids que estão ausentes ou após `expiration_date` e encerra com erro (non-zero) quando qualquer id configurado é inválido. Quando o provedor retorna preços (como o OpenRouter), ele também mostra o valor estimado em USD por 1 milhão de tokens.
+`check-models` chama o endpoint `GET /models` do provedor, valida cada id de `translationModels`, `uiModels` e `localeModels`, relata ids ausentes ou que excederam `expiration_date` e encerra com um código de saída diferente de zero quando qualquer id configurado é inválido. Quando o provedor retorna preços (como fazem o OpenRouter e o Cheaper Inference), ele também exibe o valor em USD por 1 milhão de tokens.
 
 Navegue pelo catálogo completo anunciado por um provedor:
 
@@ -107,6 +108,19 @@ Compare modelos configurados em uma amostra de tradução real — cada ID exclu
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+Solicite uma lista restrita classificada (qualidade por padrão, ou `--price`) e, opcionalmente, grave os ids principais em `translationModels`. A [aba Modelos](/pt-BR/guide/translation-dashboard/models) mostra a mesma classificação, filtros e atualização de configuração.
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+As colunas da tabela são classificação, id do modelo, índice, ChrF medido, Arena Score medido e USD de entrada/saída por 1 milhão de tokens. Uma medição ausente é `—`. `--list` imprime essas colunas para os modelos já presentes em `translationModels`. `--max-output-price` mantém modelos com esse valor de USD de saída por 1 milhão de tokens ou menos e exclui modelos sem preço de saída. `--min-delta` mantém um modelo apenas quando seu índice está pelo menos esse número de pontos abaixo do modelo mantido anteriormente. `--top` (padrão 5) limita a tabela, `--json` e `--apply` após esses filtros. `--apply` substitui apenas `translationModels`. `--refresh` baixa novamente o cache de benchmark de 7 dias. Pesos opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion). Veja [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
 
 Substitua o texto de exemplo, os locais ou a lista de modelos:
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Cada bloco de provedor pode definir seu próprio `translationModels`, `uiModels` e `localeModels` opcionais, `maxTokens`, `temperature` e `requestTimeout` (segundos) ou `requestTimeoutMs`. Um tempo limite no provedor substitui o `requestTimeout` / `requestTimeoutMs` de nível superior. Um bloco `openrouter` de nível superior legado ainda é aceito e migrado automaticamente para `providers.openrouter` no carregamento.
 
-`pricing` e `modelPricing` opcionais definem o valor em USD por 1.000.000 de tokens (`inputPerMTokens` e `outputPerMTokens`) quando o provedor omite `usage.cost`. `pricing` é o padrão para todo o provedor; uma entrada `modelPricing` o substitui para um ID de modelo. O OpenRouter já retorna um custo por chamada, portanto, deixe ambos indefinidos nesse provedor. Um custo informado pelo provedor é mantido exatamente como retornado. O valor é incluído no resumo da tradução, em [`usage`](/pt-BR/reference/cli-commands/workflows#usage) e em [Uso e custos](/pt-BR/guide/translation-dashboard/usage).
+`pricing` e `modelPricing` opcionais definem o valor em USD por 1.000.000 de tokens (`inputPerMTokens` e `outputPerMTokens`) quando o provedor omite `usage.cost`. `pricing` é o padrão para todo o provedor; uma entrada `modelPricing` substitui esse padrão para um id de modelo específico. O OpenRouter e o Cheaper Inference já retornam um custo por chamada, portanto, deixe ambos não definidos nesses provedores. Um custo relatado pelo provedor é mantido conforme retornado. O valor é incluído no resumo da tradução, [`usage`](/pt-BR/reference/cli-commands/workflows#usage), e em [Uso e custos](/pt-BR/guide/translation-dashboard/usage).
 
 Exemplo executável com quatro provedores no mesmo documento, incluindo taxas de exemplo: [`examples/multi-provider`](/pt-BR/examples#multi-provider).
 

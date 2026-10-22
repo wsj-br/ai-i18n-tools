@@ -15,6 +15,7 @@ const {
   LlmClient,
   OpenRouterClient,
   llmFailureHasAssistantOutput,
+  parseReportedUsageCost,
 } = await import("../../src/api/llm-client.js");
 
 function llmConfig(
@@ -200,6 +201,57 @@ describe("LlmClient", () => {
       { role: "user", content: "usr" },
     ]);
     expect(res.cost).toBe(0.0012);
+  });
+
+  it("chat keeps Cheaper Inference reported cost instead of configured rates", async () => {
+    generateTextMock.mockResolvedValue({
+      text: "ok",
+      finishReason: "stop",
+      usage: { inputTokens: 1_000_000, outputTokens: 1_000_000, totalTokens: 2_000_000 },
+      providerMetadata: { cheaperinference: { cost: 0.012345 } },
+    });
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: {
+            translationModels: ["deepseek-v4.1-flash"],
+            pricing: { inputPerMTokens: 10, outputPerMTokens: 10 },
+          },
+        },
+      },
+      apiKey: "k",
+    });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    expect(res.cost).toBe(0.012345);
+  });
+
+  it("parseReportedUsageCost reads usage.cost and billed_cost_usd", () => {
+    expect(parseReportedUsageCost({ usage: { cost: 0.012345 } })).toBe(0.012345);
+    expect(parseReportedUsageCost({ cost: 0 })).toBe(0);
+    expect(
+      parseReportedUsageCost({
+        cheaper_inference: { billing: { billed_cost_usd: "0.012345" } },
+      })
+    ).toBe(0.012345);
+    expect(
+      parseReportedUsageCost({
+        usage: { cost: 0.5 },
+        cheaper_inference: { billing: { billed_cost_usd: "0.012345" } },
+      })
+    ).toBe(0.5);
+    expect(
+      parseReportedUsageCost({
+        cheaper_inference: { billing: { billed_cost_usd: "not-a-number" } },
+      })
+    ).toBeUndefined();
+    expect(parseReportedUsageCost(null)).toBeUndefined();
+    expect(parseReportedUsageCost({})).toBeUndefined();
   });
 
   it("chat reports undefined cost when provider returns no cost metadata", async () => {

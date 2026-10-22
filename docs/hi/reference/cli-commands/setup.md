@@ -19,7 +19,7 @@
 
 **मुख्य विकल्प:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` यह चुनता है कि कौन सा **बिल्ट-इन प्रीसेट** स्केफोल्ड करना है (छोड़ने पर `openrouter`)। इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`।
+`-P` / `--provider` यह चुनता है कि किस **built-in preset** को स्कैफ़ोल्ड करना है (छोड़ दिए जाने पर `openrouter`)। यह इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`।
 
 **टेम्पलेट (`-t`):**
 
@@ -35,8 +35,16 @@
 | `ui-plain-html` | सादा HTML कैटलॉग (`data-i18n*` मार्कर, फ्लैट लोकेल JSON) |
 | `docs-plain-html` | सादे HTML दस्तावेज़ (प्रति लोकेल एक फ़ाइल, भाषा सूची, hreflang) |
 | `ui-json-bundles` | JSON (केवल `json[]`) |
+| `ui-python` | Python UI स्ट्रिंग्स, फ़्लैट English-key JSON, और `i18n.py` |
+| `ui-python-gettext` | फ़्लैट JSON और GNU `.po` / `.mo` के साथ Python UI स्ट्रिंग्स, साथ ही `i18n.py` |
+| `ui-python-django` | Django `gettext` / `{% blocktrans %}` कैटलॉग (`flatOutput: false`, डोमेन `django`, कोई `i18n.py` नहीं) |
+| `ui-python-flask` | `translations/` (`flatOutput: false`) के अंतर्गत Flask / Jinja कैटलॉग, साथ ही `i18n.py` |
 
-`--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है।
+`--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है (जिसमें Python virtualenv और कैश डायरेक्टरी शामिल हैं)।
+
+`ui-python`, `ui-python-gettext`, और `ui-python-flask` तब `i18n.py` भी लिखते हैं जब वह फ़ाइल मौजूद न हो। Django प्रोजेक्ट्स Django के अपने gettext रनटाइम को बनाए रखते हैं, इसलिए `ui-python-django` फ़ाइल `i18n.py` नहीं लिखता है।
+
+`migrate-python-i18n` असुरक्षित प्री-इवैल्यूएटेड कॉल्स (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) को लुकअप-बिफोर-फ़ॉर्मेट कॉल्स में फिर से लिखता है। डिफ़ॉल्ट एक ड्राई रन है। फ़ाइलों को संपादित करने के लिए `--write` पास करें, और समीक्षा नोट्स के लिए `migrate-python-i18n-report.md` पढ़ें। जेनरेट की गई `i18n.py` फ़ाइलों को छोड़ दिया जाता है।
 
 ---
 

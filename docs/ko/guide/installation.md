@@ -11,6 +11,11 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
+<a id="standalone-executables"></a>
+### 독립 실행형 실행 파일
+
+GitHub 릴리스는 Linux(`x64`, `arm64`), macOS(`arm64`, `x64`) 및 Windows(`x64`)용 Node.js 단일 실행 파일 빌드를 첨부합니다. Python 프로젝트는 해당 바이너리로 `extract` 및 `translate-ui`을(를) 실행할 수 있으며 Node.js가 설치되어 있지 않아도 됩니다. 이 바이너리는 공증되거나 Authenticode 서명이 되어 있지 않습니다. npm tarball 및 실행 파일에는 Python 예제가 포함되어 있지 않습니다. 해당 예제는 저장소에 유지되며 `ai-i18n-tools-python-examples.zip`(으)로도 첨부됩니다.
+
 ai-i18n-tools에는 자체 문자열 추출기가 포함되어 있습니다. 이전에 `i18next-scanner`, `babel-plugin-i18next-extract` 또는 유사한 도구를 사용했다면 마이그레이션 후 해당 개발 종속성을 제거할 수 있습니다. 기존 i18next **네임스페이스 JSON** 파일은 [JSON 파이프라인](/ko/guide/json#i18next-namespace-files)에 그대로 둘 수 있습니다. Intlayer `.content.ts` 사전은 `migrate-intlayer`로 가져올 수 있습니다 — [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)을 참조하세요.
 
 <a id="using-the-cli"></a>

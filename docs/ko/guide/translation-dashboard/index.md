@@ -37,6 +37,7 @@ ai-i18n-tools dashboard
 | UI 번역을 위한 용어 잠금 | **용어집** | [용어집](/ko/guide/translation-dashboard/glossary) |
 | 캐시 적용 범위 및 모델 사용량 확인 | **통계** | [통계](/ko/guide/translation-dashboard/statistics) |
 | API 호출 토큰 및 비용 보기 | **사용량 및 비용** | [사용량 및 비용](/ko/guide/translation-dashboard/usage) |
+| 번역 모델 선택 | **모델** | [모델](/ko/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## 편집 후

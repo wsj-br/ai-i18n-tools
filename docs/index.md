@@ -95,7 +95,7 @@ SVG illustrations use a separate `translate-svg` path — not `docs[].contentPat
 
 - [**Guide**](/guide/what-is-ai-i18n-tools) — translation modes, installation, quick start, and framework integrations
 - [**Integrations**](/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, and Astro
-- [**Providers and models**](/guide/providers-and-models) — presets, fallback chains, and `-P` overrides
+- [**Providers and models**](/guide/providers-and-models) — presets, fallback chains, ranked suggestions (`suggest-models`), and `-P` overrides
 - [**CLI reference**](/reference/cli-commands/) — every command, flag, and workflow
 - [**Configuration**](/reference/configuration) — full `ai-i18n-tools.config.json` schema
 - [**Examples**](/examples) — thirteen runnable demo projects with `npx degit`

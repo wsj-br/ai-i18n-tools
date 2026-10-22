@@ -11,6 +11,11 @@ pnpm add ai-i18n-tools
 yarn add ai-i18n-tools
 ```
 
+<a id="standalone-executables"></a>
+### 独立可执行文件
+
+GitHub Releases 附带了适用于 Linux (`x64`, `arm64`)、macOS (`arm64`, `x64`) 和 Windows (`x64`) 的 Node.js 单个可执行文件构建版本。Python 项目可以使用该二进制文件运行 `extract` 和 `translate-ui`，且无需安装 Node.js。这些二进制文件未经公证或 Authenticode 签名。npm 压缩包和可执行文件中不包含 Python 示例。这些示例保留在仓库中，并作为 `ai-i18n-tools-python-examples.zip` 一并附上。
+
 ai-i18n-tools 自带字符串提取器。如果你之前使用过 `i18next-scanner`、`babel-plugin-i18next-extract` 或类似工具，可以在迁移后移除这些开发依赖。现有的 i18next **命名空间 JSON** 文件可以继续在 [JSON 流水线](/zh-Hans/guide/json#i18next-namespace-files) 中使用。Intlayer `.content.ts` 字典可以通过 `migrate-intlayer` 导入 —— 参见[从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)。
 
 <a id="using-the-cli"></a>

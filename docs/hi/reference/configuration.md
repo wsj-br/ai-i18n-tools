@@ -130,13 +130,13 @@
 - `temperature`
   सैंपलिंग तापमान। डिफ़ॉल्ट: `0.2`।
 - `requestTimeout`
-  इस प्रदाता को भेजे गए प्रत्येक अनुरोध के लिए प्रतीक्षा करने का अधिकतम समय सेकंड में। शीर्ष-स्तरीय `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। जब न तो यह प्रदाता और न ही शीर्ष-स्तरीय कॉन्फ़िगरेशन टाइमआउट सेट करता है, तो डिफ़ॉल्ट `45` सेकंड होता है। एक ही ऑब्जेक्ट पर `requestTimeout` और `requestTimeoutMs` में से केवल एक ही सेट करें।
+  इस प्रदाता के प्रत्येक अनुरोध के लिए प्रतीक्षा करने का अधिकतम समय सेकंड में। यह टॉप-लेवल `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। जब न तो यह प्रदाता और न ही टॉप-लेवल कॉन्फ़िगरेशन कोई टाइमआउट सेट करता है, तो डिफ़ॉल्ट `45` सेकंड होता है। एक ही ऑब्जेक्ट पर `requestTimeout` और `requestTimeoutMs` में से केवल एक को सेट करें।
 - `requestTimeoutMs`
-  इस प्रदाता को भेजे गए प्रत्येक अनुरोध के लिए प्रतीक्षा करने का अधिकतम समय मिलीसेकंड में। शीर्ष-स्तरीय `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। जब न तो यह प्रदाता और न ही शीर्ष-स्तरीय कॉन्फ़िगरेशन टाइमआउट सेट करता है, तो डिफ़ॉल्ट `45000` (45 सेकंड) होता है। एक ही ऑब्जेक्ट पर `requestTimeout` और `requestTimeoutMs` में से केवल एक ही सेट करें।
+  इस प्रदाता के प्रत्येक अनुरोध के लिए प्रतीक्षा करने का अधिकतम समय मिलीसेकंड में। यह टॉप-लेवल `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। जब न तो यह प्रदाता और न ही टॉप-लेवल कॉन्फ़िगरेशन कोई टाइमआउट सेट करता है, तो डिफ़ॉल्ट `45000` (45 सेकंड) होता है। एक ही ऑब्जेक्ट पर `requestTimeout` और `requestTimeoutMs` में से केवल एक को सेट करें।
 - `pricing` (वैकल्पिक)
-  प्रदाता-व्यापी USD प्रति 1,000,000 टोकन: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`। जब किसी बिल किए गए कॉल में प्रदाता द्वारा रिपोर्ट किया गया `usage.cost` नहीं होता है (OpenRouter के अलावा अधिकांश प्रदाता), तो यह दर उस कॉल के इनपुट और आउटपुट टोकन पर लागू होती है। राशि अनुवाद सारांश में शामिल की जाती है और `api_calls` पंक्ति पर संग्रहीत की जाती है। एक मेल खाती `modelPricing` प्रविष्टि इस डिफ़ॉल्ट को ओवरराइड करती है। प्रदाता द्वारा रिपोर्ट की गई लागत को कभी भी बदला नहीं जाता है। बिना लागत के संग्रहीत की गई पंक्तियों का अनुमान बाद में [`usage`](/hi/reference/cli-commands/workflows#usage) और [उपयोग और लागतें](/hi/guide/translation-dashboard/usage) द्वारा लगाया जा सकता है।
+  प्रति 1,000,000 टोकन प्रदाता-व्यापी USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`। जब किसी बिल किए गए कॉल में प्रदाता द्वारा रिपोर्ट किया गया `usage.cost` नहीं होता है (OpenRouter और Cheaper Inference के अलावा अधिकांश प्रदाता), तो यह दर उस कॉल के इनपुट और आउटपुट टोकन पर लागू होती है। यह राशि अनुवाद सारांश में शामिल की जाती है और `api_calls` पंक्ति पर संग्रहीत की जाती है। एक मिलान वाली `modelPricing` प्रविष्टि इस डिफ़ॉल्ट को ओवरराइड करती है। प्रदाता द्वारा रिपोर्ट की गई लागत को कभी भी बदला नहीं जाता है। जब कोई कॉन्फ़िगरेशन दर मेल नहीं खाती है, तो टूल उस मॉडल आईडी के लिए models.dev सूची मूल्य (इनपुट और आउटपुट USD प्रति 1M टोकन) का उपयोग करते हैं। जिन पंक्तियों को बिना लागत के संग्रहीत किया गया था, उनका अनुमान बाद में [`usage`](/hi/reference/cli-commands/workflows#usage) और [Usage & costs](/hi/guide/translation-dashboard/usage) द्वारा लगाया जा सकता है। यदि उन स्रोतों में से कोई भी लागू नहीं होता है, तो लागत अज्ञात (`—`) रहती है, कभी भी `$0.00` नहीं।
 - `modelPricing` (वैकल्पिक)
-  प्रति-मॉडल USD प्रति 1,000,000 टोकन: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`। उस मॉडल आईडी के लिए `pricing` को ओवरराइड करता है। कॉल के समय लागू होता है जब प्रदाता ने `usage.cost` को छोड़ दिया हो, और कॉल के साथ संग्रहीत किया जाता है।
+  प्रति-मॉडल प्रति 1,000,000 टोकन USD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`। उस मॉडल आईडी के लिए `pricing` को ओवरराइड करता है। कॉल के समय लागू किया जाता है जब प्रदाता ने `usage.cost` को छोड़ दिया हो, और कॉल के साथ संग्रहीत किया जाता है।
 
 अंतर्निहित प्रदाता प्रीसेट (कुंजी — आधार URL — API-कुंजी env var):
 
@@ -154,6 +154,7 @@
 | `nvidia`     | `https://integrate.api.nvidia.com/v1`                     | `NVIDIA_API_KEY`     |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun`     | `https://api.apikey.fun/v1`                               | `APIFUN_API_KEY`     |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama`     | `http://localhost:11434/v1`                               | (कोई नहीं)               |
 
 एक लेगेसी शीर्ष-स्तरीय `openrouter` ब्लॉक (`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` के साथ) अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` (`provider: "openrouter"` के साथ) में स्वतः माइग्रेट हो जाता है; `defaultModel` / `fallbackModel` `translationModels` में समाहित हो जाते हैं।
@@ -262,21 +263,25 @@
   इस ब्लॉक की मास्टर कैटलॉग फ़ाइल का पथ। `extract` द्वारा अपडेट किया गया।
 - `flatOutputDir`
   वह निर्देशिका जहाँ इस ब्लॉक की प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
+- `flatOutput`
+  जब `true` (डिफ़ॉल्ट) होता है, तो `translate-ui` प्रति लोकेल एक फ्लैट JSON फ़ाइल लिखता है। gettext-ओनली ब्लॉक के लिए `false` सेट करें। `flatOutput: false` वाले ब्लॉक में `gettext` सेट होना चाहिए।
+- `gettext`
+  इस ब्लॉक के लिए वैकल्पिक GNU gettext आउटपुट। `outputDir` (डिफ़ॉल्ट `./locales`) को `<locale>/LC_MESSAGES/<domain>.po` प्राप्त होता है और, जब `compileMo` सत्य (डिफ़ॉल्ट) होता है, तो मिलान वाली `.mo` प्राप्त होती है। `domain` डिफ़ॉल्ट रूप से `messages` होता है। `potPath` टेम्प्लेट कैटलॉग है। `ingestExistingPo` (डिफ़ॉल्ट `true`) `extract` के दौरान गैर-फ़ज़ी `msgstr` मानों से खाली `strings.json` स्लॉट भरता है और गैर-खाली या उपयोगकर्ता-संपादित अनुवाद को प्रतिस्थापित नहीं करता है। `localeFormat` `posix` (डिफ़ॉल्ट, `pt_BR`) या `bcp47` (`pt-BR`) है। प्रासंगिक पंक्तियाँ gettext `\u0004` विभाजक का उपयोग करती हैं। दो संदर्भों में एक ही अंग्रेजी स्रोत एक कैटलॉग आईडी साझा नहीं करते हैं।
 - `targetLocales`
   इस ब्लॉक के लिए वैकल्पिक लोकेल सूची। जब छोड़ा जाता है या खाली होता है, तो ब्लॉक रूट `targetLocales` का उपयोग करता है।
 - `languagesManifestPath`
   वैकल्पिक पथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। जब छोड़ा जाता है, तो ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं डिफ़ॉल्ट रूप से इस ब्लॉक के `{flatOutputDir}/ui-languages.json` पर सेट होता है)। बाद के ब्लॉक डिफ़ॉल्ट रूप से `{flatOutputDir}/ui-languages.json` पर सेट होते हैं।
 - `uiGlossary`
-  जब `true` (डिफ़ॉल्ट), इस ब्लॉक का `strings.json` `translate-docs`, `translate-json`, और `translate-svg` के लिए एक शब्दावली संकेत स्रोत होता है। `translate-ui`, `proofread-ui`, और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। उन संकेतों से कैटलॉग को बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जिसे दस्तावेज़ीकरण को निर्देशित नहीं करना चाहिए)।
-- `uiExtractor.funcNames` (या पुराना `reactExtractor.funcNames`)
+  जब `true` (डिफ़ॉल्ट) होता है, तो इस ब्लॉक का `strings.json` `translate-docs`, `translate-json`, और `translate-svg` के लिए एक शब्दावली संकेत स्रोत है। `translate-ui`, `proofread-ui`, और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। किसी कैटलॉग को उन संकेतों से बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जिसे दस्तावेज़ीकरण का मार्गदर्शन नहीं करना चाहिए)।
+- `uiExtractor.funcNames` (या लीगेसी `reactExtractor.funcNames`)
   स्कैन करने के लिए अतिरिक्त फ़ंक्शन नाम (डिफ़ॉल्ट: `["t", "i18n.t"]`)।
-- `uiExtractor.extensions` (या पुराना `reactExtractor.extensions`)
-  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्पलेट एक्सप्रेशन के लिए `.astro` जोड़ें।
-- `uiExtractor.includePackageDescription` (या पुराना `reactExtractor.includePackageDescription`)
-  जब `true` (डिफ़ॉल्ट), `extract` मौजूद होने पर `package.json` `description` को भी UI स्ट्रिंग के रूप में शामिल करता है। अतिरिक्त ब्लॉकों पर `false` सेट करें ताकि समान विवरण हर कैटलॉग में एक्सट्रैक्ट न हो।
-- `uiExtractor.packageJsonPath` (या पुराना `reactExtractor.packageJsonPath`)
-  उस वैकल्पिक विवरण एक्सट्रैक्शन के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पथ।
-- `uiExtractor.includeUiLanguageEnglishNames` (या पुराना `reactExtractor.includeUiLanguageEnglishNames`)
+- `uiExtractor.extensions` (या लीगेसी `reactExtractor.extensions`)
+  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्प्लेट एक्सप्रेशन के लिए `.astro` जोड़ें।
+- `uiExtractor.includePackageDescription` (या लीगेसी `reactExtractor.includePackageDescription`)
+  जब `true` (डिफ़ॉल्ट) होता है, तो `extract` मौजूद होने पर `package.json` `description` को UI स्ट्रिंग के रूप में भी शामिल करता है। अतिरिक्त ब्लॉकों पर `false` सेट करें ताकि वही विवरण हर कैटलॉग में एक्सट्रैक्ट न हो।
+- `uiExtractor.packageJsonPath` (या लीगेसी `reactExtractor.packageJsonPath`)
+  उस वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पथ।
+- `uiExtractor.includeUiLanguageEnglishNames` (या लीगेसी `reactExtractor.includeUiLanguageEnglishNames`)
 
 जब `true` (डिफ़ॉल्ट `false`), `extract` बंडल किए गए ui-languages मास्टर कैटलॉग (`sourceLocale` + ब्लॉक के प्रभावी `targetLocales` से बनाया गया) से प्रत्येक `englishName` को `strings.json` में भी जोड़ता है जब वह स्रोत स्कैन से पहले से मौजूद न हो (समान हैश कुंजियाँ)। `languagesManifestPath` को नहीं पढ़ता है।
 
@@ -288,7 +293,7 @@
 ### `cacheDir`
 
 - `cacheDir`
-SQLite कैश डायरेक्टरी (सभी `docs` ब्लॉक द्वारा साझा)। डिफ़ॉल्ट `.translation-cache`। रन के दौरान पुन: उपयोग करें। यदि आप एक कस्टम डॉक अनुवाद कैश से माइग्रेट कर रहे हैं, तो इसे संग्रहीत या हटा दें — `cacheDir` अपना स्वयं का SQLite डेटाबेस बनाता है और अन्य स्कीमा के साथ संगत नहीं है।
+SQLite कैश निर्देशिका (सभी `docs` ब्लॉकों द्वारा साझा)। डिफ़ॉल्ट `.translation-cache`। रन के बीच पुन: उपयोग करें। यदि आप एक कस्टम डॉक अनुवाद कैश से माइग्रेट कर रहे हैं, तो इसे आर्काइव या डिलीट करें — `cacheDir` अपना स्वयं का SQLite डेटाबेस बनाता है और अन्य स्कीमा के साथ संगत नहीं है। `suggest-models` बेंचमार्क एग्रीगेट्स को भी `<cacheDir>/benchmark-scores.json` में संग्रहीत करता है। वह फ़ाइल एक कैश है, निर्देशिका के बाकी हिस्सों की तरह, और प्रकाशित पैकेज का हिस्सा नहीं है।
 
 <a id="best-practice-for-git-exclusions"></a>
 #### गिट बहिष्करण के लिए सर्वोत्तम अभ्यास:
@@ -500,6 +505,25 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 | `pathTemplate`   | कस्टम SVG आउटपुट पाथ। प्लेसहोल्डर: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>। |
 | `localePathLowercase` | जब `true` होता है, तो बिल्ट-इन `flat` / `nested` SVG लेआउट लोअरकेस लोकेल सेगमेंट का उपयोग करते हैं। कस्टम `pathTemplate` मान अपरिवर्तित रहते हैं; लोअरकेस सेगमेंट के लिए `{llocale}` का उपयोग करें। |
 | `forceLowercase` | SVG रीअसेंबली पर अनुवादित टेक्स्ट को लोअर-केस करें। उन डिज़ाइनों के लिए उपयोगी है जो सभी-लोअरकेस लेबल पर निर्भर करते हैं।                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (वैकल्पिक)
+
+[`suggest-models`](/hi/reference/cli-commands/models#suggest-models) और [डैशबोर्ड मॉडल्स टैब](/hi/guide/translation-dashboard/models) के लिए वेट। इस ब्लॉक को छोड़ दें, या किसी एक प्रोफ़ाइल को छोड़ दें, तो वह प्रोफ़ाइल इन-बिल्ट वेट को बनाए रखेगी। यह ब्लॉक `--apply` या **Update config** द्वारा फिर से नहीं लिखा जाता है; वे केवल मॉडल आईडी लिखते हैं।
+
+- `quality` — डिफ़ॉल्ट ChrF `0.45/0.95`, Arena `0.35/0.95`, मूल्य `0.15/0.95`, गुणवत्ता फ़्लोर `0.7`
+- `price` — डिफ़ॉल्ट ChrF `0.25`, Arena `0.10`, मूल्य `0.65`, गुणवत्ता फ़्लोर `0.6`
+
+प्रत्येक प्रोफ़ाइल ऑब्जेक्ट के लिए `chrf`, `arena`, और `price` आवश्यक हैं। प्रत्येक मान परिमित (finite) है और कम से कम `0` है, और कम से कम एक मान `0` से अधिक है। उन्हें 1 के योग के लिए सामान्यीकृत (normalized) किया जाता है, इसलिए `45`, `35`, और `15` गुणवत्ता डिफ़ॉल्ट से मेल खाते हैं। `qualityFloor` वैकल्पिक है, जो `(0, 1]` की सीमा में है, और यह कैंडिडेट पूल में सर्वश्रेष्ठ ChrF का अंश है। फ़्लोर से नीचे के मॉडल, जिसमें ChrF माप के बिना कोई भी मॉडल शामिल है, उन्हें क्लियर करने वाले मॉडलों के बाद सॉर्ट किया जाता है।
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

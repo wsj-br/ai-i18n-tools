@@ -26,6 +26,7 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 | `nvidia`     | `https://integrate.api.nvidia.com/v1`                     | `NVIDIA_API_KEY`     |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun`     | `https://api.apikey.fun/v1`                               | `APIFUN_API_KEY`     |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama`     | `http://localhost:11434/v1`                               | (कोई नहीं)               |
 
 किसी भी **गैर-प्रीसेट** कुंजी के लिए, कॉन्फ़िग में `baseUrl` और `apiKeyEnv` को स्पष्ट रूप से सेट करें।
@@ -94,7 +95,7 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 npx ai-i18n-tools check-models
 ```
 
-`check-models` प्रदाता के `GET /models` एंडपॉइंट को कॉल करता है, `translationModels`, `uiModels`, और `localeModels` से प्रत्येक आईडी को मान्य करता है, उन आईडी की रिपोर्ट करता है जो गुम हैं या `expiration_date` से आगे हैं, और जब कोई भी कॉन्फ़िगर की गई आईडी अमान्य होती है तो गैर-शून्य से बाहर निकलता है। जब प्रदाता मूल्य निर्धारण लौटाता है (OpenRouter करता है), तो यह प्रति 1M टोकन अनुमानित USD भी दिखाता है।
+`check-models` प्रदाता के `GET /models` एंडपॉइंट को कॉल करता है, `translationModels`, `uiModels`, और `localeModels` से प्रत्येक id को मान्य करता है, उन ids की रिपोर्ट करता है जो गायब हैं या `expiration_date` से पुराने हैं, और जब कोई कॉन्फ़िगर किया गया id अमान्य होता है तो नॉन-जीरो (non-zero) के साथ बाहर निकलता है। जब प्रदाता मूल्य निर्धारण (OpenRouter और Cheaper Inference ऐसा करते हैं) लौटाता है, तो यह प्रति 1M टोकन USD भी दिखाता है।
 
 प्रदाता द्वारा विज्ञापित पूरी कैटलॉग ब्राउज़ करें:
 
@@ -107,6 +108,19 @@ npx ai-i18n-tools list-models
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+एक रैंक की गई शॉर्टलिस्ट (डिफ़ॉल्ट रूप से गुणवत्ता, या `--price`) के लिए पूछें और वैकल्पिक रूप से शीर्ष ids को `translationModels` में लिखें। [Models tab](/hi/guide/translation-dashboard/models) वही रैंकिंग, फ़िल्टर और कॉन्फ़िगरेशन अपडेट दिखाता है।
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+तालिका के कॉलम रैंक, मॉडल id, इंडेक्स, मापा गया ChrF, मापा गया Arena Score, और प्रति 1M टोकन इनपुट/आउटपुट USD हैं। एक अनुपलब्ध माप `—` है। `--list` उन मॉडलों के लिए उन कॉलम को प्रिंट करता है जो पहले से ही `translationModels` में हैं। `--max-output-price` मॉडलों को उस आउटपुट USD प्रति 1M टोकन पर या उससे नीचे रखता है और बिना आउटपुट मूल्य वाले मॉडल को छोड़ देता है। `--min-delta` एक मॉडल को केवल तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतने अंक नीचे हो। `--top` (डिफ़ॉल्ट 5) उन फ़िल्टर के बाद तालिका, `--json`, और `--apply` को सीमित करता है। `--apply` केवल `translationModels` को बदलता है। `--refresh` 7-दिवसीय बेंचमार्क कैश को फिर से डाउनलोड करता है। वैकल्पिक वेट [`modelSuggestion`](/hi/reference/configuration#modelsuggestion) हैं। [suggest-models](/hi/reference/cli-commands/models#suggest-models) देखें।
 
 नमूना पाठ, लोकेल या मॉडल सूची को ओवरराइड करें:
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 प्रत्येक प्रदाता ब्लॉक अपनी स्वयं की `translationModels`, वैकल्पिक `uiModels` और `localeModels`, `maxTokens`, `temperature`, और `requestTimeout` (सेकंड) या `requestTimeoutMs` को परिभाषित कर सकता है। प्रदाता पर एक टाइमआउट शीर्ष-स्तरीय `requestTimeout` / `requestTimeoutMs` को ओवरराइड करता है। एक लेगेसी शीर्ष-स्तरीय `openrouter` ब्लॉक अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` में स्वतः माइग्रेट हो जाता है।
 
-वैकल्पिक `pricing` और `modelPricing` प्रति 1,000,000 टोकन USD निर्धारित करते हैं (`inputPerMTokens` और `outputPerMTokens`) जब प्रदाता `usage.cost` को छोड़ देता है। `pricing` प्रदाता-व्यापी डिफ़ॉल्ट है; एक `modelPricing` प्रविष्टि एक मॉडल आईडी के लिए इसे ओवरराइड करती है। OpenRouter पहले से ही प्रति-कॉल लागत लौटाता है, इसलिए उस प्रदाता पर दोनों को अनसेट छोड़ दें। प्रदाता द्वारा रिपोर्ट की गई लागत को वैसे ही रखा जाता है जैसा वह लौटाया जाता है। यह राशि अनुवाद सारांश, [`usage`](/hi/reference/cli-commands/workflows#usage), और [उपयोग और लागत](/hi/guide/translation-dashboard/usage) में शामिल की जाती है।
+वैकल्पिक `pricing` और `modelPricing` प्रति 1,000,000 टोकन (`inputPerMTokens` और `outputPerMTokens`) के लिए USD सेट करते हैं जब प्रदाता `usage.cost` को छोड़ देता है। `pricing` प्रदाता-व्यापी डिफ़ॉल्ट है; एक `modelPricing` प्रविष्टि इसे एक मॉडल id के लिए ओवरराइड करती है। OpenRouter और Cheaper Inference पहले से ही प्रति-कॉल लागत लौटाते हैं, इसलिए उन प्रदाताओं पर दोनों को अनसेट छोड़ दें। प्रदाता द्वारा रिपोर्ट की गई लागत को वैसे ही रखा जाता है जैसे वह लौटाई गई है। राशि को अनुवाद सारांश, [`usage`](/hi/reference/cli-commands/workflows#usage), और [Usage & costs](/hi/guide/translation-dashboard/usage) में शामिल किया गया है।
 
 समान दस्तावेज़ पर चार प्रदाताओं के साथ चलाने योग्य उदाहरण, जिसमें नमूना दरें शामिल हैं: [`examples/multi-provider`](/hi/examples#multi-provider)।
 

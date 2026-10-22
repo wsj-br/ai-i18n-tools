@@ -22,6 +22,7 @@
 |---------|---------|
 | [`check-models`](models#check-models) | 設定されたモデルIDをアクティブなプロバイダーに対して検証します。 |
 | [`list-models`](models#list-models) | アクティブなプロバイダーが提供するモデルを一覧表示します。 |
+| [`suggest-models`](models#suggest-models) | 翻訳品質や価格に基づいてチャットモデルをランク付けし、必要に応じて `translationModels` を記述します。 |
 | [`bench-models`](models#bench-models) | 設定されたモデルを1つのサンプル翻訳でベンチマークします。 |
 | [`list-languages`](models#list-languages) | バンドルされているUI言語カタログを一覧表示します。 |
 
@@ -88,10 +89,12 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

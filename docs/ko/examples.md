@@ -48,8 +48,14 @@ pnpm install
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM 공급자 선택 또는 벤치마크 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 마크다운 / CJK 번역 회귀 테스트 (데바나가리, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, 재설정 + AI 에이전트 보고서) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit 대시보드, `t()` / `_()`, 영어 키 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, 영어 키 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar 로케일, `t()` / `_()`, 영어 키 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 기존 GNU gettext CLI; `extract` / `translate-ui` 새로 고침 `.po` 및 `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 각 **예시** 이름은 전체 설정, 명령 및 프로젝트 레이아웃이 포함된 GitHub README로 연결되거나 [저장소의 예시 색인](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)을 탐색할 수 있습니다.
+
+`python-streamlit`, `python-flask` 및 `python-fastapi`는 `venv` 및 `pip`를 사용하며 `pnpm`는 사용하지 않습니다. `python-gettext`은 표준 라이브러리만 사용합니다. 릴리스에는 Node.js가 설치되어 있지 않은 사용자가 독립 실행형 실행 파일을 다운로드할 수 있도록 `ai-i18n-tools-python-examples.zip`도 첨부되어 있습니다. 해당 zip 파일은 npm 패키지의 일부가 아닙니다.
 
 <br/>
 

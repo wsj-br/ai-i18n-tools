@@ -1,0 +1,32 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": ["es", "pt-BR"],
+  "provider": "openrouter",
+  "providers": {
+    "openrouter": {
+      "translationModels": ["google/gemini-2.5-flash"],
+      "uiModels": ["google/gemini-2.5-flash"]
+    }
+  },
+  "features": {
+    "translateUIStrings": true,
+    "translateDocs": false,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "ui": {
+    "description": "Flask shop",
+    "sourceRoots": ["."],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "locales",
+    "flatOutput": true,
+    "uiExtractor": {
+      "extensions": [".py", ".html", ".htm", ".jinja", ".jinja2", ".j2"],
+      "funcNames": ["_", "t", "translate"],
+      "includePackageDescription": true,
+      "pyprojectTomlPath": "pyproject.toml"
+    }
+  },
+  "cacheDir": ".translation-cache",
+  "docs": []
+}

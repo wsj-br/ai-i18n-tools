@@ -26,6 +26,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
 
 **プリセット以外**のキーについては、`baseUrl` と `apiKeyEnv` を設定で明示的に設定します。
@@ -94,7 +95,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 npx ai-i18n-tools check-models
 ```
 
-`check-models` はプロバイダーの `GET /models` エンドポイントを呼び出し、`translationModels`、`uiModels`、および `localeModels` からのすべての ID を検証し、不足している ID または `expiration_date` を過ぎた ID を報告し、設定された ID が無効な場合はゼロ以外の値で終了します。プロバイダーが価格設定を返す場合 (OpenRouter の場合)、100万トークンあたりの推定 USD も表示されます。
+`check-models` はプロバイダーの `GET /models` エンドポイントを呼び出し、`translationModels`、`uiModels`、および `localeModels` からのすべての ID を検証します。欠落している ID や `expiration_date` を過ぎた ID を報告し、構成された ID が無効な場合は 0 以外の終了コードで終了します。プロバイダーが価格を返す場合（OpenRouter および Cheaper Inference は返します）、100 万トークンあたりの米ドル価格も表示されます。
 
 プロバイダーが宣伝する全カタログを参照します。
 
@@ -107,6 +108,19 @@ npx ai-i18n-tools list-models
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+ランク付けされたショートリスト（デフォルトでは品質順、または `--price`）を要求し、オプションで上位の ID を `translationModels` に書き込みます。[Models tab](/ja/guide/translation-dashboard/models) には、同じランキング、フィルター、および構成の更新が表示されます。
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+テーブルの列は、ランク、モデル ID、インデックス、測定された ChrF、測定された Arena Score、および 100 万トークンあたりの入力/出力米ドルです。測定値が欠落している場合は `—` となります。`--list` は、すでに `translationModels` にあるモデルについてそれらの列を出力します。`--max-output-price` は、その 100 万トークンあたりの出力米ドル以下のモデルを保持し、出力価格がないモデルを除外します。`--min-delta` は、インデックスが直前に保持されたモデルより少なくとも指定されたポイント数だけ低いモデルのみを保持します。`--top`（デフォルトは 5）は、それらのフィルター後のテーブル、`--json`、および `--apply` を制限します。`--apply` は `translationModels` のみを置き換えます。`--refresh` は 7 日間のベンチマークキャッシュを再ダウンロードします。オプションの重みは [`modelSuggestion`](/ja/reference/configuration#modelsuggestion) です。[suggest-models](/ja/reference/cli-commands/models#suggest-models) を参照してください。
 
 サンプルテキスト、ロケール、またはモデルリストをオーバーライドします。
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 各プロバイダーブロックは独自の `translationModels`、オプションの `uiModels` および `localeModels`、`maxTokens`、`temperature`、`requestTimeout` (秒) または `requestTimeoutMs` を定義できます。プロバイダーのタイムアウトはトップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。従来のトップレベルの `openrouter` ブロックも引き続き受け付けられ、ロード時に `providers.openrouter` へ自動移行されます。
 
-オプションの`pricing`と`modelPricing`は、プロバイダーが`usage.cost`を省略した場合に、1,000,000トークンあたりのUSD（`inputPerMTokens`と`outputPerMTokens`）を設定します。`pricing`はプロバイダー全体のデフォルトであり、`modelPricing`エントリは1つのモデルIDに対してこれを上書きします。OpenRouterはすでに呼び出しごとのコストを返すため、当該プロバイダーでは両方とも未設定にしてください。プロバイダーから報告されたコストは返された値のまま保持されます。この金額は、翻訳サマリー、[`usage`](/ja/reference/cli-commands/workflows#usage)、および[使用量とコスト](/ja/guide/translation-dashboard/usage)に含まれます。
+オプションの `pricing` および `modelPricing` は、プロバイダーが `usage.cost` を省略した場合に 100 万トークンあたりの米ドル（`inputPerMTokens` および `outputPerMTokens`）を設定します。`pricing` はプロバイダー全体のデフォルトであり、`modelPricing` エントリは 1 つのモデル ID に対してそれを上書きします。OpenRouter および Cheaper Inference はすでに呼び出しごとのコストを返すため、これらのプロバイダーでは両方を設定しないでください。プロバイダーから報告されたコストは、返されたまま保持されます。この金額は、翻訳の概要、[`usage`](/ja/reference/cli-commands/workflows#usage)、および [Usage & costs](/ja/guide/translation-dashboard/usage) に含まれます。
 
 同じドキュメントに対して4つのプロバイダーを使用する実行可能な例（サンプルレートを含む）：[`examples/multi-provider`](/ja/examples#multi-provider)。
 

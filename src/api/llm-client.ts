@@ -26,15 +26,19 @@ import {
   scriptValidationIssue,
 } from "../core/locale-utils.js";
 import {
+  CHEAPERINFERENCE_PROVIDER_KEY,
   OPENROUTER_PROVIDER_KEY,
   resolveActiveProvider,
   resolveApiKey,
   resolveProviderSettings,
   type ResolvedProviderSettings,
 } from "../core/llm-providers.js";
+import { benchmarkCachePath, ensureModelsDevPricing } from "../core/model-benchmarks.js";
+import type { ModelsDevRate } from "../core/model-benchmarks.js";
 import {
   collectProviderPricing,
   estimateCostUsd,
+  estimateCostWithModelsDev,
   type ProviderPricingTable,
 } from "../core/usage-stats.js";
 import {
@@ -100,22 +104,58 @@ class BilledCompletionError extends Error {
 }
 
 /**
- * OpenRouter returns `usage.cost` (USD) on non-streaming responses; surface it through
- * `providerMetadata.openrouter.cost` so the client can report exact spend.
+ * Billed USD from a non-streaming chat-completions body.
+ *
+ * OpenRouter and Cheaper Inference set numeric `usage.cost` (OpenRouter may also set a top-level
+ * `cost`). When that number is absent, Cheaper Inference's `cheaper_inference.billing.billed_cost_usd`
+ * is a fixed 6-decimal string.
  */
-const openRouterMetadataExtractor: MetadataExtractor = {
-  extractMetadata: ({ parsedBody }: { parsedBody: unknown }) => {
-    const body = parsedBody as { usage?: { cost?: unknown }; cost?: unknown } | null;
-    const cost = body?.usage?.cost ?? body?.cost;
-    return Promise.resolve(
-      typeof cost === "number" ? { [OPENROUTER_PROVIDER_KEY]: { cost } } : undefined
-    );
-  },
-  createStreamExtractor: () => ({
-    processChunk: () => {},
-    buildMetadata: () => undefined,
-  }),
-};
+export function parseReportedUsageCost(parsedBody: unknown): number | undefined {
+  if (parsedBody === null || typeof parsedBody !== "object") {
+    return undefined;
+  }
+  const body = parsedBody as {
+    usage?: { cost?: unknown };
+    cost?: unknown;
+    cheaper_inference?: { billing?: { billed_cost_usd?: unknown } };
+  };
+  const direct = finiteCost(body.usage?.cost) ?? finiteCost(body.cost);
+  if (direct !== undefined) {
+    return direct;
+  }
+  return finiteCost(body.cheaper_inference?.billing?.billed_cost_usd);
+}
+
+/** Finite USD amount from a JSON number or decimal string. `0` is a real bill. */
+function finiteCost(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Surface {@link parseReportedUsageCost} as `providerMetadata.<provider>.cost`.
+ * Streaming responses are not used (`generateText` reads the completed body).
+ */
+function usageCostMetadataExtractor(providerKey: string): MetadataExtractor {
+  return {
+    extractMetadata: ({ parsedBody }: { parsedBody: unknown }) => {
+      const cost = parseReportedUsageCost(parsedBody);
+      return Promise.resolve(typeof cost === "number" ? { [providerKey]: { cost } } : undefined);
+    },
+    createStreamExtractor: () => ({
+      processChunk: () => {},
+      buildMetadata: () => undefined,
+    }),
+  };
+}
 
 /** Details attached when every model in a fallback chain fails. */
 export interface LlmAllModelsFailedDetails {
@@ -157,7 +197,9 @@ export class DocumentBatchAllModelsFailedError extends LlmAllModelsFailedError {
 }
 
 export interface LlmClientOptions {
-  config: Pick<I18nConfig, "provider" | "providers" | "sourceLocale" | "localeDisplayNames">;
+  config: Pick<I18nConfig, "provider" | "providers" | "sourceLocale" | "localeDisplayNames"> & {
+    cacheDir?: string;
+  };
   /** Override the active provider's API key (otherwise read from its configured env var). */
   apiKey?: string;
   /**
@@ -196,6 +238,13 @@ export interface LlmClientOptions {
   onApiCall?: (event: LlmApiCallEvent) => void;
   /** Project/feature context from `glossary.contextFiles` injected into translation prompts. */
   translationContext?: string;
+  /**
+   * Directory that contains the config file. Used to resolve `cacheDir` for models.dev prices.
+   * Defaults to `process.cwd()`.
+   */
+  projectRoot?: string;
+  /** Override the benchmark cache file. Defaults to `<projectRoot>/<cacheDir>/benchmark-scores.json`. */
+  benchmarkCachePath?: string;
 }
 
 /** @deprecated Use {@link LlmClientOptions}. */
@@ -205,8 +254,9 @@ export type OpenRouterClientOptions = LlmClientOptions;
  * Provider-agnostic chat client (Vercel AI SDK, OpenAI-compatible transport) with an ordered
  * `translationModels` fallback chain. The active provider is chosen from config; OpenRouter-specific
  * routing/headers are applied only when the active provider is `openrouter`. USD cost is the
- * provider-reported `usage.cost` when present; otherwise it is calculated from
- * `providers.<name>.modelPricing` or `pricing` and reported on the same cost field.
+ * provider-reported amount when present (numeric `usage.cost`, or Cheaper Inference's
+ * `billed_cost_usd` string); otherwise config `modelPricing` / `pricing`; otherwise models.dev
+ * input and output rates. The amount is reported on the same cost field.
  */
 export class LlmClient {
   private readonly provider: string;
@@ -226,6 +276,8 @@ export class LlmClient {
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
   private readonly pricing: ProviderPricingTable;
+  private readonly benchmarkCachePath: string;
+  private modelsDevLoad: Promise<Record<string, ModelsDevRate>> | null = null;
   private readonly onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
   private readonly onApiCall?: (event: LlmApiCallEvent) => void;
   private readonly translationContext: string;
@@ -284,6 +336,12 @@ export class LlmClient {
     this.onApiCall = opts.onApiCall;
     this.translationContext = opts.translationContext?.trim() ?? "";
     this.pricing = collectProviderPricing(opts.config.providers);
+    this.benchmarkCachePath =
+      opts.benchmarkCachePath ??
+      benchmarkCachePath(
+        opts.projectRoot ?? process.cwd(),
+        opts.config.cacheDir ?? ".translation-cache"
+      );
     this.providerInstance = this.buildProvider(settings);
   }
 
@@ -293,6 +351,7 @@ export class LlmClient {
       headers["HTTP-Referer"] = this.httpReferer;
       headers["X-Title"] = this.xTitle;
     }
+    const reportsUsageCost = this.isOpenRouter || this.provider === CHEAPERINFERENCE_PROVIDER_KEY;
     return createOpenAICompatible({
       name: settings.provider,
       baseURL: settings.baseUrl,
@@ -304,8 +363,10 @@ export class LlmClient {
               ...args,
               provider: OPENROUTER_PROVIDER,
             }),
-            metadataExtractor: openRouterMetadataExtractor,
           }
+        : {}),
+      ...(reportsUsageCost
+        ? { metadataExtractor: usageCostMetadataExtractor(settings.provider) }
         : {}),
     });
   }
@@ -592,35 +653,58 @@ export class LlmClient {
     this.emitApiCall(model, usage, cost, "accepted");
   }
 
-  /** Read OpenRouter's exact USD cost from `providerMetadata` (other providers: undefined). */
+  /** Read this provider's reported USD cost from `providerMetadata` (unset when the body omitted it). */
   private extractCost(
     providerMetadata: Record<string, Record<string, unknown>> | undefined
   ): number | undefined {
-    const raw = providerMetadata?.[OPENROUTER_PROVIDER_KEY]?.cost;
-    return typeof raw === "number" ? raw : undefined;
+    const raw = providerMetadata?.[this.provider]?.cost;
+    return typeof raw === "number" && Number.isFinite(raw) ? raw : undefined;
   }
 
   /**
-   * Provider-reported USD cost when the response includes it. Otherwise the amount from
-   * configured `modelPricing` / `pricing` for this model, or `undefined` when neither applies.
-   * A reported cost (including `0`) is never replaced by configured rates.
+   * Provider-reported USD cost when the response includes it. Otherwise config
+   * `modelPricing` / `pricing`, then models.dev split rates. `undefined` when none apply.
+   * A reported cost (including `0`) is never replaced.
    */
-  private resolveBilledCost(
+  private async resolveBilledCost(
     model: string,
     usage: LlmUsageStats,
     providerMetadata: Record<string, Record<string, unknown>> | undefined
-  ): number | undefined {
+  ): Promise<number | undefined> {
     const reported = this.extractCost(providerMetadata);
     if (typeof reported === "number") {
       return reported;
     }
-    return estimateCostUsd(
+    const configured = estimateCostUsd(
       this.provider,
       model,
       usage.inputTokens,
       usage.outputTokens,
       this.pricing
     );
+    if (configured !== undefined) {
+      return configured;
+    }
+    const modelsDev = await this.loadModelsDev();
+    return estimateCostWithModelsDev(
+      this.provider,
+      model,
+      usage.inputTokens,
+      usage.outputTokens,
+      this.pricing,
+      modelsDev
+    );
+  }
+
+  private loadModelsDev(): Promise<Record<string, ModelsDevRate>> {
+    if (!this.modelsDevLoad) {
+      this.modelsDevLoad = ensureModelsDevPricing(this.benchmarkCachePath).catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : String(e);
+        this.logger?.debug?.(`models.dev pricing unavailable: ${msg}`);
+        return {};
+      });
+    }
+    return this.modelsDevLoad;
   }
 
   /** Single chat-completions call for one model via the active provider (AI SDK transport). */
@@ -673,7 +757,7 @@ export class LlmClient {
       outputTokens: result.usage.outputTokens ?? 0,
       totalTokens: result.usage.totalTokens ?? 0,
     };
-    const cost = this.resolveBilledCost(model, usage, result.providerMetadata);
+    const cost = await this.resolveBilledCost(model, usage, result.providerMetadata);
 
     // Report every billed response immediately so a live run total survives interrupts/errors,
     // even for responses that are later rejected (empty content, parse/script failure) below.

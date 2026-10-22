@@ -22,6 +22,7 @@
 |---------|---------|
 | [`check-models`](models#check-models) | 根據目前使用的供應商驗證已設定的模型 ID。 |
 | [`list-models`](models#list-models) | 列出目前使用的供應商所提供的模型。 |
+| [`suggest-models`](models#suggest-models) | 根據翻譯品質或價格對聊天模型進行排名，並可選擇編寫 `translationModels`。 |
 | [`bench-models`](models#bench-models) | 在一個翻譯範本上對已設定的模型進行基準測試。 |
 | [`list-languages`](models#list-languages) | 列出內建的 UI 語言目錄。 |
 
@@ -88,10 +89,12 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

@@ -4,7 +4,7 @@
 | 变量               | 描述                                                |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | `openrouter` 提供程序的 API 密钥（在启用时为必填项）。默认为 `init` 预设。 |
-| 其他提供商密钥    | 每个提供商读取自己的密钥环境变量：`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`（Ollama 不需要）。使用 `providers.<name>.apiKeyEnv` 为每个提供商覆盖。 |
+| 其他提供商密钥 | 每个提供商读取其各自的密钥环境变量：`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GOOGLE_API_KEY`、`DEEPSEEK_API_KEY`、`CEREBRAS_API_KEY`、`GROQ_API_KEY`、`MISTRAL_API_KEY`、`XAI_API_KEY`、`NVIDIA_API_KEY`、`ALIBABA_API_KEY`、`APIFUN_API_KEY`、`CHEAPERINFERENCE_API_KEY`（Ollama 不需要）。使用 `providers.<name>.apiKeyEnv` 对每个提供商进行覆盖。 |
 | `OPENROUTER_BASE_URL`  | 覆盖 `providers.openrouter.baseUrl`（仅当该提供商已配置时）。 |
 | `OLLAMA_BASE_URL`      | 覆盖 `providers.ollama.baseUrl`（仅当该提供商已配置时）。 |
 | `AI_I18N_LANG`         | 工具自身 UI（CLI 帮助、日志、仪表板）的语言。被 `-L` / `--ui-lang` 覆盖；覆盖配置 `uiLanguage`。请参阅[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。 |

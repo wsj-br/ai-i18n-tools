@@ -1,6 +1,13 @@
 import path from "path";
 import { parse } from "@babel/parser";
 import type { CallExpression, Expression, Node, ObjectExpression } from "@babel/types";
+import {
+  collectPlaceholderFamilies,
+  isQuantityPlaceholderFamily,
+} from "../core/ui-placeholders.js";
+import { extractPythonUiCalls } from "./python-string-extractor.js";
+import { extractQtUiCalls, isQtUiFile } from "./qt-ui-extractor.js";
+import { extractTemplateI18nCalls, isTemplateI18nFile } from "./template-i18n-extractor.js";
 
 export interface UiExtractedCall {
   literal: string;
@@ -8,6 +15,15 @@ export interface UiExtractedCall {
   file: string;
   plurals?: boolean;
   zeroDigit?: boolean;
+  /** English plural literal from `ngettext` / `{% pluralize %}` / `msgid_plural`. */
+  pluralSource?: string;
+  /** Gettext `msgctxt` / `pgettext` / Qt context. */
+  context?: string;
+  /**
+   * True when Python evaluates the string before lookup (`_(f"...")`, `_("..." % x)`,
+   * `_("...".format(...))`). The template is still extracted so it can be migrated.
+   */
+  unsafe?: boolean;
 }
 
 function isAstNode(x: unknown): x is Node {
@@ -305,6 +321,16 @@ export function extractUiCallsFromFileContent(
   relPath: string,
   funcNames: string[]
 ): UiExtractedCall[] {
+  const ext = path.extname(relPath).toLowerCase();
+  if (ext === ".py") {
+    return extractPythonUiCalls(content, relPath, funcNames);
+  }
+  if (isQtUiFile(relPath)) {
+    return extractQtUiCalls(content, relPath);
+  }
+  if (isTemplateI18nFile(relPath) && ext !== ".html" && ext !== ".htm") {
+    return extractTemplateI18nCalls(content, relPath, funcNames);
+  }
   if (isAstroUiSourceFile(relPath)) {
     return extractUiCallsFromAstroSource(content, relPath, funcNames);
   }
@@ -372,11 +398,57 @@ export function extractInterpolationNames(message: string): string[] {
   return names;
 }
 
+function namedInterpolation(family: string): string | null {
+  if (family === "count" || family === "n") {
+    return family;
+  }
+  if (
+    family === "%d" ||
+    family === "%i" ||
+    family === "%u" ||
+    family === "%s" ||
+    /^\{[0-9]+\}$/.test(family) ||
+    family === "{}"
+  ) {
+    return null;
+  }
+  if (isQuantityPlaceholderFamily(family) && /^%/.test(family) && !/^%\(/.test(family)) {
+    return null;
+  }
+  const brace = family.match(/^\{([A-Za-z_][A-Za-z0-9_]*)/);
+  if (brace) {
+    return brace[1]!;
+  }
+  const printf = family.match(/^%\(([A-Za-z_][A-Za-z0-9_]*)\)/);
+  if (printf) {
+    return printf[1]!;
+  }
+  const pyI18n = family.match(/^%\{([A-Za-z_][A-Za-z0-9_]*)\}$/);
+  if (pyI18n) {
+    return pyI18n[1]!;
+  }
+  if (!family.startsWith("{") && !family.startsWith("%")) {
+    return family;
+  }
+  return null;
+}
+
+/**
+ * True when a single-source `plurals: true` literal has two or more named interpolations
+ * and none of them is the plural axis (`count` or `n`). Anonymous `%s` / `{0}` tokens
+ * do not require a named count. Explicit `ngettext(singular, plural, n)` pairs are
+ * checked by the caller via `pluralSource` and skip this rule.
+ */
 export function pluralMultiPlaceholderMissingCount(message: string): boolean {
-  const names = extractInterpolationNames(message);
-  const distinct = [...new Set(names)];
-  if (distinct.length < 2) {
+  const names = new Set<string>();
+  for (const family of collectPlaceholderFamilies(message).keys()) {
+    const name = namedInterpolation(family);
+    if (name) {
+      names.add(name);
+    }
+  }
+  if (names.size < 2) {
     return false;
   }
-  return !distinct.includes("count");
+  return !names.has("count") && !names.has("n");
 }

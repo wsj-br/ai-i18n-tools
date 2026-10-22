@@ -19,7 +19,7 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 
 **主なオプション:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` はスキャフォールディングする**組み込みプリセット**を選択します (省略時は `openrouter`)。次のいずれかである必要があります: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`。
+`-P` / `--provider` は、スキャフォールドする **組み込みプリセット** を選択します（省略時は `openrouter`）。`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama` のいずれかである必要があります。
 
 **テンプレート (`-t`):**
 
@@ -35,8 +35,16 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 | `ui-plain-html` | プレーンHTMLカタログ (`data-i18n*`マーカー、フラットロケールJSON) |
 | `docs-plain-html` | プレーンHTMLドキュメント (ロケールごとに1ファイル、言語リスト、hreflang) |
 | `ui-json-bundles` | JSON (`json[]` のみ) |
+| `ui-python` | Python UI 文字列、フラットな英語キーの JSON、および `i18n.py` |
+| `ui-python-gettext` | フラットな JSON と GNU `.po` / `.mo` を使用した Python UI 文字列、および `i18n.py` |
+| `ui-python-django` | Django `gettext` / `{% blocktrans %}` カタログ（`flatOutput: false`、ドメイン `django`、`i18n.py` なし） |
+| `ui-python-flask` | `translations/` 配下の Flask / Jinja カタログ（`flatOutput: false`）および `i18n.py` |
 
-`--with-translate-ignore` は初期設定の `.translate-ignore` を作成します。
+`--with-translate-ignore` はスターター `.translate-ignore` を作成します（Python 仮想環境およびキャッシュディレクトリを含みます）。
+
+`ui-python`、`ui-python-gettext`、および `ui-python-flask` は、`i18n.py` が存在しない場合にそれも書き込みます。Django プロジェクトは Django 独自の gettext ランタイムを保持するため、`ui-python-django` は `i18n.py` を書き込みません。
+
+`migrate-python-i18n` は、安全でない事前評価済みの呼び出し（`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`）を、フォーマット前にルックアップを行う呼び出しに書き換えます。デフォルトはドライランです。ファイルを編集するには `--write` を渡し、レビューの注意点については `migrate-python-i18n-report.md` を参照してください。生成された `i18n.py` ファイルはスキップされます。
 
 ---
 

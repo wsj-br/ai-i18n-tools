@@ -19,10 +19,11 @@ Após a conclusão de um comando que chamou a API, as linhas anteriores a **sete
 
 Cada chamada, cartão de resumo e tabela mostra **um** custo em USD:
 
-1. O `usage.cost` do provedor quando a resposta o incluiu (OpenRouter hoje).
-2. Caso contrário, o valor de `providers.<name>.modelPricing` ou o `pricing` padrão de todo o provedor, aplicado aos tokens de entrada e saída dessa chamada.
+1. O `usage.cost` do provedor quando a resposta o incluía (OpenRouter e Cheaper Inference atualmente). Um custo reportado, incluindo `0`, nunca é substituído.
+2. Caso contrário, o valor de `providers.<name>.modelPricing` ou o padrão `pricing` de todo o provedor, aplicado aos tokens de entrada e saída daquela chamada.
+3. Caso contrário, o preço de lista models.dev para aquele ID de modelo (USD de entrada e saída por 1 milhão de tokens), a partir do mesmo cache que `suggest-models` mantém. `suggest-models --refresh` atualiza esse cache. Uma tradução ou este relatório não baixa o languagebench ou o Arena apenas para precificar uma chamada.
 
-Novas chamadas armazenam esse valor na linha `api_calls`. Linhas mais antigas que foram armazenadas sem custo são precificadas da mesma forma quando o relatório é aberto, e então adicionadas ao mesmo valor de Custo — elas não são mostradas como uma segunda coluna. Se nenhuma das fontes se aplicar, a célula é `—`, nunca `$0.00`. Alterar as taxas configuradas posteriormente não reescreve as linhas que já têm um custo armazenado. Os rollups mensais ainda mantêm uma contagem de chamadas que armazenaram um custo (`ncost_acc` / `ncost_dis`) para que `$0.00` permaneça distinto de “desconhecido” após a compactação.
+Novas chamadas armazenam esse valor na linha `api_calls`. Linhas mais antigas que foram armazenadas sem um custo são precificadas da mesma forma quando o relatório é aberto, sendo então adicionadas ao mesmo valor de Custo — elas não são exibidas como uma segunda coluna. Se nenhuma das três fontes se aplicar, a célula fica `—`, nunca `$0.00`. Alterar as taxas configuradas ou uma atualização posterior do models.dev não reescreve linhas que já possuem um custo armazenado. Os consolidadores mensais ainda mantêm uma contagem de chamadas que armazenaram um custo (`ncost_acc` / `ncost_dis`), para que `$0.00` permaneça distinto de “desconhecido” após a compactação.
 
 <a id="filters"></a>
 ## Filtros

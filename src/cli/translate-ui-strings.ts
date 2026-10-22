@@ -9,6 +9,16 @@ import type {
   StringsJsonPluralEntry,
 } from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
+import { flatMessageKey } from "../extractors/ui-string-locations.js";
+import {
+  buildPoCatalog,
+  compileMo,
+  moMessagesFromCatalog,
+  poEntriesFromCatalog,
+  serializePo,
+  toGettextLocale,
+  writeAtomicBuffer,
+} from "../core/gettext-codec.js";
 import {
   LlmAllModelsFailedError,
   LlmClient,
@@ -230,7 +240,7 @@ function buildFlatJsonForLocale(strings: StringsFile, locale: string): Record<st
     } else {
       const tx = entry.translated?.[loc];
       if (tx !== undefined && String(tx).trim() !== "") {
-        flat[src] = tx;
+        flat[flatMessageKey(src, entry.context)] = tx;
       }
     }
   }
@@ -373,6 +383,77 @@ function printTranslateUiRunSummary(
   );
 }
 
+function writeGettextCatalogs(
+  config: I18nUiTranslateConfig,
+  opts: TranslateUIOptions,
+  strings: StringsFile,
+  sourceLocale: string
+): void {
+  const gettext = config.ui.gettext;
+  if (!gettext) {
+    return;
+  }
+  if (gettext.potPath) {
+    const potAbs = path.resolve(opts.cwd, gettext.potPath);
+    const previous = fs.existsSync(potAbs) ? fs.readFileSync(potAbs, "utf8") : null;
+    const entries = poEntriesFromCatalog(strings, sourceLocale).map((entry) => ({
+      ...entry,
+      msgstr: entry.msgstr.map(() => ""),
+    }));
+    writeAtomicUtf8(
+      potAbs,
+      serializePo(
+        buildPoCatalog({
+          locale: sourceLocale,
+          domain: gettext.domain,
+          entries,
+          previous,
+        })
+      )
+    );
+  }
+  for (const locale of config.targetLocales) {
+    const norm = normalizeLocale(locale);
+    if (norm === normalizeLocale(sourceLocale)) {
+      continue;
+    }
+    const dirLocale = toGettextLocale(norm, gettext.localeFormat);
+    const poPath = path.resolve(
+      opts.cwd,
+      gettext.outputDir,
+      dirLocale,
+      "LC_MESSAGES",
+      `${gettext.domain}.po`
+    );
+    const previous = fs.existsSync(poPath) ? fs.readFileSync(poPath, "utf8") : null;
+    writeAtomicUtf8(
+      poPath,
+      serializePo(
+        buildPoCatalog({
+          locale: norm,
+          domain: gettext.domain,
+          entries: poEntriesFromCatalog(strings, norm),
+          previous,
+        })
+      )
+    );
+    if (gettext.compileMo !== false) {
+      writeAtomicBuffer(
+        poPath.replace(/\.po$/, ".mo"),
+        compileMo(moMessagesFromCatalog(strings, norm))
+      );
+    }
+    console.log(
+      chalk.gray(
+        t("   wrote Gettext catalog {{locale}} → {{path}}", {
+          locale: dirLocale,
+          path: poPath,
+        })
+      )
+    );
+  }
+}
+
 async function runTranslateUIBody(
   config: I18nUiTranslateConfig,
   opts: TranslateUIOptions
@@ -398,8 +479,11 @@ async function runTranslateUIBody(
   }
 
   let entries = Object.entries(strings);
+  const writeFlat = config.ui.flatOutput !== false;
   const outDir = path.join(opts.cwd, config.ui.flatOutputDir);
-  fs.mkdirSync(outDir, { recursive: true });
+  if (writeFlat) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
 
   const srcNorm = normalizeLocale(config.sourceLocale);
   const targets = opts.locales.map((l) => normalizeLocale(l)).filter((l) => l !== srcNorm);
@@ -609,6 +693,37 @@ async function runTranslateUIBody(
           throw interruptErrorFromSignal(opts.abortSignal);
         }
         const [h, entry] = step0Targets[si]!;
+        if (
+          entry.pluralSource &&
+          entry.pluralSource.trim() !== "" &&
+          /^en(?:-|$)/i.test(srcNorm) &&
+          entry.zeroDigit !== true
+        ) {
+          const ent = strings[h];
+          if (ent && isPluralStringsEntry(ent)) {
+            ent.translated = ent.translated ?? {};
+            ent.translated[srcNorm] = { one: entry.source, other: entry.pluralSource };
+            ent.models = ent.models ?? {};
+            ent.models[srcNorm] = "plural-source";
+            stringsUpdated++;
+            step0Count++;
+            console.log(
+              chalk.green(
+                t(
+                  "✔️  {{locale}} {{path}}: plural Step 0 {{index}}/{{total}} ({{id}}) seeded from pluralSource",
+                  {
+                    locale: srcNorm,
+                    path: stringsRel,
+                    index: si + 1,
+                    total: step0Total,
+                    id: h,
+                  }
+                )
+              )
+            );
+          }
+          continue;
+        }
         const req = requiredCldrPluralForms(srcNorm);
         const g0 = protectGlossaryForcedTerms(entry.source, glossary, srcNorm);
         const hints = glossary.findTermsInText(g0.text, srcNorm);
@@ -1043,7 +1158,7 @@ async function runTranslateUIBody(
 
       const flat = buildFlatJsonForLocale(strings, locale);
       const localePath = path.join(outDir, `${locale}.json`);
-      if (!opts.dryRun) {
+      if (!opts.dryRun && writeFlat) {
         writeAtomicUtf8(localePath, `${JSON.stringify(flat, null, 2)}\n`);
         usageCache?.setFileStatus(guidanceKey, locale, "", promptContextHash);
         if (opts.verbose) {
@@ -1116,8 +1231,12 @@ async function runTranslateUIBody(
     }
 
     // Source locale bundle: plural keys only (for i18next suffix resolution)
+    if (!opts.dryRun && config.ui.gettext) {
+      writeGettextCatalogs(config, opts, strings, srcNorm);
+    }
+
     const srcFlat = buildPluralOnlyFlatForSourceLocale(strings, srcNorm);
-    if (!opts.dryRun && Object.keys(srcFlat).length > 0) {
+    if (!opts.dryRun && writeFlat && Object.keys(srcFlat).length > 0) {
       const srcPath = path.join(outDir, `${srcNorm}.json`);
       writeAtomicUtf8(srcPath, `${JSON.stringify(srcFlat, null, 2)}\n`);
       if (opts.verbose) {
@@ -1137,11 +1256,14 @@ async function runTranslateUIBody(
     const wallElapsed = Date.now() - wallStart;
     let filesWritten = 0;
     if (!opts.dryRun) {
-      filesWritten = targets.length;
+      filesWritten = writeFlat ? targets.length : 0;
       if (stringsUpdated > 0) {
         filesWritten++;
       }
-      if (Object.keys(buildPluralOnlyFlatForSourceLocale(strings, srcNorm)).length > 0) {
+      if (
+        writeFlat &&
+        Object.keys(buildPluralOnlyFlatForSourceLocale(strings, srcNorm)).length > 0
+      ) {
         filesWritten++;
       }
     }

@@ -103,5 +103,15 @@ export default defineConfig({
         },
       },
     },
+    server: {
+      watch: {
+        ignored: [
+          "**/node_modules/**",
+          "**/.git/**",
+          "**/.vitepress/dist/**",
+          "**/.vitepress/cache/**",
+        ],
+      },
+    },
   },
 });

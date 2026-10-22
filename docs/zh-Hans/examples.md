@@ -48,8 +48,14 @@ pnpm install
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | 选择或基准测试 LLM 提供商 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 回归测试 Markdown / CJK 翻译 (梵文, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()`（`migrate-intlayer`，重置 + AI 代理报告） | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev`（`:3091`） |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit 仪表板，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI，ContextVar 区域设置，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 现有的 GNU gettext CLI；`extract` / `translate-ui` 刷新 `.po` 和 `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 每个 **示例** 名称都链接到其 GitHub README，其中包含完整的设置、命令和项目布局 — 或者浏览[存储库中的示例索引](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)。
+
+`python-streamlit`、`python-flask` 和 `python-fastapi` 使用 `venv` 和 `pip`，而非 `pnpm`。`python-gettext` 仅使用标准库。版本发布中还附带了 `ai-i18n-tools-python-examples.zip`，供下载独立可执行文件且未安装 Node.js 的用户使用。该 zip 文件不属于 npm 包的一部分。
 
 <br/>
 

@@ -634,4 +634,188 @@ export function SpreadWidget() {
     const result = codemodIntlayerUsages({ file: "Plain.tsx", source, leaves });
     expect(result.changed).toBe(false);
   });
+
+  it("formats quoted keys, leftover imports, and review refresh", () => {
+    expect(formatTCall(`It's "quoted"`, { token: "page-name", expr: "page" })).toContain(
+      "page-name"
+    );
+    expect(
+      findIntlayerLeftovers(
+        "App.tsx",
+        `import { useIntlayer, IntlayerProvider } from 'react-intlayer';\nexport const App = () => <IntlayerProvider><x /></IntlayerProvider>;`
+      ).map((item) => item.kind)
+    ).toEqual(["hook-import", "provider", "provider"]);
+    expect(findIntlayerLeftovers("bad.ts", "const x = {")).toEqual([]);
+
+    const result = codemodIntlayerUsages({
+      file: "src/components/Header.tsx",
+      source: `
+import { getIntlayer } from 'react-intlayer';
+export function Header() {
+  const content = getIntlayer('app-header');
+  return <h1>{content.title.value}</h1>;
+}
+`,
+      leaves,
+      hookNames: ["getIntlayer"],
+      tImportSpecifier: "../i18n",
+    });
+    expect(result.rewrites[0]?.replacement).toBe("t('Return to Dashboard')");
+
+    const review: ManualReviewSite = {
+      file: "x.tsx",
+      line: 1,
+      dictKey: "dynamic-key",
+      snippet: "content[statusKey].value",
+      reason: "dynamic-member",
+      writeAs: "t('OK')",
+      suggestions: [
+        { dotPath: "ok", label: "ok", sourceText: "OK", replacement: "t('OK')" },
+        { dotPath: "fail", label: "fail", sourceText: "Failed", replacement: "t('Failed')" },
+      ],
+    };
+    refreshReviewAfterLeafConversion(review, "ok", "OK", "Okay");
+    expect(review.suggestions[0]?.sourceText).toBe("Okay");
+
+    const spreadReview: ManualReviewSite = {
+      file: "x.tsx",
+      line: 1,
+      dictKey: "spread-props",
+      snippet: "<StatusBadge {...content} />",
+      reason: "spread",
+      jsxElement: "StatusBadge",
+      writeAs: "<StatusBadge ok={t('OK')} fail={t('Failed')} />",
+      suggestions: [
+        { dotPath: "ok", label: "ok", sourceText: "OK", replacement: "t('OK')" },
+      ],
+    };
+    refreshReviewAfterLeafConversion(spreadReview, "ok", "OK", "Okay");
+    expect(spreadReview.writeAs).toContain("Okay");
+    expect(relativeTImport("src/i18n.ts", "src/i18n.ts")).toBe("./i18n");
+  });
+
+  it("covers import rewriting, destructuring, and unresolved paths", () => {
+    const keepNamed = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import React, { useIntlayer, useLocale } from 'react-intlayer';
+export function Header() {
+  const content = useIntlayer('app-header');
+  return <h1>{content.title.value}</h1>;
+}
+`,
+      leaves,
+      tImportSpecifier: "../i18n",
+    });
+    expect(keepNamed.output).toContain("useLocale");
+    expect(keepNamed.output).toContain("import { t }");
+
+    const noImports = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+export function Header() {
+  const content = useIntlayer('app-header');
+  return <h1>{content.title.value}</h1>;
+}
+`,
+      leaves,
+      tImportSpecifier: "../i18n",
+    });
+    expect(noImports.output.startsWith("import { t }")).toBe(true);
+
+    const alreadyT = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+const { t } = i18n;
+function Header() {
+  const content = useIntlayer('app-header');
+  return <h1>{content.title.value}</h1>;
+}
+`,
+      leaves,
+      tImportSpecifier: "../i18n",
+    });
+    expect(alreadyT.output).not.toContain("import { t } from");
+
+    const destructure = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import { useIntlayer } from 'react-intlayer';
+export function Header() {
+  const content = useIntlayer('app-header');
+  const { title } = content;
+  return <h1>{title}</h1>;
+}
+`,
+      leaves,
+    });
+    expect(destructure.reviews[0]?.reason).toBe("destructuring");
+
+    const passed = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import { useIntlayer } from 'react-intlayer';
+export function Header() {
+  const content = useIntlayer('app-header');
+  log(content);
+  return null;
+}
+`,
+      leaves,
+    });
+    expect(passed.reviews[0]?.reason).toBe("passed-as-value");
+
+    const missing = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import { useIntlayer } from 'react-intlayer';
+export function Header() {
+  const content = useIntlayer('app-header');
+  return <h1>{content.missing.value}</h1>;
+}
+`,
+      leaves,
+    });
+    expect(missing.reviews[0]?.reason).toBe("unresolved-path");
+
+    const memberSpread = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import { useIntlayer } from 'react-intlayer';
+export function Header() {
+  const content = useIntlayer('spread-props');
+  return <Status.Badge {...content} />;
+}
+`,
+      leaves,
+    });
+    expect(memberSpread.reviews[0]?.reason).toBe("spread");
+
+    const replaceSpread = codemodIntlayerUsages({
+      file: "Header.tsx",
+      source: `
+import { useIntlayer } from 'react-intlayer';
+export function Header({ pageName }: { pageName: string }) {
+  const content = useIntlayer('app-header');
+  return <p>{content.helpFor.value.replace('{pageName}', ...vals)}</p>;
+}
+`,
+      leaves,
+    });
+    expect(replaceSpread.reviews[0]?.reason).toBe("chained-transform");
+
+    refreshReviewAfterLeafConversion(
+      {
+        file: "x.tsx",
+        line: 1,
+        dictKey: "dynamic-key",
+        snippet: "x",
+        reason: "dynamic-member",
+        suggestions: [{ dotPath: "other", label: "other", sourceText: "X", replacement: "t('X')" }],
+      },
+      "ok",
+      "OK",
+      "Okay"
+    );
+  });
 });

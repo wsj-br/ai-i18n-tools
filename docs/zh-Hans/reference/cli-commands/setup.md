@@ -19,7 +19,7 @@
 
 **主要选项：** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
 
-`-P` / `--provider` 选择要搭建的**内置预设**（省略时为 `openrouter`）。必须是以下之一：`openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `ollama`。
+`-P` / `--provider` 用于选择要构建的 **内置预设**（省略时默认为 `openrouter`）。必须是以下选项之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
 
 **模板（`-t`）：**
 
@@ -35,8 +35,16 @@
 | `ui-plain-html` | 纯 HTML 目录（`data-i18n*` 标记，扁平化区域设置 JSON） |
 | `docs-plain-html` | 纯 HTML 文档（每个区域设置一个文件，语言列表，hreflang） |
 | `ui-json-bundles` | JSON（仅 `json[]`） |
+| `ui-python` | Python UI 字符串、扁平化英文键 JSON 以及 `i18n.py` |
+| `ui-python-gettext` | 带有扁平化 JSON 和 GNU `.po` / `.mo` 的 Python UI 字符串，以及 `i18n.py` |
+| `ui-python-django` | Django `gettext` / `{% blocktrans %}` 目录（`flatOutput: false`，域 `django`，无 `i18n.py`） |
+| `ui-python-flask` | `translations/` 下的 Flask / Jinja 目录（`flatOutput: false`）以及 `i18n.py` |
 
-`--with-translate-ignore` 创建一个初始 `.translate-ignore`。
+`--with-translate-ignore` 会创建一个启动器 `.translate-ignore`（包括 Python 虚拟环境和缓存目录）。
+
+`ui-python`、`ui-python-gettext` 和 `ui-python-flask` 也会在文件缺失时写入 `i18n.py`。Django 项目保留了 Django 自身的 gettext 运行时，因此 `ui-python-django` 不会写入 `i18n.py`。
+
+`migrate-python-i18n` 会将不安全的预求值调用（`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`）重写为先查找后格式化的调用。默认执行试运行。传递 `--write` 以编辑文件，并阅读 `migrate-python-i18n-report.md` 以获取审查说明。生成的 `i18n.py` 文件将被跳过。
 
 ---
 

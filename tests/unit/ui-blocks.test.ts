@@ -225,6 +225,7 @@ describe("ui blocks", () => {
           sourceRoots: ["src/"],
           stringsJson: "locales/app.json",
           flatOutputDir: "locales/app",
+          flatOutput: true,
           uiGlossary: true,
         },
         {
@@ -232,6 +233,7 @@ describe("ui blocks", () => {
           sourceRoots: ["site/"],
           stringsJson: "locales/site.json",
           flatOutputDir: "locales/site",
+          flatOutput: true,
           uiGlossary: true,
         },
       ],

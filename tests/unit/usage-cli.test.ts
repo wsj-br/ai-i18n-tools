@@ -34,14 +34,14 @@ describe("runUsage", () => {
     vi.restoreAllMocks();
   });
 
-  it("prints an empty-cache summary without fabricating $0.00 cost", () => {
+  it("prints an empty-cache summary without fabricating $0.00 cost", async () => {
     vi.spyOn(console, "log").mockImplementation((...args: unknown[]) => {
       logs.push(args.map(String).join(" "));
     });
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "usage-cli-empty-"));
     try {
       new TranslationCache(dir).close();
-      runUsage(configFor("."), dir, {});
+      await runUsage(configFor("."), dir, {});
       const text = logs.join("\n");
       expect(text).toContain("Total calls");
       expect(text).toMatch(/Total calls.*\b0\b/s);
@@ -52,7 +52,7 @@ describe("runUsage", () => {
     }
   });
 
-  it("prints mixed actual/estimated cost and supports --clear", () => {
+  it("prints mixed actual/estimated cost and supports --clear", async () => {
     vi.spyOn(console, "log").mockImplementation((...args: unknown[]) => {
       logs.push(args.map(String).join(" "));
     });
@@ -92,7 +92,7 @@ describe("runUsage", () => {
       });
       cache.close();
 
-      runUsage(configFor("."), dir, {});
+      await runUsage(configFor("."), dir, {});
       const text = logs.join("\n");
       expect(text).toContain("Total calls");
       expect(text).toContain("0.002500");
@@ -104,7 +104,7 @@ describe("runUsage", () => {
       expect(text).not.toContain("Est. cost");
 
       logs.length = 0;
-      runUsage(configFor("."), dir, { clear: true, dryRun: true });
+      await runUsage(configFor("."), dir, { clear: true, dryRun: true });
       expect(logs.join("\n")).toMatch(/3/);
 
       const still = new TranslationCache(dir);
@@ -112,7 +112,7 @@ describe("runUsage", () => {
       still.close();
 
       logs.length = 0;
-      runUsage(configFor("."), dir, { clear: true });
+      await runUsage(configFor("."), dir, { clear: true });
       const gone = new TranslationCache(dir);
       expect(gone.getApiCallStats().summary.calls).toBe(0);
       gone.close();
@@ -121,7 +121,7 @@ describe("runUsage", () => {
     }
   });
 
-  it("aligns usage table columns when headers are ANSI-colored", () => {
+  it("aligns usage table columns when headers are ANSI-colored", async () => {
     const prevLevel = chalk.level;
     chalk.level = 1;
     vi.spyOn(console, "log").mockImplementation((...args: unknown[]) => {
@@ -141,7 +141,7 @@ describe("runUsage", () => {
         costUsd: 0.001745,
       });
       cache.close();
-      runUsage(configFor("."), dir, {});
+      await runUsage(configFor("."), dir, {});
       const modelTable = stripAnsi(logs.join("\n")).split("By model")[1]?.split("By operation")[0];
       expect(modelTable).toBeTruthy();
       const lines = modelTable!

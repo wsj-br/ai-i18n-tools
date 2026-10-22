@@ -116,6 +116,22 @@ describe("PlaceholderHandler", () => {
     expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
   });
 
+  it("restores when optional maps are omitted (legacy callers)", () => {
+    const h = new PlaceholderHandler();
+    expect(
+      h.restoreAfterTranslation("Hello", {
+        htmlTagMap: [],
+        openMap: [],
+        endMap: [],
+        htmlAnchors: [],
+        docusaurusHeadingIds: [],
+        urlMap: [],
+        boldCodeMap: [],
+        ilcMap: [],
+      })
+    ).toBe("Hello");
+  });
+
   it("keeps legacy `{#id}` heading id as `{{HDG_N}}` even when MDX brace protection runs after it", () => {
     const h = new PlaceholderHandler();
     const src = "### Step {#my-id} and {value}";

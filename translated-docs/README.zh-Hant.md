@@ -65,16 +65,18 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-其他鷹架：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html` 或 `ui-json-bundles`。
+其他鷹架：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html`、`ui-json-bundles`、`ui-python`、`ui-python-gettext`、`ui-python-django` 或 `ui-python-flask`。
+
+Python 應用程式可以跳過 Node.js 安裝，直接執行附於每個 GitHub Release 中的獨立執行檔（Linux x64/arm64、macOS arm64/x64、Windows x64）。這些二進位檔案未經公證或 Authenticode 簽章。Python 範例位於儲存庫中，以及發行版本的 `ai-i18n-tools-python-examples.zip` 內。它們不包含在 npm tarball 或執行檔中。
 
 建議優先使用 `sync`，而非串聯個別的翻譯指令。完整逐步指南：[快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start)。
 
 <a id="documentation"></a>
 ## 文件
 
-- [文件網站](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/) — 指南、整合與參考資料
-- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [供應商與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
-- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [純 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/plain-html) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [HTML 頁面](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
+- [說明文件網站](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/) — 指南、整合與參考
+- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [提供者與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
+- [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [純 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/python) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [HTML 頁面](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
 - [整合](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
 - [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/configuration) · [執行期輔助工具](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/runtime-helpers)
 - [範例](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/examples) — 可執行的示範（`npx degit …`）

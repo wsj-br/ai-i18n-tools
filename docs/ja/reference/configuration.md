@@ -130,13 +130,13 @@
 - `temperature`
   サンプリング温度。デフォルト: `0.2`。
 - `requestTimeout`
-  このプロバイダーへの各リクエストを待機する最大時間（秒）。トップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーとトップレベル設定のいずれにもタイムアウトが設定されていない場合、デフォルトは `45` 秒です。同じオブジェクトには `requestTimeout` と `requestTimeoutMs` のいずれか一方のみを設定してください。
+  このプロバイダーへの各リクエストを待機する最大時間（秒）。最上位の `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーと最上位設定のいずれもタイムアウトを設定していない場合、デフォルトは `45` 秒です。同一オブジェクト上で `requestTimeout` と `requestTimeoutMs` の両方を設定しないでください。
 - `requestTimeoutMs`
-  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。トップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーとトップレベル設定のいずれにもタイムアウトが設定されていない場合、デフォルトは `45000`（45秒）です。同じオブジェクトには `requestTimeout` と `requestTimeoutMs` のいずれか一方のみを設定してください。
+  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。最上位の `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーと最上位設定のいずれもタイムアウトを設定していない場合、デフォルトは `45000`（45秒）です。同一オブジェクト上で `requestTimeout` と `requestTimeoutMs` の両方を設定しないでください。
 - `pricing`（オプション）
-  プロバイダー全体の100万トークンあたりの米ドル：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。課金対象の呼び出しにプロバイダーが報告する `usage.cost` がない場合（OpenRouter以外のほとんどのプロバイダー）、このレートがその呼び出しの入力トークンと出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls` 行に保存されます。一致する `modelPricing` エントリがある場合、このデフォルト値が上書きされます。プロバイダーが報告したコストが置き換えられることはありません。コストなしで保存された行も、後から [`usage`](/ja/reference/cli-commands/workflows#usage) と [使用量とコスト](/ja/guide/translation-dashboard/usage) によって推定できます。
+  プロバイダー全体の100万トークンあたりの米ドル単価：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。課金対象の呼び出しにプロバイダーから報告された `usage.cost` がない場合（OpenRouterおよびCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls` 行に保存されます。一致する `modelPricing` エントリがある場合、このデフォルト値は上書きされます。プロバイダーから報告されたコストが置き換えられることはありません。どちらの設定レートも一致しない場合、ツールはモデルIDの models.dev リスト価格（100万トークンあたりの入力および出力米ドル）を使用します。コストなしで保存された行は、後で [`usage`](/ja/reference/cli-commands/workflows#usage) および [Usage & costs](/ja/guide/translation-dashboard/usage) によって推定できます。これらのソースのいずれも適用されない場合、コストは不明（`—`）のままとなり、`$0.00` になることはありません。
 - `modelPricing`（オプション）
-  モデルごとの100万トークンあたりの米ドル：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDの `pricing` を上書きします。プロバイダーが `usage.cost` を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
+  モデルごとの100万トークンあたりの米ドル単価：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDに対して `pricing` を上書きします。プロバイダーが `usage.cost` を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
 
@@ -154,6 +154,7 @@
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
 
 従来のトップレベル`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`を含む）は引き続き受け付けられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）へ自動マイグレーションされます。`defaultModel` / `fallbackModel`は`translationModels`に統合されます。
@@ -262,21 +263,25 @@
   このブロックのマスターカタログファイルへのパス。`extract` によって更新されます。
 - `flatOutputDir`
   このブロックのロケールごとの JSON ファイルが書き込まれるディレクトリ（`de.json` など）。
+- `flatOutput`
+  `true`（デフォルト）の場合、`translate-ui` はロケールごとに1つのフラットな JSON ファイルを書き込みます。gettext 専用ブロックにするには `false` を設定してください。`flatOutput: false` を持つブロックでは `gettext` を設定する必要があります。
+- `gettext`
+  このブロックのオプションの GNU gettext 出力。`outputDir`（デフォルト `./locales`）は `<locale>/LC_MESSAGES/<domain>.po` を受け取り、`compileMo` が true（デフォルト）の場合、一致する `.mo` を受け取ります。`domain` のデフォルトは `messages` です。`potPath` はテンプレートカタログです。`ingestExistingPo`（デフォルト `true`）は、`extract` 中に空の `strings.json` スロットを非ファジーな `msgstr` 値で埋めますが、空でない翻訳やユーザーが編集した翻訳を置き換えることはありません。`localeFormat` は `posix`（デフォルト、`pt_BR`）または `bcp47`（`pt-BR`）です。コンテキスト行は gettext の `\u0004` セパレーターを使用します。2つのコンテキストで同じ英語ソースがあっても、カタログIDは共有されません。
 - `targetLocales`
   このブロックのオプションのロケールリスト。省略または空の場合、ブロックはルートの `targetLocales` を使用します。
 - `languagesManifestPath`
-  `extract` と `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパス。省略した場合、ブロック0はルートの `languagesManifestPath` を使用します（これ自体がデフォルトでこのブロックの `{flatOutputDir}/ui-languages.json` になります）。後のブロックはデフォルトで `{flatOutputDir}/ui-languages.json` になります。
+  `extract` および `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパス。省略した場合、ブロック0はルートの `languagesManifestPath`（それ自体がこのブロックの `{flatOutputDir}/ui-languages.json` をデフォルトとします）を使用します。以降のブロックは `{flatOutputDir}/ui-languages.json` をデフォルトとします。
 - `uiGlossary`
-  `true`（デフォルト）の場合、このブロックの `strings.json` は、`translate-docs`、`translate-json`、および `translate-svg` の用語集ヒントソースになります。`translate-ui`、`proofread-ui`、およびソースリントは `glossary.userGlossary` のみを使用します。`false` を設定すると、カタログをそれらのヒントから除外できます（たとえば、ドキュメントに影響を与えるべきではない CLI 文字列カタログなど）。
-- `uiExtractor.funcNames`（またはレガシーの `reactExtractor.funcNames`）
-  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（またはレガシーの `reactExtractor.extensions`）
-  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。Astro のフロントマターとテンプレート式には `.astro` を追加します。
-- `uiExtractor.includePackageDescription`（またはレガシーの `reactExtractor.includePackageDescription`）
-  `true`（デフォルト）の場合、`extract` は、存在する場合は `package.json` `description` も UI 文字列として含めます。同じ説明がすべてのカタログに抽出されないように、追加のブロックで `false` を設定します。
-- `uiExtractor.packageJsonPath`（またはレガシーの `reactExtractor.packageJsonPath`）
+  `true`（デフォルト）の場合、このブロックの `strings.json` は `translate-docs`、`translate-json`、および `translate-svg` の用語集ヒントソースとなります。`translate-ui`、`proofread-ui`、およびソースのリンティングは `glossary.userGlossary` のみを使用します。カタログをこれらのヒントから除外するには `false` を設定してください（例：ドキュメントを誘導すべきではない CLI 文字列カタログなど）。
+- `uiExtractor.funcNames`（またはレガシー `reactExtractor.funcNames`）
+  スキャンする追加の関数名（デフォルト：`["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（またはレガシー `reactExtractor.extensions`）
+  含めるファイル拡張子（デフォルト：`[".js", ".jsx", ".ts", ".tsx"]`）。Astro のフロントマターおよびテンプレート式を含めるには `.astro` を追加してください。
+- `uiExtractor.includePackageDescription`（またはレガシー `reactExtractor.includePackageDescription`）
+  `true`（デフォルト）の場合、`extract` は存在時に `package.json` `description` を UI 文字列として含めます。同じ説明がすべてのカタログに抽出されないように、追加のブロックで `false` を設定してください。
+- `uiExtractor.packageJsonPath`（またはレガシー `reactExtractor.packageJsonPath`）
   そのオプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。
-- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシーの `reactExtractor.includeUiLanguageEnglishNames`）
+- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー `reactExtractor.includeUiLanguageEnglishNames`）
 
 `true`（デフォルトは `false`）の場合、`extract` は、ソーススキャンからまだ存在しない（同じハッシュキーの）各 `englishName` を、バンドルされた ui-languages マスターカタログ（`sourceLocale` + ブロックの有効な `targetLocales` から構築）から `strings.json` に追加します。`languagesManifestPath` は読み取りません。
 
@@ -288,7 +293,7 @@
 ### `cacheDir`
 
 - `cacheDir`
-SQLiteキャッシュディレクトリ（すべての`docs`ブロックで共有）。デフォルトは`.translation-cache`。実行間で再利用します。カスタムのドキュメント翻訳キャッシュから移行する場合は、それをアーカイブまたは削除してください。`cacheDir`は独自のSQLiteデータベースを作成し、他のスキーマとは互換性がありません。
+SQLite キャッシュディレクトリ（すべての `docs` ブロックで共有）。デフォルトは `.translation-cache` です。実行間で再利用されます。カスタムドキュメント翻訳キャッシュから移行する場合は、アーカイブするか削除してください。`cacheDir` は独自の SQLite データベースを作成するため、他のスキーマとは互換性がありません。`suggest-models` はベンチマークの集計も `<cacheDir>/benchmark-scores.json` に保存します。そのファイルはディレクトリの他の部分と同様にキャッシュであり、公開パッケージの一部ではありません。
 
 <a id="best-practice-for-git-exclusions"></a>
 #### Git 除外のベストプラクティス:
@@ -500,6 +505,25 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | `pathTemplate`   | カスタムSVG出力パス。使用可能なプレースホルダー: <code>"{outputDir}"</code>、<code>"{locale}"</code>、<code>"{LOCALE}"</code>、<code>"{llocale}"</code>、<code>"{relPath}"</code>、<code>"{stem}"</code>、<code>"{basename}"</code>、<code>"{extension}"</code>、<code>"{relativeToSourceRoot}"</code>。 |
 | `localePathLowercase` | `true` の場合、組み込みの `flat` / `nested` SVG レイアウトはロケールセグメントを小文字で使用します。カスタムの `pathTemplate` 値は変更されません。小文字のセグメントが必要な場合は `{llocale}` を使用してください。 |
 | `forceLowercase` | SVGを再構成する際にテキストを小文字に変換します。すべて小文字のラベルに依存するデザインで有用です。                                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (オプション)
+
+[`suggest-models`](/ja/reference/cli-commands/models#suggest-models) および [ダッシュボードのモデルタブ](/ja/guide/translation-dashboard/models) の重み付けです。このブロックを省略するか、いずれかのプロファイルを省略すると、そのプロファイルは組み込みの重みを維持します。このブロックは `--apply` や **Update config** によって書き換えられることはありません。これらはモデルIDのみを書き込みます。
+
+- `quality` — デフォルトの ChrF `0.45/0.95`、Arena `0.35/0.95`、価格 `0.15/0.95`、品質フロア `0.7`
+- `price` — デフォルトの ChrF `0.25`、Arena `0.10`、価格 `0.65`、品質フロア `0.6`
+
+各プロファイルオブジェクトには `chrf`、`arena`、および `price` が必要です。各値は有限かつ `0` 以上であり、少なくとも1つは `0` より大きい必要があります。これらは合計が 1 になるように正規化されるため、`45`、`35`、および `15` は品質のデフォルト値と一致します。`qualityFloor` はオプションであり、範囲は `(0, 1]` で、候補プール内の最良の ChrF に対する割合を表します。フロアを下回るモデル（ChrF測定値がないモデルを含む）は、フロアをクリアしたモデルの後にソートされます。
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

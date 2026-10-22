@@ -90,8 +90,8 @@ SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다
 
 - [**가이드**](/ko/guide/what-is-ai-i18n-tools) — 번역 모드, 설치, 빠른 시작 및 프레임워크 통합
 - [**통합**](/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus 및 Astro
-- [**제공자 및 모델**](/ko/guide/providers-and-models) — 프리셋, 폴백 체인 및 `-P` 재정의
-- [**CLI 참조**](/ko/reference/cli-commands/) — 모든 명령, 플래그 및 워크플로
+- [**공급자 및 모델**](/ko/guide/providers-and-models) — 프리셋, 폴백 체인, 순위가 지정된 제안(`suggest-models`) 및 `-P` 재정의
+- [**CLI 참조**](/ko/reference/cli-commands/) — 모든 명령어, 플래그 및 워크플로우
 - [**구성**](/ko/reference/configuration) — 전체 `ai-i18n-tools.config.json` 스키마
 - [**예시**](/ko/examples) — `npx degit`을(를) 포함한 13개의 실행 가능한 데모 프로젝트
 - [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 방식 API 및 확장 포인트

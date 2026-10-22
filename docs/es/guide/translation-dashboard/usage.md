@@ -19,10 +19,11 @@ Después de que finaliza un comando que llamó a la API, las filas anteriores a 
 
 Cada llamada, tarjeta de resumen y tabla muestra **un** coste en USD:
 
-1. El `usage.cost` del proveedor cuando la respuesta lo incluía (OpenRouter hoy).
-2. De lo contrario, el importe de `providers.<name>.modelPricing` o el valor predeterminado `pricing` de todo el proveedor, aplicado a los tokens de entrada y salida de esa llamada.
+1. El `usage.cost` del proveedor cuando la respuesta lo incluía (OpenRouter y Cheaper Inference actualmente). Un coste notificado, incluido `0`, nunca se sustituye.
+2. De lo contrario, la cantidad de `providers.<name>.modelPricing` o el valor predeterminado `pricing` de todo el proveedor, aplicado a los tokens de entrada y salida de esa llamada.
+3. De lo contrario, el precio de lista de models.dev para ese ID de modelo (USD de entrada y salida por cada millón de tokens), de la misma caché que mantiene `suggest-models`. `suggest-models --refresh` actualiza esa caché. Una traducción o este informe no descarga languagebench ni Arena solo para fijar el precio de una llamada.
 
-Las nuevas llamadas almacenan esa cantidad en la fila `api_calls`. Las filas más antiguas que se almacenaron sin un coste se valoran de la misma manera cuando se abre el informe, y luego se añaden a la misma cifra de Coste; no se muestran como una segunda columna. Si ninguna de las fuentes se aplica, la celda es `—`, nunca `$0.00`. Cambiar las tarifas configuradas posteriormente no reescribe las filas que ya tienen un coste almacenado. Los resúmenes mensuales aún mantienen un recuento de las llamadas que almacenaron un coste (`ncost_acc` / `ncost_dis`) para que `$0.00` se mantenga distinto de "desconocido" después de la compactación.
+Las llamadas nuevas almacenan esa cantidad en la fila `api_calls`. Las filas más antiguas que se almacenaron sin coste se valoran de la misma forma al abrir el informe y, a continuación, se añaden a la misma cifra de Coste; no se muestran como una segunda columna. Si no se aplica ninguna de las tres fuentes, la celda queda `—`, nunca `$0.00`. Cambiar las tarifas configuradas o una actualización posterior de models.dev no sobrescribe las filas que ya tienen un coste almacenado. Los resúmenes mensuales siguen manteniendo un recuento de las llamadas que almacenaron un coste (`ncost_acc` / `ncost_dis`), por lo que `$0.00` permanece diferenciado de «desconocido» tras la compactación.
 
 <a id="filters"></a>
 ## Filtros

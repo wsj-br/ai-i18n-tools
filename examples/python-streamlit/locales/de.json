@@ -1,0 +1,8 @@
+{
+  "Dashboard": "Übersicht",
+  "Welcome back, {user_name}!": "Willkommen zurück, {user_name}!",
+  "Total revenue: ${revenue:,.2f}": "Gesamtumsatz: {revenue:,.2f} €",
+  "Selected metric: %s": "Ausgewählte Kennzahl: %s",
+  "Showing %d rows": "%d Zeilen",
+  "Streamlit analytics dashboard localized with English-key JSON.": "Streamlit-Analyse-Dashboard, lokalisiert mit JSON und englischen Schlüsseln."
+}

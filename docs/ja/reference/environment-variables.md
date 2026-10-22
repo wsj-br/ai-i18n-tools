@@ -4,7 +4,7 @@
 | 変数               | 説明                                                |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | `openrouter` プロバイダーの API キー（アクティブな場合に必須）。デフォルトの `init` プリセット。 |
-| Other provider keys    | 各プロバイダーは独自のキー環境変数を読み取ります: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollamaは不要)。プロバイダーごとに `providers.<name>.apiKeyEnv` で上書きできます。 |
+| その他のプロバイダーキー | 各プロバイダーは独自のキー環境変数を読み取ります: `OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GOOGLE_API_KEY`、`DEEPSEEK_API_KEY`、`CEREBRAS_API_KEY`、`GROQ_API_KEY`、`MISTRAL_API_KEY`、`XAI_API_KEY`、`NVIDIA_API_KEY`、`ALIBABA_API_KEY`、`APIFUN_API_KEY`、`CHEAPERINFERENCE_API_KEY` (Ollamaは不要です)。プロバイダーごとに`providers.<name>.apiKeyEnv`で上書き可能です。 |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` を上書きします (そのプロバイダーが設定されている場合のみ)。 |
 | `AI_I18N_LANG`         | ツール自体のUI（CLIヘルプ、ログ、ダッシュボード）の言語。`-L` / `--ui-lang`によって上書きされ、config `uiLanguage`を上書きします。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。 |

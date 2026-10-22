@@ -134,7 +134,7 @@ Each `providers.<name>` block accepts:
 - `requestTimeoutMs`
   Maximum time in milliseconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45000` (45 seconds). Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
 - `pricing` (optional)
-  Provider-wide USD per 1,000,000 tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row. A matching `modelPricing` entry overrides this default. A provider-reported cost is never replaced. Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage).
+  Provider-wide USD per 1,000,000 tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter and Cheaper Inference), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row. A matching `modelPricing` entry overrides this default. A provider-reported cost is never replaced. When neither config rate matches, the tools use the models.dev list price for that model id (input and output USD per 1M tokens). Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage). If none of those sources apply, the cost stays unknown (`—`), never `$0.00`.
 - `modelPricing` (optional)
   Per-model USD per 1,000,000 tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Overrides `pricing` for that model id. Applied at call time when the provider omitted `usage.cost`, and stored with the call.
 
@@ -154,6 +154,7 @@ Built-in provider presets (key — base URL — API-key env var):
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (none) |
 
 A legacy top-level `openrouter` block (with `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) is still accepted and is auto-migrated to `providers.openrouter` (with `provider: "openrouter"`) on load; `defaultModel` / `fallbackModel` fold into `translationModels`.
@@ -263,6 +264,10 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
   Path to this block's master catalog file. Updated by `extract`.
 - `flatOutputDir`
   Directory where this block's per-locale JSON files are written (`de.json`, etc.).
+- `flatOutput`
+  When `true` (the default), `translate-ui` writes one flat JSON file per locale. Set `false` for a gettext-only block. A block with `flatOutput: false` must set `gettext`.
+- `gettext`
+  Optional GNU gettext output for this block. `outputDir` (default `./locales`) receives `<locale>/LC_MESSAGES/<domain>.po` and, when `compileMo` is true (the default), the matching `.mo`. `domain` defaults to `messages`. `potPath` is the template catalog. `ingestExistingPo` (default `true`) fills empty `strings.json` slots from non-fuzzy `msgstr` values during `extract` and does not replace a non-empty or user-edited translation. `localeFormat` is `posix` (default, `pt_BR`) or `bcp47` (`pt-BR`). Contextual rows use the gettext `\u0004` separator. The same English source in two contexts does not share a catalog id.
 - `targetLocales`
   Optional locale list for this block. When omitted or empty, the block uses root `targetLocales`.
 - `languagesManifestPath`
@@ -289,7 +294,7 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
 ### `cacheDir`
 
 - `cacheDir`
-SQLite cache directory (shared by all `docs` blocks). Default `.translation-cache`. Reuse across runs. If you are migrating from a custom doc translation cache, archive or delete it — `cacheDir` creates its own SQLite database and is not compatible with other schemas.
+SQLite cache directory (shared by all `docs` blocks). Default `.translation-cache`. Reuse across runs. If you are migrating from a custom doc translation cache, archive or delete it — `cacheDir` creates its own SQLite database and is not compatible with other schemas. `suggest-models` also stores benchmark aggregates in `<cacheDir>/benchmark-scores.json`. That file is a cache, like the rest of the directory, and is not part of the published package.
 
 
 <a id="best-practice-for-git-exclusions"></a>
@@ -503,6 +508,25 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 | `pathTemplate`   | Custom SVG output path. Placeholders: <code>"{outputDir}"</code>, <code>"{locale}"</code>, <code>"{LOCALE}"</code>, <code>"{llocale}"</code>, <code>"{relPath}"</code>, <code>"{stem}"</code>, <code>"{basename}"</code>, <code>"{extension}"</code>, <code>"{relativeToSourceRoot}"</code>. |
 | `localePathLowercase` | When `true`, built-in `flat` / `nested` SVG layouts use lowercased locale segments. Custom `pathTemplate` values are unchanged; use `{llocale}` for lowercase segments. |
 | `forceLowercase` | Lower-case translated text on SVG reassembly. Useful for designs that rely on all-lowercase labels.                                                                                                                                                                |
+
+---
+
+<a id="modelsuggestion"></a>
+### `modelSuggestion` (optional)
+
+Weights for [`suggest-models`](/reference/cli-commands/models#suggest-models) and the [dashboard Models tab](/guide/translation-dashboard/models). Omit the block, or omit one profile, and that profile keeps the built-in weights. The block is not rewritten by `--apply` or **Update config**; those write model ids only.
+
+- `quality` — default ChrF `0.45/0.95`, Arena `0.35/0.95`, price `0.15/0.95`, quality floor `0.7`
+- `price` — default ChrF `0.25`, Arena `0.10`, price `0.65`, quality floor `0.6`
+
+Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalized to sum to 1, so `45`, `35`, and `15` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
+
+```json
+"modelSuggestion": {
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+}
+```
 
 ---
 

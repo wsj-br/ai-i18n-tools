@@ -1,6 +1,6 @@
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "node:url";
+import { bundledMasterAvailable, readBundledMasterJson } from "./sea-assets.js";
 import { ConfigValidationError } from "./errors.js";
 import { normalizeManifestLocaleKey, primaryLanguageSubtag } from "./locale-utils.js";
 import type { I18nConfig } from "./types.js";
@@ -47,7 +47,7 @@ export function effectiveUiLanguagesCodes(
  * Load master catalog; keys are {@link normalizeManifestLocaleKey} (glibc or BCP-47).
  */
 export function loadUiLanguagesMaster(absPath: string): Map<string, UiLanguageRow> {
-  const raw = fs.readFileSync(absPath, "utf8");
+  const raw = readBundledMasterJson(absPath);
   const data = JSON.parse(raw) as unknown;
   if (!Array.isArray(data)) {
     throw new Error("ui-languages-complete.json must be a JSON array");
@@ -124,7 +124,7 @@ function formatVariantSuggestion(codes: string[]): string {
  */
 export function assertEffectiveLocalesInUiLanguagesMaster(config: I18nConfig): void {
   const masterPath = resolveBundledUiLanguagesCompletePath();
-  if (!fs.existsSync(masterPath)) {
+  if (!bundledMasterAvailable(masterPath)) {
     throw new ConfigValidationError(
       `Cannot validate locales: bundled UI languages catalog not found at ${masterPath}`
     );

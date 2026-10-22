@@ -1,0 +1,85 @@
+<a id="python"></a>
+# पायथन (Python) एप्लिकेशन
+
+`ai-i18n-tools` पायथन और जिंजा (Jinja), जैंगो (Django), तथा Qt `.ui` फ़ाइलों से UI स्ट्रिंग्स निकालता है, और फिर फ्लैट इंग्लिश-की JSON, GNU gettext कैटलॉग, या दोनों लिखता है। रनटाइम हेल्पर एक स्टैंडर्ड-लाइब्रेरी `i18n.py` (पायथन 3.10 या नया) है। स्ट्रीमलिट (Streamlit), Tkinter, PyQt, PySide, PyWebView, फ्लास्क (Flask), पिरामिड (Pyramid), और FastAPI उस हेल्पर को कॉल करते हैं। जैंगो (Django) अपने स्वयं के gettext का उपयोग करता है।
+
+रन करने योग्य प्रतियां `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext` में रहती हैं। ये पायथन प्रोजेक्ट्स हैं। पहले तीन virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। ये npm पैकेज नहीं हैं। रिलीज़ आर्काइव `ai-i18n-tools-python-examples.zip` में वही चार डायरेक्टरीज़ शामिल हैं। npm टारबॉल और स्टैंडअलोन निष्पादन योग्य फ़ाइल में ये नहीं हैं।
+
+<a id="init"></a>
+## स्कैफ़ोल्ड (Scaffold)
+
+```bash
+ai-i18n-tools init -t ui-python
+ai-i18n-tools init -t ui-python-gettext
+ai-i18n-tools init -t ui-python-flask
+ai-i18n-tools init -t ui-python-django
+```
+
+`ui-python` फ्लैट JSON और `i18n.py` लिखता है। `ui-python-gettext` JSON और `.po` / `.mo` लिखता है। `ui-python-flask` `translations/` और `i18n.py` के अंतर्गत gettext कैटलॉग लिखता है। `ui-python-django` `locale/<lang>/LC_MESSAGES/django.po` लिखता है और `i18n.py` नहीं लिखता है।
+
+स्कैन रूट्स `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, और `.eggs` को छोड़ देते हैं।
+
+<a id="calls"></a>
+## कॉल जो अनुवाद करते हैं
+
+पहले कैटलॉग प्रविष्टि देखें, फिर इंटरपोलेट करें।
+
+पोर्टेबल:
+
+```python
+t("Hello, {name}!", name=name)
+t("Total: {price:,.2f}", price=price)
+_("Hello, %s!") % name
+_("Total: {price:,.2f}").format(price=price)
+```
+
+पायथन 3.14 पर हेल्पर एक टेम्प्लेट स्ट्रिंग भी स्वीकार करता है:
+
+```python
+translate(t"Hello, {name}!")
+```
+
+`translate`, `t` का एक उपनाम (alias) है। कीवर्ड तर्क टेम्प्लेट स्ट्रिंग से लिए गए मानों को ओवरराइड करते हैं।
+
+नेटिव gettext, अभी भी सुरक्षित है क्योंकि टेम्प्लेट तर्क है:
+
+```python
+_("Hello, %s!") % name
+ngettext("1 file", "{count} files", count, count=count)
+pgettext("menu", "Open")
+```
+
+इनका मूल्यांकन किसी भी कैटलॉग लुकअप से पहले किया जाता है, इसलिए एक्सट्रैक्टर उन्हें असुरक्षित चिह्नित करता है और `migrate-python-i18n` उन्हें फिर से लिखता है:
+
+```python
+_(f"Hello, {name}!")
+_("Hello, %s!" % name)
+_("Hello, {name}!".format(name=name))
+```
+
+`migrate-python-i18n` एक ड्राई रन है जब तक आप `--write` पास नहीं करते। यह `migrate-python-i18n-report.md` लिखता है। `{value=}` जैसे डिबग फ़ील्ड और नेस्टेड फॉर्मेट स्पेक्स की रिपोर्ट की जाती है और उन्हें वैसे ही छोड़ दिया जाता है।
+
+`{% trans %}` और `{% blocktrans %}` gettext `%(name)s` प्लेसहोल्डर बन जाते हैं। जिंजा (Jinja) व्हाइटस्पेस को हटाता और सिकोड़ता है। जैंगो (Django) आंतरिक व्हाइटस्पेस को तब तक बनाए रखता है जब तक कि टैग `trimmed` न कहे।
+
+<a id="catalogs"></a>
+## कैटलॉग
+
+फ्लैट JSON कीज़ इंग्लिश सोर्स हैं। एक संदर्भ `context` + U+0004 + इंग्लिश सोर्स का उपयोग करता है। प्लुरल स्लॉट `{md5}_one`, `{md5}_other`, और अन्य CLDR फॉर्म `translate-ui` के रूप में बने रहते हैं जिन्हें यह पहले से लिखता है। हेल्पर ट्रिम किए गए सिंगुलर को MD5 के साथ हैश करता है और पहले 8 हेक्स कैरेक्टर पढ़ता है।
+
+Gettext फ़ाइलें संदर्भ के लिए `msgctxt` और प्लुरल के लिए `msgid` / `msgid_plural` का उपयोग करती हैं। `ui.gettext.compileMo` `.mo` को `.po` के बगल में लिखता है। `purge-locale` उस लोकेल की `.po` और `.mo` को हटा देता है। जब `flatOutput` गलत (false) होता है, तो यह फ्लैट JSON फ़ाइलों को वैसे ही छोड़ देता है क्योंकि वे नहीं लिखी गई थीं।
+
+एक इंग्लिश सोर्स लोकेल और स्पष्ट प्लुरल सोर्स के साथ `t(..., plurals=True)`, मॉडल को छोड़ देता है और सोर्स स्ट्रिंग्स से `one` / `other` को स्टोर करता है।
+
+<a id="locale"></a>
+## प्रत्येक फ्रेमवर्क में लोकेल
+
+`set_locale` एक `ContextVar` टोकन लौटाता है। इसे `finally` में रीसेट करें, जिसमें FastAPI और Flask मिडलवेयर शामिल हैं, ताकि समवर्ती अनुरोध (concurrent requests) किसी लोकेल को लीक न करें।
+
+- **Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` `st.session_state.locale` और `st.query_params["lang"]` लिखता है। प्रत्येक विजेट को एक निश्चित `key` दें। `examples/python-streamlit` देखें।
+- **FastAPI.** मिडलवेयर में `?lang=` या `Accept-Language` पढ़ें, `set_locale` को कॉल करें, और `finally` में `reset_locale` करें। रूट्स `t()` और `_()` को कॉल करते हैं। `examples/python-fastapi` देखें।
+- **Flask और Pyramid.** अनुरोध से लोकेल सेट करें और टेम्पलेट संदर्भ में `_`, `t`, `current_locale`, `ui_languages`, और `direction` इंजेक्ट करें। `examples/python-flask` देखें।
+- **मौजूदा gettext.** `_()`, `gettext()`, और `ngettext()` को यथावत छोड़ दें। `ui.gettext` को वर्तमान `locales/` ट्री पर इंगित करें और `extract` फिर `translate-ui` चलाएं। `examples/python-gettext` देखें।
+- **Django.** `gettext`, `ngettext`, और `{% blocktrans %}` का उपयोग करें। इनिट टेम्पलेट `ui-python-django`, Django की `locale/` डायरेक्टरी और `django` डोमेन से मेल खाता है।
+- **Tkinter.** प्रत्येक विजेट बनाते समय `t()` या `_()` को कॉल करें, फिर `set_locale` के बाद दृश्य टेक्स्ट को फिर से बनाएं।
+- **PyQt / PySide.** `self.tr("...")` निकाला जाता है। एक `.ui` फ़ाइल `<string>` तत्वों का योगदान देती है जब तक कि `notr="true"` न हो। `comment` विशेषता gettext संदर्भ बन जाती है।
+- **PyWebView / PyWebKit.** ऊपर दिए गए Python टेम्पलेट्स के साथ Python शेल निकालें। `data-i18n` मार्कर्स के साथ या प्रति लोकेल एक HTML दस्तावेज़ के साथ HTML पेज निकालें।

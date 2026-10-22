@@ -65,16 +65,18 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-기타 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html` 또는 `ui-json-bundles`.
+기타 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, `ui-json-bundles`, `ui-python`, `ui-python-gettext`, `ui-python-django` 또는 `ui-python-flask`.
+
+Python 앱은 Node.js를 설치하지 않고 각 GitHub 릴리스에 첨부된 독립 실행형 실행 파일(Linux x64/arm64, macOS arm64/x64, Windows x64)을 실행할 수 있습니다. 해당 바이너리는 공증되거나 Authenticode 서명이 되어 있지 않습니다. Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. 이 예제는 npm tarball이나 실행 파일 내부에는 포함되어 있지 않습니다.
 
 개별 번역 명령을 연결하는 것보다 `sync`을(를) 사용하는 것이 좋습니다. 전체 가이드: [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start).
 
 <a id="documentation"></a>
 ## 문서
 
-- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/) — 가이드, 통합 및 레퍼런스
+- [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/) — 가이드, 통합 및 참조
 - [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [공급자 및 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models)
-- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
+- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/python) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
 - [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [CLI 레퍼런스](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 헬퍼](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
 - [예제](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모(`npx degit …`)

@@ -1,0 +1,22 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: messages\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"MIME-Version: 1.0\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Notes CLI that already uses GNU gettext."
+msgstr "CLI de notas que ya usa GNU gettext."
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Hello, %s!"
+msgstr "Hola, %s!"
+
+msgid "1 note"
+msgid_plural "%(count)s notes"
+msgstr[0] "1 nota"
+msgstr[1] "%(count)s notas"

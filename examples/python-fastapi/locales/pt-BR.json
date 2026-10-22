@@ -1,0 +1,8 @@
+{
+  "Hello, {name}!": "Olá, {name}!",
+  "Order #%d status: %s": "Pedido #%d status: %s",
+  "paid": "pago",
+  "Service is running": "O serviço está em execução",
+  "{count} items": "{count} itens",
+  "FastAPI demo localized with English-key JSON.": "Demonstração FastAPI localizada com JSON de chaves em inglês."
+}

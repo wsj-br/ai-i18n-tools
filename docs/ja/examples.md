@@ -48,8 +48,14 @@ pnpm install
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, リセット + AIエージェントレポート) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit ダッシュボード、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI、ContextVar ロケール、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 既存の GNU gettext CLI。`extract` / `translate-ui` は `.po` と `.mo` を更新します | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。
+
+`python-streamlit`、`python-flask`、および `python-fastapi` は `venv` と `pip` を使用し、`pnpm` は使用しません。`python-gettext` は標準ライブラリのみを使用します。リリースには、スタンドアロンの実行可能ファイルをダウンロードし、Node.js をインストールしていないユーザー向けに `ai-i18n-tools-python-examples.zip` も添付されています。その zip ファイルは npm パッケージの一部ではありません。
 
 <br/>
 

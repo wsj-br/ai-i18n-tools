@@ -257,10 +257,12 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 基於 Vercel AI SDK（`ai` + `@ai-sdk/openai-compatible`）建置的提供者無關的聊天用戶端。它會從 `provider` / `providers` 解析作用中的提供者，為該提供者的 `baseUrl` + API 金鑰建置一個 OpenAI 相容的用戶端（`createOpenAICompatible`），並透過 `generateText` 路由所有呼叫。`OpenRouterClient` 保留為已淘汰的別名。主要行為：
 
-- **模型後備**：依序嘗試已解析清單中的每個模型；在請求或解析失敗時回退。每個目標語言區都有各自的已解析鏈：已設定時優先使用 `localeModels(locale)`，接著是 `uiModels`（僅限 UI 管線），然後是 `translationModels`。文件、JSON 及 SVG 翻譯會使用非 UI 鏈為每個語言區建立客戶端。`bench-models` 指令則改為每個已設定的 id 建立一個單一模型客戶端（`translationModels`、`uiModels` 與 `localeModels` 的聯集；`translationModels: [id]`，無後備），以便獨立計時和計價每個模型。
-- **請求逾時**：`requestTimeout`（秒）或作用中供應商上的 `requestTimeoutMs`，否則使用設定檔頂端的相同鍵值（預設 45 秒），透過 `AbortSignal.timeout` 中止每個請求。當 CLI 載入供應商的模型清單以供 `check-models`（任何供應商）使用時，相同的值也適用於 `GET /models`。捨棄未知模型 id 的選用預檢篩選器僅在作用中供應商為 OpenRouter 時執行。
-- **OpenRouter 額外功能**（僅當 `openrouter` 為作用中時）：透過 `provider` 請求欄位進行吞吐量路由，`HTTP-Referer` / `X-Title` 標頭，以及從 `usage.cost` 讀取的精確 USD 成本。每個供應商都會回報 Token 使用量。當供應商省略 `usage.cost` 時，USD 成本會從 `providers.<name>.modelPricing` 或供應商全域的 `pricing` 預設值計算，並儲存在 `api_calls` 列上。供應商回報的成本永遠不會被取代。
-- **除錯流量記錄**：若已設定 `debugTrafficFilePath`，會將請求與回應 JSON 附加至檔案（程式化方式）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 個檔案，包含系統/使用者提示詞、原始助理回覆，以及失敗的 UI、文件、JSON 及 SVG 翻譯檢查嘗試的驗證錯誤。供應商 API / 空回應體失敗會在主控台印出，而非傾印僅含提示詞的檔案。
+- **模型備援**：依序嘗試解析清單中的每個模型；若請求或解析失敗則進行備援。每個目標地區都有其各自的解析鏈：設定時優先使用 `localeModels(locale)`，接著是 `uiModels`（僅限 UI 管線），最後是 `translationModels`。文件、JSON 和 SVG 翻譯會建立一個使用非 UI 鏈的地區專屬用戶端。`bench-models` 指令則會為每個已設定的 ID 建立一個單一模型用戶端（`translationModels`、`uiModels` 與 `localeModels` 的聯集；`translationModels: [id]`，無備援），以便能獨立計算每個模型的耗時與價格。
+- **請求逾時**：`requestTimeout`（秒）或作用中提供者的 `requestTimeoutMs`，否則使用設定檔頂端的相同鍵值（預設為 45 秒），並透過 `AbortSignal.timeout` 中止每個請求。當 CLI 為 `check-models`（任何提供者）載入提供者的模型清單時，相同的數值也適用於 `GET /models`。用於捨棄未知模型 ID 的選用預檢篩選器，僅在作用中提供者為 OpenRouter 時執行。
+- **OpenRouter 額外功能**（僅在 `openrouter` 啟用時）：透過 `provider` 請求欄位以及 `HTTP-Referer` / `X-Title` 標頭進行吞吐量路由。每個提供者都會回報 Token 使用量。OpenRouter 和 Cheaper Inference 也會回傳計費的 USD 金額（`usage.cost`；Cheaper Inference 會備援至 `cheaper_inference.billing.billed_cost_usd`）。當提供者省略該金額時，USD 成本會依序從 `providers.<name>.modelPricing`、提供者全域的 `pricing` 預設值，以及 models.dev 的輸入與輸出定價清單計算得出，並儲存於 `api_calls` 列中。提供者回報的成本（包含 `0`）絕不會被取代。未知的成本將保持未設定狀態。定價呼叫僅會讀取 `<cacheDir>/benchmark-scores.json` 的 models.dev 切片；不會下載 languagebench 或 Arena 檔案。
+- **偵錯流量記錄**：若設定了 `debugTrafficFilePath`，則會將請求與回應的 JSON 附加至檔案（程式化）。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，其中包含系統/使用者提示詞、原始助理回覆，以及針對失敗的 UI、文件、JSON 和 SVG 翻譯檢查嘗試的驗證錯誤。提供者 API / 空主體失敗會列印在主控台上，而不是匯出僅包含提示詞的檔案。
+
+`suggest-models` 與儀表板的「模型」頁籤不會呼叫 LLM。它們會使用 languagebench ChrF、LMArena Arena Score 與 models.dev 價格對作用中提供者的聊天目錄進行排名，然後選擇性地取代 `providers.<name>.translationModels`。彙總資料位於 `<cacheDir>/benchmark-scores.json`。請參閱 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 <a id="config-loading"></a>
 ### 設定載入
@@ -278,7 +280,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 9. `augmentConfigWithUiLanguagesMaster` - 從捆綁的主目錄中附加清單顯示名稱。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 在適用時根據主目錄驗證地區設定代碼。
 
-`init` 會從 `initConfigTemplates` 寫入入門設定：`ui-markdown`（UI + 可選的應用程式 markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文件 + `nextraDictionaryPath`）、`ui-astro-website`（純 Astro UI；加入 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）。請參閱[快速入門 — 初始化](/zh-Hant/guide/quick-start#step-1-initialise)。
+`init` 會從 `initConfigTemplates` 寫入啟動設定檔：`ui-markdown`（UI + 選用的應用程式 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文件 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文件 + `nextraDictionaryPath`）、`ui-astro-website`（純 Astro UI；新增 `docs[]` 以進行 `.astro` 頁面翻譯）、`ui-json-bundles`（僅限 JSON `json[]`）、`ui-python`、`ui-python-gettext`、`ui-python-django` 以及 `ui-python-flask`。請參閱 [Quick start — Initialise](/zh-Hant/guide/quick-start#step-1-initialise) 與 [Python applications](/zh-Hant/guide/ui-strings/python)。
 
 <a id="logger"></a>
 ### 記錄器

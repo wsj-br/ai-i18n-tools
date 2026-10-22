@@ -65,17 +65,19 @@ ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
-अन्य स्कैफोल्ड्स: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, या `ui-json-bundles`।
+अन्य स्कैफोल्ड्स: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, `ui-json-bundles`, `ui-python`, `ui-python-gettext`, `ui-python-django`, या `ui-python-flask`।
+
+Python ऐप्स Node.js इंस्टॉलेशन को छोड़ सकते हैं और प्रत्येक GitHub Release (Linux x64/arm64, macOS arm64/x64, Windows x64) के साथ संलग्न स्टैंडअलोन निष्पादन योग्य (executable) फ़ाइल चला सकते हैं। वे बाइनरी नोटराइज़्ड या Authenticode-signed नहीं हैं। Python उदाहरण रिपॉजिटरी में और रिलीज़ पर `ai-i18n-tools-python-examples.zip` में मौजूद हैं। वे npm टारबॉल या निष्पादन योग्य फ़ाइल के अंदर नहीं हैं।
 
 व्यक्तिगत ट्रांसलेट कमांड्स को चेन करने के बजाय `sync` को प्राथमिकता दें। पूर्ण विवरण: [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start)।
 
 <a id="documentation"></a>
 ## दस्तावेज़
 
-- [दस्तावेज़ीकरण साइट](https://wsj-br.github.io/ai-i18n-tools/hi/) — गाइड, इंटीग्रेशन्स, और संदर्भ
-- [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [त्वरित प्रारंभ](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [प्रदाता और मॉडल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models)
-- [UI स्ट्रिंग्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [सादा HTML](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/plain-html) · [दस्तावेज़](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [HTML पेज](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
-- [इंटीग्रेशन्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
+- [Documentation site](https://wsj-br.github.io/ai-i18n-tools/hi/) — गाइड, इंटीग्रेशन और संदर्भ
+- [Installation](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [Quick start](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [Providers and models](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models)
+- [UI strings](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [Plain HTML](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/python) · [Documents](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [HTML pages](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
+- [Integrations](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro
 - [CLI रेफरेंस](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/hi/reference/configuration) · [रनटाइम हेल्पर्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/runtime-helpers)
 - [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/hi/examples) — रन करने योग्य डेमो (`npx degit …`)
 - [AI एजेंट कॉन्टेक्स्ट](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — कंज्यूमर रेपो में असिस्टेंट्स के लिए इंटीग्रेशन गाइड

@@ -4,7 +4,7 @@
 | Variable               | Descripción                                                |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | Clave API para el proveedor `openrouter` (obligatoria cuando está activo). Preajuste predeterminado `init`. |
-| Otras claves de proveedor    | Cada proveedor lee su propia variable de entorno de clave: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama no necesita ninguna). Anula por proveedor con `providers.<name>.apiKeyEnv`. |
+| Otras claves de proveedor | Cada proveedor lee su propia variable de entorno de clave: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`, `CHEAPERINFERENCE_API_KEY` (Ollama no necesita ninguna). Sustitúyalas por proveedor con `providers.<name>.apiKeyEnv`. |
 | `OPENROUTER_BASE_URL`  | Anula `providers.openrouter.baseUrl` (solo cuando ese proveedor está configurado). |
 | `OLLAMA_BASE_URL`      | Anula `providers.ollama.baseUrl` (solo cuando ese proveedor está configurado). |
 | `AI_I18N_LANG` | Idioma de la propia interfaz de usuario de la herramienta (ayuda de la CLI, registros, panel de control). Anulado por `-L` / `--ui-lang`; anula la configuración `uiLanguage`. Consulte [Idioma de la interfaz de usuario de la herramienta](/es/guide/tool-ui-language). |

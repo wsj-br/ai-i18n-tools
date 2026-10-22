@@ -22,6 +22,7 @@
 |---------|---------|
 | [`check-models`](models#check-models) | 구성된 모델 ID를 활성 제공자에 대해 검증합니다. |
 | [`list-models`](models#list-models) | 활성 제공자가 제공하는 모델을 나열합니다. |
+| [`suggest-models`](models#suggest-models) | 번역 품질 또는 가격을 기준으로 채팅 모델의 순위를 매기고 선택적으로 `translationModels`을(를) 작성하세요. |
 | [`bench-models`](models#bench-models) | 하나의 샘플 번역으로 구성된 모델을 벤치마크합니다. |
 | [`list-languages`](models#list-languages) | 번들된 UI 언어 카탈로그를 나열합니다. |
 
@@ -88,10 +89,12 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

@@ -1,9 +1,18 @@
 import { z } from "zod";
 
+/** A catalog rate: OpenRouter sends decimal strings; Cheaper Inference may send a number. */
+const usdRateSchema = z.union([z.string(), z.number(), z.null()]).optional();
+
 const pricingSchema = z
   .object({
+    /** OpenRouter: USD per token. */
     prompt: z.string().optional(),
+    /** OpenRouter: USD per token. */
     completion: z.string().optional(),
+    /** Cheaper Inference: USD per 1M input tokens (already scaled). */
+    input_per_million: usdRateSchema,
+    /** Cheaper Inference: USD per 1M output tokens (already scaled). */
+    output_per_million: usdRateSchema,
   })
   .passthrough();
 
@@ -24,7 +33,8 @@ const modelsListResponseSchema = z.object({
 
 /**
  * A single entry from any provider's OpenAI-compatible `GET /models` response. All fields beyond
- * `id` are optional: only OpenRouter is guaranteed to populate `pricing`/`expiration_date`/`name`.
+ * `id` are optional. OpenRouter fills `pricing.prompt` / `pricing.completion` (USD per token).
+ * Cheaper Inference fills `pricing.input_per_million` / `pricing.output_per_million` (USD per 1M tokens).
  */
 export type ProviderModelEntry = z.infer<typeof modelRowSchema>;
 
@@ -78,6 +88,66 @@ export function formatUsdPerMillionTokens(apiUsdPerToken: string | undefined): s
   }
   const perMillion = perToken * TOKENS_PER_MILLION;
   return `$${perMillion.toFixed(3)}`;
+}
+
+/** Format a catalog rate that is already USD per 1M tokens (do not multiply by 1e6). */
+export function formatListedUsdPerMillion(apiUsdPerMillion: string | number | undefined): string {
+  if (apiUsdPerMillion === undefined || apiUsdPerMillion === "") {
+    return "—";
+  }
+  if (typeof apiUsdPerMillion === "number") {
+    return Number.isFinite(apiUsdPerMillion) ? `$${apiUsdPerMillion.toFixed(3)}` : "—";
+  }
+  const perMillion = Number(apiUsdPerMillion);
+  if (!Number.isFinite(perMillion)) {
+    return apiUsdPerMillion;
+  }
+  return `$${perMillion.toFixed(3)}`;
+}
+
+function listedPerMillionRate(
+  value: string | number | null | undefined
+): string | number | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    return value.trim();
+  }
+  return undefined;
+}
+
+/**
+ * USD per 1M tokens for `list-models` / `check-models`.
+ * OpenRouter per-token `prompt` / `completion` win when present. Otherwise Cheaper Inference's
+ * already-per-million `input_per_million` / `output_per_million` are formatted as-is.
+ * Returns `undefined` when the row has neither shape.
+ */
+export function catalogUsdPerMillionDisplay(
+  entry: ProviderModelEntry
+): { input: string; output: string } | undefined {
+  const pricing = entry.pricing;
+  if (!pricing) {
+    return undefined;
+  }
+  const hasPerToken =
+    (typeof pricing.prompt === "string" && pricing.prompt !== "") ||
+    (typeof pricing.completion === "string" && pricing.completion !== "");
+  if (hasPerToken) {
+    return {
+      input: formatUsdPerMillionTokens(pricing.prompt),
+      output: formatUsdPerMillionTokens(pricing.completion),
+    };
+  }
+  const input = listedPerMillionRate(pricing.input_per_million);
+  const output = listedPerMillionRate(pricing.output_per_million);
+  if (input === undefined && output === undefined) {
+    return undefined;
+  }
+  return {
+    input: formatListedUsdPerMillion(input),
+    output: formatListedUsdPerMillion(output),
+  };
 }
 
 export interface FetchProviderModelsCatalogOpts {

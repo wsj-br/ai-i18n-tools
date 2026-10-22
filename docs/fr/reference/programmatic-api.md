@@ -43,6 +43,7 @@ Exportations clés (couramment utilisées — voir `src/index.ts` pour la surfac
 | `JsonExtractor` | Extraire des fichiers d'étiquettes JSON Docusaurus (catalogues d'interface, pas le corps MDX). |
 | `SvgExtractor` | Extraire depuis les fichiers SVG. |
 | `LlmClient` | Effectuer des requêtes de traduction auprès du fournisseur LLM actif (`OpenRouterClient` est un alias obsolète). |
+| `rankProviderModels` / `resolveSuggestionWeights` | Classe le catalogue de chat du fournisseur de rang un selon le profil de qualité ou de prix utilisé par `suggest-models`. N'imprime ni n'écrit la configuration. |
 | `PlaceholderHandler` | Protéger et restaurer la syntaxe markdown autour de la traduction (balises HTML, encadrés, ancres, commentaires MDX/JSX/accolades, URL, code en ligne, emphase). |
 | `protectMdx` / `restoreMdx` | Protéger et restaurer les commentaires MDX, les balises JSX, les expressions entre accolades et les attributs de chaîne JSX (appelé par `PlaceholderHandler` ; également exporté pour une utilisation directe). |
 | `splitTranslatableIntoBatches` | Regrouper les segments en lots de taille adaptée aux LLM. |

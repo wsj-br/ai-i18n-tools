@@ -47,6 +47,32 @@ describe("extractTsObjectLiteralStrings (meta)", () => {
     expect(out).toContain('"Hola"');
     expect(out).not.toContain('"Hello"');
   });
+
+  it("handles quoted keys, spreads, single quotes, and missing translations", () => {
+    const src = `export default {
+  ...shared,
+  "site title": 'Hello',
+  skip: 12,
+  nested: { href: "/docs", title: "Docs" },
+};`;
+    const { segments, spans } = extractTsObjectLiteralStrings(src, "en.ts", "dictionary", {
+      metaTranslatableKeys: ["title"],
+    });
+    expect(segments.map((s) => s.jsonKey).sort()).toEqual(["nested.title", "site title"].sort());
+    const hash = segments.find((s) => s.content === "Hello")!.hash;
+    const out = applyTsLiteralTranslations(
+      src,
+      spans,
+      new Map([
+        [hash, "Hola"],
+        ["missing", "nope"],
+      ])
+    );
+    expect(out).toContain("'Hola'");
+    expect(
+      extractTsObjectLiteralStrings("export const x = 1;", "empty.ts", "meta").segments
+    ).toEqual([]);
+  });
 });
 
 describe("extractTsObjectLiteralStrings (_meta.tsx)", () => {

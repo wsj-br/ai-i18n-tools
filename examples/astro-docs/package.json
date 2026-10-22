@@ -15,12 +15,12 @@
     "i18n:dashboard": "ai-i18n-tools dashboard"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.42.5",
-    "astro": "^7.3.5",
+    "@astrojs/starlight": "^0.42.6",
+    "astro": "^7.4.2",
     "sharp": "^0.35.5"
   },
   "devDependencies": {
-    "ai-i18n-tools": "^1.10.0"
+    "ai-i18n-tools": "^1.11.0"
   },
   "engines": {
     "node": ">=22.16.0"

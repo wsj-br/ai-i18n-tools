@@ -10,6 +10,9 @@ export const DEFAULT_LLM_REQUEST_TIMEOUT_MS = 45_000;
 /** Provider key used for OpenRouter-specific behaviour (routing field, catalog/pricing). */
 export const OPENROUTER_PROVIDER_KEY = "openrouter";
 
+/** Provider key for Cheaper Inference, which bills each call and returns that USD amount on the response. */
+export const CHEAPERINFERENCE_PROVIDER_KEY = "cheaperinference";
+
 /** Provider key for Anthropic, whose `GET /models` uses native auth instead of `Authorization: Bearer`. */
 export const ANTHROPIC_PROVIDER_KEY = "anthropic";
 
@@ -50,6 +53,10 @@ export const PROVIDER_PRESETS: Readonly<Record<string, LlmProviderPreset>> = {
     apiKeyEnv: "ALIBABA_API_KEY",
   },
   apifun: { baseUrl: "https://api.apikey.fun/v1", apiKeyEnv: "APIFUN_API_KEY" },
+  cheaperinference: {
+    baseUrl: "https://api.cheaperinference.com/v1",
+    apiKeyEnv: "CHEAPERINFERENCE_API_KEY",
+  },
   ollama: { baseUrl: "http://localhost:11434/v1", requiresApiKey: false },
 } as const;
 

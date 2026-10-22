@@ -1,6 +1,6 @@
-import fs from "fs";
 import chalk from "chalk";
 import { resolveBundledUiLanguagesCompletePath } from "../core/ui-languages-catalog.js";
+import { readBundledMasterJson } from "../core/sea-assets.js";
 import { displayWidth, padEndDisplay } from "../utils/table.js";
 import { t } from "../i18n/index.js";
 
@@ -17,7 +17,7 @@ interface UiLanguageEntry {
 
 /** Read the bundled master catalog as a raw array (preserves every entry; no dedup/normalization). */
 function loadAllUiLanguages(absPath: string): UiLanguageEntry[] {
-  const raw = fs.readFileSync(absPath, "utf8");
+  const raw = readBundledMasterJson(absPath);
   const data = JSON.parse(raw) as unknown;
   if (!Array.isArray(data)) {
     throw new Error(t("ui-languages-complete.json must be a JSON array"));

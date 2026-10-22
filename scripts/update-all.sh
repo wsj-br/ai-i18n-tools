@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Build the library, run cleanup on the repo root, then cleanup every example
-# under examples/ except examples/multi-provider.
+# under examples/ except examples/multi-provider and the Python examples.
+# Python examples ship committed catalogs; cleanup would run sync and call the LLM.
 #
 # Usage:
 #   ./scripts/update-all.sh
@@ -29,9 +30,11 @@ node bin/ai-i18n-tools.mjs cleanup || exit 1
 
 for d in examples/*/; do
   ( 
-    if [ "$d" == "examples/multi-provider/" ]; then
-      exit 0
-    fi
+    case "$d" in
+      examples/multi-provider/|examples/python-streamlit/|examples/python-flask/|examples/python-fastapi/|examples/python-gettext/)
+        exit 0
+        ;;
+    esac
     echo "================================================"
     echo "Cleaning up $d ($(seconds2mmss $SECONDS))"
     cd "$d"

@@ -6,7 +6,7 @@
 
 **Synopsis:** `ai-i18n-tools dashboard [-p <port>] [--no-open]`
 
-Starten Sie das Übersetzungs-Dashboard (lokale Web-UI für Cache-Segmente, `strings.json`, Glossar, Fehler, Statistiken und Nutzung). Standard-Port **8675** (versucht den nächsten Port, falls nicht verfügbar). Mit `--no-open` wird der Standardbrowser nicht automatisch geöffnet. `dash` ist ein gleichwertiger Alias. Der veraltete Alias `editor` funktioniert weiterhin, gibt aber eine Warnung aus.
+Starten Sie das Translation Dashboard (lokale Web-Benutzeroberfläche für Cache-Segmente, `strings.json`, Glossar, Fehler, Statistiken, Nutzung und Modellvorschläge). Standard-Port **8675** (bei Nichtverfügbarkeit wird der nächste Port versucht). Mit `--no-open` wird der Standard-Browser nicht automatisch geöffnet. `dash` ist ein gleichwertiger Alias. Der veraltete Alias `editor` funktioniert weiterhin, gibt jedoch eine Warnung aus.
 
 **Wichtige Optionen:** `-p` / `--port`, `--no-open`
 

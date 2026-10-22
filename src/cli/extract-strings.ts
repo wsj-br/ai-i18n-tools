@@ -11,9 +11,13 @@ import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
   aggregateUiStringLocations,
   defaultFuncNamesFromConfig,
+  uiCatalogHash,
   uiStringHash,
   type UiStringLocation,
 } from "../extractors/ui-string-locations.js";
+import { extractTemplateI18nCalls } from "../extractors/template-i18n-extractor.js";
+import { isGeneratedI18nPy } from "../extractors/python-string-extractor.js";
+import { readPyprojectDescription } from "../extractors/pyproject-toml.js";
 import {
   collectHtmlI18nLocations,
   collectHtmlI18nStrings,
@@ -45,6 +49,9 @@ import {
   runGenerateUiLanguages,
 } from "./generate-ui-languages.js";
 import { t } from "../i18n/index.js";
+import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import { bundledMasterAvailable } from "../core/sea-assets.js";
+import { ingestPoTranslations, listExistingPoFiles, parsePo } from "../core/gettext-codec.js";
 
 export interface ExtractSummary {
   found: number;
@@ -59,6 +66,8 @@ type ScannedRow = {
   source: string;
   plurals?: boolean;
   zeroDigit?: boolean;
+  pluralSource?: string;
+  context?: string;
 };
 
 /**
@@ -153,7 +162,20 @@ function runExtractBlock(
       )
     );
   }
-  const codeFiles = files.filter((rel) => !htmlExtensions.has(path.extname(rel).toLowerCase()));
+  const codeFiles = files.filter((rel) => {
+    if (htmlExtensions.has(path.extname(rel).toLowerCase())) {
+      return false;
+    }
+    const base = rel.split("/").pop();
+    if (base !== "i18n.py") {
+      return true;
+    }
+    try {
+      return !isGeneratedI18nPy(fs.readFileSync(path.join(cwd, rel), "utf8"));
+    } catch {
+      return true;
+    }
+  });
   const htmlMarkers = uiExtractor?.htmlI18nAttributes ?? [...HTML_I18N_MARKERS];
 
   const validationErrors: string[] = [];
@@ -162,7 +184,17 @@ function runExtractBlock(
     const content = fs.readFileSync(abs, "utf8");
     const calls = extractUiCallsFromFileContent(content, rel, funcNames);
     for (const call of calls) {
-      if (call.plurals && pluralMultiPlaceholderMissingCount(call.literal)) {
+      if (call.unsafe) {
+        console.warn(
+          chalk.yellow(
+            t(
+              "⚠️  {{file}}:{{line}} pre-evaluated translation {{value}} cannot be looked up. Run migrate-python-i18n.",
+              { file: rel, line: call.line, value: JSON.stringify(call.literal) }
+            )
+          )
+        );
+      }
+      if (call.plurals && !call.pluralSource && pluralMultiPlaceholderMissingCount(call.literal)) {
         validationErrors.push(
           t(
             "[extract] plurals: string with multiple interpolations must include {{count}} for the plural axis."
@@ -205,6 +237,8 @@ function runExtractBlock(
           source: s.content,
           ...(s.plurals === true ? { plurals: true } : {}),
           ...(s.zeroDigit === true ? { zeroDigit: true } : {}),
+          ...(s.pluralSource ? { pluralSource: s.pluralSource } : {}),
+          ...(s.context ? { context: s.context } : {}),
         });
         found++;
       }
@@ -235,6 +269,59 @@ function runExtractBlock(
       }
       locByHash.set(h, cur);
     }
+    for (const call of extractTemplateI18nCalls(content, rel, funcNames)) {
+      const text = call.literal.trim();
+      if (!text) {
+        continue;
+      }
+      const h = uiCatalogHash(text, call.context);
+      if (!byHash.has(h)) {
+        byHash.set(h, {
+          source: text,
+          ...(call.plurals === true ? { plurals: true } : {}),
+          ...(call.pluralSource ? { pluralSource: call.pluralSource } : {}),
+          ...(call.context ? { context: call.context } : {}),
+        });
+        found++;
+      }
+      const cur: UiStringLocation[] = locByHash.get(h) ?? [];
+      const key = `${rel}:${call.line}`;
+      if (!cur.some((l) => `${l.file}:${l.line}` === key)) {
+        cur.push({ file: rel, line: call.line });
+        locByHash.set(h, cur);
+      }
+    }
+  }
+
+  const pyprojectRel = uiExtractor?.pyprojectTomlPath ?? "pyproject.toml";
+  if (uiExtractor?.includePackageDescription !== false) {
+    const pyprojectPath = path.resolve(cwd, pyprojectRel);
+    if (fs.existsSync(pyprojectPath)) {
+      const parsed = readPyprojectDescription(fs.readFileSync(pyprojectPath, "utf8"));
+      if (parsed.ok === false && parsed.reason === "unsupported") {
+        console.warn(
+          chalk.yellow(
+            t(
+              "⚠️  {{file}}:{{line}} pyproject.toml description is not a basic or triple-quoted string; skipping it.",
+              { file: pyprojectRel, line: parsed.line }
+            )
+          )
+        );
+      } else if (parsed.ok && parsed.value.description) {
+        const text = parsed.value.description;
+        const h = uiCatalogHash(text);
+        if (!byHash.has(h)) {
+          byHash.set(h, { source: text });
+          found++;
+        }
+        const rel = path.relative(cwd, pyprojectPath).split(path.sep).join("/");
+        const cur = locByHash.get(h) ?? [];
+        if (!cur.some((l) => l.file === rel && l.line === parsed.value.line)) {
+          cur.push({ file: rel, line: parsed.value.line });
+          locByHash.set(h, cur);
+        }
+      }
+    }
   }
 
   for (const s of rx.packageDescriptionSegments()) {
@@ -246,7 +333,7 @@ function runExtractBlock(
 
   if (uiExtractor?.includeUiLanguageEnglishNames) {
     const masterPath = resolveDefaultUiLanguagesMasterPath();
-    if (!fs.existsSync(masterPath)) {
+    if (!bundledMasterAvailable(masterPath)) {
       console.warn(
         chalk.yellow(
           t(
@@ -293,6 +380,71 @@ function runExtractBlock(
     }
   }
 
+  const ingested = new Map<
+    string,
+    Array<{
+      locale: string;
+      translation: string | Record<string, string>;
+      plural: boolean;
+    }>
+  >();
+  if (config.ui.gettext?.ingestExistingPo !== false && config.ui.gettext) {
+    const gettext = config.ui.gettext;
+    for (const file of listExistingPoFiles(
+      cwd,
+      gettext.outputDir,
+      gettext.domain,
+      gettext.potPath
+    )) {
+      let text: string;
+      try {
+        text = fs.readFileSync(file.file, "utf8");
+      } catch {
+        continue;
+      }
+      if (!file.locale) {
+        for (const entry of parsePo(text).entries) {
+          if (entry.obsolete || entry.msgid === "") {
+            continue;
+          }
+          const h = uiCatalogHash(entry.msgid, entry.context);
+          if (!byHash.has(h)) {
+            byHash.set(h, {
+              source: entry.msgid,
+              ...(entry.msgidPlural ? { plurals: true, pluralSource: entry.msgidPlural } : {}),
+              ...(entry.context ? { context: entry.context } : {}),
+            });
+            found++;
+          }
+        }
+        continue;
+      }
+      for (const row of ingestPoTranslations(text, file.locale)) {
+        if (!byHash.has(row.hash)) {
+          byHash.set(row.hash, {
+            source: row.source,
+            ...(row.plural ? { plurals: true } : {}),
+            ...(row.pluralSource ? { pluralSource: row.pluralSource } : {}),
+            ...(row.context ? { context: row.context } : {}),
+          });
+          found++;
+        }
+        const list = ingested.get(row.hash) ?? [];
+        list.push({ locale: row.locale, translation: row.translation, plural: row.plural });
+        ingested.set(row.hash, list);
+        if (row.references.length > 0) {
+          const cur = locByHash.get(row.hash) ?? [];
+          for (const ref of row.references) {
+            if (!cur.some((item) => item.file === ref.file && item.line === ref.line)) {
+              cur.push(ref);
+            }
+          }
+          locByHash.set(row.hash, cur);
+        }
+      }
+    }
+  }
+
   let added = 0;
   let updated = 0;
   const output: Record<string, unknown> = {};
@@ -333,9 +485,12 @@ function runExtractBlock(
               ...((prev as unknown as StringsJsonPluralEntry).translated ?? {}),
             }
           : {};
+      applyIngestedTranslations(h, true, mergedTranslated, mergedModels);
       output[h] = {
         plural: true,
         source: next.source,
+        ...(next.pluralSource ? { pluralSource: next.pluralSource } : {}),
+        ...(next.context ? { context: next.context } : {}),
         ...(next.zeroDigit ? { zeroDigit: true } : {}),
         translated: mergedTranslated,
         ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
@@ -346,8 +501,10 @@ function runExtractBlock(
         !shapeChange && prev && !isPluralStringsEntry(prev as never) && prev.translated
           ? { ...(prev.translated as Record<string, string>) }
           : {};
+      applyIngestedTranslations(h, false, mergedTranslated, mergedModels);
       output[h] = {
         source: next.source,
+        ...(next.context ? { context: next.context } : {}),
         translated: mergedTranslated,
         ...(Object.keys(mergedModels).length > 0 ? { models: mergedModels } : {}),
         ...(locs && locs.length > 0 ? { locations: locs } : {}),
@@ -357,9 +514,30 @@ function runExtractBlock(
 
   writeAtomicUtf8(outPath, `${JSON.stringify(output, null, 2)}\n`);
 
+  function applyIngestedTranslations(
+    hash: string,
+    plural: boolean,
+    translated: Record<string, unknown>,
+    models: Record<string, string>
+  ): void {
+    for (const row of ingested.get(hash) ?? []) {
+      if (row.plural !== plural || models[row.locale] === USER_EDITED_MODEL) {
+        continue;
+      }
+      const current = translated[row.locale];
+      if (typeof current === "string" && current.trim()) {
+        continue;
+      }
+      if (current && typeof current === "object" && Object.keys(current).length > 0) {
+        continue;
+      }
+      translated[row.locale] = row.translation;
+    }
+  }
+
   let uiLanguagesOutPath: string | undefined;
   const masterPath = resolveDefaultUiLanguagesMasterPath();
-  if (fs.existsSync(masterPath)) {
+  if (bundledMasterAvailable(masterPath)) {
     try {
       const gen = runGenerateUiLanguages(
         {

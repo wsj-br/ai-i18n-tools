@@ -7,11 +7,11 @@
  *
  * Source locale is English; when no bundle/key matches, `t()` returns the source string unchanged.
  */
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { resolveUiLocale, type ResolveUiLocaleResult } from "../core/ui-locale.js";
+import { readUiLocaleAsset } from "../core/sea-assets.js";
 
 /** Source locale for the tool's own UI (matches this repo's `ai-i18n-tools.config.json`). */
 export const UI_SOURCE_LOCALE = "en-GB";
@@ -41,7 +41,11 @@ export function loadUiManifest(): UiLanguageManifestRow[] {
   }
   const file = path.join(localesDir(), "ui-languages.json");
   try {
-    const raw = fs.readFileSync(file, "utf8");
+    const raw = readUiLocaleAsset("ui-languages.json", file);
+    if (raw === null) {
+      manifestCache = [];
+      return manifestCache;
+    }
     const data = JSON.parse(raw) as unknown;
     manifestCache = Array.isArray(data) ? (data as UiLanguageManifestRow[]) : [];
   } catch {
@@ -73,7 +77,10 @@ export function loadUiBundle(locale: string): Record<string, string> {
   }
   const file = path.join(localesDir(), `${locale}.json`);
   try {
-    const raw = fs.readFileSync(file, "utf8");
+    const raw = readUiLocaleAsset(`${locale}.json`, file);
+    if (raw === null) {
+      return {};
+    }
     const data = JSON.parse(raw) as unknown;
     if (data && typeof data === "object" && !Array.isArray(data)) {
       return data as Record<string, string>;

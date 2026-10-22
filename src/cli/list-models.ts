@@ -8,8 +8,8 @@ import {
   resolveProviderSettings,
 } from "../core/llm-providers.js";
 import {
+  catalogUsdPerMillionDisplay,
   fetchProviderModelsCatalog,
-  formatUsdPerMillionTokens,
   isExpirationDatePast,
   modelDisplayName,
   type ProviderModelEntry,
@@ -19,19 +19,12 @@ export interface RunListModelsResult {
   exitCode: number;
 }
 
-/** True when any valid entry carries OpenAI-compatible pricing fields (`pricing.prompt`/`completion`). */
-function hasPricing(entry: ProviderModelEntry): boolean {
-  return (
-    (typeof entry.pricing?.prompt === "string" && entry.pricing.prompt !== "") ||
-    (typeof entry.pricing?.completion === "string" && entry.pricing.completion !== "")
-  );
-}
-
 /**
  * List every model the active provider advertises via its OpenAI-compatible `GET /models` endpoint.
  * The active provider follows the resolved config `provider` key, which the global `-P` / `--provider`
  * flag overrides for a single run. Pricing (USD per 1M tokens) is shown only when the provider returns
- * it (e.g. OpenRouter); keyless providers like Ollama need no API key.
+ * it (OpenRouter per-token rates, or Cheaper Inference catalog rates). Keyless providers like Ollama
+ * need no API key.
  */
 export async function runListModels(config: I18nConfig): Promise<RunListModelsResult> {
   let activeProvider: string;
@@ -89,7 +82,7 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
     return { exitCode: 0 };
   }
 
-  const showPricing = entries.some((entry) => hasPricing(entry));
+  const showPricing = entries.some((entry) => catalogUsdPerMillionDisplay(entry) !== undefined);
   if (showPricing) {
     console.log(chalk.green.bold(t("Available models — pricing USD per 1M tokens")));
   } else {
@@ -104,8 +97,9 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
     const name = label.length > 0 ? chalk.gray(` (${label})`) : "";
     const expiredTag = expired ? chalk.red(t(" [expired]")) : "";
     if (showPricing) {
-      const input = formatUsdPerMillionTokens(entry.pricing?.prompt);
-      const output = formatUsdPerMillionTokens(entry.pricing?.completion);
+      const rates = catalogUsdPerMillionDisplay(entry);
+      const input = rates?.input ?? "—";
+      const output = rates?.output ?? "—";
       console.log(
         `  ${entry.id.padEnd(idW)}   input: ${input.padStart(8)}   output: ${output.padStart(8)}  ${name}${expiredTag}`
       );

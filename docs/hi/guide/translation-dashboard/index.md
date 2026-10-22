@@ -37,6 +37,7 @@ ai-i18n-tools dashboard
 | UI अनुवाद के लिए शब्दावली लॉक करें | **शब्दावली** | [शब्दावली](/hi/guide/translation-dashboard/glossary) |
 | कैश कवरेज और मॉडल उपयोग देखें | **सांख्यिकी** | [सांख्यिकी](/hi/guide/translation-dashboard/statistics) |
 | API-कॉल टोकन और लागत देखें | **उपयोग और लागत** | [उपयोग और लागत](/hi/guide/translation-dashboard/usage) |
+| अनुवाद मॉडल चुनें | **मॉडल** | [मॉडल](/hi/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## संपादन के बाद

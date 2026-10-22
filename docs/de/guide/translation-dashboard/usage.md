@@ -19,10 +19,11 @@ Nach Abschluss eines Befehls, der die API aufgerufen hat, werden Zeilen, die äl
 
 Jeder Aufruf, jede Übersichts- und jede Tabellenkarte zeigt **einen** USD-Kostenwert an:
 
-1. Die `usage.cost` des Anbieters, wenn die Antwort diese enthielt (heute OpenRouter).
-2. Andernfalls der Betrag aus `providers.<name>.modelPricing` oder der anbieterweiten `pricing`-Standardwert, angewendet auf die Eingabe- und Ausgabe-Tokens dieses Aufrufs.
+1. Der `usage.cost` des Anbieters, sofern die Antwort diesen enthielt (derzeit OpenRouter und Cheaper Inference). Ein gemeldeter Preis, einschließlich `0`, wird niemals ersetzt.
+2. Andernfalls der Betrag aus `providers.<name>.modelPricing` oder der anbieterweite `pricing`-Standardwert, angewendet auf die Eingabe- und Ausgabetoken dieses Aufrufs.
+3. Andernfalls der Listenpreis von models.dev für diese Modell-ID (Eingabe- und Ausgabe-USD pro 1 Mio. Token) aus demselben Cache, den `suggest-models` verwaltet. `suggest-models --refresh` aktualisiert diesen Cache. Eine Übersetzung oder dieser Bericht lädt weder languagebench noch Arena herunter, nur um einen Aufruf zu bepreisen.
 
-Neue Aufrufe speichern diesen Betrag in der `api_calls`-Zeile. Ältere Zeilen, die ohne Kosten gespeichert wurden, werden auf die gleiche Weise bepreist, wenn der Bericht geöffnet wird, und dann zur gleichen Kostenfigur hinzugefügt – sie werden nicht als zweite Spalte angezeigt. Wenn keine der beiden Quellen zutrifft, ist die Zelle `—`, niemals `$0.00`. Eine spätere Änderung der konfigurierten Raten schreibt Zeilen, die bereits einen gespeicherten Kostenwert haben, nicht neu. Monatliche Rollups behalten weiterhin eine Zählung der Aufrufe, die einen Kostenwert gespeichert haben (`ncost_acc` / `ncost_dis`), damit `$0.00` nach der Komprimierung von „unbekannt“ unterscheidbar bleibt.
+Neue Aufrufe speichern diesen Betrag in der `api_calls`-Zeile. Ältere Zeilen, die ohne Kosten gespeichert wurden, werden beim Öffnen des Berichts auf die gleiche Weise bepreist und dann zum selben Kostenwert addiert – sie werden nicht als zweite Spalte angezeigt. Wenn keine der drei Quellen zutrifft, ist die Zelle `—`, niemals `$0.00`. Das Ändern der konfigurierten Raten oder eine spätere Aktualisierung von models.dev schreibt Zeilen, die bereits gespeicherte Kosten aufweisen, nicht um. Monatliche Zusammenfassungen behalten weiterhin eine Anzahl der Aufrufe bei, für die Kosten gespeichert wurden (`ncost_acc` / `ncost_dis`), sodass `$0.00` nach der Komprimierung von „unbekannt“ unterschieden bleibt.
 
 <a id="filters"></a>
 ## Filter

@@ -147,6 +147,14 @@ export { TranslationCache } from "./core/cache.js";
 export { USER_EDITED_MODEL } from "./core/user-edited-model.js";
 
 export {
+  rankProviderModels,
+  resolveSuggestionWeights,
+  type RankedModel,
+  type SuggestionProfile,
+  type SuggestionWeights,
+} from "./core/model-suggestion.js";
+
+export {
   buildDocumentBatchPrompt,
   buildDocumentSinglePrompt,
   buildDocumentCoreRules,

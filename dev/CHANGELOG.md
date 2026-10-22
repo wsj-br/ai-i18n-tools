@@ -9,7 +9,21 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
-
+- **Fixed**: docs — `pnpm docs:dev` ignores generated and out-of-tree paths (`src`, `coverage`, `dist`, `dist-sea`, `.translation-cache`, `.vitepress/dist`) so Vite does not exhaust Linux inotify instances after the VitePress 2 upgrade.
+- **Added**: dashboard — the Models tab accepts the same output-price cap and index gap as `suggest-models --max-output-price` and `--min-delta`.
+- **Added**: cli — `suggest-models --max-output-price` keeps models at or below an output USD-per-1M cap, and `--min-delta` keeps a model only when its index is at least that many points below the previous kept model.
+- **Added**: cli — `suggest-models --list` prints the score table for the active provider's configured `translationModels`, in that order, instead of the top suggestions.
+- **Added**: cli/dashboard — `suggest-models` ranks the active provider's chat models from languagebench ChrF, Arena Score, and models.dev prices (`--quality`, `--price`, `--top`, `--json`, `--apply`, `--refresh`). Optional `modelSuggestion` weights override the built-in profiles. The dashboard Models tab shows the same columns and can update `translationModels` or copy the JSON fragment.
+- **Changed**: usage — when a provider reports no `usage.cost` and config `modelPricing` / `pricing` does not cover the model, call-time cost and the Usage & costs report use models.dev input/output rates. A reported cost and an explicit config rate still win. Unknown cost stays `—`.
+- **Added**: llm — built-in `cheaperinference` provider preset (`https://api.cheaperinference.com/v1`, `CHEAPERINFERENCE_API_KEY`). Records billed `usage.cost` (or `cheaper_inference.billing.billed_cost_usd`). `list-models` and `check-models` show catalog rates from `pricing.input_per_million` / `output_per_million`.
+- **Added**: python — extract `t` / `translate` / `_` / `gettext` / `ngettext` / `pgettext` / `self.tr` from Python, Jinja `{% trans %}`, Django `{% blocktrans %}`, Qt `.ui` strings, and `pyproject.toml` descriptions. Placeholder checks cover `{name}`, `{price:,.2f}`, `%s`, `%(name)s`, and `%{name}`.
+- **Added**: python — `migrate-python-i18n` rewrites unsafe `_(f"...")`, `_("..." % expr)`, and `_("...".format(...))` calls. The default is a dry run; `--write` applies the edit and writes `migrate-python-i18n-report.md`.
+- **Added**: gettext — `ui[].gettext` writes `.pot`, `.po`, and GNU `.mo` catalogs from `extract`, `translate-ui`, and `purge-locale`. `flatOutput: false` is gettext-only. An English `pluralSource` seeds `one` / `other` without a model call.
+- **Added**: init — templates `ui-python`, `ui-python-gettext`, `ui-python-django`, and `ui-python-flask`. The first, second, and fourth write a standard-library `i18n.py` (`t`, `translate`, ContextVar locale, JSON and gettext backends).
+- **Added**: examples — `examples/python-streamlit`, `examples/python-flask`, and `examples/python-fastapi` call `t()` and `_()` and ship flat JSON catalogs. `examples/python-gettext` is a stdlib CLI that keeps GNU gettext calls while `translate-ui` refreshes `.po` and `.mo`. Release workflow uploads `ai-i18n-tools-python-examples.zip`.
+- **Added**: cli — `pnpm build:binary` builds an unsigned Node.js single executable (`esbuild`, `node --experimental-sea-config`, `postject`) for the current platform. GitHub Releases publish Linux x64/arm64, macOS arm64/x64, and Windows x64 builds plus `SHA256SUMS.txt`.
+- **Security**: dependencies — overrides from `pnpm audit fix` move `katex` to `^0.18.2` (GHSA-238p-pmpm-9mq7), `launch-editor` to `^2.14.2` (GHSA-587h-7wmj-h5pm, GHSA-698v-4r3x-3vcv, GHSA-r825-w8mm-5pxw), `postcss-selector-parser` to `^7.1.6` (GHSA-rj75-hqrm-r3gf), and `tinypool` to `^2.1.2` (GHSA-5gmw-xhrv-c9v3, GHSA-85c8-ppgw-ccpr).
+- **Security**: dependencies — force transitive `http-cache-semantics@<=4.2.0` to `4.3.0` and retarget the max-stale patch to `patches/http-cache-semantics@4.3.0.patch`. `4.3.0` is outside GHSA-ch52-4w7c-c8xp (`<=4.2.0`) but still lets `max-stale` reuse a shared-cache response that is `no-cache`, `proxy-revalidate`, or a `Set-Cookie` response without `public`. `auditConfig.ignoreGhsas` now lists only `GHSA-vfj7-8cjw-p6xm` (`braces@3.0.3`, still no upstream release).
 
 ## [1.10.0] - 2026-10-03
 

@@ -37,6 +37,7 @@ L'interface utilisateur du tableau de bord utilise la même résolution de local
 | Verrouiller la terminologie pour la traduction de l'interface utilisateur | **Glossaire** | [Glossaire](/fr/guide/translation-dashboard/glossary) |
 | Voir la couverture du cache et l'utilisation du modèle | **Statistiques** | [Statistiques](/fr/guide/translation-dashboard/statistics) |
 | Voir les jetons et le coût des appels d'API | **Utilisation et coûts** | [Utilisation et coûts](/fr/guide/translation-dashboard/usage) |
+| Choisir les modèles de traduction | **Modèles** | [Modèles](/fr/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## Après avoir modifié

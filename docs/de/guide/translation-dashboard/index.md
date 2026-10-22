@@ -37,6 +37,7 @@ Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wi
 | Terminologie für die UI-Übersetzung sperren | **Glossar** | [Glossar](/de/guide/translation-dashboard/glossary) |
 | Cache-Abdeckung und Modellnutzung anzeigen | **Statistiken** | [Statistiken](/de/guide/translation-dashboard/statistics) |
 | API-Aufruftoken und Kosten anzeigen | **Nutzung & Kosten** | [Nutzung & Kosten](/de/guide/translation-dashboard/usage) |
+| Übersetzungsmodelle auswählen | **Modelle** | [Modelle](/de/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## Nach der Bearbeitung

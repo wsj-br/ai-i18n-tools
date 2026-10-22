@@ -1,0 +1,62 @@
+{
+  "2938c7f7": {
+    "source": "Dashboard",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 16
+      }
+    ]
+  },
+  "aad0def2": {
+    "source": "Welcome back, {user_name}!",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 17
+      }
+    ]
+  },
+  "3b580c0a": {
+    "source": "Total revenue: ${revenue:,.2f}",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 18
+      }
+    ]
+  },
+  "f64cd6c6": {
+    "source": "Selected metric: %s",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 19
+      }
+    ]
+  },
+  "fffeba3f": {
+    "source": "Showing %d rows",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 20
+      }
+    ]
+  },
+  "7cb8f6e1": {
+    "source": "Streamlit analytics dashboard localized with English-key JSON.",
+    "translated": {},
+    "locations": [
+      {
+        "file": "pyproject.toml",
+        "line": 4
+      }
+    ]
+  }
+}

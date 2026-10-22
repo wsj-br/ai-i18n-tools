@@ -19,10 +19,11 @@ Une fois qu'une commande ayant appelé l'API se termine, les lignes antérieures
 
 Chaque appel, carte récapitulative et tableau affiche **un** coût en USD :
 
-1. Le `usage.cost` du fournisseur lorsque la réponse l'incluait (OpenRouter aujourd'hui).
-2. Sinon, le montant provenant de `providers.<name>.modelPricing` ou de la valeur par défaut `pricing` à l'échelle du fournisseur, appliqué aux jetons d'entrée et de sortie de cet appel.
+1. Le `usage.cost` du fournisseur lorsque la réponse l'inclut (OpenRouter et Cheaper Inference actuellement). Un coût signalé, incluant `0`, n'est jamais remplacé.
+2. Sinon, le montant provenant de `providers.<name>.modelPricing` ou la valeur par défaut `pricing` à l'échelle du fournisseur, appliqué aux jetons d'entrée et de sortie de cet appel.
+3. Sinon, le prix catalogue models.dev pour cet identifiant de modèle (entrée et sortie en USD pour 1 million de jetons), à partir du même cache que `suggest-models` maintient. `suggest-models --refresh` met à jour ce cache. Une traduction ou ce rapport ne télécharge pas languagebench ou Arena uniquement pour tarifer un appel.
 
-Les nouveaux appels stockent ce montant sur la ligne `api_calls`. Les lignes plus anciennes qui ont été stockées sans coût sont tarifées de la même manière lorsque le rapport est ouvert, puis ajoutées au même chiffre de coût — elles ne sont pas affichées comme une deuxième colonne. Si aucune des deux sources ne s'applique, la cellule est `—`, jamais `$0.00`. La modification ultérieure des tarifs configurés ne réécrit pas les lignes qui ont déjà un coût stocké. Les récapitulatifs mensuels conservent toujours un compte des appels qui ont stocké un coût (`ncost_acc` / `ncost_dis`) afin que `$0.00` reste distinct de « inconnu » après la compaction.
+Les nouveaux appels stockent ce montant sur la ligne `api_calls`. Les lignes plus anciennes stockées sans coût sont tarifées de la même manière lors de l'ouverture du rapport, puis ajoutées au même chiffre de Coût — elles ne sont pas affichées dans une seconde colonne. Si aucune des trois sources ne s'applique, la cellule est `—`, jamais `$0.00`. La modification des tarifs configurés ou une actualisation ultérieure de models.dev ne réécrit pas les lignes qui possèdent déjà un coût stocké. Les cumuls mensuels conservent toujours un décompte des appels ayant stocké un coût (`ncost_acc` / `ncost_dis`) afin que `$0.00` reste distinct de « inconnu » après compactage.
 
 <a id="filters"></a>
 ## Filtres

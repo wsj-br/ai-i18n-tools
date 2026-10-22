@@ -6,7 +6,7 @@
 
 **Synopsis :** `ai-i18n-tools dashboard [-p <port>] [--no-open]`
 
-Lancez le tableau de bord de traduction (interface utilisateur web locale pour les segments de cache, `strings.json`, le glossaire, les échecs, les statistiques et l’utilisation). Port par défaut **8675** (réessaie le port suivant s’il n’est pas disponible). Avec `--no-open`, le navigateur par défaut ne s’ouvre pas automatiquement. `dash` est un alias équivalent. L’alias déprécié `editor` fonctionne toujours mais affiche un avertissement.
+Lancez le tableau de bord de traduction (interface Web locale pour les segments de cache, `strings.json`, glossaire, échecs, statistiques, utilisation et suggestions de modèles). Le port par défaut est **8675** (le port suivant est utilisé en cas d'indisponibilité). Avec `--no-open`, le navigateur par défaut ne s'ouvre pas automatiquement. `dash` est un alias équivalent. L'alias obsolète `editor` fonctionne toujours mais affiche un avertissement.
 
 **Options clés :** `-p` / `--port`, `--no-open`
 

@@ -43,7 +43,7 @@
 
 **摘要：** `ai-i18n-tools usage [--since <when>] [--provider <name>] [--model <id>] [--operation <name>] [-l <code>] [--outcome accepted|discarded] [--clear] [--older-than <when>] [--dry-run]`
 
-列印已記錄的模型 API 呼叫統計資料（呼叫次數、權杖數量，以及單一美元成本）。成本在存在時為供應商的 `usage.cost`，否則為來自 `providers.<name>.modelPricing` 的金額或供應商範圍的 `providers.<name>.pricing` 預設值（儲存於新呼叫；在報告時套用於沒有儲存成本的較舊資料列）。與翻譯儀表板 → 用量與成本中的彙總相同。超過七個 UTC 日曆天的詳細資料列會彙整為每月 `api_totals`；報告會合併兩個資料表。`--since` 接受 `YYYY-MM-DD`、一段持續時間（`30m`、`1h`、`6h`、`12h`、`24h`、`7d`、`30d`）或一個日曆月份視窗（`1mo`、`2mo`、`3mo`）。`--clear` 會刪除詳細資料列與每月總計（`--older-than` 為 `1mo`、`2mo`、`3mo`、`6mo`、`1y` 或 `all`；`--dry-run` 僅報告計數而不刪除）。
+列印已記錄的模型 API 呼叫統計資料（呼叫次數、Token 數量以及單一 USD 成本）。成本為提供者的 `usage.cost`（若存在，包含 `0`），否則為該模型的 `providers.<name>.modelPricing`，否則為提供者層級的 `providers.<name>.pricing` 預設值，否則為 models.dev 針對該模型 ID 的輸入與輸出定價。已報告的成本與明確的設定費率絕不會被取代。未知的成本會保持為 `—`，絕不會是 `$0.00`。新的呼叫會儲存該金額；若舊的資料列已有 Token 但無儲存的成本，則會在執行報告時進行估算。其彙總方式與「翻譯儀表板 → 使用量與成本」相同。超過七個 UTC 日曆天的詳細資料列會被併入每月 `api_totals`；報告會結合這兩個資料表。`--since` 接受 `YYYY-MM-DD`、持續時間（`30m`、`1h`、`6h`、`12h`、`24h`、`7d`、`30d`）或日曆月視窗（`1mo`、`2mo`、`3mo`）。`--clear` 會刪除詳細資料列與每月總計（`--older-than` 為 `1mo`、`2mo`、`3mo`、`6mo`、`1y` 或 `all`；`--dry-run` 則會在不刪除的情況下報告計數）。
 
 **主要選項：** `--since`、`--provider`、`--model`、`--operation`、`-l` / `--locale`、`--outcome`、`--clear`、`--older-than`、`--dry-run`
 

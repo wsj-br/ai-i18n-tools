@@ -1,0 +1,52 @@
+{
+  "04fc0b55": {
+    "source": "Items selected: %s",
+    "translated": {},
+    "locations": [
+      {
+        "file": "app.py",
+        "line": 45
+      }
+    ]
+  },
+  "a66e37ee": {
+    "source": "Welcome to the shop",
+    "translated": {},
+    "locations": [
+      {
+        "file": "templates/index.html",
+        "line": 4
+      }
+    ]
+  },
+  "613969df": {
+    "source": "Hello, {name}!",
+    "translated": {},
+    "locations": [
+      {
+        "file": "templates/index.html",
+        "line": 5
+      }
+    ]
+  },
+  "db999462": {
+    "source": "{count} items in the cart",
+    "translated": {},
+    "locations": [
+      {
+        "file": "templates/index.html",
+        "line": 7
+      }
+    ]
+  },
+  "c2f24422": {
+    "source": "Flask shop demo localized with English-key JSON.",
+    "translated": {},
+    "locations": [
+      {
+        "file": "pyproject.toml",
+        "line": 4
+      }
+    ]
+  }
+}

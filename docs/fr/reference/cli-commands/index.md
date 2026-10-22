@@ -22,6 +22,7 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 |---------|---------|
 | [`check-models`](models#check-models) | Valide les identifiants de modèle configurés par rapport au fournisseur actif. |
 | [`list-models`](models#list-models) | Liste les modèles annoncés par le fournisseur actif. |
+| [`suggest-models`](models#suggest-models) | Classez les modèles de chat par qualité de traduction ou par prix et rédigez éventuellement `translationModels`. |
 | [`bench-models`](models#bench-models) | Benchmark des modèles configurés sur un échantillon de traduction. |
 | [`list-languages`](models#list-languages) | Liste le catalogue des langues d'interface utilisateur intégrées. |
 
@@ -88,10 +89,12 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

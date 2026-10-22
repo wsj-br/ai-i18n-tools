@@ -1,0 +1,7 @@
+{
+  "Welcome to the shop": "Bem-vindo à loja",
+  "Hello, {name}!": "Olá, {name}!",
+  "Items selected: %s": "Itens selecionados: %s",
+  "{count} items in the cart": "{count} itens no carrinho",
+  "Flask shop demo localized with English-key JSON.": "Demonstração de loja Flask localizada com JSON de chaves em inglês."
+}

@@ -1,0 +1,40 @@
+{
+  "sourceLocale": "en",
+  "targetLocales": ["es", "pt-BR"],
+  "provider": "openrouter",
+  "providers": {
+    "openrouter": {
+      "translationModels": ["google/gemini-2.5-flash"],
+      "uiModels": ["google/gemini-2.5-flash"]
+    }
+  },
+  "features": {
+    "translateUIStrings": true,
+    "translateDocs": false,
+    "translateJson": false,
+    "translateSVG": false
+  },
+  "ui": {
+    "description": "Gettext notes CLI",
+    "sourceRoots": ["."],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "locales",
+    "flatOutput": false,
+    "gettext": {
+      "outputDir": "locales",
+      "domain": "messages",
+      "potPath": "locales/messages.pot",
+      "compileMo": true,
+      "ingestExistingPo": true,
+      "localeFormat": "posix"
+    },
+    "uiExtractor": {
+      "extensions": [".py"],
+      "funcNames": ["_", "gettext", "ngettext", "pgettext"],
+      "includePackageDescription": true,
+      "pyprojectTomlPath": "pyproject.toml"
+    }
+  },
+  "cacheDir": ".translation-cache",
+  "docs": []
+}

@@ -4,7 +4,7 @@
 | चर                    | विवरण                                                     |
 |------------------------|------------------------------------------------------------|
 | `OPENROUTER_API_KEY`   | `openrouter` प्रदाता के लिए API कुंजी (जब यह सक्रिय हो तो आवश्यक)। डिफ़ॉल्ट `init` प्रीसेट। |
-| अन्य प्रदाता कुंजी     | प्रत्येक प्रदाता अपनी स्वयं की कुंजी पर्यावरण चर पढ़ता है: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY` (Ollama को कोई आवश्यकता नहीं है)। प्रदाता के अनुसार `providers.<name>.apiKeyEnv` के साथ ओवरराइड करें। |
+| अन्य प्रदाता कुंजियाँ | प्रत्येक प्रदाता अपनी स्वयं की कुंजी env var को पढ़ता है: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`, `CHEAPERINFERENCE_API_KEY` (Ollama को किसी की आवश्यकता नहीं है)। `providers.<name>.apiKeyEnv` के साथ प्रति प्रदाता ओवरराइड करें। |
 | `OPENROUTER_BASE_URL`  | `providers.openrouter.baseUrl` को ओवरराइड करें (केवल जब वह प्रदाता कॉन्फ़िगर किया गया हो)। |
 | `OLLAMA_BASE_URL`      | `providers.ollama.baseUrl` को ओवरराइड करें (केवल जब वह प्रदाता कॉन्फ़िगर किया गया हो)। |
 | `AI_I18N_LANG`         | उपकरण के अपने UI के लिए भाषा (CLI सहायता, लॉग, डैशबोर्ड)। `-L` / `--ui-lang` द्वारा ओवरराइड किया गया; कॉन्फ़िग `uiLanguage` को ओवरराइड करता है। [उपकरण UI भाषा](/hi/guide/tool-ui-language) देखें। |

@@ -37,6 +37,7 @@ ai-i18n-tools dashboard
 | 锁定 UI 翻译的术语 | **词汇表** | [词汇表](/zh-Hans/guide/translation-dashboard/glossary) |
 | 查看缓存覆盖率和模型使用情况 | **统计** | [统计](/zh-Hans/guide/translation-dashboard/statistics) |
 | 查看 API 调用令牌和费用 | **用量与费用** | [用量与费用](/zh-Hans/guide/translation-dashboard/usage) |
+| 选择翻译模型 | **模型** | [模型](/zh-Hans/guide/translation-dashboard/models) |
 
 <a id="after-you-edit"></a>
 ## 编辑后

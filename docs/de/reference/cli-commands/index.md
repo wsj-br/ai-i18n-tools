@@ -22,6 +22,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 |---------|---------|
 | [`check-models`](models#check-models) | Validiert konfigurierte Modell-IDs gegen den aktiven Anbieter. |
 | [`list-models`](models#list-models) | Listet Modelle auf, die vom aktiven Anbieter beworben werden. |
+| [`suggest-models`](models#suggest-models) | Bewerten Sie Chat-Modelle nach Übersetzungsqualität oder Preis und schreiben Sie optional `translationModels`. |
 | [`bench-models`](models#bench-models) | Benchmark konfigurierte Modelle auf einer Sample-Übersetzung. |
 | [`list-languages`](models#list-languages) | Listet den gebündelten UI-Sprachenkatalog auf. |
 
@@ -88,10 +89,12 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-json-bundles] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

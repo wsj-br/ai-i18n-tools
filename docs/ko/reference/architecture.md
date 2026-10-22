@@ -257,10 +257,12 @@ SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 
 
 Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 공급자 독립적인 채팅 클라이언트입니다. 활성 공급자를 `provider` / `providers`에서 확인하고, 해당 공급자의 `baseUrl` + API 키에 대한 OpenAI 호환 클라이언트( `createOpenAICompatible` )를 빌드한 다음, 모든 호출을 `generateText`를 통해 라우팅합니다. `OpenRouterClient`는 더 이상 사용되지 않는 별칭으로 유지됩니다. 주요 동작:
 
-- **모델 폴백**: 확인된 목록의 각 모델을 순서대로 시도하며, 요청 또는 파싱 실패 시 폴백합니다. 각 대상 로캘은 자체 확인된 체인을 갖습니다: 설정된 경우 `localeModels(locale)`가 먼저, 그 다음 `uiModels` (UI 파이프라인만 해당), 그 다음 `translationModels`. 문서, JSON 및 SVG 번역은 비 UI 체인으로 로캘별 클라이언트를 생성합니다. `bench-models` 명령은 대신 구성된 각 id에 대해 단일 모델 클라이언트를 하나씩 구축합니다 (`translationModels`, `uiModels`, `localeModels`의 합집합; `translationModels: [id]`, 폴백 없음)하여 각 모델을 독립적으로 시간 측정하고 가격을 책정할 수 있습니다.
-- **요청 타임아웃**: 활성 제공자의 `requestTimeout` (초) 또는 `requestTimeoutMs`, 그렇지 않으면 구성 상단의 동일한 키 (기본값 45초)가 `AbortSignal.timeout`를 통해 각 요청을 중단합니다. CLI가 `check-models` (모든 제공자)에 대해 제공자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알려지지 않은 모델 id를 제거하는 선택적 사전 필터는 활성 제공자가 OpenRouter인 경우에만 실행됩니다.
-- **OpenRouter 추가 기능** (`openrouter`가 활성일 때만): `provider` 요청 필드를 통한 처리량 라우팅, `HTTP-Referer` / `X-Title` 헤더, `usage.cost`에서 읽은 정확한 USD 비용. 토큰 사용량은 모든 제공자에 대해 보고됩니다. 제공자가 `usage.cost`를 생략하는 경우, USD 비용은 `providers.<name>.modelPricing` 또는 제공자 전체 `pricing` 기본값에서 계산되어 `api_calls` 행에 저장됩니다. 제공자가 보고한 비용은 절대 대체되지 않습니다.
-- **디버그 트래픽 로그**: `debugTrafficFilePath`가 설정된 경우, 요청 및 응답 JSON을 파일에 추가합니다 (프로그래밍 방식). CLI `--debug-failed`은 `cacheDir` 아래에 `FAILED-TRANSLATION` 파일을 작성하며, 실패한 UI, 문서, JSON 및 SVG 번역 확인 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답 및 검증 오류가 포함됩니다. 제공자 API / 빈 본문 실패는 프롬프트 전용 파일을 덤프하는 대신 콘솔에 출력됩니다.
+- **모델 폴백**: 확인된 목록의 각 모델을 순서대로 시도하며, 요청 또는 구문 분석 실패 시 폴백합니다. 각 대상 로캘은 고유한 확인 체인을 가집니다. 구성된 경우 `localeModels(locale)`이 먼저, 그다음 `uiModels`(UI 파이프라인 전용), 마지막으로 `translationModels`가 사용됩니다. 문서, JSON 및 SVG 번역은 비 UI 체인을 사용하여 로캘별 클라이언트를 생성합니다. 대신 `bench-models` 명령은 구성된 ID별로 단일 모델 클라이언트를 빌드(`translationModels`, `uiModels` 및 `localeModels`의 합집합; `translationModels: [id]`, 폴백 없음)하여 각 모델의 시간과 가격을 독립적으로 측정할 수 있습니다.
+- **요청 시간 제한**: 활성 공급자의 `requestTimeout`(초) 또는 `requestTimeoutMs`, 그렇지 않으면 구성 상단의 동일한 키(기본값 45초)를 사용하며, `AbortSignal.timeout`을 통해 각 요청을 중단합니다. CLI가 `check-models`(모든 공급자)를 위해 공급자의 모델 목록을 로드할 때 `GET /models`에도 동일한 값이 적용됩니다. 알 수 없는 모델 ID를 삭제하는 선택적 사전 확인 필터는 활성 공급자가 OpenRouter인 경우에만 실행됩니다.
+- **OpenRouter 추가 기능**(`openrouter`이 활성 상태인 경우에만): `provider` 요청 필드 및 `HTTP-Referer` / `X-Title` 헤더를 통한 처리량 라우팅. 토큰 사용량은 모든 공급자에 대해 보고됩니다. OpenRouter 및 Cheaper Inference는 청구된 USD 금액(`usage.cost`; Cheaper Inference는 `cheaper_inference.billing.billed_cost_usd`로 폴백)도 반환합니다. 공급자가 해당 금액을 생략하면 USD 비용은 `providers.<name>.modelPricing`, 그다음 공급자 전체 `pricing` 기본값, 그다음 models.dev 입력 및 출력 목록 가격에서 계산되어 `api_calls` 행에 저장됩니다. 공급자가 보고한 비용(`0` 포함)은 절대 대체되지 않습니다. 알 수 없는 비용은 설정되지 않은 상태로 유지됩니다. 호출 가격 책정은 `<cacheDir>/benchmark-scores.json`의 models.dev 슬라이스만 읽으며, languagebench나 Arena 파일은 다운로드하지 않습니다.
+- **디버그 트래픽 로그**: `debugTrafficFilePath`가 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다(프로그래밍 방식). CLI `--debug-failed`는 실패한 UI, 문서, JSON 및 SVG 번역 확인 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답 및 유효성 검사 오류를 포함하는 `FAILED-TRANSLATION` 파일을 `cacheDir` 아래에 작성합니다. 공급자 API / 빈 본문 실패는 프롬프트 전용 파일을 덤프하는 대신 콘솔에 출력됩니다.
+
+`suggest-models` 및 대시보드 모델 탭은 LLM을 호출하지 않습니다. 이들은 languagebench ChrF, LMArena Arena 점수 및 models.dev 가격을 사용하여 활성 공급자의 채팅 카탈로그 순위를 매긴 다음, 선택적으로 `providers.<name>.translationModels`을 대체합니다. 집계 데이터는 `<cacheDir>/benchmark-scores.json`에 상주합니다. [suggest-models](/ko/reference/cli-commands/models#suggest-models)을 참조하십시오.
 
 <a id="config-loading"></a>
 ### 설정 로드
@@ -278,7 +280,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 9. `augmentConfigWithUiLanguagesMaster` - 번들로 제공되는 마스터 카탈로그에서 매니페스트 표시 이름을 첨부합니다.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 해당되는 경우 마스터 카탈로그에 대해 로케일 코드를 검증합니다.
 
-`init`는 `initConfigTemplates`에서 시작 구성 파일을 작성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `vitepressThemeCatalog`), `ui-nextra`(Nextra 문서 + `nextraDictionaryPath`), `ui-astro-website`(일반 Astro UI; `docs[]`를 추가하여 `.astro` 페이지 번역), `ui-json-bundles`(JSON `json[]`만). [빠른 시작 — 초기화](/ko/guide/quick-start#step-1-initialise)를 참조하세요.
+`init`은 `initConfigTemplates`에서 시작 구성을 작성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `vitepressThemeCatalog`), `ui-nextra`(Nextra 문서 + `nextraDictionaryPath`), `ui-astro-website`(일반 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가), `ui-json-bundles`(JSON `json[]` 전용), `ui-python`, `ui-python-gettext`, `ui-python-django` 및 `ui-python-flask`. [Quick start — Initialise](/ko/guide/quick-start#step-1-initialise) 및 [Python applications](/ko/guide/ui-strings/python)을 참조하십시오.
 
 <a id="logger"></a>
 ### 로거

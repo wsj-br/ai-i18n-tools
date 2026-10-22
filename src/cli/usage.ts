@@ -1,6 +1,7 @@
 import path from "path";
 import chalk from "chalk";
 import type { ApiCallBreakdownRow, ApiCallFilters, I18nConfig } from "../core/types.js";
+import { benchmarkCachePath, ensureModelsDevPricing } from "../core/model-benchmarks.js";
 import { TranslationCache } from "../core/cache.js";
 import {
   collectProviderPricing,
@@ -70,7 +71,11 @@ function removedCount(result: { removedCalls: number; removedTotals: number }): 
   return result.removedCalls + result.removedTotals;
 }
 
-export function runUsage(config: I18nConfig, projectRoot: string, opts: RunUsageOptions): void {
+export async function runUsage(
+  config: I18nConfig,
+  projectRoot: string,
+  opts: RunUsageOptions
+): Promise<void> {
   const cacheDir = path.join(projectRoot, config.cacheDir);
   const cache = new TranslationCache(cacheDir);
   try {
@@ -137,7 +142,19 @@ export function runUsage(config: I18nConfig, projectRoot: string, opts: RunUsage
       outcome: opts.outcome,
     };
     const pricing = collectProviderPricing(config.providers);
-    const stats = withEstimatedCosts(cache.getApiCallStats(filters), pricing);
+    let modelsDev: Awaited<ReturnType<typeof ensureModelsDevPricing>> = {};
+    try {
+      modelsDev = await ensureModelsDevPricing(benchmarkCachePath(projectRoot, config.cacheDir));
+    } catch (e) {
+      console.error(
+        chalk.yellow(
+          t("models.dev pricing unavailable: {{message}}", {
+            message: e instanceof Error ? e.message : String(e),
+          })
+        )
+      );
+    }
+    const stats = withEstimatedCosts(cache.getApiCallStats(filters), pricing, modelsDev);
     const s = stats.summary;
     const costHeaders = [t("Calls"), t("Accepted"), t("Discarded"), t("Tokens"), t("Cost")];
 

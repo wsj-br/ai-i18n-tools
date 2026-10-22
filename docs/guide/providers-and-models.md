@@ -26,6 +26,7 @@ Preset provider keys need only `translationModels` — base URL and API-key env 
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
 | `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (none) |
 
 For any **non-preset** key, set `baseUrl` and `apiKeyEnv` explicitly in config.
@@ -94,7 +95,7 @@ Before changing `translationModels`, confirm each id is still available on the a
 npx ai-i18n-tools check-models
 ```
 
-`check-models` calls the provider's `GET /models` endpoint, validates every id from `translationModels`, `uiModels`, and `localeModels`, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter does), it also shows estimated USD per 1M tokens.
+`check-models` calls the provider's `GET /models` endpoint, validates every id from `translationModels`, `uiModels`, and `localeModels`, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter and Cheaper Inference do), it also shows USD per 1M tokens.
 
 Browse the full catalog advertised by a provider:
 
@@ -107,6 +108,19 @@ Benchmark configured models on a real translation sample — each unique id from
 ```bash
 npx ai-i18n-tools bench-models
 ```
+
+Ask for a ranked shortlist (quality by default, or `--price`) and optionally write the top ids into `translationModels`. The [Models tab](/guide/translation-dashboard/models) shows the same ranking, filters, and config update.
+
+```bash
+npx ai-i18n-tools suggest-models
+npx ai-i18n-tools suggest-models --list
+npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --apply
+npx ai-i18n-tools suggest-models --refresh
+```
+
+The table columns are rank, model id, index, measured ChrF, measured Arena Score, and input/output USD per 1M tokens. A missing measurement is `—`. `--list` prints those columns for the models already in `translationModels`. `--max-output-price` keeps models at or below that output USD per 1M tokens and leaves out a model with no output price. `--min-delta` keeps a model only when its index is at least that many points below the previous kept model. `--top` (default 5) limits the table, `--json`, and `--apply` after those filters. `--apply` replaces only `translationModels`. `--refresh` redownloads the 7-day benchmark cache. Optional weights are [`modelSuggestion`](/reference/configuration#modelsuggestion). See [suggest-models](/reference/cli-commands/models#suggest-models).
 
 Override the sample text, locales, or model list:
 
@@ -128,7 +142,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Each provider block can define its own `translationModels`, optional `uiModels` and `localeModels`, `maxTokens`, `temperature`, and `requestTimeout` (seconds) or `requestTimeoutMs`. A timeout on the provider overrides the top-level `requestTimeout` / `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
 
-Optional `pricing` and `modelPricing` set USD per 1,000,000 tokens (`inputPerMTokens` and `outputPerMTokens`) when the provider omits `usage.cost`. `pricing` is the provider-wide default; a `modelPricing` entry overrides it for one model id. OpenRouter already returns a per-call cost, so leave both unset on that provider. A provider-reported cost is kept as returned. The amount is included in the translation summary, [`usage`](/reference/cli-commands/workflows#usage), and [Usage & costs](/guide/translation-dashboard/usage).
+Optional `pricing` and `modelPricing` set USD per 1,000,000 tokens (`inputPerMTokens` and `outputPerMTokens`) when the provider omits `usage.cost`. `pricing` is the provider-wide default; a `modelPricing` entry overrides it for one model id. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset on those providers. A provider-reported cost is kept as returned. The amount is included in the translation summary, [`usage`](/reference/cli-commands/workflows#usage), and [Usage & costs](/guide/translation-dashboard/usage).
 
 Runnable example with four providers on the same document, including sample rates: [`examples/multi-provider`](/examples#multi-provider).
 

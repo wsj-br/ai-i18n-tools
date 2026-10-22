@@ -68,6 +68,7 @@ function guideSidebar(t: ThemeCatalog) {
               items: [
                 { text: t.sidebar.overview, link: "/guide/ui-strings/" },
                 { text: t.sidebar.uiStringsPlainHtml, link: "/guide/ui-strings/plain-html" },
+                { text: t.sidebar.python ?? "Python", link: "/guide/ui-strings/python" },
                 { text: t.sidebar.uiStringsAstroWebsite, link: "/guide/ui-strings/astro-website" },
                 { text: t.sidebar.uiStringsWireI18next, link: "/guide/ui-strings/i18next-runtime" },
                 {
@@ -200,6 +201,10 @@ function guideSidebar(t: ThemeCatalog) {
               text: t.sidebar.dashboardUsage ?? "Usage & costs",
               link: "/guide/translation-dashboard/usage",
             },
+            {
+              text: t.sidebar.dashboardModels ?? "Models",
+              link: "/guide/translation-dashboard/models",
+            },
           ],
         },
       ],
@@ -329,6 +334,27 @@ export default defineConfig({
           if (warning.message.includes("/* #__PURE__ */")) return;
           warn(warning);
         },
+      },
+    },
+    server: {
+      watch: {
+        // This config imports from ../../src, so Vite otherwise watches the
+        // monorepo (src, coverage, dist, a leftover .vitepress/dist, …) and
+        // exhausts Linux inotify instances (EMFILE) under Cursor.
+        ignored: [
+          "**/node_modules/**",
+          "**/.git/**",
+          "**/coverage/**",
+          "**/dist/**",
+          "**/dist-sea/**",
+          "**/.translation-cache/**",
+          "**/translated-docs/**",
+          "**/.vitepress/dist/**",
+          "**/.vitepress/cache/**",
+          "**/src/**",
+          "**/tests/**",
+          "**/examples/**",
+        ],
       },
     },
   },
