@@ -6,6 +6,11 @@ import {
   type MetadataExtractor,
   type OpenAICompatibleProvider,
 } from "@ai-sdk/openai-compatible";
+import {
+  cheaperInferenceFetch,
+  explainZeroDataRetentionRefusal,
+  isZeroDataRetentionRefusal,
+} from "./cheaperinference-zdr.js";
 import type { CldrPluralForm, I18nConfig, LlmApiCallEvent } from "../core/types.js";
 import {
   type BatchTranslationResult,
@@ -275,6 +280,7 @@ export class LlmClient {
   private readonly httpReferer: string;
   private readonly xTitle: string;
   private readonly requestTimeoutMs: number;
+  private readonly zeroDataRetention: boolean;
   private readonly pricing: ProviderPricingTable;
   private readonly benchmarkCachePath: string;
   private modelsDevLoad: Promise<Record<string, ModelsDevRate>> | null = null;
@@ -319,6 +325,7 @@ export class LlmClient {
     this.maxTokens = settings.maxTokens;
     this.temperature = settings.temperature;
     this.requestTimeoutMs = settings.requestTimeoutMs;
+    this.zeroDataRetention = settings.zeroDataRetention;
     this.debugTrafficFilePath = opts.debugTrafficFilePath ?? null;
     this.debugFailedDir = opts.debugFailedDir ?? null;
     this.debugFailedRelativePath = opts.debugFailedRelativePath?.trim() || "llm-batch";
@@ -363,6 +370,19 @@ export class LlmClient {
               ...args,
               provider: OPENROUTER_PROVIDER,
             }),
+          }
+        : {}),
+      ...(this.provider === CHEAPERINFERENCE_PROVIDER_KEY
+        ? {
+            fetch: cheaperInferenceFetch,
+            ...(this.zeroDataRetention
+              ? {
+                  transformRequestBody: (args: Record<string, unknown>) => ({
+                    ...args,
+                    zdr: true,
+                  }),
+                }
+              : {}),
           }
         : {}),
       ...(reportsUsageCost
@@ -746,9 +766,11 @@ export class LlmClient {
           error: e instanceof Error ? e.message : String(e),
         });
       }
-      throw new Error(
-        `${this.provider} API error for model ${model}: ${e instanceof Error ? e.message : String(e)}`
-      );
+      const msg = e instanceof Error ? e.message : String(e);
+      if (this.provider === CHEAPERINFERENCE_PROVIDER_KEY && isZeroDataRetentionRefusal(msg)) {
+        throw new Error(explainZeroDataRetentionRefusal(model, this.zeroDataRetention));
+      }
+      throw new Error(`${this.provider} API error for model ${model}: ${msg}`);
     }
 
     const content = result.text;

@@ -3,16 +3,18 @@
 
 `ai-i18n-tools` extrae cadenas de la interfaz de usuario de Python y de archivos `.ui` de Jinja, Django y Qt, y luego escribe JSON con claves en inglés, catálogos GNU gettext o ambos. El asistente de tiempo de ejecución es un `i18n.py` de la biblioteca estándar (Python 3.10 o posterior). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid y FastAPI llaman a ese asistente. Django utiliza el gettext propio de Django.
 
+Cómo añadir idiomas a una aplicación existente de un solo idioma: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python). Selector de framework: [Integraciones de Python](/es/guide/integrations/python). Lista de funciones: [Runtime de Python (`i18n.py`)](/es/reference/programmatic-api#python-runtime).
+
 Las copias ejecutables residen en `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` y `examples/python-gettext`. Son proyectos de Python. Los tres primeros utilizan un virtualenv y `pip install -r requirements.txt`. `python-gettext` utiliza únicamente la biblioteca estándar. No son paquetes npm. El archivo de lanzamiento `ai-i18n-tools-python-examples.zip` contiene los mismos cuatro directorios. El tarball de npm y el ejecutable independiente no los contienen.
 
 <a id="init"></a>
 ## Scaffold
 
 ```bash
-ai-i18n-tools init -t ui-python
-ai-i18n-tools init -t ui-python-gettext
-ai-i18n-tools init -t ui-python-flask
-ai-i18n-tools init -t ui-python-django
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools init -t ui-python-gettext -P anthropic
+ai-i18n-tools init -t ui-python-flask -P groq
+ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` escribe JSON plano y `i18n.py`. `ui-python-gettext` escribe JSON y `.po` / `.mo`. `ui-python-flask` escribe catálogos gettext en `translations/` y `i18n.py`. `ui-python-django` escribe `locale/<lang>/LC_MESSAGES/django.po` y no escribe `i18n.py`.
@@ -75,11 +77,11 @@ Los archivos Gettext utilizan `msgctxt` para el contexto y `msgid` / `msgid_plur
 
 `set_locale` devuelve un token `ContextVar`. Restablézcalo en `finally`, incluyendo el middleware de FastAPI y Flask, para que las solicitudes concurrentes no filtren una configuración regional.
 
-- **Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` escribe `st.session_state.locale` y `st.query_params["lang"]`. Asigne a cada widget una `key` fija. Consulte `examples/python-streamlit`.
-- **FastAPI.** Lea `?lang=` o `Accept-Language` en el middleware, llame a `set_locale` y `reset_locale` en `finally`. Las rutas llaman a `t()` y `_()`. Consulte `examples/python-fastapi`.
-- **Flask y Pyramid.** Establezca la configuración regional desde la solicitud e inyecte `_`, `t`, `current_locale`, `ui_languages` y `direction` en el contexto de la plantilla. Consulte `examples/python-flask`.
-- **gettext existente.** Deje `_()`, `gettext()` y `ngettext()` en su lugar. Apunte `ui.gettext` al árbol `locales/` actual y ejecute `extract` y luego `translate-ui`. Consulte `examples/python-gettext`.
-- **Django.** Utilice `gettext`, `ngettext` y `{% blocktrans %}`. La `ui-python-django` de la plantilla de inicialización coincide con el directorio `locale/` y el dominio `django` de Django.
-- **Tkinter.** Llame a `t()` o `_()` al crear cada widget, luego reconstruya el texto visible después de `set_locale`.
-- **PyQt / PySide.** `self.tr("...")` se extrae. Un archivo `.ui` aporta elementos `<string>` a menos que `notr="true"`. El atributo `comment` se convierte en el contexto de gettext.
-- **PyWebView / PyWebKit.** Extraiga el shell de Python con las plantillas de Python anteriores. Extraiga la página HTML con marcadores `data-i18n` o con un documento HTML por configuración regional.
+- <a id="streamlit"></a>**Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` escribe `st.session_state.locale` y `st.query_params["lang"]`. Asigne a cada widget una `key` fija. Consulte `examples/python-streamlit`.
+- <a id="fastapi"></a>**FastAPI.** Lea `?lang=` o `Accept-Language` en el middleware, llame a `set_locale` y `reset_locale` en `finally`. Las rutas llaman a `t()` y `_()`. Consulte `examples/python-fastapi`.
+- <a id="flask"></a>**Flask y Pyramid.** Establezca la configuración regional desde la solicitud e inyecte `_`, `t`, `current_locale`, `ui_languages` y `direction` en el contexto de la plantilla. Consulte `examples/python-flask`.
+- <a id="gettext"></a>**gettext existente.** Mantenga `_()`, `gettext()` y `ngettext()` en su lugar. Apunte `ui.gettext` al árbol `locales/` actual y ejecute `extract` y luego `translate-ui`. Consulte `examples/python-gettext`.
+- <a id="django"></a>**Django.** Utilice `gettext`, `ngettext` y `{% blocktrans %}`. La `ui-python-django` de la plantilla de inicialización coincide con el directorio `locale/` y el dominio `django` de Django.
+- <a id="tkinter"></a>**Tkinter.** Llame a `t()` o `_()` al crear cada widget, luego reconstruya el texto visible después de `set_locale`.
+- <a id="pyqt"></a>**PyQt / PySide.** `self.tr("...")` se extrae. Un archivo `.ui` aporta elementos `<string>` a menos que `notr="true"`. El atributo `comment` se convierte en contexto de gettext.
+- <a id="pywebview"></a>**PyWebView / PyWebKit.** Extraiga el shell de Python con las plantillas de Python anteriores. Extraiga la página HTML con marcadores `data-i18n` o con un documento HTML por idioma.

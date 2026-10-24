@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Scaffold a config from Node.js (optional fourth argument selects the built-in preset; defaults to `openrouter`):
+Scaffold a config from Node.js. The fourth argument is the built-in preset (`cwd` is the third):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 Key exports (commonly used — see `src/index.ts` for the full public surface):
@@ -52,6 +53,27 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries, including optional term `Context` notes. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Load `glossary.contextFiles` and fingerprint guidance for cache invalidation. |
 | `runTranslateUI` | Programmatic translate-UI entry point. |
-| `writeInitConfigFile` | Write a starter config JSON (`template`, optional `providerKey` defaulting to `openrouter`). |
+| `writeInitConfigFile` | Write a starter config JSON (`template`, `cwd`, and a required `providerKey`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Python runtime (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext`, and `ui-python-flask` write this module into the project when `i18n.py` is missing. It is a standard-library helper for Python 3.10 or newer. Import it from that file. The functions below are separate from the Node exports in the table above. Django projects keep Django's gettext, so `ui-python-django` does not write `i18n.py`.
+
+Call shapes, unsafe f-strings, and per-framework locale wiring: [Python applications](/guide/ui-strings/python).
+
+| Function | Behaviour |
+| --- | --- |
+| `set_locale(locale)` | Set the current locale. Underscores in the code are stored as hyphens (`pt_BR` becomes `pt-BR`). Returns a `ContextVar` token. |
+| `reset_locale(token)` | Restore the locale from that token. Call it in `finally`, including FastAPI and Flask middleware. |
+| `get_locale()` | Return the current locale. |
+| `set_backend(backend)` | Select `"auto"`, `"json"`, or `"gettext"`. |
+| `get_ui_languages()` | Read `ui-languages.json` next to the flat JSON directory, or the gettext directory when flat output is off. |
+| `get_direction(locale=None)` | Return `"rtl"` or `"ltr"` from the manifest row for that locale (current locale when omitted). |
+| `_(message)` | Look up one literal, then return the catalog string or the message itself. |
+| `t(template, *, plurals=False, count=None, **values)` | Look up the literal, then interpolate. `translate` is the same function. On Python 3.14, `translate(t"Hello, {name}!")` keeps the template and its values. Keyword arguments override values taken from a template string. |
+| `ngettext(singular, plural, n, **values)` | Plural lookup, then interpolate. `count` is available to the format string. |
+| `pgettext(context, message, **values)` | Context lookup (`msgctxt`, or `context` + U+0004 + the English source in flat JSON), then interpolate. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit select box. Writes `st.session_state.locale` and `st.query_params["lang"]`, calls `set_locale`, and returns the chosen code. |

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # Intégrations
 
-Guides spécifiques au framework pour intégrer les outils ai-i18n dans les sites de documentation et les projets Astro. Chaque intégration utilise le pipeline [Documents](/fr/guide/documents/) (`translate-docs` / `sync`) pour le contenu des pages ; les chaînes de shell (navigation, barre latérale, thème) sont gérées dans ce même pipeline, le cas échéant — et non via le pipeline [JSON](/fr/guide/json) séparé.
+Guides spécifiques aux frameworks pour les sites de documentation, les projets Astro et les applications Python. Les intégrations de documentation utilisent le pipeline [Documents](/fr/guide/documents/) (`translate-docs` / `sync`) pour le contenu des pages ; les chaînes de caractères de l'interface (navigation, barre latérale, thème) sont gérées au sein de ce même pipeline là où indiqué — et non via le pipeline [JSON](/fr/guide/json) séparé. Les applications Python utilisent le pipeline [UI strings](/fr/guide/ui-strings/python) (`extract` / `translate-ui`).
 
 <a id="which-guide-to-read"></a>
 ## Quel guide lire
@@ -13,13 +13,14 @@ Guides spécifiques au framework pour intégrer les outils ai-i18n dans les site
 | VitePress | `ui-vitepress` | [VitePress](/fr/guide/integrations/vitepress) |
 | Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/fr/guide/integrations/nextra) |
 | Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/fr/guide/integrations/fumadocs) |
+| Python (Streamlit, FastAPI, Flask, Django, gettext, bureau) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/fr/guide/integrations/python) |
 
 <a id="shared-concepts"></a>
 ## Concepts partagés
 
-Toutes les intégrations de framework de documentation partagent le même modèle de bloc `docs[]` décrit dans [Documents](/fr/guide/documents/). Définissez `docsOutput.style` pour correspondre à votre framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` ou `"astro-starlight"`). Pour la disposition des dossiers de sortie et le comportement de réécriture des liens, consultez [Dispositions de sortie](/fr/guide/documents/output-layouts) et [Réécriture des liens](/fr/guide/documents/link-rewriting).
+Les intégrations de frameworks de documentation partagent le même modèle de bloc `docs[]` décrit dans [Documents](/fr/guide/documents/). Définissez `docsOutput.style` pour correspondre à votre framework (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` ou `"astro-starlight"`). Pour la disposition du dossier de sortie et le comportement de réécriture des liens, consultez [Output layouts](/fr/guide/documents/output-layouts) et [Link rewriting](/fr/guide/documents/link-rewriting). La configuration Python est distincte : [Python](/fr/guide/integrations/python).
 
-Chaque modèle `init -t ui-*` génère un bloc de fournisseur LLM par défaut (`openrouter` sauf si vous passez `-P <provider>`). Avant `translate-docs` ou `sync`, configurez `provider` / `providers` si nécessaire et définissez la clé API correspondante — voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
+Chaque `init -t ui-* -P <provider>` scaffold écrit le bloc de fournisseur LLM de ce préréglage. Avant `translate-docs` ou `sync`, définissez la clé API correspondante — consultez [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
 
 Voir [Traduction du shell du framework](#framework-shell-translation) pour une comparaison entre les frameworks. Chaque guide lié ci-dessous couvre la configuration de ce framework.
 
@@ -49,3 +50,7 @@ Ne placez **pas** les chaînes de shell/thème du framework dans `json[]` — ce
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |
+| Streamlit | [examples/python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit) |
+| Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
+| FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
+| GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |

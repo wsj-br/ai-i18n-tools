@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # インテグレーション
 
-ドキュメントサイトやAstroプロジェクトにai-i18n-toolsを組み込むための、フレームワーク固有のガイドです。各インテグレーションは、ページコンテンツに[Documents](/ja/guide/documents/)パイプライン (`translate-docs` / `sync`) を使用します。シェル文字列 (ナビゲーション、サイドバー、テーマ) は、注記がある場合は同じパイプライン内で処理され、別の[JSON](/ja/guide/json)パイプラインは経由しません。
+ドキュメントサイト、Astroプロジェクト、およびPythonアプリケーション向けのフレームワーク固有ガイドです。ドキュメントの統合では、ページコンテンツに[Documents](/ja/guide/documents/)パイプライン（`translate-docs` / `sync`）を使用します。ナビゲーション、サイドバー、テーマなどのシェル文字列は、別途の[JSON](/ja/guide/json)パイプラインではなく、注記がある場合に限り同じパイプライン内で処理されます。Pythonアプリケーションでは[UI strings](/ja/guide/ui-strings/python)パイプライン（`extract` / `translate-ui`）を使用します。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
@@ -13,13 +13,14 @@
 | VitePress | `ui-vitepress` | [VitePress](/ja/guide/integrations/vitepress) |
 | Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/ja/guide/integrations/nextra) |
 | Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/ja/guide/integrations/fumadocs) |
+| Python (Streamlit, FastAPI, Flask, Django, gettext, デスクトップ) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/ja/guide/integrations/python) |
 
 <a id="shared-concepts"></a>
 ## 共通の概念
 
-すべてのドキュメントフレームワークのインテグレーションは、[Documents](/ja/guide/documents/)で説明されている同じ`docs[]`ブロックモデルを共有しています。フレームワークに合わせて`docsOutput.style`を設定します (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, または `"astro-starlight"`)。出力フォルダのレイアウトとリンクの書き換え動作については、[Output layouts](/ja/guide/documents/output-layouts)と[Link rewriting](/ja/guide/documents/link-rewriting)を参照してください。
+ドキュメントフレームワークの統合では、[Documents](/ja/guide/documents/)で説明されているものと同じ`docs[]`ブロックモデルを共有します。`docsOutput.style`を自身のフレームワーク（`"docusaurus"`、`"vitepress"`、`"nextra"`、`"fumadocs"`、または`"astro-starlight"`）に合わせて設定してください。出力フォルダーのレイアウトとリンク書き換えの動作については、[Output layouts](/ja/guide/documents/output-layouts)および[Link rewriting](/ja/guide/documents/link-rewriting)を参照してください。Pythonのセットアップは別個に行います：[Python](/ja/guide/integrations/python)。
 
-各 `init -t ui-*` テンプレートは、デフォルトの LLM プロバイダーブロック (`-P <provider>` を渡さない限り `openrouter`) をスキャフォールディングします。`translate-docs` または `sync` の前に、必要に応じて `provider` / `providers` を設定し、対応する API キーを設定してください — [プロバイダーと API キー](/ja/guide/quick-start#provider-and-api-key) を参照してください。
+各`init -t ui-* -P <provider>`スキャフォールドは、そのプリセットの大規模言語モデルプロバイダーブロックを書き込みます。`translate-docs`または`sync`の前に、一致するエーピーアイキーを設定してください。詳しくは[プロバイダーとエーピーアイキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。
 
 フレーム間比較については、[フレームワークシェルの翻訳](#framework-shell-translation)を参照してください。以下にリンクされている各ガイドでは、そのフレームワークのセットアップについて説明しています。
 
@@ -49,3 +50,7 @@
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |
+| Streamlit | [examples/python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit) |
+| Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
+| FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
+| GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |

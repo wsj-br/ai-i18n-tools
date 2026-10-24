@@ -13,7 +13,7 @@ Le site exécutable [`examples/plain-html-docs`](https://github.com/wsj-br/ai-i1
 Générez une configuration fonctionnelle :
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 Ou ajoutez cette partie HTML à un `ai-i18n-tools.config.json` qui possède déjà un [fournisseur](/fr/guide/providers-and-models) LLM :

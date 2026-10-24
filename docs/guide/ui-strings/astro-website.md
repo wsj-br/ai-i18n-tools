@@ -33,10 +33,10 @@ Example `package.json` scripts (from the reference project):
 <a id="ui-strings-ssg"></a>
 ## UI strings (SSG)
 
-Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
+Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

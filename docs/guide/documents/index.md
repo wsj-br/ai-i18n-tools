@@ -51,19 +51,19 @@ Each UI block includes its `strings.json` as glossary hints for documentation by
 ## Step 1: Initialise for documentation
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 For Astro Starlight documentation sites:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 For VitePress documentation sites:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 Set `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings - see [VitePress integration](/guide/integrations/vitepress).
@@ -71,7 +71,7 @@ Set `docsOutput.vitepressThemeCatalog` for nav/sidebar/footer strings - see [Vit
 For Nextra documentation sites:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 Set `docs[].nextraDictionaryPath` for theme dictionary strings - see [Nextra integration](/guide/integrations/nextra). Sidebar `_meta.ts` labels are collected automatically.
@@ -79,7 +79,7 @@ Set `docs[].nextraDictionaryPath` for theme dictionary strings - see [Nextra int
 For Fumadocs documentation sites:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 Set `docsOutput.fumadocsUiCatalog` for UI overrides - see [Fumadocs integration](/guide/integrations/fumadocs). Sidebar `meta.json` labels are collected automatically.
@@ -87,14 +87,14 @@ Set `docsOutput.fumadocsUiCatalog` for UI overrides - see [Fumadocs integration]
 For plain Astro website UI (no Starlight):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 That template enables UI extraction only. For page HTML translation, also set `features.translateDocs` and add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). The [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) config shows both pipelines together.
 
 Edit the generated `ai-i18n-tools.config.json`:
 
-- `provider` and `providers` — `init` scaffolds a default provider block (`openrouter` unless you pass `-P <provider>`); configure at least one provider and set its API key before `translate-docs` or `sync` (Ollama needs no key). See [Provider and API key](/guide/quick-start#provider-and-api-key) and [LLM providers and models](/guide/providers-and-models).
+- `provider` and `providers` — `init -P <provider>` scaffolds that preset; set its API key before `translate-docs` or `sync` (Ollama needs no key). See [Provider and API key](/guide/quick-start#provider-and-api-key) and [LLM providers and models](/guide/providers-and-models).
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all pipelines (and default log directory for `--write-logs`).

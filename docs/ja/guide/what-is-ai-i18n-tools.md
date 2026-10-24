@@ -6,10 +6,10 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 <a id="translation-modes"></a>
 ## 翻訳モード
 
-- **UI文字列** — JS/TSソースから`t("…")`呼び出し（および同様のマーカー）を抽出し、i18nextまたは静的ルックアップ用のロケールごとのフラットなJSONファイルを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [UI文字列](/ja/guide/ui-strings/)。
-- **ドキュメント** — `docs[].contentPaths`にリストされているMarkdown、MDX、および`.astro`ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、およびその他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/)。
-- **JSON** — トップレベルの`json[]`で定義されているネストされたJSONロケールバンドル（テーマラベル、i18nオーバーライド、ソースにないアプリのコピー）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
-- **SVG** — SVGイラスト（`<text>`、`<title>`、`<desc>`）内の表示テキストを翻訳し、ロケールごとに1つの出力ファイルを書き込みます。ドキュメント翻訳とは別です — `translate-docs`はSVGアセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
+- **UI文字列** — JS/TSおよびPythonソース（GNU gettextを含む類似のマーカー）から `t("…")` および `_()` 呼び出しを抽出し、ロケールごとのフラットなJSONまたは `.po` / `.mo` カタログを書き出します。コマンド: `extract`、`translate-ui`。ガイド: [UI文字列](/ja/guide/ui-strings/)。Python: [Pythonアプリケーション](/ja/guide/ui-strings/python)。
+- **ドキュメント** — `docs[].contentPaths` にリストされているMarkdown、MDX、および `.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、その他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/)。
+- **JSON** — 最上位の `json[]` で定義されたネストされたJSONロケールバンドル（テーマラベル、i18nオーバーライド、ソースに含まれないアプリのコピー）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
+- **SVG** — SVGイラスト内の表示テキスト（`<text>`、`<title>`、`<desc>`）を翻訳し、ロケールごとに1つの出力ファイルを書き出します。ドキュメント翻訳とは分離されており、`translate-docs` はSVGアセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
 
 これら 4 つのモードはすべて、アクティブな [LLM プロバイダー](/ja/guide/providers-and-models) を使用し、同じ設定ファイルを共有し、SQLite キャッシュを再利用するため、再実行では新しいテキストまたは変更されたテキストのみがモデルに送信されます。
 
@@ -18,7 +18,7 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 
 | コンテンツ | モード | コマンド |
 | --- | --- | --- |
-| ソースコードが `t()` または HTML `data-i18n` マーカーを使用している場合 | UI 文字列 | `extract` / `translate-ui` |
+| ソースコードで `t()`、`_()`、gettext、またはHTML `data-i18n` マーカーを使用 | UI文字列 | `extract` / `translate-ui` |
 | ローカライズされたページまたはドキュメントサイト | ドキュメント | `translate-docs` |
 | スタンドアロンのネストされた JSON ロケールファイル | JSON | `translate-json` |
 | SVG にラベルが付いた図またはイラスト | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリと�
 | [multi-provider](/ja/examples#multi-provider) | 同じドキュメントで LLM プロバイダーを比較 |
 | [test-markdown](/ja/examples#test-markdown) | Markdown パイプラインのストレステスト (CJK、デーヴァナーガリー、エッジケース) |
 | [intlayer-migration](/ja/examples#intlayer-migration) | `migrate-intlayer` を介した Intlayer `.content.ts` → `t()` |
+| [python-streamlit](/ja/examples#python-streamlit) | Streamlitダッシュボード、`t()` / `_()`、英語キーJSON |
+| [python-flask](/ja/examples#python-flask) | Flask + Jinja、`t()` / `_()`、英語キーJSON |
+| [python-fastapi](/ja/examples#python-fastapi) | FastAPI、リクエストスコープのロケール、英語キーJSON |
+| [python-gettext](/ja/examples#python-gettext) | 既存のGNU gettext; `extract` / `translate-ui` が `.po` と `.mo` を更新 |
 
 [例](/ja/examples) で `npx degit` コピーコマンドと選択ガイドを参照してください。
 
 <a id="next-steps"></a>
 ## 次のステップ
 
-1. [インストール](/ja/guide/installation) — パッケージをインストールし、プロバイダーAPIキーを設定します。
+1. [インストール](/ja/guide/installation) — npmパッケージをインストールするか、Pythonプロジェクト用に[スタンドアロン実行ファイル](/ja/guide/installation#standalone-executables)をダウンロードし、プロバイダーのAPIキーを設定します。
 2. [クイックスタート](/ja/guide/quick-start) — 設定をスキャフォールドし、最初の翻訳を実行します。
-3. [プロバイダーとモデル](/ja/guide/providers-and-models) — プロバイダー、モデルフォールバックチェーン、および`-P`オーバーライドを選択します。
+3. [プロバイダーとモデル](/ja/guide/providers-and-models) — プロバイダー、モデルのフォールバックチェーン、および `-P` オーバーライドを選択します。

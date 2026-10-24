@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### स्टैंडअलोन निष्पादन योग्य (Standalone executables)
 
-GitHub Releases में Linux (`x64`, `arm64`), macOS (`arm64`, `x64`), और Windows (`x64`) के लिए Node.js सिंगल-एक्जीक्यूटेबल बिल्ड संलग्न होते हैं। Python प्रोजेक्ट उस बाइनरी के साथ `extract` और `translate-ui` चला सकते हैं और उन्हें Node.js इंस्टॉल करने की आवश्यकता नहीं है। ये बाइनरी नोटराइज़्ड या Authenticode-साइन नहीं की गई हैं। npm टारबॉल और निष्पादन योग्य फ़ाइल में Python उदाहरण शामिल नहीं हैं। वे उदाहरण रिपॉजिटरी में ही रहते हैं और उन्हें `ai-i18n-tools-python-examples.zip` के रूप में भी संलग्न किया गया है।
+GitHub Releases में एक Node.js सिंगल-एक्जीक्यूटेबल बिल्ड संलग्न होता है। Python प्रोजेक्ट्स उस बाइनरी से CLI चलाते हैं, जिसमें `extract`, `translate-ui`, और `suggest-models` शामिल हैं, जिसके लिए Node.js इंस्टॉल करने की आवश्यकता नहीं है।
+
+| प्लेटफ़ॉर्म | एसेट |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+प्रत्येक रिलीज़ में `SHA256SUMS.txt` और `ai-i18n-tools-python-examples.zip` (चार Python उदाहरण) भी संलग्न होते हैं। npm टारबॉल और एक्जीक्यूटेबल में वे उदाहरण शामिल नहीं होते हैं। वे रिपॉजिटरी में भी बने रहते हैं।
+
+1. [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) पेज से अपनी मशीन से मेल खाने वाली एसेट डाउनलोड करें।
+2. `SHA256SUMS.txt` के विरुद्ध चेकसम की जाँच करें।
+3. Linux और macOS पर, फ़ाइल पर `chmod +x` चलाएँ और इसे `PATH` पर ले जाएँ (या इसे पाथ द्वारा कॉल करें)।
+4. Windows पर, `ai-i18n-tools-win-x64.exe` को `PATH` पर रखें। इसे `ai-i18n-tools.exe` में रीनेम करने से अन्य प्लेटफ़ॉर्म के समान ही कमांड नाम बना रहता है।
+
+बाइनरी नोटराइज़्ड या Authenticode-साइन नहीं की गई हैं। macOS आपसे किसी अनसाइंड प्रोग्राम को स्वीकृत करने के लिए कह सकता है। Windows SmartScreen एक चेतावनी दिखा सकता है।
+
+सक्रिय प्रदाता के लिए API की को उसी तरह सेट करें जैसे npm इंस्टॉल के लिए करते हैं (एनवायरनमेंट या वर्किंग डायरेक्टरी में `.env` फ़ाइल)। `init` से मॉडल सूची एक शुरुआती बिंदु है। `suggest-models` एक रैंक की गई शॉर्टलिस्ट प्रिंट करता है। `suggest-models --apply` इसे `translationModels` में लिखता है। वही रैंकिंग [Models](/hi/guide/translation-dashboard/models) टैब पर भी उपलब्ध है।
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+वॉकथ्रू: [Add i18n to a Python app](/hi/guide/add-i18n-to-python)। कमांड संदर्भ: [suggest-models](/hi/reference/cli-commands/models#suggest-models)।
 
 ai-i18n-tools में इसका अपना स्ट्रिंग एक्सट्रैक्टर शामिल है। यदि आपने पहले `i18next-scanner`, `babel-plugin-i18next-extract`, या इसी तरह के अन्य का उपयोग किया है, तो माइग्रेट करने के बाद आप उन देव डिपेंडेंसी को हटा सकते हैं। मौजूदा i18next **नेमस्पेस JSON** फ़ाइलें [JSON पाइपलाइन](/hi/guide/json#i18next-namespace-files) पर रह सकती हैं। इंटलेयर `.content.ts` डिक्शनरी को `migrate-intlayer` के साथ इम्पोर्ट किया जा सकता है — [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) देखें।
 
@@ -88,15 +117,15 @@ CLI स्रोत बदलने के बाद रिपॉजिटरी
 
 Linux, macOS, और WSL पर, रजिस्ट्री इंस्टाल CLI स्क्रिप्ट पर निष्पादन योग्य बिट स्वचालित रूप से सेट करते हैं। Windows पर, पैकेज मैनेजर `.cmd` और `.ps1` शिम उत्पन्न करते हैं जो Node को स्पष्ट रूप से इनवोक करते हैं।
 
-अनुवाद कमांड (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) के लिए `ai-i18n-tools.config.json` में **प्रदाता कॉन्फ़िगरेशन** और सक्रिय प्रदाता के लिए **एक API कुंजी** की आवश्यकता होती है। डिफ़ॉल्ट प्रदाता ब्लॉक (छोड़ने पर `openrouter`) को स्केफोल्ड करने के लिए `ai-i18n-tools init [-P <provider>]` चलाएँ; प्रीसेट या मॉडल स्विच करने के लिए `provider` / `providers` संपादित करें — [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें। Ollama एकमात्र अंतर्निहित प्रीसेट है जिसे किसी API कुंजी की आवश्यकता नहीं है।
+अनुवाद कमांड (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) के लिए `ai-i18n-tools.config.json` में **प्रदाता कॉन्फ़िगरेशन** और सक्रिय प्रदाता के लिए **एक API कुंजी** आवश्यक है। उस प्रीसेट को स्केफ़ोल्ड करने के लिए `ai-i18n-tools init -P <provider>` चलाएँ; मॉडल जोड़ने के लिए `provider` / `providers` संपादित करें — [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें। `init` से मॉडल सूची एक शुरुआती बिंदु है। `ai-i18n-tools suggest-models` सक्रिय प्रदाता के चैट मॉडल को रैंक करता है, और `suggest-models --apply` `translationModels` की जगह लेता है। वही रैंकिंग [मॉडल](/hi/guide/translation-dashboard/models) टैब पर है। कमांड संदर्भ: [suggest-models](/hi/reference/cli-commands/models#suggest-models)। ओलामा एकमात्र बिल्ट-इन प्रीसेट है जिसे किसी API कुंजी की आवश्यकता नहीं है।
 
-अपने सक्रिय प्रदाता से मेल खाने वाली API कुंजी सेट करें ([प्रीसेट तालिका](/hi/guide/providers-and-models#built-in-providers) देखें):
+उस API कुंजी को सेट करें जो उस प्रदाता से मेल खाती है जिसे आप `init` को पास करते हैं ([प्रीसेट तालिका](/hi/guide/providers-and-models#built-in-providers) देखें):
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 या प्रोजेक्ट रूट में एक `.env` फ़ाइल बनाएँ:

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 集成
 
-将 ai-i18n-tools 接入文档站点和 Astro 项目的框架专属指南。每个集成均使用 [文档](/zh-Hans/guide/documents/) 管道（`translate-docs` / `sync`）处理页面内容；外壳字符串（导航、侧边栏、主题）在注明的情况下也在同一管道中处理——而非通过独立的 [JSON](/zh-Hans/guide/json) 管道。
+针对文档站点、Astro 项目和 Python 应用程序的框架特定指南。文档集成使用 [Documents](/zh-Hans/guide/documents/) 流水线 (`translate-docs` / `sync`) 处理页面内容；shell 字符串（导航、侧边栏、主题）在注明之处由同一流水线处理，而非通过单独的 [JSON](/zh-Hans/guide/json) 流水线。Python 应用程序使用 [UI strings](/zh-Hans/guide/ui-strings/python) 流水线 (`extract` / `translate-ui`)。
 
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
@@ -13,13 +13,14 @@
 | VitePress | `ui-vitepress` | [VitePress](/zh-Hans/guide/integrations/vitepress) |
 | Nextra 4（Next.js App Router）| `ui-nextra` | [Nextra](/zh-Hans/guide/integrations/nextra) |
 | Fumadocs 4（Next.js App Router）| `ui-fumadocs` | [Fumadocs](/zh-Hans/guide/integrations/fumadocs) |
+| Python (Streamlit, FastAPI, Flask, Django, gettext, 桌面端) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/zh-Hans/guide/integrations/python) |
 
 <a id="shared-concepts"></a>
 ## 共享概念
 
-所有文档框架集成均共享 [文档](/zh-Hans/guide/documents/) 中所述的相同 `docs[]` 块模型。请将 `docsOutput.style` 设置为与你的框架相匹配（`"docusaurus"`、`"vitepress"`、`"nextra"`、`"fumadocs"` 或 `"astro-starlight"`）。有关输出文件夹布局和链接重写行为，请参见 [输出布局](/zh-Hans/guide/documents/output-layouts) 和 [链接重写](/zh-Hans/guide/documents/link-rewriting)。
+文档框架集成共享 [Documents](/zh-Hans/guide/documents/) 中描述的相同 `docs[]` 块模型。将 `docsOutput.style` 设置为与您的框架匹配 (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, 或 `"astro-starlight"`)。有关输出文件夹布局和链接重写行为，请参阅 [Output layouts](/zh-Hans/guide/documents/output-layouts) 和 [Link rewriting](/zh-Hans/guide/documents/link-rewriting)。Python 设置是独立的：[Python](/zh-Hans/guide/integrations/python)。
 
-每个 `init -t ui-*` 模板都会生成一个默认的 LLM 提供商块（除非你传入 `-P <provider>`，否则为 `openrouter`）。在 `translate-docs` 或 `sync` 之前，如有需要请配置 `provider` / `providers` 并设置相应的 API 密钥 — 参见[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。
+每个 `init -t ui-* -P <provider>` 脚手架都会写入该预设的 LLM 提供商块。在 `translate-docs` 或 `sync` 之前，请设置相应的 API 密钥 — 请参阅 [提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。
 
 有关跨框架比较，请参阅[框架外壳翻译](#framework-shell-translation)。下方链接的每个指南均涵盖相应框架的设置。
 
@@ -49,3 +50,7 @@
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |
+| Streamlit | [examples/python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit) |
+| Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
+| FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
+| GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |

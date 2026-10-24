@@ -1,13 +1,45 @@
 <a id="environment-variables"></a>
 # Umgebungsvariablen
 
-| Variable               | Beschreibung                                                |
-|------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | API-Schlüssel für den `openrouter`-Anbieter (erforderlich, wenn dieser aktiv ist). Standard-Voreinstellung `init`. |
-| Andere Anbieter-Schlüssel | Jeder Anbieter liest seine eigene Umgebungsvariable für den Schlüssel: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `DEEPSEEK_API_KEY`, `CEREBRAS_API_KEY`, `GROQ_API_KEY`, `MISTRAL_API_KEY`, `XAI_API_KEY`, `NVIDIA_API_KEY`, `ALIBABA_API_KEY`, `APIFUN_API_KEY`, `CHEAPERINFERENCE_API_KEY` (Ollama benötigt keine). Überschreiben Sie diese pro Anbieter mit `providers.<name>.apiKeyEnv`. |
-| `OPENROUTER_BASE_URL`  | Überschreibt `providers.openrouter.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
-| `OLLAMA_BASE_URL`      | Überschreibt `providers.ollama.baseUrl` (nur wenn dieser Anbieter konfiguriert ist). |
-| `AI_I18N_LANG`         | Sprache für die Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle, Dashboard). Wird durch `-L` / `--ui-lang` überschrieben; überschreibt die Konfiguration `uiLanguage`. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |
+<a id="provider-api-keys"></a>
+## Provider-API-Schlüssel
+
+`init -P <provider>` wählt dieses integrierte Preset und den API-Schlüssel in der Tabelle unten aus. Überschreiben Sie den Variablennamen für einen Provider mit `providers.<name>.apiKeyEnv`. Ollama hat keinen API-Schlüssel.
+
+| Variable | Anbieter |
+| --- | --- |
+| `OPENROUTER_API_KEY` | `openrouter` |
+| `OPENAI_API_KEY` | `openai` |
+| `ANTHROPIC_API_KEY` | `anthropic` |
+| `GOOGLE_API_KEY` | `gemini` |
+| `DEEPSEEK_API_KEY` | `deepseek` |
+| `CEREBRAS_API_KEY` | `cerebras` |
+| `GROQ_API_KEY` | `groq` |
+| `MISTRAL_API_KEY` | `mistral` |
+| `XAI_API_KEY` | `xai` |
+| `NVIDIA_API_KEY` | `nvidia` |
+| `ALIBABA_API_KEY` | `alibaba` |
+| `APIFUN_API_KEY` | `apifun` |
+| `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
+
+Der Schlüssel ist erforderlich, wenn dieser Anbieter aktiv ist. Preset-URLs: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
+
+<a id="provider-base-urls"></a>
+## Provider-Basis-URLs
+
+Diese beiden Variablen überschreiben `baseUrl` für einen konfigurierten Anbieter. Jedes andere Preset ändert seine URL in der Konfiguration (`providers.<name>.baseUrl`), nicht über eine Umgebungsvariable.
+
+| Variable | Überschreibt |
+| --- | --- |
+| `OPENROUTER_BASE_URL` | `providers.openrouter.baseUrl` (nur wenn dieser Anbieter konfiguriert ist) |
+| `OLLAMA_BASE_URL` | `providers.ollama.baseUrl` (nur wenn dieser Anbieter konfiguriert ist) |
+
+<a id="tool-and-run"></a>
+## Tool und Ausführung
+
+| Variable | Beschreibung |
+| --- | --- |
+| `AI_I18N_LANG` | Sprache für die Benutzeroberfläche des Tools (CLI-Hilfe, Protokolle, Dashboard). Wird durch `-L` / `--ui-lang` überschrieben; überschreibt die Konfiguration `uiLanguage`. Siehe [Sprache der Tool-Benutzeroberfläche](/de/guide/tool-ui-language). |
 | `I18N_SOURCE_LOCALE`    | Überschreibt `sourceLocale` zur Laufzeit.                        |
 | `I18N_TARGET_LOCALES`   | Durch Komma getrennte Gebietsschemacodes zur Überschreibung von `targetLocales`.  |
 | `I18N_LOG_LEVEL` | Logger-Level (`debug`, `info`, `warn`, `error`). Unbekannte Werte (einschließlich `silent`) fallen auf `info` zurück. |

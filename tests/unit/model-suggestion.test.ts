@@ -164,7 +164,7 @@ describe("resolveSuggestionWeights", () => {
   it("uses built-in weights when a profile is omitted and normalizes overrides", () => {
     expect(resolveSuggestionWeights(undefined, "price")).toEqual(DEFAULT_PRICE_WEIGHTS);
     const weights = resolveSuggestionWeights(
-      { modelSuggestion: { quality: { chrf: 45, arena: 35, price: 15 } } },
+      { modelSuggestion: { quality: { chrf: 45, arena: 35, price: 20 } } },
       "quality"
     );
     expect(weights.chrf).toBeCloseTo(DEFAULT_QUALITY_WEIGHTS.chrf);
@@ -256,27 +256,33 @@ describe("ensureBenchmarkCache", () => {
 });
 
 describe("replaceProviderTranslationModels", () => {
-  it("replaces only translationModels", () => {
+  const sample = {
+    sourceLocale: "en",
+    providers: {
+      openai: {
+        translationModels: ["old"],
+        uiModels: ["keep-ui"],
+        localeModels: [{ locale: "de", models: ["keep-locale"] }],
+      },
+    },
+  };
+
+  it("replaces only translationModels and keeps a timestamped backup of the previous file", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "apply-models-"));
     const configPath = path.join(dir, "ai-i18n-tools.config.json");
-    fs.writeFileSync(
+    const before = `${JSON.stringify(sample, null, 2)}\n`;
+    fs.writeFileSync(configPath, before);
+    const now = new Date("2026-10-23T00:20:00.123Z");
+    const backupPath = replaceProviderTranslationModels(
       configPath,
-      `${JSON.stringify(
-        {
-          sourceLocale: "en",
-          providers: {
-            openai: {
-              translationModels: ["old"],
-              uiModels: ["keep-ui"],
-              localeModels: [{ locale: "de", models: ["keep-locale"] }],
-            },
-          },
-        },
-        null,
-        2
-      )}\n`
+      "openai",
+      ["alpha", "beta"],
+      now
     );
-    replaceProviderTranslationModels(configPath, "openai", ["alpha", "beta"]);
+    expect(path.basename(backupPath)).toBe(
+      "ai-i18n-tools.config.2026-10-23T00-20-00-123Z.backup.json"
+    );
+    expect(fs.readFileSync(backupPath, "utf8")).toBe(before);
     const written = JSON.parse(fs.readFileSync(configPath, "utf8")) as {
       providers: {
         openai: { translationModels: string[]; uiModels: string[]; localeModels: unknown[] };
@@ -287,6 +293,16 @@ describe("replaceProviderTranslationModels", () => {
     expect(written.providers.openai.localeModels).toEqual([
       { locale: "de", models: ["keep-locale"] },
     ]);
+
+    const second = replaceProviderTranslationModels(configPath, "openai", ["gamma"], now);
+    expect(path.basename(second)).toBe(
+      "ai-i18n-tools.config.2026-10-23T00-20-00-123Z-2.backup.json"
+    );
+    const customPath = path.join(dir, "custom.json");
+    fs.writeFileSync(customPath, before);
+    const customBackup = replaceProviderTranslationModels(customPath, "openai", ["alpha"], now);
+    expect(path.basename(customBackup)).toBe("custom.2026-10-23T00-20-00-123Z.backup.json");
+    expect(fs.readFileSync(customBackup, "utf8")).toBe(before);
   });
 });
 

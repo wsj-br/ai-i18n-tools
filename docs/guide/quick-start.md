@@ -1,14 +1,16 @@
 <a id="quick-start"></a>
 # Quick start
 
-The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, and `ui-fumadocs` templates enable **document** translation (`translate-docs`); `ui-vitepress` also scaffolds `docsOutput.vitepressThemeCatalog` for VitePress theme strings, `ui-nextra` scaffolds `docs[].nextraDictionaryPath` for the Nextra theme dictionary (sidebar `_meta.ts` is collected automatically), and `ui-fumadocs` scaffolds `docsOutput.fumadocsUiCatalog` for Fumadocs UI overrides (sidebar `meta.json` is collected automatically). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) uses **both** pipelines. Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+The default `init` template (`ui-markdown`) enables **UI** extraction and translation only. The `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, and `ui-fumadocs` templates enable **document** translation (`translate-docs`); `ui-vitepress` also scaffolds `docsOutput.vitepressThemeCatalog` for VitePress theme strings, `ui-nextra` scaffolds `docs[].nextraDictionaryPath` for the Nextra theme dictionary (sidebar `_meta.ts` is collected automatically), and `ui-fumadocs` scaffolds `docsOutput.fumadocsUiCatalog` for Fumadocs UI overrides (sidebar `meta.json` is collected automatically). The `ui-astro-website` template scaffolds **UI** extraction for plain Astro apps (including `.astro` files); add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) when you also want `translate-docs` for `.astro` page HTML. The reference [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) uses **both** pipelines. Python templates are `ui-python`, `ui-python-gettext`, `ui-python-flask`, and `ui-python-django` — see [Add i18n to a Python app](/guide/add-i18n-to-python). Use `sync` when you want one command that runs extract, UI translation, optional SVG file translation, and documentation translation according to your config.
+
+Python projects can use the standalone executable and skip a Node.js install. Download steps: [Installation — Standalone executables](/guide/installation#standalone-executables).
 
 <a id="runnable-examples"></a>
 ### Runnable examples
 
-Nine runnable projects and fixtures live under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). See the [Examples](/examples) catalog (console app, Next.js + Docusaurus, Astro website, Astro Starlight docs, VitePress docs, Nextra docs, Fumadocs docs, multi-provider comparison, markdown stress test).
+Runnable projects and fixtures live under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). See the [Examples](/examples) catalog for the full list, copy commands, and which folders use `pnpm` versus a Python virtualenv.
 
-**Run one example standalone** (without cloning the whole monorepo):
+**Run one Node.js example standalone** (without cloning the whole monorepo):
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
@@ -17,7 +19,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-Replace `console-app` with any example folder name. Each example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm. Per-example READMEs include the same snippet with the folder name filled in.
+Replace `console-app` with any other Node.js example folder name. Each of those examples declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm. Python examples have no `package.json`. Copy them with the same `degit` command, or use `ai-i18n-tools-python-examples.zip` from the GitHub Release, then follow [Examples — Python](/examples#python-examples).
 
 **From the full ai-i18n-tools repository** — if you cloned the whole repo (not just one example folder with degit):
 
@@ -36,8 +38,8 @@ The workspace [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pn
 
 Every command that calls an LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, and `sync` — needs **both**:
 
-1. **At least one provider** in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init` scaffolds a default provider block (`openrouter` unless you pass `-P <provider>`); switch presets, add providers, or tune model lists — see [LLM providers and models](/guide/providers-and-models).
-2. **The matching API key** in your environment or a project-root `.env` file. Each built-in preset reads a named env var from the [preset table](/guide/providers-and-models#built-in-providers) (for example `OPENROUTER_API_KEY` for the default, or `ANTHROPIC_API_KEY` when you scaffold with `-P anthropic`); **Ollama** is the exception — it uses a local endpoint and needs no key. See [Installation — set your provider API key](/guide/installation#using-the-cli).
+1. **At least one provider** in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init -P <provider>` scaffolds that preset; add providers or tune model lists — see [LLM providers and models](/guide/providers-and-models).
+2. **The matching API key** in your environment or a project-root `.env` file. Each built-in preset reads a named env var from the [preset table](/guide/providers-and-models#built-in-providers) (for example `OPENROUTER_API_KEY` with `-P openrouter`, or `OPENAI_API_KEY` with `-P openai`); **Ollama** is the exception — it uses a local endpoint and needs no key. See [Installation — set your provider API key](/guide/installation#using-the-cli).
 
 `extract`, `status`, and other commands that do not call the LLM do not need a provider or API key.
 
@@ -47,32 +49,35 @@ Every command that calls an LLM — `translate-ui`, `translate-docs`, `translate
 Run from your **project root** after installing `ai-i18n-tools` and [configuring your shell for the bare command](/guide/installation#using-the-cli). Examples below use `ai-i18n-tools` directly.
 
 ```bash
-# Set the API key for your active provider (see preset table; skip for local Ollama)
-# Default init uses openrouter:
+# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Or scaffold another preset at init, e.g. anthropic:
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# export OPENAI_API_KEY=sk-your-key-here
+# export CHEAPERINFERENCE_API_KEY=your-key-here
 
-# UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init [-P <provider>]    # default: openrouter
-ai-i18n-tools init -P anthropic
+# UI strings (ui-markdown template enables extract + translate-ui)
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models          # optional: ranked shortlist
+ai-i18n-tools suggest-models --apply  # replace translationModels
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
-# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
-# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
+# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
+# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
+# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
+# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
+# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
+# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -82,6 +87,8 @@ ai-i18n-tools sync
 ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
+
+The model list written by `init` is a starting point. `suggest-models` ranks the active provider's chat models. `suggest-models --apply` replaces `translationModels` and leaves `uiModels` and `localeModels` unchanged. The same ranking is on the [Models](/guide/translation-dashboard/models) tab. Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
 <a id="recommended-packagejson-scripts"></a>
 ### Recommended `package.json` scripts

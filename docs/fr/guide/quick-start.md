@@ -1,14 +1,16 @@
 <a id="quick-start"></a>
 # Démarrage rapide
 
-Le modèle `init` (`ui-markdown`) par défaut n’active que l’extraction et la traduction de l’**interface utilisateur**. Les modèles `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` et `ui-fumadocs` activent la traduction de **documents** (`translate-docs`) ; `ui-vitepress` échafaude également `docsOutput.vitepressThemeCatalog` pour les chaînes de thème VitePress, `ui-nextra` échafaude `docs[].nextraDictionaryPath` pour le dictionnaire de thème Nextra (la `_meta.ts` de la barre latérale est collectée automatiquement), et `ui-fumadocs` échafaude `docsOutput.fumadocsUiCatalog` pour les remplacements d’interface utilisateur Fumadocs (la `meta.json` de la barre latérale est collectée automatiquement). Le modèle `ui-astro-website` échafaude l’extraction de l’**interface utilisateur** pour les applications Astro simples (y compris les fichiers `.astro`) ; ajoutez un bloc `docs[]` (voir [Pages de site web Astro (analyse et remplacement)](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) lorsque vous souhaitez également `translate-docs` pour le HTML de la page `.astro`. La référence [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) utilise **les deux** pipelines. Utilisez `sync` lorsque vous souhaitez une commande qui exécute l’extraction, la traduction de l’interface utilisateur, la traduction facultative des fichiers SVG et la traduction de la documentation en fonction de votre configuration.
+Le modèle `init` par défaut (`ui-markdown`) active uniquement l'extraction et la traduction de l'**UI**. Les modèles `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` et `ui-fumadocs` activent la traduction de **documents** (`translate-docs`) ; `ui-vitepress` génère également `docsOutput.vitepressThemeCatalog` pour les chaînes de caractères du thème VitePress, `ui-nextra` génère `docs[].nextraDictionaryPath` pour le dictionnaire du thème Nextra (la barre latérale `_meta.ts` est collectée automatiquement), et `ui-fumadocs` génère `docsOutput.fumadocsUiCatalog` pour les remplacements d'UI Fumadocs (la barre latérale `meta.json` est collectée automatiquement). Le modèle `ui-astro-website` génère l'extraction de l'**UI** pour les applications Astro simples (y compris les fichiers `.astro`) ; ajoutez un bloc `docs[]` (voir [Pages du site Astro (parse-and-replace)](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) si vous souhaitez également `translate-docs` pour le HTML des pages `.astro`. La référence [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) utilise les **deux** pipelines. Les modèles Python sont `ui-python`, `ui-python-gettext`, `ui-python-flask` et `ui-python-django` — voir [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python). Utilisez `sync` lorsque vous souhaitez une commande unique qui exécute l'extraction, la traduction de l'UI, la traduction optionnelle de fichiers SVG et la traduction de la documentation conformément à votre configuration.
+
+Les projets Python peuvent utiliser l'exécutable autonome et éviter l'installation de Node.js. Étapes de téléchargement : [Installation — Exécutables autonomes](/fr/guide/installation#standalone-executables).
 
 <a id="runnable-examples"></a>
 ### Exemples exécutables
 
-Neuf projets et fixtures exécutables se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/fr/examples) (application console, Next.js + Docusaurus, site web Astro, documentation Astro Starlight, documentation VitePress, documentation Nextra, documentation Fumadocs, comparaison multi-fournisseurs, test de contrainte Markdown).
+Les projets exécutables et les fixtures se trouvent sous [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consultez le catalogue [Exemples](/fr/examples) pour obtenir la liste complète, les commandes de copie et savoir quels dossiers utilisent `pnpm` par rapport à un environnement virtuel Python.
 
-**Exécuter un exemple de manière autonome** (sans cloner l'ensemble du monorepo) :
+**Exécuter un exemple Node.js de manière autonome** (sans cloner l'intégralité du monorepo) :
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
@@ -17,7 +19,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-Remplacez `console-app` par n'importe quel nom de dossier d'exemple. Chaque exemple déclare une plage de version caret publiée de `ai-i18n-tools` correspondant à la version actuelle du package et installe la CLI depuis npm. Les fichiers README de chaque exemple incluent le même extrait avec le nom du dossier renseigné.
+Remplacez `console-app` par le nom de n'importe quel autre dossier d'exemple Node.js. Chacun de ces exemples déclare une plage de versions publiée `ai-i18n-tools` correspondant à la version actuelle du package et installe la CLI depuis npm. Les exemples Python n'ont pas de `package.json`. Copiez-les avec la même commande `degit`, ou utilisez `ai-i18n-tools-python-examples.zip` depuis la version GitHub, puis suivez [Exemples — Python](/fr/examples#python-examples).
 
 **Depuis le dépôt complet ai-i18n-tools** — si vous avez cloné l'intégralité du dépôt (pas seulement un dossier d'exemple avec degit) :
 
@@ -36,8 +38,8 @@ L'entrée de l'espace de travail [`overrides`](https://github.com/wsj-br/ai-i18n
 
 Chaque commande qui appelle un LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` et `sync` — nécessite **les deux** :
 
-1. **Au moins un fournisseur** dans `ai-i18n-tools.config.json` : un bloc `providers.<name>` avec `translationModels`, et une clé `provider` de niveau supérieur lorsque plusieurs fournisseurs sont configurés. `init` échafaude un bloc de fournisseur par défaut (`openrouter` sauf si vous passez `-P <provider>`) ; changez les préréglages, ajoutez des fournisseurs ou ajustez les listes de modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
-2. **La clé API correspondante** dans votre environnement ou un fichier `.env` à la racine du projet. Chaque préréglage intégré lit une variable d'environnement nommée à partir du [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers) (par exemple `OPENROUTER_API_KEY` pour le défaut, ou `ANTHROPIC_API_KEY` lorsque vous échafaudez avec `-P anthropic`) ; **Ollama** est l'exception — il utilise un point de terminaison local et n'a pas besoin de clé. Voir [Installation — définissez votre clé API de fournisseur](/fr/guide/installation#using-the-cli).
+1. **Au moins un fournisseur** dans `ai-i18n-tools.config.json` : un bloc `providers.<name>` avec `translationModels`, et une clé `provider` de niveau supérieur lorsque plusieurs fournisseurs sont configurés. `init -P <provider>` génère ce préréglage ; ajoutez des fournisseurs ou ajustez les listes de modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
+2. **La clé API correspondante** dans votre environnement ou un fichier `.env` à la racine du projet. Chaque préréglage intégré lit une variable d'environnement nommée à partir du [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers) (par exemple `OPENROUTER_API_KEY` avec `-P openrouter`, ou `OPENAI_API_KEY` avec `-P openai`) ; **Ollama** est l'exception — il utilise un point de terminaison local et n'a pas besoin de clé. Voir [Installation — définissez votre clé API de fournisseur](/fr/guide/installation#using-the-cli).
 
 `extract`, `status` et les autres commandes qui n'appellent pas le LLM n'ont pas besoin de fournisseur ou de clé API.
 
@@ -47,32 +49,35 @@ Chaque commande qui appelle un LLM — `translate-ui`, `translate-docs`, `transl
 Exécutez depuis la **racine de votre projet** après avoir installé `ai-i18n-tools` et [configuré votre shell pour la commande brute](/fr/guide/installation#using-the-cli). Les exemples ci-dessous utilisent directement `ai-i18n-tools`.
 
 ```bash
-# Set the API key for your active provider (see preset table; skip for local Ollama)
-# Default init uses openrouter:
+# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Or scaffold another preset at init, e.g. anthropic:
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# export OPENAI_API_KEY=sk-your-key-here
+# export CHEAPERINFERENCE_API_KEY=your-key-here
 
-# UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init [-P <provider>]    # default: openrouter
-ai-i18n-tools init -P anthropic
+# UI strings (ui-markdown template enables extract + translate-ui)
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models          # optional: ranked shortlist
+ai-i18n-tools suggest-models --apply  # replace translationModels
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
-# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
-# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
+# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
+# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
+# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
+# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
+# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
+# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -82,6 +87,8 @@ ai-i18n-tools sync
 ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
+
+La liste de modèles écrite par `init` est un point de départ. `suggest-models` classe les modèles de chat du fournisseur actif. `suggest-models --apply` remplace `translationModels` et laisse `uiModels` et `localeModels` inchangés. Le même classement se trouve sur l'onglet [Modèles](/fr/guide/translation-dashboard/models). Référence des commandes : [suggest-models](/fr/reference/cli-commands/models#suggest-models).
 
 <a id="recommended-packagejson-scripts"></a>
 ### Scripts `package.json` recommandés

@@ -51,19 +51,19 @@ README या दस्तावेज़ों में एक वैकल्
 ## चरण 1: दस्तावेज़ों के लिए आरंभ करें
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 एस्ट्रो स्टारलाइट दस्तावेज़ साइटों के लिए:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 वाइटप्रेस दस्तावेज़ साइटों के लिए:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 नेविगेशन/साइडबार/फ़ुटर स्ट्रिंग के लिए `docsOutput.vitepressThemeCatalog` सेट करें - [वाइटप्रेस इंटीग्रेशन](/hi/guide/integrations/vitepress) देखें।
@@ -71,7 +71,7 @@ ai-i18n-tools init -t ui-vitepress [-P <provider>]
 नेक्स्ट्रा दस्तावेज़ साइटों के लिए:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 थीम डिक्शनरी स्ट्रिंग के लिए `docs[].nextraDictionaryPath` सेट करें - [नेक्स्ट्रा इंटीग्रेशन](/hi/guide/integrations/nextra) देखें। साइडबार `_meta.ts` लेबल स्वचालित रूप से एकत्र किए जाते हैं।
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-nextra [-P <provider>]
 फ़ुमाडॉक्स दस्तावेज़ साइटों के लिए:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 UI ओवरराइड के लिए `docsOutput.fumadocsUiCatalog` सेट करें - [फ़ुमाडॉक्स इंटीग्रेशन](/hi/guide/integrations/fumadocs) देखें। साइडबार `meta.json` लेबल स्वचालित रूप से एकत्र किए जाते हैं।
@@ -87,17 +87,17 @@ UI ओवरराइड के लिए `docsOutput.fumadocsUiCatalog` से�
 सादे एस्ट्रो वेबसाइट UI के लिए (कोई स्टारलाइट नहीं):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 वह टेम्पलेट केवल UI निष्कर्षण को सक्षम करता है। पेज HTML अनुवाद के लिए, `features.translateDocs` भी सेट करें और एक `docs[]` ब्लॉक जोड़ें ([एस्ट्रो वेबसाइट पेज (पार्स-और-रिप्लेस)](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) देखें)। [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) कॉन्फ़िग दोनों पाइपलाइन एक साथ दिखाता है।
 
 जनरेट किए गए `ai-i18n-tools.config.json` को संपादित करें:
 
-- `provider` और `providers` — `init` एक डिफ़ॉल्ट प्रदाता ब्लॉक को स्केफ़ोल्ड करता है (`openrouter` जब तक आप `-P <provider>` पास नहीं करते); कम से कम एक प्रदाता को कॉन्फ़िगर करें और `translate-docs` या `sync` से पहले उसकी API कुंजी सेट करें (ओलामा को किसी कुंजी की आवश्यकता नहीं है)। [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) और [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें।
-- `sourceLocale` - स्रोत भाषा (`docusaurus.config.js` में `defaultLocale` से मेल खाना चाहिए)।
-- `targetLocales` - BCP-47 लोकेल कोड का सरणी (जैसे `["de", "fr", "es"]`)।
-- `cacheDir` - सभी पाइपलाइनों के लिए साझा SQLite कैश निर्देशिका (और `--write-logs` के लिए डिफ़ॉल्ट लॉग निर्देशिका)।
+- `provider` और `providers` — `init -P <provider>` प्रीसेट करने वाले ढांचे; `translate-docs` या `sync` से पहले इसकी API कुंजी सेट करें (Ollama को किसी कुंजी की आवश्यकता नहीं है)। [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) और [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें।
+- `sourceLocale` - स्रोत भाषा (यह `docusaurus.config.js` में `defaultLocale` से मिलना चाहिए)।
+- `targetLocales` - BCP-47 स्थानिक कोड का एरे (जैसे `["de", "fr", "es"]`)।
+- `cacheDir` - सभी पाइपलाइनों के लिए साझा SQLite कैश डायरेक्टरी (और `--write-logs` के लिए डिफ़ॉल्ट लॉग डायरेक्टरी)।
 - `docs` - दस्तावेज़ ब्लॉकों का सरणी। प्रत्येक ब्लॉक में वैकल्पिक `description`, `contentPaths` (स्ट्रिंग या सरणी; फ़ाइल, निर्देशिका, या ग्लोब), `outputDir`, वैकल्पिक `docusaurusCatalogDir`, `docsOutput`, वैकल्पिक `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, आदि होते हैं।
 - `docs[].description` - रखरखावकर्ताओं के लिए वैकल्पिक छोटा नोट। जब सेट किया जाता है, तो यह `translate-docs` हेडलाइन और `status` अनुभाग शीर्षकों में दिखाई देता है।
 - `docs[].contentPaths` - मार्कडाउन/MDX/`.astro` स्रोत (और डोक्यूसौरस शेल JSON के लिए वैकल्पिक `docusaurusCatalogDir`)।

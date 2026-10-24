@@ -22,7 +22,7 @@
 1. 安裝 `ai-i18n-tools`（請參閱[安裝](/zh-Hant/guide/installation)）。如果您的專案還沒有 `ai-i18n-tools.config.json`，請建立一個：
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 編輯 `sourceLocale` 和 `targetLocales` 以符合 Intlayer 字典中已有的地區設定，並將 `ui.sourceRoots`、`ui.stringsJson`、`ui.flatOutputDir` 設定為指向您應用程式的來源與所需的目錄路徑——與 `translate-ui` 使用的索引鍵相同，請參閱 [UI 字串 — 步驟 1：初始化](/zh-Hant/guide/ui-strings/#step-1-initialise)。

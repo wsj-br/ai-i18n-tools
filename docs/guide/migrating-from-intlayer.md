@@ -22,7 +22,7 @@ Already using i18next JSON translation files? You do not need this migration com
 1. Install `ai-i18n-tools` (see [Installation](/guide/installation)). If your project has no `ai-i18n-tools.config.json` yet, scaffold one:
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
    Edit `sourceLocale` and `targetLocales` to match the locales already in your Intlayer dictionaries, and set `ui.sourceRoots`, `ui.stringsJson`, `ui.flatOutputDir` to point at your app's source and desired catalog paths — same keys `translate-ui` uses, see [UI strings — Step 1: Initialise](/guide/ui-strings/#step-1-initialise).

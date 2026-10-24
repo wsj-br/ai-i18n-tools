@@ -6,7 +6,12 @@ GitHub पर [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/ex
 <a id="run-standalone-npx-degit"></a>
 ## स्टैंडअलोन चलाएँ (`npx degit`)
 
-पूरे रिपॉजिटरी को क्लोन किए बिना एक उदाहरण कॉपी करें। प्रत्येक `ai-i18n-tools` की एक प्रकाशित कैरेट रेंज घोषित करता है जो वर्तमान पैकेज संस्करण से मेल खाती है और npm से CLI स्थापित करती है:
+पूरे रिपॉजिटरी को क्लोन किए बिना एक उदाहरण कॉपी करें।
+
+<a id="node-examples"></a>
+### Node.js उदाहरण
+
+प्रत्येक Node.js उदाहरण वर्तमान पैकेज संस्करण से मेल खाने वाली `ai-i18n-tools` की एक प्रकाशित कैरेट रेंज घोषित करता है और npm से CLI इंस्टॉल करता है:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-यदि आपने इसके बजाय **पूरे** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) रिपॉजिटरी को क्लोन किया है, तो रिपॉजिटरी रूट पर `pnpm install` और `pnpm run build` चलाएँ, फिर `cd examples/<name>`। कार्यस्थान उदाहरण अपने `pnpm run i18n:*` स्क्रिप्ट के माध्यम से स्थानीय CLI का उपयोग करते हैं, या [PATH सेटअप](/hi/guide/installation#using-the-cli) के बाद `ai-i18n-tools …` का उपयोग करते हैं। [स्थापना — क्लोन किया गया मोनोरिपो](/hi/guide/installation#cloned-monorepo) देखें।
+<a id="python-examples"></a>
+### Python उदाहरण
+
+`python-streamlit`, `python-flask`, `python-fastapi`, और `python-gettext` में कोई `package.json` नहीं है। नीचे दी गई तालिका में `degit` कमांड मान्य हैं। आप [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases) से `ai-i18n-tools-python-examples.zip` भी डाउनलोड कर सकते हैं। वह ज़िप वही चार निर्देशिकाएँ हैं। यह npm पैकेज का हिस्सा नहीं है, और यह स्टैंडअलोन निष्पादन योग्य फ़ाइल के अंदर नहीं है।
+
+`python-streamlit`, `python-flask`, और `python-fastapi` एक virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल मानक लाइब्रेरी का उपयोग करता है। [standalone executable](/hi/guide/installation#standalone-executables) के साथ अनुवाद करें।
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows पर, `.venv\Scripts\activate` को सक्रिय करें।
+
+यदि आपने इसके बजाय **पूरी** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) रिपॉजिटरी को क्लोन किया है, तो रिपॉजिटरी रूट पर `pnpm install` और `pnpm run build` चलाएँ, फिर `cd examples/<name>` चलाएँ। वर्कस्पेस (Node.js) उदाहरण अपने `pnpm run i18n:*` स्क्रिप्ट के माध्यम से स्थानीय CLI का उपयोग करते हैं, या [PATH setup](/hi/guide/installation#using-the-cli) के बाद सीधे `ai-i18n-tools …` का उपयोग करते हैं। उस चेकआउट में Python उदाहरण बिल्ड के बाद `node ../../bin/ai-i18n-tools.mjs` के साथ अनुवाद करते हैं। [Installation — Cloned monorepo](/hi/guide/installation#cloned-monorepo) देखें।
 
 <a id="list-of-examples"></a>
 ## उदाहरणों की सूची
@@ -32,6 +54,10 @@ pnpm install
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | उदाहरण | इसके लिए सबसे अच्छा | degit के साथ कॉपी करें | चलाएँ |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ pnpm install
 
 प्रत्येक **उदाहरण** नाम पूर्ण सेटअप, कमांड और प्रोजेक्ट लेआउट के साथ अपने GitHub README से लिंक करता है — या [रिपॉजिटरी में उदाहरण इंडेक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) ब्राउज़ करें।
 
-`python-streamlit`, `python-flask`, और `python-fastapi` में `venv` और `pip` का उपयोग होता है, न कि `pnpm` का। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। एक रिलीज़ में उन लोगों के लिए `ai-i18n-tools-python-examples.zip` भी संलग्न होता है जो स्टैंडअलोन एक्ज़ीक्यूटेबल डाउनलोड करते हैं और जिनके पास Node.js नहीं है। वह ज़िप npm पैकेज का हिस्सा नहीं है।
+Node.js उदाहरण `pnpm install` के बाद npm से CLI इंस्टॉल करते हैं। चार Python उदाहरण `venv` और `pip` का उपयोग करते हैं (`python-gettext` केवल मानक लाइब्रेरी का उपयोग करता है) और अनुवाद के लिए [standalone executable](/hi/guide/installation#standalone-executables) का उपयोग करते हैं।
 
 <br/>
 

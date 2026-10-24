@@ -137,8 +137,12 @@
   プロバイダー全体の100万トークンあたりの米ドル単価：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。課金対象の呼び出しにプロバイダーから報告された `usage.cost` がない場合（OpenRouterおよびCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls` 行に保存されます。一致する `modelPricing` エントリがある場合、このデフォルト値は上書きされます。プロバイダーから報告されたコストが置き換えられることはありません。どちらの設定レートも一致しない場合、ツールはモデルIDの models.dev リスト価格（100万トークンあたりの入力および出力米ドル）を使用します。コストなしで保存された行は、後で [`usage`](/ja/reference/cli-commands/workflows#usage) および [Usage & costs](/ja/guide/translation-dashboard/usage) によって推定できます。これらのソースのいずれも適用されない場合、コストは不明（`—`）のままとなり、`$0.00` になることはありません。
 - `modelPricing`（オプション）
   モデルごとの100万トークンあたりの米ドル単価：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDに対して `pricing` を上書きします。プロバイダーが `usage.cost` を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
+- `zeroDataRetention` (オプション、`providers.cheaperinference`のみ)
+  `true`の場合、チャットリクエストは`"zdr": true`と`list-models`を送信し、`check-models`と`suggest-models`は`GET /v1/models?zdr=true`をロードします。省略するとオフになります。[ゼロデータ保持](/ja/guide/providers-and-models#cheaperinference-zero-data-retention)を参照してください。
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
+
+<div class="provider-presets">
 
 | プロバイダー | ベースURL | APIキー環境変数 |
 | --- | --- | --- |
@@ -157,6 +161,8 @@
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
 
+</div>
+
 従来のトップレベル`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`を含む）は引き続き受け付けられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）へ自動マイグレーションされます。`defaultModel` / `fallbackModel`は`translationModels`に統合されます。
 
 1つの設定で複数のプロバイダーを構成し、`-P`で切り替える実行可能な例については、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)を参照してください（`openai`、`anthropic`、`openrouter`、`deepseek`は同じドキュメント上にあります）。
@@ -165,14 +171,14 @@
 
 以下のリストは、拡張可能な**ベースライン**として扱ってください。特定のロケールの翻訳が不十分または失敗した場合は、その言語またはスクリプトを効果的にサポートするモデルを調査し（オンラインリソースまたはプロバイダーのドキュメントを参照）、それらのモデルIDを代替として追加してください。
 
-これらのモデルIDは、`-P openrouter`（デフォルト）の場合、`ai-i18n-tools init [-P <provider>]`と一致します。その他のプリセットは`init -P <provider>`からネイティブなモデルIDを取得します — [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)を参照してください。
+これらのモデルIDは`ai-i18n-tools init -P openrouter`が書き込むものです。他のプリセットは`init -P <provider>`からネイティブモデルIDを取得します — [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)を参照してください。
 
 このリストは、36の対象ロケールを持つ大規模なドキュメンテーションプロジェクトで**広範なロケール対応のテスト**が行われました。実用的なデフォルトとして機能しますが、すべてのロケールで良好に動作する保証はありません。
 
-`translationModels`の例（`ai-i18n-tools init [-P <provider>]`と同じデフォルト）:
+例 `translationModels` (`ai-i18n-tools init -P openrouter`からのOpenRouterリスト):
 
 <details>
-<summary>デフォルトのtranslationModelsフォールバックリスト</summary>
+<summary>OpenRouterのtranslationModelsリスト</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 
 [`suggest-models`](/ja/reference/cli-commands/models#suggest-models) および [ダッシュボードのモデルタブ](/ja/guide/translation-dashboard/models) の重み付けです。このブロックを省略するか、いずれかのプロファイルを省略すると、そのプロファイルは組み込みの重みを維持します。このブロックは `--apply` や **Update config** によって書き換えられることはありません。これらはモデルIDのみを書き込みます。
 
-- `quality` — デフォルトの ChrF `0.45/0.95`、Arena `0.35/0.95`、価格 `0.15/0.95`、品質フロア `0.7`
-- `price` — デフォルトの ChrF `0.25`、Arena `0.10`、価格 `0.65`、品質フロア `0.6`
+- `quality` — デフォルトのChrF `0.45`、アリーナ `0.35`、価格 `0.20`、品質の下限 `0.7`
+- `price` — デフォルトのChrF `0.35`、アリーナ `0.20`、価格 `0.45`、品質の下限 `0.6`
 
-各プロファイルオブジェクトには `chrf`、`arena`、および `price` が必要です。各値は有限かつ `0` 以上であり、少なくとも1つは `0` より大きい必要があります。これらは合計が 1 になるように正規化されるため、`45`、`35`、および `15` は品質のデフォルト値と一致します。`qualityFloor` はオプションであり、範囲は `(0, 1]` で、候補プール内の最良の ChrF に対する割合を表します。フロアを下回るモデル（ChrF測定値がないモデルを含む）は、フロアをクリアしたモデルの後にソートされます。
+各プロファイルオブジェクトには、`chrf`、`arena`、および `price` が必要です。各値は有限で、少なくとも `0` であり、そのうち少なくとも1つは `0` より大きくなければなりません。それらは合計が1になるように正規化されるため、`45`、`35`、および `20` は品質のデフォルト値と一致します。`qualityFloor` はオプションで、`(0, 1]` の範囲にあり、候補プール内の最高のChrFの割合です。下限を下回るモデル（ChrF測定値がないモデルを含む）は、その下限をクリアするモデルの後にソートされます。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

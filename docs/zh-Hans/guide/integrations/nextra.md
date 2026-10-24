@@ -9,7 +9,7 @@
 ## 快速开始
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)

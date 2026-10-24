@@ -22,6 +22,8 @@ import i18n from './i18n.js';
 console.log(i18n.t('Processing complete'));
 ```
 
+Python 애플리케이션은 생성된 `i18n.py` 헬퍼를 사용합니다. [Python 애플리케이션](/ko/guide/ui-strings/python)을 참조하세요.
+
 **규칙:**
 
 - 다음 형식만 추출됩니다: `t("…")`, `t('…')`, `t(`…`)`, `i18n.t("…")`.

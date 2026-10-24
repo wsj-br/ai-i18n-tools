@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### Standalone executables
 
-GitHub Releases attach a Node.js single-executable build for Linux (`x64`, `arm64`), macOS (`arm64`, `x64`), and Windows (`x64`). Python projects can run `extract` and `translate-ui` with that binary and do not need Node.js installed. The binaries are not notarized or Authenticode-signed. The npm tarball and the executable do not contain the Python examples. Those examples stay in the repository and are also attached as `ai-i18n-tools-python-examples.zip`.
+GitHub Releases attach a Node.js single-executable build. Python projects run the CLI from that binary, including `extract`, `translate-ui`, and `suggest-models`, with no Node.js install.
+
+| Platform | Asset |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). The npm tarball and the executable do not contain those examples. They stay in the repository as well.
+
+1. Download the asset that matches the machine from the [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) page.
+2. Check the checksum against `SHA256SUMS.txt`.
+3. On Linux and macOS, run `chmod +x` on the file and move it onto `PATH` (or call it by path).
+4. On Windows, place `ai-i18n-tools-win-x64.exe` on `PATH`. Renaming it to `ai-i18n-tools.exe` keeps the same command name as the other platforms.
+
+The binaries are not notarized or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning.
+
+Set the API key for the active provider the same way as an npm install (environment or a `.env` file in the working directory). The model list from `init` is a starting point. `suggest-models` prints a ranked shortlist. `suggest-models --apply` writes it to `translationModels`. The same ranking is on the [Models](/guide/translation-dashboard/models) tab.
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+Walkthrough: [Add i18n to a Python app](/guide/add-i18n-to-python). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
 ai-i18n-tools includes its own string extractor. If you previously used `i18next-scanner`, `babel-plugin-i18next-extract`, or similar, you can remove those dev dependencies after migrating. Existing i18next **namespace JSON** files can stay on the [JSON pipeline](/guide/json#i18next-namespace-files). Intlayer `.content.ts` dictionaries can be imported with `migrate-intlayer` — see [Migrating from Intlayer](/guide/migrating-from-intlayer).
 
@@ -89,15 +118,15 @@ Run `pnpm run build` at the repository root after changing CLI source. See the [
 
 On Linux, macOS, and WSL, registry installs set the executable bit on the CLI script automatically. On Windows, package managers generate `.cmd` and `.ps1` shims that invoke Node explicitly.
 
-Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) require **provider configuration** in `ai-i18n-tools.config.json` and **an API key** for the active provider. Run `ai-i18n-tools init [-P <provider>]` to scaffold a default provider block (`openrouter` when omitted); edit `provider` / `providers` to switch presets or models — see [LLM providers and models](/guide/providers-and-models). Ollama is the only built-in preset that needs no API key.
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) require **provider configuration** in `ai-i18n-tools.config.json` and **an API key** for the active provider. Run `ai-i18n-tools init -P <provider>` to scaffold that preset; edit `provider` / `providers` to add models — see [LLM providers and models](/guide/providers-and-models). The model list from `init` is a starting point. `ai-i18n-tools suggest-models` ranks the active provider's chat models, and `suggest-models --apply` replaces `translationModels`. The same ranking is on the [Models](/guide/translation-dashboard/models) tab. Command reference: [suggest-models](/reference/cli-commands/models#suggest-models). Ollama is the only built-in preset that needs no API key.
 
-Set the API key that matches your active provider (see the [preset table](/guide/providers-and-models#built-in-providers)):
+Set the API key that matches the provider you pass to `init` (see the [preset table](/guide/providers-and-models#built-in-providers)):
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 Or create a `.env` file in the project root:

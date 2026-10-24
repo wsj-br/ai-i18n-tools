@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### Exécutables autonomes
 
-Les versions GitHub incluent une build Node.js en exécutable unique pour Linux (`x64`, `arm64`), macOS (`arm64`, `x64`) et Windows (`x64`). Les projets Python peuvent exécuter `extract` et `translate-ui` avec ce binaire sans avoir besoin d'installer Node.js. Les binaires ne sont ni notariés ni signés avec Authenticode. L'archive npm et l'exécutable ne contiennent pas les exemples Python. Ces exemples restent dans le dépôt et sont également joints en tant que `ai-i18n-tools-python-examples.zip`.
+Les versions GitHub incluent une build Node.js en exécutable unique. Les projets Python exécutent l'interface de ligne de commande (CLI) à partir de ce binaire, y compris `extract`, `translate-ui` et `suggest-models`, sans installation de Node.js.
+
+| Plateforme | Asset |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+Chaque version inclut également `SHA256SUMS.txt` et `ai-i18n-tools-python-examples.zip` (les quatre exemples Python). L'archive npm et l'exécutable ne contiennent pas ces exemples. Ils restent également dans le dépôt.
+
+1. Téléchargez l'asset correspondant à votre machine depuis la page [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases).
+2. Vérifiez la somme de contrôle par rapport à `SHA256SUMS.txt`.
+3. Sur Linux et macOS, exécutez `chmod +x` sur le fichier et déplacez-le vers `PATH` (ou appelez-le par son chemin d'accès).
+4. Sur Windows, placez `ai-i18n-tools-win-x64.exe` dans `PATH`. Le renommer en `ai-i18n-tools.exe` permet de conserver le même nom de commande que sur les autres plateformes.
+
+Les binaires ne sont ni notariés ni signés avec Authenticode. macOS peut vous demander d'approuver un programme non signé. Windows SmartScreen peut afficher un avertissement.
+
+Définissez la clé API pour le fournisseur actif de la même manière qu'une installation npm (variable d'environnement ou fichier `.env` dans le répertoire de travail). La liste des modèles issue de `init` constitue un point de départ. `suggest-models` affiche une liste restreinte classée. `suggest-models --apply` l'écrit dans `translationModels`. Le même classement est disponible sur l'onglet [Models](/fr/guide/translation-dashboard/models).
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+Procédure pas à pas : [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python). Référence des commandes : [suggest-models](/fr/reference/cli-commands/models#suggest-models).
 
 ai-i18n-tools inclut son propre extracteur de chaînes. Si vous utilisiez précédemment `i18next-scanner`, `babel-plugin-i18next-extract` ou similaire, vous pouvez supprimer ces dépendances de développement après la migration. Les fichiers **JSON de namespace** i18next existants peuvent rester sur le [pipeline JSON](/fr/guide/json#i18next-namespace-files). Les dictionnaires Intlayer `.content.ts` peuvent être importés avec `migrate-intlayer` — voir [Migration depuis Intlayer](/fr/guide/migrating-from-intlayer).
 
@@ -88,15 +117,15 @@ Exécutez `pnpm run build` à la racine du dépôt après avoir modifié la sour
 
 Sous Linux, macOS et WSL, les installations depuis le registre définissent automatiquement le bit d'exécution sur le script CLI. Sous Windows, les gestionnaires de paquets génèrent des shim `.cmd` et `.ps1` qui invoquent explicitement Node.
 
-Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) nécessitent une **configuration de fournisseur** dans `ai-i18n-tools.config.json` et **une clé API** pour le fournisseur actif. Exécutez `ai-i18n-tools init [-P <provider>]` pour échafauder un bloc de fournisseur par défaut (`openrouter` si omis) ; modifiez `provider` / `providers` pour changer les préréglages ou les modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models). Ollama est le seul préréglage intégré qui ne nécessite pas de clé API.
+Les commandes de traduction (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) nécessitent une **configuration du fournisseur** dans `ai-i18n-tools.config.json` et une **clé API** pour le fournisseur actif. Exécutez `ai-i18n-tools init -P <provider>` pour échafauder ce préréglage ; modifiez `provider` / `providers` pour ajouter des modèles — voir [Fournisseurs et modèles LLM](/fr/guide/providers-and-models). La liste des modèles de `init` est un point de départ. `ai-i18n-tools suggest-models` classe les modèles de chat du fournisseur actif, et `suggest-models --apply` remplace `translationModels`. Le même classement se trouve dans l'onglet [Modèles](/fr/guide/translation-dashboard/models). Référence de commande : [suggest-models](/fr/reference/cli-commands/models#suggest-models). Ollama est le seul préréglage intégré qui ne nécessite pas de clé API.
 
-Définissez la clé API qui correspond à votre fournisseur actif (voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
+Définissez la clé API qui correspond au fournisseur que vous transmettez à `init` (voir le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers)) :
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 Ou créez un fichier `.env` à la racine du projet :

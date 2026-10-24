@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # Benutzeroberflächen-Strings
 
-Entwickelt für jedes JS/TS-Projekt, das i18next verwendet: React-Apps, Next.js (Client- und Serverkomponenten), Node.js-Dienste, reines HTML, Astro-Websites und CLI-Tools.
+Entwickelt für JS/TS-Projekte, die i18next verwenden – React, Next.js (Client- und Server-Komponenten), Node.js-Dienste, einfaches HTML, Astro-Websites und CLI-Tools – sowie für Python-Anwendungen. Python ruft `t()` oder gettext über eine generierte `i18n.py` auf (Django behält Djangos gettext bei).
 
 <a id="which-guide-to-read"></a>
 ## Welchen Leitfaden Sie lesen sollten
@@ -9,6 +9,7 @@ Entwickelt für jedes JS/TS-Projekt, das i18next verwendet: React-Apps, Next.js 
 | Ihre App | Weiterlesen |
 | --- | --- |
 | React / Next.js / Node + i18next | [i18next einbinden](/de/guide/ui-strings/i18next-runtime) (Schritt 4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python-Anwendungen](/de/guide/ui-strings/python). Initialisierung: `ui-python`, `ui-python-gettext`, `ui-python-flask` oder `ui-python-django`. Hilfsprogramm: `i18n.py`. Um einer bestehenden Anwendung Locales hinzuzufügen, siehe [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python). |
 | Reines HTML (kein `t()` im Markup) | [Reine HTML-Apps](/de/guide/ui-strings/plain-html) |
 | Astro Marketing-Website (hybrid) | [Astro-Website](/de/guide/ui-strings/astro-website) |
 | `t()`-Regeln, Interpolation, Plurale | [t()-Aufrufe & Plurale](/de/guide/ui-strings/t-calls-and-plurals) |
@@ -20,13 +21,13 @@ Entwickelt für jedes JS/TS-Projekt, das i18next verwendet: React-Apps, Next.js 
 ## Schritt 1: Initialisieren
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-Dies schreibt `ai-i18n-tools.config.json` mit der Vorlage `ui-markdown` (einschließlich eines Standard-Blocks `provider` / `providers`). Bevor Sie `translate-ui` oder `sync` ausführen, legen Sie den API-Schlüssel für Ihren aktiven Anbieter in der Umgebung oder `.env` fest – Ollama ausgenommen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie die Konfiguration, um Folgendes festzulegen:
+Dies schreibt `ai-i18n-tools.config.json` mit der `ui-markdown`-Vorlage (einschließlich des `provider`- / `providers`-Blocks für dieses Preset). Bevor Sie `translate-ui` oder `sync` ausführen, legen Sie den API-Schlüssel für diesen Anbieter in der Umgebung oder `.env` fest — Ollama ausgenommen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie die Konfiguration, um Folgendes festzulegen:
 
-- `provider` und `providers` – mindestens ein Anbieter mit `translationModels`; ändern Sie die Voreinstellung oder die Modellliste, wenn die Standardeinstellung nicht Ihre Wahl ist (`init -P <provider>`). Siehe [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
-- `sourceLocale` – Ihr BCP-47-Code der Quellsprache (z. B. `"en-GB"`). **Muss übereinstimmen** mit `SOURCE_LOCALE`, das aus Ihrer i18n-Laufzeit-Setup-Datei (`src/i18n.ts` / `src/i18n.js`) exportiert wird.
+- `provider` und `providers` — mindestens ein Anbieter mit `translationModels`. `-P <provider>` auf `init` wählt das Preset und seine Startmodellliste aus. Siehe [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
+- `sourceLocale` – Ihr BCP-47-Code der Ausgangssprache (z. B. `"en-GB"`). **Muss übereinstimmen** mit `SOURCE_LOCALE`, das aus Ihrer Laufzeit-i18n-Setup-Datei (`src/i18n.ts` / `src/i18n.js`) exportiert wurde.
 - `targetLocales` – Array von BCP-47-Codes für Ihre Zielsprachen (z. B. `["de", "fr", "pt-BR"]`). Führen Sie `generate-ui-languages` aus, um das `ui-languages.json`-Manifest aus dieser Liste zu erstellen.
 - `ui.sourceRoots` – Verzeichnisse oder Glob-Muster, die nach `t("…")`-Aufrufen durchsucht werden sollen (z. B. `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` – wo der Masterkatalog geschrieben werden soll (z. B. `"src/locales/strings.json"`).

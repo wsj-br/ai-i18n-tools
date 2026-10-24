@@ -9,6 +9,16 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: cli — `init` requires `-P` / `--provider`. Omitting it exits before writing a config and lists the built-in presets.
+- **Changed**: api — `writeInitConfigFile` requires `providerKey` (fourth argument). `cwd` no longer defaults to `process.cwd()`.
+- **Removed**: api — `DEFAULT_INIT_PROVIDER_KEY`. Init no longer falls back to OpenRouter.
+- **Fixed**: dashboard — dropping a Models row with the pointer on the blue insertion bar reorders that row. The bar is the drop target for the row it sits in front of.
+- **Changed**: dashboard — the Models tab status line shows how many models are selected after each select or clear.
+- **Changed**: cli/dashboard — `suggest-models --top` and the Models tab header count default to 8 models.
+
+- **Added**: cheaperinference — `providers.cheaperinference.zeroDataRetention` (default off) sends `zdr: true` on chat calls and loads `GET /v1/models?zdr=true` for `list-models`, `check-models`, and `suggest-models`. A zero-data-retention refusal names the model and points at the config flag or the Cheaper Inference Data Protection page, then the fallback chain tries the next model. The tool UI extractor also scans `src/api` so that refusal is translated with the CLI.
+- **Changed**: dashboard — the Models tab reorders rows in the table (drag handle or up/down buttons), selects the first N rows from a header checkbox, and groups controls into Ranking, Filters, and Actions cards. **Copy JSON** and **Update config** are in Actions. **Update config** asks for confirmation. Enter in a filter field refreshes the table. While dragging, a solid blue bar marks the row where the model will land.
+- **Added**: cli/dashboard — applying `translationModels` (dashboard **Update config** or `suggest-models --apply`) copies the config to `ai-i18n-tools.config.{timestamp}.backup.json` before the write.
 - **Added**: notices — `pnpm notices:write` appends `manualNotices` from `scripts/write-third-party-notices.json` for languagebench (CC BY-SA 4.0), the LMArena Arena Score (CC BY 4.0), and models.dev (MIT). Each notice states that the application uses the data at runtime and does not ship it.
 - **Fixed**: docs — `pnpm docs:dev` ignores generated and out-of-tree paths (`src`, `coverage`, `dist`, `dist-sea`, `.translation-cache`, `.vitepress/dist`) so Vite does not exhaust Linux inotify instances after the VitePress 2 upgrade.
 - **Added**: dashboard — the Models tab accepts the same output-price cap and index gap as `suggest-models --max-output-price` and `--min-delta`.

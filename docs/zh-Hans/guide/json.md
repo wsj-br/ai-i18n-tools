@@ -14,10 +14,10 @@
 ### 步骤 1：初始化嵌套 JSON
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-该模板会设置 `features.translateJson: true`，禁用 UI 提取和文档翻译，并搭建一个指向 `src/i18n/en/translation.json`、输出为 `src/i18n/{llocale}/translation.json` 的单个 `json[]` 块。它还包含一个默认的 `provider` / `providers` 块（除非你传递 `-P <provider>`，否则为 `openrouter`）——在运行 `translate-json` 或 `sync` 之前，请设置相应的 API 密钥（或使用本地 Ollama）；参见[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。请根据你的仓库布局编辑 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate`。
+该模板设置 `features.translateJson: true`，禁用 UI 提取和文档翻译，并搭建一个指向 `src/i18n/en/translation.json` 且输出为 `src/i18n/{llocale}/translation.json` 的单个 `json[]` 块。它还包含用于您通过 `-P` 传递的预设的 `provider` / `providers` 块 — 在运行 `translate-json` 或 `sync` 之前，请设置匹配的 API 密钥（或使用本地 Ollama）；请参阅 [提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。请根据您的仓库布局编辑 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate`。
 
 <a id="step-2-configure-json"></a>
 ### 步骤 2：配置 `json[]`

@@ -13,13 +13,13 @@ Gibt die CLI-Version und den Build-Zeitstempel aus (dieselbe Information wie `-V
 <a id="init"></a>
 ### `init`
 
-**Synopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**Zusammenfassung:** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` und `docs[].addFrontmatter`). Übersetzungsbefehle, die ein LLM aufrufen, erfordern den API-Schlüssel des aktiven Anbieters in der Umgebung oder `.env` (Ollama ausgenommen) – siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
 
-**Wichtige Optionen:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**Wichtige Optionen:** `-P` / `--provider` (erforderlich), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 
-`-P` / `--provider` wählt aus, welche **integrierte Voreinstellung** für das Scaffolding verwendet werden soll (`openrouter`, falls weggelassen). Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` ist erforderlich. Es wählt aus, welches **integrierte Preset** gescaffoldet werden soll. Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Vorlagen (`-t`):**
 

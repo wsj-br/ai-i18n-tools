@@ -137,8 +137,12 @@ Each `providers.<name>` block accepts:
   Provider-wide USD per 1,000,000 tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter and Cheaper Inference), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row. A matching `modelPricing` entry overrides this default. A provider-reported cost is never replaced. When neither config rate matches, the tools use the models.dev list price for that model id (input and output USD per 1M tokens). Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage). If none of those sources apply, the cost stays unknown (`—`), never `$0.00`.
 - `modelPricing` (optional)
   Per-model USD per 1,000,000 tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Overrides `pricing` for that model id. Applied at call time when the provider omitted `usage.cost`, and stored with the call.
+- `zeroDataRetention` (optional, `providers.cheaperinference` only)
+  When `true`, chat requests send `"zdr": true` and `list-models`, `check-models`, and `suggest-models` load `GET /v1/models?zdr=true`. Omitted means off. See [Zero data retention](/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Built-in provider presets (key — base URL — API-key env var):
+
+<div class="provider-presets">
 
 | Provider | Base URL | API-key env var |
 | --- | --- | --- |
@@ -157,6 +161,8 @@ Built-in provider presets (key — base URL — API-key env var):
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (none) |
 
+</div>
+
 A legacy top-level `openrouter` block (with `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) is still accepted and is auto-migrated to `providers.openrouter` (with `provider: "openrouter"`) on load; `defaultModel` / `fallbackModel` fold into `translationModels`.
 
 For a runnable example that configures several providers in one config and switches between them with `-P`, see [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter`, and `deepseek` on the same document).
@@ -165,14 +171,14 @@ For a runnable example that configures several providers in one config and switc
 
 Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those model ids as further alternatives.
 
-These model ids match `ai-i18n-tools init [-P <provider>]` when `-P openrouter` (the default). Other presets get native model ids from `init -P <provider>` — see [Built-in providers](/guide/providers-and-models#built-in-providers).
+These model ids are what `ai-i18n-tools init -P openrouter` writes. Other presets get native model ids from `init -P <provider>` — see [Built-in providers](/guide/providers-and-models#built-in-providers).
 
 This list was **tested for broad locale coverage** across a large documentation project with 36 target locales; it serves as a practical default, but is not guaranteed to perform well for every locale.
 
-Example `translationModels` (same defaults as `ai-i18n-tools init [-P <provider>]`):
+Example `translationModels` (OpenRouter list from `ai-i18n-tools init -P openrouter`):
 
 <details>
-<summary>Default translationModels fallback list</summary>
+<summary>OpenRouter translationModels list</summary>
 
 ```json
 "translationModels": [
@@ -516,15 +522,15 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 
 Weights for [`suggest-models`](/reference/cli-commands/models#suggest-models) and the [dashboard Models tab](/guide/translation-dashboard/models). Omit the block, or omit one profile, and that profile keeps the built-in weights. The block is not rewritten by `--apply` or **Update config**; those write model ids only.
 
-- `quality` — default ChrF `0.45/0.95`, Arena `0.35/0.95`, price `0.15/0.95`, quality floor `0.7`
-- `price` — default ChrF `0.25`, Arena `0.10`, price `0.65`, quality floor `0.6`
+- `quality` — default ChrF `0.45`, Arena `0.35`, price `0.20`, quality floor `0.7`
+- `price` — default ChrF `0.35`, Arena `0.20`, price `0.45`, quality floor `0.6`
 
-Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalized to sum to 1, so `45`, `35`, and `15` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
+Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalized to sum to 1, so `45`, `35`, and `20` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

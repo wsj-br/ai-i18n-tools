@@ -1,13 +1,14 @@
 ---
 layout: home
 title: ai-i18n-tools
-description: 任意のLLMプロバイダーを使用して、JavaScript/TypeScriptアプリケーションおよびドキュメントサイトを国際化するためのCLIおよびツールキット。
+description: JavaScript/TypeScriptアプリケーション、Pythonアプリケーション、およびドキュメントサイトを、任意のLLMプロバイダーを使用して国際化するためのCLIおよびツールキットです。
 hero:
   name: ai-i18n-tools
   text: 任意のLLMでアプリとドキュメントを翻訳
   tagline: >-
-    t()
-    文字列の抽出、Markdown、MDX、HTMLページ、JSONバンドル、SVGラベルの翻訳を、1つの設定ファイルから、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、または任意のOpenAI互換APIを使用して行えます。コードベースを書き換えることなく、プロジェクトごとまたはロケールごとにモデルを切り替えられます。
+    JavaScript、TypeScript、Python から t() 文字列を抽出します。Markdown、MDX、HTML ページ、JSON
+    バンドル、SVG ラベルを、OpenAI、Anthropic、Gemini、OpenRouter、Ollama、または任意の OpenAI 互換 API
+    を使用して、1 つの設定からすべて翻訳します。コードベースを書き直すことなく、プロジェクトごとまたはロケールごとにモデルを切り替えることができます。
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools ロゴ
@@ -25,8 +26,9 @@ features:
   - icon: 🌐
     title: UI文字列
     details: >-
-      JS、TS、Astroからの t() 呼び出しの抽出、または単一HTMLファイル内の data-i18n
-      マーカーの抽出を行います。i18nextやブラウザランタイム向けに、ロケールごとのフラットなJSONを生成します。
+      JavaScript、TypeScript、Astro、Python の t() および
+      _()、または1つのHTMLファイル内のdata-i18nマーカーを抽出します。ロケールごとのフラットなJSON、またはGNU
+      gettextカタログ。
   - icon: 📄
     title: ドキュメント
     details: VitePress、Starlight、Docusaurus、Nextra、Fumadocs、および通常の静的サイト向けのMarkdown、MDX、Astro、HTMLページを翻訳します。
@@ -42,6 +44,16 @@ features:
   - icon: ⚡
     title: 1つの同期コマンド
     details: 1つの設定から、extract、translate-ui、translate-svg、translate-docs、translate-jsonを正しい順序で実行します。
+  - icon: 🐍
+    title: Python、Node.js不要
+    details: >-
+      GitHub
+      Releaseで提供されるスタンドアロン実行ファイルにより、Pythonアプリ用のCLIを実行できます。Streamlit、FastAPI、Flask、Django、およびgettextが含まれています。
+  - icon: 📊
+    title: モデルのランキングリスト
+    details: >-
+      suggest-models は、アクティブなプロバイダーのチャットモデルをランク付けし、translationModels
+      を書き込むことができます。同じランキングがダッシュボードの Models タブに表示されています。
 ---
 
 
@@ -59,11 +71,20 @@ features:
 
 ```bash
 pnpm add ai-i18n-tools
-# Set API key for your active provider — see preset table (default init: openrouter)
+# Set the API key for the provider you pass to init — see the preset table
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-ai-i18n-tools init [-P <provider>]
+# or, for OpenAI: export OPENAI_API_KEY=sk-your-key-here
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models
 ai-i18n-tools sync
 ```
+
+`suggest-models`は、アクティブなプロバイダーのモデルをランク付けします。`--apply`を追加して、スキャフォールドされた`translationModels`リストを置き換えます。[クイックスタート](/ja/guide/quick-start)および[モデル](/ja/guide/translation-dashboard/models)タブを参照してください。
+
+<a id="python-no-nodejs"></a>
+### Python、Node.js不要
+
+[GitHubリリース](https://github.com/wsj-br/ai-i18n-tools/releases)から、該当するファイル（`ai-i18n-tools-linux-x64`、`ai-i18n-tools-linux-arm64`、`ai-i18n-tools-macos-arm64`、`ai-i18n-tools-macos-x64`、または`ai-i18n-tools-win-x64.exe`）をダウンロードします。`SHA256SUMS.txt`を確認し、Unixで`chmod +x`を実行し、ファイルを`PATH`に配置します。バイナリは署名されていません。手順：[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。その後、`ai-i18n-tools init -t ui-python -P cheaperinference`。ウォークスルー：[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)。
 
 [単体のCLIコマンドの設定](/ja/guide/installation#using-the-cli)（[クローンしたモノレポでの開発](/ja/guide/installation#cloned-monorepo)を含む）については[インストール](/ja/guide/installation)を、スキャフォールドテンプレートについては[クイックスタート](/ja/guide/quick-start)を参照してください。
 
@@ -72,7 +93,7 @@ ai-i18n-tools sync
 
 | コンテンツ | コマンド |
 | --- | --- |
-| ソースコードで `t()` を使用、またはマーカー付きの単一HTMLファイル | **UI文字列** — `extract` / `translate-ui` |
+| ソースコードで`t()`または`_()`（JavaScript、TypeScript、またはPython）、gettext、あるいはマーカー付きのHTMLファイルを1つ使用する場合 | **UI文字列** — `extract` / `translate-ui` |
 | ローカライズされたページ、ドキュメントサイト、またはロケールごとの1つのHTMLファイル | **ドキュメント** — `translate-docs` |
 | スタンドアロンのネストされたJSONロケールファイル | **JSON** — `translate-json` |
 
@@ -81,13 +102,13 @@ SVGイラストは`docs[].contentPaths`ではなく、別の`translate-svg`パ�
 <a id="explore-the-documentation"></a>
 ## ドキュメントを探索する
 
-- [**ガイド**](/ja/guide/what-is-ai-i18n-tools) — 翻訳モード、インストール、クイックスタート、およびフレームワーク統合
-- [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、およびAstro
-- [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、ランク付けされた提案（`suggest-models`）、および`-P`のオーバーライド
+- [**ガイド**](/ja/guide/what-is-ai-i18n-tools) — 翻訳モード、インストール、クイックスタート、フレームワーク統合
+- [**統合**](/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro、およびPython
+- [**プロバイダーとモデル**](/ja/guide/providers-and-models) — プリセット、フォールバックチェーン、ランキングされた提案（`suggest-models`）、および`-P`のオーバーライド
 - [**CLIリファレンス**](/ja/reference/cli-commands/) — すべてのコマンド、フラグ、およびワークフロー
-- [**設定**](/ja/reference/configuration) — `ai-i18n-tools.config.json` の完全なスキーマ
-- [**サンプル**](/ja/examples) — `npx degit` を使用した13の実行可能なデモプロジェクト
-- [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラムAPI、および拡張ポイント
+- [**設定**](/ja/reference/configuration) — 完全な`ai-i18n-tools.config.json`スキーマ
+- [**例**](/ja/examples) — 17個の実行可能なデモプロジェクト（`npx degit`、またはPythonの例のzipファイル）
+- [**アーキテクチャ**](/ja/reference/architecture) — 内部構造、プログラム可能なAPI、および拡張ポイント
 
 パッケージを自分のプロジェクトに組み込む場合は、[AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) から始めてください。[リポジトリの README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) は短い GitHub/npm ランディングページであり、詳細についてはここへリンクしています。
 

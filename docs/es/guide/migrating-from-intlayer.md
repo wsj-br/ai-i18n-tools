@@ -22,7 +22,7 @@
 1. Instala `ai-i18n-tools` (consulta [Instalación](/es/guide/installation)). Si tu proyecto aún no tiene un `ai-i18n-tools.config.json`, genera uno:
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 Edita `sourceLocale` y `targetLocales` para que coincidan con los locales ya presentes en tus diccionarios de Intlayer, y configura `ui.sourceRoots`, `ui.stringsJson`, `ui.flatOutputDir` para que apunten al código fuente de tu aplicación y a las rutas de catálogo deseadas — las mismas claves que usa `translate-ui`, consulta [Cadenas de UI — Paso 1: Inicializar](/es/guide/ui-strings/#step-1-initialise).

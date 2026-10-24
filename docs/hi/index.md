@@ -2,16 +2,17 @@
 layout: home
 title: एआई-आई18एन-टूल्स
 description: >-
-  अपनी पसंद के LLM प्रदाता के साथ JavaScript/TypeScript एप्लिकेशन और
-  दस्तावेज़ीकरण साइटों को अंतर्राष्ट्रीयकृत करने के लिए CLI और टूलकिट।
+  JavaScript/TypeScript ऍप्लिकेशन्स, Python ऍप्लिकेशन्स और डॉक्यूमेंटेशन साइट्स
+  को आपकी पसंद के LLM प्रोवाइडर के साथ इंटरनेशनलाइज़ करने के लिए CLI और टूलकिट।
 hero:
   name: एआई-आई18एन-टूल्स
   text: किसी भी एलएलएम के साथ ऐप्स और दस्तावेज़ों का अनुवाद करें
   tagline: >-
-    t() स्ट्रिंग्स निकालें, Markdown, MDX, HTML पेज, JSON बंडल, और SVG लेबल का
-    अनुवाद करें — सब कुछ एक ही कॉन्फ़िग से, OpenAI, Anthropic, Gemini,
-    OpenRouter, Ollama, या किसी भी OpenAI-संगत API के साथ। अपने कोडबेस को फिर से
-    लिखे बिना प्रति प्रोजेक्ट या प्रति लोकेल मॉडल बदलें।
+    JavaScript, TypeScript और Python से t() स्ट्रिंग्स निकालें। Markdown, MDX,
+    HTML पेजों, JSON बंडल्स और SVG लेबल्स का अनुवाद करें — सब कुछ एक ही
+    कॉन्फ़िगरेशन से, OpenAI, Anthropic, Gemini, OpenRouter, Ollama, या किसी भी
+    OpenAI-संगत API के साथ। अपने कोडबेस को फिर से लिखे बिना प्रति प्रोजेक्ट या
+    प्रति लोकेल मॉडल बदलें।
   image:
     src: /ai-i18n-tools_logo.svg
     alt: एआई-आई18एन-टूल्स लोगो
@@ -29,9 +30,9 @@ features:
   - icon: 🌐
     title: यूआई स्ट्रिंग्स
     details: >-
-      JS, TS, और Astro से t() कॉल, या एक HTML फ़ाइल में data-i18n मार्कर
-      निकालें। i18next या ब्राउज़र रनटाइम के लिए प्रति लोकेल फ्लैट JSON जनरेट
-      करें।
+      JavaScript, TypeScript, Astro और Python से t() और _() निकालें, या एक HTML
+      फ़ाइल में data-i18n मार्कर्स का उपयोग करें। फ्लैट प्रति-लोकेल JSON, या GNU
+      gettext कैटलॉग।
   - icon: 📄
     title: दस्तावेज़
     details: >-
@@ -57,6 +58,17 @@ features:
     details: >-
       एक ही कॉन्फ़िग से सही क्रम में एक्सट्रैक्ट, ट्रांसलेट-यूआई,
       ट्रांसलेट-एसवीजी, ट्रांसलेट-डॉक्स और ट्रांसलेट-जेएसओएन चलाएँ।
+  - icon: 🐍
+    title: Python, Node.js नहीं
+    details: >-
+      प्रत्येक GitHub Release पर एक स्टैंडअलोन एक्ज़ीक्यूटेबल Python ऍप्स के लिए
+      CLI चलाता है। Streamlit, FastAPI, Flask, Django और gettext शामिल हैं।
+  - icon: 📊
+    title: रैंक की गई मॉडल सूची
+    details: >-
+      suggest-models सक्रिय प्रोवाइडर के चैट मॉडल्स को रैंक करता है और
+      translationModels लिख सकता है। यही रैंकिंग डैशबोर्ड के Models टैब पर भी
+      उपलब्ध है।
 ---
 
 
@@ -74,11 +86,20 @@ features:
 
 ```bash
 pnpm add ai-i18n-tools
-# Set API key for your active provider — see preset table (default init: openrouter)
+# Set the API key for the provider you pass to init — see the preset table
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-ai-i18n-tools init [-P <provider>]
+# or, for OpenAI: export OPENAI_API_KEY=sk-your-key-here
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models
 ai-i18n-tools sync
 ```
+
+`suggest-models` सक्रिय प्रोवाइडर के मॉडल्स को रैंक करता है। स्कैफोल्ड की गई `translationModels` सूची को बदलने के लिए `--apply` जोड़ें। [Quick start](/hi/guide/quick-start) और [Models](/hi/guide/translation-dashboard/models) टैब देखें।
+
+<a id="python-no-nodejs"></a>
+### Python, कोई Node.js नहीं
+
+[GitHub रिलीज़](https://github.com/wsj-br/ai-i18n-tools/releases) से मिलान करने वाली फ़ाइल डाउनलोड करें: `ai-i18n-tools-linux-x64`, `ai-i18n-tools-linux-arm64`, `ai-i18n-tools-macos-arm64`, `ai-i18n-tools-macos-x64`, या `ai-i18n-tools-win-x64.exe`। `SHA256SUMS.txt` की जाँच करें, यूनिक्स पर `chmod +x` चलाएँ, और फ़ाइल को `PATH` पर रखें। बाइनरी अहस्ताक्षरित हैं। चरण: [स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables)। फिर `ai-i18n-tools init -t ui-python -P cheaperinference`। मार्गदर्शन: [एक पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)।
 
 [बेयर सीएलआई कमांड कॉन्फ़िगर करने](/hi/guide/installation#using-the-cli) (जिसमें [क्लोन-मोनोरेपो डेवलपमेंट](/hi/guide/installation#cloned-monorepo) शामिल है) के लिए [इंस्टॉलेशन](/hi/guide/installation) और स्केफ़ोल्ड टेम्प्लेट के लिए [क्विक स्टार्ट](/hi/guide/quick-start) देखें।
 
@@ -87,7 +108,7 @@ ai-i18n-tools sync
 
 | आपकी सामग्री | कमांड |
 | --- | --- |
-| सोर्स कोड `t()` का उपयोग करता है, या मार्कर्स के साथ एक HTML फ़ाइल | **UI स्ट्रिंग्स** — `extract` / `translate-ui` |
+| सोर्स कोड `t()` या `_()` (JavaScript, TypeScript, या Python), gettext, या मार्कर्स वाली एक HTML फ़ाइल का उपयोग करता है | **UI स्ट्रिंग्स** — `extract` / `translate-ui` |
 | लोकेलाइज़ किए गए पेज, डॉक्स साइटें, या प्रति लोकेल एक HTML फ़ाइल | **दस्तावेज़** — `translate-docs` |
 | स्टैंडअलोन नेस्टेड JSON लोकेल फ़ाइलें | **JSON** — `translate-json` |
 
@@ -97,11 +118,11 @@ ai-i18n-tools sync
 ## दस्तावेज़ों का अन्वेषण करें
 
 - [**गाइड**](/hi/guide/what-is-ai-i18n-tools) — अनुवाद मोड, इंस्टॉलेशन, क्विक स्टार्ट, और फ्रेमवर्क इंटीग्रेशन
-- [**इंटीग्रेशन**](/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, और Astro
-- [**प्रोवाइडर और मॉडल**](/hi/guide/providers-and-models) — प्रीसेट, फॉलबैक चेन, रैंक किए गए सुझाव (`suggest-models`), और `-P` ओवरराइड
+- [**इंटीग्रेशन**](/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, और Python
+- [**प्रोवाइडर्स और मॉडल्स**](/hi/guide/providers-and-models) — प्रीसेट्स, फॉलबैक चेन्स, रैंक किए गए सुझाव (`suggest-models`), और `-P` ओवरराइड्स
 - [**CLI संदर्भ**](/hi/reference/cli-commands/) — प्रत्येक कमांड, फ्लैग, और वर्कफ़्लो
 - [**कॉन्फ़िगरेशन**](/hi/reference/configuration) — पूर्ण `ai-i18n-tools.config.json` स्कीमा
-- [**उदाहरण**](/hi/examples) — `npx degit` के साथ तेरह रन करने योग्य डेमो प्रोजेक्ट्स
+- [**उदाहरण**](/hi/examples) — सत्रह चलाने योग्य डेमो प्रोजेक्ट्स (`npx degit`, या Python उदाहरणों की ज़िप)
 - [**आर्किटेक्चर**](/hi/reference/architecture) — इंटरनल्स, प्रोग्रामेटिक API, और एक्सटेंशन पॉइंट्स
 
 अपने प्रोजेक्ट में पैकेज को एकीकृत कर रहे हैं? [एआई एजेंट कॉन्टेक्स्ट](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) से शुरू करें। [रिपॉजिटरी README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) एक छोटा GitHub/npm लैंडिंग पेज है जो विवरण के लिए यहां लिंक करता है।

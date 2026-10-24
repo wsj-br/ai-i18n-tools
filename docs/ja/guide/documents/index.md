@@ -51,19 +51,19 @@ README またはドキュメント内のオプションの **言語スイッチ�
 ## ステップ1: ドキュメントの初期化
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Astro Starlight ドキュメントサイトの場合：
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 VitePressドキュメントサイトの場合:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 ナビ/サイドバー/フッター文字列のために `docsOutput.vitepressThemeCatalog` を設定します - [VitePress 統合](/ja/guide/integrations/vitepress) を参照してください。
@@ -71,7 +71,7 @@ ai-i18n-tools init -t ui-vitepress [-P <provider>]
 Nextraドキュメントサイトの場合:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 テーマ辞書文字列のために `docs[].nextraDictionaryPath` を設定します - [Nextra 統合](/ja/guide/integrations/nextra) を参照してください。サイドバーの `_meta.ts` ラベルは自動的に収集されます。
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-nextra [-P <provider>]
 Fumadocsドキュメントサイトの場合:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 UI オーバーライドのために `docsOutput.fumadocsUiCatalog` を設定します - [Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照してください。サイドバーの `meta.json` ラベルは自動的に収集されます。
@@ -87,17 +87,17 @@ UI オーバーライドのために `docsOutput.fumadocsUiCatalog` を設定し
 プレーンなAstroウェブサイトUI（Starlightなし）の場合：
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 このテンプレートはUI抽出のみを有効にします。ページHTMLの翻訳には、`features.translateDocs`も設定し、`docs[]`ブロックを追加します（[Astroウェブサイトページ (解析と置換)](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)設定は、両方のパイプラインを一緒に示しています。
 
 生成された`ai-i18n-tools.config.json`を編集します。
 
-- `provider` と `providers` — `init` はデフォルトのプロバイダーブロックをスキャフォールドします (`-P <provider>` を渡さない限り `openrouter`)。`translate-docs` または `sync` の前に、少なくとも1つのプロバイダーを設定し、その API キーを設定してください (Ollama はキー不要)。[プロバイダーと API キー](/ja/guide/quick-start#provider-and-api-key) および [LLM プロバイダーとモデル](/ja/guide/providers-and-models) を参照してください。
-- `sourceLocale` - ソース言語 (`docusaurus.config.js` の `defaultLocale` と一致する必要があります)。
-- `targetLocales` - BCP-47 ロケールコードの配列 (例: `["de", "fr", "es"]`)。
-- `cacheDir` - すべてのパイプラインの共有 SQLite キャッシュディレクトリ (および `--write-logs` のデフォルトログディレクトリ)。
+- `provider`および`providers` — `init -P <provider>`をプリセットするスキャフォールド。`translate-docs`または`sync`の前にAPIキーを設定します（Ollamaにはキーは不要です）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)および[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+- `sourceLocale` - ソース言語（`docusaurus.config.js`内の`defaultLocale`と一致している必要があります）。
+- `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
+- `cacheDir` - すべてのパイプライン用の共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトのログディレクトリ）。
 - `docs` - ドキュメントブロックの配列。各ブロックにはオプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などがあります。
 - `docs[].description` - メンテナ向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
 - `docs[].contentPaths` - markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
@@ -136,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs`は、翻訳された各セグメントがMarkdownの構造（ドキュメントから解析された強調を含む）を保持し、内部のプレースホルダートークンが正しく復元されるかどうかをチェックします。`` `inline code` ``の周囲に多数の`bold`スパンを重ねたり、太字の中にバッククォートをネストしたり（例えば`` `fetch(\`/locales/${code}.json\`)` ``のようなテンプレートリテラル）、1つの長い文の中に太字とコードを織り交ぜたりする段落は脆弱です。一部のロケールでは異なる語順が必要になるため、翻訳後に`**`と`` ` ``の並びが変わり、`AST mismatch`のようなCLIエラーがトリガーされる可能性があります。
 
-復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および`**`のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
+復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および<code v-pre>**</code>のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
 
 **そのような検証エラーが発生した場合は、ソース言語のテキストを簡略化することをお勧めします** - 段落を分割する、例をコードブロックに移動する、または階層化された太字/コードのペアを減らして同じ概念を説明するなど - すべてのモデルとロケールが密集したインラインマークアップを完全に再現することを期待するのではなく。
 

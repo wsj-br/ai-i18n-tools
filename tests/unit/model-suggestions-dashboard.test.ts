@@ -136,12 +136,16 @@ describe("dashboard model suggestions", () => {
         const invalid = await originalFetch(`${base}/api/model-suggestions?minDelta=-1`);
         expect(invalid.status).toBe(400);
 
+        const beforeApply = fs.readFileSync(configPath, "utf8");
         const applied = await originalFetch(`${base}/api/model-suggestions/apply`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ provider: "openai", models: ["chat-b", "chat-a"] }),
         });
         expect(applied.status).toBe(200);
+        const appliedBody = (await applied.json()) as { backupPath?: string };
+        expect(appliedBody.backupPath).toMatch(/ai-i18n-tools\.config\..+\.backup\.json$/);
+        expect(fs.readFileSync(appliedBody.backupPath ?? "", "utf8")).toBe(beforeApply);
         const written = JSON.parse(fs.readFileSync(configPath, "utf8")) as {
           providers: { openai: { translationModels: string[]; uiModels: string[] } };
         };

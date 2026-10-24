@@ -51,19 +51,19 @@ Cada bloco de UI inclui seu `strings.json` como dicas de glossário para documen
 ## Passo 1: Inicializar para documentação
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Para sites de documentação Astro Starlight:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 Para sites de documentação VitePress:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 Defina `docsOutput.vitepressThemeCatalog` para strings de navegação/barra lateral/rodapé - veja [Integração VitePress](/pt-BR/guide/integrations/vitepress).
@@ -71,7 +71,7 @@ Defina `docsOutput.vitepressThemeCatalog` para strings de navegação/barra late
 Para sites de documentação Nextra:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 Defina `docs[].nextraDictionaryPath` para strings de dicionário de tema - veja [Integração Nextra](/pt-BR/guide/integrations/nextra). Os rótulos da barra lateral `_meta.ts` são coletados automaticamente.
@@ -79,7 +79,7 @@ Defina `docs[].nextraDictionaryPath` para strings de dicionário de tema - veja 
 Para sites de documentação Fumadocs:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 Defina `docsOutput.fumadocsUiCatalog` para substituições de UI - veja [Integração Fumadocs](/pt-BR/guide/integrations/fumadocs). Os rótulos da barra lateral `meta.json` são coletados automaticamente.
@@ -87,14 +87,14 @@ Defina `docsOutput.fumadocsUiCatalog` para substituições de UI - veja [Integra
 Para interface de site Astro simples (sem Starlight):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 Esse modelo habilita apenas a extração da UI. Para a tradução de HTML de página, defina também `features.translateDocs` e adicione um bloco `docs[]` (consulte [Páginas do site Astro (analisar e substituir)](/pt-BR/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). A configuração [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) mostra ambos os pipelines juntos.
 
 Edite o `ai-i18n-tools.config.json` gerado:
 
-- `provider` e `providers` — `init` estrutura um bloco de provedor padrão (`openrouter` a menos que você passe `-P <provider>`); configure pelo menos um provedor e defina sua chave de API antes de `translate-docs` ou `sync` (Ollama não precisa de chave). Veja [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key) e [Provedores e modelos LLM](/pt-BR/guide/providers-and-models).
+- `provider` e `providers` — estruturas `init -P <provider>` que predefinem; defina sua chave de API antes de `translate-docs` ou `sync` (Ollama não precisa de chave). Consulte [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key) e [Provedores e modelos de LLM](/pt-BR/guide/providers-and-models).
 - `sourceLocale` - idioma de origem (deve corresponder a `defaultLocale` em `docusaurus.config.js`).
 - `targetLocales` - array de códigos de localidade BCP-47 (por exemplo, `["de", "fr", "es"]`).
 - `cacheDir` - diretório de cache SQLite compartilhado para todos os pipelines (e diretório de log padrão para `--write-logs`).

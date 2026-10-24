@@ -137,8 +137,12 @@ Chaque bloc `providers.<name>` accepte :
   Coût en USD par 1 000 000 de jetons pour l'ensemble du fournisseur : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé ne contient pas de `usage.cost` rapporté par le fournisseur (la plupart des fournisseurs en dehors d'OpenRouter et Cheaper Inference), ce tarif est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de traduction et stocké sur la ligne `api_calls`. Une entrée `modelPricing` correspondante remplace cette valeur par défaut. Un coût rapporté par le fournisseur n'est jamais remplacé. Lorsque aucun tarif de configuration ne correspond, les outils utilisent le prix catalogue models.dev pour cet identifiant de modèle (USD par 1M de jetons en entrée et en sortie). Les lignes stockées sans coût peuvent toujours être estimées ultérieurement via [`usage`](/fr/reference/cli-commands/workflows#usage) et [Usage & costs](/fr/guide/translation-dashboard/usage). Si aucune de ces sources ne s'applique, le coût reste inconnu (`—`), jamais `$0.00`.
 - `modelPricing` (optionnel)
   Coût en USD par 1 000 000 de jetons par modèle : `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Remplace `pricing` pour cet identifiant de modèle. Appliqué au moment de l'appel lorsque le fournisseur a omis `usage.cost`, et stocké avec l'appel.
+- `zeroDataRetention` (facultatif, `providers.cheaperinference` uniquement)
+  Lorsque `true` est activé, les requêtes de chat envoient `"zdr": true` et `list-models`, et `check-models` et `suggest-models` chargent `GET /v1/models?zdr=true`. Si omis, c'est désactivé. Voir [Rétention de données nulle](/fr/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Préréglages de fournisseurs intégrés (clé — URL de base — variable d'environnement de la clé API) :
+
+<div class="provider-presets">
 
 | Fournisseur | URL de base | Variable d'environnement de la clé API |
 | --- | --- | --- |
@@ -157,6 +161,8 @@ Préréglages de fournisseurs intégrés (clé — URL de base — variable d'en
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (aucun) |
 
+</div>
+
 Un bloc `openrouter` de niveau supérieur hérité (avec `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement ; `defaultModel` / `fallbackModel` se replient dans `translationModels`.
 
 Pour un exemple exécutable qui configure plusieurs fournisseurs dans une seule configuration et bascule entre eux avec `-P`, voir [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` et `deepseek` sur le même document).
@@ -165,14 +171,14 @@ Pour un exemple exécutable qui configure plusieurs fournisseurs dans une seule 
 
 Considérez la liste ci-dessous comme une **base** que vous pouvez étendre : si la traduction pour une langue spécifique est médiocre ou infructueuse, recherchez les modèles qui prennent en charge cette langue ou ce script efficacement (référez-vous aux ressources en ligne ou à la documentation de votre fournisseur), et ajoutez ces identifiants de modèle comme alternatives supplémentaires.
 
-Ces ID de modèle correspondent à `ai-i18n-tools init [-P <provider>]` lorsque `-P openrouter` (par défaut). D'autres préréglages obtiennent des ID de modèle natifs de `init -P <provider>` — voir [Fournisseurs intégrés](/fr/guide/providers-and-models#built-in-providers).
+Ces identifiants de modèle sont ce que `ai-i18n-tools init -P openrouter` écrit. Les autres préréglages obtiennent des identifiants de modèle natifs de `init -P <provider>` — voir [Fournisseurs intégrés](/fr/guide/providers-and-models#built-in-providers).
 
 Cette liste a été **testée pour une couverture étendue des paramètres régionaux** dans un vaste projet de documentation comportant 36 paramètres régionaux cibles ; elle sert de valeur par défaut pratique, mais n'est pas garantie pour fonctionner correctement dans tous les paramètres régionaux.
 
-Exemple `translationModels` (mêmes valeurs par défaut que `ai-i18n-tools init [-P <provider>]`) :
+Exemple `translationModels` (liste OpenRouter de `ai-i18n-tools init -P openrouter`) :
 
 <details>
-<summary>Liste de secours par défaut pour translationModels</summary>
+<summary>Liste des translationModels d'OpenRouter</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 
 Pondérations pour [`suggest-models`](/fr/reference/cli-commands/models#suggest-models) et l'[onglet Modèles du tableau de bord](/fr/guide/translation-dashboard/models). Omettez le bloc, ou omettez un profil, et ce profil conservera les pondérations intégrées. Le bloc n'est pas réécrit par `--apply` ou **Mettre à jour la configuration** ; ces derniers écrivent uniquement les identifiants de modèle.
 
-- `quality` — ChrF par défaut `0.45/0.95`, Arena `0.35/0.95`, prix `0.15/0.95`, seuil de qualité `0.7`
-- `price` — ChrF par défaut `0.25`, Arena `0.10`, prix `0.65`, seuil de qualité `0.6`
+- `quality` — ChrF par défaut `0.45`, Arena `0.35`, prix `0.20`, seuil de qualité `0.7`
+- `price` — ChrF par défaut `0.35`, Arena `0.20`, prix `0.45`, seuil de qualité `0.6`
 
-Chaque objet de profil nécessite `chrf`, `arena` et `price`. Chaque valeur est finie et au moins égale à `0`, et au moins l'une d'entre elles est supérieure à `0`. Elles sont normalisées pour totaliser 1, de sorte que `45`, `35` et `15` correspondent aux valeurs par défaut de qualité. `qualityFloor` est facultatif, compris dans la plage `(0, 1]`, et représente la fraction du meilleur ChrF dans le pool de candidats. Les modèles en dessous du seuil, y compris tout modèle sans mesure ChrF, sont triés après ceux qui le dépassent.
+Chaque objet de profil nécessite `chrf`, `arena` et `price`. Chaque valeur est finie et au moins `0`, et au moins une est supérieure à `0`. Elles sont normalisées pour que leur somme soit égale à 1, de sorte que `45`, `35` et `20` correspondent aux valeurs par défaut de qualité. `qualityFloor` est facultatif, dans l'intervalle `(0, 1]`, et représente la fraction du meilleur ChrF dans le pool de candidats. Les modèles en dessous du seuil, y compris tout modèle sans mesure ChrF, sont classés après ceux qui le franchissent.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

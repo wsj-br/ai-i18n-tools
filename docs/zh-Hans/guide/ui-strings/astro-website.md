@@ -33,10 +33,10 @@
 <a id="ui-strings-ssg"></a>
 ## UI 字符串 (SSG)
 
-使用 `init -t ui-astro-website` 搭建 UI 提取，然后在您也翻译页面 HTML 时合并到 `docs[]` 块中（请参阅 [解析和替换页面](#astro-website-pages-parse-and-replace)）。在 TypeScript 模块中将副本包装在 `t('…')` 中，并在 `.astro` 前置内容（以及当您更喜欢 UI 字符串而不是重复的区域设置页面时，模板 `{expression}` 块）中：
+使用 `init -t ui-astro-website -P ollama` 搭建 UI 提取，然后在您也翻译页面 HTML 时，将其合并到一个 `docs[]` 块中（请参阅 [解析和替换页面](#astro-website-pages-parse-and-replace))。将文本包装在 TypeScript 模块的 `t('…')` 中以及 `.astro` 前置元数据中（如果您倾向于使用 UI 字符串而非重复的本地化页面，也可以包装在模板 `{expression}` 块中）：
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

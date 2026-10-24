@@ -170,7 +170,7 @@ export async function runSuggestModels(
     );
     return { exitCode: 1 };
   }
-  const top = opts.top ?? 5;
+  const top = opts.top ?? 8;
   if (opts.list !== true && (!Number.isInteger(top) || top < 1)) {
     console.error(chalk.red(t("--top must be an integer >= 1.")));
     return { exitCode: 1 };
@@ -260,8 +260,9 @@ export async function runSuggestModels(
 
   const ids = chosen.map((model) => model.id);
   if (opts.apply === true) {
+    let backupPath: string;
     try {
-      replaceProviderTranslationModels(configPath, result.provider, ids);
+      backupPath = replaceProviderTranslationModels(configPath, result.provider, ids);
     } catch (e) {
       console.error(chalk.red(e instanceof Error ? e.message : String(e)));
       return { exitCode: 1 };
@@ -274,6 +275,7 @@ export async function runSuggestModels(
         })
       )
     );
+    out(chalk.green(t("Config backup → {{path}}.", { path: backupPath })));
   }
 
   if (opts.json === true) {

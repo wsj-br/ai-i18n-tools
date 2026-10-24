@@ -137,8 +137,12 @@ Cada bloque de `providers.<name>` acepta:
   USD por 1 000 000 de tokens para todo el proveedor: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Cuando una llamada facturada no tiene un `usage.cost` reportado por el proveedor (la mayoría de los proveedores además de OpenRouter y Cheaper Inference), esta tarifa se aplica a los tokens de entrada y salida de esa llamada. El importe se incluye en el resumen de traducción y se almacena en la fila `api_calls`. Una entrada `modelPricing` coincidente sustituye a este valor predeterminado. Un coste reportado por el proveedor nunca se reemplaza. Cuando ninguna tarifa de configuración coincide, las herramientas utilizan el precio de lista de models.dev para ese ID de modelo (USD por 1M de tokens de entrada y salida). Las filas que se almacenaron sin coste aún pueden estimarse más tarde mediante [`usage`](/es/reference/cli-commands/workflows#usage) y [Usage & costs](/es/guide/translation-dashboard/usage). Si ninguna de esas fuentes es aplicable, el coste permanece desconocido (`—`), nunca `$0.00`.
 - `modelPricing` (opcional)
   USD por 1 000 000 de tokens por modelo: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Sustituye a `pricing` para ese ID de modelo. Se aplica en el momento de la llamada cuando el proveedor omitió `usage.cost`, y se almacena con la llamada.
+- `zeroDataRetention` (opcional, solo `providers.cheaperinference`)
+  Cuando `true`, las solicitudes de chat envían `"zdr": true`, `list-models` y `check-models`, y `suggest-models` cargan `GET /v1/models?zdr=true`. Omitido significa desactivado. Consulta [Retención de datos cero](/es/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Presets de proveedores integrados (clave — URL base — variable de entorno de clave API):
+
+<div class="provider-presets">
 
 | Proveedor | URL base | Variable de entorno de clave API |
 | --- | --- | --- |
@@ -157,6 +161,8 @@ Presets de proveedores integrados (clave — URL base — variable de entorno de
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (ninguno) |
 
+</div>
+
 Un bloque `openrouter` de nivel superior heredado (con `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) todavía se acepta y se migra automáticamente a `providers.openrouter` (con `provider: "openrouter"`) al cargar; `defaultModel` / `fallbackModel` se pliegan en `translationModels`.
 
 Para un ejemplo ejecutable que configura varios proveedores en una configuración y cambia entre ellos con `-P`, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` y `deepseek` en el mismo documento).
@@ -165,14 +171,14 @@ Para un ejemplo ejecutable que configura varios proveedores en una configuració
 
 Considere la siguiente lista como una **línea base** que puede ampliar: si la traducción para una configuración regional específica es deficiente o no tiene éxito, investigue qué modelos admiten ese idioma o script de manera efectiva (consulte los recursos en línea o la documentación de su proveedor) y agregue esos ID de modelo como alternativas adicionales.
 
-Estos ID de modelo coinciden con `ai-i18n-tools init [-P <provider>]` cuando `-P openrouter` (el valor predeterminado). Otros preajustes obtienen ID de modelo nativos de `init -P <provider>`; consulte [Proveedores integrados](/es/guide/providers-and-models#built-in-providers).
+Estos IDs de modelo son los que `ai-i18n-tools init -P openrouter` escribe. Otros preajustes obtienen IDs de modelo nativos de `init -P <provider>` — consulta [Proveedores integrados](/es/guide/providers-and-models#built-in-providers).
 
 Esta lista fue **probada para una amplia cobertura de localidades** en un gran proyecto de documentación con 36 localidades objetivo; sirve como valor predeterminado práctico, pero no se garantiza que funcione bien en todas las localidades.
 
-Ejemplo `translationModels` (mismos valores predeterminados que `ai-i18n-tools init [-P <provider>]`):
+Ejemplo `translationModels` (lista de OpenRouter de `ai-i18n-tools init -P openrouter`):
 
 <details>
-<summary>Lista predeterminada de alternativas para translationModels</summary>
+<summary>Lista de translationModels de OpenRouter</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 
 Pesos para [`suggest-models`](/es/reference/cli-commands/models#suggest-models) y la [pestaña Modelos del panel](/es/guide/translation-dashboard/models). Omita el bloque, o bien omita un perfil, y dicho perfil conservará los pesos integrados. El bloque no se sobrescribe mediante `--apply` o **Actualizar configuración**; estos solo escriben los ID de modelo.
 
-- `quality` — ChrF predeterminado `0.45/0.95`, Arena `0.35/0.95`, precio `0.15/0.95`, umbral de calidad `0.7`
-- `price` — ChrF predeterminado `0.25`, Arena `0.10`, precio `0.65`, umbral de calidad `0.6`
+- `quality` — ChrF predeterminado `0.45`, Arena `0.35`, precio `0.20`, umbral de calidad `0.7`
+- `price` — ChrF predeterminado `0.35`, Arena `0.20`, precio `0.45`, umbral de calidad `0.6`
 
-Cada objeto de perfil requiere `chrf`, `arena` y `price`. Cada valor es finito y al menos `0`, y al menos uno es mayor que `0`. Se normalizan para que sumen 1, por lo que `45`, `35` y `15` coinciden con los valores predeterminados de calidad. `qualityFloor` es opcional, está en el rango `(0, 1]` y representa la fracción del mejor ChrF en el conjunto de candidatos. Los modelos por debajo del umbral, incluido cualquier modelo sin medición de ChrF, se ordenan después de aquellos que lo superan.
+Cada objeto de perfil requiere `chrf`, `arena` y `price`. Cada valor es finito y al menos `0`, y al menos uno es mayor que `0`. Se normalizan para que sumen 1, por lo que `45`, `35` y `20` coinciden con los valores predeterminados de calidad. `qualityFloor` es opcional, en el rango `(0, 1]`, y es la fracción del mejor ChrF en el conjunto de candidatos. Los modelos por debajo del umbral, incluido cualquier modelo sin medición de ChrF, se ordenan después de los que lo superan.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

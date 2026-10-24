@@ -12,6 +12,8 @@ The CLI resolves the active provider from the top-level `provider` key (or the s
 
 Preset provider keys need only `translationModels` — base URL and API-key env var are filled in automatically:
 
+<div class="provider-presets">
+
 | Provider | Base URL | API-key env var |
 | --- | --- | --- |
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
@@ -29,9 +31,27 @@ Preset provider keys need only `translationModels` — base URL and API-key env 
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (none) |
 
+</div>
+
 For any **non-preset** key, set `baseUrl` and `apiKeyEnv` explicitly in config.
 
 Set the active provider's API key in your environment or `.env` file. The CLI auto-loads `.env` from the working directory without overriding variables already set in the shell. See [Environment variables](/reference/environment-variables).
+
+<a id="cheaperinference-zero-data-retention"></a>
+### Zero data retention (Cheaper Inference)
+
+`providers.cheaperinference.zeroDataRetention` is optional and defaults to off. Set it when this project must send prompts only through providers that do not keep them.
+
+```json
+"cheaperinference": {
+  "zeroDataRetention": true,
+  "translationModels": ["gemini-2.5-flash", "deepseek-v4-flash"]
+}
+```
+
+With the flag on, every chat request includes `"zdr": true`, and `list-models`, `check-models`, and `suggest-models` (including the dashboard Models tab) read `GET /v1/models?zdr=true`. That catalog lists the models a zero-data-retention request can use, at the zero-data-retention price. `check-models` treats an id missing from that catalog as invalid. The flag does not create a route for a model the catalog leaves out. Remove that id from `translationModels`, `uiModels`, or `localeModels`.
+
+Leave the flag off when the Cheaper Inference account does not require zero data retention. If [Data Protection](https://platform.cheaperinference.com/dashboard/data-protection) is already on for the account, Cheaper Inference still refuses a model with no zero-data-retention route. The error names that model. To keep the account policy, set `zeroDataRetention` to `true` and switch to a model from the zero-data-retention catalog. To keep the refused model, turn zero data retention off on that page. The fallback chain then tries the next configured model.
 
 <a id="model-fallback-chain"></a>
 ### Model fallback chain
@@ -47,7 +67,7 @@ Set the active provider's API key in your environment or `.env` file. The CLI au
 
 Optional `providers.<active>.uiModels` is a UI-only list tried after any matching per-locale override and before the global `translationModels` chain. Optional `providers.<active>.localeModels` maps a BCP-47 locale to models tried **first** for that locale in every pipeline (`pt-br` matches `pt-BR`). When no `localeModels` entry matches, only the pipeline-specific tiers apply.
 
-Different providers and models vary in cost, speed, and quality across languages. Treat the default list from `npx ai-i18n-tools init` as a starting point — expand it when a locale consistently produces poor results, or add a `localeModels` entry for that locale. Full defaults and rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
+Different providers and models vary in cost, speed, and quality across languages. Treat the model list from `npx ai-i18n-tools init -P <provider>` as a starting point — expand it when a locale consistently produces poor results, or add a `localeModels` entry for that locale. Preset lists and rationale: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
 
 **UI strings:** optional `uiModels` lets you route `translate-ui`, plural generation, and `proofread-ui` through premium models before the global `translationModels` chain — useful because UI copy is short but user-facing.
 
@@ -95,7 +115,7 @@ Before changing `translationModels`, confirm each id is still available on the a
 npx ai-i18n-tools check-models
 ```
 
-`check-models` calls the provider's `GET /models` endpoint, validates every id from `translationModels`, `uiModels`, and `localeModels`, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter and Cheaper Inference do), it also shows USD per 1M tokens.
+`check-models` calls the provider's `GET /models` endpoint, validates every id from `translationModels`, `uiModels`, and `localeModels`, reports ids that are missing or past `expiration_date`, and exits non-zero when any configured id is invalid. When the provider returns pricing (OpenRouter and Cheaper Inference do), it also shows USD per 1M tokens. With [`zeroDataRetention`](/guide/providers-and-models#cheaperinference-zero-data-retention) on, `check-models` and `list-models` use `GET /models?zdr=true`.
 
 Browse the full catalog advertised by a provider:
 
@@ -115,12 +135,12 @@ Ask for a ranked shortlist (quality by default, or `--price`) and optionally wri
 npx ai-i18n-tools suggest-models
 npx ai-i18n-tools suggest-models --list
 npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --price --top 8 --json
 npx ai-i18n-tools suggest-models --apply
 npx ai-i18n-tools suggest-models --refresh
 ```
 
-The table columns are rank, model id, index, measured ChrF, measured Arena Score, and input/output USD per 1M tokens. A missing measurement is `—`. `--list` prints those columns for the models already in `translationModels`. `--max-output-price` keeps models at or below that output USD per 1M tokens and leaves out a model with no output price. `--min-delta` keeps a model only when its index is at least that many points below the previous kept model. `--top` (default 5) limits the table, `--json`, and `--apply` after those filters. `--apply` replaces only `translationModels`. `--refresh` redownloads the 7-day benchmark cache. Optional weights are [`modelSuggestion`](/reference/configuration#modelsuggestion). See [suggest-models](/reference/cli-commands/models#suggest-models).
+The table columns are rank, model id, index, measured ChrF, measured Arena Score, and input/output USD per 1M tokens. A missing measurement is `—`. `--list` prints those columns for the models already in `translationModels`. `--max-output-price` keeps models at or below that output USD per 1M tokens and leaves out a model with no output price. `--min-delta` keeps a model only when its index is at least that many points below the previous kept model. `--top` (default 8) limits the table, `--json`, and `--apply` after those filters. `--apply` replaces only `translationModels`. `--refresh` redownloads the 7-day benchmark cache. Optional weights are [`modelSuggestion`](/reference/configuration#modelsuggestion). See [suggest-models](/reference/cli-commands/models#suggest-models).
 
 Override the sample text, locales, or model list:
 
@@ -149,6 +169,6 @@ Runnable example with four providers on the same document, including sample rate
 <a id="further-reference"></a>
 ### Further reference
 
-- [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, cost rates, OpenRouter-specific behaviour.
+- [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers) — preset table, custom endpoints, request timeouts, cost rates, Cheaper Inference zero data retention, OpenRouter-specific behaviour.
 - [Architecture — LLM client](/reference/architecture) — how model fallback, batching, and cost reporting work internally.
 - [Environment variables](/reference/environment-variables) — API-key env vars and base-URL overrides.

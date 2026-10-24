@@ -9,7 +9,7 @@
 ## 快速開始
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths, docusaurusCatalogDir)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build

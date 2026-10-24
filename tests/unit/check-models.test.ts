@@ -251,4 +251,36 @@ describe("runCheckModels", () => {
     const [, init] = fetchMock.mock.calls[0]!;
     expect((init as RequestInit).headers).not.toHaveProperty("Authorization");
   });
+
+  it("checks Cheaper Inference against the zero-data-retention catalog when the flag is on", async () => {
+    const prev = process.env.CHEAPERINFERENCE_API_KEY;
+    process.env.CHEAPERINFERENCE_API_KEY = "ci-test";
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ data: [{ id: "gemini-2.5-flash" }] }),
+    });
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    try {
+      const cfg = minimalConfig(["gemini-2.5-pro-preview-06-05"], "cheaperinference");
+      cfg.providers.cheaperinference!.zeroDataRetention = true;
+      const r = await runCheckModels(cfg);
+      expect(r.exitCode).toBe(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.cheaperinference.com/v1/models?zdr=true",
+        expect.objectContaining({ method: "GET" })
+      );
+      const output = logSpy.mock.calls.map((c) => String(c[0] ?? "")).join("\n");
+      expect(output).toContain("zero-data-retention catalog");
+      expect(output).toContain("gemini-2.5-pro-preview-06-05");
+    } finally {
+      logSpy.mockRestore();
+      if (prev === undefined) {
+        delete process.env.CHEAPERINFERENCE_API_KEY;
+      } else {
+        process.env.CHEAPERINFERENCE_API_KEY = prev;
+      }
+    }
+  });
 });

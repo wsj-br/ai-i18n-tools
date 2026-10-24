@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "LLMを使用してJavaScript/TypeScriptアプリケーションおよびドキュメントサイトを国際化するためのCLIおよびツールキット。"
+    "description": "LLMを使用してJavaScript/TypeScriptアプリケーション、Pythonアプリケーション、およびドキュメントサイトを国際化するためのCLIおよびツールキット。"
   },
   "nav": {
     "guide": "ガイド",
@@ -14,6 +14,7 @@
     "whatIs": "ai-i18n-toolsとは？",
     "installation": "インストール",
     "migratingFromIntlayer": "Intlayerからの移行",
+    "addI18nToPython": "Pythonアプリにi18nを追加する",
     "glossary": "用語集",
     "quickStart": "クイックスタート",
     "toolUiLanguage": "ツールのUI言語",
@@ -36,6 +37,7 @@
     "documentsTroubleshooting": "トラブルシューティング",
     "json": "JSON",
     "integrations": "インテグレーション",
+    "documentationSites": "ドキュメントサイト",
     "astro": "Astro",
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",

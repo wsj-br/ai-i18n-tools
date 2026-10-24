@@ -51,19 +51,19 @@ README나 문서에서 선택적 **언어 전환기** 블록을 사용하려면 
 ## 1단계: 문서 초기화
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Astro Starlight 문서 사이트의 경우:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 VitePress 문서 사이트의 경우:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 nav/sidebar/footer 문자열에 대해 `docsOutput.vitepressThemeCatalog`를 설정하세요 — [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하세요.
@@ -71,7 +71,7 @@ nav/sidebar/footer 문자열에 대해 `docsOutput.vitepressThemeCatalog`를 설
 Nextra 문서 사이트의 경우:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 테마 사전 문자열에 대해 `docs[].nextraDictionaryPath`를 설정하세요 — [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요. Sidebar `_meta.ts` 레이블은 자동으로 수집됩니다.
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-nextra [-P <provider>]
 Fumadocs 문서 사이트의 경우:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`를 설정하세요 — [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하세요. Sidebar `meta.json` 레이블은 자동으로 수집됩니다.
@@ -87,17 +87,17 @@ UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`를 설정하세요 — [Fu
 일반 Astro 웹사이트 UI(스타라이트 없음)의 경우:
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 이 템플릿은 UI 추출만 활성화합니다. 페이지 HTML 번역을 위해서는 `features.translateDocs`도 설정하고 `docs[]` 블록을 추가하십시오([Astro 웹사이트 페이지(구문 분석 및 교체)](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) 참조). [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 구성은 두 파이프라인을 함께 보여줍니다.
 
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `provider` 및 `providers` — `init`는 기본 provider 블록을 스캐폴드합니다(`-P <provider>`를 전달하지 않으면 `openrouter`); `translate-docs` 또는 `sync` 전에 최소 하나의 provider를 구성하고 API 키를 설정하세요(Ollama는 키가 필요 없음). [Provider 및 API 키](/ko/guide/quick-start#provider-and-api-key) 및 [LLM provider 및 모델](/ko/guide/providers-and-models)을 참조하세요.
-- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`와 일치해야 함).
-- `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 파이프라인의 공유 SQLite 캐시 디렉토리(`--write-logs`의 기본 로그 디렉토리이기도 함).
+- `provider` 및 `providers` — 미리 설정된 `init -P <provider>` 템플릿입니다. `translate-docs` 또는 `sync` 전에 API 키를 설정하세요 (Ollama는 키가 필요 없습니다). [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key) 및 [LLM 공급자 및 모델](/ko/guide/providers-and-models)을(를) 참조하세요.
+- `sourceLocale` - 소스 언어 (`docusaurus.config.js`의 `defaultLocale`와(과) 일치해야 합니다).
+- `targetLocales` - BCP-47 로케일 코드 배열 (예: `["de", "fr", "es"]`).
+- `cacheDir` - 모든 파이프라인을 위한 공유 SQLite 캐시 디렉터리 (및 `--write-logs`의 기본 로그 디렉터리).
 - `docs` - 문서 블록 배열. 각 블록에는 선택적 `description`, `contentPaths`(문자열 또는 배열; 파일, 디렉터리 또는 glob), `outputDir`, 선택적 `docusaurusCatalogDir`, `docsOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등이 있습니다.
 - `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모. 설정하면 `translate-docs` 헤드라인과 `status` 섹션 헤더에 나타납니다.
 - `docs[].contentPaths` - markdown/MDX/`.astro` 소스(및 Docusaurus 셸 JSON을 위한 선택적 `docusaurusCatalogDir`).
@@ -136,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs`는 각 번역된 세그먼트가 마크다운 구조(문서에서 파싱된 강조 포함)를 유지하고 내부 플레이스홀더 토큰이 깔끔하게 복원되는지 확인합니다. `` `inline code` `` 주변에 여러 `bold` 스팬을 쌓거나, 굵게 안에 백틱을 중첩하거나(예: `` `fetch(\`/locales/${code}.json\`)` ``와 같은 템플릿 리터럴), 하나의 긴 문장에 굵게와 코드를 엮는 단락은 취약합니다. 일부 로캘은 다른 어순이 필요하므로, 번역 후 `**` 및 `` ` ``가 정렬되는 방식이 변경되어 `AST mismatch`과 같은 CLI 오류가 발생할 수 있습니다.
 
-복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 `**`와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
+복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 <code v-pre>**</code>와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
 
 **이러한 종류의 유효성 검사 실패가 발생하면, 소스 언어 텍스트를 단순화하는 것을 선호하십시오** - 단락을 분할하거나, 예제를 펜스 코드 블록으로 이동하거나, 겹겨진 굵게/코드 쌍을 줄여 동일한 아이디어를 설명하십시오 - 모든 모델과 로케일이 조밀한 인라인 마크업을 완벽하게 재현할 것으로 기대하지 마십시오.
 

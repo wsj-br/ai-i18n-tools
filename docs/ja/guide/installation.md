@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### スタンドアロン実行ファイル
 
-GitHub Releasesには、Linux (`x64`, `arm64`)、macOS (`arm64`, `x64`)、およびWindows (`x64`) 用のNode.jsシングル実行ファイルビルドが添付されています。Pythonプロジェクトは、そのバイナリを使用して`extract`および`translate-ui`を実行できるため、Node.jsをインストールする必要はありません。これらのバイナリには、公証やAuthenticode署名は行われていません。npmのtarballおよび実行ファイルには、Pythonのサンプルは含まれていません。これらのサンプルはリポジトリ内に保持されており、`ai-i18n-tools-python-examples.zip`としても添付されています。
+GitHub Releasesには、Node.jsの単一実行可能ビルドが添付されています。Pythonプロジェクトは、Node.jsをインストールすることなく、そのバイナリから`extract`、`translate-ui`、`suggest-models`を含むCLIを実行します。
+
+| プラットフォーム | アセット |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+各リリースには`SHA256SUMS.txt`と`ai-i18n-tools-python-examples.zip`（4つのPythonサンプル）も添付されています。npm tarballと実行可能ファイルにはこれらのサンプルは含まれていません。これらはリポジトリ内にも保持されます。
+
+1. [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases)ページから、使用しているマシンに一致するアセットをダウンロードします。
+2. `SHA256SUMS.txt`を使用してチェックサムを確認します。
+3. LinuxおよびmacOSでは、ファイルに対して`chmod +x`を実行し、`PATH`に移動します（またはパスを指定して呼び出します）。
+4. Windowsでは、`ai-i18n-tools-win-x64.exe`を`PATH`に配置します。`ai-i18n-tools.exe`に名前を変更すると、他のプラットフォームと同じコマンド名で利用できます。
+
+これらのバイナリには公証やAuthenticode署名は付与されていません。macOSでは署名されていないプログラムの承認を求められる場合があります。Windows SmartScreenで警告が表示されることがあります。
+
+アクティブなプロバイダーのAPIキーは、npmインストール時と同じ方法（環境変数、または作業ディレクトリ内の`.env`ファイル）で設定します。`init`によるモデルリストは開始点となります。`suggest-models`はランク付けされたショートリストを出力します。`suggest-models --apply`はそれを`translationModels`に書き込みます。同じランキングが[Models](/ja/guide/translation-dashboard/models)タブにも表示されています。
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+チュートリアル: [Pythonアプリへのi18nの追加](/ja/guide/add-i18n-to-python)。コマンドリファレンス: [suggest-models](/ja/reference/cli-commands/models#suggest-models)。
 
 ai-i18n-toolsには独自の文字列抽出機能が含まれています。以前に`i18next-scanner`、`babel-plugin-i18next-extract`などを使用していた場合は、移行後にそれらの開発依存関係を削除できます。既存のi18nextの**ネームスペースJSON**ファイルは、[JSONパイプライン](/ja/guide/json#i18next-namespace-files)にそのまま残すことができます。Intlayerの`.content.ts`辞書は`migrate-intlayer`でインポートできます — [Intlayerからの移行](/ja/guide/migrating-from-intlayer)を参照してください。
 
@@ -88,15 +117,15 @@ CLI ソースを変更した後、リポジトリルートで `pnpm run build` �
 
 Linux、macOS、およびWSLでは、レジストリからのインストールによりCLIスクリプトの実行ビットが自動的に設定されます。Windowsでは、パッケージマネージャーがNodeを明示的に呼び出す`.cmd`および`.ps1`のシャムを生成します。
 
-翻訳コマンド (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) は `ai-i18n-tools.config.json` に **プロバイダー設定** と、アクティブなプロバイダーの **API キー** が必要です。`ai-i18n-tools init [-P <provider>]` を実行してデフォルトのプロバイダーブロックをスキャフォールドします (省略時は `openrouter`); `provider` / `providers` を編集してプリセットやモデルを切り替えます — [LLM プロバイダーとモデル](/ja/guide/providers-and-models) を参照してください。Ollama は API キーが不要な唯一の組み込みプリセットです。
+翻訳コマンド（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`）は、`ai-i18n-tools.config.json`内の**プロバイダ設定**と、アクティブプロバイダ用の**APIキー**を必要とします。`ai-i18n-tools init -P <provider>`を実行してそのプリセットをスキャフォールドし、`provider` / `providers`を編集してモデルを追加します。[LLMプロバイダとモデル](/ja/guide/providers-and-models)を参照してください。`init`からのモデルリストが出発点です。`ai-i18n-tools suggest-models`はアクティブプロバイダのチャットモデルをランク付けし、`suggest-models --apply`は`translationModels`を置き換えます。同じランキングが[モデル](/ja/guide/translation-dashboard/models)タブにあります。コマンドリファレンス: [suggest-models](/ja/reference/cli-commands/models#suggest-models)。OllamaはAPIキーを必要としない唯一の組み込みプリセットです。
 
-アクティブなプロバイダーに一致する API キーを設定します ([プリセットテーブル](/ja/guide/providers-and-models#built-in-providers) を参照):
+`init` に渡すプロバイダーに一致するAPIキーを設定します ([プリセットテーブル](/ja/guide/providers-and-models#built-in-providers) を参照):
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 またはプロジェクトルートに`.env`ファイルを作成してください。

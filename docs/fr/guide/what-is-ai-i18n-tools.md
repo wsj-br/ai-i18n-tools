@@ -6,10 +6,10 @@ ai-i18n-tools est un outil en ligne de commande et une boîte à outils qui vous
 <a id="translation-modes"></a>
 ## Modes de traduction
 
-- **Chaînes d'interface utilisateur** — Extrait les appels `t("…")` (et les marqueurs similaires) du code source JS/TS et écrit des fichiers JSON plats par locale pour i18next ou une recherche statique. Commandes : `extract`, `translate-ui`. Guide : [Chaînes d'interface utilisateur](/fr/guide/ui-strings/).
-- **Documents** — Traduit les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths`. Fonctionne avec VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro et d'autres sites de documentation statiques. Commande : `translate-docs`. Guide : [Documents](/fr/guide/documents/).
-- **JSON** — Traduit les bundles de locales JSON imbriqués (libellés de thème, remplacements i18n, copie d'application non présente dans la source) définis dans `json[]` de niveau supérieur. Commande : `translate-json`. Guide : [JSON](/fr/guide/json).
-- **SVG** — Traduit le texte visible dans les illustrations SVG (`<text>`, `<title>`, `<desc>`) et écrit un fichier de sortie par locale. Séparé de la traduction de documents — `translate-docs` ne modifie pas les ressources SVG. Commande : `translate-svg`. Guide : [Traduction SVG](/fr/guide/svg-translation/).
+- **Chaînes d'interface utilisateur** — Extrayez les appels `t("…")` et `_()` du code source JS/TS et Python (ainsi que les marqueurs similaires, y compris GNU gettext) et générez des fichiers JSON plats ou des catalogues `.po` / `.mo` par langue. Commandes : `extract`, `translate-ui`. Guide : [Chaînes d'interface utilisateur](/fr/guide/ui-strings/). Python : [Applications Python](/fr/guide/ui-strings/python).
+- **Documents** — Traduisez les pages Markdown, MDX et `.astro` listées dans `docs[].contentPaths`. Compatible avec VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro et d'autres sites de documentation statique. Commande : `translate-docs`. Guide : [Documents](/fr/guide/documents/).
+- **JSON** — Traduisez les bundles de localisation JSON imbriqués (libellés de thème, remplacements i18n, textes d'application absents du code source) définis dans le `json[]` de premier niveau. Commande : `translate-json`. Guide : [JSON](/fr/guide/json).
+- **SVG** — Traduisez le texte visible à l'intérieur des illustrations SVG (`<text>`, `<title>`, `<desc>`) et générez un fichier de sortie par langue. Indépendant de la traduction de documents — `translate-docs` ne modifie pas les ressources SVG. Commande : `translate-svg`. Guide : [Traduction SVG](/fr/guide/svg-translation/).
 
 Les quatre modes utilisent le [fournisseur LLM](/fr/guide/providers-and-models) actif, partagent le même fichier de configuration et réutilisent un cache SQLite afin que les réexécutions n'envoient que le texte nouveau ou modifié au modèle.
 
@@ -18,7 +18,7 @@ Les quatre modes utilisent le [fournisseur LLM](/fr/guide/providers-and-models) 
 
 | Votre contenu | Mode | Commande |
 | --- | --- | --- |
-| Le code source utilise les marqueurs `t()` ou HTML `data-i18n` | Chaînes d'interface utilisateur | `extract` / `translate-ui` |
+| Le code source utilise des marqueurs `t()`, `_()`, gettext ou HTML `data-i18n` | Chaînes d'interface utilisateur | `extract` / `translate-ui` |
 | Pages localisées ou sites de documentation | Documents | `translate-docs` |
 | Fichiers de langue JSON imbriqués autonomes | JSON | `translate-json` |
 | Diagrammes ou illustrations avec des étiquettes en SVG | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ Le dépôt contient des exemples de projets exécutables sous `examples/` — ch
 | [multi-provider](/fr/examples#multi-provider) | Comparer les fournisseurs LLM sur le même document |
 | [test-markdown](/fr/examples#test-markdown) | Tests de stress du pipeline Markdown (CJK, Devanagari, cas limites) |
 | [intlayer-migration](/fr/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
+| [python-streamlit](/fr/examples#python-streamlit) | Tableau de bord Streamlit, `t()` / `_()`, JSON avec clés en anglais |
+| [python-flask](/fr/examples#python-flask) | Flask + Jinja, `t()` / `_()`, JSON avec clés en anglais |
+| [python-fastapi](/fr/examples#python-fastapi) | FastAPI, locale étendue à la requête, JSON avec clés en anglais |
+| [python-gettext](/fr/examples#python-gettext) | GNU gettext existant ; `extract` / `translate-ui` actualise `.po` et `.mo` |
 
 Voir [Exemples](/fr/examples) pour les commandes de copie `npx degit` et un guide de choix.
 
 <a id="next-steps"></a>
 ## Prochaines étapes
 
-1. [Installation](/fr/guide/installation) — installez le package et définissez votre clé API de fournisseur.
-2. [Démarrage rapide](/fr/guide/quick-start) — créez une configuration et exécutez votre première traduction.
-3. [Fournisseurs et modèles](/fr/guide/providers-and-models) — choisissez un fournisseur, une chaîne de secours de modèle et une substitution `-P`.
+1. [Installation](/fr/guide/installation) — installez le package npm, ou téléchargez l'[exécutable autonome](/fr/guide/installation#standalone-executables) pour un projet Python, et configurez votre clé d'API de fournisseur.
+2. [Démarrage rapide](/fr/guide/quick-start) — générez une configuration et lancez votre première traduction.
+3. [Fournisseurs et modèles](/fr/guide/providers-and-models) — choisissez un fournisseur, une chaîne de secours de modèles et une substitution `-P`.

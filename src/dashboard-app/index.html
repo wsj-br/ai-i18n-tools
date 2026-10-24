@@ -752,40 +752,99 @@
 
         <section id="panel-models" class="panel">
           <p class="hint" data-i18n>
-            Rank the active provider's chat models. Check the ones you want, set their order, then
-            update translationModels or copy the JSON. Max output price is USD per 1M output tokens.
-            Min index delta keeps a later model only when its index is at least that far below the
-            previous kept model. Leave either box empty to skip that filter.
+            Rank the active provider's chat models. Check the rows you want. The number in the table
+            header is how many rows the header checkbox selects; clearing that checkbox clears the
+            selection. Move a row with its arrows or by dragging its handle. Checked rows, from top
+            to bottom, are the fallback order. Update config asks for confirmation, saves a
+            timestamped backup of the config file, then writes that order to translationModels. Copy
+            JSON copies the same list. Max output price is USD per 1M output tokens. Min index delta
+            keeps a later model only when its index is at least that far below the previous kept
+            model. Leave either box empty to skip that filter. Press Enter in a field to refresh the
+            table.
           </p>
-          <div class="filters">
-            <div class="filter-row">
+          <div class="models-toolbar">
+            <section class="models-card" aria-labelledby="models-card-ranking">
+              <h3 id="models-card-ranking" data-i18n>Ranking</h3>
               <span id="models-provider-wrap">
-                <label for="models-provider" data-i18n>Provider</label>
-                <select id="models-provider"></select>
+                <select id="models-provider" title="Provider" data-i18n-title></select>
               </span>
-              <label for="models-priority" data-i18n>Priority</label>
-              <select id="models-priority">
+              <select id="models-priority" title="Priority" data-i18n-title>
                 <option value="quality" data-i18n>Quality</option>
                 <option value="price" data-i18n>Price</option>
               </select>
-              <label for="models-max-output-price" data-i18n>Max output price</label>
-              <input id="models-max-output-price" type="number" min="0" step="any" />
-              <label for="models-min-delta" data-i18n>Min index delta</label>
-              <input id="models-min-delta" type="number" min="0" step="0.1" />
-              <label for="models-top" data-i18n>Use top</label>
-              <input id="models-top" type="number" min="1" value="5" />
-              <button type="button" id="models-btn-top" data-i18n>Select top</button>
-              <button type="button" id="models-btn-reload" data-i18n>Reload</button>
-            </div>
-            <div class="filter-row">
-              <button type="button" id="models-btn-apply" data-i18n>Update config</button>
+            </section>
+            <section class="models-card" aria-labelledby="models-card-filters">
+              <h3 id="models-card-filters" data-i18n>Filters</h3>
+              <input
+                id="models-max-output-price"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="Max output price"
+                title="Max output price (USD per 1M output tokens). Leave empty to skip."
+                data-i18n-placeholder
+                data-i18n-title
+              />
+              <input
+                id="models-min-delta"
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="Min index delta"
+                title="Min index delta. Keep a later model only when its index is at least this far below the previous kept model. Leave empty to skip."
+                data-i18n-placeholder
+                data-i18n-title
+              />
+              <button type="button" id="models-btn-reload" data-i18n>Update</button>
+            </section>
+            <section class="models-card" aria-labelledby="models-card-actions">
+              <h3 id="models-card-actions" data-i18n>Actions</h3>
               <button type="button" id="models-btn-copy" data-i18n>Copy JSON</button>
-            </div>
+              <button type="button" id="models-btn-apply" data-i18n>Update config</button>
+            </section>
           </div>
           <div id="models-status" class="status"></div>
-          <div class="models-layout">
-            <div id="models-table"></div>
-            <div id="models-selected"></div>
+          <div id="models-table">
+            <table class="models-table">
+              <thead>
+                <tr>
+                  <th class="models-col-reorder">
+                    <span class="visually-hidden" data-i18n>Reorder</span>
+                  </th>
+                  <th class="models-col-select">
+                    <span class="models-select-head">
+                      <input
+                        id="models-top"
+                        type="number"
+                        min="1"
+                        value="8"
+                        inputmode="numeric"
+                        aria-label="Use top"
+                        title="Use top"
+                        data-i18n-aria-label
+                        data-i18n-title
+                      />
+                      <input
+                        id="models-select-top"
+                        type="checkbox"
+                        aria-label="Select top"
+                        title="Select the first N rows. Clear to deselect all."
+                        data-i18n-aria-label
+                        data-i18n-title
+                      />
+                    </span>
+                  </th>
+                  <th data-i18n>Rank</th>
+                  <th data-i18n>Model</th>
+                  <th data-i18n>Index</th>
+                  <th>ChrF</th>
+                  <th>Arena</th>
+                  <th data-i18n>Input</th>
+                  <th data-i18n>Output</th>
+                </tr>
+              </thead>
+              <tbody id="models-tbody"></tbody>
+            </table>
           </div>
           <p id="models-attribution" class="hint"></p>
         </section>

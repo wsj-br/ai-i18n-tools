@@ -22,6 +22,8 @@ import i18n from './i18n.js';
 console.log(i18n.t('Processing complete'));
 ```
 
+Python 应用程序使用生成的 `i18n.py` 辅助程序。请参阅 [Python 应用程序](/zh-Hans/guide/ui-strings/python)。
+
 **规则：**
 
 - 仅提取这些形式：`t("…")`、`t('…')`、`t(`…`)`、`i18n.t("…")`。

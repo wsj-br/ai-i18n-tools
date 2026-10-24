@@ -13,7 +13,7 @@ Die ausführbare [`examples/plain-html-docs`](https://github.com/wsj-br/ai-i18n-
 Erstellen Sie eine funktionierende Konfiguration:
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 Oder fügen Sie diesen HTML-Teil zu einer `ai-i18n-tools.config.json` hinzu, die bereits über einen LLM-[Anbieter](/de/guide/providers-and-models) verfügt:

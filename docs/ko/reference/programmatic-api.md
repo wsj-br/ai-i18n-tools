@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Node.js에서 구성 스캐폴딩(선택적 네 번째 인수는 내장 프리셋을 선택; 기본값은 `openrouter`):
+Node.js에서 구성을 스캐폴드합니다. 네 번째 인수는 내장된 프리셋입니다 (`cwd`는 세 번째입니다):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 주요 내보내기 (일반적으로 사용됨 — 전체 공개 표면은 `src/index.ts` 참조):
@@ -52,6 +53,27 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `Glossary` / `GlossaryMatcher` | 번역 용어집을 로드하고 적용하며, 선택적인 용어 `Context` 메모를 포함합니다. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 캐시 무효화를 위한 `glossary.contextFiles` 및 지문 가이드를 로드합니다. |
 | `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점. |
-| `writeInitConfigFile` | 스타터 구성 JSON 작성(`template`, 선택적 `providerKey`의 기본값은 `openrouter`). |
+| `writeInitConfigFile` | 기본 구성 JSON을 작성합니다 (`template`, `cwd`, 그리고 필수 `providerKey`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |
 | `PROVIDER_PRESETS` | 내장 공급자 사전 설정 맵 (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Python 런타임 (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext` 및 `ui-python-flask`는 `i18n.py`이(가) 누락된 경우 이 모듈을 프로젝트에 작성합니다. 이는 Python 3.10 이상을 위한 표준 라이브러리 도우미입니다. 해당 파일에서 가져오십시오. 아래 함수들은 위 표의 Node 내보내기와는 별개입니다. Django 프로젝트는 Django의 gettext를 유지하므로 `ui-python-django`는 `i18n.py`을(를) 작성하지 않습니다.
+
+호출 형태, 안전하지 않은 f-string 및 프레임워크별 로캘 연결: [Python 애플리케이션](/ko/guide/ui-strings/python).
+
+| 함수 | 동작 |
+| --- | --- |
+| `set_locale(locale)` | 현재 로캘을 설정합니다. 코드의 밑줄은 하이픈으로 저장됩니다(`pt_BR`은(는) `pt-BR`이(가) 됨). `ContextVar` 토큰을 반환합니다. |
+| `reset_locale(token)` | 해당 토큰에서 로캘을 복원합니다. FastAPI 및 Flask 미들웨어를 포함하여 `finally`에서 호출하십시오. |
+| `get_locale()` | 현재 로캘을 반환합니다. |
+| `set_backend(backend)` | `"auto"`, `"json"` 또는 `"gettext"`을(를) 선택합니다. |
+| `get_ui_languages()` | 플랫 JSON 디렉터리 옆에 있는 `ui-languages.json`을(를) 읽거나, 플랫 출력이 꺼져 있을 때는 gettext 디렉터리를 읽습니다. |
+| `get_direction(locale=None)` | 해당 로캘(생략 시 현재 로캘)에 대한 매니페스트 행에서 `"rtl"` 또는 `"ltr"`을(를) 반환합니다. |
+| `_(message)` | 리터럴 하나를 조회한 다음 카탈로그 문자열 또는 메시지 자체를 반환합니다. |
+| `t(template, *, plurals=False, count=None, **values)` | 리터럴을 조회한 다음 보간합니다. `translate`은(는) 동일한 함수입니다. Python 3.14에서 `translate(t"Hello, {name}!")`은(는) 템플릿과 해당 값을 유지합니다. 키워드 인수는 템플릿 문자열에서 가져온 값을 재정의합니다. |
+| `ngettext(singular, plural, n, **values)` | 복수형 조회 후 보간합니다. `count`은(는) 형식 문자열에서 사용할 수 있습니다. |
+| `pgettext(context, message, **values)` | 컨텍스트 조회(`msgctxt` 또는 `context` + U+0004 + 플랫 JSON의 영어 소스) 후 보간합니다. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 선택 상자입니다. `st.session_state.locale` 및 `st.query_params["lang"]`을(를) 작성하고, `set_locale`을(를) 호출하며, 선택한 코드를 반환합니다. |

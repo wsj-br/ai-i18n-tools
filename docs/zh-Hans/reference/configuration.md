@@ -137,8 +137,12 @@
   提供商范围内的每百万个令牌的美元成本：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供商报告的 `usage.cost`（除 OpenRouter 和 Cheaper Inference 之外的大多数提供商）时，此费率将应用于该调用的输入和输出令牌。此金额包含在翻译摘要中，并存储在 `api_calls` 行中。匹配的 `modelPricing` 条目会覆盖此默认值。提供商报告的成本永远不会被替换。当没有配置费率匹配时，工具会使用 models.dev 中该模型 ID 的标价（每百万个令牌的输入和输出美元成本）。未存储成本的行仍可通过 [`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [使用情况和成本](/zh-Hans/guide/translation-dashboard/usage) 进行估算。如果这些来源均不适用，则成本保持未知 (`—`)，绝不会为 `$0.00`。
 - `modelPricing`（可选）
   每百万个令牌的每模型美元成本：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆盖该模型 ID 的 `pricing`。在提供商省略 `usage.cost` 时在调用时应用，并随调用一起存储。
+- `zeroDataRetention` (可选，仅限 `providers.cheaperinference`)
+  当 `true` 时，聊天请求会发送 `"zdr": true` 和 `list-models`；`check-models` 和 `suggest-models` 会加载 `GET /v1/models?zdr=true`。省略表示关闭。请参阅[零数据保留](/zh-Hans/guide/providers-and-models#cheaperinference-zero-data-retention)。
 
 内置提供商预设（键 — 基本 URL — API 密钥环境变量）：
+
+<div class="provider-presets">
 
 | 提供商 | 基本 URL | API 密钥环境变量 |
 | --- | --- | --- |
@@ -157,6 +161,8 @@
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (无) |
 
+</div>
+
 旧版顶层 `openrouter` 块（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍然受支持，并在加载时自动迁移到 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 合并到 `translationModels`。
 
 有关在一个配置中配置多个提供商并通过 `-P` 在它们之间切换的可运行示例，请参见 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（`openai`、`anthropic`、`openrouter` 和 `deepseek` 位于同一文档）。
@@ -165,14 +171,14 @@
 
 将以下列表视为您可以扩展的**基线**：如果特定语言环境的翻译质量差或不成功，请研究哪些模型能有效支持该语言或脚本（参考在线资源或您的提供商文档），并将这些模型 ID 添加为进一步的替代方案。
 
-当 `-P openrouter`（默认值）时，这些模型 ID 与 `ai-i18n-tools init [-P <provider>]` 匹配。其他预设从 `init -P <provider>` 获取原生模型 ID —— 参见[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
+这些模型 ID 是由 `ai-i18n-tools init -P openrouter` 生成的。其他预设从 `init -P <provider>` 获取原生模型 ID — 请参阅[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
 
 此列表经过**测试，覆盖了广泛的区域设置**，在一个大型文档项目中覆盖了 36 个目标区域设置；它是一个实用的默认选项，但不能保证对每个区域设置都表现良好。
 
-示例 `translationModels`（与 `ai-i18n-tools init [-P <provider>]` 的默认值相同）：
+`translationModels` 示例（来自 `ai-i18n-tools init -P openrouter` 的 OpenRouter 列表）：
 
 <details>
-<summary>默认翻译模型备用列表</summary>
+<summary>OpenRouter 翻译模型列表</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 
 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 和 [仪表板模型选项卡](/zh-Hans/guide/translation-dashboard/models) 的权重。省略该代码块或省略其中一个配置文件，该配置文件将保留内置权重。该代码块不会被 `--apply` 或 **更新配置** 重写；它们仅写入模型 ID。
 
-- `quality` — 默认 ChrF `0.45/0.95`、Arena `0.35/0.95`、价格 `0.15/0.95`、质量下限 `0.7`
-- `price` — 默认 ChrF `0.25`、Arena `0.10`、价格 `0.65`、质量下限 `0.6`
+- `quality` — 默认 ChrF `0.45`，Arena `0.35`，价格 `0.20`，质量下限 `0.7`
+- `price` — 默认 ChrF `0.35`，Arena `0.20`，价格 `0.45`，质量下限 `0.6`
 
-每个配置文件对象都需要 `chrf`、`arena` 和 `price`。每个值都必须是有限数且至少为 `0`，并且至少有一个值大于 `0`。它们会被归一化以使其总和为 1，因此 `45`、`35` 和 `15` 与质量默认值相匹配。`qualityFloor` 是可选的，范围在 `(0, 1]` 之间，表示候选池中最佳 ChrF 的分数。低于下限的模型（包括任何没有 ChrF 测量的模型）将排在达到该下限的模型之后。
+每个配置文件对象需要 `chrf`、`arena` 和 `price`。每个值都是有限的，并且至少为 `0`，并且至少有一个值大于 `0`。它们被归一化为总和为 1，因此 `45`、`35` 和 `20` 与质量默认值匹配。`qualityFloor` 是可选的，在 `(0, 1]` 范围内，并且是候选池中最佳 ChrF 的分数。低于下限的模型，包括任何没有 ChrF 测量的模型，排在清除下限的模型之后。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

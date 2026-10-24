@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## 快速開始
 
-1. 使用 `ai-i18n-tools init -t ui-plain-html` 建立脚手架，或新增下方的設定。
-2. 標記來源 HTML（或讓 `mark-html` 自動處理）。
+1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 建立骨架，或新增以下配置。
+2. 標記來源 HTML (或讓 `mark-html` 執行此操作)。
 3. 將 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向這些檔案。
-4. 執行 `extract`，然後執行 `translate-ui`（或使用 `sync-ui` 同時執行兩者）。
+4. 執行 `extract`，然後執行 `translate-ui` (或使用 `sync-ui` 同時執行兩者)。
 5. 將 `i18n.js` 複製到網頁旁邊，並在您自己的指令碼之前載入它。
 6. 透過 HTTP 提供該資料夾。`file://` 無法 `fetch` 地區設定 JSON。
 

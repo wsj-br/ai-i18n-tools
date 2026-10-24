@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Node.jsから設定をスキャフォールドする (オプションの第4引数で組み込みプリセットを選択。デフォルトは`openrouter`):
+Node.js から config をスキャフォールドします。4番目の引数は組み込みのプリセットです (`cwd` は3番目です):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 主なエクスポート（一般的に使用されるもの — 完全な公開インターフェースについては`src/index.ts`を参照）：
@@ -52,6 +53,27 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `Glossary` / `GlossaryMatcher` | 翻訳用語集を読み込んで適用します。これにはオプションの用語 `Context` メモが含まれます。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | キャッシュ無効化のための `glossary.contextFiles` およびフィンガープリントのガイダンスを読み込みます。 |
 | `runTranslateUI` | プログラムによる翻訳UIのエントリポイントです。 |
-| `writeInitConfigFile` | スターター設定JSONを書き出す (`template`、オプションの`providerKey`はデフォルトで`openrouter`)。 |
+| `writeInitConfigFile` | スターター config JSON (`template`、`cwd`、および必須の `providerKey`) を書き込みます。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`が使用する組み込みプリセットごとのスターター`translationModels`。 |
 | `PROVIDER_PRESETS` | 組み込みプロバイダープリセットマップ（`baseUrl`、`apiKeyEnv`）。 |
+
+<a id="python-runtime"></a>
+## Python ランタイム (`i18n.py`)
+
+`init -t ui-python`、`ui-python-gettext`、および `ui-python-flask` は、`i18n.py` が欠落している場合にこのモジュールをプロジェクトに書き込みます。これは Python 3.10 以降向けの標準ライブラリヘルパーです。そのファイルからインポートしてください。以下の関数は、上記の表にある Node エクスポートとは別個のものです。Django プロジェクトは Django の gettext を保持するため、`ui-python-django` は `i18n.py` を書き込みません。
+
+呼び出し形状、安全でない f-string、およびフレームワークごとのロケール配線: [Python アプリケーション](/ja/guide/ui-strings/python)。
+
+| 関数 | 動作 |
+| --- | --- |
+| `set_locale(locale)` | 現在のロケールを設定します。コード内のアンダースコアはハイフンとして保存されます (`pt_BR` は `pt-BR` になります)。`ContextVar` トークンを返します。 |
+| `reset_locale(token)` | そのトークンからロケールを復元します。FastAPI や Flask ミドルウェアを含む `finally` 内で呼び出してください。 |
+| `get_locale()` | 現在のロケールを返します。 |
+| `set_backend(backend)` | `"auto"`、`"json"`、または `"gettext"` を選択します。 |
+| `get_ui_languages()` | フラット JSON ディレクトリの隣にある `ui-languages.json`、またはフラット出力がオフの場合は gettext ディレクトリを読み取ります。 |
+| `get_direction(locale=None)` | そのロケールのマニフェスト行から `"rtl"` または `"ltr"` を返します (省略時は現在のロケール)。 |
+| `_(message)` | 1 つのリテラルを検索し、カタログ文字列またはメッセージ自体を返します。 |
+| `t(template, *, plurals=False, count=None, **values)` | リテラルを検索してから補間します。`translate` は同じ関数です。Python 3.14 では、`translate(t"Hello, {name}!")` はテンプレートとその値を保持します。キーワード引数は、テンプレート文字列から取得された値を上書きします。 |
+| `ngettext(singular, plural, n, **values)` | 複数形の検索を行い、補間します。`count` はフォーマット文字列で利用可能です。 |
+| `pgettext(context, message, **values)` | コンテキスト検索 (`msgctxt`、または `context` + U+0004 + フラット JSON 内の英語ソース) を行い、補間します。 |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 選択ボックス。`st.session_state.locale` と `st.query_params["lang"]` を書き込み、`set_locale` を呼び出し、選択されたコードを返します。 |

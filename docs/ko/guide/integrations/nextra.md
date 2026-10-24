@@ -9,7 +9,7 @@ Next.js App Router에서 [Nextra](https://nextra.site/) 4 문서 사이트에 `i
 ## 빠른 시작
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)

@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "CLI und Toolkit zur Internationalisierung von JavaScript/TypeScript-Anwendungen und Dokumentationsseiten mithilfe von LLMs."
+    "description": "CLI und Toolkit zur Internationalisierung von JavaScript-/TypeScript-Anwendungen, Python-Anwendungen und Dokumentations-Websites mithilfe von LLMs."
   },
   "nav": {
     "guide": "Leitfaden",
@@ -14,6 +14,7 @@
     "whatIs": "Was ist ai-i18n-tools?",
     "installation": "Installation",
     "migratingFromIntlayer": "Migration von Intlayer",
+    "addI18nToPython": "i18n zu einer Python-App hinzufügen",
     "glossary": "Glossar",
     "quickStart": "Schnellstart",
     "toolUiLanguage": "Sprache der Tool-Benutzeroberfläche",
@@ -36,6 +37,7 @@
     "documentsTroubleshooting": "Fehlerbehebung",
     "json": "JSON",
     "integrations": "Integrationen",
+    "documentationSites": "Dokumentations-Websites",
     "astro": "Astro",
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",

@@ -75,6 +75,11 @@ export interface ResolvedProviderSettings {
   maxTokens: number;
   temperature: number;
   requestTimeoutMs: number;
+  /**
+   * Cheaper Inference only. True when `providers.cheaperinference.zeroDataRetention` is true.
+   * Chat calls then send `zdr: true`, and model-catalog requests use `GET /models?zdr=true`.
+   */
+  zeroDataRetention: boolean;
 }
 
 type ProviderSelectionConfig = Pick<
@@ -192,7 +197,15 @@ export function resolveProviderSettings(
     maxTokens: entry.maxTokens ?? DEFAULT_LLM_MAX_TOKENS,
     temperature: entry.temperature ?? DEFAULT_LLM_TEMPERATURE,
     requestTimeoutMs: resolveRequestTimeoutMs(entry, config),
+    zeroDataRetention: name === CHEAPERINFERENCE_PROVIDER_KEY && entry.zeroDataRetention === true,
   };
+}
+
+/** Query string for `GET /models` when the provider's catalog has a filtered view. */
+export function providerModelsCatalogQuery(
+  settings: Pick<ResolvedProviderSettings, "zeroDataRetention">
+): Record<string, string> | undefined {
+  return settings.zeroDataRetention ? { zdr: "true" } : undefined;
 }
 
 /**

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 整合
 
-將 ai-i18n-tools 接入文件網站與 Astro 專案的框架專屬指南。每個整合都使用 [Documents](/zh-Hant/guide/documents/) 管線 (`translate-docs` / `sync`) 來處理頁面內容；殼層字串（導覽、側邊欄、主題）會在註明之處於同一管線內處理，而非透過獨立的 [JSON](/zh-Hant/guide/json) 管線。
+針對文件網站、Astro 專案與 Python 應用程式的框架專屬指南。文件整合使用 [Documents](/zh-Hant/guide/documents/) 管線 (`translate-docs` / `sync`) 來處理頁面內容；Shell 字串（導覽、側邊欄、主題）在註明處亦由同一管線處理，而非透過獨立的 [JSON](/zh-Hant/guide/json) 管線。Python 應用程式則使用 [UI strings](/zh-Hant/guide/ui-strings/python) 管線 (`extract` / `translate-ui`)。
 
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
@@ -13,13 +13,14 @@
 | VitePress | `ui-vitepress` | [VitePress](/zh-Hant/guide/integrations/vitepress) |
 | Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/zh-Hant/guide/integrations/nextra) |
 | Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/zh-Hant/guide/integrations/fumadocs) |
+| Python (Streamlit, FastAPI, Flask, Django, gettext, 桌面應用) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/zh-Hant/guide/integrations/python) |
 
 <a id="shared-concepts"></a>
 ## 共用概念
 
-所有文件框架整合都共用 [Documents](/zh-Hant/guide/documents/) 中所述的相同 `docs[]` 區塊模型。設定 `docsOutput.style` 以符合你的框架 (`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"`, 或 `"astro-starlight"`)。關於輸出資料夾佈局與連結重寫行為，請參閱 [Output layouts](/zh-Hant/guide/documents/output-layouts) 與 [Link rewriting](/zh-Hant/guide/documents/link-rewriting)。
+文件框架整合共用 [Documents](/zh-Hant/guide/documents/) 中所述的相同 `docs[]` 區塊模型。請將 `docsOutput.style` 設定為符合您的框架 (`"docusaurus"`、`"vitepress"`、`"nextra"`、`"fumadocs"` 或 `"astro-starlight"`)。關於輸出資料夾配置與連結重寫行為，請參閱 [Output layouts](/zh-Hant/guide/documents/output-layouts) 與 [Link rewriting](/zh-Hant/guide/documents/link-rewriting)。Python 的設定方式則為獨立項目：[Python](/zh-Hant/guide/integrations/python)。
 
-每個 `init -t ui-*` 範本會產生預設的 LLM 提供者區塊（除非您傳入 `-P <provider>`，否則為 `openrouter`）。在 `translate-docs` 或 `sync` 之前，如有需要請設定 `provider` / `providers` 並設定對應的 API 金鑰 — 請參閱[提供者與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
+每個 `init -t ui-* -P <provider>` 骨架會寫入該預設的 LLM 供應商區塊。在 `translate-docs` 或 `sync` 之前，請設定對應的 API 金鑰 — 請參閱 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
 
 請參閱[框架外殼翻譯](#framework-shell-translation)以取得跨框架比較。下方每個連結的指南皆涵蓋該框架的設定。
 
@@ -49,3 +50,7 @@
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |
+| Streamlit | [examples/python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit) |
+| Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
+| FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
+| GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |

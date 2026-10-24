@@ -3,16 +3,18 @@
 
 `ai-i18n-tools` は、Python、Jinja、Django、および Qt `.ui` ファイルから UI 文字列を抽出し、フラットな英語キーの JSON、GNU gettext カタログ、またはその両方を出力します。ランタイムヘルパーは標準ライブラリの `i18n.py` (Python 3.10 以降) です。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid、および FastAPI はこのヘルパーを呼び出します。Django は Django 独自の gettext を使用します。
 
+既存の単一言語アプリへのロケールの追加: [Pythonアプリへのi18nの追加](/ja/guide/add-i18n-to-python)。フレームワークの選択: [Python統合](/ja/guide/integrations/python)。関数リスト: [Pythonランタイム (`i18n.py`)](/ja/reference/programmatic-api#python-runtime)。
+
 実行可能なコピーは `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` に存在します。これらは Python プロジェクトです。最初の 3 つは virtualenv と `pip install -r requirements.txt` を使用します。`python-gettext` は標準ライブラリのみを使用します。これらは npm パッケージではありません。リリースアーカイブ `ai-i18n-tools-python-examples.zip` には同じ 4 つのディレクトリが含まれています。npm tarball およびスタンドアロン実行可能ファイルには含まれていません。
 
 <a id="init"></a>
 ## スキャフォールド
 
 ```bash
-ai-i18n-tools init -t ui-python
-ai-i18n-tools init -t ui-python-gettext
-ai-i18n-tools init -t ui-python-flask
-ai-i18n-tools init -t ui-python-django
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools init -t ui-python-gettext -P anthropic
+ai-i18n-tools init -t ui-python-flask -P groq
+ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` はフラットな JSON と `i18n.py` を書き込みます。`ui-python-gettext` は JSON と `.po` / `.mo` を書き込みます。`ui-python-flask` は `translations/` および `i18n.py` 配下に gettext カタログを書き込みます。`ui-python-django` は `locale/<lang>/LC_MESSAGES/django.po` を書き込み、`i18n.py` は書き込みません。
@@ -75,11 +77,11 @@ Gettext ファイルはコンテキストに `msgctxt` を、複数形に `msgid
 
 `set_locale` は `ContextVar` トークンを返します。FastAPI や Flask のミドルウェアを含め、`finally` でリセットしてください。これにより、同時リクエスト間でロケールが漏洩するのを防ぎます。
 
-- **Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` は `st.session_state.locale` と `st.query_params["lang"]` を書き込みます。すべてのウィジェットに固定の `key` を指定してください。`examples/python-streamlit` を参照してください。
-- **FastAPI.** ミドルウェアで `?lang=` または `Accept-Language` を読み取り、`set_locale` を呼び出し、`finally` 内で `reset_locale` を実行します。ルートは `t()` と `_()` を呼び出します。`examples/python-fastapi` を参照してください。
-- **Flask および Pyramid.** リクエストからロケールを設定し、`_`、`t`、`current_locale`、`ui_languages`、および `direction` をテンプレートコンテキストに注入します。`examples/python-flask` を参照してください。
-- **既存の gettext.** `_()`、`gettext()`、および `ngettext()` はそのままにします。`ui.gettext` を現在の `locales/` ツリーに向け、`extract` を実行してから `translate-ui` を実行します。`examples/python-gettext` を参照してください。
-- **Django.** `gettext`、`ngettext`、および `{% blocktrans %}` を使用します。初期化テンプレート `ui-python-django` は、Django の `locale/` ディレクトリおよび `django` ドメインと一致させる必要があります。
-- **Tkinter.** 各ウィジェットを作成する際に `t()` または `_()` を呼び出し、`set_locale` の後に表示テキストを再構築します。
-- **PyQt / PySide.** `self.tr("...")` が抽出されます。`notr="true"` でない限り、`.ui` ファイルが `<string>` 要素を提供します。`comment` 属性は gettext コンテキストになります。
-- **PyWebView / PyWebKit.** 上記の Python テンプレートを使用して Python シェルを抽出します。`data-i18n` マーカーを使用するか、ロケールごとに 1 つの HTML ドキュメントを作成して HTML ページを抽出します。
+- <a id="streamlit"></a>**Streamlit。** `streamlit_language_selector(sidebar=True, key="lang_selector")`は`st.session_state.locale`と`st.query_params["lang"]`を書き込みます。すべてのウィジェットに固定の`key`を指定してください。`examples/python-streamlit`を参照してください。
+- <a id="fastapi"></a>**FastAPI。** ミドルウェアで`?lang=`または`Accept-Language`を読み取り、`set_locale`を呼び出し、`finally`内で`reset_locale`を実行します。ルートは`t()`と`_()`を呼び出します。`examples/python-fastapi`を参照してください。
+- <a id="flask"></a>**FlaskおよびPyramid。** リクエストからロケールを設定し、`_`、`t`、`current_locale`、`ui_languages`、および`direction`をテンプレートコンテキストに注入します。`examples/python-flask`を参照してください。
+- <a id="gettext"></a>**既存のgettext。** `_()`、`gettext()`、および`ngettext()`をそのままにします。`ui.gettext`を現在の`locales/`ツリーに向け、`extract`を実行してから`translate-ui`を実行します。`examples/python-gettext`を参照してください。
+- <a id="django"></a>**Django。** `gettext`、`ngettext`、および`{% blocktrans %}`を使用します。初期化テンプレート`ui-python-django`は、Djangoの`locale/`ディレクトリおよび`django`ドメインと一致します。
+- <a id="tkinter"></a>**Tkinter。** 各ウィジェットの作成時に`t()`または`_()`を呼び出し、`set_locale`の後に表示テキストを再構築します。
+- <a id="pyqt"></a>**PyQt / PySide。** `self.tr("...")`が抽出されます。`notr="true"`でない限り、`.ui`ファイルが`<string>`要素を提供します。`comment`属性はgettextコンテキストになります。
+- <a id="pywebview"></a>**PyWebView / PyWebKit。** 上記のPythonテンプレートを使用してPythonシェルを抽出します。`data-i18n`マーカーを使用するか、ロケールごとに1つのHTMLドキュメントを使用してHTMLページを抽出します。

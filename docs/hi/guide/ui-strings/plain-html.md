@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
 
-1. `ai-i18n-tools init -t ui-plain-html` के साथ स्कैफोल्ड करें, या नीचे दिया गया कॉन्फ़िगरेशन जोड़ें।
+1. `ai-i18n-tools init -t ui-plain-html -P openai` के साथ स्कैफ़ोल्ड करें, या नीचे कॉन्फ़िग जोड़ें।
 2. स्रोत HTML को मार्क करें (या `mark-html` को इसे करने दें)।
-3. `ui.sourceRoots` और `ui.uiExtractor.extensions` को उन फ़ाइलों की ओर इंगित करें।
-4. `extract` चलाएँ, फिर `translate-ui` (या दोनों को `sync-ui` के साथ चलाएँ)।
+3. `ui.sourceRoots` और `ui.uiExtractor.extensions` को उन फ़ाइलों पर इंगित करें।
+4. `extract` चलाएँ, फिर `translate-ui` (या `sync-ui` के साथ दोनों चलाएँ)।
 5. `i18n.js` को पेज के बगल में कॉपी करें और इसे अपनी स्क्रिप्ट से पहले लोड करें।
 6. फ़ोल्डर को HTTP पर सर्व करें। `file://` लोकेल JSON को `fetch` नहीं कर सकता।
 

@@ -11,28 +11,30 @@
 
 **使用您選擇的 AI 模型翻譯您的應用程式與文件 — 無供應商綁定，無需重寫。**
 
-用於將 JavaScript/TypeScript 應用程式與文件網站國際化的 CLI 與工具包。提取 `t()` 字串、翻譯 Markdown、MDX 與 HTML 頁面、JSON 套件組合以及 SVG 標籤——全部透過單一設定檔完成，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 及任何 OpenAI 相容 API 的預設配置。可依專案或地區設定切換供應商或模型，無需修改程式碼庫。
+用於將 JavaScript/TypeScript 應用程式、Python 應用程式和說明文件網站進行國際化的 CLI 與工具組。從單一設定檔中提取 `t()` 字串，翻譯 Markdown、MDX 和 HTML 頁面、JSON 套件以及 SVG 標籤，並內建 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 以及任何相容 OpenAI 之 API 的預設配置。無需更改程式碼庫，即可針對每個專案或每個地區設定切換供應商或模型。
 
-適用於 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、純 Markdown 與純 HTML。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 來源字串），並使用 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
+適用於 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、純 Markdown 和純 HTML。Python 應用程式可使用 `t()` / `_()` 或 GNU gettext（適用於 Streamlit、FastAPI、Flask、Django 和桌面工具組）。保留您現有的 [i18next](https://www.i18next.com/) 目錄（命名空間 JSON 或 `t()` 原始字串），並透過 `migrate-intlayer` 遷移 [Intlayer](https://intlayer.org/) 專案。
 
 <a id="features"></a>
 ## 功能
 
 | | |
 | --- | --- |
-| **UI 字串** | 從 JS/TS/Astro 提取 `t("…")`，或從單一 HTML 檔案提取 `data-i18n*` → 每個地區設定對應一個扁平化 JSON |
+| **UI 字串** | 從 JS/TS/Astro 和 Python 提取 `t("…")` / `_()`，或在單一 HTML 檔案中提取 `data-i18n*` → 轉換為每個地區的平面 JSON 或 GNU gettext |
 | **文件** | 翻譯 Markdown、MDX、`.astro` 與 HTML 頁面（每個地區設定一個檔案） |
 | **JSON** | 當文案位於 `t()` 呼叫之外時，翻譯巢狀的語言環境套件 |
 | **SVG** | 透過 `translate-svg` 翻譯插圖式 SVG 標籤 |
 | **智慧快取** | 共享的 SQLite 快取 — 僅有新增或變更的段落會呼叫模型 |
 | **單一 `sync`** | 透過單一設定檔按正確順序執行提取 → UI → SVG → 文件 → JSON |
+| **Python** | 每個 GitHub Release 上的獨立執行檔 — CLI 執行時無需安裝 Node.js |
+| **排名模型** | `suggest-models` 會對當前供應商的聊天模型進行排名，並可編寫 `translationModels` |
 
 <a id="which-pipeline"></a>
 ## 哪個管線？
 
-| 您的內容 | 命令 |
+| 您的內容 | 指令 |
 | --- | --- |
-| 來源使用 `t()`，或單一 HTML 檔案搭配 `data-i18n*` 標記 | **UI 字串** — `extract` / `translate-ui` |
+| 原始碼使用 `t()` 或 `_()` (JavaScript、TypeScript 或 Python)、gettext，或帶有 `data-i18n*` 標記的單一 HTML 檔案 | **UI 字串** — `extract` / `translate-ui` |
 | 當地語系化頁面、文件網站，或每個地區設定一個 HTML 檔案 | **文件** — `translate-docs` |
 | 獨立的巢狀 JSON 語言檔 | **JSON** — `translate-json` |
 | 帶有 SVG 標籤的圖表或插圖 | **SVG** — `translate-svg` |
@@ -49,38 +51,47 @@ pnpm add ai-i18n-tools
 # or: npm install ai-i18n-tools
 ```
 
-為您的供應商設定 API 金鑰（預設 `init` 使用 OpenRouter；Ollama 不需要）：
+設定您傳遞給 `init` 的提供者的 API 金鑰 (Ollama 無需此項)：
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# or, for OpenAI: export OPENAI_API_KEY=sk-your-key-here
 ```
 
 設定原生 `ai-i18n-tools` 指令（direnv、PATH、`package.json` 指令碼或 `npx`）— 請參閱[安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation)。
+
+<a id="python-no-nodejs"></a>
+### Python，無需 Node.js
+
+從 [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases) 下載對應的資產：`ai-i18n-tools-linux-x64`、`ai-i18n-tools-linux-arm64`、`ai-i18n-tools-macos-arm64`、`ai-i18n-tools-macos-x64` 或 `ai-i18n-tools-win-x64.exe`。檢查 `SHA256SUMS.txt`，在 Unix 上執行 `chmod +x`，並將檔案放置於 `PATH`。這些二進位檔案未經公證或 Authenticode 簽章。四個 Python 範例位於儲存庫中以及發行版的 `ai-i18n-tools-python-examples.zip` 內。它們不包含在 npm tarball 或執行檔中。完整步驟：[獨立執行檔](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation#standalone-executables)。
 
 <a id="quick-start"></a>
 ## 快速開始
 
 ```bash
-ai-i18n-tools init [-P <provider>]   # scaffold config (default: UI strings)
+ai-i18n-tools init -P openrouter   # scaffold config (UI strings template)
+ai-i18n-tools suggest-models         # optional ranked shortlist
+ai-i18n-tools suggest-models --apply # write that list to translationModels
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
+來自 `init` 的清單是一個起點。`suggest-models` 會對當前供應商的聊天模型進行排名。`--apply` 取代了 `translationModels`。相同的排名顯示在 [模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/translation-dashboard/models) 分頁中。指令參考：[suggest-models](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/models#suggest-models)。
+
 其他鷹架：`-t ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、`ui-plain-html`、`docs-plain-html`、`ui-json-bundles`、`ui-python`、`ui-python-gettext`、`ui-python-django` 或 `ui-python-flask`。
 
-Python 應用程式可以跳過 Node.js 安裝，直接執行附於每個 GitHub Release 中的獨立執行檔（Linux x64/arm64、macOS arm64/x64、Windows x64）。這些二進位檔案未經公證或 Authenticode 簽章。Python 範例位於儲存庫中，以及發行版本的 `ai-i18n-tools-python-examples.zip` 內。它們不包含在 npm tarball 或執行檔中。
-
-建議優先使用 `sync`，而非串聯個別的翻譯指令。完整逐步指南：[快速開始](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start)。
+建議優先使用 `sync`，而非串聯個別的翻譯指令。完整操作指南：[快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start)。Python：[為 Python 應用程式新增 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/add-i18n-to-python)。
 
 <a id="documentation"></a>
 ## 文件
 
 - [說明文件網站](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/) — 指南、整合與參考
-- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [提供者與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
+- [安裝](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation) · [快速入門](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/quick-start) · [供應商與模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/providers-and-models)
 - [UI 字串](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/) · [純 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/ui-strings/python) · [文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/) · [HTML 頁面](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/svg-translation/)
-- [整合](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro
-- [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/configuration) · [執行期輔助工具](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/runtime-helpers)
-- [範例](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/examples) — 可執行的示範（`npx degit …`）
-- [AI 代理程式上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 供使用端儲存庫中助理使用的整合指南
+- [整合](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro 與 [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/integrations/python)
+- [為 Python 應用程式新增 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/add-i18n-to-python)
+- [CLI 參考](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/reference/configuration) · [執行時期輔助程式](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/runtime-helpers)
+- [範例](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/examples) — 可執行的示範 (`npx degit …`)
+- [AI 代理程式內容](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 消費者儲存庫中助理的整合指南
 
 <a id="contributing"></a>
 ## 貢獻

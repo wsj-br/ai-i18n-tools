@@ -6,7 +6,12 @@ GitHub의 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/exampl
 <a id="run-standalone-npx-degit"></a>
 ## 독립 실행 (`npx degit`)
 
-전체 리포지토리를 복제하지 않고 하나의 예제를 복사하세요. 각 예제는 현재 패키지 버전과 일치하는 `ai-i18n-tools`의 게시된 캐럿 범위를 선언하고 npm에서 CLI를 설치합니다:
+전체 저장소를 복제하지 않고 예제 하나만 복사합니다.
+
+<a id="node-examples"></a>
+### Node.js 예제
+
+각 Node.js 예제는 현재 패키지 버전과 일치하는 `ai-i18n-tools`의 게시된 캐럿 범위를 선언하고 npm에서 CLI를 설치합니다:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-대신 **전체** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소를 복제했다면 저장소 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 후 `cd examples/<name>`를 실행하세요. 워크스페이스 예제는 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하거나, [PATH 설정](/ko/guide/installation#using-the-cli) 후에 단순히 `ai-i18n-tools …`를 사용합니다. [설치 — 복제한 모노레포](/ko/guide/installation#cloned-monorepo)를 참조하세요.
+<a id="python-examples"></a>
+### Python 예제
+
+`python-streamlit`, `python-flask`, `python-fastapi` 및 `python-gettext`에는 `package.json`가 없습니다. 아래 표의 `degit` 명령은 유효합니다. [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases)에서 `ai-i18n-tools-python-examples.zip`을 다운로드할 수도 있습니다. 해당 zip 파일은 동일한 4개의 디렉터리로 구성됩니다. 이는 npm 패키지의 일부가 아니며 독립 실행형 실행 파일 내부에도 포함되어 있지 않습니다.
+
+`python-streamlit`, `python-flask` 및 `python-fastapi`는 virtualenv와 `pip install -r requirements.txt`을 사용합니다. `python-gettext`는 표준 라이브러리만 사용합니다. [독립 실행형 실행 파일](/ko/guide/installation#standalone-executables)을 사용하여 번역하십시오.
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
+
+[ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소 **전체**를 복제한 경우, 저장소 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 다음 `cd examples/<name>`를 실행하십시오. 작업 영역(Node.js) 예제는 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하거나 [PATH 설정](/ko/guide/installation#using-the-cli) 후 일반 `ai-i18n-tools …`를 사용합니다. 해당 체크아웃의 Python 예제는 빌드 후 `node ../../bin/ai-i18n-tools.mjs`를 사용하여 번역합니다. [설치 — 복제된 모노레포](/ko/guide/installation#cloned-monorepo)를 참조하십시오.
 
 <a id="list-of-examples"></a>
 ## 예시 목록
@@ -32,6 +54,10 @@ pnpm install
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | 예시 | 가장 적합한 용도 | degit으로 복사 | 실행 |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ pnpm install
 
 각 **예시** 이름은 전체 설정, 명령 및 프로젝트 레이아웃이 포함된 GitHub README로 연결되거나 [저장소의 예시 색인](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)을 탐색할 수 있습니다.
 
-`python-streamlit`, `python-flask` 및 `python-fastapi`는 `venv` 및 `pip`를 사용하며 `pnpm`는 사용하지 않습니다. `python-gettext`은 표준 라이브러리만 사용합니다. 릴리스에는 Node.js가 설치되어 있지 않은 사용자가 독립 실행형 실행 파일을 다운로드할 수 있도록 `ai-i18n-tools-python-examples.zip`도 첨부되어 있습니다. 해당 zip 파일은 npm 패키지의 일부가 아닙니다.
+Node.js 예제는 `pnpm install` 후 npm에서 CLI를 설치합니다. 4개의 Python 예제는 `venv` 및 `pip`(`python-gettext`은 표준 라이브러리만 사용)와 번역을 위한 [독립 실행형 실행 파일](/ko/guide/installation#standalone-executables)을 사용합니다.
 
 <br/>
 

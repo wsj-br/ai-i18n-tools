@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # 런타임 도우미
 
-이 헬퍼들은 `'ai-i18n-tools/runtime'`에서 내보내지며 모든 JavaScript 환경(브라우저, Node.js, Deno, Edge)에서 작동합니다. 이들은 `i18next` 또는 `react-i18next`에서 가져오지 **않습니다**.
+이 헬퍼들은 `'ai-i18n-tools/runtime'`에서 내보내지며 모든 JavaScript 환경(브라우저, Node.js, Deno, Edge)에서 작동합니다. 이 헬퍼들은 `i18next` 또는 `react-i18next`에서 **가져오지** 않습니다. Python 애플리케이션은 생성된 `i18n.py` 모듈을 사용합니다. 해당 함수들은 [Programmatic API — Python runtime](/ko/reference/programmatic-api#python-runtime)에 나열되어 있습니다.
 
 앱 부트스트랩(`src/i18n.js`), 언어 전환기, 방향이나 문자열 유틸리티가 필요한 모든 비-React 코드에서 이를 사용하세요. 엔드투엔드 연결을 위해 [i18next 연결](/ko/guide/ui-strings/i18next-runtime)로 시작하세요. 언어 메뉴 및 RTL의 경우 [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher)을 참조하세요.
 

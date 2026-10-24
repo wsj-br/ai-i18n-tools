@@ -1065,10 +1065,15 @@ export function createTranslationDashboardApp(
       return;
     }
     try {
-      replaceProviderTranslationModels(suggestion.configPath, provider, body.models);
+      const backupPath = replaceProviderTranslationModels(
+        suggestion.configPath,
+        provider,
+        body.models
+      );
       res.json({
         ok: true,
         provider,
+        backupPath,
         translationModels: body.models.map((id) => id.trim()),
       });
     } catch (err) {

@@ -13,13 +13,13 @@
 <a id="init"></a>
 ### `init`
 
-**概要：** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**概要：** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 编写一个入门配置文件（包含 `provider` / `providers`、`concurrency`、`uiBatchConcurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 和 `docs[].addFrontmatter`）。调用 LLM 的翻译命令需要在环境中提供当前提供商的 API 密钥或 `.env`（Ollama 除外）——参见[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。
 
-**主要选项：** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**主要选项：** `-P` / `--provider`（必填），`-t` / `--template`，`-o` / `--output`，`--with-translate-ignore`
 
-`-P` / `--provider` 用于选择要构建的 **内置预设**（省略时默认为 `openrouter`）。必须是以下选项之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
+`-P` / `--provider` 是必填项。它选择用于搭建的**内置预设**。必须是以下之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
 
 **模板（`-t`）：**
 

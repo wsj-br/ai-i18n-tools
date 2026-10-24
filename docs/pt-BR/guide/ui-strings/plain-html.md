@@ -8,8 +8,8 @@ Para um site estático que deve emitir um arquivo HTML traduzido por localidade 
 <a id="quick-start"></a>
 ## Início rápido
 
-1. Crie a estrutura com `ai-i18n-tools init -t ui-plain-html` ou adicione a configuração abaixo.
-2. Marque o HTML de origem (ou deixe o `mark-html` fazer isso).
+1. Crie o scaffolding com `ai-i18n-tools init -t ui-plain-html -P openai`, ou adicione a configuração abaixo.
+2. Marque o HTML de origem (ou deixe `mark-html` fazer isso).
 3. Aponte `ui.sourceRoots` e `ui.uiExtractor.extensions` para esses arquivos.
 4. Execute `extract`, depois `translate-ui` (ou execute ambos com `sync-ui`).
 5. Copie `i18n.js` para ao lado da página e carregue-o antes do seu próprio script.

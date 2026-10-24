@@ -14,7 +14,7 @@ ai-i18n-tools का उपयोग [एस्ट्रो](https://astro.build
 ### त्वरित शुरुआत
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 ### त्वरित शुरुआत
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-`init -t ui-astro-website` के साथ UI निष्कर्षण को स्केफोल्ड करें, फिर जब आप पृष्ठ HTML का भी अनुवाद करते हैं तो एक `docs[]` ब्लॉक में मर्ज करें:
+`init -t ui-astro-website -P ollama` के साथ यूआई एक्सट्रैक्शन को स्केफ़ोल्ड करें, फिर, जब आप पेज एचटीएमएल का भी अनुवाद करें, तो एक `docs[]` ब्लॉक में मर्ज करें:
 
 ```json
 {

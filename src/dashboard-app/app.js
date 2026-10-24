@@ -62,7 +62,7 @@
 
   /**
    * Translate static markup. Markers are bare by default (the source key is the element's own
-   * textContent / title / placeholder); a valued marker (data-i18n="Key") overrides the key.
+   * textContent / title / placeholder / aria-label); a valued marker (data-i18n="Key") overrides the key.
    */
   function applyStaticI18n() {
     document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -79,6 +79,12 @@
         el.getAttribute("data-i18n-placeholder") ||
         normalizeI18nText(el.getAttribute("placeholder") || "");
       if (key) el.setAttribute("placeholder", t(key));
+    });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+      const key =
+        el.getAttribute("data-i18n-aria-label") ||
+        normalizeI18nText(el.getAttribute("aria-label") || "");
+      if (key) el.setAttribute("aria-label", t(key));
     });
   }
 
@@ -3122,6 +3128,15 @@
     el.style.color = isError ? "var(--danger)" : "";
   }
 
+  function modelsReportSelection() {
+    const count = modelsState.selected.length;
+    const message =
+      count === 1
+        ? t("{{count}} model selected.", { count })
+        : t("{{count}} models selected.", { count });
+    modelsSetStatus(message, false);
+  }
+
   function modelsFormatMeasure(value, digits) {
     return typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
   }
@@ -3130,66 +3145,134 @@
     return typeof value === "number" && Number.isFinite(value) ? "$" + value.toFixed(3) : "—";
   }
 
-  function modelsRenderSelected() {
-    const host = document.getElementById("models-selected");
-    const items = modelsState.selected
-      .map((id, index) => {
-        return (
-          '<li><span class="models-id">' +
-          escapeHtml(id) +
-          '</span><button type="button" data-move="up" data-index="' +
-          index +
-          '">↑</button><button type="button" data-move="down" data-index="' +
-          index +
-          '">↓</button></li>'
-        );
-      })
-      .join("");
-    host.innerHTML =
-      "<h3>" +
-      escapeHtml(t("Selected order")) +
-      "</h3><ol>" +
-      (items || "<li>" + escapeHtml(t("None selected")) + "</li>") +
-      "</ol>";
-    host.querySelectorAll("button[data-move]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const index = Number(btn.getAttribute("data-index"));
-        const dir = btn.getAttribute("data-move") === "up" ? -1 : 1;
-        const next = index + dir;
-        if (next < 0 || next >= modelsState.selected.length) return;
-        const copy = modelsState.selected.slice();
-        const swapped = copy[index];
-        copy[index] = copy[next];
-        copy[next] = swapped;
-        modelsState.selected = copy;
-        modelsRenderSelected();
-      });
-    });
+  const MODELS_GRIP_SVG =
+    '<svg width="14" height="18" viewBox="0 0 14 18" aria-hidden="true" focusable="false">' +
+    '<circle cx="4" cy="3" r="1.4" fill="currentColor"/>' +
+    '<circle cx="10" cy="3" r="1.4" fill="currentColor"/>' +
+    '<circle cx="4" cy="9" r="1.4" fill="currentColor"/>' +
+    '<circle cx="10" cy="9" r="1.4" fill="currentColor"/>' +
+    '<circle cx="4" cy="15" r="1.4" fill="currentColor"/>' +
+    '<circle cx="10" cy="15" r="1.4" fill="currentColor"/>' +
+    "</svg>";
+
+  /** Ignore header-checkbox changes caused by syncing its checked state. */
+  let modelsHeaderSync = false;
+  /** Row id to highlight after the next tbody render. */
+  let modelsHighlightId = "";
+  /** `{ id, action }` so keyboard focus returns to the same arrow after a move. */
+  let modelsFocusRestore = null;
+  let modelsDragFrom = null;
+
+  function modelsEscapeAttr(value) {
+    return escapeHtml(value).replace(/"/g, "&quot;");
+  }
+
+  function modelsSyncSelectedOrder() {
+    const picked = new Set(modelsState.selected);
+    modelsState.selected = modelsState.rows.map((row) => row.id).filter((id) => picked.has(id));
+  }
+
+  /** Integer >= 1 from the header field, or null when the field is not a valid count. */
+  function modelsTopCount() {
+    const raw = Number(document.getElementById("models-top").value);
+    if (!Number.isInteger(raw) || raw < 1) return null;
+    return raw;
+  }
+
+  function modelsSelectionMatchesTop() {
+    const n = modelsTopCount();
+    if (n === null) return false;
+    const top = modelsState.rows.slice(0, n).map((row) => row.id);
+    if (modelsState.selected.length !== top.length) return false;
+    return modelsState.selected.every((id, index) => id === top[index]);
+  }
+
+  function modelsSyncHeaderCheckbox() {
+    const box = document.getElementById("models-select-top");
+    if (!box) return;
+    modelsHeaderSync = true;
+    box.checked = modelsSelectionMatchesTop();
+    modelsHeaderSync = false;
+  }
+
+  function modelsKeepPreviousSelection(previous) {
+    const keep = new Set(previous);
+    modelsState.selected = modelsState.rows.map((row) => row.id).filter((id) => keep.has(id));
+  }
+
+  function modelsSelectTopRows() {
+    const n = modelsTopCount();
+    if (n === null) {
+      modelsSetStatus(t("--top must be an integer >= 1."), true);
+      return false;
+    }
+    modelsState.selected = modelsState.rows.slice(0, n).map((row) => row.id);
+    return true;
+  }
+
+  /** Move `from` so it occupies index `to`. Other rows shift to make room. */
+  function modelsMoveRow(from, to) {
+    if (to < 0 || to >= modelsState.rows.length || from === to) return false;
+    const copy = modelsState.rows.slice();
+    const [item] = copy.splice(from, 1);
+    copy.splice(to, 0, item);
+    modelsState.rows = copy;
+    modelsSyncSelectedOrder();
+    return true;
   }
 
   function modelsRenderTable() {
-    const host = document.getElementById("models-table");
-    const head =
-      "<tr><th></th><th>" +
-      escapeHtml(t("Rank")) +
-      "</th><th>" +
-      escapeHtml(t("Model")) +
-      "</th><th>" +
-      escapeHtml(t("Index")) +
-      "</th><th>ChrF</th><th>Arena</th><th>" +
-      escapeHtml(t("Input")) +
-      "</th><th>" +
-      escapeHtml(t("Output")) +
-      "</th></tr>";
-    const body = modelsState.rows
-      .map((row) => {
+    const body = document.getElementById("models-tbody");
+    if (!body) return;
+    const highlightId = modelsHighlightId;
+    const focus = modelsFocusRestore;
+    modelsHighlightId = "";
+    modelsFocusRestore = null;
+    const last = modelsState.rows.length - 1;
+    body.innerHTML = modelsState.rows
+      .map((row, index) => {
         const checked = modelsState.selected.indexOf(row.id) >= 0 ? " checked" : "";
+        const upDisabled = index === 0 ? " disabled" : "";
+        const downDisabled = index === last ? " disabled" : "";
+        const highlight = highlightId === row.id ? " models-row-moved" : "";
+        const idAttr = modelsEscapeAttr(row.id);
         return (
-          '<tr><td><input type="checkbox" data-model-id="' +
-          escapeHtml(row.id) +
+          '<tr class="models-row' +
+          highlight +
+          '" data-index="' +
+          index +
+          '"><td class="models-col-reorder"><span class="models-reorder-controls">' +
+          '<span class="models-drag" draggable="true" aria-hidden="true" data-drag-index="' +
+          index +
+          '" title="' +
+          modelsEscapeAttr(t("Drag to reorder {{model}}", { model: row.id })) +
+          '">' +
+          MODELS_GRIP_SVG +
+          "</span>" +
+          '<button type="button" class="models-move" data-move="up" data-index="' +
+          index +
+          '" data-model-id="' +
+          idAttr +
+          '"' +
+          upDisabled +
+          ' aria-label="' +
+          modelsEscapeAttr(t("Move {{model}} up", { model: row.id })) +
+          '">↑</button>' +
+          '<button type="button" class="models-move" data-move="down" data-index="' +
+          index +
+          '" data-model-id="' +
+          idAttr +
+          '"' +
+          downDisabled +
+          ' aria-label="' +
+          modelsEscapeAttr(t("Move {{model}} down", { model: row.id })) +
+          '">↓</button></span></td><td><input type="checkbox" data-model-id="' +
+          idAttr +
           '"' +
           checked +
-          " /></td><td>" +
+          ' aria-label="' +
+          modelsEscapeAttr(t("Select {{model}}", { model: row.id })) +
+          '" /></td><td>' +
           row.rank +
           "</td><td>" +
           escapeHtml(row.id) +
@@ -3207,9 +3290,7 @@
         );
       })
       .join("");
-    host.innerHTML =
-      '<table class="stats-table"><thead>' + head + "</thead><tbody>" + body + "</tbody></table>";
-    host.querySelectorAll("input[data-model-id]").forEach((box) => {
+    body.querySelectorAll("input[data-model-id]").forEach((box) => {
       box.addEventListener("change", () => {
         const id = box.getAttribute("data-model-id");
         if (box.checked) {
@@ -3217,17 +3298,113 @@
         } else {
           modelsState.selected = modelsState.selected.filter((item) => item !== id);
         }
-        modelsRenderSelected();
+        modelsSyncSelectedOrder();
+        modelsSyncHeaderCheckbox();
+        modelsReportSelection();
       });
     });
-    modelsRenderSelected();
-  }
-
-  function modelsApplyTop() {
-    const raw = Number(document.getElementById("models-top").value);
-    const n = Number.isInteger(raw) && raw >= 1 ? raw : 5;
-    modelsState.selected = modelsState.rows.slice(0, n).map((row) => row.id);
-    modelsRenderTable();
+    body.querySelectorAll("button[data-move]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const index = Number(btn.getAttribute("data-index"));
+        const action = btn.getAttribute("data-move") === "up" ? "up" : "down";
+        const next = action === "up" ? index - 1 : index + 1;
+        const id = btn.getAttribute("data-model-id");
+        if (!modelsMoveRow(index, next)) return;
+        modelsHighlightId = id;
+        modelsFocusRestore = { id, action };
+        modelsRenderTable();
+      });
+    });
+    body.querySelectorAll(".models-drag").forEach((handle) => {
+      handle.addEventListener("dragstart", (event) => {
+        modelsDragFrom = Number(handle.getAttribute("data-drag-index"));
+        if (event.dataTransfer) {
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", String(modelsDragFrom));
+        }
+        const row = handle.closest("tr");
+        if (row) row.classList.add("models-row-dragging");
+      });
+      handle.addEventListener("dragend", () => {
+        modelsDragFrom = null;
+        const line = body.querySelector(".models-drop-line");
+        if (line) line.remove();
+        body.querySelectorAll(".models-row-dragging").forEach((el) => {
+          el.classList.remove("models-row-dragging");
+        });
+      });
+    });
+    function modelsShowDropLine(beforeRow) {
+      let line = body.querySelector(".models-drop-line");
+      if (!line) {
+        line = document.createElement("tr");
+        line.className = "models-drop-line";
+        line.setAttribute("aria-hidden", "true");
+        const cell = document.createElement("td");
+        cell.colSpan = beforeRow.cells.length || 9;
+        line.appendChild(cell);
+      }
+      if (line !== beforeRow.previousElementSibling) {
+        beforeRow.parentNode.insertBefore(line, beforeRow);
+      }
+    }
+    /** Index the bar or row represents. The bar sits in front of the row it targets. */
+    function modelsDropIndex(row) {
+      const source = row.classList.contains("models-drop-line") ? row.nextElementSibling : row;
+      if (!source || !source.hasAttribute("data-index")) return null;
+      const to = Number(source.getAttribute("data-index"));
+      return Number.isInteger(to) ? to : null;
+    }
+    function modelsEventRow(event) {
+      const target = event.target;
+      if (!target || typeof target.closest !== "function") return null;
+      const row = target.closest("tr");
+      if (!row || row.parentNode !== body) return null;
+      return row;
+    }
+    // Bind once. Rendering replaces rows, and the insertion bar is created mid-drag.
+    if (body.dataset.modelsDnd !== "1") {
+      body.dataset.modelsDnd = "1";
+      const allowModelsDrop = (event) => {
+        if (modelsDragFrom === null) return;
+        const row = modelsEventRow(event);
+        if (!row) return;
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+        if (row.classList.contains("models-drop-line")) return;
+        const to = modelsDropIndex(row);
+        if (to === null || to === modelsDragFrom) {
+          const line = body.querySelector(".models-drop-line");
+          if (line) line.remove();
+          return;
+        }
+        modelsShowDropLine(row);
+      };
+      body.addEventListener("dragenter", allowModelsDrop);
+      body.addEventListener("dragover", allowModelsDrop);
+      body.addEventListener("drop", (event) => {
+        const row = modelsEventRow(event);
+        if (!row) return;
+        event.preventDefault();
+        const to = modelsDropIndex(row);
+        const from = modelsDragFrom;
+        modelsDragFrom = null;
+        if (to === null || from === null || !modelsMoveRow(from, to)) return;
+        const moved = modelsState.rows[to];
+        modelsHighlightId = moved ? moved.id : "";
+        modelsRenderTable();
+      });
+    }
+    modelsSyncHeaderCheckbox();
+    if (focus && focus.id) {
+      const cssApi = window.CSS;
+      const escapedId =
+        cssApi && typeof cssApi.escape === "function" ? cssApi.escape(focus.id) : focus.id;
+      const selector =
+        'button[data-move="' + focus.action + '"][data-model-id="' + escapedId + '"]';
+      const btn = body.querySelector(selector);
+      if (btn) btn.focus();
+    }
   }
 
   function modelsOptionalNumber(id) {
@@ -3255,6 +3432,8 @@
     }
     const seq = ++modelsLoadSeq;
     modelsState.priority = priority;
+    const headerChecked = document.getElementById("models-select-top").checked;
+    const previousSelected = modelsState.selected.slice();
     modelsSetStatus(t("Loading model suggestions…"), false);
     const params = new URLSearchParams();
     if (provider) params.set("provider", provider);
@@ -3305,21 +3484,64 @@
         }
       );
       const warnings = Array.isArray(body.warnings) ? body.warnings : [];
-      modelsSetStatus(warnings.join(" "), warnings.length > 0);
-      modelsApplyTop();
+      if (headerChecked) {
+        if (!modelsSelectTopRows()) {
+          modelsKeepPreviousSelection(previousSelected);
+        } else {
+          modelsSetStatus(warnings.join(" "), warnings.length > 0);
+        }
+      } else {
+        modelsKeepPreviousSelection(previousSelected);
+        modelsSetStatus(warnings.join(" "), warnings.length > 0);
+      }
+      modelsRenderTable();
     } catch (e) {
       if (seq !== modelsLoadSeq) return;
       modelsSetStatus(e instanceof Error ? e.message : String(e), true);
     }
   }
 
+  function modelsFilterOnEnter(event) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    void modelsLoad();
+  }
+
+  function modelsTopOnEnter(event) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    const box = document.getElementById("models-select-top");
+    if (!box.checked) return;
+    if (!modelsSelectTopRows()) return;
+    modelsRenderTable();
+    modelsReportSelection();
+  }
+
+  function modelsOnHeaderToggle() {
+    if (modelsHeaderSync) return;
+    const box = document.getElementById("models-select-top");
+    if (!box.checked) {
+      modelsState.selected = [];
+      modelsRenderTable();
+      modelsReportSelection();
+      return;
+    }
+    if (!modelsSelectTopRows()) {
+      modelsHeaderSync = true;
+      box.checked = false;
+      modelsHeaderSync = false;
+      return;
+    }
+    modelsRenderTable();
+    modelsReportSelection();
+  }
+
   function modelsInit() {
     document.getElementById("models-btn-reload").addEventListener("click", () => {
       void modelsLoad();
     });
-    document.getElementById("models-btn-top").addEventListener("click", () => {
-      modelsApplyTop();
-    });
+    document.getElementById("models-select-top").addEventListener("change", modelsOnHeaderToggle);
+    document.getElementById("models-top").addEventListener("keydown", modelsTopOnEnter);
     document.getElementById("models-priority").addEventListener("change", () => {
       void modelsLoad();
     });
@@ -3332,11 +3554,22 @@
     document.getElementById("models-min-delta").addEventListener("change", () => {
       void modelsLoad();
     });
+    document
+      .getElementById("models-max-output-price")
+      .addEventListener("keydown", modelsFilterOnEnter);
+    document.getElementById("models-min-delta").addEventListener("keydown", modelsFilterOnEnter);
     document.getElementById("models-btn-apply").addEventListener("click", async () => {
       if (modelsState.selected.length === 0) {
         modelsSetStatus(t("Select at least one model."), true);
         return;
       }
+      const confirmed = window.confirm(
+        t(
+          'Replace translationModels for provider "{{provider}}" with {{count}} model(s)? The current config file will be copied to a timestamped backup first.',
+          { provider: modelsState.provider, count: modelsState.selected.length }
+        )
+      );
+      if (!confirmed) return;
       modelsSetStatus(t("Updating config…"), false);
       try {
         const res = await fetch("/api/model-suggestions/apply", {
@@ -3349,7 +3582,10 @@
         });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error || res.statusText);
-        modelsSetStatus(t("Updated translationModels."), false);
+        modelsSetStatus(
+          t("Updated translationModels. Backup → {{path}}.", { path: body.backupPath || "" }),
+          false
+        );
       } catch (e) {
         modelsSetStatus(e instanceof Error ? e.message : String(e), true);
       }

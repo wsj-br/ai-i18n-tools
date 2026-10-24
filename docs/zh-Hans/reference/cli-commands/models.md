@@ -6,7 +6,7 @@
 
 **概要：** `ai-i18n-tools check-models`
 
-针对当前活跃提供商的 `GET /models` 列表（成员资格和 `expiration_date`）验证每个已配置的模型 ID。需要该提供商的 API 密钥（对于像 Ollama 这样无需密钥的提供商则不需要）。当任何已配置的 ID 缺失或过期时以非零状态退出，并遵循解析后的请求超时时间（提供商上的 `requestTimeout` 或 `requestTimeoutMs`，否则使用顶级值）。当提供商返回定价信息（例如 OpenRouter）时，还会显示提示/补全每 100 万 token 的美元价格。
+根据活动提供商的 `GET /models` 列表（成员资格和 `expiration_date`）验证每个已配置的模型 ID。需要该提供商的 API 密钥（无需密钥的提供商如 Ollama 则不需要）。当任何已配置的 ID 缺失或过期时，以非零状态退出，并遵守已解析的请求超时时间（提供商上的 `requestTimeout` 或 `requestTimeoutMs`，否则为顶级值）。当提供商返回定价信息时（例如 OpenRouter），还会显示提示/补全每 100 万个令牌的美元价格。当 `providers.cheaperinference.zeroDataRetention` 为 true 时，检查使用 `GET /v1/models?zdr=true` 并将目录中遗漏的 ID 标记为失败。
 
 **另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)
 
@@ -17,7 +17,7 @@
 
 **概要：** `ai-i18n-tools list-models`
 
-列出当前提供商通过其 `GET /models` 列表发布的所有模型（按 ID 排序；当前提供商遵循配置的 `provider` 键，可通过 `-P` / `--provider` 覆盖）。需要该提供商的 API 密钥（对于 Ollama 等免密钥提供商则无需）。当提供商返回定价信息时（例如 OpenRouter），还会显示每 100 万 token 的提示/补全 USD 价格，并标记超过 `expiration_date` 的条目。
+列出活动提供商通过其 `GET /models` 列表公布的所有模型（按 ID 排序；活动提供商遵循配置中的 `provider` 键，可通过 `-P` / `--provider` 覆盖）。需要该提供商的 API 密钥（无需密钥的提供商如 Ollama 则不需要）。当提供商返回定价信息时（例如 OpenRouter），还会显示提示/补全每 100 万个令牌的美元价格，并标记超出 `expiration_date` 的条目。当 `providers.cheaperinference.zeroDataRetention` 为 true 时，列表为 `GET /v1/models?zdr=true`。
 
 **主要选项：** `-P` / `--provider`
 
@@ -30,15 +30,15 @@
 
 **概要：** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
 
-对当前活跃提供商的聊天模型进行排名并打印排名靠前的模型（默认为 5 个）。表格列依次为：排名、模型 ID、索引（加权分数乘以 100，保留一位小数）、测得的 languagebench ChrF、测得的 Arena 分数，以及每百万 token 的输入和输出价格（美元）。缺失的测量值显示为 `—`。该命令需要提供商的 API 密钥（对于 Ollama 等无需密钥的提供商则不需要）。活跃提供商遵循配置 `provider`；可使用 `-P` / `--provider` 进行覆盖。
+对活跃提供商的聊天模型进行排名，并打印排名靠前的模型（默认为 8 个）。表格列的顺序为：排名、模型 ID、指数（加权分数乘以 100，保留一位小数）、测量的 languagebench ChrF、测量的 Arena 分数，以及每 100 万个 token 的输入和输出价格（美元）。缺失的测量值为 `—`。该命令需要该提供商的 API 密钥（对于 Ollama 等无密钥提供商则不需要）。活跃提供商遵循配置 `provider`；使用 `-P` / `--provider` 覆盖它。
 
-候选模型来自提供商的 `GET /models` 列表。已过期的行和非聊天行（嵌入、语音、图像、视频、审核、重排序器）将被排除。如果目录请求失败，命令将以状态码 1 退出。
+候选模型来自提供商的 `GET /models` 列表。当 `providers.cheaperinference.zeroDataRetention` 为 true 时，该请求为 `GET /v1/models?zdr=true`。过期行和非聊天行（嵌入、语音、图像、视频、内容审核、重排器）将被排除。如果该目录请求失败，命令将以状态 1 退出。
 
 `--quality` 是默认设置。它将 ChrF 和 Arena 分数的权重置于价格之上。`--price` 将价格权重置于这些分数之上，同时保持质量底线，因此未测量的廉价模型不会跳到列表前面。同时传递两个标志会导致错误。不传递任何标志则表示按质量排序。配置中的可选 `modelSuggestion` 权重可替换任一配置文件。请参阅 [Configuration](/zh-Hans/reference/configuration#modelsuggestion)。相同的权重也用于 [dashboard Models tab](/zh-Hans/guide/translation-dashboard/models)。
 
 ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值，其指标为 `chrf`，仅限于此项目的 `sourceLocale` 和 `targetLocales`。区域设置映射到 languagebench 语言代码（主要子标签，包含一些别名，例如 `pt-BR` 到 `pt` 以及 `zh-Hant` 到 `zh` 和 `yue`）。空集使用 `en`。Arena 是 LMArena 的整体 Arena 分数，而非 Elo 分数。排名价格为每百万 token `(3 × input + output) / 4` 美元。价格来源依次为：非零目录费率、models.dev 输入和输出费率，最后是 languagebench 的单一成本数字。目录价格 `0` 表示未定价，而非免费。未知价格在质量配置文件中为中性，在价格配置文件中为最差。缺失的 ChrF 会排在质量底线之下。用于缺失 ChrF 或 Arena 的 `0.35` 和 `0.45` 替补值仅影响索引；表格中打印 `—` 代替。
 
-清除底线的行优先，其次是更高的索引，然后是更便宜的混合价格。`--top`（默认 `5`，至少为 1 的整数）在应用下方的过滤器后，限制表格、`--json` 片段和 `--apply` 的显示数量。
+达到最低要求的行优先显示，其次是指数较高的，然后是混合价格更低的。`--top`（默认为 `8`，一个至少为 1 的整数）在应用以下筛选器后，共同限制表格、`--json` 片段和 `--apply`。
 
 `--list` 为活跃提供商配置的 `translationModels` 打印相同的列（按该顺序），并忽略 `--top`。排名列仍为每个模型在完整排名中的位置。配置中存在但目录中缺失、已过期或非聊天模型的 ID 仍会列出，测量值显示为 `—`。`--list` 不能与 `--apply` 结合使用。
 
@@ -52,7 +52,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值�
 }
 ```
 
-`--apply` 将 `providers.<active>.translationModels` 替换为这些 ID。`uiModels` 和 `localeModels` 保持不变。分数不会写入配置文件。
+`--apply` 将当前配置复制到同级 `ai-i18n-tools.config.{timestamp}.backup.json`（如果 `-c` 指定了另一个文件，则复制到 `{name}.{timestamp}.backup.json`），然后用这些 ID 替换 `providers.<active>.translationModels`。发生名称冲突时，会在 `.backup.json` 之前添加 `-2`、`-3` 等。如果复制失败，配置文件将保持不变。`uiModels` 和 `localeModels` 保持不变。分数不会写入配置文件。仪表板的 **Update config** 按钮也会写入相同的备份。
 
 基准测试数据会缓存在 `<cacheDir>/benchmark-scores.json`（通常为 `.translation-cache/benchmark-scores.json`）中，有效期为 7 天。原始数据集在运行时下载，不会随软件包一同发布。`--refresh` 会重新下载 languagebench、Arena 和 models.dev。如果在 `--refresh` 期间某个源失败，则不会从之前的缓存中填充数据。如果没有 `--refresh`，下载失败时会复用缓存的切片。如果 languagebench 或 Arena 其中之一失败，该命令会使用另一个源进行排名，并指出哪个源失败。如果两者都失败，则退出代码为 1。models.dev 失败时会保留现有的目录价格。仪表板没有刷新控件；请从 CLI 运行 `--refresh`，然后重新加载“模型”（Models）选项卡。
 

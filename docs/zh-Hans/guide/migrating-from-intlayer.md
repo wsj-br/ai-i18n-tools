@@ -22,7 +22,7 @@
 1. 安装 `ai-i18n-tools`（请参阅[安装](/zh-Hans/guide/installation)）。如果您的项目还没有 `ai-i18n-tools.config.json`，请使用脚手架创建一个：
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 修改 `sourceLocale` 和 `targetLocales` 以匹配 Intlayer 字典中已有的区域设置，并将 `ui.sourceRoots`、`ui.stringsJson`、`ui.flatOutputDir` 设置为指向应用的源代码和所需目录路径——与 `translate-ui` 使用的键相同，请参阅 [UI 字符串 — 第 1 步：初始化](/zh-Hans/guide/ui-strings/#step-1-initialise)。

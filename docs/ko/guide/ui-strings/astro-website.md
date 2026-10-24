@@ -33,10 +33,10 @@
 <a id="ui-strings-ssg"></a>
 ## UI 문자열 (SSG)
 
-`init -t ui-astro-website`를 사용하여 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록에 병합합니다([페이지 구문 분석 및 바꾸기](#astro-website-pages-parse-and-replace) 참조). TypeScript 모듈의 `t('…')`와 `.astro` 프런트매터(그리고 중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록)에 복사본을 래핑합니다.
+`init -t ui-astro-website -P ollama`를 사용하여 UI 추출을 스캐폴드하고, 페이지 HTML도 번역할 때 `docs[]` 블록으로 병합합니다 ([페이지 구문 분석 및 교체](#astro-website-pages-parse-and-replace) 참조). TypeScript 모듈과 `.astro` 프런트매터(중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록에서도)에서 텍스트를 `t('…')`로 래핑합니다:
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

@@ -22,7 +22,7 @@
 1. `ai-i18n-tools` इंस्टॉल करें ([इंस्टॉलेशन](/hi/guide/installation) देखें)। यदि आपके प्रोजेक्ट में अभी तक कोई `ai-i18n-tools.config.json` नहीं है, तो एक स्केफोल्ड करें:
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 `sourceLocale` और `targetLocales` को संपादित करें ताकि वे आपके Intlayer शब्दकोशों में पहले से मौजूद लोकेल्स से मेल खाएं, और `ui.sourceRoots`, `ui.stringsJson`, `ui.flatOutputDir` को अपने ऐप के स्रोत और वांछित कैटलॉग पथ की ओर इंगित करने के लिए सेट करें — वही कुंजियाँ जिनका उपयोग `translate-ui` करता है, देखें [UI स्ट्रिंग्स — चरण 1: प्रारंभ करें](/hi/guide/ui-strings/#step-1-initialise)।

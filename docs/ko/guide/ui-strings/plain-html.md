@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## 빠른 시작
 
-1. `ai-i18n-tools init -t ui-plain-html`(으)로 스캐폴딩하거나 아래 구성을 추가합니다.
-2. 소스 HTML에 마크를 지정합니다(또는 `mark-html`이 처리하게 둡니다).
-3. `ui.sourceRoots` 및 `ui.uiExtractor.extensions`의 대상을 해당 파일로 지정합니다.
-4. `extract`을(를) 실행한 다음 `translate-ui`을(를) 실행합니다(또는 `sync-ui`(으)로 둘 다 실행).
+1. `ai-i18n-tools init -t ui-plain-html -P openai`로 스캐폴드를 생성하거나 아래 구성을 추가하세요.
+2. 원본 에이치티엠엘에 표시하세요 (또는 `mark-html`에 맡기세요).
+3. `ui.sourceRoots`와 `ui.uiExtractor.extensions`가 해당 파일을 가리키도록 설정하세요.
+4. `extract`를 실행한 다음 `translate-ui`를 실행하세요 (또는 `sync-ui`로 둘 다 실행하세요).
 5. 페이지와 동일한 디렉터리에 `i18n.js`을(를) 복사하고 자체 스크립트보다 먼저 로드합니다.
 6. HTTP를 통해 폴더를 서비스합니다. `file://`은(는) 로캘 JSON을 `fetch`할 수 없습니다.
 

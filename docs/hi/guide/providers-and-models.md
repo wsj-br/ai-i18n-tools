@@ -12,6 +12,8 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 
 प्रीसेट प्रदाता कुंजियों को केवल `translationModels` की आवश्यकता होती है — आधार URL और API-कुंजी env var स्वचालित रूप से भरे जाते हैं:
 
+<div class="provider-presets">
+
 | प्रदाता | आधार URL | API-कुंजी env var |
 | --- | --- | --- |
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
@@ -29,9 +31,27 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama`     | `http://localhost:11434/v1`                               | (कोई नहीं)               |
 
+</div>
+
 किसी भी **गैर-प्रीसेट** कुंजी के लिए, कॉन्फ़िग में `baseUrl` और `apiKeyEnv` को स्पष्ट रूप से सेट करें।
 
 अपने वातावरण या `.env` फ़ाइल में सक्रिय प्रदाता की API कुंजी सेट करें। CLI शेल में पहले से सेट किए गए चर को ओवरराइड किए बिना कार्यशील निर्देशिका से `.env` को स्वचालित रूप से लोड करता है। [पर्यावरण चर](/hi/reference/environment-variables) देखें।
+
+<a id="cheaperinference-zero-data-retention"></a>
+### शून्य डेटा प्रतिधारण (Cheaper Inference)
+
+`providers.cheaperinference.zeroDataRetention` वैकल्पिक है और डिफ़ॉल्ट रूप से बंद रहता है। इसे तब सेट करें जब इस प्रोजेक्ट को प्रॉम्प्ट केवल उन प्रोवाइडर के माध्यम से भेजने होंगे जो उन्हें नहीं रखते हैं।
+
+```json
+"cheaperinference": {
+  "zeroDataRetention": true,
+  "translationModels": ["gemini-2.5-flash", "deepseek-v4-flash"]
+}
+```
+
+फ़्लैग चालू होने पर, हर चैट अनुरोध में `"zdr": true` शामिल होता है, और `list-models`, `check-models`, और `suggest-models` (डैशबोर्ड के मॉडल्स टैब सहित) `GET /v1/models?zdr=true` पढ़ते हैं। वह कैटलॉग उन मॉडलों को सूचीबद्ध करता है जिनका उपयोग शून्य-डेटा-प्रतिधारण अनुरोध शून्य-डेटा-प्रतिधारण मूल्य पर कर सकता है। `check-models` उस कैटलॉग से गायब आईडी को अमान्य मानता है। फ़्लैग उस मॉडल के लिए कोई मार्ग नहीं बनाता जिसे कैटलॉग छोड़ देता है। उस आईडी को `translationModels`, `uiModels`, या `localeModels` से हटा दें।
+
+फ़्लैग को बंद रहने दें जब Cheaper Inference खाते को शून्य डेटा प्रतिधारण की आवश्यकता नहीं है। यदि खाते के लिए [डेटा सुरक्षा](https://platform.cheaperinference.com/dashboard/data-protection) पहले से चालू है, तो Cheaper Inference फिर भी शून्य-डेटा-प्रतिधारण मार्ग के बिना किसी मॉडल को अस्वीकार कर देता है। त्रुटि उस मॉडल का नाम बताती है। खाता नीति बनाए रखने के लिए, `zeroDataRetention` को `true` पर सेट करें और शून्य-डेटा-प्रतिधारण कैटलॉग से किसी मॉडल पर स्विच करें। अस्वीकृत मॉडल को रखने के लिए, उस पृष्ठ पर शून्य डेटा प्रतिधारण बंद कर दें। फ़ॉलबैक चेन फिर अगले कॉन्फ़िगर किए गए मॉडल को आज़माती है।
 
 <a id="model-fallback-chain"></a>
 ### मॉडल फ़ॉलबैक श्रृंखला
@@ -47,7 +67,7 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 
 वैकल्पिक `providers.<active>.uiModels` एक UI-केवल सूची है जिसे किसी भी मिलान करने वाले प्रति-स्थान ओवरराइड के बाद और वैश्विक `translationModels` श्रृंखला से पहले आज़माया जाता है। वैकल्पिक `providers.<active>.localeModels` एक BCP-47 स्थान को उन मॉडलों से मैप करता है जिन्हें प्रत्येक पाइपलाइन में उस स्थान के लिए **पहले** आज़माया जाता है (`pt-br` `pt-BR` से मेल खाता है)। जब कोई `localeModels` प्रविष्टि मेल नहीं खाती है, तो केवल पाइपलाइन-विशिष्ट टियर लागू होते हैं।
 
-विभिन्न प्रदाता और मॉडल भाषाओं में लागत, गति और गुणवत्ता में भिन्न होते हैं। `npx ai-i18n-tools init` से डिफ़ॉल्ट सूची को एक शुरुआती बिंदु के रूप में मानें — जब कोई स्थान लगातार खराब परिणाम देता है, तो इसे विस्तारित करें, या उस स्थान के लिए एक `localeModels` प्रविष्टि जोड़ें। पूर्ण डिफ़ॉल्ट और तर्क: [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers)।
+विभिन्न प्रदाता और मॉडल भाषाओं में लागत, गति और गुणवत्ता में भिन्न होते हैं। `npx ai-i18n-tools init -P <provider>` से मॉडल सूची को एक शुरुआती बिंदु मानें — इसे तब विस्तृत करें जब कोई स्थान लगातार खराब परिणाम देता हो, या उस स्थान के लिए एक `localeModels` प्रविष्टि जोड़ें। पूर्व-निर्धारित सूचियाँ और तर्क: [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers)।
 
 **UI स्ट्रिंग्स:** वैकल्पिक `uiModels` आपको `translate-ui`, बहुवचन जनरेशन, और `proofread-ui` को वैश्विक `translationModels` श्रृंखला से पहले प्रीमियम मॉडल के माध्यम से रूट करने देता है — उपयोगी क्योंकि UI कॉपी छोटी लेकिन उपयोगकर्ता-सामने होती है।
 
@@ -95,7 +115,7 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 npx ai-i18n-tools check-models
 ```
 
-`check-models` प्रदाता के `GET /models` एंडपॉइंट को कॉल करता है, `translationModels`, `uiModels`, और `localeModels` से प्रत्येक id को मान्य करता है, उन ids की रिपोर्ट करता है जो गायब हैं या `expiration_date` से पुराने हैं, और जब कोई कॉन्फ़िगर किया गया id अमान्य होता है तो नॉन-जीरो (non-zero) के साथ बाहर निकलता है। जब प्रदाता मूल्य निर्धारण (OpenRouter और Cheaper Inference ऐसा करते हैं) लौटाता है, तो यह प्रति 1M टोकन USD भी दिखाता है।
+`check-models` प्रोवाइडर के `GET /models` एंडपॉइंट को कॉल करता है, `translationModels`, `uiModels`, और `localeModels` से हर आईडी को मान्य करता है, उन आईडी की रिपोर्ट करता है जो गायब हैं या `expiration_date` से समाप्त हो चुकी हैं, और जब कोई भी कॉन्फ़िगर की गई आईडी अमान्य होती है तो गैर-शून्य पर बाहर निकलता है। जब प्रोवाइडर मूल्य निर्धारण लौटाता है (OpenRouter और Cheaper Inference ऐसा करते हैं), तो यह प्रति 1M टोकन USD भी दिखाता है। [`zeroDataRetention`](/hi/guide/providers-and-models#cheaperinference-zero-data-retention) चालू होने पर, `check-models` और `list-models` `GET /models?zdr=true` का उपयोग करते हैं।
 
 प्रदाता द्वारा विज्ञापित पूरी कैटलॉग ब्राउज़ करें:
 
@@ -115,12 +135,12 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools suggest-models
 npx ai-i18n-tools suggest-models --list
 npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --price --top 8 --json
 npx ai-i18n-tools suggest-models --apply
 npx ai-i18n-tools suggest-models --refresh
 ```
 
-तालिका के कॉलम रैंक, मॉडल id, इंडेक्स, मापा गया ChrF, मापा गया Arena Score, और प्रति 1M टोकन इनपुट/आउटपुट USD हैं। एक अनुपलब्ध माप `—` है। `--list` उन मॉडलों के लिए उन कॉलम को प्रिंट करता है जो पहले से ही `translationModels` में हैं। `--max-output-price` मॉडलों को उस आउटपुट USD प्रति 1M टोकन पर या उससे नीचे रखता है और बिना आउटपुट मूल्य वाले मॉडल को छोड़ देता है। `--min-delta` एक मॉडल को केवल तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतने अंक नीचे हो। `--top` (डिफ़ॉल्ट 5) उन फ़िल्टर के बाद तालिका, `--json`, और `--apply` को सीमित करता है। `--apply` केवल `translationModels` को बदलता है। `--refresh` 7-दिवसीय बेंचमार्क कैश को फिर से डाउनलोड करता है। वैकल्पिक वेट [`modelSuggestion`](/hi/reference/configuration#modelsuggestion) हैं। [suggest-models](/hi/reference/cli-commands/models#suggest-models) देखें।
+तालिका के कॉलम रैंक, मॉडल आईडी, इंडेक्स, मापा गया ChrF, मापा गया एरिना स्कोर, और इनपुट/आउटपुट USD प्रति 1M टोकन हैं। एक गुम माप `—` है। `--list` उन मॉडलों के लिए उन कॉलमों को प्रिंट करता है जो पहले से ही `translationModels` में हैं। `--max-output-price` उन मॉडलों को रखता है जिनकी आउटपुट USD प्रति 1M टोकन उस सीमा के बराबर या उससे कम है और उन मॉडलों को छोड़ देता है जिनकी कोई आउटपुट कीमत नहीं है। `--min-delta` एक मॉडल को तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतने अंक नीचे हो। `--top` (डिफ़ॉल्ट 8) उन फ़िल्टरों के बाद तालिका, `--json`, और `--apply` को सीमित करता है। `--apply` केवल `translationModels` को बदलता है। `--refresh` 7-दिवसीय बेंचमार्क कैश को फिर से डाउनलोड करता है। वैकल्पिक भार [`modelSuggestion`](/hi/reference/configuration#modelsuggestion) हैं। [suggest-models](/hi/reference/cli-commands/models#suggest-models) देखें।
 
 नमूना पाठ, लोकेल या मॉडल सूची को ओवरराइड करें:
 
@@ -149,6 +169,6 @@ npx ai-i18n-tools bench-models -P deepseek
 <a id="further-reference"></a>
 ### आगे का संदर्भ
 
-- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट तालिका, कस्टम एंडपॉइंट, अनुरोध टाइमआउट, लागत दरें, OpenRouter-विशिष्ट व्यवहार।
+- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट तालिका, कस्टम एंडपॉइंट, अनुरोध टाइमआउट, लागत दरें, Cheaper Inference शून्य डेटा प्रतिधारण, OpenRouter-विशिष्ट व्यवहार।
 - [आर्किटेक्चर — LLM क्लाइंट](/hi/reference/architecture) — मॉडल फ़ॉलबैक, बैचिंग और लागत रिपोर्टिंग आंतरिक रूप से कैसे काम करते हैं।
-- [एनवायरनमेंट वेरिएबल्स](/hi/reference/environment-variables) — API-कुंजी एनवायरनमेंट वेरिएबल्स और बेस-URL ओवरराइड।
+- [पर्यावरण चर](/hi/reference/environment-variables) — API-की पर्यावरण चर और बेस-URL ओवरराइड।

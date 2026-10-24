@@ -517,6 +517,12 @@ const providerEntrySchema = z
      * A provider-reported cost is never replaced.
      */
     modelPricing: z.record(z.string().min(1), llmModelPricingSchema).optional(),
+    /**
+     * Cheaper Inference only. When true, chat requests send `zdr: true` and model catalogs load
+     * from `GET /v1/models?zdr=true`. Omitted means off. The account Data Protection setting can
+     * still force zero data retention when this is off.
+     */
+    zeroDataRetention: z.boolean().optional(),
   })
   .strict()
   .superRefine((entry, ctx) => {
@@ -545,7 +551,22 @@ const providerEntrySchema = z
     }
   });
 
-const providersConfigSchema = z.record(z.string().min(1), providerEntrySchema);
+/** Provider key that accepts `zeroDataRetention`. Kept in sync with `CHEAPERINFERENCE_PROVIDER_KEY`. */
+const CHEAPERINFERENCE_ZDR_PROVIDER_KEY = "cheaperinference";
+
+const providersConfigSchema = z
+  .record(z.string().min(1), providerEntrySchema)
+  .superRefine((providers, ctx) => {
+    for (const [name, entry] of Object.entries(providers)) {
+      if (entry.zeroDataRetention !== undefined && name !== CHEAPERINFERENCE_ZDR_PROVIDER_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "zeroDataRetention is only supported on providers.cheaperinference",
+          path: [name, "zeroDataRetention"],
+        });
+      }
+    }
+  });
 
 const featuresSchema = z.object({
   /**

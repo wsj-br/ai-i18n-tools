@@ -8,7 +8,7 @@ For a static site that should emit one translated HTML file per locale (no runti
 <a id="quick-start"></a>
 ## Quick start
 
-1. Scaffold with `ai-i18n-tools init -t ui-plain-html`, or add the config below.
+1. Scaffold with `ai-i18n-tools init -t ui-plain-html -P openai`, or add the config below.
 2. Mark the source HTML (or let `mark-html` do it).
 3. Point `ui.sourceRoots` and `ui.uiExtractor.extensions` at those files.
 4. Run `extract`, then `translate-ui` (or run both with `sync-ui`).

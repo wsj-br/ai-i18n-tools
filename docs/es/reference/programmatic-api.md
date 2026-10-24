@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Cree una configuración a partir de Node.js (el cuarto argumento opcional selecciona el preajuste integrado; el valor predeterminado es `openrouter`):
+Generar una configuración desde Node.js. El cuarto argumento es el preajuste integrado (`cwd` es el tercero):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 Exportaciones clave (de uso común; consulte `src/index.ts` para ver la superficie pública completa):
@@ -52,6 +53,27 @@ Exportaciones clave (de uso común; consulte `src/index.ts` para ver la superfic
 | `Glossary` / `GlossaryMatcher` | Carga y aplica glosarios de traducción, incluyendo notas opcionales de `Context` de términos. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Carga `glossary.contextFiles` y la guía de huellas digitales para la invalidación de la caché. |
 | `runTranslateUI` | Punto de entrada programático para la interfaz de traducción. |
-| `writeInitConfigFile` | Escriba un JSON de configuración inicial (`template`, `providerKey` opcional con valor predeterminado `openrouter`). |
+| `writeInitConfigFile` | Escribe un JSON de configuración inicial (`template`, `cwd` y un `providerKey` obligatorio). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` inicial por preajuste integrado utilizado por `init -P`. |
 | `PROVIDER_PRESETS` | Mapa preestablecido de proveedor integrado (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Entorno de ejecución de Python (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext` y `ui-python-flask` escriben este módulo en el proyecto cuando falta `i18n.py`. Es un asistente de la biblioteca estándar para Python 3.10 o versiones posteriores. Impórtelo desde ese archivo. Las funciones a continuación son independientes de las exportaciones de Node en la tabla anterior. Los proyectos de Django conservan el gettext de Django, por lo que `ui-python-django` no escribe `i18n.py`.
+
+Formas de llamada, f-strings no seguras y configuración de configuración regional por framework: [Aplicaciones de Python](/es/guide/ui-strings/python).
+
+| Función | Comportamiento |
+| --- | --- |
+| `set_locale(locale)` | Establece la configuración regional actual. Los guiones bajos en el código se almacenan como guiones (`pt_BR` se convierte en `pt-BR`). Devuelve un token `ContextVar`. |
+| `reset_locale(token)` | Restaura la configuración regional a partir de ese token. Llámela en `finally`, incluyendo el middleware de FastAPI y Flask. |
+| `get_locale()` | Devuelve la configuración regional actual. |
+| `set_backend(backend)` | Selecciona `"auto"`, `"json"` o `"gettext"`. |
+| `get_ui_languages()` | Lee `ui-languages.json` junto al directorio JSON plano, o el directorio gettext cuando la salida plana está desactivada. |
+| `get_direction(locale=None)` | Devuelve `"rtl"` o `"ltr"` de la fila del manifiesto para esa configuración regional (la configuración regional actual cuando se omite). |
+| `_(message)` | Busca un literal y, a continuación, devuelve la cadena del catálogo o el propio mensaje. |
+| `t(template, *, plurals=False, count=None, **values)` | Busca el literal y, a continuación, interpola. `translate` es la misma función. En Python 3.14, `translate(t"Hello, {name}!")` conserva la plantilla y sus valores. Los argumentos de palabra clave anulan los valores tomados de una cadena de plantilla. |
+| `ngettext(singular, plural, n, **values)` | Búsqueda de plurales y, a continuación, interpolación. `count` está disponible para la cadena de formato. |
+| `pgettext(context, message, **values)` | Búsqueda de contexto (`msgctxt`, o `context` + U+0004 + la fuente en inglés en JSON plano) y, a continuación, interpolación. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Cuadro de selección de Streamlit. Escribe `st.session_state.locale` y `st.query_params["lang"]`, llama a `set_locale` y devuelve el código elegido. |

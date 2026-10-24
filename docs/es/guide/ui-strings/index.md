@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # Cadenas de la interfaz de usuario
 
-Diseñado para cualquier proyecto JS/TS que utilice i18next: aplicaciones React, Next.js (componentes de cliente y servidor), servicios Node.js, HTML plano, sitios web Astro y herramientas CLI.
+Diseñado para proyectos JS/TS que utilizan i18next (React, Next.js (componentes de cliente y servidor), servicios Node.js, HTML plano, sitios web Astro y herramientas CLI) y para aplicaciones Python. Python llama a `t()` o gettext a través de un `i18n.py` generado (Django mantiene el gettext de Django).
 
 <a id="which-guide-to-read"></a>
 ## Qué guía leer
@@ -9,6 +9,7 @@ Diseñado para cualquier proyecto JS/TS que utilice i18next: aplicaciones React,
 | Tu aplicación | Leer siguiente |
 | --- | --- |
 | React / Next.js / Node + i18next | [Conectar i18next](/es/guide/ui-strings/i18next-runtime) (Paso 4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Aplicaciones Python](/es/guide/ui-strings/python). Inicialización: `ui-python`, `ui-python-gettext`, `ui-python-flask` o `ui-python-django`. Ayudante: `i18n.py`. Para añadir idiomas a una aplicación existente, consulte [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python). |
 | HTML plano (sin `t()` en el marcado) | [Aplicaciones HTML planas](/es/guide/ui-strings/plain-html) |
 | Sitio de marketing de Astro (híbrido) | [Sitio web de Astro](/es/guide/ui-strings/astro-website) |
 | Reglas de `t()`, interpolación, plurales | [Llamadas a t() y plurales](/es/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@ Diseñado para cualquier proyecto JS/TS que utilice i18next: aplicaciones React,
 ## Paso 1: Inicializar
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown` (incluyendo un bloque `provider` / `providers` predeterminado). Antes de ejecutar `translate-ui` o `sync`, configure la clave API para su proveedor activo en el entorno o `.env` —excepto Ollama; consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key). Edite la configuración para establecer:
+Esto escribe `ai-i18n-tools.config.json` con la plantilla `ui-markdown` (incluyendo el bloque `provider` / `providers` para ese preajuste). Antes de ejecutar `translate-ui` o `sync`, establezca la clave API para ese proveedor en el entorno o `.env` — excepto Ollama; consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key). Edite la configuración para establecer:
 
-- `provider` y `providers` — al menos un proveedor con `translationModels`; cambie el preajuste o la lista de modelos si el predeterminado no es su elección (`init -P <provider>`). Consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
-- `sourceLocale` - su código BCP-47 de idioma de origen (por ejemplo, `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde su archivo de configuración i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` - matriz de códigos BCP-47 para sus idiomas de destino (por ejemplo, `["de", "fr", "pt-BR"]`). Ejecute `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
-- `ui.sourceRoots` - directorios o patrones globales para buscar llamadas `t("…")` (por ejemplo, `["src/"]`, `["src/**/*.ts"]`).
+- `provider` y `providers` — al menos un proveedor con `translationModels`. `-P <provider>` en `init` elige el preajuste y su lista de modelos iniciales. Consulte [Proveedores y modelos de LLM](/es/guide/providers-and-models).
+- `sourceLocale` - su código BCP-47 de idioma de origen (p. ej., `"en-GB"`). **Debe coincidir** con `SOURCE_LOCALE` exportado desde su archivo de configuración i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
+- `targetLocales` - array de códigos BCP-47 para sus idiomas de destino (p. ej., `["de", "fr", "pt-BR"]`). Ejecute `generate-ui-languages` para crear el manifiesto `ui-languages.json` a partir de esta lista.
+- `ui.sourceRoots` - directorios o patrones glob para buscar llamadas a `t("…")` (p. ej., `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - dónde escribir el catálogo maestro (por ejemplo, `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - dónde escribir `de.json`, `pt-BR.json`, etc. (por ejemplo, `"src/locales/"`).
 - `providers.<active>.uiModels` (opcional) - lista de modelos solo de UI ordenada para `translate-ui`, generación plural y `proofread-ui` (después de cualquier entrada `localeModels` coincidente, antes de `translationModels`). Consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).

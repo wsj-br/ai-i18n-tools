@@ -4,6 +4,7 @@ import {
   isPresetProvider,
   resolveActiveProvider,
   resolveApiKey,
+  providerModelsCatalogQuery,
   resolveProviderSettings,
   translationModelsForProvider,
   DEFAULT_LLM_MAX_TOKENS,
@@ -49,6 +50,18 @@ describe("resolveProviderSettings", () => {
     expect(s.baseUrl).toBe("https://api.cheaperinference.com/v1");
     expect(s.apiKeyEnv).toBe("CHEAPERINFERENCE_API_KEY");
     expect(s.requiresApiKey).toBe(true);
+    expect(s.zeroDataRetention).toBe(false);
+  });
+
+  it("turns on Cheaper Inference zero data retention only for that provider", () => {
+    const on = resolveProviderSettings("cheaperinference", {
+      providers: { cheaperinference: { zeroDataRetention: true } },
+    });
+    expect(on.zeroDataRetention).toBe(true);
+    expect(providerModelsCatalogQuery(on)).toEqual({ zdr: "true" });
+    const off = resolveProviderSettings("openai", { providers: { openai: {} } });
+    expect(off.zeroDataRetention).toBe(false);
+    expect(providerModelsCatalogQuery(off)).toBeUndefined();
   });
 
   it("inherits baseUrl and apiKeyEnv from a built-in preset", () => {

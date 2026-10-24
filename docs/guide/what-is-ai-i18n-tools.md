@@ -6,7 +6,7 @@ ai-i18n-tools is a command-line tool and toolkit that helps you translate your a
 <a id="translation-modes"></a>
 ## Translation modes
 
-- **UI strings** — Extract `t("…")` calls (and similar markers) from JS/TS source and write flat per-locale JSON files for i18next or static lookup. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/).
+- **UI strings** — Extract `t("…")` and `_()` calls from JS/TS and Python source (and similar markers, including GNU gettext) and write flat per-locale JSON or `.po` / `.mo` catalogs. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/). Python: [Python applications](/guide/ui-strings/python).
 - **Documents** — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and other static doc sites. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
 - **JSON** — Translate nested JSON locale bundles (theme labels, i18n overrides, app copy not in source) defined in top-level `json[]`. Command: `translate-json`. Guide: [JSON](/guide/json).
 - **SVG** — Translate visible text inside SVG illustrations (`<text>`, `<title>`, `<desc>`) and write one output file per locale. Separate from document translation — `translate-docs` does not modify SVG assets. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
@@ -18,7 +18,7 @@ All four modes use the active [LLM provider](/guide/providers-and-models), share
 
 | Your content | Mode | Command |
 | --- | --- | --- |
-| Source code uses `t()` or HTML `data-i18n` markers | UI strings | `extract` / `translate-ui` |
+| Source code uses `t()`, `_()`, gettext, or HTML `data-i18n` markers | UI strings | `extract` / `translate-ui` |
 | Localized pages or doc sites | Documents | `translate-docs` |
 | Standalone nested JSON locale files | JSON | `translate-json` |
 | Diagrams or illustrations with labels in SVG | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ The repository ships runnable example projects under `examples/` — each with i
 | [multi-provider](/examples#multi-provider) | Compare LLM providers on the same document |
 | [test-markdown](/examples#test-markdown) | Markdown pipeline stress tests (CJK, Devanagari, edge cases) |
 | [intlayer-migration](/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
+| [python-streamlit](/examples#python-streamlit) | Streamlit dashboard, `t()` / `_()`, English-key JSON |
+| [python-flask](/examples#python-flask) | Flask + Jinja, `t()` / `_()`, English-key JSON |
+| [python-fastapi](/examples#python-fastapi) | FastAPI, request-scoped locale, English-key JSON |
+| [python-gettext](/examples#python-gettext) | Existing GNU gettext; `extract` / `translate-ui` refresh `.po` and `.mo` |
 
 See [Examples](/examples) for `npx degit` copy commands and a choosing guide.
 
 <a id="next-steps"></a>
 ## Next steps
 
-1. [Installation](/guide/installation) — install the package and set your provider API key.
+1. [Installation](/guide/installation) — install the npm package, or download the [standalone executable](/guide/installation#standalone-executables) for a Python project, and set your provider API key.
 2. [Quick start](/guide/quick-start) — scaffold a config and run your first translation.
 3. [Providers and models](/guide/providers-and-models) — choose a provider, model fallback chain, and `-P` override.

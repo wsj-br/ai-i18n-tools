@@ -137,8 +137,12 @@
   提供者範圍內每 1,000,000 個權杖的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有提供者報告的 `usage.cost`（大多數提供者，除了 OpenRouter 和 Cheaper Inference）時，此費率會套用到該呼叫的輸入和輸出權杖。此金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。相符的 `modelPricing` 項目會覆寫此預設值。提供者報告的費用永遠不會被取代。當沒有設定費率相符時，工具會使用 models.dev 針對該模型 ID 的定價（輸入和輸出每 1M 權杖的美元費用）。沒有儲存費用的列仍可稍後透過 [`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 和 [使用量與費用](/zh-Hant/guide/translation-dashboard/usage) 進行估算。如果這些來源都不適用，費用將保持未知 (`—`)，永遠不會是 `$0.00`。
 - `modelPricing`（選用）
   每個模型每 1,000,000 個權杖的美元費用：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。這會覆寫該模型 ID 的 `pricing`。當提供者省略 `usage.cost` 時，會在呼叫時套用並與呼叫一起儲存。
+- `zeroDataRetention` (可選，僅限 `providers.cheaperinference`)
+  當 `true` 時，聊天請求會傳送 `"zdr": true` 和 `list-models`，`check-models` 和 `suggest-models` 會載入 `GET /v1/models?zdr=true`。省略即表示關閉。請參閱 [零資料保留](/zh-Hant/guide/providers-and-models#cheaperinference-zero-data-retention)。
 
 內建提供者預設值（金鑰 — 基本 URL — API 金鑰環境變數）：
+
+<div class="provider-presets">
 
 | 提供者 | 基本 URL | API 金鑰環境變數 |
 | --- | --- | --- |
@@ -157,6 +161,8 @@
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (無) |
 
+</div>
+
 舊版頂層 `openrouter` 區塊（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍受支援，並會在載入時自動遷移至 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 會摺疊進 `translationModels`。
 
 如需在一個設定中配置多個供應商並透過 `-P` 在其間切換的可執行範例，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（同一文件中的 `openai`、`anthropic`、`openrouter` 與 `deepseek`）。
@@ -165,14 +171,14 @@
 
 將以下列表視為您可以擴展的**基準**：如果特定語言環境的翻譯品質不佳或不成功，請研究哪些模型能有效支援該語言或文字（參考線上資源或您的提供者文件），並將這些模型 ID 添加為進一步的替代方案。
 
-這些模型 ID 在 `-P openrouter`（預設值）時符合 `ai-i18n-tools init [-P <provider>]`。其他預設集從 `init -P <provider>` 取得原生模型 ID——請參閱[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
+這些模型 ID 是 `ai-i18n-tools init -P openrouter` 所寫入的。其他預設會從 `init -P <provider>` 取得原生模型 ID — 請參閱 [內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
 
 此列表經過**測試，涵蓋了廣泛的地區**，適用於一個包含 36 個目標地區的大型文件專案；它是一個實用的預設值，但不能保證對每個地區都有良好的表現。
 
-範例 `translationModels`（與 `ai-i18n-tools init [-P <provider>]` 相同的預設值）：
+`translationModels` 範例（來自 `ai-i18n-tools init -P openrouter` 的 OpenRouter 清單）：
 
 <details>
-<summary>預設翻譯模型備用列表</summary>
+<summary>OpenRouter 翻譯模型清單</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 
 用於 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 與 [儀表板模型分頁](/zh-Hant/guide/translation-dashboard/models) 的權重。若省略此區塊或省略其中一個設定檔，該設定檔將保留內建權重。此區塊不會被 `--apply` 或 **更新設定** 所覆寫；這些操作僅會寫入模型 ID。
 
-- `quality` — 預設 ChrF `0.45/0.95`、Arena `0.35/0.95`、價格 `0.15/0.95`、品質下限 `0.7`
-- `price` — 預設 ChrF `0.25`、Arena `0.10`、價格 `0.65`、品質下限 `0.6`
+- `quality` — 預設 ChrF `0.45`、Arena `0.35`、價格 `0.20`、品質下限 `0.7`
+- `price` — 預設 ChrF `0.35`、Arena `0.20`、價格 `0.45`、品質下限 `0.6`
 
-每個設定檔物件皆須包含 `chrf`、`arena` 與 `price`。每個數值皆須為有限數且至少為 `0`，且至少有一個數值大於 `0`。這些數值會被正規化以使其總和為 1，因此 `45`、`35` 與 `15` 會符合品質預設值。`qualityFloor` 為選填項目，範圍為 `(0, 1]`，代表候選池中最佳 ChrF 的分數比例。低於品質下限的模型（包含任何沒有 ChrF 測量值的模型）將會排在通過下限的模型之後。
+每個設定檔物件都需要 `chrf`、`arena` 和 `price`。每個值都是有限的，且至少為 `0`，其中至少有一個大於 `0`。它們被正規化為總和為 1，因此 `45`、`35` 和 `20` 與品質預設值相符。`qualityFloor` 是選用的，範圍為 `(0, 1]`，並且是候選池中最佳 ChrF 的比例。低於下限的模型，包括任何沒有 ChrF 測量的模型，會排在那些達到下限的模型之後。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

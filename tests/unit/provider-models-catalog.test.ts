@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   catalogUsdPerMillionDisplay,
   fetchOpenRouterModelsCatalog,
+  fetchProviderModelsCatalog,
+  providerModelsCatalogUrl,
   formatListedUsdPerMillion,
   formatUsdPerMillionTokens,
   isExpirationDatePast,
@@ -101,6 +103,48 @@ describe("catalogUsdPerMillionDisplay", () => {
   it("returns undefined when the row has no token rates", () => {
     const map = parseModelsListResponse({ data: [{ id: "x" }] });
     expect(catalogUsdPerMillionDisplay(map.get("x")!)).toBeUndefined();
+  });
+});
+
+describe("providerModelsCatalogUrl", () => {
+  it("appends a zero-data-retention query", () => {
+    expect(providerModelsCatalogUrl("https://api.cheaperinference.com/v1", { zdr: "true" })).toBe(
+      "https://api.cheaperinference.com/v1/models?zdr=true"
+    );
+    expect(providerModelsCatalogUrl("https://api.openai.com/v1/")).toBe(
+      "https://api.openai.com/v1/models"
+    );
+  });
+});
+
+describe("fetchProviderModelsCatalog query", () => {
+  let prevFetch: typeof fetch;
+
+  beforeEach(() => {
+    prevFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = prevFetch;
+  });
+
+  it("sends the query string on GET /models", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({ data: [{ id: "gemini-2.5-flash" }] }),
+    }) as unknown as typeof fetch;
+
+    await fetchProviderModelsCatalog({
+      baseUrl: "https://api.cheaperinference.com/v1",
+      apiKey: "ci",
+      query: { zdr: "true" },
+    });
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      "https://api.cheaperinference.com/v1/models?zdr=true",
+      expect.objectContaining({ method: "GET" })
+    );
   });
 });
 

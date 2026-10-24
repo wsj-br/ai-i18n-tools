@@ -6,10 +6,10 @@ ai-i18n-tools é uma ferramenta de linha de comando e um kit de ferramentas que 
 <a id="translation-modes"></a>
 ## Modos de tradução
 
-- **Strings da UI** — Extraia chamadas `t("…")` (e marcadores semelhantes) do código-fonte JS/TS e escreva arquivos JSON planos por localidade para i18next ou pesquisa estática. Comandos: `extract`, `translate-ui`. Guia: [Strings da UI](/pt-BR/guide/ui-strings/).
+- **Strings de UI** — Extraia chamadas `t("…")` e `_()` de fontes JS/TS e Python (e marcadores similares, incluindo GNU gettext) e escreva JSON simples por localidade ou catálogos `.po` / `.mo`. Comandos: `extract`, `translate-ui`. Guia: [Strings de UI](/pt-BR/guide/ui-strings/). Python: [Aplicações Python](/pt-BR/guide/ui-strings/python).
 - **Documentos** — Traduza páginas Markdown, MDX e `.astro` listadas em `docs[].contentPaths`. Funciona com VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro e outros sites de documentação estática. Comando: `translate-docs`. Guia: [Documentos](/pt-BR/guide/documents/).
-- **JSON** — Traduza pacotes de localidade JSON aninhados (rótulos de tema, substituições de i18n, cópia de aplicativo não no código-fonte) definidos no `json[]` de nível superior. Comando: `translate-json`. Guia: [JSON](/pt-BR/guide/json).
-- **SVG** — Traduza o texto visível dentro das ilustrações SVG (`<text>`, `<title>`, `<desc>`) e escreva um arquivo de saída por localidade. Separado da tradução de documentos — `translate-docs` não modifica os ativos SVG. Comando: `translate-svg`. Guia: [Tradução de SVG](/pt-BR/guide/svg-translation/).
+- **JSON** — Traduza pacotes de localidade JSON aninhados (rótulos de tema, substituições de i18n, textos de aplicativos que não estão no código-fonte) definidos no `json[]` de nível superior. Comando: `translate-json`. Guia: [JSON](/pt-BR/guide/json).
+- **SVG** — Traduza textos visíveis dentro de ilustrações SVG (`<text>`, `<title>`, `<desc>`) e escreva um arquivo de saída por localidade. Separado da tradução de documentos — `translate-docs` não modifica ativos SVG. Comando: `translate-svg`. Guia: [Tradução de SVG](/pt-BR/guide/svg-translation/).
 
 Todos os quatro modos usam o [provedor LLM](/pt-BR/guide/providers-and-models) ativo, compartilham o mesmo arquivo de configuração e reutilizam um cache SQLite para que as novas execuções enviem apenas texto novo ou alterado para o modelo.
 
@@ -18,7 +18,7 @@ Todos os quatro modos usam o [provedor LLM](/pt-BR/guide/providers-and-models) a
 
 | Seu conteúdo | Modo | Comando |
 | --- | --- | --- |
-| O código-fonte usa `t()` ou marcadores HTML `data-i18n` | Strings de UI | `extract` / `translate-ui` |
+| O código-fonte usa `t()`, `_()`, gettext ou marcadores HTML `data-i18n` | Strings de UI | `extract` / `translate-ui` |
 | Páginas localizadas ou sites de documentação | Documentos | `translate-docs` |
 | Arquivos de localidade JSON aninhados autônomos | JSON | `translate-json` |
 | Diagramas ou ilustrações com rótulos em SVG | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ O repositório contém projetos de exemplo executáveis em `examples/` — cada 
 | [multi-provider](/pt-BR/examples#multi-provider) | Compare provedores LLM no mesmo documento |
 | [test-markdown](/pt-BR/examples#test-markdown) | Testes de estresse de pipeline Markdown (CJK, Devanagari, casos extremos) |
 | [intlayer-migration](/pt-BR/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
+| [python-streamlit](/pt-BR/examples#python-streamlit) | Dashboard Streamlit, `t()` / `_()`, JSON com chaves em inglês |
+| [python-flask](/pt-BR/examples#python-flask) | Flask + Jinja, `t()` / `_()`, JSON com chaves em inglês |
+| [python-fastapi](/pt-BR/examples#python-fastapi) | FastAPI, localidade com escopo de requisição, JSON com chaves em inglês |
+| [python-gettext](/pt-BR/examples#python-gettext) | GNU gettext existente; `extract` / `translate-ui` atualiza `.po` e `.mo` |
 
 Consulte [Exemplos](/pt-BR/examples) para comandos de cópia `npx degit` e um guia de escolha.
 
 <a id="next-steps"></a>
 ## Próximas etapas
 
-1. [Instalação](/pt-BR/guide/installation) — instale o pacote e defina sua chave de API do provedor.
+1. [Instalação](/pt-BR/guide/installation) — instale o pacote npm, ou baixe o [executável independente](/pt-BR/guide/installation#standalone-executables) para um projeto Python, e defina sua chave de API do provedor.
 2. [Início rápido](/pt-BR/guide/quick-start) — crie uma configuração e execute sua primeira tradução.
-3. [Provedores e modelos](/pt-BR/guide/providers-and-models) — escolha um provedor, cadeia de fallback de modelo e substituição `-P`.
+3. [Provedores e modelos](/pt-BR/guide/providers-and-models) — escolha um provedor, cadeia de fallback de modelo e substituição de `-P`.

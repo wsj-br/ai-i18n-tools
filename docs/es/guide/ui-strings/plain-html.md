@@ -8,10 +8,10 @@ Para un sitio estático que debe generar un archivo HTML traducido por configura
 <a id="quick-start"></a>
 ## Inicio rápido
 
-1. Genere la estructura con `ai-i18n-tools init -t ui-plain-html`, o añada la configuración a continuación.
-2. Marque el HTML de origen (o deje que `mark-html` lo haga).
-3. Apunte `ui.sourceRoots` y `ui.uiExtractor.extensions` a esos archivos.
-4. Ejecute `extract` y luego `translate-ui` (o ejecute ambos con `sync-ui`).
+1. Genera la estructura con `ai-i18n-tools init -t ui-plain-html -P openai`, o añade la configuración a continuación.
+2. Marca el HTML de origen (o deja que `mark-html` lo haga).
+3. Apunta `ui.sourceRoots` y `ui.uiExtractor.extensions` a esos archivos.
+4. Ejecuta `extract`, luego `translate-ui` (o ejecuta ambos con `sync-ui`).
 5. Copie `i18n.js` junto a la página y cárguelo antes de su propio script.
 6. Sirva la carpeta a través de HTTP. `file://` no puede `fetch` el JSON de configuración regional.
 

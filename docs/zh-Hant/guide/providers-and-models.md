@@ -12,6 +12,8 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 預設供應商鍵只需 `translationModels` — 基本 URL 和 API 鍵環境變數會自動填入：
 
+<div class="provider-presets">
+
 | 提供者 | 基本 URL | API 金鑰環境變數 |
 | --- | --- | --- |
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
@@ -29,9 +31,27 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (無) |
 
+</div>
+
 對於任何**非預設**鍵，請在設定中明確設定 `baseUrl` 和 `apiKeyEnv`。
 
 在您的環境或 `.env` 檔案中設定活動供應商的 API 鍵。CLI 會自動從工作目錄載入 `.env`，而不會覆寫 shell 中已設定的變數。請參閱[環境變數](/zh-Hant/reference/environment-variables)。
+
+<a id="cheaperinference-zero-data-retention"></a>
+### 零資料保留 (Cheaper Inference)
+
+`providers.cheaperinference.zeroDataRetention` 為選用，預設為關閉。當此專案必須僅透過不保留提示的供應商傳送提示時，請設定此項。
+
+```json
+"cheaperinference": {
+  "zeroDataRetention": true,
+  "translationModels": ["gemini-2.5-flash", "deepseek-v4-flash"]
+}
+```
+
+啟用此旗標後，每個聊天請求都會包含 `"zdr": true`，且 `list-models`、`check-models` 和 `suggest-models` (包括儀表板的「模型」分頁) 會讀取 `GET /v1/models?zdr=true`。該目錄會列出零資料保留請求可使用的模型，並以零資料保留價格計費。`check-models` 會將該目錄中遺失的 ID 視為無效。此旗標不會為目錄中未列出的模型建立路由。請從 `translationModels`、`uiModels` 或 `localeModels` 中移除該 ID。
+
+當 Cheaper Inference 帳戶不需要零資料保留時，請保持旗標關閉。如果帳戶已啟用[資料保護](https://platform.cheaperinference.com/dashboard/data-protection)，Cheaper Inference 仍會拒絕沒有零資料保留路由的模型。錯誤會指出該模型。若要保留帳戶政策，請將 `zeroDataRetention` 設定為 `true` 並切換到零資料保留目錄中的模型。若要保留被拒絕的模型，請在該頁面上關閉零資料保留。備援鏈會接著嘗試下一個已設定的模型。
 
 <a id="model-fallback-chain"></a>
 ### 模型備用鏈
@@ -47,7 +67,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 可選的 `providers.<active>.uiModels` 是一個僅限 UI 的清單，在任何匹配的本地化覆蓋和全局 `translationModels` 鏈之前嘗試。可選的 `providers.<active>.localeModels` 將 BCP-47 本地化映射到每個管道中為該本地化**首先**嘗試的模型（`pt-br` 匹配 `pt-BR`）。當沒有 `localeModels` 項目匹配時，僅應用管道特定的層次。
 
-不同的提供者和模型在不同語言中的成本、速度和質量各不相同。將 `npx ai-i18n-tools init` 的默認清單視為起點——當某個本地化始終產生不良結果時擴展它，或為該本地化添加 `localeModels` 項目。默認值和理由：[配置 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers)。
+不同的供應商和模型在不同語言中，其成本、速度和品質各不相同。請將來自 `npx ai-i18n-tools init -P <provider>` 的模型清單視為起點 — 當某個地區設定持續產生不佳結果時，請擴充它，或為該地區設定新增一個 `localeModels` 項目。預設清單和原理：[設定 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers)。
 
 **UI 字串：** 選用的 `uiModels` 讓您在全域 `translationModels` 鏈之前，將 `translate-ui`、複數生成與 `proofread-ui` 路由至進階模型 — 這很有用，因為 UI 文案簡短但面向使用者。
 
@@ -95,7 +115,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 npx ai-i18n-tools check-models
 ```
 
-`check-models` 會呼叫提供者的 `GET /models` 端點，驗證來自 `translationModels`、`uiModels` 和 `localeModels` 的每個 id，報告缺失或已過 `expiration_date` 的 id，並在任何已設定的 id 無效時以非零狀態碼退出。當提供者回傳定價資訊時（OpenRouter 和 Cheaper Inference 會回傳），它也會顯示每 100 萬個 token 的美元價格。
+`check-models` 會呼叫供應商的 `GET /models` 端點，驗證來自 `translationModels`、`uiModels` 和 `localeModels` 的每個 ID，報告遺失或超過 `expiration_date` 的 ID，並且在任何已設定的 ID 無效時以非零值結束。當供應商傳回定價時 (OpenRouter 和 Cheaper Inference 會這麼做)，它也會顯示每 1M 權杖的美元價格。啟用 [`zeroDataRetention`](/zh-Hant/guide/providers-and-models#cheaperinference-zero-data-retention) 後，`check-models` 和 `list-models` 會使用 `GET /models?zdr=true`。
 
 瀏覽供應商宣傳的完整目錄：
 
@@ -115,12 +135,12 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools suggest-models
 npx ai-i18n-tools suggest-models --list
 npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --price --top 8 --json
 npx ai-i18n-tools suggest-models --apply
 npx ai-i18n-tools suggest-models --refresh
 ```
 
-表格欄位為排名、模型 id、索引、測得的 ChrF、測得的競技場分數（Arena Score），以及每 100 萬個 token 的輸入/輸出美元價格。缺失的測量值顯示為 `—`。`--list` 會列印已存在於 `translationModels` 中的模型之對應欄位。`--max-output-price` 會保留輸出價格低於或等於該每 100 萬個 token 美元價格的模型，並排除沒有輸出價格的模型。`--min-delta` 僅在模型的索引比前一個保留的模型至少低該數值時才保留該模型。`--top`（預設為 5）會在這些篩選器之後限制表格、`--json` 和 `--apply`。`--apply` 僅取代 `translationModels`。`--refresh` 會重新下載 7 天基準測試快取。選用的權重為 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion)。請參閱 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
+表格欄位為排名、模型 ID、索引、測得的 ChrF、測得的 Arena 分數，以及每百萬個 token 的輸入/輸出美元費用。遺失的測量值為 `—`。`--list` 會列印已在 `translationModels` 中的模型的這些欄位。`--max-output-price` 會保留輸出費用等於或低於該每百萬個 token 美元費用的模型，並排除沒有輸出價格的模型。`--min-delta` 僅在模型的索引至少比前一個保留的模型低那麼多點時才保留該模型。`--top` (預設值為 8) 會在這些篩選之後限制表格、`--json` 和 `--apply`。`--apply` 僅取代 `translationModels`。`--refresh` 會重新下載 7 天基準測試快取。選用權重為 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion)。請參閱 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 覆寫樣本文字、語言環境或模型列表：
 
@@ -149,6 +169,6 @@ npx ai-i18n-tools bench-models -P deepseek
 <a id="further-reference"></a>
 ### 延伸參考
 
-- [設定 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers) — 預設表格、自訂端點、請求逾時、成本費率、OpenRouter 專屬行為。
-- [架構 — LLM 用戶端](/zh-Hant/reference/architecture) — 模型回退、批次處理和成本回報的內部運作方式。
-- [環境變數](/zh-Hant/reference/environment-variables) — API 金鑰環境變數和基底 URL 覆寫。
+- [設定 — `provider` 和 `providers`](/zh-Hant/reference/configuration#provider-and-providers) — 預設表格、自訂端點、請求逾時、成本費率、Cheaper Inference 零資料保留、OpenRouter 特定行為。
+- [架構 — LLM 用戶端](/zh-Hant/reference/architecture) — 模型備援、批次處理和成本報告的內部運作方式。
+- [環境變數](/zh-Hant/reference/environment-variables) — API 密鑰環境變數和基礎 URL 覆寫。

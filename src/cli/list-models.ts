@@ -3,6 +3,7 @@ import type { I18nConfig } from "../core/types.js";
 import { t } from "../i18n/index.js";
 import {
   OPENROUTER_PROVIDER_KEY,
+  providerModelsCatalogQuery,
   resolveActiveProvider,
   resolveModelsListRequestAuth,
   resolveProviderSettings,
@@ -12,6 +13,7 @@ import {
   fetchProviderModelsCatalog,
   isExpirationDatePast,
   modelDisplayName,
+  providerModelsCatalogUrl,
   type ProviderModelEntry,
 } from "../api/provider-models-catalog.js";
 
@@ -48,6 +50,8 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
   const auth = resolveModelsListRequestAuth(activeProvider, apiKey, {
     xTitle: "ai-i18n-tools list-models",
   });
+  const catalogQuery = providerModelsCatalogQuery(settings);
+  const catalogUrl = providerModelsCatalogUrl(settings.baseUrl, catalogQuery);
 
   let catalog: Map<string, ProviderModelEntry>;
   try {
@@ -57,6 +61,7 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
       providerLabel: activeProvider,
       requestTimeoutMs: settings.requestTimeoutMs,
       extraHeaders: auth.extraHeaders,
+      query: catalogQuery,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -75,6 +80,10 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
     )
   );
   console.log();
+  if (settings.zeroDataRetention) {
+    console.log(chalk.gray(t("Zero data retention catalog (GET /models?zdr=true).")));
+    console.log();
+  }
 
   if (entries.length === 0) {
     console.log(chalk.yellow(t("No models returned by the provider.")));
@@ -115,7 +124,7 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
         chalk.cyan("https://openrouter.ai/models\n")
     );
   } else {
-    console.log(chalk.gray(t("Source: {{baseUrl}}/models\n", { baseUrl: settings.baseUrl })));
+    console.log(chalk.gray(t("Source: {{catalogUrl}}\n", { catalogUrl })));
   }
 
   return { exitCode: 0 };

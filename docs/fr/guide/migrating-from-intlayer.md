@@ -22,7 +22,7 @@ Vous utilisez déjà des fichiers de traduction JSON i18next ? Vous n'avez pas b
 1. Installez `ai-i18n-tools` (voir [Installation](/fr/guide/installation)). Si votre projet n'a pas encore de `ai-i18n-tools.config.json`, initialisez-en un :
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 Modifiez `sourceLocale` et `targetLocales` pour qu'ils correspondent aux locales déjà présentes dans vos dictionnaires Intlayer, et configurez `ui.sourceRoots`, `ui.stringsJson`, `ui.flatOutputDir` pour pointer vers le code source de votre application et les chemins de catalogue souhaités — les mêmes clés que celles utilisées par `translate-ui`, voir [Chaînes d'interface utilisateur — Étape 1 : Initialisation](/fr/guide/ui-strings/#step-1-initialise).

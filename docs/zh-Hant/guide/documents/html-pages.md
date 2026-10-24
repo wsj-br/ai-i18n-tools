@@ -13,7 +13,7 @@
 建立可運作的設定架構：
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 或將此 HTML 部分新增至已有 LLM [提供者](/zh-Hant/guide/providers-and-models) 的 `ai-i18n-tools.config.json`：

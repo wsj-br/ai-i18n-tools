@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ai-i18n-tools",
-    "description": "使用大语言模型对 JavaScript/TypeScript 应用程序和文档网站进行国际化的 CLI 和工具包。"
+    "description": "用于使用大语言模型 (LLM) 对 JavaScript/TypeScript 应用程序、Python 应用程序和文档网站进行国际化的 CLI 和工具包。"
   },
   "nav": {
     "guide": "指南",
@@ -14,6 +14,7 @@
     "whatIs": "什么是 ai-i18n-tools？",
     "installation": "安装",
     "migratingFromIntlayer": "从 Intlayer 迁移",
+    "addI18nToPython": "为 Python 应用程序添加 i18n",
     "glossary": "术语表",
     "quickStart": "快速开始",
     "toolUiLanguage": "工具界面语言",
@@ -36,6 +37,7 @@
     "documentsTroubleshooting": "故障排除",
     "json": "JSON",
     "integrations": "集成",
+    "documentationSites": "文档网站",
     "astro": "Astro",
     "docusaurus": "Docusaurus",
     "vitepress": "VitePress",

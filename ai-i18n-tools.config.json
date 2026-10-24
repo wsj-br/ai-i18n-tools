@@ -17,7 +17,7 @@
   "fileConcurrency": 2,
   "batchSize": 20,
   "maxBatchChars": 4096,
-  "provider": "openrouter",
+  "provider": "cheaperinference",
   "providers": {
     "openrouter": {
       "translationModels": [
@@ -41,12 +41,13 @@
       "translationModels": [
         "gemini-2.5-flash",
         "deepseek-v4-flash",
-        "gemini-2.5-pro",
-        "gemini-2.5-pro-preview-06-05",
-        "gemma-3-27b-it",
         "gpt-5-mini",
+        "gemma-3-27b-it",
         "glm-4.5-air",
-        "gpt-5.1"
+        "gpt-oss-120b",
+        "gpt-5-nano",
+        "gpt-oss-20b",
+        "qwen3-30b-a3b"
       ]
     }
   },
@@ -57,6 +58,7 @@
   "ui": {
     "description": "CLI and dashboard",
     "sourceRoots": [
+      "src/api",
       "src/cli",
       "src/server",
       "src/dashboard-app"

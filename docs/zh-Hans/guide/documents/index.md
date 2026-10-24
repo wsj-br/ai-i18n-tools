@@ -51,19 +51,19 @@
 ## 步骤 1：初始化文档
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 适用于 Astro Starlight 文档网站：
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 对于 VitePress 文档站点：
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 为导航/侧边栏/页脚字符串设置 `docsOutput.vitepressThemeCatalog`——参见 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)。
@@ -71,7 +71,7 @@ ai-i18n-tools init -t ui-vitepress [-P <provider>]
 对于 Nextra 文档站点：
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 为主题字典字符串设置 `docs[].nextraDictionaryPath`——参见 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。侧边栏 `_meta.ts` 标签会自动收集。
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-nextra [-P <provider>]
 对于 Fumadocs 文档站点：
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 为 UI 覆盖设置 `docsOutput.fumadocsUiCatalog`——参见 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs)。侧边栏 `meta.json` 标签会自动收集。
@@ -87,17 +87,17 @@ ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 适用于纯 Astro 网站 UI（无 Starlight）：
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 该模板仅启用 UI 提取。对于页面 HTML 翻译，还要设置 `features.translateDocs` 并添加一个 `docs[]` 块（请参阅 [Astro 网站页面（解析和替换）](/zh-Hans/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 配置显示了两个管道。
 
 编辑生成的 `ai-i18n-tools.config.json`：
 
-- `provider` 和 `providers` — `init` 会搭建一个默认的提供商块（除非你传入 `-P <provider>`，否则为 `openrouter`）；在运行 `translate-docs` 或 `sync` 之前，请至少配置一个提供商并设置其 API 密钥（Ollama 不需要密钥）。参见[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)和 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
-- `sourceLocale` — 源语言（必须与 `docusaurus.config.js` 中的 `defaultLocale` 匹配）。
-- `targetLocales` — BCP-47 语言环境代码数组（例如 `["de", "fr", "es"]`）。
-- `cacheDir` — 所有流水线共享的 SQLite 缓存目录（也是 `--write-logs` 的默认日志目录）。
+- `provider` 和 `providers` — 预设的 `init -P <provider>` 脚手架；在 `translate-docs` 或 `sync` 之前设置其 API 密钥（Ollama 不需要密钥）。请参阅 [提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key) 和 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
+- `sourceLocale` - 源语言（必须与 `docusaurus.config.js` 中的 `defaultLocale` 匹配）。
+- `targetLocales` - BCP-47 区域设置代码数组（例如 `["de", "fr", "es"]`）。
+- `cacheDir` - 所有管道的共享 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
 - `docs` - 文档块数组。每个块包含可选的 `description`、`contentPaths`（字符串或数组；文件、目录或 glob）、`outputDir`、可选的 `docusaurusCatalogDir`、`docsOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
 - `docs[].description` - 为维护者提供的可选简短说明。设置后，它会显示在 `translate-docs` 标题和 `status` 章节标题中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus shell JSON 的可选 `docusaurusCatalogDir`）。
@@ -136,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs` 会检查每个已翻译的段落是否保留了 markdown 结构（包括从文档解析出的强调标记），以及内部占位符标记是否能干净地还原。在一段话中堆叠大量 `bold` 片段并围绕 `` `inline code` ``、在加粗中嵌套反引号（例如模板字面量 `` `fetch(\`/locales/${code}.json\`)` ``），或在长句中交织加粗与代码的写法都很脆弱：某些语言区域需要不同的语序，这会改变翻译后 `**` 与 `` ` `` 的对齐方式，并触发诸如 `AST mismatch` 之类的 CLI 错误。
 
-在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 `**` 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
+在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 <code v-pre>**</code> 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
 
 **如果您遇到此类验证失败，建议优先简化源语言文本** - 拆分段落、将示例移入围栏代码块，或者用更少的嵌套粗体/代码对来描述相同的概念 - 而不是期望每个模型和语言环境都能完美重现密集的内联标记。
 

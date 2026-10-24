@@ -13,7 +13,7 @@ The runnable [`examples/plain-html-docs`](https://github.com/wsj-br/ai-i18n-tool
 Scaffold a working configuration:
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 Or add this HTML portion to an `ai-i18n-tools.config.json` that already has an LLM [provider](/guide/providers-and-models):

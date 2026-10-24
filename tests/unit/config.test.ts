@@ -313,6 +313,43 @@ describe("parseI18nConfig", () => {
     ).toThrow(/Invalid ai-i18n-tools config/);
   });
 
+  it("accepts providers.cheaperinference.zeroDataRetention", () => {
+    const c = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        cacheDir: ".translation-cache",
+        docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: {
+            translationModels: ["deepseek-v4.1-flash"],
+            zeroDataRetention: true,
+          },
+        },
+      })
+    );
+    expect(c.providers.cheaperinference?.zeroDataRetention).toBe(true);
+  });
+
+  it("rejects zeroDataRetention on a provider other than cheaperinference", () => {
+    expect(() =>
+      parseI18nConfig(
+        mergeWithDefaults({
+          sourceLocale: "en",
+          cacheDir: ".translation-cache",
+          docs: [{ ...docBlockDefaults, contentPaths: [], outputDir: "./out" }],
+          provider: "openai",
+          providers: {
+            openai: {
+              translationModels: ["gpt-4o-mini"],
+              zeroDataRetention: true,
+            },
+          },
+        })
+      )
+    ).toThrow(/zeroDataRetention is only supported on providers\.cheaperinference/);
+  });
+
   it("rejects unknown top-level keys", () => {
     expect(() =>
       parseI18nConfig(
@@ -947,7 +984,7 @@ describe("writeInitConfigFile", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-"));
     const out = path.join(dir, "out", "ai-i18n-tools.config.json");
     try {
-      writeInitConfigFile(out, "uiMarkdown", dir);
+      writeInitConfigFile(out, "uiMarkdown", dir, "openrouter");
       const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
         sourceLocale?: string;
         provider?: string;
@@ -1006,6 +1043,22 @@ describe("writeInitConfigFile", () => {
     expect(() => assertPresetInitProvider("notreal")).toThrow(/built-in preset/);
   });
 
+  it("requires a provider key", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-"));
+    const out = path.join(dir, "ai-i18n-tools.config.json");
+    try {
+      expect(() =>
+        writeInitConfigFile(out, "uiMarkdown", dir, undefined as unknown as string)
+      ).toThrow(ConfigValidationError);
+      expect(() =>
+        writeInitConfigFile(out, "uiMarkdown", dir, undefined as unknown as string)
+      ).toThrow(/requires a provider key/);
+      expect(fs.existsSync(out)).toBe(false);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("writes a parseable config for every init template", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-all-"));
     try {
@@ -1013,7 +1066,7 @@ describe("writeInitConfigFile", () => {
       expect(keys.length).toBeGreaterThan(10);
       for (const key of keys) {
         const out = path.join(dir, key, "ai-i18n-tools.config.json");
-        writeInitConfigFile(out, key, dir);
+        writeInitConfigFile(out, key, dir, "openrouter");
         const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
           provider?: string;
           features?: Record<string, boolean>;

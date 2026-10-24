@@ -22,7 +22,7 @@
 1. `ai-i18n-tools` をインストールします（[インストール](/ja/guide/installation)を参照）。プロジェクトにまだ `ai-i18n-tools.config.json` がない場合は、スキャフォールドを生成します。
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 `sourceLocale`と`targetLocales`を編集して、Intlayer辞書に既に存在するロケールと一致させ、`ui.sourceRoots`、`ui.stringsJson`、`ui.flatOutputDir`を設定して、アプリのソースおよび目的のカタログパスを指すようにします。これは`translate-ui`が使用するのと同じキーです。[UI文字列 — ステップ1: 初期化](/ja/guide/ui-strings/#step-1-initialise)を参照してください。

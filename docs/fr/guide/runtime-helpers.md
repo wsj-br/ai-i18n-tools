@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # Helpers d'exécution
 
-Ces assistants sont exportés depuis `'ai-i18n-tools/runtime'` et fonctionnent dans n'importe quel environnement JavaScript (navigateur, Node.js, Deno, Edge). Ils n'importent **pas** depuis `i18next` ou `react-i18next`.
+Ces fonctions d'assistance sont exportées depuis `'ai-i18n-tools/runtime'` et fonctionnent dans n'importe quel environnement JavaScript (navigateur, Node.js, Deno, Edge). Elles n'importent **pas** depuis `i18next` ou `react-i18next`. Les applications Python utilisent le module généré `i18n.py`. Ses fonctions sont listées dans [Programmatic API — Python runtime](/fr/reference/programmatic-api#python-runtime).
 
 Utilisez-les dans le démarrage de votre application (`src/i18n.js`), le sélecteur de langue et tout code non-React qui a besoin d'utilitaires de direction ou de chaîne. Pour un câblage de bout en bout, commencez par [Câbler i18next](/fr/guide/ui-strings/i18next-runtime) ; pour les menus de langue et le RTL, voir [Sélecteur de langue et RTL](/fr/guide/ui-strings/language-switcher).
 

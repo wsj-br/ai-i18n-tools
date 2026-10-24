@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Crie um config a partir do Node.js (o quarto argumento opcional seleciona o preset integrado; o padrão é `openrouter`):
+Gerar uma configuração a partir do Node.js. O quarto argumento é o preset integrado (`cwd` é o terceiro):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 Exportações principais (comumente usadas — consulte `src/index.ts` para a superfície pública completa):
@@ -52,6 +53,27 @@ Exportações principais (comumente usadas — consulte `src/index.ts` para a su
 | `Glossary` / `GlossaryMatcher` | Carrega e aplica glossários de tradução, incluindo notas opcionais de `Context` de termos. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Carrega `glossary.contextFiles` e orientação de impressão digital para invalidação de cache. |
 | `runTranslateUI` | Ponto de entrada programático para a interface de tradução. |
-| `writeInitConfigFile` | Escreve um JSON de configuração inicial (`template`, `providerKey` opcional com padrão `openrouter`). |
+| `writeInitConfigFile` | Escreve um JSON de configuração inicial (`template`, `cwd` e um `providerKey` obrigatório). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` inicial por preset integrado usado por `init -P`. |
 | `PROVIDER_PRESETS` | Mapa predefinido de provedor integrado (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Runtime do Python (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext` e `ui-python-flask` gravam este módulo no projeto quando `i18n.py` está ausente. É um auxiliar da biblioteca padrão para Python 3.10 ou superior. Importe-o a partir desse arquivo. As funções abaixo são separadas das exportações do Node na tabela acima. Projetos Django mantêm o gettext do Django, portanto `ui-python-django` não grava `i18n.py`.
+
+Formatos de chamada, f-strings inseguras e configuração de localidade por framework: [Aplicações Python](/pt-BR/guide/ui-strings/python).
+
+| Função | Comportamento |
+| --- | --- |
+| `set_locale(locale)` | Define a localidade atual. Sublinhados no código são armazenados como hifens (`pt_BR` torna-se `pt-BR`). Retorna um token `ContextVar`. |
+| `reset_locale(token)` | Restaura a localidade a partir desse token. Chame-a em `finally`, incluindo middleware de FastAPI e Flask. |
+| `get_locale()` | Retorna a localidade atual. |
+| `set_backend(backend)` | Seleciona `"auto"`, `"json"` ou `"gettext"`. |
+| `get_ui_languages()` | Lê `ui-languages.json` próximo ao diretório JSON simples, ou o diretório gettext quando a saída simples está desativada. |
+| `get_direction(locale=None)` | Retorna `"rtl"` ou `"ltr"` da linha do manifesto para essa localidade (localidade atual quando omitido). |
+| `_(message)` | Procura um literal e, em seguida, retorna a string do catálogo ou a própria mensagem. |
+| `t(template, *, plurals=False, count=None, **values)` | Procura o literal e, em seguida, interpola. `translate` é a mesma função. No Python 3.14, `translate(t"Hello, {name}!")` mantém o modelo e seus valores. Argumentos nomeados substituem valores obtidos de uma string de modelo. |
+| `ngettext(singular, plural, n, **values)` | Procura plural e, em seguida, interpola. `count` está disponível para a string de formato. |
+| `pgettext(context, message, **values)` | Procura contexto (`msgctxt`, ou `context` + U+0004 + a fonte em inglês em JSON simples) e, em seguida, interpola. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Caixa de seleção do Streamlit. Grava `st.session_state.locale` e `st.query_params["lang"]`, chama `set_locale` e retorna o código escolhido. |

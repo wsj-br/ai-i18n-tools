@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # रनटाइम हेल्पर
 
-ये हेल्पर `'ai-i18n-tools/runtime'` से निर्यात किए जाते हैं और किसी भी JavaScript वातावरण (ब्राउज़र, Node.js, Deno, Edge) में काम करते हैं। वे `i18next` या `react-i18next` से आयात **नहीं** करते हैं।
+ये हेल्पर्स `'ai-i18n-tools/runtime'` से एक्सपोर्ट किए जाते हैं और किसी भी JavaScript वातावरण (ब्राउज़र, Node.js, Deno, Edge) में काम करते हैं। ये `i18next` या `react-i18next` से इम्पोर्ट **नहीं** करते हैं। Python एप्लिकेशन जनरेट किए गए `i18n.py` मॉड्यूल का उपयोग करते हैं। इसके फंक्शन्स [Programmatic API — Python runtime](/hi/reference/programmatic-api#python-runtime) में सूचीबद्ध हैं।
 
 इन्हें अपने ऐप बूटस्ट्रैप (`src/i18n.js`), भाषा स्विचर और किसी भी गैर-रिएक्ट कोड में उपयोग करें जिसे दिशा या स्ट्रिंग यूटिलिटी की आवश्यकता है। एंड-टू-एंड वायरिंग के लिए, [i18next वायर करें](/hi/guide/ui-strings/i18next-runtime) से शुरू करें; भाषा मेनू और RTL के लिए, [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher) देखें।
 

@@ -6,7 +6,7 @@
 
 **Sinopse:** `ai-i18n-tools check-models`
 
-Valida cada ID de modelo configurado em relação à lista `GET /models` do provedor ativo (assinatura e `expiration_date`). Requer a chave de API desse provedor (nenhuma para provedores sem chave como o Ollama). Sai com um código de erro diferente de zero quando qualquer ID configurado está ausente ou expirado, e respeita o tempo limite de solicitação resolvido (`requestTimeout` ou `requestTimeoutMs` no provedor, caso contrário, o valor de nível superior). Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra o USD por 1 milhão de tokens para prompt/conclusão.
+Valida cada ID de modelo configurado em relação à lista `GET /models` do provedor ativo (associação e `expiration_date`). Requer a chave de API desse provedor (nenhuma para provedores sem chave como Ollama). Retorna um código de saída diferente de zero quando qualquer ID configurado está ausente ou expirado, e respeita o tempo limite de solicitação resolvido (`requestTimeout` ou `requestTimeoutMs` no provedor, caso contrário, o valor de nível superior). Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra USD por 1M de tokens para prompt/conclusão. Quando `providers.cheaperinference.zeroDataRetention` é verdadeiro, a verificação usa `GET /v1/models?zdr=true` e falha um ID que o catálogo omite.
 
 **Ver também:** [Provedores LLM](/pt-BR/guide/providers-and-models)
 
@@ -17,7 +17,7 @@ Valida cada ID de modelo configurado em relação à lista `GET /models` do prov
 
 **Sinopse:** `ai-i18n-tools list-models`
 
-Lista todos os modelos que o provedor ativo anuncia através de sua lista `GET /models` (ordenados por ID; o provedor ativo segue a chave de configuração `provider`, substitua por `-P` / `--provider`). Requer a chave de API desse provedor (nenhuma para provedores sem chave, como o Ollama). Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra USD por 1M de tokens para prompt/conclusão, e marca as entradas após `expiration_date`.
+Lista todos os modelos que o provedor ativo anuncia por meio de sua lista `GET /models` (ordenado por ID; o provedor ativo segue a chave de configuração `provider`, substitua com `-P` / `--provider`). Requer a chave de API desse provedor (nenhuma para provedores sem chave como Ollama). Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra USD por 1M de tokens para prompt/conclusão, e marca as entradas após `expiration_date`. Quando `providers.cheaperinference.zeroDataRetention` é verdadeiro, a lista é `GET /v1/models?zdr=true`.
 
 **Opções principais:** `-P` / `--provider`
 
@@ -30,15 +30,15 @@ Lista todos os modelos que o provedor ativo anuncia através de sua lista `GET /
 
 **Sinopse:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
 
-Classifica os modelos de chat do provedor ativo e exibe os principais (padrão 5). As colunas da tabela, em ordem, são: classificação, ID do modelo, índice (a pontuação ponderada vezes 100, com uma casa decimal), ChrF do languagebench medido, Arena Score medido e preço de entrada e saída em USD por 1 milhão de tokens. Uma medição ausente é `—`. O comando requer a chave de API desse provedor (nenhuma para provedores sem chave, como o Ollama). O provedor ativo segue a configuração `provider`; substitua-a com `-P` / `--provider`.
+Classifique os modelos de chat do provedor ativo e imprima os melhores (padrão 8). As colunas da tabela, em ordem, são: classificação, ID do modelo, índice (a pontuação ponderada vezes 100, uma casa decimal), ChrF do languagebench medido, Pontuação Arena medida e preço de entrada e saída em USD por 1M de tokens. Uma medição ausente é `—`. O comando precisa da chave de API desse provedor (nenhuma para provedores sem chave, como Ollama). O provedor ativo segue a configuração `provider`; substitua-a com `-P` / `--provider`.
 
-Os candidatos vêm da lista `GET /models` do provedor. Linhas expiradas e linhas que não são de chat (embeddings, fala, imagem, vídeo, moderação, rerankers) são deixadas de fora. Se essa solicitação de catálogo falhar, o comando encerra com código 1.
+Os candidatos vêm da lista `GET /models` do provedor. Quando `providers.cheaperinference.zeroDataRetention` é verdadeiro, essa solicitação é `GET /v1/models?zdr=true`. Linhas expiradas e linhas não-chat (embeddings, fala, imagem, vídeo, moderação, rerankers) são omitidas. Se essa solicitação de catálogo falhar, o comando sai com 1.
 
 `--quality` é o padrão. Ele pondera o ChrF e o Arena Score acima do preço. `--price` pondera o preço acima dessas pontuações e ainda mantém um limite mínimo de qualidade, para que um modelo barato não medido não salte na lista. Passar ambos os sinalizadores é um erro. Não passar nenhum significa qualidade. Pesos opcionais `modelSuggestion` na configuração substituem qualquer perfil. Consulte [Configuração](/pt-BR/reference/configuration#modelsuggestion). Os mesmos pesos são usados pela [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models).
 
 ChrF é a média das linhas `translation_from` e `translation_to` do languagebench cuja métrica é `chrf`, limitada a `sourceLocale` e `targetLocales` deste projeto. As localidades mapeiam para um código de idioma do languagebench (o subtag primário, com alguns aliases como `pt-BR` para `pt` e `zh-Hant` para `zh` e `yue`). Um conjunto vazio usa `en`. Arena é o Arena Score geral do LMArena, não o Elo. O preço de classificação é `(3 × input + output) / 4` USD por 1 milhão de tokens. A fonte do preço é uma taxa de catálogo diferente de zero, seguida pelas taxas de entrada e saída do models.dev e, por fim, o valor de custo único do languagebench. Um preço de catálogo de `0` não tem preço definido, não é gratuito. Um preço desconhecido é neutro no perfil de qualidade e o pior no perfil de preço. Um ChrF ausente é classificado abaixo do limite mínimo de qualidade. Os substitutos `0.35` e `0.45` usados para um ChrF ou Arena ausente afetam apenas o índice; a tabela imprime `—` em seu lugar.
 
-As linhas que superam o limite mínimo vêm primeiro, seguidas por um índice maior e, depois, um preço misto mais barato. `--top` (padrão `5`, um número inteiro de pelo menos 1) limita a tabela, o fragmento `--json` e `--apply` juntos, após os filtros abaixo.
+As linhas que superam o limite vêm primeiro, depois o índice mais alto, depois um preço combinado mais barato. `--top` (padrão `8`, um número inteiro de pelo menos 1) limita a tabela, o fragmento `--json` e `--apply` juntos, após os filtros abaixo.
 
 `--list` imprime as mesmas colunas para os `translationModels` configurados do provedor ativo, nessa ordem, e ignora `--top`. A coluna de classificação ainda é a posição de cada modelo na classificação completa. Um ID configurado que esteja ausente do catálogo, expirado ou que não seja um modelo de chat ainda é listado, com `—` para as medições. `--list` não pode ser combinado com `--apply`.
 
@@ -52,7 +52,7 @@ As linhas que superam o limite mínimo vêm primeiro, seguidas por um índice ma
 }
 ```
 
-`--apply` substitui `providers.<active>.translationModels` por esses IDs. `uiModels` e `localeModels` permanecem inalterados. As pontuações não são gravadas no arquivo de configuração.
+`--apply` copia a configuração atual para um `ai-i18n-tools.config.{timestamp}.backup.json` irmão (ou `{name}.{timestamp}.backup.json` quando `-c` nomeia outro arquivo), então substitui `providers.<active>.translationModels` por esses IDs. Uma colisão de nome adiciona `-2`, `-3` e assim por diante antes de `.backup.json`. Se a cópia falhar, o arquivo de configuração permanece inalterado. `uiModels` e `localeModels` permanecem inalterados. As pontuações não são gravadas no arquivo de configuração. O botão **Atualizar configuração** do painel grava o mesmo backup.
 
 Os dados de benchmark são armazenados em cache em `<cacheDir>/benchmark-scores.json` (geralmente `.translation-cache/benchmark-scores.json`) por 7 dias. Os conjuntos de dados brutos são baixados em tempo de execução e não são enviados no pacote. `--refresh` baixa novamente o languagebench, o Arena e o models.dev. Uma fonte que falha durante `--refresh` não é preenchida a partir do cache anterior. Sem `--refresh`, um download com falha reutiliza a fatia armazenada em cache. Se um dos componentes, languagebench ou Arena, falhar, o comando classifica com o outro e informa qual fonte falhou. Se ambos falharem, ele encerra com código 1. Uma falha no models.dev mantém os preços do catálogo. O painel não possui controle de atualização; execute `--refresh` a partir da CLI e, em seguida, recarregue a guia Models.
 

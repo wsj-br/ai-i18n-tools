@@ -132,7 +132,6 @@ export {
   DEFAULT_CONFIG_FILENAME,
   initConfigTemplates,
   writeInitConfigFile,
-  DEFAULT_INIT_PROVIDER_KEY,
   DEFAULT_INIT_MODELS_BY_PROVIDER,
   defaultInitModelsForProvider,
   buildInitProviderBlock,

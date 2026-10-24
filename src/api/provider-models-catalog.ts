@@ -156,10 +156,24 @@ export interface FetchProviderModelsCatalogOpts {
   apiKey?: string;
   /** Extra request headers (e.g. OpenRouter's `HTTP-Referer`/`X-Title`). */
   extraHeaders?: Record<string, string>;
+  /** Query parameters appended to `GET /models` (e.g. Cheaper Inference `zdr=true`). */
+  query?: Record<string, string>;
   /** Human-readable provider name used in error messages (e.g. `OpenRouter`, `openai`). */
   providerLabel?: string;
   /** Per-request timeout; defaults to 30s when omitted. */
   requestTimeoutMs?: number;
+}
+
+/** Absolute `GET /models` URL, including an optional query string. */
+export function providerModelsCatalogUrl(baseUrl: string, query?: Record<string, string>): string {
+  const base = baseUrl.replace(/\/$/, "");
+  const url = new URL(`${base}/models`);
+  for (const [key, value] of Object.entries(query ?? {})) {
+    if (value !== "") {
+      url.searchParams.set(key, value);
+    }
+  }
+  return url.toString();
 }
 
 /**
@@ -170,8 +184,7 @@ export interface FetchProviderModelsCatalogOpts {
 export async function fetchProviderModelsCatalog(
   opts: FetchProviderModelsCatalogOpts
 ): Promise<Map<string, ProviderModelEntry>> {
-  const base = opts.baseUrl.replace(/\/$/, "");
-  const url = `${base}/models`;
+  const url = providerModelsCatalogUrl(opts.baseUrl, opts.query);
   const requestTimeoutMs = opts.requestTimeoutMs ?? 30_000;
   const label = opts.providerLabel ?? "Provider";
   const headers: Record<string, string> = { ...(opts.extraHeaders ?? {}) };

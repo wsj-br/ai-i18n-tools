@@ -13,7 +13,7 @@
 動作する構成をスキャフォールドします:
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 または、すでに LLM [provider](/ja/guide/providers-and-models) を持つ `ai-i18n-tools.config.json` に、この HTML 部分を追加します:

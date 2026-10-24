@@ -17,6 +17,8 @@ Optional: set top-level `requestTimeout` (seconds) or `requestTimeoutMs` for eve
 
 Optional cost rates under `providers.<name>`: `pricing` (provider-wide USD per 1,000,000 input and output tokens, `inputPerMTokens` / `outputPerMTokens`) and `modelPricing` (per-model overrides). Applied when the provider omits `usage.cost`. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset there. A provider-reported cost is kept as returned. The amount is stored with the call and shown by `usage` and the dashboard Usage & costs view. See [Providers and models](/guide/providers-and-models#multiple-providers).
 
+Optional `providers.cheaperinference.zeroDataRetention` (default off). When `true`, chat requests send `"zdr": true` and model lists, checks, and suggestions use `GET /v1/models?zdr=true`. The flag does not make a model without a zero-data-retention route usable. If the Cheaper Inference account [Data Protection](https://platform.cheaperinference.com/dashboard/data-protection) setting is on, a model with no such route fails even while this flag is off; the error tells the user to turn the flag on and pick a catalog model, or to turn the account setting off. See [Zero data retention](/guide/providers-and-models#cheaperinference-zero-data-retention).
+
 Optional model tiers under `providers.<active>`: `uiModels` (UI-only fallback after per-locale overrides) and `localeModels` (per-locale overrides for all pipelines). Resolution order — UI: `localeModels` → `uiModels` → `translationModels`; docs/JSON/SVG: `localeModels` → `translationModels`. See [Providers and models — Model fallback chain](/guide/providers-and-models#model-fallback-chain).
 
 The CLI auto-loads a `.env` file from the working directory (does not override variables already set in the shell).
@@ -25,7 +27,7 @@ The CLI auto-loads a `.env` file from the working directory (does not override v
 
 | Pipeline | Config | CLI | Use when |
 |----------|--------|-----|----------|
-| **UI strings** | `ui.*`, `features.translateUIStrings` | `extract`, `translate-ui`, `sync-ui` | `t("…")` / `i18n.t("…")` in source, or `data-i18n*` in `.html` → `strings.json` + flat `de.json`, … |
+| **UI strings** | `ui.*`, `features.translateUIStrings` | `extract`, `translate-ui`, `sync-ui` | `t("…")` / `i18n.t("…")` in JS/TS, Python `t()` / `_()` / gettext, or `data-i18n*` in `.html` → `strings.json` + flat `de.json` and/or `.po` / `.mo` |
 | **Documents** | `docs[]`, `features.translateDocs` | `translate-docs` | `.md` / `.mdx` / `.astro` pages plus framework shell strings (nav, sidebar, theme catalogs) |
 | **JSON** | `json[]`, `features.translateJson` | `translate-json` | Standalone nested locale JSON (e.g. `src/i18n/en/translation.json`) — not `t()` in source, not doc-framework shell |
 | **SVG** | `svg`, `features.translateSVG` | `translate-svg` | Illustrated SVGs with `<text>` / `<title>` / `<desc>` labels — separate from doc markdown assets |
@@ -308,10 +310,11 @@ Full config field reference: [Configuration](/reference/configuration).
 
 When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`. Optional `Context` cells and `glossary.contextFiles` add extra source-language guidance for all pipelines.
 
-- **Scaffold config:** `ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles] [-o path] [-P <provider>]`
+- **Scaffold config:** `ai-i18n-tools init -P <provider> [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path]`
 - **Validate model ids:** `ai-i18n-tools check-models` (validates the union of `translationModels`, `uiModels`, and `localeModels`)
 - **List available models:** `ai-i18n-tools list-models` (use `-P` / `--provider` to inspect another configured provider)
 - **Suggest translation models:** `ai-i18n-tools suggest-models` ranks the active provider's chat models (quality or `--price`; `--list` scores the configured `translationModels`; `--max-output-price` and `--min-delta` thin the list; `--top` limits the list; `--json` / `--apply` write only `translationModels`; `--refresh` updates the benchmark cache). The dashboard **Models** tab uses the same ranking, filters, and config update. Optional weights are `modelSuggestion`.
+- **Rewrite unsafe Python lookups:** `ai-i18n-tools migrate-python-i18n` (dry run; `--write` to apply). See [Python applications](#python-applications).
 - **Benchmark models:** `ai-i18n-tools bench-models` (one sample translation per model; `--model` to override the configured list)
 - **List bundled locales:** `ai-i18n-tools list-languages [search]`
 - **Build `ui-languages.json`:** `ai-i18n-tools generate-ui-languages`
@@ -339,6 +342,19 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 Exhaustive CLI list and global flags: [CLI commands reference](/reference/cli-commands/). Use `-c <path>` when the config file is not the default. Flags and env vars: `ai-i18n-tools --help` and per-command `--help`.
 
 The `ai-i18n-tools dashboard` UI includes a **Markdown issues** tab (same `markdown_source_issues` data as `check-markdown`), separate from translation failures.
+
+---
+
+<a id="python-applications"></a>
+## Python applications
+
+Python projects can run the CLI from the standalone executable on each GitHub Release (Linux x64/arm64, macOS arm64/x64, Windows x64) with no Node.js install. Asset names and checksums: [Installation — Standalone executables](/guide/installation#standalone-executables). The npm package works too when Node.js `>=22.16.0` is already installed.
+
+Scaffold with `ai-i18n-tools init -t ui-python -P cheaperinference` (flat English-key JSON and `i18n.py`), `ui-python-gettext` (JSON and `.po` / `.mo`), `ui-python-flask` (gettext under `translations/`), or `ui-python-django` (Django `locale/` and the `django` domain, no `i18n.py`). `-P` is required on every `init`. `ui-python`, `ui-python-gettext`, and `ui-python-flask` write `i18n.py` when that file is missing. It is a standard-library helper (Python 3.10 or newer): `t`, `_`, `set_locale`, `reset_locale`, and the other functions in [Programmatic API — Python runtime](/reference/programmatic-api#python-runtime).
+
+Look up the catalog first, then interpolate: `t("Hello, {name}!", name=name)` and `_("Hello, %s!") % name`. `migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`). Dry run by default. `--write` edits files and the report is `migrate-python-i18n-report.md`. Generated `i18n.py` is skipped.
+
+Django keeps `gettext`, `ngettext`, and `{% blocktrans %}`. Reset `set_locale` tokens in `finally` for FastAPI and Flask. Guide: [Add i18n to a Python app](/guide/add-i18n-to-python), [Python applications](/guide/ui-strings/python), [Python integrations](/guide/integrations/python).
 
 ---
 

@@ -33,10 +33,10 @@
 <a id="ui-strings-ssg"></a>
 ## यूआई स्ट्रिंग्स (एसएसजी)
 
-`init -t ui-astro-website` के साथ UI एक्सट्रैक्शन को स्केफोल्ड करें, फिर जब आप पेज HTML का भी अनुवाद करते हैं तो `docs[]` ब्लॉक में मर्ज करें ([पेज पार्स करें और बदलें](#astro-website-pages-parse-and-replace) देखें)। TypeScript मॉड्यूल में `t('…')` और `.astro` फ्रंटमैटर (और टेम्पलेट `{expression}` ब्लॉक जब आप डुप्लिकेट स्थानीय पेज के बजाय UI स्ट्रिंग पसंद करते हैं) में कॉपी को रैप करें:
+UI निष्कर्षण को `init -t ui-astro-website -P ollama` के साथ स्केफ़ोल्ड करें, फिर `docs[]` ब्लॉक में मर्ज करें जब आप पेज HTML का भी अनुवाद करते हैं (देखें [पेज पार्स करें और बदलें](#astro-website-pages-parse-and-replace))। TypeScript मॉड्यूल और `.astro` फ्रंटमैटर में (और टेम्प्लेट `{expression}` ब्लॉक में, जब आप डुप्लिकेट किए गए लोकेल पेजों के बजाय UI स्ट्रिंग पसंद करते हैं) कॉपी को `t('…')` में रैप करें:
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

@@ -8,10 +8,10 @@ Für eine statische Website, die pro Locale eine übersetzte HTML-Datei ausgeben
 <a id="quick-start"></a>
 ## Schnellstart
 
-1. Projektgerüst mit `ai-i18n-tools init -t ui-plain-html` erstellen oder die folgende Konfiguration hinzufügen.
-2. Quell-HTML auszeichnen (oder dies `mark-html` überlassen).
-3. `ui.sourceRoots` und `ui.uiExtractor.extensions` auf diese Dateien verweisen lassen.
-4. `extract` ausführen, danach `translate-ui` (oder beides mit `sync-ui` ausführen).
+1. Erstellen Sie ein Gerüst mit `ai-i18n-tools init -t ui-plain-html -P openai`, oder fügen Sie die folgende Konfiguration hinzu.
+2. Markieren Sie das Quell-HTML (oder lassen Sie es `mark-html` erledigen).
+3. Verweisen Sie `ui.sourceRoots` und `ui.uiExtractor.extensions` auf diese Dateien.
+4. Führen Sie `extract` aus, dann `translate-ui` (oder führen Sie beide mit `sync-ui` aus).
 5. `i18n.js` neben die Seite kopieren und vor dem eigenen Skript laden.
 6. Den Ordner über HTTP bereitstellen. `file://` kann die Locale-JSON nicht `fetch`.
 

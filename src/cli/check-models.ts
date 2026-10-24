@@ -4,6 +4,7 @@ import { t } from "../i18n/index.js";
 import { resolveAllConfiguredModelIds, resolveTranslationModels } from "../core/config.js";
 import {
   OPENROUTER_PROVIDER_KEY,
+  providerModelsCatalogQuery,
   resolveActiveProvider,
   resolveModelsListRequestAuth,
   resolveProviderSettings,
@@ -13,6 +14,7 @@ import {
   fetchProviderModelsCatalog,
   isExpirationDatePast,
   modelDisplayName,
+  providerModelsCatalogUrl,
   type ProviderModelEntry,
 } from "../api/provider-models-catalog.js";
 
@@ -56,6 +58,8 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   const auth = resolveModelsListRequestAuth(activeProvider, apiKey, {
     xTitle: "ai-i18n-tools check-models",
   });
+  const catalogQuery = providerModelsCatalogQuery(settings);
+  const catalogUrl = providerModelsCatalogUrl(settings.baseUrl, catalogQuery);
 
   let catalog: Map<string, ProviderModelEntry>;
   try {
@@ -65,6 +69,7 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
       providerLabel: activeProvider,
       requestTimeoutMs: settings.requestTimeoutMs,
       extraHeaders: auth.extraHeaders,
+      query: catalogQuery,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -104,7 +109,13 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
   console.log();
 
   if (missing.length > 0) {
-    console.log(chalk.red.bold(t("Not in {{provider}} models list", { provider: activeProvider })));
+    console.log(
+      chalk.red.bold(
+        settings.zeroDataRetention
+          ? t("Not in the Cheaper Inference zero-data-retention catalog")
+          : t("Not in {{provider}} models list", { provider: activeProvider })
+      )
+    );
     for (const m of missing) {
       console.log(chalk.red(`  • ${m.id}`));
     }
@@ -161,7 +172,7 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
         chalk.cyan("https://openrouter.ai/models\n")
     );
   } else {
-    console.log(chalk.gray(t("Source: {{baseUrl}}/models\n", { baseUrl: settings.baseUrl })));
+    console.log(chalk.gray(t("Source: {{catalogUrl}}\n", { catalogUrl })));
   }
 
   const exitCode = problemCount > 0 ? 1 : 0;

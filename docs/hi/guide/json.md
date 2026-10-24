@@ -14,10 +14,10 @@
 ### चरण 1: नेस्टेड JSON के लिए प्रारंभ करें
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-वह टेम्पलेट `features.translateJson: true` सेट करता है, UI एक्सट्रैक्शन और दस्तावेज़ अनुवाद को अक्षम करता है, और आउटपुट `src/i18n/{llocale}/translation.json` के साथ `src/i18n/en/translation.json` की ओर इशारा करते हुए एक एकल `json[]` ब्लॉक को स्केफ़ोल्ड करता है। इसमें एक डिफ़ॉल्ट `provider` / `providers` ब्लॉक भी शामिल है (`openrouter` जब तक आप `-P <provider>` पास नहीं करते हैं) — `translate-json` या `sync` चलाने से पहले मिलान करने वाली API कुंजी सेट करें (या स्थानीय ओलामा का उपयोग करें); [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें। अपने रेपो लेआउट के लिए `sourceLocale`, `targetLocales`, `contentPaths`, और `outputPathTemplate` संपादित करें।
+वह टेम्पलेट `features.translateJson: true` सेट करता है, UI एक्सट्रैक्शन और दस्तावेज़ अनुवाद को अक्षम करता है, और आउटपुट `src/i18n/{llocale}/translation.json` के साथ `src/i18n/en/translation.json` पर इंगित करते हुए एक एकल `json[]` ब्लॉक तैयार करता है। इसमें उस प्रीसेट के लिए `provider` / `providers` ब्लॉक भी शामिल है जिसे आप `-P` के साथ पास करते हैं — `translate-json` या `sync` चलाने से पहले संबंधित API कुंजी सेट करें (या स्थानीय Ollama का उपयोग करें); [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें। अपने रेपो लेआउट के लिए `sourceLocale`, `targetLocales`, `contentPaths`, और `outputPathTemplate` को संपादित करें।
 
 <a id="step-2-configure-json"></a>
 ### चरण 2: `json[]` कॉन्फ़िगर करें

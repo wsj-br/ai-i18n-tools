@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # यूआई स्ट्रिंग
 
-किसी भी JS/TS प्रोजेक्ट के लिए डिज़ाइन किया गया है जो i18next का उपयोग करता है: React ऐप्स, Next.js (क्लाइंट और सर्वर कंपोनेंट), Node.js सेवाएं, Plain HTML, Astro वेबसाइट और CLI टूल।
+इसे उन JS/TS प्रोजेक्ट्स के लिए डिज़ाइन किया गया है जो i18next का उपयोग करते हैं — React, Next.js (क्लाइंट और सर्वर कंपोनेंट्स), Node.js सर्विसेज, प्लेन HTML, Astro वेबसाइट्स, और CLI टूल्स — और Python एप्लिकेशन्स के लिए। Python एक जनरेट की गई `i18n.py` के माध्यम से `t()` या gettext को कॉल करता है (Django, Django के gettext को बनाए रखता है)।
 
 <a id="which-guide-to-read"></a>
 ## कौन सी गाइड पढ़ें
@@ -9,6 +9,7 @@
 | आपका ऐप | आगे पढ़ें |
 | --- | --- |
 | React / Next.js / Node + i18next | [i18next वायर करें](/hi/guide/ui-strings/i18next-runtime) (चरण 4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python एप्लिकेशन्स](/hi/guide/ui-strings/python)। Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, या `ui-python-django`। हेल्पर: `i18n.py`। किसी मौजूदा ऐप में लोकेल जोड़ने के लिए, [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) देखें। |
 | Plain HTML (मार्कअप में कोई `t()` नहीं) | [Plain HTML ऐप्स](/hi/guide/ui-strings/plain-html) |
 | Astro मार्केटिंग साइट (हाइब्रिड) | [Astro वेबसाइट](/hi/guide/ui-strings/astro-website) |
 | `t()` नियम, इंटरपोलेशन, बहुवचन | [t() कॉल और बहुवचन](/hi/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@
 ## चरण 1: आरंभ करें
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-यह `ui-markdown` टेम्पलेट (एक डिफ़ॉल्ट `provider` / `providers` ब्लॉक सहित) के साथ `ai-i18n-tools.config.json` लिखता है। `translate-ui` या `sync` चलाने से पहले, अपने सक्रिय प्रदाता के लिए एपीआई कुंजी को वातावरण या `.env` में सेट करें — Ollama को छोड़कर; [प्रदाता और एपीआई कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें। सेट करने के लिए कॉन्फ़िग संपादित करें:
+यह `ai-i18n-tools.config.json` को `ui-markdown` टेम्पलेट के साथ लिखता है (उस प्रीसेट के लिए `provider` / `providers` ब्लॉक सहित)। `translate-ui` या `sync` चलाने से पहले, उस प्रोवाइडर के लिए API कुंजी को एनवायरनमेंट या `.env` में सेट करें — ओलामा को छोड़कर; [प्रोवाइडर और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें। कॉन्फ़िग को सेट करने के लिए संपादित करें:
 
-- `provider` और `providers` — `translationModels` के साथ कम से कम एक प्रदाता; यदि डिफ़ॉल्ट आपकी पसंद नहीं है तो प्रीसेट या मॉडल सूची बदलें (`init -P <provider>`)। [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें।
-- `sourceLocale` - आपकी स्रोत भाषा BCP-47 कोड (उदाहरण के लिए `"en-GB"`)। आपके रनटाइम i18n सेटअप फ़ाइल (`src/i18n.ts` / `src/i18n.js`) से निर्यात किए गए `SOURCE_LOCALE` से **मेल खाना चाहिए**।
-- `targetLocales` - आपकी लक्ष्य भाषाओं के लिए BCP-47 कोड का सरणी (उदाहरण के लिए `["de", "fr", "pt-BR"]`)। इस सूची से `ui-languages.json` मैनिफेस्ट बनाने के लिए `generate-ui-languages` चलाएँ।
-- `ui.sourceRoots` - `t("…")` कॉल (उदाहरण के लिए `["src/"]`, `["src/**/*.ts"]`) को स्कैन करने के लिए निर्देशिका या ग्लोब पैटर्न।
+- `provider` और `providers` — `translationModels` के साथ कम से कम एक प्रोवाइडर। `init` पर `-P <provider>` प्रीसेट और उसकी स्टार्टर मॉडल सूची चुनता है। [LLM प्रोवाइडर और मॉडल](/hi/guide/providers-and-models) देखें।
+- `sourceLocale` - आपकी स्रोत भाषा का BCP-47 कोड (जैसे `"en-GB"`)। आपके रनटाइम i18n सेटअप फ़ाइल (`src/i18n.ts` / `src/i18n.js`) से निर्यात किए गए `SOURCE_LOCALE` से **मेल खाना चाहिए**।
+- `targetLocales` - आपकी लक्ष्य भाषाओं के लिए BCP-47 कोड का ऐरे (जैसे `["de", "fr", "pt-BR"]`)। इस सूची से `ui-languages.json` मैनिफेस्ट बनाने के लिए `generate-ui-languages` चलाएँ।
+- `ui.sourceRoots` - `t("…")` कॉल के लिए स्कैन करने हेतु डायरेक्टरी या ग्लोब पैटर्न (जैसे `["src/"]`, `["src/**/*.ts"]`)।
 - `ui.stringsJson` - मास्टर कैटलॉग कहाँ लिखना है (उदाहरण के लिए `"src/locales/strings.json"`)।
 - `ui.flatOutputDir` - `de.json`, `pt-BR.json`, आदि कहाँ लिखना है (उदाहरण के लिए `"src/locales/"`)।
 - `providers.<active>.uiModels` (वैकल्पिक) - `translate-ui`, बहुवचन पीढ़ी, और `proofread-ui` के लिए ऑर्डर की गई UI-केवल मॉडल सूची (किसी भी मिलान `localeModels` प्रविष्टि के बाद, `translationModels` से पहले)। [प्रदाता और मॉडल](/hi/guide/providers-and-models#model-fallback-chain) देखें।

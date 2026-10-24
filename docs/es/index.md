@@ -2,18 +2,18 @@
 layout: home
 title: ai-i18n-tools
 description: >-
-  CLI y conjunto de herramientas para internacionalizar aplicaciones
-  JavaScript/TypeScript y sitios de documentación con el proveedor de LLM de su
-  elección.
+  CLI y kit de herramientas para internacionalizar aplicaciones
+  JavaScript/TypeScript, aplicaciones Python y sitios de documentación con el
+  proveedor de LLM que elija.
 hero:
   name: ai-i18n-tools
   text: Traduce aplicaciones y documentos con cualquier LLM
   tagline: >-
-    Extrae cadenas t(), traduce páginas Markdown, MDX, HTML, paquetes JSON y
-    etiquetas SVG, todo desde una única configuración, con OpenAI, Anthropic,
-    Gemini, OpenRouter, Ollama o cualquier API compatible con OpenAI. Cambia de
-    modelo por proyecto o por configuración regional sin reescribir tu base de
-    código.
+    Extraiga cadenas t() de JavaScript, TypeScript y Python. Traduzca páginas
+    Markdown, MDX, HTML, paquetes JSON y etiquetas SVG, todo desde una única
+    configuración, con OpenAI, Anthropic, Gemini, OpenRouter, Ollama o cualquier
+    API compatible con OpenAI. Cambie de modelo por proyecto o por configuración
+    regional sin tener que reescribir su código base.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: Logotipo de ai-i18n-tools
@@ -31,9 +31,9 @@ features:
   - icon: 🌐
     title: Cadenas de interfaz de usuario
     details: >-
-      Extrae llamadas a t() desde JS, TS y Astro, o marcadores data-i18n en un
-      único archivo HTML. Genera archivos JSON planos por configuración regional
-      para i18next o un entorno de ejecución de navegador.
+      Extraiga t() y _() de JavaScript, TypeScript, Astro y Python, o marcadores
+      data-i18n en un archivo HTML. JSON plano por configuración regional o
+      catálogos GNU gettext.
   - icon: 📄
     title: Documentos
     details: >-
@@ -61,6 +61,17 @@ features:
     details: >-
       Ejecute extract, translate-ui, translate-svg, translate-docs y
       translate-json en el orden correcto desde una única configuración.
+  - icon: 🐍
+    title: Python, sin Node.js
+    details: >-
+      Un ejecutable independiente en cada GitHub Release ejecuta la CLI para
+      aplicaciones Python. Incluye Streamlit, FastAPI, Flask, Django y gettext.
+  - icon: 📊
+    title: Lista de modelos clasificados
+    details: >-
+      suggest-models clasifica los modelos de chat del proveedor activo y puede
+      escribir translationModels. La misma clasificación se encuentra en la
+      pestaña Models del panel de control.
 ---
 
 
@@ -78,20 +89,29 @@ El paquete publicado es **solo ESM**. Se requiere Node.js `>=22.16.0`.
 
 ```bash
 pnpm add ai-i18n-tools
-# Set API key for your active provider — see preset table (default init: openrouter)
+# Set the API key for the provider you pass to init — see the preset table
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-ai-i18n-tools init [-P <provider>]
+# or, for OpenAI: export OPENAI_API_KEY=sk-your-key-here
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models
 ai-i18n-tools sync
 ```
+
+`suggest-models` clasifica los modelos del proveedor activo. Añada `--apply` para reemplazar la lista `translationModels` generada automáticamente. Consulte [Inicio rápido](/es/guide/quick-start) y la pestaña [Modelos](/es/guide/translation-dashboard/models).
+
+<a id="python-no-nodejs"></a>
+### Python, sin Node.js
+
+Descargue el archivo correspondiente de la [versión de GitHub](https://github.com/wsj-br/ai-i18n-tools/releases): `ai-i18n-tools-linux-x64`, `ai-i18n-tools-linux-arm64`, `ai-i18n-tools-macos-arm64`, `ai-i18n-tools-macos-x64` o `ai-i18n-tools-win-x64.exe`. Compruebe `SHA256SUMS.txt`, ejecute `chmod +x` en Unix y coloque el archivo en `PATH`. Los binarios no están firmados. Pasos: [Ejecutables independientes](/es/guide/installation#standalone-executables). Luego `ai-i18n-tools init -t ui-python -P cheaperinference`. Tutorial: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python).
 
 Consulte [Instalación](/es/guide/installation) para [configurar el comando CLI básico](/es/guide/installation#using-the-cli) (incluido el [desarrollo de monorepo clonado](/es/guide/installation#cloned-monorepo)) y [Inicio rápido](/es/guide/quick-start) para las plantillas de andamiaje.
 
 <a id="which-pipeline-should-i-use"></a>
 ## ¿Qué pipeline debo usar?
 
-| Tu contenido | Comando |
+| Su contenido | Comando |
 | --- | --- |
-| El código fuente usa `t()`, o un archivo HTML con marcadores | **Cadenas de IU** — `extract` / `translate-ui` |
+| El código fuente utiliza `t()` o `_()` (JavaScript, TypeScript o Python), gettext o un archivo HTML con marcadores | **Cadenas de la interfaz de usuario** — `extract` / `translate-ui` |
 | Páginas localizadas, sitios de documentación o un archivo HTML por configuración regional | **Documentos** — `translate-docs` |
 | Archivos de configuración regional JSON anidados independientes | **JSON** — `translate-json` |
 
@@ -100,13 +120,13 @@ Las ilustraciones SVG usan una ruta `translate-svg` separada, no `docs[].content
 <a id="explore-the-documentation"></a>
 ## Explorar la documentación
 
-- [**Guía**](/es/guide/what-is-ai-i18n-tools) — modos de traducción, instalación, inicio rápido e integraciones con frameworks
-- [**Integraciones**](/es/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus y Astro
-- [**Proveedores y modelos**](/es/guide/providers-and-models) — preajustes, cadenas de reserva, sugerencias clasificadas (`suggest-models`) y anulaciones de `-P`
-- [**Referencia de la CLI**](/es/reference/cli-commands/) — todos los comandos, flags y flujos de trabajo
+- [**Guía**](/es/guide/what-is-ai-i18n-tools) — modos de traducción, instalación, inicio rápido e integraciones de framework
+- [**Integraciones**](/es/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro y Python
+- [**Proveedores y modelos**](/es/guide/providers-and-models) — ajustes preestablecidos, cadenas de reserva, sugerencias clasificadas (`suggest-models`) y anulaciones de `-P`
+- [**Referencia de la CLI**](/es/reference/cli-commands/) — cada comando, flag y flujo de trabajo
 - [**Configuración**](/es/reference/configuration) — esquema completo de `ai-i18n-tools.config.json`
-- [**Ejemplos**](/es/examples) — trece proyectos de demostración ejecutables con `npx degit`
-- [**Arquitectura**](/es/reference/architecture) — funcionamiento interno, API programática y puntos de extensión
+- [**Ejemplos**](/es/examples) — diecisiete proyectos de demostración ejecutables (`npx degit` o el archivo zip con ejemplos de Python)
+- [**Arquitectura**](/es/reference/architecture) — aspectos internos, API programática y puntos de extensión
 
 ¿Va a integrar el paquete en su propio proyecto? Empiece con [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md). El [README del repositorio](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) es una breve página de inicio de GitHub/npm que enlaza aquí para obtener más detalles.
 

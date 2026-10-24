@@ -13,13 +13,13 @@
 <a id="init"></a>
 ### `init`
 
-**सारांश:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**सारांश:** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (इसमें `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `docs[].addFrontmatter` शामिल हैं)। LLM को कॉल करने वाले अनुवाद कमांड के लिए सक्रिय प्रदाता की API कुंजी वातावरण में या `.env` (ओलामा को छोड़कर) में होनी चाहिए — [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें।
 
-**मुख्य विकल्प:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**मुख्य विकल्प:** `-P` / `--provider` (अनिवार्य), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 
-`-P` / `--provider` यह चुनता है कि किस **built-in preset** को स्कैफ़ोल्ड करना है (छोड़ दिए जाने पर `openrouter`)। यह इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`।
+`-P` / `--provider` अनिवार्य है। यह चुनता है कि कौन सा **बिल्ट-इन प्रीसेट** स्केफ़ोल्ड करना है। इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`।
 
 **टेम्पलेट (`-t`):**
 

@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI 문자열
 
-i18next를 사용하는 모든 JS/TS 프로젝트에 적합합니다: React 앱, Next.js(클라이언트 및 서버 구성 요소), Node.js 서비스, 평면 HTML, Astro 웹사이트 및 CLI 도구.
+i18next를 사용하는 JS/TS 프로젝트(React, Next.js(클라이언트 및 서버 컴포넌트), Node.js 서비스, 일반 HTML, Astro 웹사이트, CLI 도구)와 Python 애플리케이션을 위해 설계되었습니다. Python은 생성된 `i18n.py`을 통해 `t()` 또는 gettext를 호출합니다(Django는 Django의 gettext를 유지합니다).
 
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
@@ -9,6 +9,7 @@ i18next를 사용하는 모든 JS/TS 프로젝트에 적합합니다: React 앱,
 | 귀하의 앱 | 다음 읽기 |
 | --- | --- |
 | React / Next.js / Node + i18next | [i18next 연결](/ko/guide/ui-strings/i18next-runtime) (4단계) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 애플리케이션](/ko/guide/ui-strings/python). 초기화: `ui-python`, `ui-python-gettext`, `ui-python-flask` 또는 `ui-python-django`. 도우미: `i18n.py`. 기존 앱에 로케일을 추가하려면 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 참조하세요. |
 | 일반 HTML (마크업에 `t()` 없음) | [일반 HTML 앱](/ko/guide/ui-strings/plain-html) |
 | Astro 마케팅 사이트 (하이브리드) | [Astro 웹사이트](/ko/guide/ui-strings/astro-website) |
 | `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/ko/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@ i18next를 사용하는 모든 JS/TS 프로젝트에 적합합니다: React 앱,
 ## 1단계: 초기화
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-이 작업은 기본 `provider` / `providers` 블록을 포함하여 `ui-markdown` 템플릿으로 `ai-i18n-tools.config.json`를 작성합니다. `translate-ui` 또는 `sync`를 실행하기 전에, 환경 변수나 `.env`에서 활성 프로바이더의 API 키를 설정하세요. 단, Ollama는 예외입니다. 자세한 내용은 [프로바이더 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요. config를 편집하여 다음을 설정하세요:
+이것은 `ui-markdown` 템플릿을 사용하여 `ai-i18n-tools.config.json`을(를) 작성합니다(해당 사전 설정에 대한 `provider` / `providers` 블록 포함). `translate-ui` 또는 `sync`를(을) 실행하기 전에, 해당 공급자의 API 키를 환경 또는 `.env`에 설정하십시오. Ollama는 예외입니다. [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하십시오. 설정을 위해 구성을 편집하십시오:
 
-- `provider` 및 `providers` — 최소한 하나의 제공자가 `translationModels`를 가지고 있습니다; 기본값이 선택 사항이 아닌 경우 프리셋 또는 모델 목록을 변경하십시오 (`init -P <provider>`). [LLM 제공자 및 모델](/ko/guide/providers-and-models)를 참조하십시오.
-- `sourceLocale` - 귀하의 소스 언어 BCP-47 코드 (예: `"en-GB"`). **일치해야 합니다** `SOURCE_LOCALE` 귀하의 런타임 i18n 설정 파일에서 내보낸 (`src/i18n.ts` / `src/i18n.js`).
-- `targetLocales` - 귀하의 대상 언어에 대한 BCP-47 코드 배열 (예: `["de", "fr", "pt-BR"]`). `generate-ui-languages`을 실행하여 이 목록에서 `ui-languages.json` 매니페스트를 생성하십시오.
-- `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉토리 또는 글로브 패턴 (예: `["src/"]`, `["src/**/*.ts"]`).
+- `provider` 및 `providers` — `translationModels`가 있는 공급자가 하나 이상 있어야 합니다. `-P <provider>`의 `init`가 사전 설정과 해당 시작 모델 목록을 선택합니다. [LLM 공급자 및 모델](/ko/guide/providers-and-models)을 참조하세요.
+- `sourceLocale` - 소스 언어 BCP-47 코드(예: `"en-GB"`). **일치해야 합니다** 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`.
+- `targetLocales` - 대상 언어의 BCP-47 코드 배열(예: `["de", "fr", "pt-BR"]`). 이 목록에서 `ui-languages.json` 매니페스트를 만들려면 `generate-ui-languages`를 실행하세요.
+- `ui.sourceRoots` - `t("…")` 호출을 스캔할 디렉터리 또는 glob 패턴(예: `["src/"]`, `["src/**/*.ts"]`).
 - `ui.stringsJson` - 마스터 카탈로그를 작성할 위치(예: `"src/locales/strings.json"`).
 - `ui.flatOutputDir` - `de.json`, `pt-BR.json` 등을 작성할 위치(예: `"src/locales/"`).
 - `providers.<active>.uiModels` (선택 사항) - `translate-ui`, 복수형 생성 및 `proofread-ui`을 위한 정렬된 UI 전용 모델 목록(일치하는 `localeModels` 항목 이후, `translationModels` 이전). [프로바이더 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.

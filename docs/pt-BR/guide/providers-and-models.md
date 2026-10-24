@@ -12,6 +12,8 @@ A CLI resolve o provedor ativo a partir da chave `provider` de nível superior (
 
 As chaves de provedor predefinidas precisam apenas de `translationModels` — URL base e variável de ambiente da chave de API são preenchidas automaticamente:
 
+<div class="provider-presets">
+
 | Provedor | URL Base | Variável de ambiente da chave de API |
 | --- | --- | --- |
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
@@ -29,9 +31,27 @@ As chaves de provedor predefinidas precisam apenas de `translationModels` — UR
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (nenhum) |
 
+</div>
+
 Para qualquer chave **não predefinida**, defina `baseUrl` e `apiKeyEnv` explicitamente na configuração.
 
 Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI carrega automaticamente `.env` do diretório de trabalho sem substituir variáveis já definidas no shell. Consulte [Variáveis de ambiente](/pt-BR/reference/environment-variables).
+
+<a id="cheaperinference-zero-data-retention"></a>
+### Retenção zero de dados (Inferência Mais Barata)
+
+`providers.cheaperinference.zeroDataRetention` é opcional e está desativado por padrão. Defina-o quando este projeto precisar enviar prompts apenas por meio de provedores que não os armazenam.
+
+```json
+"cheaperinference": {
+  "zeroDataRetention": true,
+  "translationModels": ["gemini-2.5-flash", "deepseek-v4-flash"]
+}
+```
+
+Com a flag ativada, cada solicitação de chat inclui `"zdr": true`, e `list-models`, `check-models` e `suggest-models` (incluindo a aba Modelos do painel) exibem `GET /v1/models?zdr=true`. Esse catálogo lista os modelos que uma solicitação de retenção de dados zero pode usar, pelo preço de retenção de dados zero. `check-models` trata um ID ausente desse catálogo como inválido. A flag não cria uma rota para um modelo que o catálogo omite. Remova esse ID de `translationModels`, `uiModels` ou `localeModels`.
+
+Deixe a flag desativada quando a conta Cheaper Inference não exigir retenção zero de dados. Se a [Proteção de Dados](https://platform.cheaperinference.com/dashboard/data-protection) já estiver ativada para a conta, Cheaper Inference ainda recusa um modelo sem uma rota de retenção zero de dados. O erro nomeia esse modelo. Para manter a política da conta, defina `zeroDataRetention` como `true` e mude para um modelo do catálogo de retenção zero de dados. Para manter o modelo recusado, desative a retenção zero de dados naquela página. A cadeia de fallback então tenta o próximo modelo configurado.
 
 <a id="model-fallback-chain"></a>
 ### Cadeia de fallback de modelo
@@ -47,7 +67,7 @@ Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI
 
 O `providers.<active>.uiModels` opcional é uma lista exclusiva da UI tentada após qualquer substituição por localidade e antes da cadeia global `translationModels`. O `providers.<active>.localeModels` opcional mapeia uma localidade BCP-47 para modelos tentados **primeiro** para essa localidade em cada pipeline (`pt-br` corresponde a `pt-BR`). Quando nenhuma entrada de `localeModels` corresponde, apenas as camadas específicas do pipeline se aplicam.
 
-Diferentes provedores e modelos variam em custo, velocidade e qualidade entre os idiomas. Trate a lista padrão de `npx ai-i18n-tools init` como um ponto de partida — expanda-a quando uma localidade produzir resultados consistentemente ruins ou adicione uma entrada de `localeModels` para essa localidade. Padrões completos e justificativa: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
+Diferentes provedores e modelos variam em custo, velocidade e qualidade entre idiomas. Considere a lista de modelos de `npx ai-i18n-tools init -P <provider>` como um ponto de partida — expanda-a quando um local consistentemente produzir resultados ruins, ou adicione uma entrada `localeModels` para esse local. Listas predefinidas e justificativa: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
 
 **Strings de UI:** o `uiModels` opcional permite rotear `translate-ui`, geração plural e `proofread-ui` por meio de modelos premium antes da cadeia global de `translationModels` — útil porque o texto da UI é curto, mas voltado para o usuário.
 
@@ -95,7 +115,7 @@ Antes de alterar `translationModels`, confirme se cada ID ainda está disponíve
 npx ai-i18n-tools check-models
 ```
 
-`check-models` chama o endpoint `GET /models` do provedor, valida cada id de `translationModels`, `uiModels` e `localeModels`, relata ids ausentes ou que excederam `expiration_date` e encerra com um código de saída diferente de zero quando qualquer id configurado é inválido. Quando o provedor retorna preços (como fazem o OpenRouter e o Cheaper Inference), ele também exibe o valor em USD por 1 milhão de tokens.
+`check-models` chama o endpoint `GET /models` do provedor, valida cada ID de `translationModels`, `uiModels` e `localeModels`, relata IDs ausentes ou que excedem `expiration_date`, e sai com um código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (OpenRouter e Inferência Mais Barata o fazem), ele também mostra USD por 1M de tokens. Com [`zeroDataRetention`](/pt-BR/guide/providers-and-models#cheaperinference-zero-data-retention) ativado, `check-models` e `list-models` usam `GET /models?zdr=true`.
 
 Navegue pelo catálogo completo anunciado por um provedor:
 
@@ -115,12 +135,12 @@ Solicite uma lista restrita classificada (qualidade por padrão, ou `--price`) e
 npx ai-i18n-tools suggest-models
 npx ai-i18n-tools suggest-models --list
 npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --price --top 8 --json
 npx ai-i18n-tools suggest-models --apply
 npx ai-i18n-tools suggest-models --refresh
 ```
 
-As colunas da tabela são classificação, id do modelo, índice, ChrF medido, Arena Score medido e USD de entrada/saída por 1 milhão de tokens. Uma medição ausente é `—`. `--list` imprime essas colunas para os modelos já presentes em `translationModels`. `--max-output-price` mantém modelos com esse valor de USD de saída por 1 milhão de tokens ou menos e exclui modelos sem preço de saída. `--min-delta` mantém um modelo apenas quando seu índice está pelo menos esse número de pontos abaixo do modelo mantido anteriormente. `--top` (padrão 5) limita a tabela, `--json` e `--apply` após esses filtros. `--apply` substitui apenas `translationModels`. `--refresh` baixa novamente o cache de benchmark de 7 dias. Pesos opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion). Veja [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
+As colunas da tabela são classificação, ID do modelo, índice, ChrF medido, Pontuação Arena medida e USD de entrada/saída por 1M de tokens. Uma medição ausente é `—`. `--list` imprime essas colunas para os modelos já em `translationModels`. `--max-output-price` mantém modelos com USD de saída por 1M de tokens igual ou inferior a esse valor e exclui um modelo sem preço de saída. `--min-delta` mantém um modelo apenas se seu índice for no mínimo essa quantidade de pontos menor que o modelo mantido anteriormente. `--top` (padrão 8) limita a tabela, `--json` e `--apply` após esses filtros. `--apply` substitui apenas `translationModels`. `--refresh` baixa novamente o cache de benchmark de 7 dias. Pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion). Veja [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
 
 Substitua o texto de exemplo, os locais ou a lista de modelos:
 
@@ -149,6 +169,6 @@ Exemplo executável com quatro provedores no mesmo documento, incluindo taxas de
 <a id="further-reference"></a>
 ### Referência adicional
 
-- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela de predefinições, endpoints personalizados, tempos limite de requisição, taxas de custo, comportamento específico do OpenRouter.
-- [Arquitetura — Cliente LLM](/pt-BR/reference/architecture) — como o fallback de modelo, o processamento em lote e o relatório de custos funcionam internamente.
+- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela de predefinições, endpoints personalizados, tempos limite de solicitação, taxas de custo, retenção zero de dados do Cheaper Inference, comportamento específico do OpenRouter.
+- [Arquitetura — cliente LLM](/pt-BR/reference/architecture) — como o fallback do modelo, o processamento em lote e o relatório de custos funcionam internamente.
 - [Variáveis de ambiente](/pt-BR/reference/environment-variables) — variáveis de ambiente de chave de API e substituições de URL base.

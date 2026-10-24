@@ -51,19 +51,19 @@ Jeder UI-Block enthält standardmäßig die `strings.json` als Glossarhinweise f
 ## Schritt 1: Initialisierung für die Dokumentation
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Für Astro Starlight-Dokumentationsseiten:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 Für VitePress-Dokumentationsseiten:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 Setzen Sie `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/Fußzeilen-Strings – siehe [VitePress-Integration](/de/guide/integrations/vitepress).
@@ -71,7 +71,7 @@ Setzen Sie `docsOutput.vitepressThemeCatalog` für Navigations-/Seitenleisten-/F
 Für Nextra-Dokumentationsseiten:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 Setzen Sie `docs[].nextraDictionaryPath` für Theme-Wörterbuch-Strings – siehe [Nextra-Integration](/de/guide/integrations/nextra). Seitenleisten-`_meta.ts`-Beschriftungen werden automatisch gesammelt.
@@ -79,7 +79,7 @@ Setzen Sie `docs[].nextraDictionaryPath` für Theme-Wörterbuch-Strings – sieh
 Für Fumadocs-Dokumentationsseiten:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 Setzen Sie `docsOutput.fumadocsUiCatalog` für UI-Überschreibungen – siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs). Seitenleisten-`meta.json`-Beschriftungen werden automatisch gesammelt.
@@ -87,17 +87,17 @@ Setzen Sie `docsOutput.fumadocsUiCatalog` für UI-Überschreibungen – siehe [F
 Für einfache Astro-Website-Oberflächen (ohne Starlight):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 Diese Vorlage ermöglicht nur die UI-Extraktion. Für die Übersetzung von Seiten-HTML setzen Sie auch `features.translateDocs` und fügen Sie einen `docs[]`-Block hinzu (siehe [Astro-Website-Seiten (Parsen und Ersetzen)](/de/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). Die [`examples/astro-website`]-Konfiguration (https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) zeigt beide Pipelines zusammen.
 
 Bearbeiten Sie die generierte `ai-i18n-tools.config.json`:
 
-- `provider` und `providers` – `init` erstellt einen Standard-Anbieterblock (`openrouter`, es sei denn, Sie übergeben `-P <provider>`); konfigurieren Sie mindestens einen Anbieter und legen Sie dessen API-Schlüssel fest, bevor `translate-docs` oder `sync` (Ollama benötigt keinen Schlüssel). Siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key) und [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
+- `provider` und `providers` — `init -P <provider>` vorkonfigurierte Gerüste; legen Sie den API-Schlüssel fest, bevor Sie `translate-docs` oder `sync` ausführen (Ollama benötigt keinen Schlüssel). Siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key) und [LLM-Anbieter und -Modelle](/de/guide/providers-and-models).
 - `sourceLocale` – Quellsprache (muss mit `defaultLocale` in `docusaurus.config.js` übereinstimmen).
-- `targetLocales` – Array von BCP-47-Sprachcodes (z. B. `["de", "fr", "es"]`).
-- `cacheDir` – Gemeinsames SQLite-Cache-Verzeichnis für alle Pipelines (und Standard-Log-Verzeichnis für `--write-logs`).
+- `targetLocales` – Array von BCP-47-Locale-Codes (z. B. `["de", "fr", "es"]`).
+- `cacheDir` – gemeinsames SQLite-Cache-Verzeichnis für alle Pipelines (und Standard-Log-Verzeichnis für `--write-logs`).
 - `docs` – Array von Dokumentationsblöcken. Jeder Block hat optionale `description`, `contentPaths` (String oder Array; Datei, Verzeichnis oder Glob), `outputDir`, optional `docusaurusCatalogDir`, `docsOutput`, optional `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` usw.
 - `docs[].description` – Optionale kurze Notiz für Wartungspersonal. Wenn festgelegt, erscheint sie in der Überschrift `translate-docs` und in den Abschnittsüberschriften `status`.
 - `docs[].contentPaths` – Markdown/MDX/`.astro`-Quellen (und optional `docusaurusCatalogDir` für Docusaurus-Shell-JSON).

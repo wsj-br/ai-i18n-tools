@@ -130,6 +130,10 @@ function guideSidebar(t: ThemeCatalog) {
           link: "/guide/glossary",
         },
         {
+          text: t.sidebar.addI18nToPython ?? "Add i18n to a Python app",
+          link: "/guide/add-i18n-to-python",
+        },
+        {
           text: t.sidebar.migratingFromIntlayer ?? "Migrating from Intlayer",
           link: "/guide/migrating-from-intlayer",
         },
@@ -139,11 +143,17 @@ function guideSidebar(t: ThemeCatalog) {
           link: "/guide/integrations/",
           items: [
             { text: t.sidebar.overview, link: "/guide/integrations/" },
-            { text: t.sidebar.astro, link: "/guide/integrations/astro" },
-            { text: t.sidebar.docusaurus, link: "/guide/integrations/docusaurus" },
-            { text: t.sidebar.vitepress, link: "/guide/integrations/vitepress" },
-            { text: t.sidebar.nextra, link: "/guide/integrations/nextra" },
-            { text: t.sidebar.fumadocs, link: "/guide/integrations/fumadocs" },
+            {
+              text: t.sidebar.documentationSites ?? "Documentation sites",
+              items: [
+                { text: t.sidebar.astro, link: "/guide/integrations/astro" },
+                { text: t.sidebar.docusaurus, link: "/guide/integrations/docusaurus" },
+                { text: t.sidebar.vitepress, link: "/guide/integrations/vitepress" },
+                { text: t.sidebar.nextra, link: "/guide/integrations/nextra" },
+                { text: t.sidebar.fumadocs, link: "/guide/integrations/fumadocs" },
+              ],
+            },
+            { text: t.sidebar.python ?? "Python", link: "/guide/integrations/python" },
           ],
         },
         {

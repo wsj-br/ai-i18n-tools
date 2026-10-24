@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-從 Node.js 搭建設定檔（選擇性第四個引數用於指定內建預設；預設為 `openrouter`）：
+從 Node.js 建立設定骨架。第四個引數是內建預設 (`cwd` 是第三個)：
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 主要匯出（常用 — 請參閱 `src/index.ts` 以取得完整的公開介面）：
@@ -52,6 +53,27 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'a
 | `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表，包括可選術語 `Context` 註解。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 載入 `glossary.contextFiles` 和快取失效的指紋指引。 |
 | `runTranslateUI` | 程式化翻譯 UI 的進入點。 |
-| `writeInitConfigFile` | 寫入起始設定檔 JSON（`template`，選擇性 `providerKey` 預設為 `openrouter`）。 |
+| `writeInitConfigFile` | 寫入一個入門設定 JSON (`template`、`cwd`，以及一個必要的 `providerKey`)。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |
 | `PROVIDER_PRESETS` | 內建提供者預設映射（`baseUrl`、`apiKeyEnv`）。 |
+
+<a id="python-runtime"></a>
+## Python 執行階段 (`i18n.py`)
+
+當缺少 `i18n.py` 時，`init -t ui-python`、`ui-python-gettext` 和 `ui-python-flask` 會將此模組寫入專案。這是適用於 Python 3.10 或更新版本的標準函式庫輔助程式。請從該檔案匯入它。下方的函式與上表中的 Node 匯出項目是分開的。Django 專案會保留 Django 的 gettext，因此 `ui-python-django` 不會寫入 `i18n.py`。
+
+呼叫形狀、不安全的 f-strings 以及各框架的地區設定連線：[Python 應用程式](/zh-Hant/guide/ui-strings/python)。
+
+| 函式 | 行為 |
+| --- | --- |
+| `set_locale(locale)` | 設定目前的地區設定。程式碼中的底線會儲存為連字號（`pt_BR` 會變成 `pt-BR`）。傳回一個 `ContextVar` 權杖。 |
+| `reset_locale(token)` | 從該權杖還原地區設定。請在 `finally` 中呼叫它，包括 FastAPI 和 Flask 中介軟體。 |
+| `get_locale()` | 傳回目前的地區設定。 |
+| `set_backend(backend)` | 選擇 `"auto"`、`"json"` 或 `"gettext"`。 |
+| `get_ui_languages()` | 讀取扁平化 JSON 目錄旁的 `ui-languages.json`，或在關閉扁平化輸出時讀取 gettext 目錄。 |
+| `get_direction(locale=None)` | 從該地區設定的資訊清單列傳回 `"rtl"` 或 `"ltr"`（若省略則為目前地區設定）。 |
+| `_(message)` | 查閱一個字面值，然後傳回目錄字串或訊息本身。 |
+| `t(template, *, plurals=False, count=None, **values)` | 查閱字面值，然後進行插值。`translate` 是相同的函式。在 Python 3.14 上，`translate(t"Hello, {name}!")` 會保留範本及其值。關鍵字引數會覆寫從範本字串取得的值。 |
+| `ngettext(singular, plural, n, **values)` | 複數查閱，然後進行插值。`count` 可用於格式化字串。 |
+| `pgettext(context, message, **values)` | 內容查閱（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 中的英文來源），然後進行插值。 |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 選擇方塊。寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，呼叫 `set_locale`，並傳回選擇的代碼。 |

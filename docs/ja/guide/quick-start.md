@@ -1,14 +1,16 @@
 <a id="quick-start"></a>
 # クイックスタート
 
-デフォルトの`init`テンプレート（`ui-markdown`）は、**UI**の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、および`ui-fumadocs`テンプレートは、**ドキュメント**の翻訳（`translate-docs`）を有効にします。`ui-vitepress`はVitePressテーマ文字列用の`docsOutput.vitepressThemeCatalog`も足場を固め、`ui-nextra`はNextraテーマ辞書用の`docs[].nextraDictionaryPath`を足場を固め（サイドバーの`_meta.ts`は自動的に収集されます）、`ui-fumadocs`はFumadocs UIオーバーライド用の`docsOutput.fumadocsUiCatalog`を足場を固めます（サイドバーの`meta.json`は自動的に収集されます）。`ui-astro-website`テンプレートは、プレーンなAstroアプリ（`.astro`ファイルを含む）の**UI**抽出を足場を固めます。`.astro`ページのHTMLの`translate-docs`も必要な場合は、`docs[]`ブロックを追加します（[Astroウェブサイトページ（解析と置換）](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照）。リファレンス[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)は、**両方**のパイプラインを使用します。設定に従って、抽出、UI翻訳、オプションのSVGファイル翻訳、およびドキュメント翻訳を実行する1つのコマンドが必要な場合は、`sync`を使用します。
+デフォルトの `init` テンプレート (`ui-markdown`) は、**UI** の抽出と翻訳のみを有効にします。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra`、および `ui-fumadocs` テンプレートは、**ドキュメント** 翻訳 (`translate-docs`) を有効にします。`ui-vitepress` は VitePress テーマ文字列用の `docsOutput.vitepressThemeCatalog` もスキャフォールドし、`ui-nextra` は Nextra テーマ辞書用の `docs[].nextraDictionaryPath` をスキャフォールドします (サイドバーの `_meta.ts` は自動的に収集されます)。また、`ui-fumadocs` は Fumadocs UI オーバーライド用の `docsOutput.fumadocsUiCatalog` をスキャフォールドします (サイドバーの `meta.json` は自動的に収集されます)。`ui-astro-website` テンプレートは、プレーンな Astro アプリ (`.astro` ファイルを含む) 用の **UI** 抽出をスキャフォールドします。`.astro` ページの HTML に対して `translate-docs` も必要な場合は、`docs[]` ブロックを追加してください ([Astro の Web サイトページ (parse-and-replace)](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) を参照)。リファレンス [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) は **両方** のパイプラインを使用します。Python テンプレートは `ui-python`、`ui-python-gettext`、`ui-python-flask`、および `ui-python-django` です ([Python アプリへの i18n の追加](/ja/guide/add-i18n-to-python) を参照)。抽出、UI 翻訳、オプションの SVG ファイル翻訳、および設定に応じたドキュメント翻訳を実行する単一のコマンドが必要な場合は、`sync` を使用してください。
+
+Python プロジェクトでは、スタンドアロン実行可能ファイルを使用して Node.js のインストールをスキップできます。ダウンロード手順: [インストール — スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
 
 <a id="runnable-examples"></a>
 ### 実行可能な例
 
-9つの実行可能なプロジェクトとフィクスチャは、[`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/)にあります。[例](/ja/examples)カタログ（コンソールアプリ、Next.js + Docusaurus、Astroウェブサイト、Astro Starlightドキュメント、VitePressドキュメント、Nextraドキュメント、Fumadocsドキュメント、マルチプロバイダー比較、マークダウンストレステスト）を参照してください。
+実行可能なプロジェクトとフィクスチャは [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) の下にあります。全リスト、コピーコマンド、およびどのフォルダーが `pnpm` と Python 仮想環境のどちらを使用するかについては、[例](/ja/examples) カタログを参照してください。
 
-**1つの例をスタンドアロンで実行します**（モノレポ全体をクローンせずに）：
+**Node.js の例を 1 つスタンドアロンで実行する** (モノレポ全体をクローンせずに):
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
@@ -17,7 +19,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-`console-app`は任意のサンプルフォルダー名に置き換えてください。各サンプルは現在のパッケージバージョンに一致する公開済みのキャレット範囲 `ai-i18n-tools` を宣言し、npmからCLIをインストールします。サンプルごとのREADMEには、フォルダー名を埋めた同じスニペットが記載されています。
+`console-app` を他の Node.js の例のフォルダー名に置き換えてください。これらの各例は、現在のパッケージバージョンと一致する `ai-i18n-tools` の公開キャレット範囲を宣言し、npm から CLI をインストールします。Python の例には `package.json` はありません。同じ `degit` コマンドでコピーするか、GitHub リリースから `ai-i18n-tools-python-examples.zip` を使用してから、[例 — Python](/ja/examples#python-examples) に従ってください。
 
 **完全な ai-i18n-tools リポジトリから** — degit で単一のサンプルフォルダーではなくリポジトリ全体をクローンした場合:
 
@@ -36,8 +38,8 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 
 LLMを呼び出すすべてのコマンド — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync` — には、以下の**両方**が必要です。
 
-1. `ai-i18n-tools.config.json`内の**少なくとも1つのプロバイダ**: `translationModels`を含む`providers.<name>`ブロック、および複数のプロバイダを設定する場合のトップレベルの`provider`キー。`init`はデフォルトのプロバイダブロックをスキャフォールドします（`-P <provider>`を渡さない場合は`openrouter`）。プリセットの切り替え、プロバイダの追加、またはモデルリストの調整については、[LLMプロバイダとモデル](/ja/guide/providers-and-models)を参照してください。
-2. 環境またはプロジェクトルートの`.env`ファイル内にある**対応するAPIキー**。各組み込みプリセットは、[プリセットテーブル](/ja/guide/providers-and-models#built-in-providers)から指定された環境変数を読み取ります（例えば、デフォルトでは`OPENROUTER_API_KEY`、または`-P anthropic`でスキャフォールドする場合は`ANTHROPIC_API_KEY`）。例外は**Ollama**です。ローカルエンドポイントを使用するため、キーは不要です。[インストール — プロバイダAPIキーの設定](/ja/guide/installation#using-the-cli)を参照してください。
+1. **少なくとも1つのプロバイダー**を`ai-i18n-tools.config.json`内に：`providers.<name>`ブロック（`translationModels`付き）、および複数のプロバイダーが設定されている場合のトップレベルの`provider`キー。`init -P <provider>`はそのプリセットをスキャフォールドします。プロバイダーを追加するか、モデルリストを調整してください — [LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+2. **対応するAPIキー**を環境変数またはプロジェクトルートの`.env`ファイルに設定してください。各組み込みプリセットは、[プリセットテーブル](/ja/guide/providers-and-models#built-in-providers)から名前付き環境変数を読み取ります（例：`OPENROUTER_API_KEY`と`-P openrouter`、または`OPENAI_API_KEY`と`-P openai`）；**Ollama**は例外です — ローカルエンドポイントを使用するため、キーは不要です。[インストール — プロバイダーAPIキーの設定](/ja/guide/installation#using-the-cli)を参照してください。
 
 `extract`、`status`、およびLLMを呼び出さないその他のコマンドは、プロバイダーやAPIキーを必要としません。
 
@@ -47,32 +49,35 @@ LLMを呼び出すすべてのコマンド — `translate-ui`, `translate-docs`,
 `ai-i18n-tools`をインストールし、[ベアコマンド用にシェルを設定](/ja/guide/installation#using-the-cli)した後、**プロジェクトルート**から実行します。以下の例では`ai-i18n-tools`を直接使用しています。
 
 ```bash
-# Set the API key for your active provider (see preset table; skip for local Ollama)
-# Default init uses openrouter:
+# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Or scaffold another preset at init, e.g. anthropic:
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# export OPENAI_API_KEY=sk-your-key-here
+# export CHEAPERINFERENCE_API_KEY=your-key-here
 
-# UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init [-P <provider>]    # default: openrouter
-ai-i18n-tools init -P anthropic
+# UI strings (ui-markdown template enables extract + translate-ui)
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models          # optional: ranked shortlist
+ai-i18n-tools suggest-models --apply  # replace translationModels
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
-# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
-# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
+# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
+# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
+# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
+# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
+# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
+# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -82,6 +87,8 @@ ai-i18n-tools sync
 ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
+
+`init` によって書き込まれるモデルリストは出発点です。`suggest-models` はアクティブなプロバイダーのチャットモデルをランク付けします。`suggest-models --apply` は `translationModels` を置き換え、`uiModels` と `localeModels` は変更しません。同じランキングが [モデル](/ja/guide/translation-dashboard/models) タブに表示されます。コマンドリファレンス: [suggest-models](/ja/reference/cli-commands/models#suggest-models)。
 
 <a id="recommended-packagejson-scripts"></a>
 ### 推奨される `package.json` スクリプト

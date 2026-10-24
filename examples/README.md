@@ -8,7 +8,7 @@ Most examples need an LLM API key (typically [OpenRouter](https://openrouter.ai/
 
 ### Run one example standalone (`npx degit`)
 
-Each folder under `examples/` can be copied without cloning the full repository. Every example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm. Copy the example, install dependencies, then follow that example's README for run and translation commands:
+Node.js examples can be copied without cloning the full repository. Each of those examples declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -16,7 +16,9 @@ cd <name>
 pnpm install
 ```
 
-Replace `<name>` with one of the folders below. Each example README repeats the same three commands with the folder name filled in, then documents how to run it (for example `pnpm start`, `pnpm dev`, or `pnpm run docs:dev`).
+Replace `<name>` with a Node.js folder in the table below. Each of those READMEs repeats the same three commands with the folder name filled in, then documents how to run it (for example `pnpm start`, `pnpm dev`, or `pnpm run docs:dev`).
+
+Python examples (`python-streamlit`, `python-flask`, `python-fastapi`, `python-gettext`) use the same `degit` command and have no `package.json`. Skip `pnpm install`. Setup is under [Python examples](#python-examples). The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories.
 
 | Example | Copy with degit |
 | --- | --- |
@@ -73,7 +75,7 @@ Each example has its own README with setup, commands, and project layout. Use th
 
 ### Python examples
 
-`python-streamlit`, `python-flask`, `python-fastapi`, and `python-gettext` are not workspace packages. They do not use `npx` or `pnpm install`. The first three need a virtualenv and `requirements.txt`. `python-gettext` uses only the standard library.
+`python-streamlit`, `python-flask`, `python-fastapi`, and `python-gettext` are not workspace packages. Skip `pnpm install` in these directories. The first three need a virtualenv and `requirements.txt`. `python-gettext` uses only the standard library. Copy a single directory with `npx degit`, or take all four from `ai-i18n-tools-python-examples.zip`.
 
 ```bash
 python3 -m venv .venv

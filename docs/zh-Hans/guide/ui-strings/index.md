@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI 字符串
 
-专为任何使用 i18next 的 JS/TS 项目设计：React 应用、Next.js（客户端和服务器组件）、Node.js 服务、纯 HTML、Astro 网站和 CLI 工具。
+专为使用 i18next 的 JS/TS 项目（React、Next.js（客户端和服务器组件）、Node.js 服务、纯 HTML、Astro 网站和 CLI 工具）以及 Python 应用程序而设计。Python 通过生成的 `i18n.py` 调用 `t()` 或 gettext（Django 保留其自身的 gettext）。
 
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
@@ -9,6 +9,7 @@
 | 您的应用 | 下一步阅读 |
 | --- | --- |
 | React / Next.js / Node + i18next | [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)（步骤 4） |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 应用程序](/zh-Hans/guide/ui-strings/python)。初始化：`ui-python`, `ui-python-gettext`, `ui-python-flask` 或 `ui-python-django`。辅助工具：`i18n.py`。若要为现有应用程序添加语言环境，请参阅 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)。 |
 | 纯 HTML（标记中没有 `t()`） | [纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html) |
 | Astro 营销网站（混合） | [Astro 网站](/zh-Hans/guide/ui-strings/astro-website) |
 | `t()` 规则、插值、复数 | [t() 调用和复数](/zh-Hans/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@
 ## 步骤 1：初始化
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-这会使用 `ui-markdown` 模板写入 `ai-i18n-tools.config.json`（包含一个默认的 `provider` / `providers` 块）。在运行 `translate-ui` 或 `sync` 之前，请在环境变量或 `.env` 中设置当前所用提供商的 API 密钥——Ollama 除外；参见[提供商与 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。编辑配置以设置：
+这会使用 `ui-markdown` 模板写入 `ai-i18n-tools.config.json`（包括该预设的 `provider` / `providers` 块）。在运行 `translate-ui` 或 `sync` 之前，请在环境变量或 `.env` 中设置该提供商的 API 密钥 — Ollama 除外；详见[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。编辑配置以设置：
 
-- `provider` 和 `providers` — 至少一个带有 `translationModels` 的提供商；如果默认选项不符合你的需求，请更改预设或模型列表 (`init -P <provider>`)。参见 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
-- `sourceLocale` - 你的源语言 BCP-47 代码（例如 `"en-GB"`）。**必须匹配** 从你的运行时 i18n 设置文件 (`src/i18n.ts` / `src/i18n.js`) 导出的 `SOURCE_LOCALE`。
-- `targetLocales` - 你的目标语言的 BCP-47 代码数组（例如 `["de", "fr", "pt-BR"]`）。运行 `generate-ui-languages` 以从此列表创建 `ui-languages.json` 清单。
-- `ui.sourceRoots` - 用于扫描 `t("…")` 调用的目录或 glob 模式（例如 `["src/"]`, `["src/**/*.ts"]`）。
+- `provider` 和 `providers` — 至少一个提供者具有 `translationModels`。`-P <provider>` 在 `init` 上选择预设及其起始模型列表。请参阅 [LLM 提供者和模型](/zh-Hans/guide/providers-and-models)。
+- `sourceLocale` - 您的源语言 BCP-47 代码（例如 `"en-GB"`）。**必须匹配** 从运行时国际化设置文件（`src/i18n.ts` / `src/i18n.js`）导出的 `SOURCE_LOCALE`。
+- `targetLocales` - 目标语言的 BCP-47 代码数组（例如 `["de", "fr", "pt-BR"]`）。运行 `generate-ui-languages` 从此列表创建 `ui-languages.json` 清单。
+- `ui.sourceRoots` - 要扫描 `t("…")` 调用的目录或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
 - `ui.stringsJson` —— 主目录的写入位置（例如 `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` —— `de.json`、`pt-BR.json` 等的写入位置（例如 `"src/locales/"`）。
 - `providers.<active>.uiModels`（可选）—— 用于 `translate-ui`、复数生成和 `proofread-ui` 的有序 UI 专用模型列表（位于任何匹配的 `localeModels` 条目之后、`translationModels` 之前）。参见[提供商与模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。

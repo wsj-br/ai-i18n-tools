@@ -14,10 +14,10 @@ This pipeline does **not** run `extract` — there is no `strings.json` catalog.
 ### Step 1: Initialise for nested JSON
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-That template sets `features.translateJson: true`, disables UI extraction and document translation, and scaffolds a single `json[]` block pointing at `src/i18n/en/translation.json` with output `src/i18n/{llocale}/translation.json`. It also includes a default `provider` / `providers` block (`openrouter` unless you pass `-P <provider>`) — set the matching API key (or use local Ollama) before running `translate-json` or `sync`; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit `sourceLocale`, `targetLocales`, `contentPaths`, and `outputPathTemplate` for your repo layout.
+That template sets `features.translateJson: true`, disables UI extraction and document translation, and scaffolds a single `json[]` block pointing at `src/i18n/en/translation.json` with output `src/i18n/{llocale}/translation.json`. It also includes the `provider` / `providers` block for the preset you pass with `-P` — set the matching API key (or use local Ollama) before running `translate-json` or `sync`; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit `sourceLocale`, `targetLocales`, `contentPaths`, and `outputPathTemplate` for your repo layout.
 
 <a id="step-2-configure-json"></a>
 ### Step 2: Configure `json[]`

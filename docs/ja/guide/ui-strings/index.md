@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI文字列
 
-i18nextを使用するあらゆるJS/TSプロジェクト向けに設計されています：Reactアプリ、Next.js（クライアントおよびサーバーコンポーネント）、Node.jsサービス、プレーンHTML、Astroウェブサイト、CLIツール。
+i18next を使用する JS/TS プロジェクト（React、Next.js（クライアントおよびサーバーコンポーネント）、Node.js サービス、プレーンな HTML、Astro ウェブサイト、CLI ツール）および Python アプリケーション向けに設計されています。Python は `t()` または生成された `i18n.py` を介して gettext を呼び出します（Django は Django 独自の gettext を保持します）。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
@@ -9,6 +9,7 @@ i18nextを使用するあらゆるJS/TSプロジェクト向けに設計され�
 | あなたのアプリ | 次を読む |
 | --- | --- |
 | React / Next.js / Node + i18next | [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime) (ステップ4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python アプリケーション](/ja/guide/ui-strings/python)。初期化: `ui-python`, `ui-python-gettext`, `ui-python-flask`, または `ui-python-django`。ヘルパー: `i18n.py`。既存のアプリにロケールを追加するには、[Python アプリへの i18n の追加](/ja/guide/add-i18n-to-python) を参照してください。 |
 | プレーンHTML (マークアップに`t()`なし) | [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html) |
 | Astroマーケティングサイト (ハイブリッド) | [Astroウェブサイト](/ja/guide/ui-strings/astro-website) |
 | `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/ja/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@ i18nextを使用するあらゆるJS/TSプロジェクト向けに設計され�
 ## ステップ1: 初期化
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-これにより、`ui-markdown` テンプレートを使用して `ai-i18n-tools.config.json` が書き込まれます（デフォルトの `provider` / `providers` ブロックを含む）。`translate-ui` または `sync` を実行する前に、環境変数または `.env` でアクティブなプロバイダーのAPIキーを設定してください（Ollamaを除く）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。設定を編集して以下を設定します：
+これは`ui-markdown`テンプレートを使用して`ai-i18n-tools.config.json`を書き込みます（そのプリセットの`provider` / `providers`ブロックを含みます）。`translate-ui`または`sync`を実行する前に、そのプロバイダーのAPIキーを環境変数または`.env`に設定してください — Ollamaは例外です。詳細は[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。設定を編集して以下を設定します。
 
-- `provider`および`providers` — `translationModels`を持つプロバイダが少なくとも1つ必要です。デフォルトがお好みでない場合は、プリセットまたはモデルリストを変更してください (`init -P <provider>`)。[LLMプロバイダとモデル](/ja/guide/providers-and-models)を参照してください。
-- `sourceLocale` - ソース言語のBCP-47コード（例：`"en-GB"`）。ランタイムi18nセットアップファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた`SOURCE_LOCALE`と**一致する必要があります**。
-- `targetLocales` - ターゲット言語のBCP-47コードの配列（例：`["de", "fr", "pt-BR"]`）。このリストから`ui-languages.json`マニフェストを作成するには、`generate-ui-languages`を実行します。
-- `ui.sourceRoots` - `t("…")`呼び出しをスキャンするディレクトリまたはglobパターン（例：`["src/"]`、`["src/**/*.ts"]`）。
+- `provider`と`providers` — 少なくとも1つの`translationModels`を持つプロバイダー。`init`上の`-P <provider>`が、プリセットとそのスターターモデルリストを選択します。[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
+- `sourceLocale` - ソース言語のBCP-47コード (例: `"en-GB"`)。**ランタイムi18nセットアップファイル (`src/i18n.ts` / `src/i18n.js`) からエクスポートされた`SOURCE_LOCALE`と一致する必要があります**。
+- `targetLocales` - ターゲット言語のBCP-47コードの配列 (例: `["de", "fr", "pt-BR"]`)。このリストから`ui-languages.json`マニフェストを作成するには、`generate-ui-languages`を実行します。
+- `ui.sourceRoots` - `t("…")`呼び出しをスキャンするためのディレクトリまたはグロブパターン (例: `["src/"]`, `["src/**/*.ts"]`)。
 - `ui.stringsJson` - マスターカタログを書き込む場所（例: `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - `de.json`、`pt-BR.json` などを書き込む場所（例: `"src/locales/"`）。
 - `providers.<active>.uiModels`（オプション） - `translate-ui`、複数形生成、および `proofread-ui` のための順序付きUI専用モデルリスト（一致する `localeModels` エントリの後、`translationModels` の前）。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照してください。

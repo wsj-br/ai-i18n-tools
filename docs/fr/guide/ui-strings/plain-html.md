@@ -8,9 +8,9 @@ Pour un site statique qui doit générer un fichier HTML traduit par locale (san
 <a id="quick-start"></a>
 ## Démarrage rapide
 
-1. Générez le projet avec `ai-i18n-tools init -t ui-plain-html`, ou ajoutez la configuration ci-dessous.
-2. Balisez le HTML source (ou laissez `mark-html` le faire).
-3. Pointez `ui.sourceRoots` et `ui.uiExtractor.extensions` vers ces fichiers.
+1. Générez avec `ai-i18n-tools init -t ui-plain-html -P openai`, ou ajoutez la configuration ci-dessous.
+2. Marquez le code HTML source (ou laissez `mark-html` le faire).
+3. Faites pointer `ui.sourceRoots` et `ui.uiExtractor.extensions` vers ces fichiers.
 4. Exécutez `extract`, puis `translate-ui` (ou exécutez les deux avec `sync-ui`).
 5. Copiez `i18n.js` à côté de la page et chargez-le avant votre propre script.
 6. Servez le dossier via HTTP. `file://` ne peut pas `fetch` le JSON de la locale.

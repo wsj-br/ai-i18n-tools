@@ -33,10 +33,10 @@ Beispiel-`package.json`-Skripte (aus dem Referenzprojekt):
 <a id="ui-strings-ssg"></a>
 ## UI-Strings (SSG)
 
-Extrahieren Sie UI-Strings mit `init -t ui-astro-website` und fügen Sie dann einen `docs[]`-Block ein, wenn Sie auch Seiten-HTML übersetzen (siehe [Seiten parsen und ersetzen](#astro-website-pages-parse-and-replace)). Umschließen Sie den Text in `t('…')` in TypeScript-Modulen und `.astro`-Frontmatter (und Vorlagen-`{expression}`-Blöcke, wenn Sie UI-Strings gegenüber duplizierten Lokalisierungsseiten bevorzugen):
+Erstellen Sie ein Gerüst für die UI-Extraktion mit `init -t ui-astro-website -P ollama`, und führen Sie dann einen `docs[]`-Block zusammen, wenn Sie auch Seiten-HTML übersetzen (siehe [Seiten parsen und ersetzen](#astro-website-pages-parse-and-replace)). Umschließen Sie Text in `t('…')` in TypeScript-Modulen und `.astro`-Frontmatter (und `{expression}`-Blöcke in Vorlagen, wenn Sie UI-Strings gegenüber duplizierten Lokalisierungsseiten bevorzugen):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 통합
 
-문서 사이트 및 Astro 프로젝트에 ai-i18n-tools를 연결하기 위한 프레임워크별 가이드입니다. 각 통합은 페이지 콘텐츠를 위해 [문서](/ko/guide/documents/) 파이프라인(`translate-docs` / `sync`)을 사용합니다. 셸 문자열(nav, sidebar, theme)은 별도의 [JSON](/ko/guide/json) 파이프라인이 아닌, 명시된 경우 동일한 파이프라인 내에서 처리됩니다.
+문서 사이트, Astro 프로젝트 및 Python 애플리케이션을 위한 프레임워크별 가이드입니다. 문서 통합은 페이지 콘텐츠에 [Documents](/ko/guide/documents/) 파이프라인(`translate-docs` / `sync`)을 사용합니다. 탐색, 사이드바, 테마와 같은 셸 문자열은 별도의 [JSON](/ko/guide/json) 파이프라인이 아닌, 명시된 경우 동일한 파이프라인 내에서 처리됩니다. Python 애플리케이션은 [UI strings](/ko/guide/ui-strings/python) 파이프라인(`extract` / `translate-ui`)을 사용합니다.
 
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
@@ -13,13 +13,14 @@
 | VitePress | `ui-vitepress` | [VitePress](/ko/guide/integrations/vitepress) |
 | Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/ko/guide/integrations/nextra) |
 | Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/ko/guide/integrations/fumadocs) |
+| Python (Streamlit, FastAPI, Flask, Django, gettext, 데스크톱) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/ko/guide/integrations/python) |
 
 <a id="shared-concepts"></a>
 ## 공유 개념
 
-모든 문서 프레임워크 통합은 [문서](/ko/guide/documents/)에 설명된 것과 동일한 `docs[]` 블록 모델을 공유합니다. 프레임워크(`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` 또는 `"astro-starlight"`)에 맞게 `docsOutput.style`을 설정하세요. 출력 폴더 레이아웃 및 링크 재작성 동작에 대해서는 [출력 레이아웃](/ko/guide/documents/output-layouts) 및 [링크 재작성](/ko/guide/documents/link-rewriting)을 참조하세요.
+문서 프레임워크 통합은 [Documents](/ko/guide/documents/)에 설명된 동일한 `docs[]` 블록 모델을 공유합니다. `docsOutput.style`을 사용 중인 프레임워크(`"docusaurus"`, `"vitepress"`, `"nextra"`, `"fumadocs"` 또는 `"astro-starlight"`)와 일치하도록 설정하십시오. 출력 폴더 레이아웃 및 링크 재작성 동작에 대해서는 [Output layouts](/ko/guide/documents/output-layouts) 및 [Link rewriting](/ko/guide/documents/link-rewriting)을 참조하십시오. Python 설정은 별도로 진행됩니다: [Python](/ko/guide/integrations/python).
 
-각 `init -t ui-*` 템플릿은 기본 LLM 제공자 블록을 스캐폴드합니다 (`-P <provider>`를 전달하지 않는 한 `openrouter`). `translate-docs` 또는 `sync` 전에 필요에 따라 `provider` / `providers`를 구성하고 일치하는 API 키를 설정하세요 — [제공자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
+각 `init -t ui-* -P <provider>` 스캐폴드는 해당 프리셋의 LLM 공급자 블록을 작성합니다. `translate-docs` 또는 `sync` 전에, 일치하는 API 키를 설정하세요. 자세한 내용은 [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)를 참조하세요.
 
 프레임워크 간 비교는 [프레임워크 셸 번역](#framework-shell-translation)을 참조하세요. 아래 링크된 각 가이드는 해당 프레임워크의 설정 방법을 다룹니다.
 
@@ -49,3 +50,7 @@
 | VitePress | [examples/vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs) |
 | Nextra | [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs) |
 | Fumadocs | [examples/fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs) |
+| Streamlit | [examples/python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit) |
+| Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
+| FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
+| GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |

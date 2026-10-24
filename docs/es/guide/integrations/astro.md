@@ -14,7 +14,7 @@ Utilice `init -t ui-starlight` y `docsOutput.style: "astro-starlight"` para siti
 ### Inicio rápido
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ La mayoría de los equipos utilizan un **híbrido** de dos pipelines en la misma
 ### Inicio rápido
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-Prepare la extracción de la interfaz de usuario con `init -t ui-astro-website`, luego fusione en un bloque `docs[]` cuando también traduzca el HTML de la página:
+Crear el andamiaje para la extracción de la IU con `init -t ui-astro-website -P ollama`, luego fusionar en un bloque `docs[]` cuando también traduzcas el HTML de la página:
 
 ```json
 {

@@ -13,7 +13,7 @@
 एक कार्यशील कॉन्फ़िगरेशन स्कैफ़ोल्ड करें:
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 या इस HTML भाग को किसी ऐसे `ai-i18n-tools.config.json` में जोड़ें जिसमें पहले से ही एक LLM [प्रदाता](/hi/guide/providers-and-models) हो:

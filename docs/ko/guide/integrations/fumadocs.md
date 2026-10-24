@@ -9,7 +9,7 @@ Next.js App Router에서 [Fumadocs](https://www.fumadocs.dev/) 4 문서 사이�
 ## 빠른 시작
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run build       # Next.js build (project-specific script)

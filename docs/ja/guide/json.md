@@ -14,10 +14,10 @@ UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**�
 ### ステップ 1: ネストされたJSON向けに初期化
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-そのテンプレートは`features.translateJson: true`を設定し、UI抽出とドキュメント翻訳を無効にし、`src/i18n/en/translation.json`を指し出力が`src/i18n/{llocale}/translation.json`となる単一の`json[]`ブロックを作成します。また、デフォルトの`provider` / `providers`ブロック（`-P <provider>`を渡さない限り`openrouter`）も含まれています — `translate-json`または`sync`を実行する前に、対応するAPIキーを設定する（またはローカルのOllamaを使用する）必要があります。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。リポジトリのレイアウトに合わせて`sourceLocale`、`targetLocales`、`contentPaths`、`outputPathTemplate`を編集してください。
+そのテンプレートは`features.translateJson: true`を設定し、UI抽出とドキュメント翻訳を無効にし、出力を`src/i18n/{llocale}/translation.json`とする`src/i18n/en/translation.json`を指す単一の`json[]`ブロックをスキャフォールドします。また、`-P`で渡すプリセット用の`provider` / `providers`ブロックも含まれています。`translate-json`または`sync`を実行する前に、一致するAPIキーを設定するか（またはローカルのOllamaを使用）してください。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)を参照してください。リポジトリのレイアウトに合わせて`sourceLocale`、`targetLocales`、`contentPaths`、および`outputPathTemplate`を編集してください。
 
 <a id="step-2-configure-json"></a>
 ### ステップ 2: `json[]` の設定

@@ -14,7 +14,7 @@ ai-i18n-toolsを[Astro](https://astro.build/)で利用するには、一般的�
 ### クイックスタート
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲ
 ### クイックスタート
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-`init -t ui-astro-website`でUI抽出を足場固めし、ページHTMLも翻訳する場合は`docs[]`ブロックにマージします。
+`init -t ui-astro-website -P ollama` を使用してUI抽出の足場を構築し、ページHTMLも翻訳する際には`docs[]` ブロックにマージします。
 
 ```json
 {

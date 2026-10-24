@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Konfiguration aus Node.js gerüstet (optionales viertes Argument wählt das integrierte Preset aus; Standard ist `openrouter`):
+Eine Konfiguration aus Node.js gerüstet. Das vierte Argument ist das integrierte Preset (`cwd` ist das dritte):
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 Schlüsselexporte (häufig verwendet – siehe `src/index.ts` für die vollständige öffentliche Oberfläche):
@@ -52,6 +53,27 @@ Schlüsselexporte (häufig verwendet – siehe `src/index.ts` für die vollstän
 | `Glossary` / `GlossaryMatcher` | Laden und Anwenden von Übersetzungsglossaren, einschließlich optionaler `Context`-Hinweise. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Laden von `glossary.contextFiles` und Fingerabdruck-Anleitung zur Cache-Invalidierung. |
 | `runTranslateUI` | Programmatischer Einstiegspunkt für die Übersetzungs-UI. |
-| `writeInitConfigFile` | Eine Starter-Konfigurations-JSON schreiben (`template`, optional `providerKey` mit Standardwert `openrouter`). |
+| `writeInitConfigFile` | Schreibt eine Starter-Konfigurations-JSON (`template`, `cwd` und ein erforderliches `providerKey`). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter-`translationModels` pro integriertem Preset, das von `init -P` verwendet wird. |
 | `PROVIDER_PRESETS` | Vordefinierte Anbieter-Voreinstellungskarte (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Python-Laufzeitumgebung (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext` und `ui-python-flask` schreiben dieses Modul in das Projekt, wenn `i18n.py` fehlt. Es handelt sich um einen Standardbibliotheks-Helfer für Python 3.10 oder neuer. Importieren Sie ihn aus dieser Datei. Die unten aufgeführten Funktionen sind von den Node-Exporten in der obigen Tabelle getrennt. Django-Projekte behalten Djangos gettext bei, daher schreibt `ui-python-django` kein `i18n.py`.
+
+Aufrufformen, unsichere f-Strings und frameworkspezifische Locale-Anbindung: [Python-Anwendungen](/de/guide/ui-strings/python).
+
+| Funktion | Verhalten |
+| --- | --- |
+| `set_locale(locale)` | Legt die aktuelle Locale fest. Unterstriche im Code werden als Bindestriche gespeichert (`pt_BR` wird zu `pt-BR`). Gibt ein `ContextVar`-Token zurück. |
+| `reset_locale(token)` | Stellt die Locale aus diesem Token wieder her. Rufen Sie dies in `finally` auf, einschließlich FastAPI- und Flask-Middleware. |
+| `get_locale()` | Gibt die aktuelle Locale zurück. |
+| `set_backend(backend)` | Wählt `"auto"`, `"json"` oder `"gettext"` aus. |
+| `get_ui_languages()` | Liest `ui-languages.json` neben dem flachen JSON-Verzeichnis oder dem gettext-Verzeichnis, wenn die flache Ausgabe deaktiviert ist. |
+| `get_direction(locale=None)` | Gibt `"rtl"` oder `"ltr"` aus der Manifest-Zeile für diese Locale zurück (aktuelle Locale, wenn weggelassen). |
+| `_(message)` | Sucht ein Literal nach und gibt dann den Katalog-String oder die Nachricht selbst zurück. |
+| `t(template, *, plurals=False, count=None, **values)` | Sucht das Literal nach und interpoliert dann. `translate` ist dieselbe Funktion. Unter Python 3.14 behält `translate(t"Hello, {name}!")` die Vorlage und ihre Werte bei. Schlüsselwortargumente überschreiben Werte, die aus einem Vorlagen-String stammen. |
+| `ngettext(singular, plural, n, **values)` | Plural-Suche, dann Interpolation. `count` steht für den Format-String zur Verfügung. |
+| `pgettext(context, message, **values)` | Kontext-Suche (`msgctxt` oder `context` + U+0004 + die englische Quelle in flachem JSON), dann Interpolation. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit-Auswahlfeld. Schreibt `st.session_state.locale` und `st.query_params["lang"]`, ruft `set_locale` auf und gibt den gewählten Code zurück. |

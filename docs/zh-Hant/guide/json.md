@@ -14,10 +14,10 @@
 ### 步驟 1：初始化巢狀 JSON
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-該範本會設定 `features.translateJson: true`，停用 UI 擷取與文件翻譯，並建立一個指向 `src/i18n/en/translation.json` 且輸出為 `src/i18n/{llocale}/translation.json` 的單一 `json[]` 區塊。它還包含一個預設的 `provider` / `providers` 區塊（除非你傳入 `-P <provider>`，否則為 `openrouter`）— 在執行 `translate-json` 或 `sync` 之前，請設定對應的 API 金鑰（或使用本機 Ollama）；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。請根據你的儲存庫佈局編輯 `sourceLocale`、`targetLocales`、`contentPaths` 與 `outputPathTemplate`。
+該範本設定 `features.translateJson: true`，停用 UI 擷取和文件翻譯，並搭建一個指向 `src/i18n/en/translation.json` 且輸出為 `src/i18n/{llocale}/translation.json` 的單一 `json[]` 區塊。它也包含適用於您透過 `-P` 傳遞的預設值的 `provider` / `providers` 區塊 — 在執行 `translate-json` 或 `sync` 之前，請設定相符的 API 金鑰 (或使用本機 Ollama)；請參閱 [提供者和 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。編輯 `sourceLocale`、`targetLocales`、`contentPaths` 和 `outputPathTemplate` 以符合您的儲存庫佈局。
 
 <a id="step-2-configure-json"></a>
 ### 步驟 2：設定 `json[]`

@@ -51,19 +51,19 @@
 ## 步驟 1：初始化文件
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 適用於 Astro Starlight 文件網站：
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 對於 VitePress 文件網站：
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 為導覽/側邊欄/頁尾字串設定 `docsOutput.vitepressThemeCatalog` — 請參閱[VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
@@ -71,7 +71,7 @@ ai-i18n-tools init -t ui-vitepress [-P <provider>]
 對於 Nextra 文件網站：
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 為主題字典字串設定 `docs[].nextraDictionaryPath` — 請參閱[Nextra 整合](/zh-Hant/guide/integrations/nextra)。側邊欄 `_meta.ts` 標籤會自動收集。
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-nextra [-P <provider>]
 對於 Fumadocs 文件網站：
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 為 UI 覆寫設定 `docsOutput.fumadocsUiCatalog` — 請參閱[Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。側邊欄 `meta.json` 標籤會自動收集。
@@ -87,17 +87,17 @@ ai-i18n-tools init -t ui-fumadocs [-P <provider>]
 適用於純 Astro 網站 UI（無 Starlight）：
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 該範本僅啟用 UI 提取。對於頁面 HTML 翻譯，還需設定 `features.translateDocs` 並新增一個 `docs[]` 區塊（請參閱 [Astro 網站頁面（解析與替換）](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 設定顯示了兩個管道。
 
 編輯產生的 `ai-i18n-tools.config.json`：
 
-- `provider` 及 `providers` — `init` 會建立預設的供應商區塊（除非您傳入 `-P <provider>`，否則為 `openrouter`）；在執行 `translate-docs` 或 `sync` 之前，請至少設定一個供應商並設定其 API 金鑰（Ollama 無需金鑰）。請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)及[LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
-- `sourceLocale` - 來源語言（必須與 `docusaurus.config.js` 中的 `defaultLocale` 相符）。
-- `targetLocales` - BCP-47 語系代碼陣列（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有管線共用的 SQLite 快取目錄（同時為 `--write-logs` 的預設日誌目錄）。
+- `provider` 和 `providers` — 預設的 `init -P <provider>` 樣板；在 `translate-docs` 或 `sync` 之前設定其 API 金鑰 (Ollama 無需金鑰)。請參閱 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key) 和 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
+- `sourceLocale` - 來源語言 (必須與 `docusaurus.config.js` 中的 `defaultLocale` 相符)。
+- `targetLocales` - BCP-47 語言環境代碼陣列 (例如 `["de", "fr", "es"]`)。
+- `cacheDir` - 所有管線的共用 SQLite 快取目錄 (以及 `--write-logs` 的預設日誌目錄)。
 - `docs` - 文件區塊陣列。每個區塊包含可選的 `description`、`contentPaths`（字串或陣列；檔案、目錄或萬用字元模式）、`outputDir`、可選的 `docusaurusCatalogDir`、`docsOutput`、可選的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
 - `docs[].description` - 給維護者的可選簡短備註。設定後，會顯示在 `translate-docs` 標題與 `status` 區塊標頭中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 來源（以及 Docusaurus shell JSON 的可選 `docusaurusCatalogDir`）。
@@ -136,7 +136,7 @@ ai-i18n-tools status
 
 `translate-docs` 會檢查每個翻譯片段是否保留了 Markdown 結構（包括從文件中解析出的強調標記），以及內部佔位符標記是否正確還原。在 `` `inline code` `` 周圍堆疊多個 `bold` 跨度、在粗體內嵌套反引號（例如範本字面值如 `` `fetch(\`/locales/${code}.json\`)` ``），或在長句中交織粗體與程式碼的段落非常脆弱：某些語言環境需要不同的語序，這可能會改變 `**` 和 `` ` `` 在翻譯後的對齊方式，並觸發如 `AST mismatch` 的 CLI 錯誤。
 
-還原後，`translate-docs` 亦會拒絕以下段落：HTML 標籤佔位符被重複使用或丟棄（導致還原後的標籤不再與來源映射相符），或模型捏造了來源中不存在的多餘雙花括號權杖（例如虛構的詞彙表風格權杖）。還原前檢查要求相同的 <code v-pre>{{…}}</code> 權杖多重集，以及相同的結構權杖有序子序列（<code v-pre>{{HTM_N}}</code>，提示標記）；內容權杖如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code>，以及強調標記如 `**` 可隨自然語序移動，前提是每個 id / 類型的計數仍相符。這些失敗情況使用與多餘官方內部權杖相同的模型回退路徑。
+還原後，`translate-docs` 亦會拒絕以下段落：HTML 標籤佔位符被重複使用或丟棄（導致還原後的標籤不再與來源映射相符），或模型捏造了來源中不存在的多餘雙花括號權杖（例如虛構的詞彙表風格權杖）。還原前檢查要求相同的 <code v-pre>{{…}}</code> 權杖多重集，以及相同的結構權杖有序子序列（<code v-pre>{{HTM_N}}</code>，提示標記）；內容權杖如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code>，以及強調標記如 <code v-pre>**</code> 可隨自然語序移動，前提是每個 id / 類型的計數仍相符。這些失敗情況使用與多餘官方內部權杖相同的模型回退路徑。
 
 **如果您遇到此類驗證失敗，請優先簡化來源語言文字** - 分割段落、將範例移至圍欄程式碼區塊中，或使用較少層層堆疊的粗體/程式碼配對來描述相同概念 - 而非期望每個模型和語系都能完美重現密集的行內標記。
 

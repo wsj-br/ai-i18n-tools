@@ -26,16 +26,16 @@ export interface SuggestionWeights {
 }
 
 export const DEFAULT_QUALITY_WEIGHTS: SuggestionWeights = {
-  chrf: 0.45 / 0.95,
-  arena: 0.35 / 0.95,
-  price: 0.15 / 0.95,
+  chrf: 0.45,
+  arena: 0.35,
+  price: 0.20,
   qualityFloor: 0.7,
 };
 
 export const DEFAULT_PRICE_WEIGHTS: SuggestionWeights = {
-  chrf: 0.25,
-  arena: 0.1,
-  price: 0.65,
+  chrf: 0.35,
+  arena: 0.20,
+  price: 0.45,
   qualityFloor: 0.6,
 };
 

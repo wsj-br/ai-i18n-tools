@@ -8,8 +8,8 @@
 <a id="quick-start"></a>
 ## 快速开始
 
-1. 使用 `ai-i18n-tools init -t ui-plain-html` 搭建脚手架，或添加以下配置。
-2. 标记源 HTML（或让 `mark-html` 自动完成）。
+1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 搭建脚手架，或添加以下配置。
+2. 标记源 HTML（或让 `mark-html` 来完成）。
 3. 将 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向这些文件。
 4. 运行 `extract`，然后运行 `translate-ui`（或使用 `sync-ui` 同时运行两者）。
 5. 将 `i18n.js` 复制到页面同级目录，并在您自己的脚本之前加载它。

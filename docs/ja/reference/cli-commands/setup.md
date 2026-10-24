@@ -13,13 +13,13 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 <a id="init"></a>
 ### `init`
 
-**概要:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**概要：** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 初期設定ファイルを記述します（`provider` / `providers`、`concurrency`、`uiBatchConcurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars`、`docs[].addFrontmatter` を含みます）。LLM を呼び出す翻訳コマンドでは、環境変数または `.env` にアクティブなプロバイダーの API キーが必要です（Ollama を除く）— [プロバイダーと API キー](/ja/guide/quick-start#provider-and-api-key) を参照してください。
 
-**主なオプション:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**主要オプション:** `-P` / `--provider` (必須), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 
-`-P` / `--provider` は、スキャフォールドする **組み込みプリセット** を選択します（省略時は `openrouter`）。`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama` のいずれかである必要があります。
+`-P` / `--provider` は必須です。これにより、スキャフォールドする**組み込みプリセット**が選択されます。次のいずれかである必要があります: `openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
 
 **テンプレート (`-t`):**
 

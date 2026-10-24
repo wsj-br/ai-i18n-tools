@@ -137,8 +137,12 @@
   प्रति 1,000,000 टोकन प्रदाता-व्यापी USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`। जब किसी बिल किए गए कॉल में प्रदाता द्वारा रिपोर्ट किया गया `usage.cost` नहीं होता है (OpenRouter और Cheaper Inference के अलावा अधिकांश प्रदाता), तो यह दर उस कॉल के इनपुट और आउटपुट टोकन पर लागू होती है। यह राशि अनुवाद सारांश में शामिल की जाती है और `api_calls` पंक्ति पर संग्रहीत की जाती है। एक मिलान वाली `modelPricing` प्रविष्टि इस डिफ़ॉल्ट को ओवरराइड करती है। प्रदाता द्वारा रिपोर्ट की गई लागत को कभी भी बदला नहीं जाता है। जब कोई कॉन्फ़िगरेशन दर मेल नहीं खाती है, तो टूल उस मॉडल आईडी के लिए models.dev सूची मूल्य (इनपुट और आउटपुट USD प्रति 1M टोकन) का उपयोग करते हैं। जिन पंक्तियों को बिना लागत के संग्रहीत किया गया था, उनका अनुमान बाद में [`usage`](/hi/reference/cli-commands/workflows#usage) और [Usage & costs](/hi/guide/translation-dashboard/usage) द्वारा लगाया जा सकता है। यदि उन स्रोतों में से कोई भी लागू नहीं होता है, तो लागत अज्ञात (`—`) रहती है, कभी भी `$0.00` नहीं।
 - `modelPricing` (वैकल्पिक)
   प्रति-मॉडल प्रति 1,000,000 टोकन USD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`। उस मॉडल आईडी के लिए `pricing` को ओवरराइड करता है। कॉल के समय लागू किया जाता है जब प्रदाता ने `usage.cost` को छोड़ दिया हो, और कॉल के साथ संग्रहीत किया जाता है।
+- `zeroDataRetention` (वैकल्पिक, `providers.cheaperinference` केवल)
+  जब `true` होता है, तो चैट अनुरोध `"zdr": true` और `list-models` भेजते हैं, और `check-models` और `suggest-models` `GET /v1/models?zdr=true` में लोड होते हैं। छोड़े जाने का मतलब है बंद। [शून्य डेटा प्रतिधारण](/hi/guide/providers-and-models#cheaperinference-zero-data-retention) देखें।
 
 अंतर्निहित प्रदाता प्रीसेट (कुंजी — आधार URL — API-कुंजी env var):
+
+<div class="provider-presets">
 
 | प्रदाता | आधार URL | API-कुंजी env var |
 | --- | --- | --- |
@@ -157,6 +161,8 @@
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama`     | `http://localhost:11434/v1`                               | (कोई नहीं)               |
 
+</div>
+
 एक लेगेसी शीर्ष-स्तरीय `openrouter` ब्लॉक (`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` के साथ) अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` (`provider: "openrouter"` के साथ) में स्वतः माइग्रेट हो जाता है; `defaultModel` / `fallbackModel` `translationModels` में समाहित हो जाते हैं।
 
 एक चलाने योग्य उदाहरण के लिए जो एक कॉन्फ़िग में कई प्रदाताओं को कॉन्फ़िगर करता है और `-P` के साथ उनके बीच स्विच करता है, [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (एक ही दस्तावेज़ पर `openai`, `anthropic`, `openrouter`, और `deepseek`) देखें।
@@ -165,14 +171,14 @@
 
 नीचे दी गई सूची को एक **आधार रेखा** के रूप में मानें जिसे आप विस्तारित कर सकते हैं: यदि किसी विशिष्ट स्थान-विशेष के लिए अनुवाद खराब या असफल है, तो शोध करें कि कौन से मॉडल उस भाषा या स्क्रिप्ट को प्रभावी ढंग से समर्थन करते हैं (ऑनलाइन संसाधनों या अपने प्रदाता के दस्तावेज़ों का संदर्भ लें), और उन मॉडल ID को आगे के विकल्पों के रूप में जोड़ें।
 
-ये मॉडल ID `ai-i18n-tools init [-P <provider>]` से मेल खाते हैं जब `-P openrouter` (डिफ़ॉल्ट)। अन्य प्रीसेट `init -P <provider>` से मूल मॉडल ID प्राप्त करते हैं — [अंतर्निहित प्रदाता](/hi/guide/providers-and-models#built-in-providers) देखें।
+ये मॉडल आईडी वही हैं जो `ai-i18n-tools init -P openrouter` लिखता है। अन्य प्रीसेट `init -P <provider>` से नेटिव मॉडल आईडी प्राप्त करते हैं — [बिल्ट-इन प्रोवाइडर](/hi/guide/providers-and-models#built-in-providers) देखें।
 
 इस सूची को 36 लक्षित लोकेल के साथ एक बड़े दस्तावेज़ीकरण प्रोजेक्ट में **व्यापक लोकेल कवरेज के लिए परखा गया** था; यह एक व्यावहारिक डिफ़ॉल्ट के रूप में कार्य करता है, लेकिन हर लोकेल के लिए अच्छा प्रदर्शन करने की गारंटी नहीं है।
 
-उदाहरण `translationModels` (`ai-i18n-tools init [-P <provider>]` के समान डिफ़ॉल्ट):
+उदाहरण `translationModels` (`ai-i18n-tools init -P openrouter` से OpenRouter सूची):
 
 <details>
-<summary>डिफ़ॉल्ट ट्रांसलेशनमॉडल फ़ॉलबैक सूची</summary>
+<summary>OpenRouter ट्रांसलेशनमॉडल सूची</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 
 [`suggest-models`](/hi/reference/cli-commands/models#suggest-models) और [डैशबोर्ड मॉडल्स टैब](/hi/guide/translation-dashboard/models) के लिए वेट। इस ब्लॉक को छोड़ दें, या किसी एक प्रोफ़ाइल को छोड़ दें, तो वह प्रोफ़ाइल इन-बिल्ट वेट को बनाए रखेगी। यह ब्लॉक `--apply` या **Update config** द्वारा फिर से नहीं लिखा जाता है; वे केवल मॉडल आईडी लिखते हैं।
 
-- `quality` — डिफ़ॉल्ट ChrF `0.45/0.95`, Arena `0.35/0.95`, मूल्य `0.15/0.95`, गुणवत्ता फ़्लोर `0.7`
-- `price` — डिफ़ॉल्ट ChrF `0.25`, Arena `0.10`, मूल्य `0.65`, गुणवत्ता फ़्लोर `0.6`
+- `quality` — डिफ़ॉल्ट ChrF `0.45`, एरीना `0.35`, कीमत `0.20`, गुणवत्ता सीमा `0.7`
+- `price` — डिफ़ॉल्ट ChrF `0.35`, एरीना `0.20`, कीमत `0.45`, गुणवत्ता सीमा `0.6`
 
-प्रत्येक प्रोफ़ाइल ऑब्जेक्ट के लिए `chrf`, `arena`, और `price` आवश्यक हैं। प्रत्येक मान परिमित (finite) है और कम से कम `0` है, और कम से कम एक मान `0` से अधिक है। उन्हें 1 के योग के लिए सामान्यीकृत (normalized) किया जाता है, इसलिए `45`, `35`, और `15` गुणवत्ता डिफ़ॉल्ट से मेल खाते हैं। `qualityFloor` वैकल्पिक है, जो `(0, 1]` की सीमा में है, और यह कैंडिडेट पूल में सर्वश्रेष्ठ ChrF का अंश है। फ़्लोर से नीचे के मॉडल, जिसमें ChrF माप के बिना कोई भी मॉडल शामिल है, उन्हें क्लियर करने वाले मॉडलों के बाद सॉर्ट किया जाता है।
+प्रत्येक प्रोफ़ाइल ऑब्जेक्ट के लिए `chrf`, `arena`, और `price` आवश्यक हैं। प्रत्येक मान परिमित है और कम से कम `0` है, और कम से कम एक `0` से अधिक है। उन्हें 1 के योग के लिए सामान्यीकृत किया जाता है, ताकि `45`, `35`, और `20` गुणवत्ता डिफ़ॉल्ट से मेल खाते हों। `qualityFloor` वैकल्पिक है, `(0, 1]` की सीमा में है, और उम्मीदवार पूल में सर्वश्रेष्ठ ChrF का अंश है। सीमा से नीचे के मॉडल, जिसमें कोई ChrF माप वाला मॉडल भी शामिल है, उन लोगों के बाद क्रमबद्ध होते हैं जो इसे पार करते हैं।
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

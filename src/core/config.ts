@@ -124,8 +124,6 @@ export const DEFAULT_INIT_MODELS_BY_PROVIDER: Readonly<Record<string, readonly s
   ollama: ["llama3.2:3b", "mistral-nemo:12b"],
 } as const;
 
-export const DEFAULT_INIT_PROVIDER_KEY = "openrouter";
-
 /** Built-in preset keys accepted by `init -P` / `--provider`. */
 export function listPresetInitProviderKeys(): string[] {
   return Object.keys(PROVIDER_PRESETS).sort();
@@ -1284,19 +1282,25 @@ function pythonUiTemplate(
 }
 
 /**
- * Write a starter config JSON for `ai-i18n-tools init [-P <provider>]`.
+ * Write a starter config JSON for `ai-i18n-tools init -P <provider>`.
  * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
  */
 export function writeInitConfigFile(
   outPath: string,
   template: keyof typeof initConfigTemplates,
-  cwd = process.cwd(),
-  providerKey = DEFAULT_INIT_PROVIDER_KEY
+  cwd: string,
+  providerKey: string
 ): void {
-  assertPresetInitProvider(providerKey);
+  const key = typeof providerKey === "string" ? providerKey.trim() : "";
+  if (!key) {
+    throw new ConfigValidationError(
+      `writeInitConfigFile requires a provider key (one of: ${listPresetInitProviderKeys().join(", ")})`
+    );
+  }
+  assertPresetInitProvider(key);
   const resolved = path.isAbsolute(outPath) ? outPath : path.join(cwd, outPath);
   const raw = initConfigTemplates[template]();
-  const merged = applyInitProvider(mergeWithDefaults(raw), providerKey);
+  const merged = applyInitProvider(mergeWithDefaults(raw), key);
   parseI18nConfig(merged);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
   fs.writeFileSync(resolved, `${JSON.stringify(merged, null, 2)}\n`, "utf8");

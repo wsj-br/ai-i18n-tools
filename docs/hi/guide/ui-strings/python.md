@@ -3,16 +3,18 @@
 
 `ai-i18n-tools` पायथन और जिंजा (Jinja), जैंगो (Django), तथा Qt `.ui` फ़ाइलों से UI स्ट्रिंग्स निकालता है, और फिर फ्लैट इंग्लिश-की JSON, GNU gettext कैटलॉग, या दोनों लिखता है। रनटाइम हेल्पर एक स्टैंडर्ड-लाइब्रेरी `i18n.py` (पायथन 3.10 या नया) है। स्ट्रीमलिट (Streamlit), Tkinter, PyQt, PySide, PyWebView, फ्लास्क (Flask), पिरामिड (Pyramid), और FastAPI उस हेल्पर को कॉल करते हैं। जैंगो (Django) अपने स्वयं के gettext का उपयोग करता है।
 
+मौजूदा एकल-भाषा ऐप में लोकेल जोड़ना: [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)। फ्रेमवर्क चयनकर्ता: [Python एकीकरण](/hi/guide/integrations/python)। फ़ंक्शन सूची: [Python रनटाइम (`i18n.py`)](/hi/reference/programmatic-api#python-runtime)।
+
 रन करने योग्य प्रतियां `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext` में रहती हैं। ये पायथन प्रोजेक्ट्स हैं। पहले तीन virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। ये npm पैकेज नहीं हैं। रिलीज़ आर्काइव `ai-i18n-tools-python-examples.zip` में वही चार डायरेक्टरीज़ शामिल हैं। npm टारबॉल और स्टैंडअलोन निष्पादन योग्य फ़ाइल में ये नहीं हैं।
 
 <a id="init"></a>
 ## स्कैफ़ोल्ड (Scaffold)
 
 ```bash
-ai-i18n-tools init -t ui-python
-ai-i18n-tools init -t ui-python-gettext
-ai-i18n-tools init -t ui-python-flask
-ai-i18n-tools init -t ui-python-django
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools init -t ui-python-gettext -P anthropic
+ai-i18n-tools init -t ui-python-flask -P groq
+ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` फ्लैट JSON और `i18n.py` लिखता है। `ui-python-gettext` JSON और `.po` / `.mo` लिखता है। `ui-python-flask` `translations/` और `i18n.py` के अंतर्गत gettext कैटलॉग लिखता है। `ui-python-django` `locale/<lang>/LC_MESSAGES/django.po` लिखता है और `i18n.py` नहीं लिखता है।
@@ -75,11 +77,11 @@ Gettext फ़ाइलें संदर्भ के लिए `msgctxt` औ�
 
 `set_locale` एक `ContextVar` टोकन लौटाता है। इसे `finally` में रीसेट करें, जिसमें FastAPI और Flask मिडलवेयर शामिल हैं, ताकि समवर्ती अनुरोध (concurrent requests) किसी लोकेल को लीक न करें।
 
-- **Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` `st.session_state.locale` और `st.query_params["lang"]` लिखता है। प्रत्येक विजेट को एक निश्चित `key` दें। `examples/python-streamlit` देखें।
-- **FastAPI.** मिडलवेयर में `?lang=` या `Accept-Language` पढ़ें, `set_locale` को कॉल करें, और `finally` में `reset_locale` करें। रूट्स `t()` और `_()` को कॉल करते हैं। `examples/python-fastapi` देखें।
-- **Flask और Pyramid.** अनुरोध से लोकेल सेट करें और टेम्पलेट संदर्भ में `_`, `t`, `current_locale`, `ui_languages`, और `direction` इंजेक्ट करें। `examples/python-flask` देखें।
-- **मौजूदा gettext.** `_()`, `gettext()`, और `ngettext()` को यथावत छोड़ दें। `ui.gettext` को वर्तमान `locales/` ट्री पर इंगित करें और `extract` फिर `translate-ui` चलाएं। `examples/python-gettext` देखें।
-- **Django.** `gettext`, `ngettext`, और `{% blocktrans %}` का उपयोग करें। इनिट टेम्पलेट `ui-python-django`, Django की `locale/` डायरेक्टरी और `django` डोमेन से मेल खाता है।
-- **Tkinter.** प्रत्येक विजेट बनाते समय `t()` या `_()` को कॉल करें, फिर `set_locale` के बाद दृश्य टेक्स्ट को फिर से बनाएं।
-- **PyQt / PySide.** `self.tr("...")` निकाला जाता है। एक `.ui` फ़ाइल `<string>` तत्वों का योगदान देती है जब तक कि `notr="true"` न हो। `comment` विशेषता gettext संदर्भ बन जाती है।
-- **PyWebView / PyWebKit.** ऊपर दिए गए Python टेम्पलेट्स के साथ Python शेल निकालें। `data-i18n` मार्कर्स के साथ या प्रति लोकेल एक HTML दस्तावेज़ के साथ HTML पेज निकालें।
+- <a id="streamlit"></a>**Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` `st.session_state.locale` और `st.query_params["lang"]` लिखता है। प्रत्येक विजेट को एक निश्चित `key` दें। `examples/python-streamlit` देखें।
+- <a id="fastapi"></a>**FastAPI.** मिडलवेयर में `?lang=` या `Accept-Language` पढ़ें, `set_locale` को कॉल करें, और `finally` में `reset_locale` करें। रूट `t()` और `_()` को कॉल करते हैं। `examples/python-fastapi` देखें।
+- <a id="flask"></a>**Flask और Pyramid.** अनुरोध से लोकेल सेट करें और टेम्पलेट संदर्भ में `_`, `t`, `current_locale`, `ui_languages`, और `direction` इंजेक्ट करें। `examples/python-flask` देखें।
+- <a id="gettext"></a>**मौजूदा gettext.** `_()`, `gettext()`, और `ngettext()` को यथावत छोड़ दें। `ui.gettext` को वर्तमान `locales/` ट्री पर इंगित करें और `extract` फिर `translate-ui` चलाएं। `examples/python-gettext` देखें।
+- <a id="django"></a>**Django.** `gettext`, `ngettext`, और `{% blocktrans %}` का उपयोग करें। इनिट टेम्पलेट `ui-python-django`, Django की `locale/` निर्देशिका और `django` डोमेन से मेल खाता है।
+- <a id="tkinter"></a>**Tkinter.** प्रत्येक विजेट बनाते समय `t()` या `_()` को कॉल करें, फिर `set_locale` के बाद दृश्य टेक्स्ट को पुन: निर्मित करें।
+- <a id="pyqt"></a>**PyQt / PySide.** `self.tr("...")` निकाला जाता है। एक `.ui` फ़ाइल `<string>` तत्वों का योगदान देती है जब तक कि `notr="true"` न हो। `comment` विशेषता gettext संदर्भ बन जाती है।
+- <a id="pywebview"></a>**PyWebView / PyWebKit.** ऊपर दिए गए Python टेम्पलेट्स के साथ Python शेल निकालें। `data-i18n` मार्करों के साथ या प्रति लोकेल एक HTML दस्तावेज़ के साथ HTML पेज निकालें।

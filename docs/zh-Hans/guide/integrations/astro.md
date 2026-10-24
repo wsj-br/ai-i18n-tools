@@ -14,7 +14,7 @@ ai-i18n-tools 可与 [Astro](https://astro.build/) 在两种常见设置中使�
 ### 快速入门
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ Starlight 内置了许多区域设置的 UI 字符串（导航标签、搜索占
 ### 快速入门
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-使用 `init -t ui-astro-website` 搭建 UI 提取，然后在翻译页面 HTML 时合并到 `docs[]` 块中：
+使用 `init -t ui-astro-website -P ollama` 搭建 UI 提取，然后在您翻译页面 HTML 时，并入 `docs[]` 块：
 
 ```json
 {

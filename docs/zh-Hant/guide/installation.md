@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### 獨立執行檔
 
-GitHub Releases 附帶了適用於 Linux (`x64`, `arm64`)、macOS (`arm64`, `x64`) 與 Windows (`x64`) 的 Node.js 單一執行檔建置。Python 專案可以使用該二進位檔執行 `extract` 與 `translate-ui`，且無需安裝 Node.js。這些二進位檔未經過公證 (notarized) 或 Authenticode 簽章。npm 壓縮檔與該執行檔不包含 Python 範例。這些範例保留在儲存庫中，並以 `ai-i18n-tools-python-examples.zip` 的形式一併附上。
+GitHub Releases 附帶一個 Node.js 單一可執行檔組建。Python 專案可直接從該二進位檔案執行 CLI，包含 `extract`、`translate-ui` 和 `suggest-models`，無需安裝 Node.js。
+
+| 平台 | 資產 |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+每個發行版本亦附帶 `SHA256SUMS.txt` 和 `ai-i18n-tools-python-examples.zip`（四個 Python 範例）。npm tarball 和可執行檔並不包含這些範例。它們同樣保留在儲存庫中。
+
+1. 從 [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) 頁面下載符合您機器的資產。
+2. 對照 `SHA256SUMS.txt` 檢查校驗和。
+3. 在 Linux 和 macOS 上，對該檔案執行 `chmod +x` 並將其移動至 `PATH`（或透過路徑呼叫它）。
+4. 在 Windows 上，將 `ai-i18n-tools-win-x64.exe` 放置於 `PATH`。將其重新命名為 `ai-i18n-tools.exe` 可保持與其他平台相同的指令名稱。
+
+這些二進位檔案未經公證或 Authenticode 簽章。macOS 可能會要求您批准未簽章的程式。Windows SmartScreen 可能會顯示警告。
+
+設定使用中提供者的 API 金鑰方式與 npm 安裝相同（環境變數或工作目錄中的 `.env` 檔案）。來自 `init` 的模型清單是一個起點。`suggest-models` 會列印一份排序後的簡短清單。`suggest-models --apply` 會將其寫入 `translationModels`。相同的排序亦顯示於 [Models](/zh-Hant/guide/translation-dashboard/models) 頁籤中。
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+逐步指南：[將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 ai-i18n-tools 內建其專用的字串擷取器。如果您先前使用過 `i18next-scanner`、`babel-plugin-i18next-extract` 或類似工具，可以在遷移後移除這些開發依賴項。現有的 i18next **namespace JSON** 檔案可以繼續使用 [JSON 管線](/zh-Hant/guide/json#i18next-namespace-files)。Intlayer `.content.ts` 字典可以使用 `migrate-intlayer` 匯入 — 請參閱[從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)。
 
@@ -88,15 +117,15 @@ pnpm add -g ai-i18n-tools
 
 在 Linux、macOS 和 WSL 上，登錄檔安裝會自動為 CLI 指令碼設定可執行位元。在 Windows 上，套件管理器會產生 `.cmd` 和 `.ps1` 代理程式，明確叫用 Node。
 
-翻譯指令 (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) 需要在 `ai-i18n-tools.config.json` 中進行 **供應商設定**，並為目前使用的供應商提供 **API 金鑰**。執行 `ai-i18n-tools init [-P <provider>]` 來建立預設的供應商區塊（省略時為 `openrouter`）；編輯 `provider` / `providers` 來切換預設值或模型 — 請參閱 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。Ollama 是唯一不需要 API 金鑰的內建預設值。
+翻譯指令 (`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`) 需要在 `ai-i18n-tools.config.json` 中進行 **供應商設定**，以及作用中供應商的 **API 金鑰**。執行 `ai-i18n-tools init -P <provider>` 以建立該預設；編輯 `provider` / `providers` 以新增模型 — 請參閱 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。來自 `init` 的模型清單是一個起點。`ai-i18n-tools suggest-models` 會對作用中供應商的聊天模型進行排名，而 `suggest-models --apply` 會取代 `translationModels`。相同的排名位於 [模型](/zh-Hant/guide/translation-dashboard/models) 索引標籤上。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。Ollama 是唯一不需要 API 金鑰的內建預設。
 
-設定與你目前使用的供應商相符的 API 金鑰（請參閱 [預設值表格](/zh-Hant/guide/providers-and-models#built-in-providers)）：
+設定與您傳遞給 `init` 的供應商相符的 API 金鑰 (請參閱 [預設表格](/zh-Hant/guide/providers-and-models#built-in-providers))：
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 或在專案根目錄建立 `.env` 檔案：

@@ -14,7 +14,7 @@ Use `init -t ui-starlight` and `docsOutput.style: "astro-starlight"` for [Astro 
 ### Quick start
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ Most teams use a **hybrid** of two pipelines on the same page:
 ### Quick start
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-Scaffold UI extraction with `init -t ui-astro-website`, then merge in a `docs[]` block when you also translate page HTML:
+Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML:
 
 ```json
 {

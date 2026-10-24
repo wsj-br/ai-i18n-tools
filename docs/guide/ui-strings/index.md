@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI strings
 
-Designed for any JS/TS project that uses i18next: React apps, Next.js (client and server components), Node.js services, Plain HTML, Astro websites and CLI tools.
+Designed for JS/TS projects that use i18next — React, Next.js (client and server components), Node.js services, plain HTML, Astro websites, and CLI tools — and for Python applications. Python calls `t()` or gettext through a generated `i18n.py` (Django keeps Django's gettext).
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
@@ -9,6 +9,7 @@ Designed for any JS/TS project that uses i18next: React apps, Next.js (client an
 | Your app | Read next |
 | --- | --- |
 | React / Next.js / Node + i18next | [Wire i18next](/guide/ui-strings/i18next-runtime) (Step 4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python applications](/guide/ui-strings/python). Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, or `ui-python-django`. Helper: `i18n.py`. To add locales to an existing app, see [Add i18n to a Python app](/guide/add-i18n-to-python). |
 | Plain HTML (no `t()` in markup) | [Plain HTML apps](/guide/ui-strings/plain-html) |
 | Astro marketing site (hybrid) | [Astro website](/guide/ui-strings/astro-website) |
 | `t()` rules, interpolation, plurals | [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals) |
@@ -20,12 +21,12 @@ Designed for any JS/TS project that uses i18next: React apps, Next.js (client an
 ## Step 1: Initialise
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including a default `provider` / `providers` block). Before running `translate-ui` or `sync`, set the API key for your active provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit the config to set:
+This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including the `provider` / `providers` block for that preset). Before running `translate-ui` or `sync`, set the API key for that provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Edit the config to set:
 
-- `provider` and `providers` — at least one provider with `translationModels`; change the preset or model list if the default is not your choice (`init -P <provider>`). See [LLM providers and models](/guide/providers-and-models).
+- `provider` and `providers` — at least one provider with `translationModels`. `-P <provider>` on `init` chooses the preset and its starter model list. See [LLM providers and models](/guide/providers-and-models).
 - `sourceLocale` - your source language BCP-47 code (e.g. `"en-GB"`). **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales` - array of BCP-47 codes for your target languages (e.g. `["de", "fr", "pt-BR"]`). Run `generate-ui-languages` to create the `ui-languages.json` manifest from this list.
 - `ui.sourceRoots` - directories or glob patterns to scan for `t("…")` calls (e.g. `["src/"]`, `["src/**/*.ts"]`).

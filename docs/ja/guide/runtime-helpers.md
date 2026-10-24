@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # ランタイムヘルパー
 
-これらのヘルパーは`'ai-i18n-tools/runtime'`からエクスポートされ、任意のJavaScript環境（ブラウザ、Node.js、Deno、Edge）で動作します。これらは`i18next`や`react-i18next`からインポートし**ません**。
+これらのヘルパーは `'ai-i18n-tools/runtime'` からエクスポートされており、あらゆる JavaScript 環境（ブラウザ、Node.js、Deno、Edge）で動作します。これらは `i18next` や `react-i18next` からインポート**しません**。Python アプリケーションでは、生成された `i18n.py` モジュールを使用します。その関数は [Programmatic API — Python runtime](/ja/reference/programmatic-api#python-runtime) に記載されています。
 
 これらはアプリのブートストラップ（`src/i18n.js`）、言語スイッチャー、および方向や文字列ユーティリティを必要とするReact以外のコードで使用してください。エンドツーエンドの設定については、[i18nextの設定](/ja/guide/ui-strings/i18next-runtime)から始めてください。言語メニューやRTLについては、[言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)を参照してください。
 

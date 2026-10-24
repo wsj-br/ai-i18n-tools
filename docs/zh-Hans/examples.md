@@ -6,7 +6,12 @@ GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 <a id="run-standalone-npx-degit"></a>
 ## 独立运行 (`npx degit`)
 
-复制一个示例，无需克隆整个仓库。每个示例都声明了与当前包版本匹配的 `ai-i18n-tools` 脱字符范围，并从 npm 安装 CLI：
+在不克隆完整仓库的情况下复制一个示例。
+
+<a id="node-examples"></a>
+### Node.js 示例
+
+每个 Node.js 示例都声明了与当前包版本匹配的 `ai-i18n-tools` 发布插入符号范围，并从 npm 安装 CLI：
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-如果你改为克隆了**整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录下运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区示例通过其 `pnpm run i18n:*` 脚本使用本地 CLI，或者在 [PATH 设置](/zh-Hans/guide/installation#using-the-cli) 之后直接使用 `ai-i18n-tools …`。请参阅 [安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
+<a id="python-examples"></a>
+### Python 示例
+
+`python-streamlit`、`python-flask`、`python-fastapi` 和 `python-gettext` 没有 `package.json`。下表中的 `degit` 命令是有效的。您也可以从 [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases) 下载 `ai-i18n-tools-python-examples.zip`。该 zip 文件包含相同的四个目录。它不属于 npm 包，也不在独立可执行文件中。
+
+`python-streamlit`、`python-flask` 和 `python-fastapi` 使用 virtualenv 和 `pip install -r requirements.txt`。`python-gettext` 仅使用标准库。使用 [独立可执行文件](/zh-Hans/guide/installation#standalone-executables) 进行翻译。
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+在 Windows 上，激活 `.venv\Scripts\activate`。
+
+如果您克隆了 **整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区 (Node.js) 示例通过其 `pnpm run i18n:*` 脚本使用本地 CLI，或者在 [PATH 设置](/zh-Hans/guide/installation#using-the-cli) 后使用裸 `ai-i18n-tools …`。该检出中的 Python 示例在构建后使用 `node ../../bin/ai-i18n-tools.mjs` 进行翻译。请参阅 [安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
 
 <a id="list-of-examples"></a>
 ## 示例列表
@@ -32,6 +54,10 @@ pnpm install
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | 示例 | 最适合 | 使用 degit 复制 | 运行 |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ pnpm install
 
 每个 **示例** 名称都链接到其 GitHub README，其中包含完整的设置、命令和项目布局 — 或者浏览[存储库中的示例索引](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)。
 
-`python-streamlit`、`python-flask` 和 `python-fastapi` 使用 `venv` 和 `pip`，而非 `pnpm`。`python-gettext` 仅使用标准库。版本发布中还附带了 `ai-i18n-tools-python-examples.zip`，供下载独立可执行文件且未安装 Node.js 的用户使用。该 zip 文件不属于 npm 包的一部分。
+Node.js 示例在 `pnpm install` 之后从 npm 安装 CLI。这四个 Python 示例使用 `venv` 和 `pip`（`python-gettext` 仅使用标准库）以及用于翻译的 [独立可执行文件](/zh-Hans/guide/installation#standalone-executables) 。
 
 <br/>
 

@@ -1,13 +1,45 @@
 <a id="environment-variables"></a>
 # 環境變數
 
-| 變數               | 說明                                                        |
-|------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` 提供者的 API 金鑰 (啟用時為必填)。預設 `init` 預設。 |
-| 其他供應商金鑰 | 每個供應商都會讀取其專屬的金鑰環境變數：`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GOOGLE_API_KEY`、`DEEPSEEK_API_KEY`、`CEREBRAS_API_KEY`、`GROQ_API_KEY`、`MISTRAL_API_KEY`、`XAI_API_KEY`、`NVIDIA_API_KEY`、`ALIBABA_API_KEY`、`APIFUN_API_KEY`、`CHEAPERINFERENCE_API_KEY`（Ollama 不需要）。若要針對個別供應商進行覆寫，請使用 `providers.<name>.apiKeyEnv`。 |
-| `OPENROUTER_BASE_URL`  | 覆寫 `providers.openrouter.baseUrl`（僅當該提供者已設定時）。 |
-| `OLLAMA_BASE_URL`      | 覆寫 `providers.ollama.baseUrl`（僅當該提供者已設定時）。 |
-| `AI_I18N_LANG`         | 工具自身介面（CLI 說明、日誌、儀表板）的語言。由 `-L` / `--ui-lang` 覆寫；覆寫設定 `uiLanguage`。請參閱[工具介面語言](/zh-Hant/guide/tool-ui-language)。 |
+<a id="provider-api-keys"></a>
+## 提供者 API 金鑰
+
+`init -P <provider>` 會選取該內建預設，以及下表中的 API 金鑰。針對其中一個提供者，請使用 `providers.<name>.apiKeyEnv` 覆寫變數名稱。Ollama 沒有 API 金鑰。
+
+| 變數 | 提供者 |
+| --- | --- |
+| `OPENROUTER_API_KEY` | `openrouter` |
+| `OPENAI_API_KEY` | `openai` |
+| `ANTHROPIC_API_KEY` | `anthropic` |
+| `GOOGLE_API_KEY` | `gemini` |
+| `DEEPSEEK_API_KEY` | `deepseek` |
+| `CEREBRAS_API_KEY` | `cerebras` |
+| `GROQ_API_KEY` | `groq` |
+| `MISTRAL_API_KEY` | `mistral` |
+| `XAI_API_KEY` | `xai` |
+| `NVIDIA_API_KEY` | `nvidia` |
+| `ALIBABA_API_KEY` | `alibaba` |
+| `APIFUN_API_KEY` | `apifun` |
+| `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
+
+當該提供者處於啟用狀態時，必須提供此金鑰。預設 URL：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
+
+<a id="provider-base-urls"></a>
+## 提供者基礎 URL
+
+這兩個變數會覆寫已設定提供者的 `baseUrl`。所有其他預設設定皆透過設定檔 (`providers.<name>.baseUrl`) 變更其 URL，而非透過環境變數。
+
+| 變數 | 覆寫對象 |
+| --- | --- |
+| `OPENROUTER_BASE_URL` | `providers.openrouter.baseUrl` (僅在已設定該提供者時) |
+| `OLLAMA_BASE_URL` | `providers.ollama.baseUrl` (僅在已設定該提供者時) |
+
+<a id="tool-and-run"></a>
+## 工具與執行
+
+| 變數 | 說明 |
+| --- | --- |
+| `AI_I18N_LANG` | 工具本身使用者介面（CLI 說明、記錄檔、儀表板）的語言。會被 `-L` / `--ui-lang` 覆寫；並會覆寫設定檔中的 `uiLanguage`。請參閱 [工具使用者介面語言](/zh-Hant/guide/tool-ui-language)。 |
 | `I18N_SOURCE_LOCALE`   | 在執行階段覆寫 `sourceLocale`。                        |
 | `I18N_TARGET_LOCALES`  | 以逗號分隔的地區設定代碼，用於覆寫 `targetLocales`。  |
 | `I18N_LOG_LEVEL`       | 記錄器層級 (`debug`、`info`、`warn`、`error`)。未知值 (包括 `silent`) 會回復為 `info`。 |

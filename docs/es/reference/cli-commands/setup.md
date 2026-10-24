@@ -13,13 +13,13 @@ Imprime la versión de la CLI y la marca de tiempo de compilación (la misma inf
 <a id="init"></a>
 ### `init`
 
-**Sinopsis:** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**Sinopsis:** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 Escriba un archivo de configuración inicial (incluye `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` y `docs[].addFrontmatter`). Los comandos de traducción que llaman a un LLM requieren la clave API del proveedor activo en el entorno o `.env` (excepto Ollama); consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key).
 
-**Opciones clave:** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**Opciones clave:** `-P` / `--provider` (obligatorio), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 
-`-P` / `--provider` selecciona qué **ajuste preestablecido integrado** usar para la estructura (`openrouter` si se omite). Debe ser uno de los siguientes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` es obligatorio. Selecciona el **preajuste integrado** para generar la estructura. Debe ser uno de: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Plantillas (`-t`):**
 

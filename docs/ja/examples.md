@@ -6,7 +6,12 @@ GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 <a id="run-standalone-npx-degit"></a>
 ## スタンドアロンで実行 (`npx degit`)
 
-リポジトリ全体をクローンせずに1つの例をコピーします。各例では、現在のパッケージバージョンに一致する公開済みのキャレット範囲 `ai-i18n-tools` を宣言し、npm から CLI をインストールします。
+リポジトリ全体をクローンせずに、例を1つコピーします。
+
+<a id="node-examples"></a>
+### Node.jsの例
+
+各Node.jsの例では、現在のパッケージバージョンと一致する`ai-i18n-tools`の公開キャレット範囲が宣言されており、npmからCLIをインストールします：
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-代わりに**全体の** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) リポジトリをクローンした場合は、リポジトリルートで `pnpm install` と `pnpm run build` を実行し、その後 `cd examples/<name>` を実行します。ワークスペースの例では、`pnpm run i18n:*` スクリプト経由でローカルCLIを使用するか、[PATHの設定](/ja/guide/installation#using-the-cli)後に単独の `ai-i18n-tools …` を使用します。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)を参照してください。
+<a id="python-examples"></a>
+### Pythonの例
+
+`python-streamlit`、`python-flask`、`python-fastapi`、および`python-gettext`には`package.json`がありません。以下の表にある`degit`コマンドは有効です。また、[GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases)から`ai-i18n-tools-python-examples.zip`をダウンロードすることもできます。そのzipファイルは同じ4つのディレクトリで構成されています。これはnpmパッケージの一部ではなく、スタンドアロン実行ファイル内にも含まれていません。
+
+`python-streamlit`、`python-flask`、および`python-fastapi`はvirtualenvと`pip install -r requirements.txt`を使用します。`python-gettext`は標準ライブラリのみを使用します。[スタンドアロン実行ファイル](/ja/guide/installation#standalone-executables)を使用して翻訳します。
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Windowsでは、`.venv\Scripts\activate`をアクティブ化してください。
+
+[ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)リポジトリを**全体**クローンした場合は、リポジトリのルートで`pnpm install`と`pnpm run build`を実行してから、`cd examples/<name>`を実行してください。ワークスペース（Node.js）の例では、`pnpm run i18n:*`スクリプトを介してローカルCLIを使用するか、[PATH設定](/ja/guide/installation#using-the-cli)の後に直接`ai-i18n-tools …`を使用します。このチェックアウト内のPythonの例は、ビルド後に`node ../../bin/ai-i18n-tools.mjs`を使用して翻訳します。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)を参照してください。
 
 <a id="list-of-examples"></a>
 ## 例のリスト
@@ -32,6 +54,10 @@ pnpm install
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | 例 | 最適な用途 | degit でコピー | 実行 |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ pnpm install
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。
 
-`python-streamlit`、`python-flask`、および `python-fastapi` は `venv` と `pip` を使用し、`pnpm` は使用しません。`python-gettext` は標準ライブラリのみを使用します。リリースには、スタンドアロンの実行可能ファイルをダウンロードし、Node.js をインストールしていないユーザー向けに `ai-i18n-tools-python-examples.zip` も添付されています。その zip ファイルは npm パッケージの一部ではありません。
+Node.jsの例では、`pnpm install`の後にnpmからCLIをインストールします。4つのPythonの例では、`venv`と`pip`（`python-gettext`は標準ライブラリのみを使用）および翻訳用の[スタンドアロン実行ファイル](/ja/guide/installation#standalone-executables)を使用します。
 
 <br/>
 

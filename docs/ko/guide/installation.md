@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### 독립 실행형 실행 파일
 
-GitHub 릴리스는 Linux(`x64`, `arm64`), macOS(`arm64`, `x64`) 및 Windows(`x64`)용 Node.js 단일 실행 파일 빌드를 첨부합니다. Python 프로젝트는 해당 바이너리로 `extract` 및 `translate-ui`을(를) 실행할 수 있으며 Node.js가 설치되어 있지 않아도 됩니다. 이 바이너리는 공증되거나 Authenticode 서명이 되어 있지 않습니다. npm tarball 및 실행 파일에는 Python 예제가 포함되어 있지 않습니다. 해당 예제는 저장소에 유지되며 `ai-i18n-tools-python-examples.zip`(으)로도 첨부됩니다.
+GitHub Releases는 Node.js 단일 실행 파일 빌드를 첨부합니다. Python 프로젝트는 Node.js 설치 없이 `extract`, `translate-ui`, `suggest-models`를 포함하여 해당 바이너리에서 CLI를 실행합니다.
+
+| 플랫폼 | 에셋 |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+각 릴리스에는 `SHA256SUMS.txt` 및 `ai-i18n-tools-python-examples.zip`(4개의 Python 예제)도 첨부됩니다. npm tarball과 실행 파일에는 해당 예제가 포함되어 있지 않습니다. 예제는 저장소에도 그대로 유지됩니다.
+
+1. [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) 페이지에서 머신과 일치하는 에셋을 다운로드합니다.
+2. `SHA256SUMS.txt`을 사용하여 체크섬을 확인합니다.
+3. Linux 및 macOS에서는 파일에 `chmod +x`을 실행하고 `PATH`로 이동합니다(또는 경로를 통해 호출합니다).
+4. Windows에서는 `ai-i18n-tools-win-x64.exe`을 `PATH`에 배치합니다. `ai-i18n-tools.exe`(으)로 이름을 바꾸면 다른 플랫폼과 동일한 명령 이름을 유지할 수 있습니다.
+
+바이너리는 공증되거나 Authenticode 서명이 되어 있지 않습니다. macOS에서 서명되지 않은 프로그램을 승인하라는 메시지가 표시될 수 있습니다. Windows SmartScreen에 경고가 표시될 수 있습니다.
+
+npm 설치와 동일한 방식(환경 변수 또는 작업 디렉터리의 `.env` 파일)으로 활성 공급자에 대한 API 키를 설정합니다. `init`의 모델 목록은 시작점입니다. `suggest-models`는 순위가 지정된 간략한 목록을 출력합니다. `suggest-models --apply`은 이를 `translationModels`에 씁니다. 동일한 순위가 [Models](/ko/guide/translation-dashboard/models) 탭에 있습니다.
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+연습: [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python). 명령 참조: [suggest-models](/ko/reference/cli-commands/models#suggest-models).
 
 ai-i18n-tools에는 자체 문자열 추출기가 포함되어 있습니다. 이전에 `i18next-scanner`, `babel-plugin-i18next-extract` 또는 유사한 도구를 사용했다면 마이그레이션 후 해당 개발 종속성을 제거할 수 있습니다. 기존 i18next **네임스페이스 JSON** 파일은 [JSON 파이프라인](/ko/guide/json#i18next-namespace-files)에 그대로 둘 수 있습니다. Intlayer `.content.ts` 사전은 `migrate-intlayer`로 가져올 수 있습니다 — [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)을 참조하세요.
 
@@ -88,15 +117,15 @@ CLI 소스를 변경한 후 저장소 루트에서 `pnpm run build`을(를) 실�
 
 Linux, macOS 및 WSL에서는 레지스트리 설치 시 CLI 스크립트의 실행 권한 비트가 자동으로 설정됩니다. Windows에서는 패키지 관리자가 Node.js를 명시적으로 호출하는 `.cmd` 및 `.ps1` 쉼(Shim)을 생성합니다.
 
-번역 명령(`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`)은 `ai-i18n-tools.config.json`에 **제공자 구성**이 필요하며, 활성 제공자에 대해 **API 키**가 필요합니다. 기본 제공자 블록을 스캐폴드하려면 `ai-i18n-tools init [-P <provider>]`를 실행하세요 (생략 시 `openrouter`); 프리셋 또는 모델을 전환하려면 `provider` / `providers`를 편집하세요 — [LLM 제공자 및 모델](/ko/guide/providers-and-models)을 참조하세요. Ollama는 API 키가 필요 없는 유일한 기본 제공 프리셋입니다.
+번역 명령(`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`)에는 `ai-i18n-tools.config.json`의 **공급자 구성**과 활성 공급자에 대한 **API 키**가 필요합니다. 해당 사전 설정을 스캐폴드하려면 `ai-i18n-tools init -P <provider>`을(를) 실행하고, 모델을 추가하려면 `provider` / `providers`을(를) 편집하세요. 자세한 내용은 [LLM 공급자 및 모델](/ko/guide/providers-and-models)을(를) 참조하세요. `init`의 모델 목록은 시작점입니다. `ai-i18n-tools suggest-models`은(는) 활성 공급자의 채팅 모델 순위를 매기고, `suggest-models --apply`은(는) `translationModels`를 대체합니다. 동일한 순위는 [모델](/ko/guide/translation-dashboard/models) 탭에서도 확인할 수 있습니다. 명령 참조: [suggest-models](/ko/reference/cli-commands/models#suggest-models). Ollama는 API 키가 필요 없는 유일한 내장 사전 설정입니다.
 
-활성 제공자와 일치하는 API 키를 설정하세요 ([프리셋 테이블](/ko/guide/providers-and-models#built-in-providers) 참조):
+`init`에 전달하는 공급자와 일치하는 API 키를 설정하세요 ([사전 설정 표](/ko/guide/providers-and-models#built-in-providers) 참조):
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 또는 프로젝트 루트에 `.env` 파일을 생성하세요:

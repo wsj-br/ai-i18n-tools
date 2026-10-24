@@ -14,10 +14,10 @@ Diese Pipeline führt **kein** `extract` aus – es gibt keinen `strings.json`-K
 ### Schritt 1: Initialisierung für verschachtelte JSON-Dateien
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-Diese Vorlage setzt `features.translateJson: true`, deaktiviert die UI-Extraktion und Dokumentübersetzung und erstellt einen einzelnen `json[]`-Block, der auf `src/i18n/en/translation.json` mit der Ausgabe `src/i18n/{llocale}/translation.json` verweist. Sie enthält auch einen Standard-`provider`- / `providers`-Block (`openrouter`, es sei denn, Sie übergeben `-P <provider>`) – legen Sie den passenden API-Schlüssel fest (oder verwenden Sie lokales Ollama), bevor Sie `translate-json` oder `sync` ausführen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie `sourceLocale`, `targetLocales`, `contentPaths` und `outputPathTemplate` für Ihr Repo-Layout.
+Diese Vorlage setzt `features.translateJson: true`, deaktiviert die UI-Extraktion und die Dokumentübersetzung und erstellt einen einzelnen `json[]`-Block, der auf `src/i18n/en/translation.json` mit der Ausgabe `src/i18n/{llocale}/translation.json` zeigt. Sie enthält auch den `provider` / `providers`-Block für das Preset, das Sie mit `-P` übergeben – legen Sie den passenden API-Schlüssel fest (oder verwenden Sie lokales Ollama), bevor Sie `translate-json` oder `sync` ausführen; siehe [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key). Bearbeiten Sie `sourceLocale`, `targetLocales`, `contentPaths` und `outputPathTemplate` für Ihr Repo-Layout.
 
 <a id="step-2-configure-json"></a>
 ### Schritt 2: Konfigurieren von `json[]`

@@ -8,6 +8,11 @@ import {
   type ProviderModelEntry,
 } from "../api/provider-models-catalog.js";
 import {
+  providerModelsCatalogQuery,
+  resolveModelsListRequestAuth,
+  resolveProviderSettings,
+} from "./llm-providers.js";
+import {
   benchmarkCachePath,
   ensureBenchmarkCache,
   type BenchmarkCacheFile,
@@ -19,7 +24,6 @@ import {
   type SuggestionProfile,
   type SuggestionWeights,
 } from "./model-suggestion.js";
-import { resolveModelsListRequestAuth, resolveProviderSettings } from "./llm-providers.js";
 import type { I18nConfig } from "./types.js";
 
 export interface SuggestProviderModelsResult {
@@ -56,6 +60,7 @@ export async function suggestProviderModels(opts: {
     providerLabel: opts.provider,
     requestTimeoutMs: settings.requestTimeoutMs,
     extraHeaders: auth.extraHeaders,
+    query: providerModelsCatalogQuery(settings),
   });
   const cachePath = benchmarkCachePath(opts.projectRoot, opts.config.cacheDir);
   const benchmarks: BenchmarkCacheFile = await ensureBenchmarkCache(cachePath, {

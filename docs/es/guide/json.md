@@ -14,10 +14,10 @@ Este pipeline **no** ejecuta `extract`; no hay un catálogo `strings.json`. Habi
 ### Paso 1: Inicializar para JSON anidado
 
 ```bash
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ```
 
-Esa plantilla establece `features.translateJson: true`, deshabilita la extracción de la interfaz de usuario y la traducción de documentos, y estructura un único bloque `json[]` que apunta a `src/i18n/en/translation.json` con salida `src/i18n/{llocale}/translation.json`. También incluye un bloque predeterminado `provider` / `providers` (`openrouter` a menos que pases `-P <provider>`) — establece la clave API coincidente (o usa Ollama local) antes de ejecutar `translate-json` o `sync`; consulta [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key). Edita `sourceLocale`, `targetLocales`, `contentPaths` y `outputPathTemplate` para el diseño de tu repositorio.
+Esa plantilla configura `features.translateJson: true`, deshabilita la extracción de la interfaz de usuario y la traducción de documentos, y estructura un único bloque `json[]` que apunta a `src/i18n/en/translation.json` con la salida `src/i18n/{llocale}/translation.json`. También incluye el bloque `provider` / `providers` para el preajuste que pasas con `-P` — establece la clave de API correspondiente (o usa Ollama local) antes de ejecutar `translate-json` o `sync`; consulta [Proveedor y clave de API](/es/guide/quick-start#provider-and-api-key). Edita `sourceLocale`, `targetLocales`, `contentPaths` y `outputPathTemplate` para el diseño de tu repositorio.
 
 <a id="step-2-configure-json"></a>
 ### Paso 2: Configurar `json[]`

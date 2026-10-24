@@ -22,6 +22,8 @@ import i18n from './i18n.js';
 console.log(i18n.t('Processing complete'));
 ```
 
+Python アプリケーションは、生成された `i18n.py` ヘルパーを使用します。詳細は [Python アプリケーション](/ja/guide/ui-strings/python) を参照してください。
+
 **ルール:**
 
 - 抽出されるのは次の形式のみです: `t("…")`, `t('…')`, `t(`…`)`, `i18n.t("…")`。

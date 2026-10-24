@@ -13,13 +13,13 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 <a id="init"></a>
 ### `init`
 
-**Synopsis :** `ai-i18n-tools init [-t <template>] [-o <path>] [-P <provider>] [--with-translate-ignore]`
+**Synopsis :** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
 
 Écrivez un fichier de configuration de démarrage (inclut `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `docs[].addFrontmatter`). Les commandes de traduction qui appellent un LLM nécessitent la clé API du fournisseur actif dans l'environnement ou `.env` (sauf Ollama) — voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
 
-**Options clés :** `-t` / `--template`, `-o` / `--output`, `-P` / `--provider`, `--with-translate-ignore`
+**Options clés :** `-P` / `--provider` (obligatoire), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
 
-`-P` / `--provider` sélectionne le **préréglage intégré** à échafauder (`openrouter` par défaut). Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` est obligatoire. Il sélectionne le **préréglage intégré** à échafauder. Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Modèles (`-t`) :**
 

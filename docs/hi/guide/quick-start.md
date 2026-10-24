@@ -1,14 +1,16 @@
 <a id="quick-start"></a>
 # त्वरित शुरुआत
 
-डिफ़ॉल्ट `init` टेम्पलेट (`ui-markdown`) केवल **UI** निष्कर्षण और अनुवाद को सक्षम करता है। `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, और `ui-fumadocs` टेम्पलेट **दस्तावेज़** अनुवाद (`translate-docs`) को सक्षम करते हैं; `ui-vitepress` VitePress थीम स्ट्रिंग्स के लिए `docsOutput.vitepressThemeCatalog` को भी स्कैफोल्ड करता है, `ui-nextra` Nextra थीम डिक्शनरी के लिए `docs[].nextraDictionaryPath` को स्कैफोल्ड करता है (साइडबार `_meta.ts` स्वचालित रूप से एकत्र किया जाता है), और `ui-fumadocs` Fumadocs UI ओवरराइड के लिए `docsOutput.fumadocsUiCatalog` को स्कैफोल्ड करता है (साइडबार `meta.json` स्वचालित रूप से एकत्र किया जाता है)। `ui-astro-website` टेम्पलेट सादे Astro ऐप्स (`.astro` फ़ाइलों सहित) के लिए **UI** निष्कर्षण को स्कैफोल्ड करता है; जब आप `.astro` पेज HTML के लिए `translate-docs` भी चाहते हैं तो एक `docs[]` ब्लॉक जोड़ें (देखें [Astro वेबसाइट पेज (पार्स-और-बदलें)](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace))। संदर्भ [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **दोनों** पाइपलाइन का उपयोग करता है। जब आप एक कमांड चाहते हैं जो आपके कॉन्फ़िग के अनुसार निष्कर्षण, UI अनुवाद, वैकल्पिक SVG फ़ाइल अनुवाद, और दस्तावेज़ अनुवाद चलाता है तो `sync` का उपयोग करें।
+डिफ़ॉल्ट `init` टेम्प्लेट (`ui-markdown`) केवल **UI** एक्सट्रैक्शन और अनुवाद को सक्षम करता है। `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, और `ui-fumadocs` टेम्प्लेट **डॉक्यूमेंट** अनुवाद (`translate-docs`) को सक्षम करते हैं; `ui-vitepress` VitePress थीम स्ट्रिंग्स के लिए `docsOutput.vitepressThemeCatalog` को भी स्कैफ़ोल्ड करता है, `ui-nextra` Nextra थीम डिक्शनरी के लिए `docs[].nextraDictionaryPath` को स्कैफ़ोल्ड करता है (साइडबार `_meta.ts` स्वचालित रूप से कलेक्ट किया जाता है), और `ui-fumadocs` Fumadocs UI ओवरराइड्स के लिए `docsOutput.fumadocsUiCatalog` को स्कैफ़ोल्ड करता है (साइडबार `meta.json` स्वचालित रूप से कलेक्ट किया जाता है)। `ui-astro-website` टेम्प्लेट सादे Astro ऐप्स (`.astro` फ़ाइलों सहित) के लिए **UI** एक्सट्रैक्शन को स्कैफ़ोल्ड करता है; जब आप `.astro` पेज HTML के लिए `translate-docs` भी चाहते हैं, तो एक `docs[]` ब्लॉक जोड़ें (देखें [Astro वेबसाइट पेज (parse-and-replace)](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace))। संदर्भ [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) **दोनों** पाइपलाइनों का उपयोग करता है। पायथन टेम्प्लेट `ui-python`, `ui-python-gettext`, `ui-python-flask`, और `ui-python-django` हैं — देखें [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)। जब आप एक ऐसा कमांड चाहते हैं जो आपके कॉन्फ़िगरेशन के अनुसार एक्सट्रैक्ट, UI अनुवाद, वैकल्पिक SVG फ़ाइल अनुवाद, और डॉक्यूमेंटेशन अनुवाद चलाए, तो `sync` का उपयोग करें।
+
+पायथन प्रोजेक्ट्स स्टैंडअलोन निष्पादन योग्य (executable) का उपयोग कर सकते हैं और Node.js इंस्टॉलेशन को छोड़ सकते हैं। डाउनलोड चरण: [इंस्टॉलेशन — स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables)।
 
 <a id="runnable-examples"></a>
 ### चलाने योग्य उदाहरण
 
-नौ चलाने योग्य प्रोजेक्ट और फिक्स्चर [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) के अंतर्गत रहते हैं। [उदाहरण](/hi/examples) कैटलॉग देखें (कंसोल ऐप, Next.js + Docusaurus, Astro वेबसाइट, Astro Starlight डॉक्स, VitePress डॉक्स, Nextra डॉक्स, Fumadocs डॉक्स, मल्टी-प्रोवाइडर तुलना, मार्कडाउन स्ट्रेस टेस्ट)।
+रन करने योग्य प्रोजेक्ट्स और फिक्स्चर [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) के अंतर्गत रहते हैं। पूरी सूची, कॉपी कमांड, और कौन से फ़ोल्डर `pnpm` बनाम पायथन वर्चुअल-एनवी (virtualenv) का उपयोग करते हैं, यह जानने के लिए [उदाहरण](/hi/examples) कैटलॉग देखें।
 
-**एक उदाहरण को अकेले चलाएँ** (पूरे मोनोरिपो को क्लोन किए बिना):
+**एक Node.js उदाहरण स्टैंडअलोन चलाएं** (पूरे मोनोरेपो को क्लोन किए बिना):
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
@@ -17,7 +19,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-किसी भी उदाहरण फ़ोल्डर नाम के साथ `console-app` को बदलें। प्रत्येक उदाहरण वर्तमान पैकेज संस्करण से मेल खाने वाली `ai-i18n-tools` की प्रकाशित कैरेट रेंज घोषित करता है और npm से CLI स्थापित करता है। प्रति-उदाहरण READMEs में फ़ोल्डर नाम के साथ वही स्निपेट शामिल होता है।
+`console-app` को किसी अन्य Node.js उदाहरण फ़ोल्डर नाम से बदलें। उन उदाहरणों में से प्रत्येक वर्तमान पैकेज संस्करण से मेल खाने वाली `ai-i18n-tools` की एक प्रकाशित कैरेट रेंज घोषित करता है और npm से CLI इंस्टॉल करता है। पायथन उदाहरणों में कोई `package.json` नहीं होता है। उन्हें उसी `degit` कमांड के साथ कॉपी करें, या GitHub रिलीज़ से `ai-i18n-tools-python-examples.zip` का उपयोग करें, फिर [उदाहरण — पायथन](/hi/examples#python-examples) का पालन करें।
 
 **पूरे ai-i18n-tools रिपॉजिटरी से** — यदि आपने पूरा रिपो क्लोन किया है (केवल degit के साथ एक उदाहरण फ़ोल्डर नहीं):
 
@@ -36,8 +38,8 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 
 LLM को कॉल करने वाला हर कमांड — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, और `sync` — को **दोनों** की आवश्यकता होती है:
 
-1. `ai-i18n-tools.config.json` में **कम से कम एक प्रदाता**: `translationModels` के साथ एक `providers.<name>` ब्लॉक, और जब एक से अधिक प्रदाता कॉन्फ़िगर किए गए हों तो एक शीर्ष-स्तरीय `provider` कुंजी। `init` एक डिफ़ॉल्ट प्रदाता ब्लॉक को स्कैफोल्ड करता है (`openrouter` जब तक आप `-P <provider>` पास नहीं करते); प्रीसेट स्विच करें, प्रदाता जोड़ें, या मॉडल सूचियों को ट्यून करें — [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें।
-2. आपके वातावरण में या एक प्रोजेक्ट-रूट `.env` फ़ाइल में **मिलान करने वाली API कुंजी**। प्रत्येक अंतर्निहित प्रीसेट [प्रीसेट तालिका](/hi/guide/providers-and-models#built-in-providers) से एक नामित env var पढ़ता है (उदाहरण के लिए डिफ़ॉल्ट के लिए `OPENROUTER_API_KEY`, या जब आप `-P anthropic` के साथ स्कैफोल्ड करते हैं तो `ANTHROPIC_API_KEY`); **Ollama** अपवाद है — यह एक स्थानीय एंडपॉइंट का उपयोग करता है और इसे किसी कुंजी की आवश्यकता नहीं होती है। [स्थापना — अपनी प्रदाता API कुंजी सेट करें](/hi/guide/installation#using-the-cli) देखें।
+1. **कम से कम एक प्रोवाइडर** `ai-i18n-tools.config.json` में: `translationModels` के साथ एक `providers.<name>` ब्लॉक, और एक टॉप-लेवल `provider` कुंजी जब एक से अधिक प्रोवाइडर कॉन्फ़िगर किए गए हों। `init -P <provider>` उस प्रीसेट को स्कैफ़ोल्ड करता है; प्रोवाइडर जोड़ें या मॉडल सूचियों को ट्यून करें — [LLM प्रोवाइडर और मॉडल](/hi/guide/providers-and-models) देखें।
+2. आपके एनवायरनमेंट में या एक प्रोजेक्ट-रूट `.env` फ़ाइल में **मिलान करने वाली API कुंजी**। प्रत्येक बिल्ट-इन प्रीसेट [प्रीसेट टेबल](/hi/guide/providers-and-models#built-in-providers) से एक नामित env var पढ़ता है (उदाहरण के लिए `OPENROUTER_API_KEY` के साथ `-P openrouter`, या `OPENAI_API_KEY` के साथ `-P openai`); **ओलामा** अपवाद है — यह एक स्थानीय एंडपॉइंट का उपयोग करता है और इसे किसी कुंजी की आवश्यकता नहीं है। [इंस्टॉलेशन — अपना प्रोवाइडर API कुंजी सेट करें](/hi/guide/installation#using-the-cli) देखें।
 
 `extract`, `status`, और अन्य कमांड जो LLM को कॉल नहीं करते हैं, उन्हें प्रदाता या API कुंजी की आवश्यकता नहीं होती है।
 
@@ -47,32 +49,35 @@ LLM को कॉल करने वाला हर कमांड — `trans
 `ai-i18n-tools` स्थापित करने और [बेयर कमांड के लिए अपनी शेल कॉन्फ़िगर करने](/hi/guide/installation#using-the-cli) के बाद अपने **प्रोजेक्ट रूट** से चलाएँ। नीचे दिए गए उदाहरण सीधे `ai-i18n-tools` का उपयोग करते हैं।
 
 ```bash
-# Set the API key for your active provider (see preset table; skip for local Ollama)
-# Default init uses openrouter:
+# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Or scaffold another preset at init, e.g. anthropic:
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# export OPENAI_API_KEY=sk-your-key-here
+# export CHEAPERINFERENCE_API_KEY=your-key-here
 
-# UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init [-P <provider>]    # default: openrouter
-ai-i18n-tools init -P anthropic
+# UI strings (ui-markdown template enables extract + translate-ui)
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models          # optional: ranked shortlist
+ai-i18n-tools suggest-models --apply  # replace translationModels
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
-# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
-# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
+# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
+# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
+# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
+# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
+# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
+# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -82,6 +87,8 @@ ai-i18n-tools sync
 ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
+
+`init` द्वारा लिखी गई मॉडल सूची एक शुरुआती बिंदु है। `suggest-models` सक्रिय प्रदाता के चैट मॉडल को रैंक करता है। `suggest-models --apply` को `translationModels` से बदलें और `uiModels` तथा `localeModels` को अपरिवर्तित छोड़ दें। वही रैंकिंग [मॉडल](/hi/guide/translation-dashboard/models) टैब पर है। कमांड संदर्भ: [suggest-models](/hi/reference/cli-commands/models#suggest-models)।
 
 <a id="recommended-packagejson-scripts"></a>
 ### अनुशंसित `package.json` स्क्रिप्ट

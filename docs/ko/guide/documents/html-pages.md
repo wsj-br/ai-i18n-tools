@@ -13,7 +13,7 @@
 작동하는 구성을 스캐폴딩합니다:
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 또는 이미 LLM [provider](/ko/guide/providers-and-models)가 있는 `ai-i18n-tools.config.json`에 이 HTML 부분을 추가합니다:

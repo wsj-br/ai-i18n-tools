@@ -51,19 +51,19 @@ Chaque bloc d'interface utilisateur inclut son `strings.json` comme suggestions 
 ## Étape 1 : Initialisation pour la documentation
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Pour les sites de documentation Astro Starlight :
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 Pour les sites de documentation VitePress :
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 Définissez `docsOutput.vitepressThemeCatalog` pour les chaînes de navigation/barre latérale/pied de page - voir [Intégration VitePress](/fr/guide/integrations/vitepress).
@@ -71,7 +71,7 @@ Définissez `docsOutput.vitepressThemeCatalog` pour les chaînes de navigation/b
 Pour les sites de documentation Nextra :
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 Définissez `docs[].nextraDictionaryPath` pour les chaînes du dictionnaire de thème - voir [Intégration Nextra](/fr/guide/integrations/nextra). Les étiquettes de la barre latérale `_meta.ts` sont collectées automatiquement.
@@ -79,7 +79,7 @@ Définissez `docs[].nextraDictionaryPath` pour les chaînes du dictionnaire de t
 Pour les sites de documentation Fumadocs :
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 Définissez `docsOutput.fumadocsUiCatalog` pour les remplacements d'interface utilisateur - voir [Intégration Fumadocs](/fr/guide/integrations/fumadocs). Les étiquettes de la barre latérale `meta.json` sont collectées automatiquement.
@@ -87,17 +87,17 @@ Définissez `docsOutput.fumadocsUiCatalog` pour les remplacements d'interface ut
 Pour une interface utilisateur Astro simple (sans Starlight) :
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 Ce modèle n'active que l'extraction de l'interface utilisateur. Pour la traduction HTML de page, définissez également `features.translateDocs` et ajoutez un bloc `docs[]` (voir [Pages de site Web Astro (analyse et remplacement)](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). La configuration [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) montre les deux pipelines ensemble.
 
 Modifiez le fichier `ai-i18n-tools.config.json` généré :
 
-- `provider` et `providers` — `init` échafaude un bloc de fournisseur par défaut (`openrouter` sauf si vous passez `-P <provider>`) ; configurez au moins un fournisseur et définissez sa clé API avant `translate-docs` ou `sync` (Ollama n'a pas besoin de clé). Voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key) et [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
+- `provider` et `providers` — des structures `init -P <provider>` préconfigurées ; définissez sa clé API avant `translate-docs` ou `sync` (Ollama ne nécessite pas de clé). Voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key) et [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
 - `sourceLocale` - langue source (doit correspondre à `defaultLocale` dans `docusaurus.config.js`).
 - `targetLocales` - tableau de codes de locale BCP-47 (par exemple `["de", "fr", "es"]`).
-- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de journal par défaut pour `--write-logs`).
+- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de logs par défaut pour `--write-logs`).
 - `docs` - tableau de blocs de documentation. Chaque bloc a un `description` facultatif, `contentPaths` (chaîne ou tableau ; fichier, répertoire ou glob), `outputDir`, `docusaurusCatalogDir` facultatif, `docsOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `docs[].description` - courte note facultative pour les mainteneurs. Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` et dans les en-têtes de section `status`.
 - `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON shell de Docusaurus).

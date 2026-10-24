@@ -6,7 +6,12 @@ Proyectos ejecutables en [`examples/`](https://github.com/wsj-br/ai-i18n-tools/t
 <a id="run-standalone-npx-degit"></a>
 ## Ejecutar de forma independiente (`npx degit`)
 
-Copie un ejemplo sin clonar el repositorio completo. Cada uno declara un rango de intercalación publicado de `ai-i18n-tools` que coincide con la versión actual del paquete e instala la CLI desde npm:
+Copie un ejemplo sin clonar el repositorio completo.
+
+<a id="node-examples"></a>
+### Ejemplos de Node.js
+
+Cada ejemplo de Node.js declara un rango de versión (caret range) publicado de `ai-i18n-tools` que coincide con la versión actual del paquete e instala la CLI desde npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-Si clonó el repositorio **completo** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), ejecute `pnpm install` y `pnpm run build` en la raíz del repositorio, luego `cd examples/<name>`. Los ejemplos del espacio de trabajo usan la CLI local a través de sus scripts `pnpm run i18n:*`, o `ai-i18n-tools …` sin formato después de la [configuración de PATH](/es/guide/installation#using-the-cli). Consulte [Instalación — Monorepo clonado](/es/guide/installation#cloned-monorepo).
+<a id="python-examples"></a>
+### Ejemplos de Python
+
+`python-streamlit`, `python-flask`, `python-fastapi` y `python-gettext` no tienen `package.json`. Los comandos `degit` en la tabla siguiente son válidos. También puede descargar `ai-i18n-tools-python-examples.zip` desde el [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases). Ese archivo zip contiene los mismos cuatro directorios. No forma parte del paquete npm y no se encuentra dentro del ejecutable independiente.
+
+`python-streamlit`, `python-flask` y `python-fastapi` utilizan un virtualenv y `pip install -r requirements.txt`. `python-gettext` utiliza únicamente la biblioteca estándar. Traduzca con el [ejecutable independiente](/es/guide/installation#standalone-executables).
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+En Windows, active `.venv\Scripts\activate`.
+
+Si, en cambio, clonó el repositorio **completo** de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), ejecute `pnpm install` y `pnpm run build` en la raíz del repositorio y, a continuación, `cd examples/<name>`. Los ejemplos de espacio de trabajo (Node.js) utilizan la CLI local a través de sus scripts `pnpm run i18n:*`, o `ai-i18n-tools …` directamente después de la [configuración de PATH](/es/guide/installation#using-the-cli). Los ejemplos de Python en esa copia realizan la traducción con `node ../../bin/ai-i18n-tools.mjs` después de la compilación. Consulte [Instalación — Monorepositorio clonado](/es/guide/installation#cloned-monorepo).
 
 <a id="list-of-examples"></a>
 ## Lista de ejemplos
@@ -32,6 +54,10 @@ Si clonó el repositorio **completo** [ai-i18n-tools](https://github.com/wsj-br/
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | Ejemplo | Ideal para | Copiar con degit | Ejecutar |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ Si clonó el repositorio **completo** [ai-i18n-tools](https://github.com/wsj-br/
 
 Cada nombre de **Ejemplo** enlaza a su README de GitHub con la configuración completa, los comandos y el diseño del proyecto, o explore el [índice de ejemplos en el repositorio](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
 
-`python-streamlit`, `python-flask` y `python-fastapi` utilizan `venv` y `pip`, no `pnpm`. `python-gettext` utiliza únicamente la biblioteca estándar. Una versión también incluye `ai-i18n-tools-python-examples.zip` para los usuarios que descargan el ejecutable independiente y no tienen Node.js. Ese archivo zip no forma parte del paquete npm.
+Los ejemplos de Node.js instalan la CLI desde npm después de `pnpm install`. Los cuatro ejemplos de Python utilizan `venv` y `pip` (`python-gettext` utiliza únicamente la biblioteca estándar) y el [ejecutable independiente](/es/guide/installation#standalone-executables) para la traducción.
 
 <br/>
 

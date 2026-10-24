@@ -3,16 +3,18 @@
 
 `ai-i18n-tools` 从 Python 以及 Jinja、Django 和 Qt `.ui` 文件中提取 UI 字符串，然后写入扁平化的英文键 JSON、GNU gettext 目录或两者兼有。运行时辅助程序是一个标准库 `i18n.py`（Python 3.10 或更高版本）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 均调用该辅助程序。Django 使用 Django 自带的 gettext。
 
+将区域设置添加到现有的单语言应用程序：[向 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)。框架选择器：[Python 集成](/zh-Hans/guide/integrations/python)。函数列表：[Python 运行时 (`i18n.py`)](/zh-Hans/reference/programmatic-api#python-runtime)。
+
 可运行的副本位于 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它们是 Python 项目。前三个项目使用 virtualenv 和 `pip install -r requirements.txt`。`python-gettext` 仅使用标准库。它们不是 npm 包。发布存档 `ai-i18n-tools-python-examples.zip` 包含相同的四个目录。npm tarball 和独立可执行文件则不包含。
 
 <a id="init"></a>
 ## 脚手架
 
 ```bash
-ai-i18n-tools init -t ui-python
-ai-i18n-tools init -t ui-python-gettext
-ai-i18n-tools init -t ui-python-flask
-ai-i18n-tools init -t ui-python-django
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools init -t ui-python-gettext -P anthropic
+ai-i18n-tools init -t ui-python-flask -P groq
+ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` 写入扁平 JSON 和 `i18n.py`。`ui-python-gettext` 写入 JSON 和 `.po` / `.mo`。`ui-python-flask` 在 `translations/` 和 `i18n.py` 下写入 gettext 目录。`ui-python-django` 写入 `locale/<lang>/LC_MESSAGES/django.po` 且不写入 `i18n.py`。
@@ -75,11 +77,11 @@ Gettext 文件使用 `msgctxt` 作为上下文，使用 `msgid` / `msgid_plural`
 
 `set_locale` 返回一个 `ContextVar` 令牌。请在 `finally` 中重置它（包括 FastAPI 和 Flask 中间件），以确保并发请求不会泄露区域设置。
 
-- **Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` 会写入 `st.session_state.locale` 和 `st.query_params["lang"]`。请为每个组件提供一个固定的 `key`。请参阅 `examples/python-streamlit`。
-- **FastAPI.** 在中间件中读取 `?lang=` 或 `Accept-Language`，调用 `set_locale`，并在 `finally` 中执行 `reset_locale`。路由会调用 `t()` 和 `_()`。请参阅 `examples/python-fastapi`。
-- **Flask 和 Pyramid.** 从请求中设置区域设置，并将 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入到模板上下文中。请参阅 `examples/python-flask`。
-- **现有 gettext.** 保留 `_()`、`gettext()` 和 `ngettext()` 不变。将 `ui.gettext` 指向当前的 `locales/` 树，然后运行 `extract` 和 `translate-ui`。请参阅 `examples/python-gettext`。
-- **Django.** 使用 `gettext`、`ngettext` 和 `{% blocktrans %}`。初始化模板 `ui-python-django` 以匹配 Django 的 `locale/` 目录和 `django` 域。
-- **Tkinter.** 在创建每个组件时调用 `t()` 或 `_()`，然后在 `set_locale` 之后重建可见文本。
-- **PyQt / PySide.** `self.tr("...")` 会被提取。除非指定 `notr="true"`，否则 `.ui` 文件会贡献 `<string>` 元素。`comment` 属性将成为 gettext 上下文。
-- **PyWebView / PyWebKit.** 使用上述 Python 模板提取 Python shell。使用 `data-i18n` 标记或每个区域设置一个 HTML 文档的方式提取 HTML 页面。
+- <a id="streamlit"></a>**Streamlit。** `streamlit_language_selector(sidebar=True, key="lang_selector")` 写入 `st.session_state.locale` 和 `st.query_params["lang"]`。为每个小部件提供固定的 `key`。请参阅 `examples/python-streamlit`。
+- <a id="fastapi"></a>**FastAPI。** 在中间件中读取 `?lang=` 或 `Accept-Language`，调用 `set_locale`，并在 `finally` 中 `reset_locale`。路由调用 `t()` 和 `_()`。请参阅 `examples/python-fastapi`。
+- <a id="flask"></a>**Flask 和 Pyramid。** 从请求中设置区域设置，并将 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入到模板上下文中。请参阅 `examples/python-flask`。
+- <a id="gettext"></a>**现有的 gettext。** 保留 `_()`、`gettext()` 和 `ngettext()`。将 `ui.gettext` 指向当前的 `locales/` 树，然后运行 `extract` 和 `translate-ui`。请参阅 `examples/python-gettext`。
+- <a id="django"></a>**Django。** 使用 `gettext`、`ngettext` 和 `{% blocktrans %}`。初始化模板 `ui-python-django` 以匹配 Django 的 `locale/` 目录和 `django` 域。
+- <a id="tkinter"></a>**Tkinter。** 在创建每个小部件时调用 `t()` 或 `_()`，然后在 `set_locale` 之后重建可见文本。
+- <a id="pyqt"></a>**PyQt / PySide。** `self.tr("...")` 会被提取。除非 `notr="true"`，否则 `.ui` 文件会贡献 `<string>` 元素。`comment` 属性将成为 gettext 上下文。
+- <a id="pywebview"></a>**PyWebView / PyWebKit。** 使用上述 Python 模板提取 Python shell。使用 `data-i18n` 标记或每个区域设置一个 HTML 文档来提取 HTML 页面。

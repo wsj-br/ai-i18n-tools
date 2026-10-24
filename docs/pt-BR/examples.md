@@ -6,7 +6,12 @@ Projetos executáveis em [`examples/`](https://github.com/wsj-br/ai-i18n-tools/t
 <a id="run-standalone-npx-degit"></a>
 ## Executar de forma autônoma (`npx degit`)
 
-Copie um exemplo sem clonar o repositório completo. Cada um declara um intervalo de circunflexo publicado de `ai-i18n-tools` correspondendo à versão atual do pacote e instala a CLI do npm:
+Copie um exemplo sem clonar o repositório completo.
+
+<a id="node-examples"></a>
+### Exemplos em Node.js
+
+Cada exemplo em Node.js declara um intervalo de versão (caret range) publicado de `ai-i18n-tools` que corresponde à versão atual do pacote e instala a CLI a partir do npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-Se você clonou o repositório **inteiro** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), execute `pnpm install` e `pnpm run build` na raiz do repositório, depois `cd examples/<name>`. Os exemplos de workspace usam a CLI local por meio de seus scripts `pnpm run i18n:*`, ou `ai-i18n-tools …` puro após a [configuração de PATH](/pt-BR/guide/installation#using-the-cli). Consulte [Instalação — Monorepo clonado](/pt-BR/guide/installation#cloned-monorepo).
+<a id="python-examples"></a>
+### Exemplos em Python
+
+`python-streamlit`, `python-flask`, `python-fastapi` e `python-gettext` não possuem `package.json`. Os comandos `degit` na tabela abaixo são válidos. Você também pode baixar `ai-i18n-tools-python-examples.zip` a partir do [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases). Esse arquivo zip contém os mesmos quatro diretórios. Ele não faz parte do pacote npm e não está dentro do executável independente.
+
+`python-streamlit`, `python-flask` e `python-fastapi` usam um virtualenv e `pip install -r requirements.txt`. `python-gettext` usa apenas a biblioteca padrão. Traduza com o [executável independente](/pt-BR/guide/installation#standalone-executables).
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+No Windows, ative `.venv\Scripts\activate`.
+
+Se você clonou o repositório **inteiro** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools), execute `pnpm install` e `pnpm run build` na raiz do repositório e, em seguida, `cd examples/<name>`. Os exemplos de Workspace (Node.js) usam a CLI local por meio de seus scripts `pnpm run i18n:*`, ou o `ai-i18n-tools …` puro após a [configuração do PATH](/pt-BR/guide/installation#using-the-cli). Os exemplos em Python nesse checkout traduzem com `node ../../bin/ai-i18n-tools.mjs` após a compilação. Consulte [Instalação — Monorepo clonado](/pt-BR/guide/installation#cloned-monorepo).
 
 <a id="list-of-examples"></a>
 ## Lista de Exemplos
@@ -32,6 +54,10 @@ Se você clonou o repositório **inteiro** [ai-i18n-tools](https://github.com/ws
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | Exemplo | Melhor para | Copiar com degit | Executar |
 | --- | --- | --- | --- |
@@ -55,7 +81,7 @@ Se você clonou o repositório **inteiro** [ai-i18n-tools](https://github.com/ws
 
 Cada nome de **Exemplo** se vincula ao seu README do GitHub com configuração completa, comandos e layout do projeto — ou navegue pelo [índice de exemplos no repositório](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
 
-`python-streamlit`, `python-flask` e `python-fastapi` usam `venv` e `pip`, não `pnpm`. `python-gettext` usa apenas a biblioteca padrão. Uma versão também anexa `ai-i18n-tools-python-examples.zip` para pessoas que baixam o executável autônomo e não possuem o Node.js. Esse arquivo zip não faz parte do pacote npm.
+Os exemplos em Node.js instalam a CLI a partir do npm após `pnpm install`. Os quatro exemplos em Python usam `venv` e `pip` (`python-gettext` usa apenas a biblioteca padrão) e o [executável independente](/pt-BR/guide/installation#standalone-executables) para tradução.
 
 <br/>
 

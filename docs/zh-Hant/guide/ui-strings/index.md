@@ -1,7 +1,7 @@
 <a id="ui-strings"></a>
 # UI 字串
 
-專為任何使用 i18next 的 JS/TS 專案而設計：React 應用程式、Next.js（客戶端與伺服器元件）、Node.js 服務、純 HTML、Astro 網站與 CLI 工具。
+專為使用 i18next 的 JS/TS 專案設計 — 包括 React、Next.js（客戶端與伺服器端元件）、Node.js 服務、純 HTML、Astro 網站以及 CLI 工具 — 同時也適用於 Python 應用程式。Python 透過產生的 `i18n.py` 呼叫 `t()` 或 gettext（Django 則保留 Django 的 gettext）。
 
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
@@ -9,6 +9,7 @@
 | 您的應用程式 | 接下來閱讀 |
 | --- | --- |
 | React / Next.js / Node + i18next | [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) (步驟 4) |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 應用程式](/zh-Hant/guide/ui-strings/python)。初始化：`ui-python`、`ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。輔助工具：`i18n.py`。若要將語系加入現有的應用程式，請參閱 [將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。 |
 | 純 HTML (標記中沒有 `t()`) | [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html) |
 | Astro 行銷網站 (混合) | [Astro 網站](/zh-Hant/guide/ui-strings/astro-website) |
 | `t()` 規則、插值、複數 | [t() 呼叫與複數](/zh-Hant/guide/ui-strings/t-calls-and-plurals) |
@@ -20,15 +21,15 @@
 ## 步驟 1：初始化
 
 ```bash
-ai-i18n-tools init [-P <provider>]
+ai-i18n-tools init -P openrouter
 ```
 
-這會使用 `ui-markdown` 模板寫入 `ai-i18n-tools.config.json`（包含預設的 `provider` / `providers` 區塊）。在執行 `translate-ui` 或 `sync` 之前，請在環境變數或 `.env` 中設定您目前使用的供應商 API 金鑰 — Ollama 除外；請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。編輯設定檔以設定：
+這會使用 `ui-markdown` 範本寫入 `ai-i18n-tools.config.json`（包括該預設的 `provider` / `providers` 區塊）。在執行 `translate-ui` 或 `sync` 之前，請在環境或 `.env` 中設定該提供者的 API 金鑰 — Ollama 除外；請參閱[提供者與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。編輯設定以設定：
 
-- `provider` 與 `providers` — 至少一個具有 `translationModels` 的供應商；如果預設值不是您的選擇，請變更預設集或模型列表 (`init -P <provider>`)。請參閱 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
-- `sourceLocale` - 您的來源語言 BCP-47 代碼（例如 `"en-GB"`）。**必須符合** 從您的執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE`。
-- `targetLocales` - 您目標語言的 BCP-47 代碼陣列（例如 `["de", "fr", "pt-BR"]`）。執行 `generate-ui-languages` 以從此列表建立 `ui-languages.json` 資訊清單。
-- `ui.sourceRoots` - 要掃描 `t("…")` 呼叫的目錄或 glob 模式（例如 `["src/"]`, `["src/**/*.ts"]`）。
+- `provider` 和 `providers` — 至少一個具有 `translationModels` 的提供者。`init` 上的 `-P <provider>` 會選擇預設集及其入門模型清單。請參閱 [LLM 提供者和模型](/zh-Hant/guide/providers-and-models)。
+- `sourceLocale` — 您的來源語言 BCP-47 代碼 (例如 `"en-GB"`)。**必須符合** 從您的執行階段 i18n 設定檔匯出的 `SOURCE_LOCALE` (`src/i18n.ts` / `src/i18n.js`)。
+- `targetLocales` — 您的目標語言的 BCP-47 代碼陣列 (例如 `["de", "fr", "pt-BR"]`)。執行 `generate-ui-languages` 以從此清單建立 `ui-languages.json` 資訊清單。
+- `ui.sourceRoots` — 要掃描 `t("…")` 呼叫的目錄或 glob 模式 (例如 `["src/"]`、`["src/**/*.ts"]`)。
 - `ui.stringsJson` - 寫入主目錄的位置（例如 `"src/locales/strings.json"`）。
 - `ui.flatOutputDir` - 寫入 `de.json`, `pt-BR.json` 等的位置（例如 `"src/locales/"`）。
 - `providers.<active>.uiModels`（選用）- 用於 `translate-ui`、複數生成與 `proofread-ui` 的有序僅限 UI 模型列表（在任何相符的 `localeModels` 項目之後，`translationModels` 之前）。請參閱[供應商與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。

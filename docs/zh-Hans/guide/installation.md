@@ -14,7 +14,36 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### 独立可执行文件
 
-GitHub Releases 附带了适用于 Linux (`x64`, `arm64`)、macOS (`arm64`, `x64`) 和 Windows (`x64`) 的 Node.js 单个可执行文件构建版本。Python 项目可以使用该二进制文件运行 `extract` 和 `translate-ui`，且无需安装 Node.js。这些二进制文件未经公证或 Authenticode 签名。npm 压缩包和可执行文件中不包含 Python 示例。这些示例保留在仓库中，并作为 `ai-i18n-tools-python-examples.zip` 一并附上。
+GitHub Releases 附带一个 Node.js 单可执行文件构建。Python 项目可直接从该二进制文件运行 CLI，包括 `extract`、`translate-ui` 和 `suggest-models`，无需安装 Node.js。
+
+| 平台 | 资源 |
+| --- | --- |
+| Linux x64 | `ai-i18n-tools-linux-x64` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64` |
+| macOS x64 | `ai-i18n-tools-macos-x64` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+
+每个版本还附带了 `SHA256SUMS.txt` 和 `ai-i18n-tools-python-examples.zip`（四个 Python 示例）。npm tarball 和可执行文件不包含这些示例。它们同样保留在仓库中。
+
+1. 从 [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) 页面下载与您的机器匹配的资源。
+2. 根据 `SHA256SUMS.txt` 校验其校验和。
+3. 在 Linux 和 macOS 上，对该文件运行 `chmod +x` 并将其移动到 `PATH`（或通过路径调用它）。
+4. 在 Windows 上，将 `ai-i18n-tools-win-x64.exe` 放置在 `PATH` 上。将其重命名为 `ai-i18n-tools.exe` 可保持与其他平台相同的命令名称。
+
+这些二进制文件未经公证或 Authenticode 签名。macOS 可能会要求您批准未签名的程序。Windows SmartScreen 可能会显示警告。
+
+设置当前提供程序的 API 密钥的方式与 npm 安装相同（环境变量或工作目录中的 `.env` 文件）。来自 `init` 的模型列表是一个起点。`suggest-models` 会打印一份排名的简短列表。`suggest-models --apply` 会将其写入 `translationModels`。相同的排名可在 [Models](/zh-Hans/guide/translation-dashboard/models) 选项卡中查看。
+
+```bash
+ai-i18n-tools init -t ui-python -P cheaperinference
+ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
+```
+
+演练：[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。命令参考：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
 ai-i18n-tools 自带字符串提取器。如果你之前使用过 `i18next-scanner`、`babel-plugin-i18next-extract` 或类似工具，可以在迁移后移除这些开发依赖。现有的 i18next **命名空间 JSON** 文件可以继续在 [JSON 流水线](/zh-Hans/guide/json#i18next-namespace-files) 中使用。Intlayer `.content.ts` 字典可以通过 `migrate-intlayer` 导入 —— 参见[从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)。
 
@@ -88,15 +117,15 @@ pnpm add -g ai-i18n-tools
 
 在 Linux、macOS 和 WSL 上，注册表安装会自动为 CLI 脚本设置可执行位。在 Windows 上，包管理器会生成 `.cmd` 和 `.ps1` 包装器，它们会显式调用 Node。
 
-翻译命令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`）需要在 `ai-i18n-tools.config.json` 中进行 **提供商配置**，并为当前活动的提供商提供 **一个 API 密钥**。运行 `ai-i18n-tools init [-P <provider>]` 来生成默认的提供商块（省略时为 `openrouter`）；编辑 `provider` / `providers` 以切换预设或模型 —— 参见 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。Ollama 是唯一不需要 API 密钥的内置预设。
+翻译命令 (`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`) 需要在 `ai-i18n-tools.config.json` 中进行 **供应商配置**，并为活动供应商提供 **API 密钥**。运行 `ai-i18n-tools init -P <provider>` 以生成该预设的脚手架；编辑 `provider` / `providers` 以添加模型 — 参见 [LLM 供应商和模型](/zh-Hans/guide/providers-and-models)。来自 `init` 的模型列表是一个起点。`ai-i18n-tools suggest-models` 对活动供应商的聊天模型进行排名，`suggest-models --apply` 替换 `translationModels`。相同的排名位于 [模型](/zh-Hans/guide/translation-dashboard/models) 选项卡上。命令参考：[建议模型](/zh-Hans/reference/cli-commands/models#suggest-models)。Ollama 是唯一不需要 API 密钥的内置预设。
 
-设置与你的当前活动提供商相匹配的 API 密钥（参见[预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）：
+设置与您传递给 `init` 的供应商匹配的 API 密钥（参见 [预设表](/zh-Hans/guide/providers-and-models#built-in-providers)）：
 
 ```bash
-# Default init (openrouter)
+# init -P openrouter
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Example: init -P anthropic
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# init -P openai
+# export OPENAI_API_KEY=sk-your-key-here
 ```
 
 或在项目根目录中创建一个 `.env` 文件：

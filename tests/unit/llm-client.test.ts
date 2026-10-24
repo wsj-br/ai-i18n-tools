@@ -5,8 +5,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as config from "../../src/core/config.js";
 import type { I18nConfig } from "../../src/core/types.js";
 
-const { generateTextMock } = vi.hoisted(() => ({ generateTextMock: vi.fn() }));
+const { generateTextMock, createOpenAICompatibleMock } = vi.hoisted(() => ({
+  generateTextMock: vi.fn(),
+  createOpenAICompatibleMock: vi.fn(() => {
+    const provider = (modelId: string) => ({ modelId });
+    return provider;
+  }),
+}));
 vi.mock("ai", () => ({ generateText: generateTextMock }));
+vi.mock("@ai-sdk/openai-compatible", () => ({
+  createOpenAICompatible: createOpenAICompatibleMock,
+}));
 
 // Imported after vi.mock so the client picks up the mocked `generateText`.
 const {
@@ -69,6 +78,11 @@ describe("LlmClient", () => {
 
   beforeEach(() => {
     generateTextMock.mockReset();
+    createOpenAICompatibleMock.mockReset();
+    createOpenAICompatibleMock.mockImplementation(() => {
+      const provider = (modelId: string) => ({ modelId });
+      return provider;
+    });
     prevKey = process.env.OPENROUTER_API_KEY;
     process.env.OPENROUTER_API_KEY = "env-key";
   });
@@ -201,6 +215,142 @@ describe("LlmClient", () => {
       { role: "user", content: "usr" },
     ]);
     expect(res.cost).toBe(0.0012);
+  });
+
+  it("sends zdr: true on Cheaper Inference chat calls when zeroDataRetention is set", () => {
+    new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: {
+            translationModels: ["deepseek-v4.1-flash"],
+            zeroDataRetention: true,
+          },
+        },
+      },
+      apiKey: "k",
+    });
+    const calls = createOpenAICompatibleMock.mock.calls as unknown as Array<
+      [
+        {
+          fetch?: unknown;
+          transformRequestBody?: (args: Record<string, unknown>) => Record<string, unknown>;
+        },
+      ]
+    >;
+    const opts = calls[calls.length - 1]![0];
+    expect(opts.fetch).toBeTypeOf("function");
+    expect(opts.transformRequestBody?.({ model: "m", messages: [] })).toEqual({
+      model: "m",
+      messages: [],
+      zdr: true,
+    });
+  });
+
+  it("omits zdr on Cheaper Inference chat calls when zeroDataRetention is off", () => {
+    new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: { translationModels: ["deepseek-v4.1-flash"] },
+        },
+      },
+      apiKey: "k",
+    });
+    const calls = createOpenAICompatibleMock.mock.calls as unknown as Array<
+      [{ transformRequestBody?: unknown }]
+    >;
+    const opts = calls[calls.length - 1]![0];
+    expect(opts.transformRequestBody).toBeUndefined();
+  });
+
+  it("explains a zero-data-retention refusal and continues to the next model", async () => {
+    generateTextMock
+      .mockRejectedValueOnce(
+        new Error(
+          "AI_APICallError: No zero-data-retention route serves gemini-2.5-pro-preview-06-05."
+        )
+      )
+      .mockResolvedValueOnce(genResult("ok"));
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: {
+            translationModels: ["gemini-2.5-pro-preview-06-05", "gemini-2.5-flash"],
+          },
+        },
+      },
+      apiKey: "k",
+    });
+    const res = await c.chat([
+      { role: "system", content: "sys" },
+      { role: "user", content: "usr" },
+    ]);
+    expect(res.model).toBe("gemini-2.5-flash");
+    expect(res.content).toBe("ok");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("names the config flag when zero data retention is off and every model is refused", async () => {
+    generateTextMock.mockRejectedValue(
+      new Error("zdr_capacity_unavailable: No zero-data-retention route serves gpt-5.1.")
+    );
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: { translationModels: ["gpt-5.1"] },
+        },
+      },
+      apiKey: "k",
+    });
+    await expect(
+      c.chat([
+        { role: "system", content: "sys" },
+        { role: "user", content: "usr" },
+      ])
+    ).rejects.toThrow(/providers\.cheaperinference\.zeroDataRetention/);
+    await expect(
+      c.chat([
+        { role: "system", content: "sys" },
+        { role: "user", content: "usr" },
+      ])
+    ).rejects.toThrow(/platform\.cheaperinference\.com\/dashboard\/data-protection/);
+  });
+
+  it("tells the user to remove the model when zeroDataRetention is on and the model is refused", async () => {
+    generateTextMock.mockRejectedValue(
+      new Error("No zero-data-retention route serves gemini-2.5-pro-preview-06-05.")
+    );
+    const c = new LlmClient({
+      config: {
+        sourceLocale: "en",
+        localeDisplayNames: {},
+        provider: "cheaperinference",
+        providers: {
+          cheaperinference: {
+            translationModels: ["gemini-2.5-pro-preview-06-05"],
+            zeroDataRetention: true,
+          },
+        },
+      },
+      apiKey: "k",
+    });
+    await expect(
+      c.chat([
+        { role: "system", content: "sys" },
+        { role: "user", content: "usr" },
+      ])
+    ).rejects.toThrow(/not in the Cheaper Inference zero-data-retention catalog/);
   });
 
   it("chat keeps Cheaper Inference reported cost instead of configured rates", async () => {

@@ -6,10 +6,10 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 <a id="translation-modes"></a>
 ## 翻译模式
 
-- **UI 字符串** — 从 JS/TS 源码中提取 `t("…")` 调用（及类似标记），为 i18next 或静态查找生成扁平的按语言环境的 JSON 文件。命令：`extract`、`translate-ui`。指南：[UI 字符串](/zh-Hans/guide/ui-strings/)。
-- **文档** — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。支持 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 及其他静态文档站点。命令：`translate-docs`。指南：[文档](/zh-Hans/guide/documents/)。
-- **JSON** — 翻译在顶层 `json[]` 中定义的嵌套 JSON 语言包（主题标签、i18n 覆盖项、源码中未包含的应用文案）。命令：`translate-json`。指南：[JSON](/zh-Hans/guide/json)。
-- **SVG** — 翻译 SVG 插图中的可见文本（`<text>`、`<title>`、`<desc>`），并为每个语言环境生成一个输出文件。与文档翻译相互独立 — `translate-docs` 不会修改 SVG 资源。命令：`translate-svg`。指南：[SVG 翻译](/zh-Hans/guide/svg-translation/)。
+- **UI 字符串** — 从 JS/TS 和 Python 源代码中提取 `t("…")` 和 `_()` 调用（以及类似的标记，包括 GNU gettext），并写入扁平的各语言 JSON 或 `.po` / `.mo` 目录。命令：`extract`，`translate-ui`。指南：[UI 字符串](/zh-Hans/guide/ui-strings/)。Python：[Python 应用程序](/zh-Hans/guide/ui-strings/python)。
+- **文档** — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 以及其他静态文档站点。命令：`translate-docs`。指南：[文档](/zh-Hans/guide/documents/)。
+- **JSON** — 翻译在顶层 `json[]` 中定义的嵌套 JSON 语言包（主题标签、i18n 覆盖、不在源代码中的应用文案）。命令：`translate-json`。指南：[JSON](/zh-Hans/guide/json)。
+- **SVG** — 翻译 SVG 插图（`<text>`、`<title>`、`<desc>`）中的可见文本，并为每种语言写入一个输出文件。与文档翻译分离 — `translate-docs` 不会修改 SVG 资源。命令：`translate-svg`。指南：[SVG 翻译](/zh-Hans/guide/svg-translation/)。
 
 所有四种模式都使用活动的 [LLM 提供商](/zh-Hans/guide/providers-and-models)，共享相同的配置文件，并重用 SQLite 缓存，因此重新运行只会将新的或更改的文本发送到模型。
 
@@ -18,7 +18,7 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 
 | 您的内容 | 模式 | 命令 |
 | --- | --- | --- |
-| 源代码使用 `t()` 或 HTML `data-i18n` 标记 | UI 字符串 | `extract` / `translate-ui` |
+| 源代码使用 `t()`、`_()`、gettext 或 HTML `data-i18n` 标记 | UI 字符串 | `extract` / `translate-ui` |
 | 本地化页面或文档站点 | 文档 | `translate-docs` |
 | 独立的嵌套 JSON 区域设置文件 | JSON | `translate-json` |
 | 带有 SVG 标签的图表或插图 | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ ai-i18n-tools 是一个命令行工具和工具包，可帮助您使用首选的
 | [multi-provider](/zh-Hans/examples#multi-provider) | 比较同一文档上的 LLM 提供商 |
 | [test-markdown](/zh-Hans/examples#test-markdown) | Markdown 管道压力测试（CJK、天城文、边缘情况） |
 | [intlayer-migration](/zh-Hans/examples#intlayer-migration) | 通过 `migrate-intlayer` 将 Intlayer `.content.ts` 迁移至 `t()` |
+| [python-streamlit](/zh-Hans/examples#python-streamlit) | Streamlit 仪表板，`t()` / `_()`，英文键 JSON |
+| [python-flask](/zh-Hans/examples#python-flask) | Flask + Jinja，`t()` / `_()`，英文键 JSON |
+| [python-fastapi](/zh-Hans/examples#python-fastapi) | FastAPI，请求作用域语言环境，英文键 JSON |
+| [python-gettext](/zh-Hans/examples#python-gettext) | 现有的 GNU gettext；`extract` / `translate-ui` 刷新 `.po` 和 `.mo` |
 
 请参阅 [示例](/zh-Hans/examples) 获取 `npx degit` 复制命令和选择指南。
 
 <a id="next-steps"></a>
 ## 后续步骤
 
-1. [安装](/zh-Hans/guide/installation) — 安装软件包并设置您的提供商 API 密钥。
+1. [安装](/zh-Hans/guide/installation) — 安装 npm 包，或为 Python 项目下载 [独立可执行文件](/zh-Hans/guide/installation#standalone-executables)，并设置您的提供商 API 密钥。
 2. [快速入门](/zh-Hans/guide/quick-start) — 构建配置并运行您的首次翻译。
-3. [提供商和模型](/zh-Hans/guide/providers-and-models) — 选择提供商、模型回退链和 `-P` 覆盖。
+3. [提供商和模型](/zh-Hans/guide/providers-and-models) — 选择提供商、模型回退链以及 `-P` 覆盖。

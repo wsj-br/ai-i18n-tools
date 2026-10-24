@@ -6,7 +6,12 @@ Runnable projects under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tr
 <a id="run-standalone-npx-degit"></a>
 ## Run standalone (`npx degit`)
 
-Copy one example without cloning the full repository. Each declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm:
+Copy one example without cloning the full repository.
+
+<a id="node-examples"></a>
+### Node.js examples
+
+Each Node.js example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/<name> <name>
@@ -14,7 +19,24 @@ cd <name>
 pnpm install
 ```
 
-If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository instead, run `pnpm install` and `pnpm run build` at the repository root, then `cd examples/<name>`. Workspace examples use the local CLI via their `pnpm run i18n:*` scripts, or bare `ai-i18n-tools …` after [PATH setup](/guide/installation#using-the-cli). See [Installation — Cloned monorepo](/guide/installation#cloned-monorepo).
+<a id="python-examples"></a>
+### Python examples
+
+`python-streamlit`, `python-flask`, `python-fastapi`, and `python-gettext` have no `package.json`. The `degit` commands in the table below are valid. You can also download `ai-i18n-tools-python-examples.zip` from the [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases). That zip is the same four directories. It is not part of the npm package, and it is not inside the standalone executable.
+
+`python-streamlit`, `python-flask`, and `python-fastapi` use a virtualenv and `pip install -r requirements.txt`. `python-gettext` uses only the standard library. Translate with the [standalone executable](/guide/installation#standalone-executables).
+
+```bash
+npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit
+cd python-streamlit
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+On Windows, activate `.venv\Scripts\activate`.
+
+If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository instead, run `pnpm install` and `pnpm run build` at the repository root, then `cd examples/<name>`. Workspace (Node.js) examples use the local CLI via their `pnpm run i18n:*` scripts, or bare `ai-i18n-tools …` after [PATH setup](/guide/installation#using-the-cli). Python examples in that checkout translate with `node ../../bin/ai-i18n-tools.mjs` after the build. See [Installation — Cloned monorepo](/guide/installation#cloned-monorepo).
 
 
 <a id="list-of-examples"></a>
@@ -33,6 +55,10 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
 <a id="test-markdown"></a>
+<a id="python-streamlit"></a>
+<a id="python-flask"></a>
+<a id="python-fastapi"></a>
+<a id="python-gettext"></a>
 
 | Example | Best for | Copy with degit | Run |
 | --- | --- | --- | --- |
@@ -56,7 +82,7 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 
 Each **Example** name links to its GitHub README with full setup, commands, and project layout — or browse the [examples index in the repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
 
-`python-streamlit`, `python-flask`, and `python-fastapi` use `venv` and `pip`, not `pnpm`. `python-gettext` uses only the standard library. A release also attaches `ai-i18n-tools-python-examples.zip` for people who download the standalone executable and do not have Node.js. That zip is not part of the npm package.
+Node.js examples install the CLI from npm after `pnpm install`. The four Python examples use `venv` and `pip` (`python-gettext` uses only the standard library) and the [standalone executable](/guide/installation#standalone-executables) for translation.
 
 
 <br/>

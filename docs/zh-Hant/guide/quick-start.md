@@ -1,14 +1,16 @@
 <a id="quick-start"></a>
 # 快速入門
 
-預設的 `init` 模板（`ui-markdown`）僅啟用 **UI** 萃取與翻譯。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra` 與 `ui-fumadocs` 模板啟用 **文件** 翻譯（`translate-docs`）；`ui-vitepress` 亦會為 VitePress 主題字串搭建 `docsOutput.vitepressThemeCatalog`，`ui-nextra` 為 Nextra 主題字典搭建 `docs[].nextraDictionaryPath`（側邊欄 `_meta.ts` 會自動收集），而 `ui-fumadocs` 為 Fumadocs UI 覆寫搭建 `docsOutput.fumadocsUiCatalog`（側邊欄 `meta.json` 會自動收集）。`ui-astro-website` 模板為一般 Astro 應用程式搭建 **UI** 萃取（包含 `.astro` 檔案）；當您也想要為 `.astro` 頁面 HTML 進行 `translate-docs` 時，請新增 `docs[]` 區塊（參見 [Astro 網站頁面（解析並取代）](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。參考 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用了 **兩者** 管線。當您想要以單一指令根據設定執行萃取、UI 翻譯、可選的 SVG 檔案翻譯以及文件翻譯時，請使用 `sync`。
+預設的 `init` 模板 (`ui-markdown`) 僅啟用 **UI** 擷取與翻譯。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra` 與 `ui-fumadocs` 模板則啟用 **文件** 翻譯 (`translate-docs`)；`ui-vitepress` 同時會為 VitePress 主題字串建立 `docsOutput.vitepressThemeCatalog` 鷹架，`ui-nextra` 會為 Nextra 主題字典建立 `docs[].nextraDictionaryPath` 鷹架（側邊欄 `_meta.ts` 會自動收集），而 `ui-fumadocs` 則會為 Fumadocs UI 覆寫建立 `docsOutput.fumadocsUiCatalog` 鷹架（側邊欄 `meta.json` 會自動收集）。`ui-astro-website` 模板為純 Astro 應用程式（包含 `.astro` 檔案）建立 **UI** 擷取鷹架；若您同時需要 `.astro` 頁面 HTML 的 `translate-docs`，請加入 `docs[]` 區塊（請參閱 [Astro 網站頁面 (parse-and-replace)](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。參考資料 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用了 **兩者** 的管線。Python 模板為 `ui-python`、`ui-python-gettext`、`ui-python-flask` 與 `ui-python-django` — 請參閱 [將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。當您希望透過單一指令根據設定檔執行擷取、UI 翻譯、選用的 SVG 檔案翻譯以及文件翻譯時，請使用 `sync`。
+
+Python 專案可以使用獨立執行檔，無需安裝 Node.js。下載步驟：[安裝 — 獨立執行檔](/zh-Hant/guide/installation#standalone-executables)。
 
 <a id="runnable-examples"></a>
 ### 可執行的範例
 
-九個可執行的專案與測試夾具位於 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 之下。請參閱 [範例](/zh-Hant/examples) 目錄（主控台應用程式、Next.js + Docusaurus、Astro 網站、Astro Starlight 文件、VitePress 文件、Nextra 文件、Fumadocs 文件、多供應商比較、Markdown 壓力測試）。
+可執行的專案與測試夾具位於 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。請參閱 [範例](/zh-Hant/examples) 目錄以取得完整清單、複製指令，以及了解哪些資料夾使用 `pnpm` 與 Python 虛擬環境。
 
-**獨立執行一個範例**（無需複製整個單一儲存庫）：
+**執行一個 Node.js 範例獨立程式**（無需複製整個 monorepo）：
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
@@ -17,7 +19,7 @@ pnpm install
 pnpm run i18n:sync    # example scripts call the locally installed CLI
 ```
 
-將 `console-app` 替換為任何範例資料夾名稱。每個範例都宣告一個與目前套件版本相符的已發佈插入符號範圍 `ai-i18n-tools`，並從 npm 安裝 CLI。每個範例的 README 都包含相同的程式碼片段，並填入了資料夾名稱。
+將 `console-app` 取代為任何其他 Node.js 範例資料夾名稱。這些範例中的每一個都宣告了與目前套件版本相符的已發佈 `ai-i18n-tools` 插入符號範圍，並從 npm 安裝 CLI。Python 範例沒有 `package.json`。請使用相同的 `degit` 指令複製它們，或使用來自 GitHub Release 的 `ai-i18n-tools-python-examples.zip`，然後依照 [範例 — Python](/zh-Hant/examples#python-examples) 操作。
 
 **從完整的 ai-i18n-tools 儲存庫** — 如果您複製了整個儲存庫（而不僅僅是透過 degit 複製單個範例資料夾）：
 
@@ -36,8 +38,8 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 
 每個呼叫 LLM 的指令 — `translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 與 `sync` — 都需要**兩者**：
 
-1. **至少一個供應商** 位於 `ai-i18n-tools.config.json`：一個包含 `translationModels` 的 `providers.<name>` 區塊，以及當設定多個供應商時的一個頂層 `provider` 鍵。`init` 會建立預設供應商區塊（除非您傳遞 `-P <provider>`，否則為 `openrouter`）；切換預設集、新增供應商或調整模型列表 — 請參閱 [LLM 供應商與模型](/zh-Hant/guide/providers-and-models)。
-2. **對應的 API 金鑰** 位於您的環境變數或專案根目錄的 `.env` 檔案中。每個內建預設集會從 [預設集表格](/zh-Hant/guide/providers-and-models#built-in-providers) 讀取一個具名環境變數（例如預設的 `OPENROUTER_API_KEY`，或當您使用 `-P anthropic` 建立時的 `ANTHROPIC_API_KEY`）；**Ollama** 是例外 — 它使用本機端點且不需要金鑰。請參閱 [安裝 — 設定您的供應商 API 金鑰](/zh-Hant/guide/installation#using-the-cli)。
+1. **至少一個提供者**在 `ai-i18n-tools.config.json`：一個包含 `translationModels` 的 `providers.<name>` 區塊，且在設定多個提供者時，需有頂層 `provider` 鍵。`init -P <provider>` 會建立該預設；可新增提供者或調整模型列表 — 參閱 [LLM 提供者與模型](/zh-Hant/guide/providers-and-models)。
+2. **相符的 API 金鑰**位於您的環境或專案根目錄的 `.env` 檔案中。每個內建預設會從[預設表格](/zh-Hant/guide/providers-and-models#built-in-providers)讀取指定的環境變數（例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter`，或 `OPENAI_API_KEY` 搭配 `-P openai`）；**Ollama** 是例外 — 它使用本地端點且無需金鑰。參閱[安裝 — 設定您的提供者 API 金鑰](/zh-Hant/guide/installation#using-the-cli)。
 
 `extract`、`status` 與其他不呼叫 LLM 的指令不需要供應商或 API 金鑰。
 
@@ -47,32 +49,35 @@ pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
 在安裝 `ai-i18n-tools` 並[為裸命令設定您的 shell](/zh-Hant/guide/installation#using-the-cli)後，從您的 **專案根目錄**執行。以下範例直接使用 `ai-i18n-tools`。
 
 ```bash
-# Set the API key for your active provider (see preset table; skip for local Ollama)
-# Default init uses openrouter:
+# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# Or scaffold another preset at init, e.g. anthropic:
-# export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# export OPENAI_API_KEY=sk-your-key-here
+# export CHEAPERINFERENCE_API_KEY=your-key-here
 
-# UI strings (default template enables extract + translate-ui)
-ai-i18n-tools init [-P <provider>]    # default: openrouter
-ai-i18n-tools init -P anthropic
+# UI strings (ui-markdown template enables extract + translate-ui)
+ai-i18n-tools init -P openrouter
+ai-i18n-tools suggest-models          # optional: ranked shortlist
+ai-i18n-tools suggest-models --apply  # replace translationModels
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 
 # Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
 ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight [-P <provider>]
-# VitePress docs: ai-i18n-tools init -t ui-vitepress [-P <provider>]
-# Nextra docs: ai-i18n-tools init -t ui-nextra [-P <provider>]
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs [-P <provider>]
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website [-P <provider>]
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html [-P <provider>]
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html [-P <provider>]
+# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
+# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
+# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
+# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
+# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
+# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
+# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
+# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
+# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
+# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
+# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
 ai-i18n-tools translate-docs
 
 # JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles [-P <provider>]
+ai-i18n-tools init -t ui-json-bundles -P ollama
 ai-i18n-tools translate-json
 
 # Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
@@ -82,6 +87,8 @@ ai-i18n-tools sync
 ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
+
+由 `init` 寫入的模型清單僅為起點。`suggest-models` 會對作用中提供者的聊天模型進行排名。`suggest-models --apply` 會取代 `translationModels` 並保持 `uiModels` 與 `localeModels` 不變。相同的排名亦顯示於 [模型](/zh-Hant/guide/translation-dashboard/models) 分頁中。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 <a id="recommended-packagejson-scripts"></a>
 ### 建議的 `package.json` 指令碼

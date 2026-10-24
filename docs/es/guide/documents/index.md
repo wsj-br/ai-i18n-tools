@@ -51,19 +51,19 @@ Cada bloque de UI incluye su `strings.json` como sugerencias de glosario para la
 ## Paso 1: Inicializar para la documentación
 
 ```bash
-ai-i18n-tools init -t ui-docusaurus [-P <provider>]
+ai-i18n-tools init -t ui-docusaurus -P openai
 ```
 
 Para sitios de documentación Astro Starlight:
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 ```
 
 Para sitios de documentación de VitePress:
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 ```
 
 Configure `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/barra lateral/pie de página; consulte [Integración de VitePress](/es/guide/integrations/vitepress).
@@ -71,7 +71,7 @@ Configure `docsOutput.vitepressThemeCatalog` para las cadenas de navegación/bar
 Para sitios de documentación de Nextra:
 
 ```bash
-ai-i18n-tools init -t ui-nextra [-P <provider>]
+ai-i18n-tools init -t ui-nextra -P gemini
 ```
 
 Configure `docs[].nextraDictionaryPath` para las cadenas del diccionario de temas; consulte [Integración de Nextra](/es/guide/integrations/nextra). Las etiquetas de la barra lateral `_meta.ts` se recopilan automáticamente.
@@ -79,7 +79,7 @@ Configure `docs[].nextraDictionaryPath` para las cadenas del diccionario de tema
 Para sitios de documentación de Fumadocs:
 
 ```bash
-ai-i18n-tools init -t ui-fumadocs [-P <provider>]
+ai-i18n-tools init -t ui-fumadocs -P groq
 ```
 
 Configure `docsOutput.fumadocsUiCatalog` para las anulaciones de la interfaz de usuario; consulte [Integración de Fumadocs](/es/guide/integrations/fumadocs). Las etiquetas de la barra lateral `meta.json` se recopilan automáticamente.
@@ -87,16 +87,16 @@ Configure `docsOutput.fumadocsUiCatalog` para las anulaciones de la interfaz de 
 Para la interfaz de un sitio web Astro plano (sin Starlight):
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
 Esa plantilla solo permite la extracción de la interfaz de usuario. Para la traducción de HTML de páginas, también configure `features.translateDocs` y agregue un bloque `docs[]` (consulte [Páginas del sitio web de Astro (analizar y reemplazar)](/es/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). La configuración de [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) muestra ambas canalizaciones juntas.
 
 Edite el `ai-i18n-tools.config.json` generado:
 
-- `provider` y `providers` — `init` genera un bloque de proveedor predeterminado (`openrouter` a menos que pase `-P <provider>`); configure al menos un proveedor y establezca su clave API antes de `translate-docs` o `sync` (Ollama no necesita clave). Consulte [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key) y [Proveedores y modelos de LLM](/es/guide/providers-and-models).
+- `provider` y `providers` — plantillas `init -P <provider>` que preconfiguran; establezca su clave de API antes de `translate-docs` o `sync` (Ollama no necesita clave). Consulte [Proveedor y clave de API](/es/guide/quick-start#provider-and-api-key) y [Proveedores y modelos de LLM](/es/guide/providers-and-models).
 - `sourceLocale` - idioma de origen (debe coincidir con `defaultLocale` en `docusaurus.config.js`).
-- `targetLocales` - matriz de códigos de configuración regional BCP-47 (por ejemplo, `["de", "fr", "es"]`).
+- `targetLocales` - matriz de códigos de configuración regional BCP-47 (p. ej. `["de", "fr", "es"]`).
 - `cacheDir` - directorio de caché SQLite compartido para todas las canalizaciones (y directorio de registro predeterminado para `--write-logs`).
 - `docs` - array de bloques de documentación. Cada bloque tiene `description` opcional, `contentPaths` (cadena o array; archivo, directorio o patrón), `outputDir`, `docusaurusCatalogDir` opcional, `docsOutput`, `segmentSplitting` opcional, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `docs[].description` - nota breve opcional para los mantenedores. Cuando se establece, aparece en el titular de `translate-docs` y en los encabezados de sección de `status`.

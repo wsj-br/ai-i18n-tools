@@ -13,7 +13,7 @@
 搭建一个可用的配置：
 
 ```bash
-ai-i18n-tools init -t docs-plain-html [-P <provider>]
+ai-i18n-tools init -t docs-plain-html -P openai
 ```
 
 或者将此 HTML 部分添加到已具有 LLM [提供程序](/zh-Hans/guide/providers-and-models) 的 `ai-i18n-tools.config.json` 中：

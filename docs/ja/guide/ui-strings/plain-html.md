@@ -8,9 +8,9 @@
 <a id="quick-start"></a>
 ## クイックスタート
 
-1. `ai-i18n-tools init -t ui-plain-html`でスキャフォールディングを行うか、以下の設定を追加します。
-2. ソースHTMLにマークを付けます（または`mark-html`に任せます）。
-3. `ui.sourceRoots`と`ui.uiExtractor.extensions`をそれらのファイルに向けます。
+1. `ai-i18n-tools init -t ui-plain-html -P openai`でスキャフォールドするか、以下の設定を追加します。
+2. ソースHTMLをマークします（または`mark-html`に任せます）。
+3. `ui.sourceRoots`と`ui.uiExtractor.extensions`をそれらのファイルに指定します。
 4. `extract`を実行し、次に`translate-ui`を実行します（または`sync-ui`で両方を実行します）。
 5. `i18n.js`をページと同じディレクトリにコピーし、独自のスクリプトより前に読み込みます。
 6. フォルダをHTTP経由で配信します。`file://`はロケールJSONを`fetch`できません。

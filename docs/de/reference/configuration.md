@@ -137,8 +137,12 @@ Jeder `providers.<name>`-Block akzeptiert:
   Anbieterweite USD pro 1.000.000 Token: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf kein vom Anbieter gemeldetes `usage.cost` aufweist (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabetoken dieses Aufrufs angewendet. Der Betrag ist in der Übersetzungszusammenfassung enthalten und wird in der Zeile `api_calls` gespeichert. Ein übereinstimmender `modelPricing`-Eintrag überschreibt diesen Standardwert. Ein vom Anbieter gemeldeter Preis wird niemals ersetzt. Wenn kein Konfigurationssatz übereinstimmt, verwenden die Tools den models.dev-Listenpreis für diese Modell-ID (Eingabe- und Ausgabe-USD pro 1 Mio. Token). Zeilen, die ohne Kosten gespeichert wurden, können später noch durch [`usage`](/de/reference/cli-commands/workflows#usage) und [Usage & costs](/de/guide/translation-dashboard/usage) geschätzt werden. Wenn keine dieser Quellen zutrifft, bleiben die Kosten unbekannt (`—`), niemals `$0.00`.
 - `modelPricing` (optional)
   Modellspezifische USD pro 1.000.000 Token: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zum Zeitpunkt des Aufrufs angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
+- `zeroDataRetention` (optional, nur `providers.cheaperinference`)
+  Wenn `true` aktiviert ist, senden Chat-Anfragen `"zdr": true` und `list-models`, und `check-models` sowie `suggest-models` laden `GET /v1/models?zdr=true`. Weglassen bedeutet deaktiviert. Siehe [Null-Datenaufbewahrung](/de/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebungsvariable):
+
+<div class="provider-presets">
 
 | Anbieter | Basis-URL | API-Schlüssel-Umgebungsvariable |
 | --- | --- | --- |
@@ -157,6 +161,8 @@ Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebu
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (keine) |
 
+</div>
+
 Ein veralteter übergeordneter `openrouter`-Block (mit `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) wird weiterhin akzeptiert und beim Laden automatisch zu `providers.openrouter` (mit `provider: "openrouter"`) migriert; `defaultModel` / `fallbackModel` werden in `translationModels` zusammengeführt.
 
 Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfiguriert und mit `-P` zwischen ihnen wechselt, finden Sie unter [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` und `deepseek` im selben Dokument).
@@ -165,14 +171,14 @@ Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfigur
 
 Betrachten Sie die folgende Liste als **Grundlage**, die Sie erweitern können: Wenn die Übersetzung für ein bestimmtes Gebietsschema schlecht oder erfolglos ist, recherchieren Sie, welche Modelle diese Sprache oder Schrift effektiv unterstützen (siehe Online-Ressourcen oder die Dokumentation Ihres Anbieters), und fügen Sie diese Modell-IDs als weitere Alternativen hinzu.
 
-Diese Modell-IDs stimmen mit `ai-i18n-tools init [-P <provider>]` überein, wenn `-P openrouter` (die Standardeinstellung) verwendet wird. Andere Voreinstellungen erhalten native Modell-IDs von `init -P <provider>` – siehe [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
+Diese Modell-IDs sind das, was `ai-i18n-tools init -P openrouter` schreibt. Andere Voreinstellungen erhalten native Modell-IDs von `init -P <provider>` — siehe [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
 
 Diese Liste wurde auf **umfassende Abdeckung verschiedener Sprachen** in einem großen Dokumentationsprojekt mit 36 Ziel-Lokalisierungen getestet; sie dient als praktischer Standard, ist jedoch nicht garantiert für jede Lokalisierung optimal.
 
-Beispiel `translationModels` (gleiche Standardwerte wie `ai-i18n-tools init [-P <provider>]`):
+Beispiel `translationModels` (OpenRouter-Liste von `ai-i18n-tools init -P openrouter`):
 
 <details>
-<summary>Standard-Übersetzungsmodell-Fallback-Liste</summary>
+<summary>OpenRouter translationModels-Liste</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 
 Gewichtungen für [`suggest-models`](/de/reference/cli-commands/models#suggest-models) und den [Dashboard-Tab „Models“](/de/guide/translation-dashboard/models). Lassen Sie den Block oder ein Profil weg, dann behält dieses Profil die integrierten Gewichtungen bei. Der Block wird nicht durch `--apply` oder **Update config** überschrieben; diese schreiben nur Modell-IDs.
 
-- `quality` — Standard ChrF `0.45/0.95`, Arena `0.35/0.95`, Preis `0.15/0.95`, Qualitätsuntergrenze `0.7`
-- `price` — Standard ChrF `0.25`, Arena `0.10`, Preis `0.65`, Qualitätsuntergrenze `0.6`
+- `quality` – Standard-ChrF `0.45`, Arena `0.35`, Preis `0.20`, Qualitätsuntergrenze `0.7`
+- `price` – Standard-ChrF `0.35`, Arena `0.20`, Preis `0.45`, Qualitätsuntergrenze `0.6`
 
-Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und beträgt mindestens `0`, wobei mindestens einer größer als `0` ist. Sie werden so normalisiert, dass sie sich auf 1 summieren, sodass `45`, `35` und `15` den Qualitätsstandards entsprechen. `qualityFloor` ist optional, liegt im Bereich `(0, 1]` und entspricht dem Bruchteil des besten ChrF im Kandidatenpool. Modelle unterhalb der Untergrenze, einschließlich aller Modelle ohne ChrF-Messung, werden nach denjenigen sortiert, die diese erreichen.
+Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und mindestens `0`, und mindestens einer ist größer als `0`. Sie werden auf eine Summe von 1 normalisiert, sodass `45`, `35` und `20` den Standard-Qualitätswerten entsprechen. `qualityFloor` ist optional, liegt im Bereich `(0, 1]` und ist der Anteil des besten ChrF im Kandidatenpool. Modelle unterhalb der Untergrenze, einschließlich jedes Modells ohne ChrF-Messung, werden nach denen sortiert, die sie überschreiten.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

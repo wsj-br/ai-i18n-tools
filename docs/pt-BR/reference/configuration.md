@@ -137,8 +137,12 @@ Cada bloco `providers.<name>` aceita:
   USD por 1.000.000 de tokens em todo o provedor: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Quando uma chamada faturada não possui `usage.cost` relatado pelo provedor (a maioria dos provedores além do OpenRouter e Cheaper Inference), essa taxa é aplicada aos tokens de entrada e saída da chamada. O valor é incluído no resumo da tradução e armazenado na linha `api_calls`. Uma entrada `modelPricing` correspondente substitui esse padrão. Um custo relatado pelo provedor nunca é substituído. Quando nenhuma taxa de configuração corresponde, as ferramentas usam o preço de lista models.dev para aquele ID de modelo (USD de entrada e saída por 1M de tokens). Linhas que foram armazenadas sem um custo ainda podem ser estimadas posteriormente por [`usage`](/pt-BR/reference/cli-commands/workflows#usage) e [Usage & costs](/pt-BR/guide/translation-dashboard/usage). Se nenhuma dessas fontes se aplicar, o custo permanece desconhecido (`—`), nunca `$0.00`.
 - `modelPricing` (opcional)
   USD por 1.000.000 de tokens por modelo: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Substitui `pricing` para aquele ID de modelo. Aplicado no momento da chamada quando o provedor omitiu `usage.cost`, e armazenado com a chamada.
+- `zeroDataRetention` (opcional, somente `providers.cheaperinference`)
+  Quando `true`, as solicitações de chat enviam `"zdr": true` e `list-models`, e `check-models` e `suggest-models` carregam `GET /v1/models?zdr=true`. Omitido significa desativado. Consulte [Retenção zero de dados](/pt-BR/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Presets de provedores integrados (chave — URL base — variável de ambiente da chave de API):
+
+<div class="provider-presets">
 
 | Provedor | URL Base | Variável de ambiente da chave de API |
 | --- | --- | --- |
@@ -157,6 +161,8 @@ Presets de provedores integrados (chave — URL base — variável de ambiente d
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (nenhum) |
 
+</div>
+
 Um bloco `openrouter` de nível superior legado (com `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) ainda é aceito e é migrado automaticamente para `providers.openrouter` (com `provider: "openrouter"`) no carregamento; `defaultModel` / `fallbackModel` se dobram em `translationModels`.
 
 Para um exemplo executável que configura vários provedores em uma configuração e alterna entre eles com `-P`, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` e `deepseek` no mesmo documento).
@@ -165,14 +171,14 @@ Para um exemplo executável que configura vários provedores em uma configuraç�
 
 Considere a lista abaixo como uma **linha de base** que você pode expandir: se a tradução para um local específico for ruim ou malsucedida, pesquise quais modelos suportam esse idioma ou script de forma eficaz (consulte recursos online ou a documentação do seu provedor) e adicione esses IDs de modelo como outras alternativas.
 
-Esses IDs de modelo correspondem a `ai-i18n-tools init [-P <provider>]` quando `-P openrouter` (o padrão). Outros presets obtêm IDs de modelo nativos de `init -P <provider>` — consulte [Provedores integrados](/pt-BR/guide/providers-and-models#built-in-providers).
+Esses IDs de modelo são o que `ai-i18n-tools init -P openrouter` escreve. Outras predefinições obtêm IDs de modelo nativos de `init -P <provider>` — consulte [Provedores integrados](/pt-BR/guide/providers-and-models#built-in-providers).
 
 Esta lista foi **testada quanto à ampla cobertura de localidades** em um grande projeto de documentação com 36 localidades de destino; serve como um padrão prático, mas não há garantia de bom desempenho para todas as localidades.
 
-Exemplo `translationModels` (mesmos padrões que `ai-i18n-tools init [-P <provider>]`):
+Exemplo `translationModels` (lista do OpenRouter de `ai-i18n-tools init -P openrouter`):
 
 <details>
-<summary>Lista padrão de fallback para translationModels</summary>
+<summary>Lista de translationModels do OpenRouter</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ Caminhos e estrutura de nível superior para arquivos SVG. A tradução é execu
 
 Pesos para [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models) e a [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models). Omita o bloco, ou omita um perfil, e esse perfil manterá os pesos integrados. O bloco não é reescrito por `--apply` ou **Update config**; eles gravam apenas IDs de modelo.
 
-- `quality` — padrão ChrF `0.45/0.95`, Arena `0.35/0.95`, preço `0.15/0.95`, limite de qualidade `0.7`
-- `price` — padrão ChrF `0.25`, Arena `0.10`, preço `0.65`, limite de qualidade `0.6`
+- `quality` — ChrF padrão `0.45`, Arena `0.35`, preço `0.20`, piso de qualidade `0.7`
+- `price` — ChrF padrão `0.35`, Arena `0.20`, preço `0.45`, piso de qualidade `0.6`
 
-Cada objeto de perfil requer `chrf`, `arena` e `price`. Cada valor é finito e pelo menos `0`, e pelo menos um é maior que `0`. Eles são normalizados para somar 1, portanto `45`, `35` e `15` correspondem aos padrões de qualidade. `qualityFloor` é opcional, no intervalo `(0, 1]`, e é a fração do melhor ChrF no conjunto de candidatos. Modelos abaixo do limite, incluindo qualquer modelo sem medição de ChrF, são classificados após aqueles que o atingem.
+Cada objeto de perfil requer `chrf`, `arena` e `price`. Cada valor é finito e pelo menos `0`, e pelo menos um é maior que `0`. Eles são normalizados para que a soma seja 1, assim `45`, `35` e `20` correspondem aos padrões de qualidade. `qualityFloor` é opcional, no intervalo `(0, 1]`, e é a fração do melhor ChrF no pool de candidatos. Modelos abaixo do piso, incluindo qualquer modelo sem medição de ChrF, são classificados depois daqueles que o superam.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

@@ -137,8 +137,12 @@
   공급자 전체 1,000,000 토큰당 USD 비용: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`가 없는 경우(OpenRouter 및 Cheaper Inference 외 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 이 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다. 일치하는 `modelPricing` 항목이 있으면 이 기본값을 재정의합니다. 공급자가 보고한 비용은 절대 대체되지 않습니다. 구성된 요율이 일치하지 않는 경우, 도구는 해당 모델 ID에 대한 models.dev 정가(100만 토큰당 입력 및 출력 USD)를 사용합니다. 비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [Usage & costs](/ko/guide/translation-dashboard/usage)를 통해 추정할 수 있습니다. 해당 소스가 적용되지 않는 경우, 비용은 알 수 없음(`—`)으로 유지되며 절대 `$0.00`되지 않습니다.
 - `modelPricing` (선택 사항)
   모델별 1,000,000 토큰당 USD 비용: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대해 `pricing`를 재정의합니다. 공급자가 `usage.cost`을 생략했을 때 호출 시점에 적용되며 호출과 함께 저장됩니다.
+- `zeroDataRetention` (선택 사항, `providers.cheaperinference` 전용)
+  `true`인 경우, 채팅 요청은 `"zdr": true` 및 `list-models`, `check-models`, `suggest-models`을(를) 전송하고 `GET /v1/models?zdr=true`을(를) 로드합니다. 생략하면 비활성화됩니다. [제로 데이터 보존](/ko/guide/providers-and-models#cheaperinference-zero-data-retention)을(를) 참조하세요.
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
+
+<div class="provider-presets">
 
 | 제공자 | 기본 URL | API 키 환경 변수 |
 | --- | --- | --- |
@@ -157,6 +161,8 @@
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
 
+</div>
+
 레거시 최상위 `openrouter` 블록(`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` 포함)은 여전히 허용되며, 로드 시 `providers.openrouter`(`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`는 `translationModels`로 병합됩니다.
 
 하나의 설정에서 여러 프로바이더를 구성하고 `-P`로 전환하는 실행 가능한 예제는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)를 참조하세요(`openai`, `anthropic`, `openrouter`, `deepseek`가 동일한 문서에 있습니다).
@@ -165,14 +171,14 @@
 
 아래 목록을 확장할 수 있는 **기준선**으로 간주하십시오. 특정 로케일에 대한 번역이 불량하거나 성공적이지 않은 경우, 해당 언어 또는 스크립트를 효과적으로 지원하는 모델을 조사하고(온라인 리소스 또는 공급자 설명서 참조) 해당 모델 ID를 추가 대안으로 추가하십시오.
 
-이러한 모델 ID는 `-P openrouter`(기본값)일 때 `ai-i18n-tools init [-P <provider>]`과 일치합니다. 다른 프리셋은 `init -P <provider>`에서 네이티브 모델 ID를 가져옵니다 — [기본 제공 프로바이더](/ko/guide/providers-and-models#built-in-providers)를 참조하세요.
+이 모델 ID는 `ai-i18n-tools init -P openrouter`가 작성하는 것입니다. 다른 사전 설정은 `init -P <provider>`에서 기본 모델 ID를 가져옵니다. — [내장 제공자](/ko/guide/providers-and-models#built-in-providers)를 참조하세요.
 
 이 목록은 36개의 대상 로케일을 포함하는 대규모 문서 프로젝트에서 **광범위한 로케일 커버리지 테스트**를 거쳤습니다. 실용적인 기본값으로 사용되지만, 모든 로케일에서 항상 우수한 성능을 보장하지는 않습니다.
 
-예시 `translationModels`(`ai-i18n-tools init [-P <provider>]`과 동일한 기본값):
+`translationModels` 예시 (`ai-i18n-tools init -P openrouter`의 OpenRouter 목록):
 
 <details>
-<summary>기본 translationModels 대체 목록</summary>
+<summary>OpenRouter translationModels 목록</summary>
 
 ```json
 "translationModels": [
@@ -513,15 +519,15 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 
 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models) 및 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에 대한 가중치입니다. 이 블록을 생략하거나 하나의 프로필을 생략하면 해당 프로필은 기본 제공 가중치를 유지합니다. 이 블록은 `--apply` 또는 **구성 업데이트**에 의해 다시 작성되지 않습니다. 해당 작업은 모델 ID만 작성합니다.
 
-- `quality` — 기본값 ChrF `0.45/0.95`, Arena `0.35/0.95`, 가격 `0.15/0.95`, 품질 하한선 `0.7`
-- `price` — 기본값 ChrF `0.25`, Arena `0.10`, 가격 `0.65`, 품질 하한선 `0.6`
+- `quality` — 기본 ChrF `0.45`, 아레나 `0.35`, 가격 `0.20`, 품질 하한선 `0.7`
+- `price` — 기본 ChrF `0.35`, 아레나 `0.20`, 가격 `0.45`, 품질 하한선 `0.6`
 
-각 프로필 객체에는 `chrf`, `arena` 및 `price`가 필요합니다. 각 값은 유한하며 최소 `0` 이상이어야 하고, 하나 이상의 값은 `0`보다 커야 합니다. 이 값들은 합계가 1이 되도록 정규화되므로 `45`, `35` 및 `15`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며 `(0, 1]` 범위 내에 있고, 후보 풀에서 가장 높은 ChrF의 비율을 나타냅니다. 하한선 미만의 모델(ChrF 측정값이 없는 모델 포함)은 하한선을 통과한 모델 뒤로 정렬됩니다.
+각 프로필 객체에는 `chrf`, `arena`, 그리고 `price`가 필요합니다. 각 값은 유한하며 최소 `0` 이상이고, 적어도 하나는 `0`보다 큽니다. 이 값들은 합계가 1이 되도록 정규화되므로, `45`, `35`, 그리고 `20`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며, `(0, 1]` 범위 내에 있고, 후보 풀에서 가장 좋은 ChrF의 비율입니다. 하한선 미만의 모델은 ChrF 측정값이 없는 모든 모델을 포함하여, 하한선을 통과한 모델 뒤에 정렬됩니다.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.15, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.25, "arena": 0.1, "price": 0.65, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

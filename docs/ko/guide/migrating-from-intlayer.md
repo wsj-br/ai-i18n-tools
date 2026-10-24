@@ -22,7 +22,7 @@
 1. `ai-i18n-tools` 설치([설치](/ko/guide/installation) 참조). 프로젝트에 아직 `ai-i18n-tools.config.json`이(가) 없다면 스캐폴딩합니다:
 
    ```bash
-   ai-i18n-tools init [-P <provider>]
+   ai-i18n-tools init -P gemini
    ```
 
 Intlayer 사전에 이미 있는 로캘과 일치하도록 `sourceLocale` 및 `targetLocales`을(를) 편집하고, `ui.sourceRoots`, `ui.stringsJson`, `ui.flatOutputDir`을(를) 앱의 소스 및 원하는 카탈로그 경로를 가리키도록 설정합니다. 이는 `translate-ui`에서 사용하는 키와 동일합니다. [UI 문자열 — 1단계: 초기화](/ko/guide/ui-strings/#step-1-initialise)를 참조하세요.

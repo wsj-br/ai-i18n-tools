@@ -1,13 +1,45 @@
 <a id="environment-variables"></a>
 # 环境变量
 
-| 变量               | 描述                                                |
-|------------------------|------------------------------------------------------------|
-| `OPENROUTER_API_KEY`   | `openrouter` 提供程序的 API 密钥（在启用时为必填项）。默认为 `init` 预设。 |
-| 其他提供商密钥 | 每个提供商读取其各自的密钥环境变量：`OPENAI_API_KEY`、`ANTHROPIC_API_KEY`、`GOOGLE_API_KEY`、`DEEPSEEK_API_KEY`、`CEREBRAS_API_KEY`、`GROQ_API_KEY`、`MISTRAL_API_KEY`、`XAI_API_KEY`、`NVIDIA_API_KEY`、`ALIBABA_API_KEY`、`APIFUN_API_KEY`、`CHEAPERINFERENCE_API_KEY`（Ollama 不需要）。使用 `providers.<name>.apiKeyEnv` 对每个提供商进行覆盖。 |
-| `OPENROUTER_BASE_URL`  | 覆盖 `providers.openrouter.baseUrl`（仅当该提供商已配置时）。 |
-| `OLLAMA_BASE_URL`      | 覆盖 `providers.ollama.baseUrl`（仅当该提供商已配置时）。 |
-| `AI_I18N_LANG`         | 工具自身 UI（CLI 帮助、日志、仪表板）的语言。被 `-L` / `--ui-lang` 覆盖；覆盖配置 `uiLanguage`。请参阅[工具 UI 语言](/zh-Hans/guide/tool-ui-language)。 |
+<a id="provider-api-keys"></a>
+## 提供商 API 密钥
+
+`init -P <provider>` 选择下表中的该内置预设和 API 密钥。使用 `providers.<name>.apiKeyEnv` 覆盖一个提供商的变量名。Ollama 没有 API 密钥。
+
+| 变量 | 提供商 |
+| --- | --- |
+| `OPENROUTER_API_KEY` | `openrouter` |
+| `OPENAI_API_KEY` | `openai` |
+| `ANTHROPIC_API_KEY` | `anthropic` |
+| `GOOGLE_API_KEY` | `gemini` |
+| `DEEPSEEK_API_KEY` | `deepseek` |
+| `CEREBRAS_API_KEY` | `cerebras` |
+| `GROQ_API_KEY` | `groq` |
+| `MISTRAL_API_KEY` | `mistral` |
+| `XAI_API_KEY` | `xai` |
+| `NVIDIA_API_KEY` | `nvidia` |
+| `ALIBABA_API_KEY` | `alibaba` |
+| `APIFUN_API_KEY` | `apifun` |
+| `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
+
+当该提供商处于活动状态时，必须提供此密钥。预设 URL：[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
+
+<a id="provider-base-urls"></a>
+## 提供商基础 URL
+
+这两个变量会覆盖已配置提供商的 `baseUrl`。所有其他预设均在配置 (`providers.<name>.baseUrl`) 中更改其 URL，而非通过环境变量。
+
+| 变量 | 覆盖对象 |
+| --- | --- |
+| `OPENROUTER_BASE_URL` | `providers.openrouter.baseUrl`（仅当配置了该提供商时） |
+| `OLLAMA_BASE_URL` | `providers.ollama.baseUrl`（仅当配置了该提供商时） |
+
+<a id="tool-and-run"></a>
+## 工具与运行
+
+| 变量 | 描述 |
+| --- | --- |
+| `AI_I18N_LANG` | 工具自身界面（CLI 帮助、日志、仪表板）的语言。会被 `-L` / `--ui-lang` 覆盖；并会覆盖配置 `uiLanguage`。请参阅 [工具 UI 语言](/zh-Hans/guide/tool-ui-language)。 |
 | `I18N_SOURCE_LOCALE`   | 在运行时覆盖 `sourceLocale`。                        |
 | `I18N_TARGET_LOCALES`  | 以逗号分隔的语言代码，用于覆盖 `targetLocales`。  |
 | `I18N_LOG_LEVEL` | 记录器级别 (`debug`、`info`、`warn`、`error`)。未知值（包括 `silent`）将回退到 `info`。 |

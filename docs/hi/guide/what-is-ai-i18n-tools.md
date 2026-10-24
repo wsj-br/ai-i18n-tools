@@ -6,10 +6,10 @@ ai-i18n-tools एक कमांड-लाइन टूल और टूलक�
 <a id="translation-modes"></a>
 ## अनुवाद मोड
 
-- **UI स्ट्रिंग्स** — JS/TS स्रोत से `t("…")` कॉल (और इसी तरह के मार्कर) निकालें और i18next या स्थिर लुकअप के लिए प्रति-स्थानिक JSON फ़ाइलें लिखें। कमांड: `extract`, `translate-ui`। मार्गदर्शिका: [UI स्ट्रिंग्स](/hi/guide/ui-strings/)।
-- **दस्तावेज़** — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX और `.astro` पृष्ठों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro और अन्य स्थिर दस्तावेज़ साइटों के साथ काम करता है। कमांड: `translate-docs`। मार्गदर्शिका: [दस्तावेज़](/hi/guide/documents/)।
-- **JSON** — शीर्ष-स्तरीय `json[]` में परिभाषित नेस्टेड JSON स्थानीय बंडलों (थीम लेबल, i18n ओवरराइड, स्रोत में नहीं ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। मार्गदर्शिका: [JSON](/hi/guide/json)।
-- **SVG** — SVG चित्रों (`<text>`, `<title>`, `<desc>`) के अंदर दृश्यमान टेक्स्ट का अनुवाद करें और प्रति स्थानीय एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग — `translate-docs` SVG संपत्तियों को संशोधित नहीं करता है। कमांड: `translate-svg`। मार्गदर्शिका: [SVG अनुवाद](/hi/guide/svg-translation/)।
+- **UI स्ट्रिंग्स** — JS/TS और Python सोर्स (और GNU gettext सहित समान मार्कर्स) से `t("…")` और `_()` कॉल्स को एक्सट्रैक्ट करें और फ्लैट प्रति-लोकेल JSON या `.po` / `.mo` कैटलॉग लिखें। कमांड्स: `extract`, `translate-ui`। गाइड: [UI strings](/hi/guide/ui-strings/)। Python: [Python applications](/hi/guide/ui-strings/python)।
+- **दस्तावेज़** — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX, और `.astro` पेजों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और अन्य स्टेटिक डॉक साइट्स के साथ काम करता है। कमांड: `translate-docs`। गाइड: [Documents](/hi/guide/documents/)।
+- **JSON** — टॉप-लेवल `json[]` में परिभाषित नेस्टेड JSON लोकेल बंडल्स (थीम लेबल्स, i18n ओवरराइड्स, सोर्स में न होने वाली ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। गाइड: [JSON](/hi/guide/json)।
+- **SVG** — SVG इलस्ट्रेशन (`<text>`, `<title>`, `<desc>`) के अंदर दिखाई देने वाले टेक्स्ट का अनुवाद करें और प्रति लोकेल एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग — `translate-docs` SVG एसेट्स को संशोधित नहीं करता है। कमांड: `translate-svg`। गाइड: [SVG translation](/hi/guide/svg-translation/)।
 
 सभी चार मोड सक्रिय [LLM प्रदाता](/hi/guide/providers-and-models) का उपयोग करते हैं, एक ही कॉन्फ़िग फ़ाइल साझा करते हैं, और एक SQLite कैश का पुन: उपयोग करते हैं ताकि पुनरावृत्ति केवल नए या बदले हुए टेक्स्ट को मॉडल पर भेजें।
 
@@ -18,7 +18,7 @@ ai-i18n-tools एक कमांड-लाइन टूल और टूलक�
 
 | आपकी सामग्री | मोड | कमांड |
 | --- | --- | --- |
-| स्रोत कोड `t()` या HTML `data-i18n` मार्कर का उपयोग करता है | UI स्ट्रिंग्स | `extract` / `translate-ui` |
+| सोर्स कोड `t()`, `_()`, gettext, या HTML `data-i18n` मार्कर्स का उपयोग करता है | UI स्ट्रिंग्स | `extract` / `translate-ui` |
 | स्थानीयकृत पृष्ठ या दस्तावेज़ साइटें | दस्तावेज़ | `translate-docs` |
 | स्टैंडअलोन नेस्टेड JSON स्थानीय फ़ाइलें | JSON | `translate-json` |
 | SVG में लेबल वाले आरेख या चित्र | SVG | `translate-svg` |
@@ -44,12 +44,16 @@ ai-i18n-tools एक कमांड-लाइन टूल और टूलक�
 | [मल्टी-प्रोवाइडर](/hi/examples#multi-provider) | एक ही दस्तावेज़ पर एलएलएम प्रोवाइडर की तुलना करें |
 | [टेस्ट-मार्कडाउन](/hi/examples#test-markdown) | मार्कडाउन पाइपलाइन स्ट्रेस टेस्ट (सीजेके, देवनागरी, एज केस) |
 | [intlayer-migration](/hi/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` `migrate-intlayer` के माध्यम से |
+| [python-streamlit](/hi/examples#python-streamlit) | Streamlit डैशबोर्ड, `t()` / `_()`, इंग्लिश-की JSON |
+| [python-flask](/hi/examples#python-flask) | Flask + Jinja, `t()` / `_()`, इंग्लिश-की JSON |
+| [python-fastapi](/hi/examples#python-fastapi) | FastAPI, रिक्वेस्ट-स्कोप लोकेल, इंग्लिश-की JSON |
+| [python-gettext](/hi/examples#python-gettext) | मौजूदा GNU gettext; `extract` / `translate-ui` रिफ्रेश `.po` और `.mo` |
 
 `npx degit` कॉपी कमांड और चुनने के लिए गाइड के लिए [उदाहरण](/hi/examples) देखें।
 
 <a id="next-steps"></a>
 ## अगले चरण
 
-1. [इंस्टॉलेशन](/hi/guide/installation) — पैकेज इंस्टॉल करें और अपनी प्रोवाइडर एपीआई कुंजी सेट करें।
-2. [त्वरित शुरुआत](/hi/guide/quick-start) — एक कॉन्फ़िग स्केफ़ोल्ड करें और अपना पहला अनुवाद चलाएँ।
-3. [प्रोवाइडर और मॉडल](/hi/guide/providers-and-models) — एक प्रोवाइडर, मॉडल फ़ॉलबैक चेन और `-P` ओवरराइड चुनें।
+1. [Installation](/hi/guide/installation) — npm पैकेज इंस्टॉल करें, या Python प्रोजेक्ट के लिए [standalone executable](/hi/guide/installation#standalone-executables) डाउनलोड करें, और अपनी प्रोवाइडर API की सेट करें।
+2. [Quick start](/hi/guide/quick-start) — कॉन्फ़िगरेशन को स्कैफ़ोल्ड करें और अपना पहला अनुवाद चलाएं।
+3. [Providers and models](/hi/guide/providers-and-models) — एक प्रोवाइडर, मॉडल फ़ॉलबैक चेन, और `-P` ओवरराइड चुनें।

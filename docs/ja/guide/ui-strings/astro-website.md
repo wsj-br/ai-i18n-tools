@@ -33,10 +33,10 @@
 <a id="ui-strings-ssg"></a>
 ## UI文字列 (SSG)
 
-`init -t ui-astro-website` で UI 抽出の足場を構築し、ページ HTML も翻訳する場合は `docs[]` ブロックにマージします（[ページの解析と置換](#astro-website-pages-parse-and-replace) を参照）。TypeScript モジュールでは `t('…')`、`.astro` フロントマター（および重複するロケールページよりも UI 文字列を優先する場合はテンプレートの `{expression}` ブロック）でコピーをラップします。
+`init -t ui-astro-website -P ollama` を使ってユーザーインターフェースの抽出用の雛形を作成し、ページのエイチティーエムエルも翻訳する場合は `docs[]` ブロックにマージします（[ページの解析と置換](#astro-website-pages-parse-and-replace) を参照）。TypeScript モジュール内ではコピーを `t('…')` でラップし、フロントマターでは `.astro` を使用します（重複するロケールページよりユーザーインターフェース文字列を優先する場合はテンプレートの `{expression}` ブロックも）。:
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```

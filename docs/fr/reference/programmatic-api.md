@@ -21,12 +21,13 @@ console.log(
 );
 ```
 
-Échafauder une configuration à partir de Node.js (le quatrième argument facultatif sélectionne le préréglage intégré ; la valeur par défaut est `openrouter`) :
+Générer une configuration à partir de Node.js. Le quatrième argument est le préréglage intégré (`cwd` est le troisième) :
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
 ```
 
 Exportations clés (couramment utilisées — voir `src/index.ts` pour la surface publique complète) :
@@ -52,6 +53,27 @@ Exportations clés (couramment utilisées — voir `src/index.ts` pour la surfac
 | `Glossary` / `GlossaryMatcher` | Charger et appliquer les glossaires de traduction, y compris les notes de `Context` de terme facultatives. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Charger les `glossary.contextFiles` et les directives d'empreinte pour l'invalidation du cache. |
 | `runTranslateUI` | Point d'entrée programmatique pour l'interface de traduction. |
-| `writeInitConfigFile` | Écrit un JSON de configuration de démarrage (`template`, `providerKey` facultatif avec une valeur par défaut de `openrouter`). |
+| `writeInitConfigFile` | Écrit un JSON de configuration de base (`template`, `cwd`, et un `providerKey` requis). |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` de démarrage par préréglage intégré utilisé par `init -P`. |
 | `PROVIDER_PRESETS` | Mappage prédéfini du fournisseur intégré (`baseUrl`, `apiKeyEnv`). |
+
+<a id="python-runtime"></a>
+## Environnement d'exécution Python (`i18n.py`)
+
+`init -t ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent ce module dans le projet lorsque `i18n.py` est manquant. Il s'agit d'un utilitaire de la bibliothèque standard pour Python 3.10 ou version ultérieure. Importez-le depuis ce fichier. Les fonctions ci-dessous sont distinctes des exports Node du tableau ci-dessus. Les projets Django conservent le gettext de Django, donc `ui-python-django` n'écrit pas `i18n.py`.
+
+Formes d'appel, f-strings non sécurisées et configuration des paramètres régionaux par framework : [Applications Python](/fr/guide/ui-strings/python).
+
+| Fonction | Comportement |
+| --- | --- |
+| `set_locale(locale)` | Définit les paramètres régionaux actuels. Les traits de soulignement dans le code sont stockés sous forme de traits d'union (`pt_BR` devient `pt-BR`). Renvoie un jeton `ContextVar`. |
+| `reset_locale(token)` | Restaure les paramètres régionaux à partir de ce jeton. Appelez-la dans `finally`, y compris dans les middlewares FastAPI et Flask. |
+| `get_locale()` | Renvoie les paramètres régionaux actuels. |
+| `set_backend(backend)` | Sélectionne `"auto"`, `"json"` ou `"gettext"`. |
+| `get_ui_languages()` | Lit `ui-languages.json` à côté du répertoire JSON plat, ou le répertoire gettext lorsque la sortie plate est désactivée. |
+| `get_direction(locale=None)` | Renvoie `"rtl"` ou `"ltr"` à partir de la ligne du manifeste pour ces paramètres régionaux (paramètres régionaux actuels si omis). |
+| `_(message)` | Recherche un littéral, puis renvoie la chaîne du catalogue ou le message lui-même. |
+| `t(template, *, plurals=False, count=None, **values)` | Recherche le littéral, puis effectue l'interpolation. `translate` est la même fonction. Sur Python 3.14, `translate(t"Hello, {name}!")` conserve le modèle et ses valeurs. Les arguments nommés remplacent les valeurs extraites d'une chaîne de modèle. |
+| `ngettext(singular, plural, n, **values)` | Recherche au pluriel, puis effectue l'interpolation. `count` est disponible pour la chaîne de formatage. |
+| `pgettext(context, message, **values)` | Recherche contextuelle (`msgctxt`, ou `context` + U+0004 + la source anglaise en JSON plat), puis effectue l'interpolation. |
+| `streamlit_language_selector(sidebar=True, key="lang_selector")` | Zone de sélection Streamlit. Écrit `st.session_state.locale` et `st.query_params["lang"]`, appelle `set_locale` et renvoie le code choisi. |

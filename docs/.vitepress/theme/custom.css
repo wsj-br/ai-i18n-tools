@@ -127,6 +127,20 @@
   overflow-wrap: anywhere;
 }
 
+/* Provider preset tables: keep the key, the URL, and the env-var name on
+   one line. The page scrolls horizontally when the URL is wider than the
+   column. */
+.vp-doc .provider-presets table th,
+.vp-doc .provider-presets table td {
+  white-space: nowrap;
+}
+
+.vp-doc .provider-presets table code {
+  overflow-wrap: normal;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
 /* Shields.io badges: VitePress base.css sets img { display: block } and
    .vp-doc img { margin: 16px 0 }, which stacks badges vertically.
    English index is h1 (from sync) + h2 (from README) + badge paragraph. */

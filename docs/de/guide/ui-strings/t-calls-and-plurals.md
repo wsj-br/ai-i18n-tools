@@ -22,6 +22,8 @@ import i18n from './i18n.js';
 console.log(i18n.t('Processing complete'));
 ```
 
+Python-Anwendungen verwenden den generierten `i18n.py`-Helper. Siehe [Python-Anwendungen](/de/guide/ui-strings/python).
+
 **Regeln:**
 
 - Nur diese Formen werden extrahiert: `t("…")`, `t('…')`, `t(`…`)`, `i18n.t("…")`.

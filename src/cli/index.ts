@@ -18,7 +18,6 @@ import chalk from "chalk";
 import {
   assertPresetInitProvider,
   DEFAULT_CONFIG_FILENAME,
-  DEFAULT_INIT_PROVIDER_KEY,
   initConfigTemplates,
   listPresetInitProviderKeys,
   writeInitConfigFile,
@@ -507,7 +506,7 @@ Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--
 Provider override (-P / --provider):
   On translation commands, selects the active LLM provider for this run, overriding the config
   "provider" key. The name must be configured under "providers" (e.g. -P openai).
-  On init, selects which built-in preset to scaffold (default: openrouter).`)}\n`;
+  On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n`;
 
 // Load `.env` from the current working directory so provider API keys are
 // available in non-interactive shells (e.g. agent-run commands) that do not
@@ -619,7 +618,7 @@ program
   )
   .option("--quality", t("Rank for translation quality (default)"), false)
   .option("--price", t("Rank for lower price, keeping a quality floor"), false)
-  .option("--top <n>", t("How many models to show, print, and apply"), "5")
+  .option("--top <n>", t("How many models to show, print, and apply"), "8")
   .option(
     "--json",
     t("Write a translationModels JSON fragment to stdout (the table goes to stderr)"),
@@ -696,7 +695,7 @@ program
     "after",
     `\n${t(`Examples:
   ai-i18n-tools suggest-models
-  ai-i18n-tools suggest-models --price --top 5 --json
+  ai-i18n-tools suggest-models --price --top 8 --json
   ai-i18n-tools suggest-models --quality --apply
   ai-i18n-tools suggest-models --list
   ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
@@ -779,6 +778,7 @@ program
 program
   .command("init")
   .description(t("Write starter ai-i18n-tools JSON config"))
+  .usage("-P <provider> [options]")
   .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
@@ -792,22 +792,31 @@ program
     "after",
     `\n${t(
       `Examples:
-  ai-i18n-tools init [-P <provider>]
-  ai-i18n-tools init -t ui-docusaurus -P anthropic
-  ai-i18n-tools init -P openai --with-translate-ignore
+  ai-i18n-tools init -P openrouter
+  ai-i18n-tools init -t ui-docusaurus -P openai
+  ai-i18n-tools init -P cheaperinference --with-translate-ignore
 
-Built-in presets for -P / --provider:
-  {{presets}} (default: {{defaultProvider}})`,
+Built-in presets for -P / --provider (required):
+  {{presets}}`,
       {
         presets: listPresetInitProviderKeys().join(", "),
-        defaultProvider: DEFAULT_INIT_PROVIDER_KEY,
       }
     )}\n`
   )
   .action(
     (opts: { output: string; template: string; withTranslateIgnore?: boolean }, cmd: Command) => {
       const { providerOverride } = withConfig(cmd);
-      const providerKey = providerOverride ?? DEFAULT_INIT_PROVIDER_KEY;
+      if (!providerOverride) {
+        console.error(
+          t(
+            "init requires -P / --provider <name>. Choose a built-in preset: {{presets}}",
+            { presets: listPresetInitProviderKeys().join(", ") }
+          )
+        );
+        process.exitCode = 1;
+        return;
+      }
+      const providerKey = providerOverride;
       try {
         assertPresetInitProvider(providerKey);
       } catch (e) {

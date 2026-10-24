@@ -12,6 +12,8 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 プリセットプロバイダーキーには `translationModels` のみが必要です。ベース URL と API キーの環境変数は自動的に入力されます。
 
+<div class="provider-presets">
+
 | プロバイダー | ベースURL | APIキー環境変数 |
 | --- | --- | --- |
 | `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
@@ -29,9 +31,27 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 | `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
 
+</div>
+
 **プリセット以外**のキーについては、`baseUrl` と `apiKeyEnv` を設定で明示的に設定します。
 
 アクティブなプロバイダーの API キーを環境または `.env` ファイルに設定します。CLI は、シェルですでに設定されている変数を上書きすることなく、作業ディレクトリから `.env` を自動的にロードします。[環境変数](/ja/reference/environment-variables) を参照してください。
+
+<a id="cheaperinference-zero-data-retention"></a>
+### ゼロデータ保持 (Cheaper Inference)
+
+`providers.cheaperinference.zeroDataRetention` はオプションであり、デフォルトではオフです。このプロジェクトがプロンプトを保持しないプロバイダーのみを介して送信する必要がある場合に設定します。
+
+```json
+"cheaperinference": {
+  "zeroDataRetention": true,
+  "translationModels": ["gemini-2.5-flash", "deepseek-v4-flash"]
+}
+```
+
+このフラグがオンの場合、すべてのチャットリクエストに `"zdr": true` が含まれ、`list-models`、`check-models`、および `suggest-models` (ダッシュボードの「モデル」タブを含む) は `GET /v1/models?zdr=true` を読み取ります。そのカタログには、ゼロデータ保持リクエストが使用できるモデルが、ゼロデータ保持価格でリストされています。`check-models` は、そのカタログにないIDを無効として扱います。このフラグは、カタログに含まれていないモデルのルートを作成しません。そのIDを `translationModels`、`uiModels`、または `localeModels` から削除してください。
+
+Cheaper Inference アカウントでゼロデータ保持が不要な場合は、このフラグをオフのままにしてください。アカウントで [データ保護](https://platform.cheaperinference.com/dashboard/data-protection) がすでにオンになっている場合、Cheaper Inference は、ゼロデータ保持ルートがないモデルを拒否します。エラーはそのモデル名を指定します。アカウントポリシーを維持するには、`zeroDataRetention` を `true` に設定し、ゼロデータ保持カタログのモデルに切り替えてください。拒否されたモデルを維持するには、そのページでゼロデータ保持をオフにしてください。フォールバックチェーンは、次に設定されたモデルを試行します。
 
 <a id="model-fallback-chain"></a>
 ### モデルフォールバックチェーン
@@ -47,7 +67,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 オプションの `providers.<active>.uiModels` は、ロケールごとのオーバーライドが一致した後、グローバルな `translationModels` チェーンの前に試行される UI 専用のリストです。オプションの `providers.<active>.localeModels` は、BCP-47 ロケールを、すべてのパイプラインでそのロケールに対して**最初に**試行されるモデルにマッピングします (`pt-br` は `pt-BR` と一致します)。`localeModels` エントリが一致しない場合、パイプライン固有の階層のみが適用されます。
 
-プロバイダーとモデルは、言語によってコスト、速度、品質が異なります。`npx ai-i18n-tools init` のデフォルトリストを出発点として扱い、ロケールで一貫して結果が悪い場合は拡張するか、そのロケールに `localeModels` エントリを追加してください。完全なデフォルトと根拠: [設定 — `provider` と `providers`](/ja/reference/configuration#provider-and-providers)。
+プロバイダーとモデルは、言語によってコスト、速度、品質が異なります。`npx ai-i18n-tools init -P <provider>` のモデルリストは出発点として扱ってください。ロケールが一貫して悪い結果を生成する場合は拡張するか、そのロケールに `localeModels` エントリを追加してください。プリセットリストと根拠: [設定 — `provider` および `providers`](/ja/reference/configuration#provider-and-providers)。
 
 **UI文字列:** オプションの `uiModels` を使用すると、グローバルな `translationModels` チェーンの前に、`translate-ui`、複数形生成、および `proofread-ui` をプレミアムモデルにルーティングできます。UIコピーは短く、ユーザーに直接見えるため、これは有用です。
 
@@ -95,7 +115,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 npx ai-i18n-tools check-models
 ```
 
-`check-models` はプロバイダーの `GET /models` エンドポイントを呼び出し、`translationModels`、`uiModels`、および `localeModels` からのすべての ID を検証します。欠落している ID や `expiration_date` を過ぎた ID を報告し、構成された ID が無効な場合は 0 以外の終了コードで終了します。プロバイダーが価格を返す場合（OpenRouter および Cheaper Inference は返します）、100 万トークンあたりの米ドル価格も表示されます。
+`check-models` はプロバイダーの `GET /models` エンドポイントを呼び出し、`translationModels`、`uiModels`、および `localeModels` からのすべてのIDを検証し、欠落しているIDまたは `expiration_date` を過ぎたIDを報告し、設定されたIDのいずれかが無効な場合はゼロ以外の値で終了します。プロバイダーが価格情報 (OpenRouter と Cheaper Inference は提供します) を返す場合、100万トークンあたりのUSDも表示されます。[`zeroDataRetention`](/ja/guide/providers-and-models#cheaperinference-zero-data-retention) がオンの場合、`check-models` と `list-models` は `GET /models?zdr=true` を使用します。
 
 プロバイダーが宣伝する全カタログを参照します。
 
@@ -115,12 +135,12 @@ npx ai-i18n-tools bench-models
 npx ai-i18n-tools suggest-models
 npx ai-i18n-tools suggest-models --list
 npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 5 --json
+npx ai-i18n-tools suggest-models --price --top 8 --json
 npx ai-i18n-tools suggest-models --apply
 npx ai-i18n-tools suggest-models --refresh
 ```
 
-テーブルの列は、ランク、モデル ID、インデックス、測定された ChrF、測定された Arena Score、および 100 万トークンあたりの入力/出力米ドルです。測定値が欠落している場合は `—` となります。`--list` は、すでに `translationModels` にあるモデルについてそれらの列を出力します。`--max-output-price` は、その 100 万トークンあたりの出力米ドル以下のモデルを保持し、出力価格がないモデルを除外します。`--min-delta` は、インデックスが直前に保持されたモデルより少なくとも指定されたポイント数だけ低いモデルのみを保持します。`--top`（デフォルトは 5）は、それらのフィルター後のテーブル、`--json`、および `--apply` を制限します。`--apply` は `translationModels` のみを置き換えます。`--refresh` は 7 日間のベンチマークキャッシュを再ダウンロードします。オプションの重みは [`modelSuggestion`](/ja/reference/configuration#modelsuggestion) です。[suggest-models](/ja/reference/cli-commands/models#suggest-models) を参照してください。
+テーブルの列は、ランク、モデルID、インデックス、測定されたChrF、測定されたアリーナスコア、および100万トークンあたりの入出力USDです。測定値がない場合は`—`です。`--list`は、すでに`translationModels`にあるモデルについて、これらの列を出力します。`--max-output-price`は、100万トークンあたりの出力USDがその値以下であるモデルを保持し、出力価格がないモデルは除外します。`--min-delta`は、そのインデックスが以前に保持されたモデルよりも少なくともそのポイント数低い場合にのみ、モデルを保持します。`--top`（デフォルトは8）は、これらのフィルター適用後、テーブル、`--json`、および`--apply`を制限します。`--apply`は`translationModels`のみを置き換えます。`--refresh`は、7日間のベンチマークキャッシュを再ダウンロードします。オプションの重みは[`modelSuggestion`](/ja/reference/configuration#modelsuggestion)です。[suggest-models](/ja/reference/cli-commands/models#suggest-models)を参照してください。
 
 サンプルテキスト、ロケール、またはモデルリストをオーバーライドします。
 
@@ -149,6 +169,6 @@ npx ai-i18n-tools bench-models -P deepseek
 <a id="further-reference"></a>
 ### その他の参考資料
 
-- [設定 — `provider`と`providers`](/ja/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、コストレート、OpenRouter固有の動作。
-- [アーキテクチャ — LLMクライアント](/ja/reference/architecture) — モデルフォールバック、バッチ処理、コスト報告の内部動作。
-- [環境変数](/ja/reference/environment-variables) — APIキーの環境変数とベースURLのオーバーライド。
+- [設定 — `provider` と `providers`](/ja/reference/configuration#provider-and-providers) — プリセットテーブル、カスタムエンドポイント、リクエストタイムアウト、コストレート、Cheaper Inference ゼロデータ保持、OpenRouter固有の動作。
+- [アーキテクチャ — LLMクライアント](/ja/reference/architecture) — モデルのフォールバック、バッチ処理、コストレポートが内部でどのように機能するか。
+- [環境変数](/ja/reference/environment-variables) — APIキー環境変数とベースURLのオーバーライド。

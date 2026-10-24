@@ -9,7 +9,7 @@ Consulte también [Documentos](/es/guide/documents/) y la demostración ejecutab
 ## Inicio rápido
 
 ```bash
-ai-i18n-tools init -t ui-vitepress [-P <provider>]
+ai-i18n-tools init -t ui-vitepress -P anthropic
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)

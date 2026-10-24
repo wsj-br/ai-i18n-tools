@@ -14,7 +14,7 @@ ai-i18n-tools를 [Astro](https://astro.build/)와 함께 두 가지 일반적인
 ### 빠른 시작
 
 ```bash
-ai-i18n-tools init -t ui-starlight [-P <provider>]
+ai-i18n-tools init -t ui-starlight -P cheaperinference
 # edit ai-i18n-tools.config.json (targetLocales, providers, contentPaths)
 pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm dev             # Starlight dev server (project-specific script)
@@ -70,13 +70,13 @@ Starlight는 여러 로케일에 대한 기본 제공 UI 문자열(탐색 레이
 ### 빠른 시작
 
 ```bash
-ai-i18n-tools init -t ui-astro-website [-P <provider>]
+ai-i18n-tools init -t ui-astro-website -P ollama
 # enable features.translateDocs and add a docs[] block for page HTML (see below)
 pnpm run i18n:sync
 pnpm dev
 ```
 
-`init -t ui-astro-website`로 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록에 병합합니다.
+`init -t ui-astro-website -P ollama`을(를) 사용하여 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록으로 병합합니다.
 
 ```json
 {

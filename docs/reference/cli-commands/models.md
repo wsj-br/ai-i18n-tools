@@ -6,7 +6,7 @@
 
 **Synopsis:** `ai-i18n-tools check-models`
 
-Validate each configured model id against the active provider's `GET /models` list (membership and `expiration_date`). Requires that provider's API key (none for keyless providers like Ollama). Exits non-zero when any configured id is missing or expired, and respects the resolved request timeout (`requestTimeout` or `requestTimeoutMs` on the provider, otherwise the top-level value). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion.
+Validate each configured model id against the active provider's `GET /models` list (membership and `expiration_date`). Requires that provider's API key (none for keyless providers like Ollama). Exits non-zero when any configured id is missing or expired, and respects the resolved request timeout (`requestTimeout` or `requestTimeoutMs` on the provider, otherwise the top-level value). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion. When `providers.cheaperinference.zeroDataRetention` is true, the check uses `GET /v1/models?zdr=true` and fails an id that catalog leaves out.
 
 **See also:** [LLM providers](/guide/providers-and-models)
 
@@ -17,7 +17,7 @@ Validate each configured model id against the active provider's `GET /models` li
 
 **Synopsis:** `ai-i18n-tools list-models`
 
-List every model the active provider advertises via its `GET /models` list (sorted by id; active provider follows the config `provider` key, override with `-P` / `--provider`). Requires that provider's API key (none for keyless providers like Ollama). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion, and tags entries past `expiration_date`.
+List every model the active provider advertises via its `GET /models` list (sorted by id; active provider follows the config `provider` key, override with `-P` / `--provider`). Requires that provider's API key (none for keyless providers like Ollama). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion, and tags entries past `expiration_date`. When `providers.cheaperinference.zeroDataRetention` is true, the list is `GET /v1/models?zdr=true`.
 
 **Key options:** `-P` / `--provider`
 
@@ -30,15 +30,15 @@ List every model the active provider advertises via its `GET /models` list (sort
 
 **Synopsis:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
 
-Rank the active provider's chat models and print the top ones (default 5). The table columns, in order, are rank, model id, index (the weighted score times 100, one decimal), measured languagebench ChrF, measured Arena Score, and input and output price in USD per 1M tokens. A missing measurement is `—`. The command needs that provider's API key (none for keyless providers such as Ollama). The active provider follows config `provider`; override it with `-P` / `--provider`.
+Rank the active provider's chat models and print the top ones (default 8). The table columns, in order, are rank, model id, index (the weighted score times 100, one decimal), measured languagebench ChrF, measured Arena Score, and input and output price in USD per 1M tokens. A missing measurement is `—`. The command needs that provider's API key (none for keyless providers such as Ollama). The active provider follows config `provider`; override it with `-P` / `--provider`.
 
-Candidates come from the provider's `GET /models` list. Expired rows and non-chat rows (embeddings, speech, image, video, moderation, rerankers) are left out. If that catalog request fails, the command exits 1.
+Candidates come from the provider's `GET /models` list. When `providers.cheaperinference.zeroDataRetention` is true, that request is `GET /v1/models?zdr=true`. Expired rows and non-chat rows (embeddings, speech, image, video, moderation, rerankers) are left out. If that catalog request fails, the command exits 1.
 
 `--quality` is the default. It weights ChrF and Arena Score above price. `--price` weights price above those scores and still keeps a quality floor, so an unmeasured cheap model does not jump the list. Passing both flags is an error. Passing neither means quality. Optional `modelSuggestion` weights in config replace either profile. See [Configuration](/reference/configuration#modelsuggestion). The same weights are used by the [dashboard Models tab](/guide/translation-dashboard/models).
 
 ChrF is the mean of languagebench `translation_from` and `translation_to` rows whose metric is `chrf`, limited to this project's `sourceLocale` and `targetLocales`. Locales map to a languagebench language code (the primary subtag, with a few aliases such as `pt-BR` to `pt` and `zh-Hant` to `zh` and `yue`). An empty set uses `en`. Arena is the LMArena overall Arena Score, not Elo. The ranking price is `(3 × input + output) / 4` USD per 1M tokens. The price source is a non-zero catalog rate, then models.dev input and output rates, then languagebench's single cost figure. A catalog price of `0` is unpriced, not free. An unknown price is neutral on the quality profile and worst on the price profile. A missing ChrF sorts below the quality floor. The `0.35` and `0.45` stand-ins used for a missing ChrF or Arena affect only the index; the table prints `—` instead.
 
-Rows that clear the floor come first, then higher index, then a cheaper blended price. `--top` (default `5`, an integer of at least 1) limits the table, the `--json` fragment, and `--apply` together, after the filters below.
+Rows that clear the floor come first, then higher index, then a cheaper blended price. `--top` (default `8`, an integer of at least 1) limits the table, the `--json` fragment, and `--apply` together, after the filters below.
 
 `--list` prints the same columns for the active provider's configured `translationModels`, in that order, and ignores `--top`. The rank column is still each model's place in the full ranking. A configured id that is missing from the catalog, expired, or not a chat model is still listed, with `—` for measurements. `--list` cannot be combined with `--apply`.
 
@@ -52,7 +52,7 @@ Rows that clear the floor come first, then higher index, then a cheaper blended 
 }
 ```
 
-`--apply` replaces `providers.<active>.translationModels` with those ids. `uiModels` and `localeModels` are left unchanged. Scores are not written into the config file.
+`--apply` copies the current config to a sibling `ai-i18n-tools.config.{timestamp}.backup.json` (or `{name}.{timestamp}.backup.json` when `-c` names another file), then replaces `providers.<active>.translationModels` with those ids. A name collision adds `-2`, `-3`, and so on before `.backup.json`. If the copy fails, the config file is left unchanged. `uiModels` and `localeModels` are left unchanged. Scores are not written into the config file. The dashboard **Update config** button writes the same backup.
 
 Benchmark data is cached at `<cacheDir>/benchmark-scores.json` (usually `.translation-cache/benchmark-scores.json`) for 7 days. The raw datasets are downloaded at runtime and are not shipped in the package. `--refresh` redownloads languagebench, Arena, and models.dev. A source that fails during `--refresh` is not filled from the previous cache. Without `--refresh`, a failed download reuses the cached slice. If one of languagebench or Arena fails, the command ranks with the other and says which source failed. If both fail, it exits 1. A models.dev failure leaves catalog prices in place. The dashboard has no refresh control; run `--refresh` from the CLI, then reload the Models tab.
 
