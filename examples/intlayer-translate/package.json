@@ -1,0 +1,32 @@
+{
+  "name": "intlayer-translate-example",
+  "version": "1.0.0",
+  "description": "Example Intlayer app for practicing translate-intlayer",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "reset": "node scripts/reset.mjs",
+    "clean": "node scripts/reset.mjs",
+    "dev": "vite --port 3093",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 3093",
+    "translate:dry": "ai-i18n-tools translate-intlayer src --dry-run",
+    "translate": "ai-i18n-tools translate-intlayer src"
+  },
+  "dependencies": {
+    "ai-i18n-tools": "^1.11.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "license": "MIT"
+}

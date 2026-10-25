@@ -1,0 +1,4 @@
+node_modules
+dist
+.translation-cache
+.i18n

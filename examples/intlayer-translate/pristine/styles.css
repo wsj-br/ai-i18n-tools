@@ -1,0 +1,103 @@
+:root {
+  color: #12202b;
+  background: #f4f1ea;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+}
+
+body {
+  margin: 0;
+}
+
+.page {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: #fffdf8;
+  border: 1px solid #d7cfc2;
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 8px 24px rgb(40 28 12 / 6%);
+}
+
+.eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin: 0 0 0.35rem;
+  color: #6b5b45;
+}
+
+h1,
+h2 {
+  margin: 0 0 0.5rem;
+}
+
+.muted {
+  color: #5c5348;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  background: #1f4d3a;
+  color: #f7f3ea;
+}
+
+button.ghost {
+  background: transparent;
+  color: #1f4d3a;
+  border: 1px solid #1f4d3a;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 0;
+}
+
+dt {
+  font-size: 0.8rem;
+  color: #6b5b45;
+}
+
+dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #ece4d4;
+}
+
+.pill.ok {
+  background: #d7ecd8;
+}
+
+.pill.warn {
+  background: #f3e0b5;
+}
+
+.pill.fail {
+  background: #f0c9c4;
+}
+
+.locale-picker {
+  justify-self: end;
+  font-size: 0.9rem;
+}
