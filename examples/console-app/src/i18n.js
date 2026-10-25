@@ -1,5 +1,5 @@
 /**
- * Node.js / CLI i18next bootstrap for ai-i18n-tools (see docs/GETTING_STARTED.md, Step 4).
+ * Node.js / CLI i18next bootstrap for ai-i18n-tools (see docs/guide/ui-strings/i18next-runtime.md).
  *
  * Paths line up with this example’s `ai-i18n-tools.config.json`:
  * `ui.stringsJson` → `locales/strings.json`, `ui.flatOutputDir` → `locales/`, and the

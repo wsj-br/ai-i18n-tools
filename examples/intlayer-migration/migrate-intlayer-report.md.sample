@@ -21,14 +21,7 @@ This report was generated with `--write`: catalog/flat bundles were seeded and s
 
 ## Extracted dictionaries
 
-### `src/content/app-header.content.ts` (`app-header`)
-
-| Dot path | Source | Locales seeded |
-| --- | --- | --- |
-| `title` | Status console | en, de, fr, es, pt-BR |
-| `subtitle` | Intlayer migration demo | en, de, fr, es, pt-BR |
-
-### `src/content/common.content.ts` (`common`)
+### `src/common.content.ts` (`common`)
 
 | Dot path | Source | Locales seeded |
 | --- | --- | --- |
@@ -38,7 +31,7 @@ This report was generated with `--write`: catalog/flat bundles were seeded and s
 | `navigation.dashboard` | Dashboard | en, de, fr, es, pt-BR |
 | `navigation.helpFor` | Help for {{pageName}} | en, de, fr, es, pt-BR |
 
-### `src/content/dashboard.content.ts` (`dashboard`)
+### `src/components/Dashboard.content.ts` (`dashboard`)
 
 | Dot path | Source | Locales seeded |
 | --- | --- | --- |
@@ -46,7 +39,7 @@ This report was generated with `--write`: catalog/flat bundles were seeded and s
 | `servers` | Servers | en, de, fr, es, pt-BR |
 | `lastRefresh` | Last refresh | en, de, fr, es, pt-BR |
 
-### `src/content/dynamic-key.content.ts` (`dynamic-key`)
+### `src/components/DynamicLabel.content.ts` (`dynamic-key`)
 
 | Dot path | Source | Locales seeded |
 | --- | --- | --- |
@@ -54,13 +47,20 @@ This report was generated with `--write`: catalog/flat bundles were seeded and s
 | `warn` | Degraded | en, de, fr, es, pt-BR |
 | `fail` | Down | en, de, fr, es, pt-BR |
 
-### `src/content/multi-placeholder.content.ts` (`multi-placeholder`)
+### `src/components/Header.content.ts` (`app-header`)
+
+| Dot path | Source | Locales seeded |
+| --- | --- | --- |
+| `title` | Status console | en, de, fr, es, pt-BR |
+| `subtitle` | Intlayer migration demo | en, de, fr, es, pt-BR |
+
+### `src/components/MultiPlaceholderBanner.content.ts` (`multi-placeholder`)
 
 | Dot path | Source | Locales seeded |
 | --- | --- | --- |
 | `greeting` | Hello {name}, you have {count} alerts | en, de, fr, es, pt-BR |
 
-### `src/content/spread-props.content.ts` (`spread-props`)
+### `src/components/SpreadWidget.content.ts` (`spread-props`)
 
 | Dot path | Source | Locales seeded |
 | --- | --- | --- |
@@ -180,12 +180,12 @@ Remove `IntlayerProvider`. It is not rewritten automatically:
 
 Then delete these unused `*.content.ts` files:
 
-- `src/content/app-header.content.ts`
-- `src/content/common.content.ts`
-- `src/content/dashboard.content.ts`
-- `src/content/dynamic-key.content.ts`
-- `src/content/multi-placeholder.content.ts`
-- `src/content/spread-props.content.ts`
+- `src/common.content.ts`
+- `src/components/Dashboard.content.ts`
+- `src/components/DynamicLabel.content.ts`
+- `src/components/Header.content.ts`
+- `src/components/MultiPlaceholderBanner.content.ts`
+- `src/components/SpreadWidget.content.ts`
 
 ## Runtime bootstrap
 

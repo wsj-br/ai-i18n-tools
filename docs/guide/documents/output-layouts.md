@@ -64,7 +64,7 @@ The flat link rewriter uses the per-file output path when computing depth prefix
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Paths outside `docsRoot` fall back to the [nested](#nested) layout (`{outputDir}/{locale}/{relPath}`).
+Paths outside `docsRoot` fall back to the [nested](#nested-default) layout (`{outputDir}/{locale}/{relPath}`).
 
 Set `docs[].docsOutput.docsRoot` to your English source root (e.g. `"docs"`, `"src/content/docs"`, or `"content/en"`). When `docsOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets). Use `localeSubpath: ""` when translated pages sit directly under `{outputDir}/{locale}/` (Starlight-style).
 
@@ -76,7 +76,7 @@ Docusaurus shell JSON from `docusaurusCatalogDir` and other JSON artifacts under
 **Aliases** (same `doc-system` engine, preset `localeSubpath` and defaults):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""`; `localePathLowercase` defaults to `true`. Translated pages under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`. Also used for plain Astro locale pages (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — see [Astro website pages](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""`; `localePathLowercase` defaults to `true`. Translated pages under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`. Also used for plain Astro locale pages (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — see [Astro website pages](/guide/ui-strings/astro-website#pages-parse-and-replace).
 - `docsOutput.style = "vitepress"` — same layout as `doc-system` with empty `localeSubpath`; BCP-47 locale folder names are preserved (`localePathLowercase` defaults to `false`). See [VitePress integration](/guide/integrations/vitepress).
 - `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; English source lives under a locale folder (e.g. `content/en/`). See [Nextra integration](/guide/integrations/nextra).
 

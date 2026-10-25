@@ -12,10 +12,12 @@ packages:
   - "examples/plain-html-docs"
   - "examples/docusaurus-docs"
   - "examples/intlayer-migration"
+  - "examples/intlayer-translate"
 allowBuilds:
   sharp: true
   core-js: true
   esbuild: true
+  '@parcel/watcher': true
 minimumReleaseAgeExclude:
   - serialize-javascript@7.0.5
   - "@11ty/gray-matter@3.0.0"

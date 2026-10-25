@@ -1,5 +1,6 @@
 import { t, type Dictionary } from "intlayer";
 
+// Co-located next to DynamicLabel.tsx, which consumes it via useIntlayer("dynamic-key").
 export default {
   key: "dynamic-key",
   content: {

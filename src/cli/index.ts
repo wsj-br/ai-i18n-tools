@@ -67,6 +67,7 @@ import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
 import { runMarkHtml } from "./mark-html.js";
 import { runMigrateIntlayer } from "./migrate-intlayer.js";
+import { runTranslateIntlayer } from "./translate-intlayer.js";
 import { runMigratePythonI18n } from "./migrate-python-i18n.js";
 import {
   runTranslate,
@@ -1224,6 +1225,101 @@ program
         process.exit(1);
       }
     }
+  );
+
+program
+  .command("translate-intlayer")
+  .description(
+    t(
+      "Translate missing and stale locale leaves in Intlayer *.content.ts dictionaries in place, keeping the files as the source of truth. Dry run reports counts without calling an LLM."
+    )
+  )
+  .argument("[paths...]", t("Files/dirs/globs to scan (default: ui.sourceRoots)"))
+  .option(
+    "-l, --locale <codes>",
+    t("Comma-separated target locales to fill (default: the block's configured targetLocales)")
+  )
+  .option(
+    "--ui-block <selector>",
+    t("UI block to use: zero-based index, description, or strings.json path (default: block 0)")
+  )
+  .option("--dry-run", t("Report missing/stale counts only; do not call an LLM or write"), false)
+  .option(
+    "-j, --concurrency <n>",
+    t("Max parallel target locales (default: config concurrency or 4)")
+  )
+  .action(
+    async (
+      paths: string[],
+      opts: { locale?: string; uiBlock?: string; dryRun?: boolean; concurrency?: string },
+      cmd: Command
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+      const g = cmd.optsWithGlobals() as {
+        verbose?: boolean;
+        writeLogs?: boolean | string;
+        debugFailed?: boolean;
+      };
+      const logPath = activateWriteLogs(
+        g.writeLogs,
+        path.join(projectRoot, config.cacheDir),
+        "translate-intlayer"
+      );
+      try {
+        const sum = await runTranslateIntlayer({
+          cwd: projectRoot,
+          config,
+          paths,
+          localeFilter: opts.locale,
+          uiBlock: opts.uiBlock,
+          dryRun: Boolean(opts.dryRun),
+          verbose: Boolean(g.verbose),
+          ...(logPath !== undefined ? { logPath } : {}),
+          ...(opts.concurrency !== undefined
+            ? { concurrency: parsePositiveInt("Concurrency (-j)", opts.concurrency) }
+            : {}),
+          debugFailed: Boolean(g.debugFailed),
+        });
+        const headline = sum.written
+          ? t(
+              "✅ translate-intlayer: {{changed}} file(s) updated, {{pairs}} leaf×locale translated ({{missing}} missing, {{stale}} stale) across {{dicts}} dictionary/dictionaries",
+              {
+                changed: sum.filesChanged,
+                pairs: sum.pairsTranslated,
+                missing: sum.pairsMissing,
+                stale: sum.pairsStale,
+                dicts: sum.dictionaries,
+              }
+            )
+          : t(
+              "✅ translate-intlayer (dry run): {{pairs}} leaf×locale would be translated ({{missing}} missing, {{stale}} stale) across {{dicts}} dictionary/dictionaries; re-run without --dry-run to apply",
+              {
+                pairs: sum.pairsTranslated,
+                missing: sum.pairsMissing,
+                stale: sum.pairsStale,
+                dicts: sum.dictionaries,
+              }
+            );
+        console.log(chalk.green("\n" + headline));
+      } catch (e) {
+        console.error(
+          chalk.red(
+            t("❌ [translate-intlayer] {{error}}", {
+              error: e instanceof Error ? e.message : String(e),
+            })
+          )
+        );
+        process.exit(1);
+      }
+    }
+  )
+  .addHelpText(
+    "after",
+    `\n${t(`Examples:
+  ai-i18n-tools translate-intlayer src --dry-run
+  ai-i18n-tools translate-intlayer src
+  ai-i18n-tools translate-intlayer src -l de,fr`)}\n`
   );
 
 program

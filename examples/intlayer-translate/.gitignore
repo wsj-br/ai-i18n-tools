@@ -1,4 +1,5 @@
 node_modules
 dist
+.intlayer
 .translation-cache
 .i18n

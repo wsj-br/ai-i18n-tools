@@ -9,11 +9,11 @@
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg?event=release)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-**Translate your app and documentation with the AI model of your choice — no lock-in, no rewrites.**
+**Translate your app, website, and docs with any LLM. One config, cached reruns, your provider.**
 
-CLI and toolkit for internationalizing JavaScript/TypeScript apps, Python apps, and documentation sites. Extract `t()` strings, translate Markdown, MDX, and HTML pages, JSON bundles, and SVG labels — all from one config, with built-in presets for OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale without changing your codebase.
+CLI and toolkit that adds languages to JavaScript/TypeScript apps, Python apps, and documentation sites. It finds the text, translates it, and writes the files your project loads. Built-in presets cover OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale.
 
-Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), plain Markdown, and plain HTML. Python apps use `t()` / `_()` or GNU gettext (Streamlit, FastAPI, Flask, Django, and desktop toolkits). Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and migrates [Intlayer](https://intlayer.org/) projects with `migrate-intlayer`.
+Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), plain Markdown, and plain HTML. Python apps use `t()` / `_()` or GNU gettext (Streamlit, FastAPI, Flask, Django, and desktop toolkits). Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and migrates [Intlayer](https://intlayer.org/) projects with `migrate-intlayer` (or translates Intlayer dictionaries in place with `translate-intlayer`).
 
 <a id="features"></a>
 ## Features
@@ -29,18 +29,19 @@ Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.as
 | **Python** | Standalone executable on each GitHub Release — the CLI runs with no Node.js install |
 | **Ranked models** | `suggest-models` ranks the active provider's chat models and can write `translationModels` |
 
-<a id="which-pipeline"></a>
-## Which pipeline?
+<a id="where-do-i-start"></a>
+## Where do I start?
 
-| Your content | Command |
+| You have | Start here |
 | --- | --- |
-| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) — then UI strings |
-| Source uses `t()` or `_()` (JavaScript, TypeScript, or Python), gettext, or one HTML file with `data-i18n*` markers | **UI strings** — `extract` / `translate-ui` |
-| Localized pages, docs sites, or one HTML file per locale | **Documents** — `translate-docs` |
-| Standalone nested JSON locale files | **JSON** — `translate-json` |
-| Diagrams or illustrations with labels in SVG | **SVG** — `translate-svg` |
+| A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) |
+| A Python app (Streamlit, FastAPI, Flask, Django, gettext) | [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) |
+| A website or docs site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) |
+| Code that already calls `t()` or `_()` | [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) |
+| Standalone nested JSON locale files | [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) |
+| SVG diagrams with text labels | [SVG translation](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/) |
 
-See [What is ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) for a full comparison.
+See [What is ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) for how the pipelines fit together.
 
 <a id="install"></a>
 ## Install
@@ -76,6 +77,8 @@ ai-i18n-tools suggest-models --apply # write that list to translationModels
 ai-i18n-tools sync                   # extract + translate per features
 ```
 
+For a JS/TS app, wrap the text in `t()` before `sync`, or it finds nothing to translate. Pick your path above.
+
 The list from `init` is a starting point. `suggest-models` ranks the active provider's chat models. `--apply` replaces `translationModels`. The same ranking is on the [Models](https://wsj-br.github.io/ai-i18n-tools/guide/translation-dashboard/models) tab. Command reference: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/models#suggest-models).
 
 Other scaffolds: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, `ui-json-bundles`, `ui-python`, `ui-python-gettext`, `ui-python-django`, or `ui-python-flask`.
@@ -89,7 +92,7 @@ Prefer `sync` over chaining individual translate commands. Full walkthrough: [Qu
 - [Installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [Quick start](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [Providers and models](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
 - [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [Plain HTML](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/python) · [Documents](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [HTML pages](https://wsj-br.github.io/ai-i18n-tools/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
 - [Integrations](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, and [Python](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/python)
-- [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python)
+- [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) · [Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) · [website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) · [Combining pipelines](https://wsj-br.github.io/ai-i18n-tools/guide/combining-pipelines)
 - [CLI reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuration](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Runtime helpers](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
 - [Examples](https://wsj-br.github.io/ai-i18n-tools/examples) — runnable demos (`npx degit …`)
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — integration guide for assistants in consumer repos

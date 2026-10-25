@@ -92,6 +92,32 @@ describe("extractIntlayerContentFile", () => {
     expect(result.unsupported[0]?.reason).toBe("missing-source-locale");
   });
 
+  it("unwraps insert() insertion nodes and flags the leaf", () => {
+    const src = `
+import { insert, t } from 'intlayer';
+export default {
+  key: 'app',
+  content: {
+    greeting: t({ en: insert('Welcome back, {{name}}'), de: insert('Willkommen, {{name}}') }),
+    plain: t({ en: 'Hello' }),
+    member: t({ en: intlayer.insert('Hi {{name}}') }),
+  },
+};`;
+    const result = extractIntlayerContentFile(src, "a.content.ts", "en");
+    const greeting = result.leaves.find((l) => l.dotPath === "greeting")!;
+    expect(greeting.sourceText).toBe("Welcome back, {{name}}");
+    expect(greeting.locales).toEqual({
+      en: "Welcome back, {{name}}",
+      de: "Willkommen, {{name}}",
+    });
+    expect(greeting.insertion).toBe(true);
+    const plain = result.leaves.find((l) => l.dotPath === "plain")!;
+    expect(plain.insertion).toBeUndefined();
+    const member = result.leaves.find((l) => l.dotPath === "member")!;
+    expect(member.sourceText).toBe("Hi {{name}}");
+    expect(member.insertion).toBe(true);
+  });
+
   it("accepts template literals and intlayer.t calls", () => {
     const src = `
 import intlayer from 'intlayer';

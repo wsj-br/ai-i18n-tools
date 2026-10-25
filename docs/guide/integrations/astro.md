@@ -3,7 +3,7 @@
 
 Use ai-i18n-tools with [Astro](https://astro.build/) in two common setups: **Astro Starlight** documentation sites and **plain Astro** marketing or app sites. Both use Documents (`translate-docs`) for page content; plain Astro sites often combine that with UI strings (`extract` / `translate-ui`) for `t()` strings in frontmatter and shared data.
 
-See also [UI strings](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documents](/guide/documents/), and the runnable examples below.
+See also [UI strings](/guide/ui-strings/astro-website), [Documents](/guide/documents/), and the runnable examples below.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight

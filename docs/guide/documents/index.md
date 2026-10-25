@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # Documents
 
-Designed primarily for **markdown, MDX, `.astro`, and plain HTML** managed through `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
+Reference for `translate-docs`, the pipeline for Markdown, MDX, `.astro`, and plain HTML pages listed in `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Adding languages to a site for the first time? Start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
 
-On [Docusaurus](/guide/integrations/docusaurus) sites, also set `docusaurusCatalogDir` to your `write-translations` catalog folder (e.g. `docs-site/i18n/en`). Then `translate-docs` includes shell JSON too - navbar, footer, and theme strings.
-
-On [VitePress](/guide/integrations/vitepress) sites, page bodies use the same `docs[]` pipeline. Nav, sidebar, and footer labels live in `docsOutput.vitepressThemeCatalog` - `translate-docs` bootstraps the English catalog and translates it alongside pages, no separate pipeline.
-
-On [Nextra](/guide/integrations/nextra) sites, page bodies use the same `docs[]` pipeline with `docsOutput.style: "nextra"`. `_meta.ts` sidebar labels are collected and translated automatically by `translate-docs`; theme dictionary strings translate via `docs[].nextraDictionaryPath` in the same pipeline.
-
-On [Fumadocs](/guide/integrations/fumadocs) sites, page bodies use `docsOutput.style: "fumadocs"` with `fumadocsParser` `"dot"` (default) or `"dir"`. `meta.json` sidebar labels are collected automatically; UI overrides translate via `docsOutput.fumadocsUiCatalog`.
-
-On [Astro Starlight](/guide/integrations/astro#astro-starlight) sites, page bodies use `docsOutput.style: "astro-starlight"` with `docsRoot` at your Starlight content root (typically `src/content/docs/`). `translate-docs` writes localized markdown/MDX under `src/content/docs/<locale>/` beside the English tree. Starlight ships built-in UI strings for many locales — no separate theme catalog pipeline; optional UI overrides can use `jsonPathTemplate` on a `docs[]` block for `src/content/i18n/en.json`.
+Framework shell strings (navbar, sidebar, theme) are translated in the same run, not by a separate pipeline. The framework guides in the table below say how each one does it: `docusaurusCatalogDir` for Docusaurus, `docsOutput.vitepressThemeCatalog` for VitePress, `docs[].nextraDictionaryPath` for Nextra, `docsOutput.fumadocsUiCatalog` for Fumadocs. Nextra `_meta.ts` and Fumadocs `meta.json` sidebar labels are collected automatically. Astro Starlight ships built-in UI strings for many locales, and optional overrides can use `jsonPathTemplate` on a `docs[]` block.
 
 For PNG and other raster images embedded in markdown, see [Images & Screenshots](/guide/images-and-screenshots/). `translate-docs` translates alt text only; it does not copy raster files.
 
@@ -90,7 +82,7 @@ For plain Astro website UI (no Starlight):
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-That template enables UI extraction only. For page HTML translation, also set `features.translateDocs` and add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). The [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) config shows both pipelines together.
+That template enables UI extraction only. For page HTML translation, also set `features.translateDocs` and add a `docs[]` block (see [Astro website pages (parse-and-replace)](/guide/ui-strings/astro-website#pages-parse-and-replace)). The [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) config shows both pipelines together.
 
 Edit the generated `ai-i18n-tools.config.json`:
 

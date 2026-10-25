@@ -1,31 +1,35 @@
-<a id="add-i18n-to-a-js-ts-app"></a>
+<a id="add-i18n-to-a-jsts-app"></a>
 # Add i18n to a JS/TS app
 
-`extract` records a UI string only when it is a **string literal** inside `t()` or `i18n.t()`. A React, Next.js, Node, or CLI project whose buttons, labels, and messages are still plain source-language text produces an empty catalog. `translate-ui` then has nothing to translate, and the UI stays in the source language.
+This page is for a JS/TS app (React, Next.js, Node, or a CLI) whose buttons, labels, and messages are still plain source-language text. `extract` records a UI string only when it is a string literal inside `t()` or `i18n.t()`, so today the catalog would be empty and `translate-ui` would have nothing to translate.
 
-This page is the preparation step: install the runtime libraries, add a bootstrap so `t` exists, then wrap user-facing literals. After that, follow [UI strings](/guide/ui-strings/) steps 2–3.
+The steps: install the tool, install i18next, run `extract` once, add a small setup file so `t` exists, wrap the user-facing text, then translate. Not sure this is your case? See [Not your case?](#not-your-case) at the end.
 
-<a id="which-page"></a>
-## Which page
+<a id="install-the-tool-and-set-the-key"></a>
+## Install the tool and set the key
 
-| Your code today | Read |
-| --- | --- |
-| JS/TS/JSX with source-language literals and no `t()` yet (React, Next.js, Node, CLI) | This page |
-| Already `t("English…")` or `i18n.t("English…")` | [UI strings](/guide/ui-strings/) steps 2–3, then [Wire i18next](/guide/ui-strings/i18next-runtime) |
-| i18next namespace JSON (`t("saveButton")` plus `en/translation.json`) | [JSON](/guide/json). Do not switch those keys to English sentences unless you are ready to change every call |
-| Intlayer dictionaries | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
-| One HTML file | [Plain HTML](/guide/ui-strings/plain-html) and `mark-html` |
-| Doc sites, or Astro page HTML | [Documents](/guide/documents/) and [Astro website](/guide/ui-strings/astro-website). `t()` is only for shared data and frontmatter |
+Install the CLI ([Installation](/guide/installation)) and set the API key for your provider ([Provider and API key](/guide/quick-start#provider-and-api-key)). Ollama needs no key.
 
-<a id="what-extract-can-see"></a>
-## What extract can see
+<a id="initialise-the-config"></a>
+## Initialise the config
 
-Until a user-facing string is a literal inside `t()` or `i18n.t()`, it is not translated. An empty `strings.json` after `sync` usually means this step was skipped. Non-literal calls such as `t(label)` are skipped with no warning. Details of what the scanner opens: [What extract scans](/guide/ui-strings/#what-extract-scans).
+```bash
+ai-i18n-tools init -P openrouter
+```
+
+This writes `ai-i18n-tools.config.json`. Four keys matter for now:
+
+- `sourceLocale`: the language your text is written in.
+- `targetLocales`: the languages to add.
+- `ui.sourceRoots`: the folders `extract` scans, for example `src/`.
+- `ui.stringsJson` and `ui.flatOutputDir`: where the catalog and the per-locale files are written.
+
+Every other key is in [Configuration](/reference/configuration).
 
 <a id="install-the-runtime-libraries"></a>
 ## Install the runtime libraries
 
-`ai-i18n-tools` does not depend on `i18next` or `react-i18next`. The app installs them.
+ai-i18n-tools does not depend on `i18next` or `react-i18next`. The app installs them.
 
 - Every JS/TS app that looks up strings at runtime: `i18next`.
 - React components that call `useTranslation()`: `react-i18next` as well.
@@ -36,12 +40,51 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="add-the-bootstrap-first"></a>
-## Add the bootstrap first
+<a id="run-extract-once"></a>
+## Run extract once
 
-Add the i18n bootstrap before you edit call sites, so `t` exists while you wrap strings. Copy the setup in [Wire i18next](/guide/ui-strings/i18next-runtime). `SOURCE_LOCALE` in that file must equal `sourceLocale` in `ai-i18n-tools.config.json`.
+```bash
+ai-i18n-tools extract
+```
 
-Import the bootstrap from the app entry before the first render. In Next.js, import it from a client module, the same pattern as [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts) (the example page is `"use client"` and imports that module).
+The setup file in the next step imports `strings.json` and `ui-languages.json`, and only `extract` writes them. It writes both even when it finds no `t()` calls, so the app compiles. Expect 0 strings, or 1 if your `package.json` has a `description`, because the extractor includes it by default (`ui.uiExtractor.includePackageDescription`).
+
+<a id="add-the-bootstrap"></a>
+## Add the bootstrap
+
+Create the i18n setup file. This minimal version is enough to wrap strings and translate them. `SOURCE_LOCALE` must equal `sourceLocale` in `ai-i18n-tools.config.json`.
+
+```js
+// src/i18n.js — adjust the import paths to match `ui` in your config
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import aiI18n from 'ai-i18n-tools/runtime';
+import uiLanguages from './locales/ui-languages.json';
+import stringsJson from './locales/strings.json';
+
+export const SOURCE_LOCALE = 'en-GB';
+
+void i18n.use(initReactI18next).init(aiI18n.defaultI18nInitOptions(SOURCE_LOCALE));
+aiI18n.setupKeyAsDefaultT(i18n, { stringsJson });
+
+i18n.on('languageChanged', aiI18n.applyDirection);
+aiI18n.applyDirection(i18n.language);
+
+const localeLoaders = aiI18n.makeLocaleLoadersFromManifest(
+  uiLanguages,
+  SOURCE_LOCALE,
+  (code) => () => import(`./locales/${code}.json`),
+);
+
+export const loadLocale = aiI18n.makeLoadLocale(i18n, localeLoaders, SOURCE_LOCALE);
+export default i18n;
+```
+
+Not using React? Drop the `react-i18next` import and the `.use(initReactI18next)` call.
+
+When the app starts using plurals, add the source-locale flat file so plural forms resolve. That adds a third import and a `sourcePluralFlatBundle` option, shown in [Wire i18next](/guide/ui-strings/i18next-runtime).
+
+Import this file from the app entry before the first render. In Next.js, import it from a client module, the same pattern as [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts).
 
 <a id="replace-hardcoded-copy"></a>
 ## Replace hardcoded copy
@@ -62,9 +105,9 @@ console.log(`Hello ${name}`);
 console.log(t("Hello {{name}}", { name }));
 ```
 
-Rules (also in [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals)):
+Rules (also in [t() calls and plurals](/guide/ui-strings/t-calls-and-plurals)):
 
-- The key is a literal. `t(variable)` and <code>{'t(`Hello ${name}`)'}</code> are not extracted.
+- The key is a literal. `t(variable)` and <code>{'t(`Hello ${name}`)'}</code> are not extracted, and non-literal calls are skipped with no warning.
 - Placeholders inside the literal use i18next form <code v-pre>{{name}}</code>, passed in the second argument.
 - Plurals: one source sentence plus `{ plurals: true, count }`. See [Cardinal plurals](/guide/ui-strings/t-calls-and-plurals#cardinal-plurals-plurals-true). Do not invent `_one` / `_other` keys yourself.
 - React components take `t` from `useTranslation()`. Other files call `i18n.t`. A constant evaluated at import time must move into a function or `useMemo(..., [t])`, so `t()` runs after the locale loads.
@@ -80,16 +123,40 @@ When the literals are in place:
 ```bash
 ai-i18n-tools extract
 ai-i18n-tools translate-ui
+ai-i18n-tools status
 ```
 
-`sync` runs both when `features.translateUIStrings` is on. Continue at [UI strings — Step 2](/guide/ui-strings/#step-2-extract-strings).
+`sync` runs `extract` and `translate-ui` together when `features.translateUIStrings` is on. `extract` should now list the sentences you wrapped. Open one generated locale file under `ui.flatOutputDir` and confirm the translations are there. Next: [UI strings, Step 2](/guide/ui-strings/#step-2-extract-strings) for what `extract` scans and writes.
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) is a small Node app whose `src/main.js` is already wrapped. The Next.js example is the React bootstrap.
 
 <a id="language-switching"></a>
 ## Language switching
 
-Switching language is a later step: [Language switcher & RTL](/guide/ui-strings/language-switcher). Restore a saved locale before the first render, as described in [Wire i18next](/guide/ui-strings/i18next-runtime#startup-locale).
+Restore a saved locale before the first render, as described in [Wire i18next](/guide/ui-strings/i18next-runtime#startup-locale). Then add a control that calls `await loadLocale(code)` followed by `await i18n.changeLanguage(code)`: [Language switcher and RTL](/guide/ui-strings/language-switcher).
+
+<a id="keep-it-translated"></a>
+## Keep it translated
+
+Re-run `sync` after changing source text. The cache means only new or changed strings go to the model. Add the scripts from [Recommended package.json scripts](/guide/quick-start#recommended-packagejson-scripts), and run `sync` in CI so translations do not drift.
+
+<a id="coming-from-another-tool"></a>
+## Coming from another tool
+
+ai-i18n-tools includes its own string extractor. If you used `i18next-scanner`, `babel-plugin-i18next-extract`, or similar, you can remove those dev dependencies after migrating. Existing i18next namespace JSON files can stay on the [JSON pipeline](/guide/json#i18next-namespace-files). Intlayer `.content.ts` dictionaries can be imported with `migrate-intlayer`: see [Migrating from Intlayer](/guide/migrating-from-intlayer). To keep Intlayer at runtime and only fill its translations, use `translate-intlayer`: see [Translating Intlayer in place](/guide/translating-intlayer).
+
+<a id="not-your-case"></a>
+## Not your case?
+
+| Your code today | Read |
+| --- | --- |
+| Already `t("English…")` or `i18n.t("English…")` | [UI strings](/guide/ui-strings/) steps 2–3, then [Wire i18next](/guide/ui-strings/i18next-runtime) |
+| i18next namespace JSON (`t("saveButton")` plus `en/translation.json`) | [JSON](/guide/json). Do not switch those keys to English sentences unless you are ready to change every call |
+| Intlayer dictionaries, moving off Intlayer | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
+| Intlayer dictionaries, keeping Intlayer | [Translating Intlayer in place](/guide/translating-intlayer) |
+| One HTML file | [Plain HTML](/guide/ui-strings/plain-html) and `mark-html` |
+| Doc sites, or Astro page HTML | [Add i18n to a website or docs site](/guide/add-i18n-to-website) and [Astro website](/guide/ui-strings/astro-website). `t()` is only for shared data and frontmatter |
+| A Python app | [Add i18n to a Python app](/guide/add-i18n-to-python) |
 
 <a id="agent-prompt"></a>
 ## Agent prompt
@@ -111,7 +178,7 @@ Read `ui.sourceRoots` in `ai-i18n-tools.config.json` and edit only those trees (
 
 ## Call shape
 
-Install `i18next`. Install `react-i18next` when a component uses `useTranslation()`. Add the bootstrap from the Wire i18next guide first. `SOURCE_LOCALE` must equal config `sourceLocale`.
+Install `i18next`. Install `react-i18next` when a component uses `useTranslation()`. Run `ai-i18n-tools extract` once so `strings.json` and `ui-languages.json` exist, then add the bootstrap from the Wire i18next guide. `SOURCE_LOCALE` must equal config `sourceLocale`.
 
 - React components: `const { t } = useTranslation()` and `{t("Save")}`.
 - Module-level constants and non-React files: `i18n.t("…")`. Move a constant that would call `t()` at import time into a function or `useMemo(..., [t])`.
@@ -145,9 +212,11 @@ console.log(t("Hello {{name}}", { name }));
 
 ## Order
 
-1. Install the libraries and add the bootstrap.
-2. Wrap call sites.
-3. Run `ai-i18n-tools extract`. Do not run a translation yourself and do not hand-edit catalogs.
+1. Install the libraries.
+2. Run `ai-i18n-tools extract` once.
+3. Add the bootstrap.
+4. Wrap call sites.
+5. Run `ai-i18n-tools extract` again. Do not run a translation yourself and do not hand-edit catalogs.
 
 ## Do not
 

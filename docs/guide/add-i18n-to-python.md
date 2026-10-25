@@ -5,6 +5,18 @@ This walkthrough takes a Python application that has a single language and adds 
 
 Already using GNU gettext, Django, or Flask catalogs? Keep those calls. Pick the matching init template below and let `extract` fill empty catalog slots from the existing `.po` files.
 
+The steps:
+
+1. [Install](#install) the CLI and set the API key.
+2. [Pick a template](#pick-a-template) and run `init`.
+3. [Wrap strings](#wrap-strings) in `t()` or `_()`.
+4. [Migrate call sites](#migrate) that are already wrapped unsafely.
+5. [Choose models and translate](#translate).
+6. [Switch locale at runtime](#switch-locale).
+7. [Keep it translated](#keep-it-translated).
+
+Not sure this is your case? See [Not your case?](#not-your-case) at the end.
+
 <a id="install"></a>
 ## Install
 
@@ -50,6 +62,8 @@ _("Hello, {name}!".format(name=name))
 ```
 
 <a id="agent-prompt-i18n-py"></a>
+
+<a id="agent-prompt-i18npy-helper"></a>
 ### Agent prompt: `i18n.py` helper
 
 Use this for Streamlit, FastAPI, Flask with flat JSON, Tkinter, Qt, and a PyWebView shell. Copy it into a coding agent. A Django or existing-gettext project should use the [next prompt](#agent-prompt-django-gettext) instead.
@@ -119,6 +133,8 @@ List files changed, each string you deliberately skipped with a one-line reason,
 ````
 
 <a id="agent-prompt-django-gettext"></a>
+
+<a id="agent-prompt-django-and-native-gettext"></a>
 ### Agent prompt: Django and native gettext
 
 Use this when the app already calls Django or GNU gettext, or when you want to stay on `.po` catalogs. Do not add `i18n.py`.
@@ -189,6 +205,8 @@ List files changed, each string you deliberately skipped with a one-line reason,
 ````
 
 <a id="migrate"></a>
+
+<a id="migrate-call-sites"></a>
 ## Migrate call sites
 
 `migrate-python-i18n` is a dry run until you pass `--write`. It always writes `migrate-python-i18n-report.md`. Generated `i18n.py` files are skipped. Debug fields such as `{value=}` and nested format specs are reported and left in place.
@@ -201,6 +219,8 @@ ai-i18n-tools migrate-python-i18n --write
 Read the report before `--write` when the dry run lists manual-review sites. Optional `--report <path>` changes the report path. Optional `--ui-block` limits the scan to one UI block.
 
 <a id="translate"></a>
+
+<a id="choose-models-and-translate"></a>
 ## Choose models and translate
 
 The model list from `init` is a starting point. Rank the active provider's chat models and, when the shortlist looks right, write it into `translationModels`:
@@ -220,6 +240,8 @@ ai-i18n-tools translate-ui
 `extract` writes `strings.json` and `ui-languages.json`. `translate-ui` fills the flat JSON files and, when `ui.gettext` is set, the `.po` / `.mo` catalogs. Do not hand-edit those generated catalogs.
 
 <a id="switch-locale"></a>
+
+<a id="switch-locale-at-runtime"></a>
 ## Switch locale at runtime
 
 `set_locale` returns a `ContextVar` token. Reset it when the request or the callback ends.
@@ -233,6 +255,20 @@ finally:
 ```
 
 FastAPI and Flask middleware must reset in `finally` (Flask: `teardown_request`) so concurrent requests do not leak a locale. Django projects keep Django's locale activation and do not use `i18n.py`. Per-framework notes: [Locale in each framework](/guide/ui-strings/python#locale).
+
+<a id="keep-it-translated"></a>
+## Keep it translated
+
+Re-run `ai-i18n-tools sync` (or `extract` then `translate-ui`) after changing source text. The cache means only new or changed strings go to the model. Run it in CI so translations do not drift. `ai-i18n-tools dashboard` opens the [Translation Dashboard](/guide/translation-dashboard/) to review translations.
+
+<a id="not-your-case"></a>
+## Not your case?
+
+| You have | Read |
+| --- | --- |
+| A JS/TS app | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
+| A website or docs site | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
+| Nested locale JSON | [JSON](/guide/json) |
 
 <a id="examples"></a>
 ## Examples

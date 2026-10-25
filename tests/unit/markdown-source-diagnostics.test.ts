@@ -20,6 +20,13 @@ function S(partial: Partial<Segment> & Pick<Segment, "content" | "type" | "hash"
   };
 }
 
+describe("collectMalformedAdmonitionIssues with nested fences", () => {
+  it("ignores admonition syntax inside a 4-backtick fence that holds a 3-backtick fence", () => {
+    const md = ["````md", "```python", "x = 1", "```", ":::note", "````", "", "Done."].join("\n");
+    expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+  });
+});
+
 describe("collectMarkdownSourceIssues", () => {
   it("flags unpaired ** pattern like Translate**", () => {
     const md = `- Translate** - convert text.\n- **Rewrite** - rephrase.`;

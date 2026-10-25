@@ -1,5 +1,6 @@
-import { t, type Dictionary } from "intlayer";
+import { insert, t, type Dictionary } from "intlayer";
 
+// Co-located next to Header.tsx, which consumes it via useIntlayer("app").
 export default {
   key: "app",
   content: {
@@ -12,12 +13,12 @@ export default {
       "pt-BR": "Monitore todos os servidores em um só lugar",
     }),
     greeting: t({
-      en: "Welcome back, {name}",
-      "pt-BR": "Bem-vindo de volta, {name}",
+      en: insert("Welcome back, {{name}}"),
+      "pt-BR": insert("Bem-vindo de volta, {{name}}"),
     }),
     alerts: t({
-      en: "You have {count} new alerts",
-      "pt-BR": "Você tem {count} novos alertas",
+      en: insert("You have {{count}} new alerts"),
+      "pt-BR": insert("Você tem {{count}} novos alertas"),
     }),
   },
 } satisfies Dictionary;

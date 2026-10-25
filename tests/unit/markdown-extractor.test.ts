@@ -129,6 +129,30 @@ Paragraph.
     expect(segs.some((s) => s.type === "paragraph")).toBe(true);
   });
 
+  it("keeps a nested 3-backtick fence inside a 4-backtick fence as one code segment", () => {
+    const md = [
+      "Intro.",
+      "",
+      "````text",
+      "Prompt:",
+      "",
+      "```python",
+      "from x import y as _",
+      "```",
+      "",
+      "More prompt.",
+      "````",
+      "",
+      "After.",
+    ].join("\n");
+    const segs = ex.extract(md, "doc.md");
+    const code = segs.filter((s) => s.type === "code");
+    expect(code).toHaveLength(1);
+    expect(code[0]!.content).toContain("from x import y as _");
+    expect(code[0]!.content).toContain("More prompt.");
+    expect(segs.filter((s) => s.translatable).map((s) => s.content)).toEqual(["Intro.", "After."]);
+  });
+
   it("captures a nested admonition as one segment and reassembles it exactly", () => {
     const block = [
       ":::::info[Parent]",

@@ -1,5 +1,6 @@
 import { t, type Dictionary } from "intlayer";
 
+// Co-located next to SpreadWidget.tsx, which consumes it via useIntlayer("spread-props").
 export default {
   key: "spread-props",
   content: {

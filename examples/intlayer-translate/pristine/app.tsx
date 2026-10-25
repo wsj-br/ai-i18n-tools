@@ -1,27 +1,37 @@
-import { useState } from "react";
-import { IntlayerProvider } from "react-intlayer";
+import { getLocaleName } from "intlayer";
+import { IntlayerProvider, useLocale } from "react-intlayer";
 import { Header } from "./components/Header";
 import { Dashboard } from "./components/Dashboard";
-import { LOCALE_LABELS, SOURCE_LOCALE, TARGET_LOCALES } from "./i18n";
 
-const LOCALES = [SOURCE_LOCALE, ...TARGET_LOCALES];
+function LocalePicker() {
+  const { locale, availableLocales, setLocale } = useLocale();
+  return (
+    <label className="locale-picker">
+      Locale{" "}
+      <select
+        value={locale}
+        onChange={(e) => {
+          const next = availableLocales.find((code) => code === e.target.value);
+          if (next) {
+            setLocale(next);
+          }
+        }}
+      >
+        {availableLocales.map((code) => (
+          <option key={code} value={code}>
+            {getLocaleName(code, code)} ({code})
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
 
 export function App() {
-  const [locale, setLocale] = useState<string>(SOURCE_LOCALE);
-
   return (
-    <IntlayerProvider locale={locale}>
+    <IntlayerProvider>
       <main className="page">
-        <label className="locale-picker">
-          Locale{" "}
-          <select value={locale} onChange={(e) => setLocale(e.target.value)}>
-            {LOCALES.map((code) => (
-              <option key={code} value={code}>
-                {LOCALE_LABELS[code] ?? code} ({code})
-              </option>
-            ))}
-          </select>
-        </label>
+        <LocalePicker />
         <Header name="Ada" alertCount={3} />
         <Dashboard />
       </main>

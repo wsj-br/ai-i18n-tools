@@ -6,17 +6,7 @@ import { prefixVitepressThemeConfigLinks } from "../../src/processors/vitepress-
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const TARGET_LOCALES = [
-  "de",
-  "es",
-  "fr",
-  "hi",
-  "ja",
-  "ko",
-  "pt-BR",
-  "zh-Hans",
-  "zh-Hant",
-] as const;
+const TARGET_LOCALES = ["de", "es", "fr", "hi", "ja", "ko", "pt-BR", "zh-Hans", "zh-Hant"] as const;
 
 type ThemeCatalog = {
   site: { title: string; description: string };
@@ -51,95 +41,89 @@ function loadTheme(localeFile: string): ThemeCatalog {
 function guideSidebar(t: ThemeCatalog) {
   return [
     {
-      text: t.sidebar.guide,
+      text: t.sidebar.getStarted,
       items: [
         { text: t.sidebar.whatIs, link: "/guide/what-is-ai-i18n-tools" },
         { text: t.sidebar.installation, link: "/guide/installation" },
         { text: t.sidebar.quickStart, link: "/guide/quick-start" },
-        { text: t.sidebar.toolUiLanguage, link: "/guide/tool-ui-language" },
+        { text: t.sidebar.providers, link: "/guide/providers-and-models" },
+      ],
+    },
+    {
+      text: t.sidebar.addI18nToProject,
+      items: [
+        { text: t.sidebar.addI18nToJs, link: "/guide/add-i18n-to-js" },
+        { text: t.sidebar.addI18nToPython, link: "/guide/add-i18n-to-python" },
+        { text: t.sidebar.addI18nToWebsite, link: "/guide/add-i18n-to-website" },
+        { text: t.sidebar.combiningPipelines, link: "/guide/combining-pipelines" },
+        { text: t.sidebar.migratingFromIntlayer, link: "/guide/migrating-from-intlayer" },
+        { text: t.sidebar.translatingIntlayer, link: "/guide/translating-intlayer" },
+      ],
+    },
+    {
+      text: t.sidebar.translationTypes,
+      items: [
         {
-          text: t.sidebar.translationTypes,
-          collapsed: false,
+          text: t.sidebar.uiStrings,
+          collapsed: true,
+          link: "/guide/ui-strings/",
           items: [
+            { text: t.sidebar.overview, link: "/guide/ui-strings/" },
+            { text: t.sidebar.uiStringsPlainHtml, link: "/guide/ui-strings/plain-html" },
+            { text: t.sidebar.python ?? "Python", link: "/guide/ui-strings/python" },
+            { text: t.sidebar.uiStringsAstroWebsite, link: "/guide/ui-strings/astro-website" },
+            { text: t.sidebar.uiStringsWireI18next, link: "/guide/ui-strings/i18next-runtime" },
             {
-              text: t.sidebar.uiStrings,
-              collapsed: true,
-              link: "/guide/ui-strings/",
-              items: [
-                { text: t.sidebar.overview, link: "/guide/ui-strings/" },
-                { text: t.sidebar.uiStringsPlainHtml, link: "/guide/ui-strings/plain-html" },
-                { text: t.sidebar.python ?? "Python", link: "/guide/ui-strings/python" },
-                { text: t.sidebar.uiStringsAstroWebsite, link: "/guide/ui-strings/astro-website" },
-                { text: t.sidebar.uiStringsWireI18next, link: "/guide/ui-strings/i18next-runtime" },
-                {
-                  text: t.sidebar.uiStringsTCallsAndPlurals,
-                  link: "/guide/ui-strings/t-calls-and-plurals",
-                },
-                {
-                  text: t.sidebar.uiStringsLanguageSwitcher,
-                  link: "/guide/ui-strings/language-switcher",
-                },
-              ],
+              text: t.sidebar.uiStringsTCallsAndPlurals,
+              link: "/guide/ui-strings/t-calls-and-plurals",
             },
             {
-              text: t.sidebar.documents,
-              collapsed: true,
-              link: "/guide/documents/",
-              items: [
-                { text: t.sidebar.overview, link: "/guide/documents/" },
-                { text: t.sidebar.documentsHtmlPages, link: "/guide/documents/html-pages" },
-                { text: t.sidebar.documentsOutputLayouts, link: "/guide/documents/output-layouts" },
-                { text: t.sidebar.documentsAnchorLinks, link: "/guide/documents/anchor-links" },
-                { text: t.sidebar.documentsLinkRewriting, link: "/guide/documents/link-rewriting" },
-                {
-                  text: t.sidebar.documentsLanguageSwitcher,
-                  link: "/guide/documents/language-switcher",
-                },
-                { text: t.sidebar.documentsCliOptions, link: "/guide/documents/cli-options" },
-                {
-                  text: t.sidebar.documentsTroubleshooting,
-                  link: "/guide/documents/troubleshooting",
-                },
-              ],
-            },
-            { text: t.sidebar.json, link: "/guide/json" },
-            {
-              text: t.sidebar.svgTranslation,
-              collapsed: true,
-              link: "/guide/svg-translation/",
-              items: [
-                { text: t.sidebar.overview, link: "/guide/svg-translation/" },
-                {
-                  text: t.sidebar.svgWebAppFlat,
-                  link: "/guide/svg-translation/translated-svg-web-app",
-                },
-                {
-                  text: t.sidebar.svgColocated,
-                  link: "/guide/svg-translation/translated-svg-colocated",
-                },
-                {
-                  text: t.sidebar.svgTroubleshooting,
-                  link: "/guide/svg-translation/troubleshooting",
-                },
-              ],
+              text: t.sidebar.uiStringsLanguageSwitcher,
+              link: "/guide/ui-strings/language-switcher",
             },
           ],
         },
         {
-          text: t.sidebar.glossary ?? "Glossary",
-          link: "/guide/glossary",
+          text: t.sidebar.documents,
+          collapsed: true,
+          link: "/guide/documents/",
+          items: [
+            { text: t.sidebar.overview, link: "/guide/documents/" },
+            { text: t.sidebar.documentsHtmlPages, link: "/guide/documents/html-pages" },
+            { text: t.sidebar.documentsOutputLayouts, link: "/guide/documents/output-layouts" },
+            { text: t.sidebar.documentsAnchorLinks, link: "/guide/documents/anchor-links" },
+            { text: t.sidebar.documentsLinkRewriting, link: "/guide/documents/link-rewriting" },
+            {
+              text: t.sidebar.documentsLanguageSwitcher,
+              link: "/guide/documents/language-switcher",
+            },
+            { text: t.sidebar.documentsCliOptions, link: "/guide/documents/cli-options" },
+            {
+              text: t.sidebar.documentsTroubleshooting,
+              link: "/guide/documents/troubleshooting",
+            },
+          ],
         },
+        { text: t.sidebar.json, link: "/guide/json" },
         {
-          text: t.sidebar.addI18nToJs ?? "Add i18n to a JS/TS app",
-          link: "/guide/add-i18n-to-js",
-        },
-        {
-          text: t.sidebar.addI18nToPython ?? "Add i18n to a Python app",
-          link: "/guide/add-i18n-to-python",
-        },
-        {
-          text: t.sidebar.migratingFromIntlayer ?? "Migrating from Intlayer",
-          link: "/guide/migrating-from-intlayer",
+          text: t.sidebar.svgTranslation,
+          collapsed: true,
+          link: "/guide/svg-translation/",
+          items: [
+            { text: t.sidebar.overview, link: "/guide/svg-translation/" },
+            {
+              text: t.sidebar.svgWebAppFlat,
+              link: "/guide/svg-translation/translated-svg-web-app",
+            },
+            {
+              text: t.sidebar.svgColocated,
+              link: "/guide/svg-translation/translated-svg-colocated",
+            },
+            {
+              text: t.sidebar.svgTroubleshooting,
+              link: "/guide/svg-translation/troubleshooting",
+            },
+          ],
         },
         {
           text: t.sidebar.integrations,
@@ -166,7 +150,10 @@ function guideSidebar(t: ThemeCatalog) {
           link: "/guide/images-and-screenshots/",
           items: [
             { text: t.sidebar.overview, link: "/guide/images-and-screenshots/" },
-            { text: t.sidebar.imagesSharedImage, link: "/guide/images-and-screenshots/shared-image" },
+            {
+              text: t.sidebar.imagesSharedImage,
+              link: "/guide/images-and-screenshots/shared-image",
+            },
             {
               text: t.sidebar.imagesPerLocaleFolder,
               link: "/guide/images-and-screenshots/per-locale-folder",
@@ -185,7 +172,13 @@ function guideSidebar(t: ThemeCatalog) {
             },
           ],
         },
-        { text: t.sidebar.providers, link: "/guide/providers-and-models" },
+      ],
+    },
+    {
+      text: t.sidebar.tools,
+      items: [
+        { text: t.sidebar.glossary ?? "Glossary", link: "/guide/glossary" },
+        { text: t.sidebar.toolUiLanguage, link: "/guide/tool-ui-language" },
         { text: t.sidebar.runtimeHelpers, link: "/guide/runtime-helpers" },
         {
           text: t.sidebar.dashboard,
@@ -255,35 +248,35 @@ function themeConfigFor(t: ThemeCatalog, localeCode: string | null = null) {
   const localeRoutePrefix = localeCode ? `/${localeCode}` : null;
   return prefixVitepressThemeConfigLinks(
     {
-    logo: "/ai-i18n-tools_logo.svg",
-    nav: [
-      { text: t.nav.guide, link: "/guide/what-is-ai-i18n-tools", activeMatch: "/guide/" },
-      { text: t.nav.examples, link: "/examples", activeMatch: "/examples" },
-      { text: t.nav.reference, link: "/reference/configuration", activeMatch: "/reference/" },
-      {
-        text: t.nav.github,
-        link: "https://github.com/wsj-br/ai-i18n-tools",
+      logo: "/ai-i18n-tools_logo.svg",
+      nav: [
+        { text: t.nav.guide, link: "/guide/what-is-ai-i18n-tools", activeMatch: "/guide/" },
+        { text: t.nav.examples, link: "/examples", activeMatch: "/examples" },
+        { text: t.nav.reference, link: "/reference/configuration", activeMatch: "/reference/" },
+        {
+          text: t.nav.github,
+          link: "https://github.com/wsj-br/ai-i18n-tools",
+        },
+      ],
+      sidebar: guideSidebar(t),
+      footer: {
+        message: t.footer.message,
+        copyright: t.footer.copyright,
       },
-    ],
-    sidebar: guideSidebar(t),
-    footer: {
-      message: t.footer.message,
-      copyright: t.footer.copyright,
-    },
-    docFooter: {
-      prev: t.docFooter.prev,
-      next: t.docFooter.next,
-    },
-    outline: {
-      label: t.outline.label,
-    },
-    langMenuLabel: t.langMenuLabel,
-    search: {
-      provider: "local" as const,
-      options: {
-        placeholder: t.search.placeholder,
+      docFooter: {
+        prev: t.docFooter.prev,
+        next: t.docFooter.next,
       },
-    },
+      outline: {
+        label: t.outline.label,
+      },
+      langMenuLabel: t.langMenuLabel,
+      search: {
+        provider: "local" as const,
+        options: {
+          placeholder: t.search.placeholder,
+        },
+      },
     },
     localeRoutePrefix
   );

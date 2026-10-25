@@ -1,5 +1,4 @@
 <a id="astro-website"></a>
-<a id="astro-website"></a>
 # Astro website
 
 For static Astro marketing or app sites (plain Astro, not Starlight), combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. See also [Astro integration](/guide/integrations/astro).
@@ -33,7 +32,7 @@ Example `package.json` scripts (from the reference project):
 <a id="ui-strings-ssg"></a>
 ## UI strings (SSG)
 
-Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages). Page HTML does not need `t()`: `translate-docs` copies it. The [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) applies to those frontmatter and data files, except the i18next install and bootstrap — Astro resolves `t` at build time with `makeT`, not with i18next.
+Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages). Page HTML does not need `t()`: `translate-docs` copies it. The [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) applies to those frontmatter and data files, except the i18next install and bootstrap — Astro resolves `t` at build time with `makeT`, not with i18next.
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama
@@ -82,6 +81,6 @@ Enable `features.translateDocs` and add a `docs[]` block, for example:
 
 Run `ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). English source stays at `src/pages/index.astro`; each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
 
-Inside the **template body**, string literals in `{expression}` blocks (inline arrays, object `title`/`desc` fields) are translated when they are user-facing; quoted values on protected attributes/keys, literals inside `t('…')`, `<script>`, and `<style>` are left unchanged. **Frontmatter TypeScript is not translated** by this path—keep shared frontmatter (including `t()` imports and data arrays) identical on English and locale pages, or re-run `translate-docs` after editing the English page so locale copies pick up frontmatter changes. For frontmatter-only copy, use the [UI-string pipeline](#astro-website-ui-strings-ssg) instead.
+Inside the **template body**, string literals in `{expression}` blocks (inline arrays, object `title`/`desc` fields) are translated when they are user-facing; quoted values on protected attributes/keys, literals inside `t('…')`, `<script>`, and `<style>` are left unchanged. **Frontmatter TypeScript is not translated** by this path—keep shared frontmatter (including `t()` imports and data arrays) identical on English and locale pages, or re-run `translate-docs` after editing the English page so locale copies pick up frontmatter changes. For frontmatter-only copy, use the [UI-string pipeline](#ui-strings-ssg) instead.
 
 See [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) for the full hybrid landing page (HTML via `translate-docs`, screenshot tab labels via `t()` + `translate-ui`).

@@ -10,12 +10,8 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "types": ["vite/client"],
-    "paths": {
-      "intlayer": ["./src/shim/intlayer.ts"],
-      "react-intlayer": ["./src/shim/react-intlayer.tsx"]
-    }
+    "types": ["vite/client"]
   },
-  "include": ["src"],
+  "include": ["src", "intlayer.config.ts", ".intlayer/**/*.ts"],
   "exclude": ["pristine", "node_modules", "dist"]
 }

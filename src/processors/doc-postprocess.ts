@@ -10,6 +10,7 @@ import type {
   RegexAdjustmentConfig,
 } from "../core/types.js";
 import { normalizeLocale } from "../core/config.js";
+import { isCodeFenceClose, matchCodeFenceOpen, type OpenCodeFence } from "./code-fence.js";
 import { resolveDocumentationOutputPath, toPosix } from "../core/output-paths.js";
 import {
   loadUiLanguagesMaster,
@@ -82,9 +83,6 @@ function splitBodyLines(body: string): string[] {
   return body.split(/\r?\n/);
 }
 
-/** Match {@link MarkdownExtractor}: CommonMark fenced code opener/closer line. */
-const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
-
 function joinBodyLines(lines: string[]): string {
   return lines.join("\n");
 }
@@ -99,18 +97,25 @@ export function extractLanguageListBlock(
   cfg: LanguageListBlockConfig
 ): { block: string; startLine: number; endLine: number } | null {
   const lines = splitBodyLines(body);
-  let inFence = false;
+  let openFence: OpenCodeFence | null = null;
   let startLine = -1;
   let endLine = -1;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? "";
-    if (MD_CODE_FENCE_LINE_RE.test(line)) {
-      inFence = !inFence;
+    if (openFence) {
+      if (isCodeFenceClose(line, openFence)) {
+        openFence = null;
+      }
+      continue;
+    }
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      openFence = fenceOpen;
       continue;
     }
     if (startLine === -1) {
-      if (!inFence && line.includes(cfg.start)) {
+      if (line.includes(cfg.start)) {
         startLine = i;
         if (line.includes(cfg.end)) {
           endLine = i;
@@ -119,7 +124,7 @@ export function extractLanguageListBlock(
       }
       continue;
     }
-    if (!inFence && line.includes(cfg.end)) {
+    if (line.includes(cfg.end)) {
       endLine = i;
       break;
     }

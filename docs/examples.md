@@ -8,7 +8,7 @@ Runnable projects under [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tr
 
 Copy one example without cloning the full repository.
 
-<a id="node-examples"></a>
+<a id="nodejs-examples"></a>
 ### Node.js examples
 
 Each Node.js example declares a published caret range of `ai-i18n-tools` matching the current package version and installs the CLI from npm:
@@ -39,6 +39,14 @@ On Windows, activate `.venv\Scripts\activate`.
 If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository instead, run `pnpm install` and `pnpm run build` at the repository root, then `cd examples/<name>`. Workspace (Node.js) examples use the local CLI via their `pnpm run i18n:*` scripts, or bare `ai-i18n-tools …` after [PATH setup](/guide/installation#using-the-cli). Python examples in that checkout translate with `node ../../bin/ai-i18n-tools.mjs` after the build. See [Installation — Cloned monorepo](/guide/installation#cloned-monorepo).
 
 
+<a id="which-example-matches-my-project"></a>
+## Which example matches my project?
+
+- A JS/TS app: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (smallest) or [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). Guide: [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
+- A Python app: python-streamlit, python-flask, python-fastapi, or python-gettext. Guide: [Add i18n to a Python app](/guide/add-i18n-to-python).
+- A website or docs site: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, or plain-html-docs. Guide: [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+- Something else: multi-provider, test-markdown, and intlayer-migration.
+
 <a id="list-of-examples"></a>
 ## List of Examples
 
@@ -54,6 +62,7 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
+<a id="intlayer-translate"></a>
 <a id="test-markdown"></a>
 <a id="python-streamlit"></a>
 <a id="python-flask"></a>
@@ -75,6 +84,7 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | Pick or benchmark an LLM provider (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Regression-test markdown / CJK translation (Devanagari, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, reset + AI-agent report) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
+| [**intlayer-translate**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate/README.md) | Keep Intlayer, fill missing locales in place (`translate-intlayer`; `en` + `pt-BR` shipped, `es` + `zh-Hans` missing) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-translate intlayer-translate` | `pnpm reset && pnpm translate` (`pnpm dev` `:3093`) |
 | [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit dashboard, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar locale, `t()` / `_()`, English-key JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |

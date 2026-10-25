@@ -8,10 +8,9 @@ hero:
   name: ai-i18n-tools
   text: Translate apps & docs with any LLM
   tagline: >-
-    Extract t() strings from JavaScript, TypeScript, and Python. Translate Markdown,
-    MDX, HTML pages, JSON bundles, and SVG labels — all from one config, with OpenAI,
-    Anthropic, Gemini, OpenRouter, Ollama, or any OpenAI-compatible API. Switch models
-    per project or per locale without rewriting your codebase.
+    Add languages to your app, website, or docs site. One config, cached reruns, and
+    your choice of provider: OpenAI, Anthropic, Gemini, OpenRouter, Ollama, or any
+    OpenAI-compatible API. Switch models per project or per locale.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools logo
@@ -98,23 +97,25 @@ Download the matching file from the [GitHub Release](https://github.com/wsj-br/a
 
 See [Installation](/guide/installation) for [configuring the bare CLI command](/guide/installation#using-the-cli) (including [cloned-monorepo development](/guide/installation#cloned-monorepo)) and [Quick start](/guide/quick-start) for scaffold templates.
 
-<a id="which-pipeline-should-i-use"></a>
-## Which pipeline should I use?
+<a id="start-here"></a>
+## Start here
 
-| Your content | Command |
+| You have | Start here |
 | --- | --- |
-| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](/guide/add-i18n-to-js) — then UI strings |
-| Source code uses `t()` or `_()` (JavaScript, TypeScript, or Python), gettext, or one HTML file with markers | **UI strings** — `extract` / `translate-ui` |
-| Localized pages, docs sites, or one HTML file per locale | **Documents** — `translate-docs` |
-| Standalone nested JSON locale files | **JSON** — `translate-json` |
+| A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
+| A Python app (Streamlit, FastAPI, Flask, Django, gettext) | [Add i18n to a Python app](/guide/add-i18n-to-python) |
+| A website or docs site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
+| Code that already calls `t()` or `_()` | [UI strings](/guide/ui-strings/) |
+| Standalone nested JSON locale files | [JSON](/guide/json) |
+| SVG diagrams with text labels | [SVG translation](/guide/svg-translation/) |
 
-SVG illustrations use a separate `translate-svg` path — not `docs[].contentPaths`. See [What is ai-i18n-tools?](/guide/what-is-ai-i18n-tools) for a full comparison.
+Need more than one of these in a single project? See [Combining pipelines](/guide/combining-pipelines). For how the pipelines fit together, see [What is ai-i18n-tools?](/guide/what-is-ai-i18n-tools).
 
 <a id="explore-the-documentation"></a>
 ## Explore the documentation
 
-- [**Guide**](/guide/what-is-ai-i18n-tools) — translation modes, installation, quick start, and framework integrations
-- [**Integrations**](/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, and Python
+- [**Guide**](/guide/what-is-ai-i18n-tools) — translation modes, installation, quick start, and the add-i18n guides
+- [**Integrations**](/guide/integrations/) — reference for VitePress, Nextra, Fumadocs, Docusaurus, Astro, and Python
 - [**Providers and models**](/guide/providers-and-models) — presets, fallback chains, ranked suggestions (`suggest-models`), and `-P` overrides
 - [**CLI reference**](/reference/cli-commands/) — every command, flag, and workflow
 - [**Configuration**](/reference/configuration) — full `ai-i18n-tools.config.json` schema

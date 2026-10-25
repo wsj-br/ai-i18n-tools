@@ -1,5 +1,6 @@
 import { t, type Dictionary } from "intlayer";
 
+// Co-located next to Dashboard.tsx, which consumes it via useIntlayer("dashboard").
 export default {
   key: "dashboard",
   content: {

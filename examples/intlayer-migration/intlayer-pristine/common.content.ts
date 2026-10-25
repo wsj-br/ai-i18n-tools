@@ -1,5 +1,7 @@
 import { t, type Dictionary } from "intlayer";
 
+// Shared dictionary used by more than one component (Header and Dashboard), so it
+// lives at the source root instead of beside a single component.
 export default {
   key: "common",
   content: {

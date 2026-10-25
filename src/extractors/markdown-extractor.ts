@@ -6,6 +6,11 @@ import type {
   SegmentSplittingConfig,
   SegmentTranslationMapValue,
 } from "../core/types.js";
+import {
+  isCodeFenceClose,
+  matchCodeFenceOpen,
+  type OpenCodeFence,
+} from "../processors/code-fence.js";
 import { extractLanguageListBlock } from "../processors/doc-postprocess.js";
 import {
   collectTranslatableFrontmatterFields,
@@ -36,9 +41,6 @@ export type MarkdownExtractOptions = {
   /** When false, entire YAML front matter stays non-translatable. Default true. */
   translateFrontmatterFields?: boolean | string[];
 };
-
-/** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
-const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
 
 /** MDX top-level ESM (`import …`, `export …`) — those segments are component code, not prose. */
 const MDX_TOPLEVEL_ESM_RE = /^(?:import|export)\b/;
@@ -189,7 +191,7 @@ export class MarkdownExtractor extends BaseExtractor {
     const langListEnd = langListExt?.endLine ?? -1;
     let currentSegment: string[] = [];
     let currentSegmentStartLine = 0;
-    let inCodeBlock = false;
+    let openFence: OpenCodeFence | null = null;
     let codeBlockContent: string[] = [];
     let codeBlockStartLine = 0;
     let admonitionContent: string[] = [];
@@ -209,9 +211,9 @@ export class MarkdownExtractor extends BaseExtractor {
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex] ?? "";
-      if (MD_CODE_FENCE_LINE_RE.test(line)) {
-        if (inCodeBlock) {
-          codeBlockContent.push(line);
+      if (openFence) {
+        codeBlockContent.push(line);
+        if (isCodeFenceClose(line, openFence)) {
           segments.push({
             type: "code",
             content: codeBlockContent.join("\n"),
@@ -219,18 +221,17 @@ export class MarkdownExtractor extends BaseExtractor {
             startLine: bodyStartLine + codeBlockStartLine,
           });
           codeBlockContent = [];
-          inCodeBlock = false;
-        } else {
-          flushCurrentSegment();
-          codeBlockContent.push(line);
-          codeBlockStartLine = lineIndex;
-          inCodeBlock = true;
+          openFence = null;
         }
         continue;
       }
 
-      if (inCodeBlock) {
+      const fenceOpen = matchCodeFenceOpen(line);
+      if (fenceOpen) {
+        flushCurrentSegment();
         codeBlockContent.push(line);
+        codeBlockStartLine = lineIndex;
+        openFence = fenceOpen;
         continue;
       }
 

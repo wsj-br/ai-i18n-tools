@@ -1,5 +1,6 @@
 import { t, type Dictionary } from "intlayer";
 
+// Co-located next to Header.tsx, which consumes it via useIntlayer("app-header").
 export default {
   key: "app-header",
   content: {

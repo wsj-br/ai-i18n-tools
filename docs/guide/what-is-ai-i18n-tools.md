@@ -1,56 +1,68 @@
 <a id="what-is-ai-i18n-tools"></a>
 # What is ai-i18n-tools?
 
-ai-i18n-tools is a command-line tool and toolkit that helps you translate your app and documentation using your preferred LLM provider. You control everything from a single config file, choosing which translation features to enable. Use the "sync" command to run the modes you need in one go.
+You have an app, a website, or a documentation site in one language, and you want more languages. ai-i18n-tools finds the text, translates it with the LLM provider you choose, and writes the files your project already loads. It caches every result, so reruns only send new or changed text to the model.
+
+<a id="what-you-do-and-what-the-tool-does"></a>
+## What you do and what the tool does
+
+| You | The tool |
+| --- | --- |
+| Pick the languages and a provider | Extracts text, translates it, validates the result, and writes catalogs or pages |
+| Make user-facing text visible to the tool: `t()` calls in app code, or your framework's own i18n for a site | Caches translations and reuses them on every rerun |
+| Wire the result into the app or the site's routing | Shows progress and lets you review translations in the dashboard |
+
+The tool does not rewrite your source. Coding-agent prompts are provided for the wrapping step. It does not install i18next or your site framework's i18n, and it does not build your language switcher, although runtime helpers are provided for that.
+
+<a id="where-do-i-start"></a>
+## Where do I start?
+
+| You have | Start here |
+| --- | --- |
+| A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
+| A Python app (Streamlit, FastAPI, Flask, Django, gettext, desktop) | [Add i18n to a Python app](/guide/add-i18n-to-python) |
+| A website or documentation site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
+| Standalone nested JSON locale files | [JSON](/guide/json) |
+| SVG diagrams with text labels | [SVG translation](/guide/svg-translation/) |
+| Intlayer dictionaries (move off Intlayer) | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
+| Intlayer dictionaries (keep Intlayer, translate in place) | [Translating Intlayer in place](/guide/translating-intlayer) |
+
+<a id="which-should-i-use"></a>
+
+<a id="how-it-works"></a>
+## How it works
+
+1. Install the CLI and set your provider's API key: [Installation](/guide/installation).
+2. Run `init` to write `ai-i18n-tools.config.json`: [Quick start](/guide/quick-start).
+3. Prepare the project: wrap strings in `t()`, or enable your site framework's i18n.
+4. Run `sync`. It extracts text, translates what is new, and writes the output.
+5. Load the output in your app or site, add a language switcher, and rerun `sync` when the source changes.
 
 <a id="translation-modes"></a>
 ## Translation modes
 
-- **UI strings** — Extract `t("…")` and `_()` calls from JS/TS and Python source (and similar markers, including GNU gettext) and write flat per-locale JSON or `.po` / `.mo` catalogs. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/). Python: [Python applications](/guide/ui-strings/python).
-- **Documents** — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and other static doc sites. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
-- **JSON** — Translate nested JSON locale bundles (theme labels, i18n overrides, app copy not in source) defined in top-level `json[]`. Command: `translate-json`. Guide: [JSON](/guide/json).
-- **SVG** — Translate visible text inside SVG illustrations (`<text>`, `<title>`, `<desc>`) and write one output file per locale. Separate from document translation — `translate-docs` does not modify SVG assets. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
+Under the hood, the tool runs four pipelines. Your config enables the ones you need, and `sync` runs them in order.
 
-All four modes use the active [LLM provider](/guide/providers-and-models), share the same config file, and reuse a SQLite cache so reruns only send new or changed text to the model.
+- UI strings — Extract `t("…")` and `_()` calls from JS/TS and Python source (and similar markers, including GNU gettext) and write flat per-locale JSON or `.po` / `.mo` catalogs. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/). Python: [Python applications](/guide/ui-strings/python).
+- Documents — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and other static doc sites. Command: `translate-docs`. Guide: [Documents](/guide/documents/).
+- JSON — Translate nested JSON locale bundles (theme labels, i18n overrides, app copy not in source) defined in top-level `json[]`. Command: `translate-json`. Guide: [JSON](/guide/json).
+- SVG — Translate visible text inside SVG illustrations (`<text>`, `<title>`, `<desc>`) and write one output file per locale. Separate from document translation. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
 
-<a id="which-should-i-use"></a>
-## Which should I use?
-
-| Your content | Mode | Command |
-| --- | --- | --- |
-| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](/guide/add-i18n-to-js) — then UI strings | `extract` / `translate-ui` |
-| Source code uses `t()`, `_()`, gettext, or HTML `data-i18n` markers | UI strings | `extract` / `translate-ui` |
-| Localized pages or doc sites | Documents | `translate-docs` |
-| Standalone nested JSON locale files | JSON | `translate-json` |
-| Diagrams or illustrations with labels in SVG | SVG | `translate-svg` |
-
-Many projects combine modes — for example UI strings plus documents for a VitePress site, or documents plus SVG for illustrated guides. See [Quick start](/guide/quick-start) for scaffold templates and [Configuration](/reference/configuration) for the full config schema.
+Many projects combine modes, such as UI strings plus documents for a VitePress site. See [Combining pipelines](/guide/combining-pipelines).
 
 <a id="examples"></a>
 ## Examples
 
-The repository ships runnable example projects under `examples/` — each with its own config, committed locale outputs, and README. You can explore translated files without an API key; re-running translation requires a provider key (see [Providers and models](/guide/providers-and-models)).
+The repository ships runnable example projects under `examples/`, each with its own config, committed locale outputs, and README. Explore translated files without an API key; re-running translation needs a provider key.
 
-| Example | What it shows |
+| If you have | Example |
 | --- | --- |
-| [console-app](/examples#console-app) | Smallest end-to-end app: `t()` UI strings plus README translation |
-| [nextjs-app](/examples#nextjs-app) | Next.js UI, plurals, SVG, nested Docusaurus docs, flat README, dashboard |
-| [docusaurus-docs](/examples#docusaurus-docs) | Standalone Docusaurus documentation site |
-| [astro-website](/examples#astro-website) | Astro marketing site: full-page HTML translation plus `t()` strings |
-| [astro-docs](/examples#astro-docs) | Astro Starlight documentation site |
-| [vitepress-docs](/examples#vitepress-docs) | VitePress docs plus theme catalog |
-| [nextra-docs](/examples#nextra-docs) | Nextra docs plus `_meta.ts` sidebar labels and theme dictionary |
-| [fumadocs-docs](/examples#fumadocs-docs) | Fumadocs docs plus `meta.json` sidebar labels and UI catalog |
-| [plain-html](/examples#plain-html) | Static HTML with `data-i18n*` markers and locale JSON |
-| [multi-provider](/examples#multi-provider) | Compare LLM providers on the same document |
-| [test-markdown](/examples#test-markdown) | Markdown pipeline stress tests (CJK, Devanagari, edge cases) |
-| [intlayer-migration](/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` via `migrate-intlayer` |
-| [python-streamlit](/examples#python-streamlit) | Streamlit dashboard, `t()` / `_()`, English-key JSON |
-| [python-flask](/examples#python-flask) | Flask + Jinja, `t()` / `_()`, English-key JSON |
-| [python-fastapi](/examples#python-fastapi) | FastAPI, request-scoped locale, English-key JSON |
-| [python-gettext](/examples#python-gettext) | Existing GNU gettext; `extract` / `translate-ui` refresh `.po` and `.mo` |
+| A JS/TS app | [console-app](/examples#console-app), [nextjs-app](/examples#nextjs-app) |
+| A Python app | [python-streamlit](/examples#python-streamlit), [python-fastapi](/examples#python-fastapi), [python-gettext](/examples#python-gettext) |
+| A docs site | [docusaurus-docs](/examples#docusaurus-docs), [vitepress-docs](/examples#vitepress-docs), [astro-docs](/examples#astro-docs) |
+| A website or plain HTML | [astro-website](/examples#astro-website), [plain-html](/examples#plain-html) |
 
-See [Examples](/examples) for `npx degit` copy commands and a choosing guide.
+See [Examples](/examples) for the full list and `npx degit` copy commands.
 
 <a id="next-steps"></a>
 ## Next steps

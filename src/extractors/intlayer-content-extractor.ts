@@ -17,6 +17,8 @@ export interface IntlayerLeaf {
   line: number;
   /** Locale key as written in the `t({ … })` object (e.g. `en`, `pt-BR`). */
   locales: Record<string, string>;
+  /** True when locale values are wrapped in Intlayer `insert("…")` nodes. */
+  insertion?: boolean;
   sourceText: string;
   hash: string;
 }
@@ -151,12 +153,36 @@ function isIntlayerTCall(expr: Expression): expr is CallExpression {
   return false;
 }
 
-function readLocaleMap(call: CallExpression): Record<string, string> | null {
+/** `insert("…")` / `intlayer.insert("…")` with a single string-literal argument. */
+function readInsertLiteral(expr: Expression): string | undefined {
+  if (expr.type !== "CallExpression" || expr.arguments.length !== 1) {
+    return undefined;
+  }
+  const callee = expr.callee;
+  const isInsert =
+    (callee.type === "Identifier" && callee.name === "insert") ||
+    (callee.type === "MemberExpression" &&
+      !callee.computed &&
+      callee.property.type === "Identifier" &&
+      callee.property.name === "insert" &&
+      callee.object.type === "Identifier" &&
+      callee.object.name === "intlayer");
+  const arg = expr.arguments[0];
+  if (!isInsert || !arg || arg.type === "SpreadElement" || arg.type === "ArgumentPlaceholder") {
+    return undefined;
+  }
+  return readStringLiteral(unwrapTs(arg as Expression));
+}
+
+function readLocaleMap(
+  call: CallExpression
+): { locales: Record<string, string>; insertion: boolean } | null {
   const arg0 = call.arguments[0];
   if (!arg0 || arg0.type !== "ObjectExpression") {
     return null;
   }
   const locales: Record<string, string> = {};
+  let insertion = false;
   for (const prop of arg0.properties) {
     if (prop.type !== "ObjectProperty") {
       return null;
@@ -166,13 +192,17 @@ function readLocaleMap(call: CallExpression): Record<string, string> | null {
       return null;
     }
     const value = unwrapTs(prop.value as Expression);
-    const text = readStringLiteral(value);
+    const inserted = readInsertLiteral(value);
+    const text = inserted ?? readStringLiteral(value);
     if (text === undefined) {
       return null;
     }
+    if (inserted !== undefined) {
+      insertion = true;
+    }
     locales[key] = text;
   }
-  return Object.keys(locales).length > 0 ? locales : null;
+  return Object.keys(locales).length > 0 ? { locales, insertion } : null;
 }
 
 /**
@@ -265,8 +295,8 @@ function collectLeaves(
     }
 
     if (isIntlayerTCall(value)) {
-      const locales = readLocaleMap(value);
-      if (!locales) {
+      const localeMap = readLocaleMap(value);
+      if (!localeMap) {
         unsupported.push({
           dictKey,
           dotPath,
@@ -276,6 +306,7 @@ function collectLeaves(
         });
         continue;
       }
+      const { locales, insertion } = localeMap;
       const picked = pickIntlayerSourceText(locales, sourceLocale);
       if (!picked) {
         unsupported.push({
@@ -294,6 +325,7 @@ function collectLeaves(
         file,
         line,
         locales,
+        ...(insertion ? { insertion } : {}),
         sourceText,
         hash: uiStringHash(sourceText),
       });

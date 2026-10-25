@@ -2,6 +2,8 @@
 
 Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behaviour, runtime imports). Developing the package itself: see `AGENTS.md` and `docs/reference/` in the upstream repo.
 
+Routing for a user who asks to add languages: a JS/TS app with plain text goes to [Add i18n to a JS/TS app](/guide/add-i18n-to-js), a Python app to [Add i18n to a Python app](/guide/add-i18n-to-python), and a website or docs site to [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+
 ---
 
 ## What it is
@@ -160,7 +162,7 @@ t("Translate")  →  flat[md5("Translate").slice(0, 8)]   // flat files are not 
 
 ### Astro / static sites (hybrid with `translate-docs`) {#astro-hybrid}
 
-Reference: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) and [UI strings — Astro website](/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight).
+Reference: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) and [UI strings — Astro website](/guide/ui-strings/astro-website).
 
 | What | Pipeline | Notes |
 |------|----------|-------|
@@ -257,7 +259,7 @@ i18next plural suffix keys (`key_one`, `key_other`, `key_zero`, …) are transla
 
 **Commands:** `ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
 
-To migrate Intlayer `.content.ts` dictionaries (and simple `useIntlayer` / `getIntlayer` call sites) into the UI-strings `t("English")` schema instead, see `migrate-intlayer` and [Migrating from Intlayer](/guide/migrating-from-intlayer).
+To migrate Intlayer `.content.ts` dictionaries (and simple `useIntlayer` / `getIntlayer` call sites) into the UI-strings `t("English")` schema instead, see `migrate-intlayer` and [Migrating from Intlayer](/guide/migrating-from-intlayer). To keep Intlayer at runtime and only translate its `.content.ts` dictionaries in place, see `translate-intlayer` and [Translating Intlayer in place](/guide/translating-intlayer).
 
 **vs Documents:** Docusaurus shell files (`{ "key": { "message": "…", "description": "…" } }`) belong under `docs[].docusaurusCatalogDir` and are translated by `translate-docs`, not `translate-json`. The same rule applies to VitePress theme catalogs, Nextra dictionaries, and Fumadocs UI catalogs — all via `docs[]`, not `json[]`.
 
@@ -322,6 +324,7 @@ When set, `glossary.userGlossary` points at an optional CSV used by `translate-u
 - **Refresh UI catalog:** `ai-i18n-tools extract` (also runs before UI translate when `translateUIStrings` is on)
 - **Insert HTML i18n markers:** `ai-i18n-tools mark-html [paths...]` (dry run; `--write` to apply)
 - **Migrate Intlayer dictionaries:** `ai-i18n-tools migrate-intlayer` (dry run; `--write` to seed `strings.json` and rewrite safe `useIntlayer` / `getIntlayer` sites; `--content-glob` defaults to `**/*.content.ts`)
+- **Translate Intlayer dictionaries in place:** `ai-i18n-tools translate-intlayer [paths...]` (fills missing/stale `t({ … })` locale leaves without leaving Intlayer; `--dry-run` reports counts only; keeps existing translations and `{token}` placeholders)
 - **Translate UI:** `ai-i18n-tools translate-ui` (runs extract first)
 - **Translate documentation:** `ai-i18n-tools translate-docs` — `docs[]` pages plus framework shell catalogs (see **Documentation frameworks** below)
 - **Insert heading anchor ids:** `ai-i18n-tools write-heading-ids` (before re-translating when section links break)
@@ -412,7 +415,7 @@ General rules for all doc frameworks:
 - **Language picker names not translated** — ensure `englishName` (or equivalent) is covered by extract flags or manual rows, then `translate-ui`.
 - `generate-ui-languages` fails — set `languagesManifestPath` (manifest output) in config.
 - **Section anchor links broken in translated docs** — run `write-heading-ids` on source markdown to insert or refresh `<a id="…"></a>` lines, then re-run `translate-docs`; see [Documents — Troubleshooting](/guide/documents/troubleshooting).
-- **Hindi/Arabic/CJK/Cyrillic output is romanized (Latin letters)** — wrong-script cache rows are rejected on the next `translate-ui` / `translate-docs` / `sync`; see [Documents — Troubleshooting](/guide/documents/troubleshooting#wrong-script-or-romanized-output). Use `hi-Latn` only when you want romanized Hindi.
+- **Hindi/Arabic/CJK/Cyrillic output is romanized (Latin letters)** — wrong-script cache rows are rejected on the next `translate-ui` / `translate-docs` / `sync`; see [Documents — Troubleshooting](/guide/documents/troubleshooting#hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters). Use `hi-Latn` only when you want romanized Hindi.
 - **Broken links on VitePress (404 in dev or GitHub Pages)** — English sources should use site routes (`/guide/…`), not `docs/guide/…` or `../guide/…`. Enable `rewriteVitepressLinks` (default for `style: "vitepress"`) and re-run `translate-docs` / `sync`. Do not patch locale trees by hand.
 - **Nextra / Fumadocs sidebar labels not translated** — confirm `style` is `"nextra"` or `"fumadocs"`, English sources live under the configured `docsRoot`, and `features.translateDocs` is on; re-run `sync`.
 - **Fumadocs wrong output paths** — check `fumadocsParser`: `"dot"` writes `page.{locale}.mdx` beside English; `"dir"` writes locale folders like Nextra.

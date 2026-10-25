@@ -27,6 +27,25 @@ The report is the handoff for everything `--write` leaves behind, and it ends wi
 
 ---
 
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**Synopsis:** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+Translate missing and stale locale leaves inside Intlayer `*.content.ts` dictionaries in place, keeping the dictionaries as the source of truth. Unlike [`migrate-intlayer`](#migrate-intlayer), this does not move the app off Intlayer; it only fills the `t({ … })` leaves. Use it when you want to keep Intlayer at runtime and use ai-i18n-tools as the translation engine.
+
+It extracts every `t({ … })` leaf, seeds the chosen UI block's `strings.json` with the source text, runs the same engine as [`translate-ui`](#translate-ui) (provider selection, glossary, translation context, and model fallback), then writes the new per-locale strings back into each `t({ … })` object. Edits are surgical: only the missing or stale locale lines change, so your formatting and comments are preserved. Intlayer `{token}` placeholders round-trip to <code v-pre>{{token}}</code> for translation and back.
+
+A leaf+locale is translated when the locale is absent from the leaf (missing), or when the English source text changed since the last run for that locale (stale). Staleness is tracked in `cacheDir`, so editing an English string re-translates that one leaf on the next run. `--dry-run` reports the missing/stale counts without calling an LLM or writing anything. Requires `features.translateUIStrings` and the UI block's `stringsJson` (same as `translate-ui`).
+
+**Key options:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
+
+`[paths...]`: files/dirs/globs to scan (default: the block's `sourceRoots`). `-l` / `--locale`: comma-separated target locales to fill (default: the block's configured `targetLocales`). `--ui-block`: zero-based index, description, or `stringsJson` path (default: block 0). `-j` parallelizes locales.
+
+**See also:** [migrate-intlayer](#migrate-intlayer), [Migrating from Intlayer](/guide/migrating-from-intlayer)
+
+---
+
 <a id="mark-html"></a>
 ### `mark-html`
 

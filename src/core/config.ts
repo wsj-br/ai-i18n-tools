@@ -804,7 +804,8 @@ export const initConfigTemplates = {
       translateUIStrings: true,
       // Documents: document translation (enable when you have markdown to translate)
       translateDocs: false,
-
+      // JSON bundles: nested JSON locale files (enable with a json[] block)
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {
@@ -844,7 +845,7 @@ export const initConfigTemplates = {
     features: {
       translateUIStrings: false,
       translateDocs: true,
-
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {
@@ -881,7 +882,7 @@ export const initConfigTemplates = {
     features: {
       translateUIStrings: false,
       translateDocs: true,
-
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {
@@ -1001,7 +1002,7 @@ export const initConfigTemplates = {
   uiFumadocs: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en-GB",
-    targetLocales: ["pt", "zh"],
+    targetLocales: ["pt-BR", "zh-Hans"],
     features: {
       translateUIStrings: false,
       translateDocs: true,
@@ -1047,7 +1048,7 @@ export const initConfigTemplates = {
     features: {
       translateUIStrings: true,
       translateDocs: false,
-
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {
@@ -1079,6 +1080,7 @@ export const initConfigTemplates = {
     features: {
       translateUIStrings: true,
       translateDocs: false,
+      translateJson: false,
       translateSVG: false,
     },
     glossary: {

@@ -4,7 +4,8 @@ type Leaf = { locales: Record<string, string> };
 
 const LocaleContext = createContext("en");
 
-const modules = import.meta.glob("../content/**/*.content.ts", { eager: true });
+// Like Intlayer's default contentDir (./src): discover *.content.ts anywhere in the tree.
+const modules = import.meta.glob("../**/*.content.ts", { eager: true });
 const byKey = new Map<string, unknown>();
 for (const mod of Object.values(modules)) {
   const d = (mod as { default?: { key?: string; content?: unknown } }).default;

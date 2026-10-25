@@ -32,6 +32,7 @@ if (!fs.existsSync(pristine)) {
 // clear everything translate-intlayer produces so the demo starts over cleanly.
 rmrf(src);
 copyDir(pristine, src);
+rmrf(path.join(root, ".intlayer"));
 rmrf(path.join(root, ".i18n"));
 rmrf(path.join(root, ".translation-cache"));
 

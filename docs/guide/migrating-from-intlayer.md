@@ -5,6 +5,10 @@ Moving from [Intlayer](https://intlayer.org/)? This command brings your existing
 
 Already using i18next JSON translation files? You do not need this migration command; use the [JSON pipeline](/guide/json#i18next-namespace-files) instead.
 
+::: tip Migrate off, or translate in place?
+This page moves your app off Intlayer onto ai-i18n-tools' `t('English source')` schema. If you want to keep Intlayer at runtime and only fill the missing translations, use [`translate-intlayer`](/guide/translating-intlayer) instead — it translates the `*.content.ts` leaves in place.
+:::
+
 <a id="what-migrate-intlayer-does"></a>
 ## What `migrate-intlayer` does
 

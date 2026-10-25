@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # Integrations
 
-Framework-specific guides for documentation sites, Astro projects, and Python applications. Documentation integrations use the [Documents](/guide/documents/) pipeline (`translate-docs` / `sync`) for page content; shell strings (nav, sidebar, theme) are handled inside that same pipeline where noted — not via the separate [JSON](/guide/json) pipeline. Python applications use the [UI strings](/guide/ui-strings/python) pipeline (`extract` / `translate-ui`).
+Reference for the framework integrations: what they share and how their shell strings differ. To add languages to a site, start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). For an app, start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python).
+
+Documentation integrations use the [Documents](/guide/documents/) pipeline (`translate-docs` / `sync`) for page content; shell strings (nav, sidebar, theme) are handled inside that same pipeline where noted — not via the separate [JSON](/guide/json) pipeline. Python applications use the [UI strings](/guide/ui-strings/python) pipeline (`extract` / `translate-ui`).
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
 
-| Your site | Init template | Start here | Agent prompt |
-| --- | --- | --- | --- |
-| Astro Starlight or plain Astro | `ui-starlight` / hybrid UI strings | [Astro](/guide/integrations/astro) | Starlight: notes only. Astro `t()` files: [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) (skip i18next) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/guide/integrations/docusaurus) | Notes only (`<Translate>` is Docusaurus's own API) |
-| VitePress | `ui-vitepress` | [VitePress](/guide/integrations/vitepress) | [Theme catalog prompt](/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off) |
-| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/guide/integrations/nextra) | [Dictionary prompt](/guide/integrations/nextra#agent-prompt-dictionary) and [hybrid `t()` prompt](/guide/integrations/nextra#optional-t-for-app-react-hybrid) |
-| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/guide/integrations/fumadocs) | [UI catalog prompt](/guide/integrations/fumadocs#agent-prompt) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, desktop) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/guide/integrations/python) | [`i18n.py`](/guide/add-i18n-to-python#agent-prompt-i18n-py) and [Django / gettext](/guide/add-i18n-to-python#agent-prompt-django-gettext) |
+The chooser table, with init templates and agent prompts per framework, is in [Add i18n to a website or docs site](/guide/add-i18n-to-website#what-do-you-have). Python frameworks: [Python](/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## Shared concepts

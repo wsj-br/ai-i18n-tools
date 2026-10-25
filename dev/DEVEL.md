@@ -340,7 +340,7 @@ examples/         Example projects — see examples/README.md
 scripts/          Mainstream workflow helpers (build, docs, release, dependency upgrade)
 ```
 
-Workspace packages are listed in `pnpm-workspace.yaml`: root, `examples/console-app`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, `examples/vitepress-docs`, and the other workspace examples including `examples/intlayer-migration`. Standalone fixtures (`multi-provider`, `test-markdown`) install `ai-i18n-tools` from npm when copied with `degit`.
+Workspace packages are listed in `pnpm-workspace.yaml`: root, `examples/console-app`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/astro-docs`, `examples/astro-website`, `examples/vitepress-docs`, and the other workspace examples including `examples/intlayer-migration` and `examples/intlayer-translate`. Standalone fixtures (`multi-provider`, `test-markdown`) install `ai-i18n-tools` from npm when copied with `degit`.
 
 ## Running Examples
 

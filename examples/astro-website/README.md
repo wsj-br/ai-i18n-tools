@@ -220,7 +220,7 @@ pnpm build
 pnpm preview
 ```
 
-Optional protection for custom JSX attribute names or object keys in `{expression}` blocks: `documentations[].protectAttributes` / `protectKeys` (see [GETTING_STARTED — protectAttributes / protectKeys](../../docs/GETTING_STARTED.md#protectattributes-protectkeys)).
+Optional protection for custom JSX attribute names or object keys in `{expression}` blocks: `documentations[].protectAttributes` / `protectKeys` (see [protectAttributes / protectKeys](../../docs/reference/configuration.md#protectattributes-protectkeys)).
 
 ### After changing English HTML
 
@@ -354,7 +354,7 @@ Set `OPENROUTER_API_KEY` for translate commands that call the API.
 
 - [Astro i18n guide](https://docs.astro.build/en/guides/internationalization/)
 - [Astro i18n recipe](https://docs.astro.build/en/recipes/i18n/) (`useTranslations` pattern; this example uses `Astro.currentLocale` + flat JSON instead of a hand-written `ui` object)
-- [GETTING_STARTED — Astro website (hybrid)](../../docs/GETTING_STARTED.md#astro-website)
-- [GETTING_STARTED — Astro website UI strings](../../docs/GETTING_STARTED.md#astro-website-ui-strings)
-- [GETTING_STARTED — Astro website pages (parse-and-replace)](../../docs/GETTING_STARTED.md#astro-website-parse-and-replace)
+- [Astro website (hybrid)](../../docs/guide/ui-strings/astro-website.md)
+- [Astro website UI strings](../../docs/guide/ui-strings/astro-website.md#ui-strings-ssg)
+- [Astro website pages (parse-and-replace)](../../docs/guide/ui-strings/astro-website.md#pages-parse-and-replace)
 - [ai-i18n-tools-context — Astro hybrid workflow](../../docs/ai-i18n-tools-context.md#astro-hybrid)

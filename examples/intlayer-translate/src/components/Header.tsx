@@ -1,5 +1,4 @@
 import { useIntlayer } from "react-intlayer";
-import { fill } from "../i18n";
 
 export function Header({ name, alertCount }: { name: string; alertCount: number }) {
   const app = useIntlayer("app");
@@ -7,8 +6,8 @@ export function Header({ name, alertCount }: { name: string; alertCount: number 
     <header className="card">
       <p className="eyebrow">{app.subtitle.value}</p>
       <h1>{app.title.value}</h1>
-      <p>{fill(app.greeting.value, { name })}</p>
-      <p className="muted">{fill(app.alerts.value, { count: alertCount })}</p>
+      <p>{app.greeting({ name })}</p>
+      <p className="muted">{app.alerts({ count: alertCount })}</p>
     </header>
   );
 }

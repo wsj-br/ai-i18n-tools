@@ -1065,7 +1065,8 @@ describe("writeInitConfigFile", () => {
       const keys = Object.keys(initConfigTemplates) as (keyof typeof initConfigTemplates)[];
       expect(keys.length).toBeGreaterThan(10);
       for (const key of keys) {
-        const out = path.join(dir, key, "ai-i18n-tools.config.json");
+        const projectDir = path.join(dir, key);
+        const out = path.join(projectDir, "ai-i18n-tools.config.json");
         writeInitConfigFile(out, key, dir, "openrouter");
         const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
           provider?: string;
@@ -1073,6 +1074,9 @@ describe("writeInitConfigFile", () => {
         };
         expect(raw.provider).toBe("openrouter");
         expect(raw.features).toBeDefined();
+        // The scaffolded config must load through the real loader without throwing,
+        // so `init -P <provider>` followed by any command works on a fresh project.
+        expect(() => loadI18nConfigFromFile(out, projectDir)).not.toThrow();
       }
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });

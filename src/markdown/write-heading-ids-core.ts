@@ -7,6 +7,11 @@ import emojiRegex from "emoji-regex";
 import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import removeMarkdown from "remove-markdown";
+import {
+  isCodeFenceClose,
+  matchCodeFenceOpen,
+  type OpenCodeFence,
+} from "../processors/code-fence.js";
 
 /** Slug algorithms / output modes aligned with doctoc / anchor-markdown-header / Docusaurus. */
 export type SlugStyle =
@@ -304,20 +309,19 @@ function stripEmbeddedHeadingIdTokens(titlePart: string): string {
 export function extractHeadingIds(markdownBody: string): (string | undefined)[] {
   const ids: (string | undefined)[] = [];
   const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
+  let fence: OpenCodeFence | null = null;
 
   for (const line of lines) {
-    const trimmed = line.trimStart();
-
     if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
+      if (isCodeFenceClose(line, fence)) {
         fence = null;
       }
       continue;
     }
 
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
       continue;
     }
 
@@ -342,25 +346,24 @@ export function applyKnownHeadingIds(
   style: SlugStyle
 ): string {
   const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
+  let fence: OpenCodeFence | null = null;
   let i = 0;
   let headingIndex = 0;
   const htmlStyle = style !== "mdx-comment";
 
   while (i < lines.length) {
     const line = lines[i]!;
-    const trimmed = line.trimStart();
-
     if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
+      if (isCodeFenceClose(line, fence)) {
         fence = null;
       }
       i += 1;
       continue;
     }
 
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
       i += 1;
       continue;
     }
@@ -413,23 +416,22 @@ export function applyKnownHeadingIds(
  */
 export function stripHeadingIdsAnywhere(markdownBody: string): string {
   const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
+  let fence: OpenCodeFence | null = null;
   let i = 0;
 
   while (i < lines.length) {
     const line = lines[i]!;
-    const trimmed = line.trimStart();
-
     if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
+      if (isCodeFenceClose(line, fence)) {
         fence = null;
       }
       i += 1;
       continue;
     }
 
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
       i += 1;
       continue;
     }
@@ -458,23 +460,22 @@ export function stripHeadingIdsAnywhere(markdownBody: string): string {
  */
 export function stripHeadingIds(markdownBody: string): string {
   const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
+  let fence: OpenCodeFence | null = null;
   let i = 0;
 
   while (i < lines.length) {
     const line = lines[i]!;
-    const trimmed = line.trimStart();
-
     if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
+      if (isCodeFenceClose(line, fence)) {
         fence = null;
       }
       i += 1;
       continue;
     }
 
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
       i += 1;
       continue;
     }
@@ -507,24 +508,23 @@ export function stripHeadingIds(markdownBody: string): string {
  */
 export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
   const lines = markdownBody.split("\n");
-  let fence: "`" | "~" | null = null;
+  let fence: OpenCodeFence | null = null;
   let i = 0;
   const htmlStyle = ctx.style !== "mdx-comment";
 
   while (i < lines.length) {
     const line = lines[i]!;
-    const trimmed = line.trimStart();
-
     if (fence) {
-      if (trimmed.startsWith(fence + fence + fence)) {
+      if (isCodeFenceClose(line, fence)) {
         fence = null;
       }
       i += 1;
       continue;
     }
 
-    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
-      fence = trimmed.startsWith("```") ? "`" : "~";
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
       i += 1;
       continue;
     }

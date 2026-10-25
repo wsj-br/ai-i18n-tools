@@ -368,7 +368,10 @@ Optional English Nextra theme dictionary module (e.g. `"app/_dictionaries/en.ts"
 - `nextraDictionaryOutputTemplate`
 Optional output template for locale dictionary modules (default: `{dir}/{locale}.ts` relative to the dictionary directory).
 
-**Output layout**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+Output layout for this block.
 
 - `outputDir`
 Root directory for translated output for this block.
@@ -518,6 +521,8 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 
 Weights for [`suggest-models`](/reference/cli-commands/models#suggest-models) and the [dashboard Models tab](/guide/translation-dashboard/models). Omit the block, or omit one profile, and that profile keeps the built-in weights. The block is not rewritten by `--apply` or **Update config**; those write model ids only.

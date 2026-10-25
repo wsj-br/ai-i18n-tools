@@ -237,6 +237,17 @@ export {
   type ManualReviewSite,
 } from "./extractors/intlayer-usage-codemod.js";
 export {
+  writeIntlayerContentFile,
+  type IntlayerLeafLocaleUpdate,
+  type WriteIntlayerContentResult,
+} from "./extractors/intlayer-content-writer.js";
+export {
+  runTranslateIntlayer,
+  type RunTranslateIntlayerOptions,
+  type TranslateIntlayerSummary,
+  type TranslateDelegateOptions,
+} from "./cli/translate-intlayer.js";
+export {
   HTML_I18N_MARKERS,
   HTML_I18N_LOCALE_URL_MARKERS,
   HTML_I18N_IGNORE_ATTR,

@@ -1,7 +1,9 @@
 <a id="json"></a>
 # JSON
 
-Designed for projects that keep UI copy in **nested JSON files per locale** (for example `src/i18n/en/translation.json`) instead of `t("…")` in source. The CLI walks string values in those files, translates them via the active LLM provider, and writes per-locale outputs using `json[].outputPathTemplate`. It uses the same SQLite cache as `translate-docs` and `translate-svg` (`cacheDir`).
+Who this is for: projects that already keep copy in nested JSON files per locale (for example `src/i18n/en/translation.json`) and want to keep that layout. If your source has plain text and no `t()` yet, start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) instead.
+
+The CLI walks string values in those files, translates them via the active LLM provider, and writes per-locale outputs using `json[].outputPathTemplate`. It uses the same SQLite cache as `translate-docs` and `translate-svg` (`cacheDir`).
 
 This pipeline does **not** run `extract` — there is no `strings.json` catalog. Enable it with `features.translateJson` and one or more entries in top-level `json[]`.
 
@@ -105,7 +107,8 @@ When `translateJson` is on, `status` prints a `json[]` section (✓ up to date, 
 | Fumadocs `meta.json` labels and UI overrides catalog | Documents — `translate-docs` (auto `meta.json` when `style: "fumadocs"`, optional `fumadocsUiCatalog`); **do not** use `json[]` — see [Fumadocs integration](/guide/integrations/fumadocs) |
 | Standalone nested locale JSON (ZenBrowser-style `translation.json` trees) | JSON — `json[]` + `translate-json` |
 | i18next namespace files (`public/locales/en/common.json`, <code v-pre>{{name}}</code> tokens, `key_one` / `key_other` suffixes) | JSON — `json[]` + `translate-json` (see [i18next namespace files](#i18next-namespace-files)) |
-| Intlayer `*.content.ts` dictionaries + `useIntlayer` | [Migrating from Intlayer](/guide/migrating-from-intlayer) — `migrate-intlayer`, then UI strings |
+| Intlayer `*.content.ts` dictionaries + `useIntlayer` (move off Intlayer) | [Migrating from Intlayer](/guide/migrating-from-intlayer) — `migrate-intlayer`, then UI strings |
+| Intlayer `*.content.ts` dictionaries (keep Intlayer, fill translations) | [Translating Intlayer in place](/guide/translating-intlayer) — `translate-intlayer` |
 | Illustrated `.svg` files with `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/reference/configuration#svg) + `translate-svg` (optional; not one of the three main pipelines) |
 
 Field reference: [`json`](#json) in [Configuration reference](/reference/configuration#json). Cache keys for cleanup use `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.
@@ -113,7 +116,7 @@ Field reference: [`json`](#json) in [Configuration reference](/reference/configu
 <a id="i18next-namespace-files"></a>
 ### i18next namespace files
 
-The JSON pipeline covers typical i18next key/value locale files: nested objects, string arrays, <code v-pre>{{name}}</code> interpolation in values, and independent plural suffix keys (`welcome_one`, `welcome_other`). It does **not** rewrite `t("some.key")` call sites — those stay key-based. To move a project onto ai-i18n-tools' English source-string `t()` schema, change call sites to `t("English text")` (or run `migrate-intlayer` when the source is Intlayer `.content.ts`).
+The JSON pipeline covers typical i18next key/value locale files: nested objects, string arrays, <code v-pre>{{name}}</code> interpolation in values, and independent plural suffix keys (`welcome_one`, `welcome_other`). It does **not** rewrite `t("some.key")` call sites — those stay key-based. To move a project onto ai-i18n-tools' English source-string `t()` schema, change call sites to `t("English text")` (or run `migrate-intlayer` when the source is Intlayer `.content.ts`; to keep Intlayer and only translate its dictionaries, use [`translate-intlayer`](/guide/translating-intlayer) instead).
 
 Example (source English namespaces under `public/locales/en/`):
 

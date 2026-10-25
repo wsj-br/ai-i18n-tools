@@ -14,10 +14,8 @@ import {
   MKDOCS_ADMONITION_TITLE_START_RE,
 } from "./admonition-syntax.js";
 import { HTML_ID_ANCHOR_RE } from "./anchor-placeholders.js";
+import { isCodeFenceClose, matchCodeFenceOpen, type OpenCodeFence } from "./code-fence.js";
 import { computeSegmentHash } from "../utils/hash.js";
-
-/** CommonMark fenced code: line starts (after optional indent) with 3+ ``` or 3+ ~~~. */
-const MD_CODE_FENCE_LINE_RE = /^\s*(?:`{3,}|~{3,})/;
 
 export const MARKDOWN_SOURCE_ISSUE_CODES = {
   UNPAIRED_EMPHASIS: "UNPAIRED_EMPHASIS",
@@ -309,7 +307,7 @@ export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSour
   const issues: MarkdownSourceIssue[] = [];
   const lines = neutralizeCommentsForMarkdownDiagnostics(fileText).split("\n");
   const stack: { colonCount: number; openerLine1: number }[] = [];
-  let inCodeBlock = false;
+  let openFence: OpenCodeFence | null = null;
   let inFrontmatter = false;
 
   for (let i = 0; i < lines.length; i++) {
@@ -327,11 +325,15 @@ export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSour
       continue;
     }
 
-    if (MD_CODE_FENCE_LINE_RE.test(line)) {
-      inCodeBlock = !inCodeBlock;
+    if (openFence) {
+      if (isCodeFenceClose(line, openFence)) {
+        openFence = null;
+      }
       continue;
     }
-    if (inCodeBlock) {
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      openFence = fenceOpen;
       continue;
     }
 

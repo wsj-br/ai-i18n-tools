@@ -35,6 +35,7 @@ Python examples (`python-streamlit`, `python-flask`, `python-fastapi`, `python-g
 | [multi-provider](./multi-provider/) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` |
 | [test-markdown](./test-markdown/) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` |
 | [intlayer-migration](./intlayer-migration/) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` |
+| [intlayer-translate](./intlayer-translate/) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-translate intlayer-translate` |
 | [python-streamlit](./python-streamlit/) | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` |
 | [python-flask](./python-flask/) | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` |
 | [python-fastapi](./python-fastapi/) | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` |
@@ -66,6 +67,7 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [multi-provider](./multi-provider/) | Standalone fixture | Document translation only                | CLI (compare LLM providers)      |
 | [test-markdown](./test-markdown/)   | Standalone fixture | Document translation only                | CLI (markdown stress test)       |
 | [intlayer-migration](./intlayer-migration/) | Workspace app | Intlayer `.content.ts` → `t()` migration (`migrate-intlayer`) | Vite + React (Intlayer shim → ai-i18n-tools/runtime) |
+| [intlayer-translate](./intlayer-translate/) | Workspace app | Translate Intlayer `.content.ts` in place (`translate-intlayer`) | Vite + React (real `intlayer` / `react-intlayer` / `vite-intlayer` kept at runtime) |
 | [python-streamlit](./python-streamlit/) | Python app | UI strings, `t()` / `_()`, English-key JSON | Streamlit |
 | [python-flask](./python-flask/) | Python app | UI strings, `t()` / `_()`, Jinja, English-key JSON | Flask |
 | [python-fastapi](./python-fastapi/) | Python app | UI strings, `t()` / `_()`, English-key JSON | FastAPI |
@@ -311,6 +313,24 @@ Practice **`migrate-intlayer`**: Intlayer `*.content.ts` dictionaries and `useIn
 
 ---
 
+## [intlayer-translate](./intlayer-translate/)
+
+Practice **`translate-intlayer`**: keep Intlayer `*.content.ts` dictionaries as the source of truth and let ai-i18n-tools fill the missing locales in place.
+
+**What it demonstrates**
+
+- Dictionaries ship with English and Brazilian Portuguese (`pt-BR`); Spanish (`es`) and Simplified Chinese (`zh-Hans`) are missing
+- `--dry-run` counts vs a real run that writes the new lines into each `t({ … })` leaf
+- Existing translations stay untouched; Intlayer `{{name}}` / `{{count}}` insertion placeholders survive the round trip
+- Editing an English string makes that leaf stale and re-translates it on the next run
+- `pnpm reset` restores the starting state so you can repeat the exercise
+
+**Good starting point if** you want to keep Intlayer at runtime and only use ai-i18n-tools to translate.
+
+→ [intlayer-translate/README.md](./intlayer-translate/README.md)
+
+---
+
 ## Choosing an example
 
 | Your goal | Start here |
@@ -329,5 +349,6 @@ Practice **`migrate-intlayer`**: Intlayer `*.content.ts` dictionaries and `useIn
 | Pick or benchmark an LLM provider | [multi-provider](./multi-provider/) |
 | Regression-test markdown / CJK translation | [test-markdown](./test-markdown/) |
 | Migrate Intlayer `.content.ts` to `t()` | [intlayer-migration](./intlayer-migration/) |
+| Keep Intlayer and translate its `.content.ts` in place | [intlayer-translate](./intlayer-translate/) |
 
 For conceptual background (catalog vs flat bundles, translation overview, config schema), see the [documentation site](https://wsj-br.github.io/ai-i18n-tools/) and [docs/ai-i18n-tools-context.md](../docs/ai-i18n-tools-context.md).

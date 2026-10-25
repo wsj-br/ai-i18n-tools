@@ -43,6 +43,14 @@ describe("injectHtmlHeadingAnchors", () => {
     expect(out).toContain('<a id="real"></a>');
   });
 
+  it("skips a heading inside a nested 3-backtick fence within a 4-backtick fence", () => {
+    const input = "````md\n```text\n## Not a heading\n```\n## Still in fence\n````\n\n## Real\n";
+    const out = injectHtmlHeadingAnchors(input, ctx("github"));
+    expect(out).not.toContain('<a id="not-a-heading"');
+    expect(out).not.toContain('<a id="still-in-fence"');
+    expect(out).toContain('<a id="real"></a>');
+  });
+
   it("leaves unchanged when the preceding HTML anchor id matches the heading", () => {
     const input = '<a id="already"></a>\n## Already\n';
     const out = injectHtmlHeadingAnchors(input, ctx("github"));
@@ -288,6 +296,22 @@ describe("extractHeadingIds", () => {
       "",
     ].join("\n");
     expect(extractHeadingIds(input)).toEqual(["welcome", "next", undefined]);
+  });
+
+  it("ignores headings inside a nested 3-backtick fence within a 4-backtick fence", () => {
+    const input = [
+      "# Real {#real}",
+      "",
+      "````md",
+      "```text",
+      "## Not a heading {#inner}",
+      "```",
+      "## Still in fence {#outer}",
+      "````",
+      "",
+      "## After {#after}",
+    ].join("\n");
+    expect(extractHeadingIds(input)).toEqual(["real", "after"]);
   });
 });
 

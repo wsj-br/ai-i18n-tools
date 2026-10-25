@@ -18,21 +18,21 @@ From a full [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) clone, run 
 
 ## What is in the demo
 
-Two dictionaries under `src/content/`:
+Two dictionaries, each declared right next to the component that uses it, as [Intlayer recommends](https://intlayer.org/doc/concept/content):
 
-- `app.content.ts` — title, subtitle, and two placeholder strings (`Welcome back, {name}`, `You have {count} new alerts`)
-- `dashboard.content.ts` — nested `stats.*` and `actions.*` leaves
+- `src/components/Header.content.ts` (key `app`) — title, subtitle, and two [insertion](https://intlayer.org/doc/concept/content/insertion) strings declared with Intlayer's `insert()` node and `{{name}}` / `{{count}}` placeholders (`Welcome back, {{name}}`, `You have {{count}} new alerts`)
+- `src/components/Dashboard.content.ts` (key `dashboard`) — nested `stats.*` and `actions.*` leaves
 
-Every leaf has `en` and `pt-BR`. None has `es` or `zh-Hans` — that is what the command fills.
+Every leaf has `en` and `pt-BR`. None has `es` or `zh-Hans` — that is what the command fills. Because the files sit beside the source code, `translate-intlayer src` finds them with no extra configuration.
 
-The Intlayer runtime here is a local Vite alias (`src/shim/`) so the example stays small. Dictionary files still use `import { t, type Dictionary } from "intlayer"` and components use `useIntlayer` from `react-intlayer`. The shim falls back to English when a locale leaf is missing, so you can see the gap in the browser before translating.
+This example uses the real Intlayer packages: `intlayer`, `react-intlayer`, and the `vite-intlayer` plugin. `intlayer.config.ts` declares the four locales (`routing.mode: "no-prefix"` keeps the locale out of the URL for this router-free SPA), the `intlayer()` Vite plugin builds the dictionaries and generates the typed `.intlayer/` directory, and `app.tsx` wraps the tree in `IntlayerProvider` and switches locale with `useLocale`. Components read content with `useIntlayer`, and insertion leaves are callable — `Header.tsx` renders `app.greeting({ name })` directly. When a locale leaf is missing, Intlayer falls back to the default locale (`en`), so you can see the gap in the browser before translating.
 
 ## Workflow
 
 1. `pnpm reset` — restore `src/` (English + `pt-BR`; `es` and `zh-Hans` missing) and clear the catalog and cache.
 2. `pnpm dev` — run the app on [http://localhost:3093](http://localhost:3093). Switch the locale to `es` or `zh-Hans` and the strings fall back to English, because those leaves are empty.
 3. `pnpm translate:dry` — report how many leaf×locale pairs are missing (20: 10 leaves × `es` + `zh-Hans`) without calling an LLM or writing anything.
-4. `pnpm translate` — translate the missing leaves and write them back into the `*.content.ts` files (needs a provider API key; see Config). Only the missing lines change; `pt-BR` is left as written and `{name}` / `{count}` stay as single-brace placeholders.
+4. `pnpm translate` — translate the missing leaves and write them back into the `*.content.ts` files (needs a provider API key; see Config). Only the missing lines change; `pt-BR` is left as written and the `{{name}}` / `{{count}}` placeholders are preserved in every new translation.
 5. `pnpm dev` — switch to `es` or `zh-Hans` again and see the filled translations.
 6. Edit an English string in a dictionary, then run `pnpm translate` again. Only that leaf is re-translated, because its source text changed (stale detection). `pt-BR`, `es`, and `zh-Hans` for that leaf refresh; everything else is cached.
 7. `pnpm reset` to start over as many times as you like.

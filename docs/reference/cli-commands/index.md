@@ -34,6 +34,7 @@ Run `ai-i18n-tools <command> --help` for every flag on a command. Group pages be
 | [`extract`](ui-strings#extract) | Update `strings.json` from source literals and HTML markers. |
 | [`mark-html`](ui-strings#mark-html) | Insert `data-i18n*` markers into HTML files. |
 | [`migrate-intlayer`](ui-strings#migrate-intlayer) | Import Intlayer `.content.ts` dictionaries and rewrite simple `useIntlayer` / `getIntlayer` sites to `t()`. |
+| [`translate-intlayer`](ui-strings#translate-intlayer) | Translate missing/stale locale leaves in Intlayer `.content.ts` dictionaries in place. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | Write `ui-languages.json` from config locales. |
 | [`translate-ui`](ui-strings#translate-ui) | Translate UI strings (`strings.json` → locale JSON). |
 | [`sync-ui`](ui-strings#sync-ui) | Extract, then translate UI strings. |
@@ -100,6 +101,7 @@ ai-i18n-tools list-languages [search]
 ai-i18n-tools extract
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …

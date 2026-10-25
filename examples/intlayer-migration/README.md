@@ -27,6 +27,8 @@ From a full [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) clone, run 
 2. `SpreadWidget.tsx` — `<StatusBadge {...content} />`
 3. `MultiPlaceholderBanner.tsx` — chained `.replace().replace()`
 
+Each `*.content.ts` dictionary is declared next to the component that uses it, as [Intlayer recommends](https://intlayer.org/doc/concept/content) (for example `src/components/Header.content.ts` for `useIntlayer("app-header")`). The shared `common` dictionary lives at the source root in `src/common.content.ts` because both `Header.tsx` and `Dashboard.tsx` use it.
+
 The Intlayer runtime here is a local Vite alias (`src/shim/`) so the example stays small. Dictionary files still use `import { t, type Dictionary } from 'intlayer'` and components use `useIntlayer` from `react-intlayer`.
 
 ## Workflow
