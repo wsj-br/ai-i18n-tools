@@ -1,14 +1,15 @@
 <a id="ui-strings"></a>
 # UI strings
 
-Designed for JS/TS projects that use i18next — React, Next.js (client and server components), Node.js services, plain HTML, Astro websites, and CLI tools — and for Python applications. Python calls `t()` or gettext through a generated `i18n.py` (Django keeps Django's gettext).
+Designed for JS/TS projects — React, Next.js (client and server components), Node.js services, plain HTML, Astro websites, and CLI tools — and for Python applications. JS/TS looks up strings with i18next after the source calls `t()`. Python calls `t()` or gettext through a generated `i18n.py` (Django keeps Django's gettext). If the source still has bare English (or another source language) and no `t()` yet, start with [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
 
 | Your app | Read next |
 | --- | --- |
-| React / Next.js / Node + i18next | [Wire i18next](/guide/ui-strings/i18next-runtime) (Step 4) |
+| JS/TS with hardcoded source strings, no `t()` yet | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
+| React / Next.js / Node, `t()` already in the source | [Wire i18next](/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [Python applications](/guide/ui-strings/python). Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, or `ui-python-django`. Helper: `i18n.py`. To add locales to an existing app, see [Add i18n to a Python app](/guide/add-i18n-to-python). |
 | Plain HTML (no `t()` in markup) | [Plain HTML apps](/guide/ui-strings/plain-html) |
 | Astro marketing site (hybrid) | [Astro website](/guide/ui-strings/astro-website) |
@@ -37,13 +38,23 @@ This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (includi
 <a id="step-2-extract-strings"></a>
 ## Step 2: Extract strings
 
+`extract` does nothing useful until those `t()` / `i18n.t()` calls exist. Wrap hardcoded copy first: [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
+
 ```bash
 ai-i18n-tools extract
 ```
 
-Scans all JS/TS files under `ui.sourceRoots` for `t("literal")` and `i18n.t("literal")` calls. Writes (or merges into) `ui.stringsJson`.
+Scans files under `ui.sourceRoots` for `t("literal")` and `i18n.t("literal")` calls. Writes (or merges into) `ui.stringsJson`.
 
 The scanner is configurable: add custom function names via `ui.uiExtractor.funcNames` (or legacy `ui.reactExtractor.funcNames`). For Astro pages and components, add `.astro` to `ui.uiExtractor.extensions`. For plain HTML, see [Plain HTML apps](/guide/ui-strings/plain-html).
+
+<a id="what-extract-scans"></a>
+### What extract scans
+
+- Default extensions are `.js`, `.jsx`, `.ts`, and `.tsx` only. `.mjs`, `.cjs`, `.mts`, and `.cts` are included only when you add them to `ui.uiExtractor.extensions`.
+- A non-literal key such as `t(variable)` or a template literal is skipped with no warning.
+- `package.json` `description` is included by default (`ui.uiExtractor.includePackageDescription`).
+- Vue and Svelte single-file components are not supported. Adding `.vue` or `.svelte` to `extensions` does not extract template text. There is no SFC parser.
 
 <a id="step-3-translate-ui-strings"></a>
 ## Step 3: Translate UI strings

@@ -182,13 +182,13 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 在翻譯之前，敏感語法會被替換為不透明的 token，以防止 LLM 損壞，按此順序套用（還原是反向的）：
 
 1. **標題 id 後綴**（位於 ATX 標題結尾的傳統 `{#id}` / MDX `{/* #id */}`）— 會從該行完全剝離，且**不會**傳送給模型。還原後會重新釘回至對應標題的結尾，讓 Docusaurus 仍能看見有效的 id。標題中間的註解會保留在文字中，由後續的 MDX / `{#…}` 層處理。
-2. **HTML 標籤與註解**（`<strong>`、`<!-- ... -->` 等）— 來自已知允許清單的小寫 HTML 標籤會被替換為 ```{{HTM_N}}``` 權杖。首字母大寫的 JSX 標籤（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 層（步驟 5）另行處理。
-3. **提示標記**（`:::note`、`:::`）— 僅將開頭行的指令前綴替換為 ```{{ADM_OPEN_N}}```；同一行上的任何標題則保留給模型翻譯。還原時使用完全相同的原始文字。
+2. **HTML 標籤與註解**（`<strong>`、`<!-- ... -->` 等）— 來自已知允許清單的小寫 HTML 標籤會被替換為 <code v-pre>{{HTM_N}}</code> 權杖。首字母大寫的 JSX 標籤（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 層（步驟 5）另行處理。
+3. **提示標記**（`:::note`、`:::`）— 僅將開頭行的指令前綴替換為 <code v-pre>{{ADM_OPEN_N}}</code>；同一行上的任何標題則保留給模型翻譯。還原時使用完全相同的原始文字。
 4. **文件錨點**（HTML `<a id="…">`、標題中間殘留的 Docusaurus `{#…}`）— 原樣保留。
 5. **MDX 專用結構**（`src/processors/mdx-placeholders.ts`）：
-   - **MDX 註解**（`{/* … */}`，包含非行尾後綴的標題中間 `{/* #my-id */}`）替換為 ```{{MDX_N}}```。
-   - **首字母大寫的 JSX 標籤**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）— 保留為 ```{{MDX_N}}```，可翻譯的字串屬性（`label`、`tooltip`、`aria-label`）會在標籤內改寫為 ```{{JXA_N}}```，除非該屬性名稱出現在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 物件字面量中的 `label:`（可透過 `docs[].protectKeys` 跳過）以及 `<TabItem value="…">`（當不存在 `label` 屬性時，跳過類似 slug 的小寫值）也會被擷取。以 `||JXA_N: …||` 行的形式附加至段落中，並由 `restoreMdx` 合併回來。
-   - **MDX 大括號運算式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）— 具備深度感知的比對，替換為 ```{{MDX_N}}```。
+   - **MDX 註解**（`{/* … */}`，包含非行尾後綴的標題中間 `{/* #my-id */}`）替換為 <code v-pre>{{MDX_N}}</code>。
+   - **首字母大寫的 JSX 標籤**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）— 保留為 <code v-pre>{{MDX_N}}</code>，可翻譯的字串屬性（`label`、`tooltip`、`aria-label`）會在標籤內改寫為 <code v-pre>{{JXA_N}}</code>，除非該屬性名稱出現在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 物件字面量中的 `label:`（可透過 `docs[].protectKeys` 跳過）以及 `<TabItem value="…">`（當不存在 `label` 屬性時，跳過類似 slug 的小寫值）也會被擷取。以 `||JXA_N: …||` 行的形式附加至段落中，並由 `restoreMdx` 合併回來。
+   - **MDX 大括號運算式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）— 具備深度感知的比對，替換為 <code v-pre>{{MDX_N}}</code>。
 6. **Markdown URL**（`](url)`、`src="…"`）— 翻譯後從對照表還原。
 7. **行內程式碼區段**（`` `code` ``）與**粗體包裹的行內程式碼**（`**`code`**`）— 保留。
 8. **Markdown 強調**（可選，CJK/RTL 語系自動啟用）— 強調分隔符號會被遮罩。
@@ -293,7 +293,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 此工具會將其自身的使用者介面（命令列說明、高流量記錄/摘要/錯誤訊息，以及翻譯儀表板）與您需要翻譯的內容分開進行本地化。
 
 - **區域設定解析** (`resolveUiLocale` 於 `src/core/ui-locale.ts`)：從 `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > 主機作業系統區域設定 (`Intl.DateTimeFormat().resolvedOptions().locale`) 挑選 UI 區域設定。候選項目會經過標準化，並與隨附的套件集進行精確配對或最接近的變體配對（例如 `pt-PT` → `pt-BR`、`en-US` → `en-GB`），若無符合則回退至來源區域設定 (`en-GB`)。CLI 會在建立說明前解析一次（預先剖析 argv 掃描），並在載入設定後再次解析，以便套用 `uiLanguage`（旗標和環境變數仍具有最高優先權）。
-- **執行階段** (`src/i18n/index.ts`)：具備 ```{{name}}``` 插值的最小化 `t(source, vars)`，以英文來源字串為鍵，對照 `src/i18n/locales/<code>.json` 中扁平化的各區域設定套件（在建置時複製到 `dist/i18n/locales`）。缺少鍵值或套件時會傳回來源文字。這與 UI 字串採用相同的「以鍵為預設值」模型——沒有雜湊查詢。
+- **執行階段** (`src/i18n/index.ts`)：具備 <code v-pre>{{name}}</code> 插值的最小化 `t(source, vars)`，以英文來源字串為鍵，對照 `src/i18n/locales/<code>.json` 中扁平化的各區域設定套件（在建置時複製到 `dist/i18n/locales`）。缺少鍵值或套件時會傳回來源文字。這與 UI 字串採用相同的「以鍵為預設值」模型——沒有雜湊查詢。
 - **儀表板**：伺服器會公開 `GET /api/ui-i18n`，針對解析後的 UI 區域設定傳回 `{ locale, dir, bundle }`；前端會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性將靜態標記當地語系化。
 - **內部試用**：套件由 `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) 產生，它會提取並翻譯 `ai-i18n-tools.config.json` 中 CLI 與儀表板的 `ui` 區塊。目錄鍵值來自 `src/cli/` 和 `src/i18n/` 中的 `t()` 呼叫，加上儀表板 `src/dashboard-app/index.html` 中的 `data-i18n*` 標記。
 

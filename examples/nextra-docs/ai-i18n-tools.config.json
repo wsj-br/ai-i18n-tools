@@ -6,10 +6,15 @@
   "batchSize": 20,
   "maxBatchChars": 4096,
   "features": {
-    "translateUIStrings": false,
+    "translateUIStrings": true,
     "translateDocs": true,
     "translateJson": false,
     "translateSVG": false
+  },
+  "ui": {
+    "sourceRoots": ["app/_components"],
+    "stringsJson": "locales/strings.json",
+    "flatOutputDir": "locales"
   },
   "cacheDir": ".translation-cache",
   "glossary": {

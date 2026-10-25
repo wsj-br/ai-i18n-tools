@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # Wire i18next at runtime
 
+This page wires lookup at runtime. It does not discover strings. If the app still has bare source-language literals, wrap them first: [Add i18n to a JS/TS app](/guide/add-i18n-to-js). The app installs `i18next`, and `react-i18next` when components use `useTranslation()`. `ai-i18n-tools` does not install either package.
+
 Create your i18n setup file using the helpers exported by `'ai-i18n-tools/runtime'`. For API signatures, see [Runtime helpers](/guide/runtime-helpers).
 
 <details>
@@ -57,6 +59,11 @@ export default i18n;
 The snippet uses `./locales/…` and `./public/locales/…` as if `i18n` sits beside those folders. If your file is under `src/` (typical), use `../locales/…` and `../public/locales/…` so imports resolve to the same paths as `ui.stringsJson`, `languagesManifestPath`, and `ui.flatOutputDir`.
 
 Import `i18n.js` before React renders (e.g. at the top of your entry point). When the user changes language, call `await loadLocale(code)` then `await i18n.changeLanguage(code)`.
+
+<a id="startup-locale"></a>
+### Startup locale
+
+Call `loadLocale(saved)` and then `i18n.changeLanguage(saved)` before the first render, not only in the language switcher. [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) does this before it prints. In Next.js, reading `localStorage` in an effect after hydration paints the source locale first and can mismatch the server HTML. Prefer a cookie the server can read, or load the saved locale in the client module before the first client render.
 
 `SOURCE_LOCALE` is exported so any other file that needs it (e.g. a language switcher) can import it directly from `'./i18n'`. If you are migrating an existing i18next setup, replace any hardcoded source locale strings (e.g. `'en-GB'` checks scattered across components) with imports of `SOURCE_LOCALE` from your i18n bootstrap file.
 

@@ -47,6 +47,17 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 
 Align `targetLocales` with `defineI18n().languages` in `lib/i18n.ts` exactly (the example uses short codes `pt` and `zh`).
 
+<a id="enable-i18n-in-an-existing-site"></a>
+### Enable i18n in an existing site
+
+An English-only Fumadocs app needs a locale route and `defineI18n` before `translate-docs` can write sibling files. The [agent prompt](#agent-prompt) walks through an existing site. Checklist:
+
+- `defineI18n` in `lib/i18n.ts` with `languages`, `defaultLanguage`, and `parser: "dot"` or `"dir"`.
+- `app/[lang]/` routes and `createI18nMiddleware` from `proxy.ts` (the example's file).
+- `i18n.translations()` in `lib/layout.shared.ts`, passed to `i18nProvider`.
+- English MDX at the collection root (dot) or under `content/docs/en/` (dir).
+- `targetLocales` equal to `languages` minus the default language, then `sync`.
+
 <a id="dir-parser-nextra-style"></a>
 ### Dir parser (Nextra-style)
 
@@ -112,12 +123,73 @@ Fumadocs layout chrome (search placeholder, locale display names, and other `def
 }
 ```
 
-- **`catalogPath`** — generated English flat JSON (bootstrap output). Re-run `sync` when English overrides in `layout.shared.ts` change.
+- **`catalogPath`** — English flat JSON. The bootstrap reads only the `en` object of `.add({ … })` in `sourcePath`. String literals in that object become catalog keys (`displayName`, `Search(search trigger)`). `.add()` only accepts keys the Fumadocs UI presets registered, so a nav title such as `site.title` cannot live there. The example keeps `site.title` in the JSON and reads `catalog["site.title"]` for `nav.title`. Keys already in the file but absent from the `en` object stay: the merge is `{ ...existing, ...extracted }`. Re-run `sync` when the English literals change.
 - **`outputPathTemplate`** (optional) — per-locale outputs; default: `ui.{locale}.json` beside `catalogPath`.
 
-Load per-locale JSON in `layout.shared.ts` via `loadUiCatalog(locale)` and merge with `i18nProvider(translations, lang)` in your root layout. See [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts).
+A translated key does nothing until the app reads it. `i18n.translations().get(lang)` returns only keys registered with `.extend()` (the Fumadocs UI presets). Spread the locale catalog into `.add()` so those keys apply, and put native `displayName` **after** the spread so a translation of the English name does not replace it:
+
+```ts
+"pt-BR": {
+  ...loadUiCatalog("pt-BR"),
+  displayName: "Português (Brasil)",
+},
+```
+
+`site.title` is not a Fumadocs UI key. The example reads it from the catalog for `nav.title`. A search label that exists only in `ui.pt-BR.json` stays on the built-in preset until that spread (or another read) uses it.
+
+See [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts).
 
 Standard locales may be covered by `@fumadocs/language/*` presets without LLM cost; the catalog translates **project overrides** in the English block only.
+
+<a id="agent-prompt"></a>
+## Agent prompt
+
+Copy this when an English-only Fumadocs site should gain locales. It wires routing and the UI catalog. It does not translate strings.
+
+````markdown
+# Enable Fumadocs i18n and the UI catalog
+
+## Context
+
+ai-i18n-tools translates Fumadocs MDX, `meta.json` titles, and the English block of `i18n.translations().add({ en: { … } })` via `translate-docs` and `docsOutput.fumadocsUiCatalog`. The literal in that `en` object is the source string. Locale JSON takes effect only for keys the app reads: either a catalog spread into `.add()` for registered UI keys, or a direct read such as `catalog["site.title"]` for the nav title. Do not translate any string.
+
+Reference: https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs
+
+## Scope
+
+Edit `lib/i18n.ts`, `lib/layout.shared.ts`, `proxy.ts`, `app/[lang]/` routes, and `ai-i18n-tools.config.json`. Skip URLs, slugs, and native language names (`displayName` on each locale entry).
+
+## Call shape
+
+- `defineI18n({ languages, defaultLanguage, parser })`. Use `"dot"` unless the project already keeps English under a locale folder (`"dir"`).
+- `export default createI18nMiddleware(i18n)` from `proxy.ts`.
+- Move pages under `app/[lang]/…` and pass `lang` into `baseOptions` and `i18nProvider(translations, lang)`.
+- In `lib/layout.shared.ts`, keep English UI overrides as string literals inside `.add({ en: { … } })`. For each other locale, spread `loadUiCatalog(locale)` and then set `displayName` to the native name.
+- Config: `features.translateDocs`, `docsOutput.style: "fumadocs"`, `fumadocsParser` matching `defineI18n`, and `fumadocsUiCatalog.sourcePath` pointing at `lib/layout.shared.ts`. `targetLocales` must equal `languages` except the default language, character for character.
+
+## Order
+
+1. Routing and `defineI18n`.
+2. English literals in the `en` block, and the catalog spread for other locales.
+3. Ask the user to run `sync`. Do not hand-write `ui.<locale>.json` or translated MDX.
+
+## Do not
+
+- Do not translate, rename, or reword the English literals.
+- Do not put native language names only in the `en` block (they would be extracted and translated).
+- Do not hand-edit locale JSON, `meta.<locale>.json`, or locale MDX.
+- Do not use `json[]` for this catalog.
+
+## Verify
+
+- `pnpm build` passes.
+- The default locale still shows the English overrides.
+- After `sync`, one other locale shows the translated search trigger and nav title, and `displayName` in the language menu is still the native name.
+
+## Report back
+
+List files changed, each key you added to the `en` block, each key you left unread (and so unused) with a one-line reason, and whether the parser is `dot` or `dir`.
+````
 
 **Do not** use `json[]` for Fumadocs UI strings — that pipeline is for unrelated app locale bundles.
 

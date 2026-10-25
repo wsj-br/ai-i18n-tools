@@ -1,5 +1,6 @@
 /**
- * Browser / Next.js client i18next bootstrap for ai-i18n-tools (see docs/GETTING_STARTED.md, Step 4).
+ * Browser / Next.js client i18next bootstrap for ai-i18n-tools
+ * (see docs/guide/ui-strings/i18next-runtime.md).
  *
  * `stringsJson` and `ui-languages.json` match `ui.stringsJson` / `flatOutputDir` in
  * `ai-i18n-tools.config.json`; flat bundles are under `public/locales/` so they are
@@ -25,7 +26,7 @@ aiI18n.setupKeyAsDefaultT(i18n, {
   },
 });
 
-/** `applyDirection` matches GETTING_STARTED; `lang` on `<html>` is extra (a11y / SEO) for web apps. */
+/** `applyDirection` matches the Wire i18next guide; `lang` on `<html>` is extra (a11y / SEO) for web apps. */
 function applyDocumentLocale(lng: string) {
   aiI18n.applyDirection(lng);
   if (typeof document !== "undefined" && document.documentElement) {

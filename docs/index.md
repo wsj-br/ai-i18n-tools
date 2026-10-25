@@ -103,6 +103,7 @@ See [Installation](/guide/installation) for [configuring the bare CLI command](/
 
 | Your content | Command |
 | --- | --- |
+| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](/guide/add-i18n-to-js) — then UI strings |
 | Source code uses `t()` or `_()` (JavaScript, TypeScript, or Python), gettext, or one HTML file with markers | **UI strings** — `extract` / `translate-ui` |
 | Localized pages, docs sites, or one HTML file per locale | **Documents** — `translate-docs` |
 | Standalone nested JSON locale files | **JSON** — `translate-json` |

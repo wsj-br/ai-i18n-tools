@@ -1,0 +1,53 @@
+{
+  "37b9affb": {
+    "source": "Was this page helpful?",
+    "translated": {
+      "zh-Hans": "此页面有帮助吗？",
+      "pt-BR": "Esta página foi útil?"
+    },
+    "locations": [
+      {
+        "file": "app/_components/feedback-links.tsx",
+        "line": 13
+      }
+    ],
+    "models": {
+      "zh-Hans": "google/gemini-2.5-flash",
+      "pt-BR": "google/gemini-2.5-flash"
+    }
+  },
+  "0d1f2bb5": {
+    "source": "Send feedback",
+    "translated": {
+      "zh-Hans": "发送反馈",
+      "pt-BR": "Enviar feedback"
+    },
+    "locations": [
+      {
+        "file": "app/_components/feedback-links.tsx",
+        "line": 14
+      }
+    ],
+    "models": {
+      "zh-Hans": "google/gemini-2.5-flash",
+      "pt-BR": "google/gemini-2.5-flash"
+    }
+  },
+  "c4e32b53": {
+    "source": "You are reading {{page}}.",
+    "translated": {
+      "zh-Hans": "您正在阅读{{page}}。",
+      "pt-BR": "Você está lendo {{page}}."
+    },
+    "locations": [
+      {
+        "file": "app/_components/feedback-links.tsx",
+        "line": 16
+      }
+    ],
+    "models": {
+      "zh-Hans": "google/gemini-2.5-flash",
+      "pt-BR": "google/gemini-2.5-flash"
+    }
+  }
+}

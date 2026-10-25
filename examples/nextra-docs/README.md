@@ -4,6 +4,8 @@ Minimal [Nextra](https://nextra.site/) 4 site translated by [ai-i18n-tools](http
 
 English source pages live under `content/en/`. Translated copies are committed under `content/pt-BR/` and `content/zh-Hans/`. Theme strings live in `app/_dictionaries/en.ts`; sidebar labels are inline in `content/en/**/_meta.ts`. Both are translated via **`translate-docs`** (no `json[]` sidecars).
 
+Custom server-component copy in `app/_components/feedback-links.tsx` uses `t()` and flat JSON under `locales/`. That path is separate from the dictionary: `pnpm run i18n:sync-ui` runs extract and `translate-ui` only. The lookup does not select plural forms.
+
 Full integration guide: [Nextra integration](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/nextra/) on the main documentation site.
 
 ## Locales
@@ -56,11 +58,26 @@ pnpm run start
 
 > **Note:** Nextra 4.6.1 is incompatible with Zod 4.4.x until an upstream fix ships. This example includes a small `pnpm` patch for `nextra-theme-docs` (see `patches/`) covering layout props and `LastUpdated` locale handling. When installing from the monorepo root, the same patch is applied via the workspace `pnpm-workspace.yaml`.
 
+## Dictionary chrome and `t()` components
+
+| Copy | Where it lives | Command |
+| --- | --- | --- |
+| Navbar, footer, edit link, search, table of contents | `app/_dictionaries/en.ts` | `pnpm run i18n:sync` (docs pipeline) |
+| Sidebar titles | `content/en/**/_meta.ts` | `pnpm run i18n:sync` |
+| Custom component sentences | `app/_components/` via `t()` | `pnpm run i18n:sync-ui` (extract + `translate-ui` only) |
+
+`i18n:sync` is `ai-i18n-tools sync`. With `features.translateUIStrings` on, that command also refreshes `locales/`. Use `i18n:sync-ui` when the component strings changed and the docs should stay as they are.
+
+`lib/ui-t.ts` loads `locales/{lang}.json` for `pt-BR` and `zh-Hans`. The `en` route does not load a bundle: the English literal is the text. Do not put the same sentence in both the dictionary and `t()`.
+
+`getT` does not resolve `plurals: true`. A component that needs plurals should use the i18next client bootstrap, or a per-request `createInstance()`, instead of this lookup.
+
 ## Translate documentation
 
 ```bash
 echo "OPENROUTER_API_KEY=sk-or-..." > .env
 pnpm run i18n:sync
+pnpm run i18n:sync-ui
 ```
 
 Config: [`ai-i18n-tools.config.json`](./ai-i18n-tools.config.json).
@@ -81,10 +98,16 @@ examples/nextra-docs/
 │   ├── [lang]/
 │   │   ├── layout.tsx
 │   │   └── [[...mdxPath]]/page.tsx
+│   ├── _components/
+│   │   └── feedback-links.tsx
 │   └── _dictionaries/
 │       ├── en.ts
 │       ├── pt-BR.ts
 │       └── zh-Hans.ts
+├── lib/
+│   ├── site-locales.ts
+│   └── ui-t.ts
+├── locales/
 └── content/
     ├── en/
     │   ├── _meta.ts

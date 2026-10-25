@@ -88,6 +88,8 @@ ai-i18n-tools status
 # ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
 ```
 
+The `ui-markdown` template does not rewrite source. If buttons and messages are still plain source-language strings, `extract` records nothing until you wrap them in `t()`. Walkthrough: [Add i18n to a JS/TS app](/guide/add-i18n-to-js). Python: [Add i18n to a Python app](/guide/add-i18n-to-python).
+
 The model list written by `init` is a starting point. `suggest-models` ranks the active provider's chat models. `suggest-models --apply` replaces `translationModels` and leaves `uiModels` and `localeModels` unchanged. The same ranking is on the [Models](/guide/translation-dashboard/models) tab. Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
 <a id="recommended-packagejson-scripts"></a>

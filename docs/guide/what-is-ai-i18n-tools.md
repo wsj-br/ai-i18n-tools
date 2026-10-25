@@ -18,6 +18,7 @@ All four modes use the active [LLM provider](/guide/providers-and-models), share
 
 | Your content | Mode | Command |
 | --- | --- | --- |
+| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](/guide/add-i18n-to-js) — then UI strings | `extract` / `translate-ui` |
 | Source code uses `t()`, `_()`, gettext, or HTML `data-i18n` markers | UI strings | `extract` / `translate-ui` |
 | Localized pages or doc sites | Documents | `translate-docs` |
 | Standalone nested JSON locale files | JSON | `translate-json` |

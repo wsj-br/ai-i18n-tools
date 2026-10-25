@@ -47,13 +47,69 @@ export function escapeVueBracesInMarkdown(text) {
     return -1;
   }
 
+  /**
+   * CommonMark fence at the start of a line: 3+ backticks or tildes.
+   * A longer opener (````markdown) stays open across inner ``` fences.
+   */
+  function fenceOpenerAt(index) {
+    if (index !== 0 && source[index - 1] !== "\n") return null;
+    const lineEnd = source.indexOf("\n", index);
+    const line = source.slice(index, lineEnd === -1 ? source.length : lineEnd);
+    const match = /^( {0,3})([`~]+)/.exec(line);
+    if (!match || match[2].length < 3) return null;
+    const char = match[2][0];
+    if ([...match[2]].some((c) => c !== char)) return null;
+    const info = line.slice(match[1].length + match[2].length);
+    if (char === "`" && info.includes("`")) return null;
+    return { char, count: match[2].length, lineEnd: lineEnd === -1 ? source.length : lineEnd };
+  }
+
+  function isFenceClose(index, open) {
+    if (source[index - 1] !== "\n") return false;
+    const lineEnd = source.indexOf("\n", index);
+    const line = source.slice(index, lineEnd === -1 ? source.length : lineEnd);
+    const match = /^( {0,3})([`~]+)\s*$/.exec(line);
+    if (!match || match[2].length < open.count) return false;
+    const char = match[2][0];
+    if (char !== open.char) return false;
+    if ([...match[2]].some((c) => c !== char)) return false;
+    return lineEnd === -1 ? source.length : lineEnd;
+  }
+
+  function nextTildeFence(from) {
+    let index = from;
+    while (index < source.length) {
+      const atLine = index === 0 || source[index - 1] === "\n";
+      if (atLine) {
+        const open = fenceOpenerAt(index);
+        if (open?.char === "~") return index;
+      }
+      const nl = source.indexOf("\n", index);
+      if (nl === -1) return -1;
+      index = nl + 1;
+    }
+    return -1;
+  }
+
   const source = restoreVPreToSource(text);
   const parts = [];
   let i = 0;
   while (i < source.length) {
-    if (source.startsWith("```", i)) {
-      const end = source.indexOf("```", i + 3);
-      const sliceEnd = end === -1 ? source.length : end + 3;
+    const open = fenceOpenerAt(i);
+    if (open) {
+      let pos = open.lineEnd < source.length ? open.lineEnd + 1 : source.length;
+      let closedAt = -1;
+      while (pos < source.length) {
+        const closeEnd = isFenceClose(pos, open);
+        if (closeEnd !== false) {
+          closedAt = closeEnd;
+          break;
+        }
+        const nl = source.indexOf("\n", pos);
+        if (nl === -1) break;
+        pos = nl + 1;
+      }
+      const sliceEnd = closedAt === -1 ? source.length : closedAt;
       parts.push(source.slice(i, sliceEnd));
       i = sliceEnd;
       continue;
@@ -74,11 +130,11 @@ export function escapeVueBracesInMarkdown(text) {
       i = sliceEnd;
       continue;
     }
-    const nextFence = source.indexOf("```", i);
     const nextTick = source.indexOf("`", i);
+    const nextTilde = nextTildeFence(i);
     let nextSpecial = source.length;
-    if (nextFence >= 0) nextSpecial = Math.min(nextSpecial, nextFence);
     if (nextTick >= 0) nextSpecial = Math.min(nextSpecial, nextTick);
+    if (nextTilde >= 0) nextSpecial = Math.min(nextSpecial, nextTilde);
     parts.push(escapeProse(source.slice(i, nextSpecial)));
     i = nextSpecial;
   }

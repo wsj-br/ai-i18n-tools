@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Chooser for Python applications. Extraction, catalogs, and call shapes live in [Python applications](/guide/ui-strings/python). The step-by-step for an existing single-locale app is [Add i18n to a Python app](/guide/add-i18n-to-python).
+Chooser for Python applications. Extraction, catalogs, and call shapes live in [Python applications](/guide/ui-strings/python). The step-by-step for an existing single-locale app is [Add i18n to a Python app](/guide/add-i18n-to-python), with an [`i18n.py` prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py) and a [Django / gettext prompt](/guide/add-i18n-to-python#agent-prompt-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call the generated `i18n.py` helper (Python 3.10 or newer). Django keeps Django's gettext. Four runnable copies ship in the repository: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, and `examples/python-gettext`. Pyramid, Django, Tkinter, Qt, and PyWebView have no separate example directory.
 

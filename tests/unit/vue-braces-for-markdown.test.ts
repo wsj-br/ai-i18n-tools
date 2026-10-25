@@ -35,6 +35,25 @@ describe("escapeVueBracesInMarkdown", () => {
     expect(out).not.toMatch(/`<code v-pre>/);
   });
 
+  it("keeps mustaches inside a longer fence that contains inner fences", () => {
+    const input = [
+      "see `{{name}}`",
+      "````markdown",
+      "use `{{name}}` and",
+      "```js",
+      't("Hello {{name}}")',
+      "```",
+      "````",
+      "tail",
+    ].join("\n");
+    const out = escapeVueBracesInMarkdown(input);
+    expect(out).toContain("<code v-pre>{{name}}</code>");
+    expect(out).toContain('t("Hello {{name}}")');
+    expect(out).toContain("use `{{name}}` and");
+    expect(out).not.toContain('t("Hello <code v-pre>');
+    expect(escapeVueBracesInMarkdown(out)).toBe(out);
+  });
+
   it("is idempotent on already-escaped v-pre spans", () => {
     const once = escapeVueBracesInMarkdown("token `{{SE}}`");
     const twice = escapeVueBracesInMarkdown(once);

@@ -33,7 +33,7 @@ Example `package.json` scripts (from the reference project):
 <a id="ui-strings-ssg"></a>
 ## UI strings (SSG)
 
-Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages):
+Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in a `docs[]` block when you also translate page HTML (see [Parse-and-replace pages](#astro-website-pages-parse-and-replace)). Wrap copy in `t('…')` in TypeScript modules and `.astro` frontmatter (and template `{expression}` blocks when you prefer UI strings over duplicated locale pages). Page HTML does not need `t()`: `translate-docs` copies it. The [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) applies to those frontmatter and data files, except the i18next install and bootstrap — Astro resolves `t` at build time with `makeT`, not with i18next.
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama

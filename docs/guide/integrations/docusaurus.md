@@ -48,6 +48,13 @@ Point `contentPaths` at your English `.md` / `.mdx` files and directories. Set `
 
 Wire Docusaurus [internationalization](https://docusaurus.io/docs/i18n/introduction): keep `targetLocales` in `ai-i18n-tools.config.json` aligned with the `locales` array in `docusaurus.config.js`. Each `localeConfigs[locale].path` must match the folder name under `i18n/` (for example `path: "fr"` for `i18n/fr/`).
 
+<a id="enable-i18n-in-an-existing-site"></a>
+### Enable i18n in an existing site
+
+- Add the `i18n` block in `docusaurus.config.js`: `defaultLocale`, `locales`, and `localeConfigs[locale].path` when the URL path should differ from the locale code.
+- Run `docusaurus write-translations` so `i18n/<defaultLocale>/` exists, then point `docusaurusCatalogDir` at that folder and run `sync`.
+- Custom React in `src/pages` and `src/components` is not markdown. Mark user-facing copy with `<Translate>` or `translate()` from `@docusaurus/Translate` so `write-translations` can collect it into `code.json`. The message has to be a static string. `write-translations` writes `i18n/<locale>/code.json`; with `docusaurusCatalogDir` set, `translate-docs` translates that JSON with the rest of the shell catalog. ai-i18n-tools does not scan those JSX trees for `t()`.
+
 <a id="shell-strings-write-translations"></a>
 ## Shell strings (write-translations)
 

@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+The handler above switches language after the app is already showing. Restore a saved locale before the first paint as well: [Startup locale](/guide/ui-strings/i18next-runtime#startup-locale).
+
 `getUILanguageLabel(lang, t)` - shows `t(englishName)` when translated, or `englishName / t(englishName)` when both differ. Suitable for settings screens.
 
 `getUILanguageLabelNative(lang)` - shows `englishName / label` (no `t()` call on each row). Suitable for header menus where you want the native name visible.

@@ -9,6 +9,7 @@
     "start": "next start --port 3070",
     "i18n:translate": "node ../../bin/ai-i18n-tools.mjs translate-docs",
     "i18n:sync": "node ../../bin/ai-i18n-tools.mjs sync",
+    "i18n:sync-ui": "node ../../bin/ai-i18n-tools.mjs sync-ui",
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "dependencies": {

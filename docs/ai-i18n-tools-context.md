@@ -189,6 +189,7 @@ const t = useTranslations(locale, makeT(flat));
 
 | Mistake | Why it fails |
 |---------|----------------|
+| Running `extract` while UI copy is still a bare string literal | `extract` only records literals inside `t()` / `i18n.t()` (or `data-i18n*`). Wrap user-facing copy first. Guide: [Add i18n to a JS/TS app](/guide/add-i18n-to-js). |
 | Runtime lookup by MD5-8 in flat JSON | `translate-ui` writes `flat[source] = translation`, not hash keys. |
 | Importing `strings.json` in Astro `makeT` | Catalog is for CLI; flat bundles are the SSG/runtime map. |
 | Empty `en.json` required | For `sourceLocale`, missing keys should fall back to the source literal; `{}` is fine. |

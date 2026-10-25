@@ -2,6 +2,7 @@ import { Footer, LastUpdated, Layout, LocaleSwitch, Navbar } from "nextra-theme-
 import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
 import type { FC, ReactNode } from "react";
+import { FeedbackLinks } from "../_components/feedback-links";
 import { getDictionary } from "../_dictionaries/get-dictionary";
 import { resolveSiteLocale } from "../../lib/site-locales";
 import "nextra-theme-docs/style.css";
@@ -29,7 +30,11 @@ const RootLayout: FC<LayoutProps> = async ({ children, params }) => {
     </Navbar>
   );
 
-  const footer = <Footer>{dictionary.footer}</Footer>;
+  const footer = (
+    <Footer>
+      {dictionary.footer} <FeedbackLinks lang={lang} page={dictionary.siteTitle} />
+    </Footer>
+  );
 
   return (
     <html lang={lang} dir="ltr" suppressHydrationWarning>

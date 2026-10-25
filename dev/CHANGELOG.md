@@ -9,6 +9,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: docs — Vue brace escaping keeps a four-backtick fence as one code block, so nested samples and mustache placeholders inside an agent prompt stay literal. Inline triple-backtick placeholders in prose are escaped the same way as single-backtick ones.
 - **Changed**: cli — `init` requires `-P` / `--provider`. Omitting it exits before writing a config and lists the built-in presets.
 - **Changed**: api — `writeInitConfigFile` requires `providerKey` (fourth argument). `cwd` no longer defaults to `process.cwd()`.
 - **Removed**: api — `DEFAULT_INIT_PROVIDER_KEY`. Init no longer falls back to OpenRouter.

@@ -182,13 +182,13 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 번역 전에 민감한 구문은 LLM 손상을 방지하기 위해 불투명한 토큰으로 교체되며, 이 순서로 적용됩니다 (복원은 반대 순서입니다):
 
 1. **제목-id 접미사** (ATX 제목 끝의 클래식 `{#id}` / MDX `{/* #id */}`) — 줄에서 완전히 분리되어 모델에 **전송되지 않습니다**. 복원 후 일치하는 제목의 끝에 다시 고정되어 Docusaurus가 여전히 유효한 id를 인식할 수 있습니다. 제목 중간의 주석은 텍스트에 그대로 남으며 이후의 MDX / `{#…}` 레이어에서 처리됩니다.
-2. **HTML 태그 및 주석** (`<strong>`, `<!-- ... -->` 등) - 알려진 허용 목록의 소문자 HTML 태그는 ```{{HTM_N}}``` 토큰으로 대체됩니다. 대문자 JSX 태그(`<Highlight>`, `<Tabs>`, `</Tab>`)는 MDX 레이어(5단계)에서 별도로 처리됩니다.
-3. **Admonition 마커** (`:::note`, `:::`) - 여는 줄의 디렉티브 접두사만 ```{{ADM_OPEN_N}}```로 대체되며, 같은 줄의 제목은 모델이 번역하도록 남겨집니다. 원본 텍스트 그대로 복원됩니다.
+2. **HTML 태그 및 주석** (`<strong>`, `<!-- ... -->` 등) - 알려진 허용 목록의 소문자 HTML 태그는 <code v-pre>{{HTM_N}}</code> 토큰으로 대체됩니다. 대문자 JSX 태그(`<Highlight>`, `<Tabs>`, `</Tab>`)는 MDX 레이어(5단계)에서 별도로 처리됩니다.
+3. **Admonition 마커** (`:::note`, `:::`) - 여는 줄의 디렉티브 접두사만 <code v-pre>{{ADM_OPEN_N}}</code>로 대체되며, 같은 줄의 제목은 모델이 번역하도록 남겨집니다. 원본 텍스트 그대로 복원됩니다.
 4. **문서 앵커** (HTML `<a id="…">`, 제목 중간에 남은 Docusaurus `{#…}`) - 그대로 보존됩니다.
 5. **MDX 전용 구문** (`src/processors/mdx-placeholders.ts`):
-   - **MDX 주석** (`{/* … */}`, 줄 끝 접미사가 아닌 제목 중간의 `{/* #my-id */}` 포함)는 ```{{MDX_N}}```로 대체됩니다.
-   - **대문자 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - ```{{MDX_N}}```로 보존되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 속성 이름이 `docs[].protectAttributes`에 나타나지 않는 한 태그 내에서 ```{{JXA_N}}```로 재작성됩니다; `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내의 `label:`(`docs[].protectKeys`를 통해 건너뛸 수 있음) 및 `<TabItem value="…">`(`label` 속성이 없을 때, 소문자 슬러그 형태의 값을 건너뜀)도 추출됩니다. 세그먼트에 `||JXA_N: …||` 줄로 추가되며 `restoreMdx`에 의해 다시 병합됩니다.
-   - **MDX 중괄호 표현식** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - 깊이 인식 매칭, ```{{MDX_N}}```로 대체됩니다.
+   - **MDX 주석** (`{/* … */}`, 줄 끝 접미사가 아닌 제목 중간의 `{/* #my-id */}` 포함)는 <code v-pre>{{MDX_N}}</code>로 대체됩니다.
+   - **대문자 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - <code v-pre>{{MDX_N}}</code>로 보존되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 속성 이름이 `docs[].protectAttributes`에 나타나지 않는 한 태그 내에서 <code v-pre>{{JXA_N}}</code>로 재작성됩니다; `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내의 `label:`(`docs[].protectKeys`를 통해 건너뛸 수 있음) 및 `<TabItem value="…">`(`label` 속성이 없을 때, 소문자 슬러그 형태의 값을 건너뜀)도 추출됩니다. 세그먼트에 `||JXA_N: …||` 줄로 추가되며 `restoreMdx`에 의해 다시 병합됩니다.
+   - **MDX 중괄호 표현식** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - 깊이 인식 매칭, <code v-pre>{{MDX_N}}</code>로 대체됩니다.
 6. **마크다운 URL** (`](url)`, `src="…"`) - 번역 후 맵에서 복원됩니다.
 7. **인라인 코드 스팬** (`` `code` ``) 및 **굵게 처리된 인라인 코드** (`**`code`**`) - 보존됩니다.
 8. **마크다운 강조** (선택 사항, CJK/RTL 로케일에서 자동 활성화) - 강조 구분자가 마스킹됩니다.
@@ -293,7 +293,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 도구는 사용자가 번역한 콘텐츠와 별개로 자체 UI — CLI 도움말, 고交通 로그/요약/오류 메시지 및 번역 대시보드를 지역화합니다.
 
 - **로케일 확인** (`resolveUiLocale` 내 `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`) 순서로 UI 로케일을 선택합니다. 선택된 후보는 정규화되어 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 매칭되며, 일치하지 않으면 소스 로케일(`en-GB`)로 폴백합니다. CLI는 도움말 생성 전(argv 파싱 전 스캔) 한 번, 그리고 구성 로드 후 `uiLanguage`이(가) 적용되도록 다시 한 번 로케일을 확인합니다(플래그와 환경 변수가 여전히 우선합니다).
-- **런타임** (`src/i18n/index.ts`): ```{{name}}``` 보간을 사용하는 최소한의 `t(source, vars)`로, 영문 소스 문자열을 키로 사용하여 `src/i18n/locales/<code>.json`의 로케일별 플랫 번들(빌드 시 `dist/i18n/locales`에 복사됨)과 매칭됩니다. 키나 번들이 누락된 경우 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일하게 키를 기본값으로 사용하는 모델로, 해시 조회를 사용하지 않습니다.
+- **런타임** (`src/i18n/index.ts`): <code v-pre>{{name}}</code> 보간을 사용하는 최소한의 `t(source, vars)`로, 영문 소스 문자열을 키로 사용하여 `src/i18n/locales/<code>.json`의 로케일별 플랫 번들(빌드 시 `dist/i18n/locales`에 복사됨)과 매칭됩니다. 키나 번들이 누락된 경우 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일하게 키를 기본값으로 사용하는 모델로, 해시 조회를 사용하지 않습니다.
 - **대시보드**: 서버는 확인된 UI 로케일에 대해 `{ locale, dir, bundle }`을(를) 반환하는 `GET /api/ui-i18n`을(를) 노출하며, 프론트엔드는 `<html lang>` / `dir`을(를) 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
 - **독푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`에 있는 대시보드의 `data-i18n*` 마커에서 가져옵니다.
 

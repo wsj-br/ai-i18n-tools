@@ -34,6 +34,7 @@ Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.as
 
 | Your content | Command |
 | --- | --- |
+| JS/TS still has hardcoded UI copy and no `t()` yet | Wrap literals first — [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) — then UI strings |
 | Source uses `t()` or `_()` (JavaScript, TypeScript, or Python), gettext, or one HTML file with `data-i18n*` markers | **UI strings** — `extract` / `translate-ui` |
 | Localized pages, docs sites, or one HTML file per locale | **Documents** — `translate-docs` |
 | Standalone nested JSON locale files | **JSON** — `translate-json` |

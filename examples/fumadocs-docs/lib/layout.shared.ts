@@ -20,10 +20,14 @@ export const translations = i18n
       displayName: "English",
       "Search(search trigger)": "Search docs",
     },
+    // Catalog first so translated UI keys (search trigger) apply.
+    // displayName after the spread keeps the native language name.
     "pt-BR": {
+      ...loadUiCatalog("pt-BR"),
       displayName: "Português (Brasil)",
     },
     "zh-Hans": {
+      ...loadUiCatalog("zh-Hans"),
       displayName: "简体中文",
     },
   });

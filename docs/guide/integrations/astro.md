@@ -49,6 +49,16 @@ Starlight UI overrides can use `src/content/i18n/en.json` with `jsonPathTemplate
 
 Starlight ships built-in UI strings for many locales (nav labels, search placeholder, table of contents, and so on). There is no separate shell/theme pipeline to configure — use `translate-docs` for page content only. For other frameworks, see [Framework shell translation](/guide/integrations/#framework-shell-translation).
 
+Explicit sidebar `label`s, the site `title`, and `social[].label` in `astro.config.mjs` are English literals this tool does not translate. Prefer `slug` entries so the label comes from the page's translated frontmatter (`title`). A group or an external link that needs its own wording uses Starlight's per-locale `translations` map (`label` for the default locale, `translations['pt-BR']` for the others). `social[].label` has no translations field in the current Starlight schema; it stays as written. See [Starlight sidebar](https://starlight.astro.build/guides/sidebar/#internationalization) and [examples/astro-docs/astro.config.mjs](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs), which uses `slug` entries.
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### Enable i18n in an existing site
+
+- `locales` in the Starlight config, including a `root` entry when English should be unprefixed (`label` and required `lang`).
+- `defaultLocale: 'root'` when the default language is that root locale. Omit `defaultLocale` only if Starlight's default already matches.
+- English pages stay in `src/content/docs/`; `translate-docs` writes `src/content/docs/<locale>/`.
+- `targetLocales` aligned with the non-root locale keys (watch case: Starlight directory keys are often lowercase, such as `pt-br`).
+
 <a id="example-project"></a>
 ### Example project
 

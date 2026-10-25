@@ -130,6 +130,10 @@ function guideSidebar(t: ThemeCatalog) {
           link: "/guide/glossary",
         },
         {
+          text: t.sidebar.addI18nToJs ?? "Add i18n to a JS/TS app",
+          link: "/guide/add-i18n-to-js",
+        },
+        {
           text: t.sidebar.addI18nToPython ?? "Add i18n to a Python app",
           link: "/guide/add-i18n-to-python",
         },

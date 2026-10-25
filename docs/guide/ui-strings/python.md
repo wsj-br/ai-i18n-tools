@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` extracts UI strings from Python and from Jinja, Django, and Qt `.ui` files, then writes flat English-key JSON, GNU gettext catalogs, or both. The runtime helper is a standard-library `i18n.py` (Python 3.10 or newer). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, and FastAPI call that helper. Django uses Django's own gettext.
 
-Adding locales to an existing single-language app: [Add i18n to a Python app](/guide/add-i18n-to-python). Framework chooser: [Python integrations](/guide/integrations/python). Function list: [Python runtime (`i18n.py`)](/reference/programmatic-api#python-runtime).
+Adding locales to an existing single-language app: [Add i18n to a Python app](/guide/add-i18n-to-python), including the [`i18n.py` prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py) and the [Django / gettext prompt](/guide/add-i18n-to-python#agent-prompt-django-gettext). Framework chooser: [Python integrations](/guide/integrations/python). Function list: [Python runtime (`i18n.py`)](/reference/programmatic-api#python-runtime).
 
 Runnable copies live in `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, and `examples/python-gettext`. They are Python projects. The first three use a virtualenv and `pip install -r requirements.txt`. `python-gettext` uses only the standard library. They are not npm packages. The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories. The npm tarball and the standalone executable do not.
 

@@ -216,6 +216,52 @@ A valued marker names the catalog key. The runtime still writes the translation 
 
 `mark-html` inserts the bare markers above. It is a dry run unless you pass `--write`. It skips `data-i18n-ignore` subtrees, code-like elements (`code`, `pre`, `kbd`, `samp`, `var`), and empty or numeric-only text. It reports mixed-content parents and leaves them for you to wrap in `<span data-i18n>`. It never writes a valued marker.
 
+<a id="agent-prompt"></a>
+### Agent prompt
+
+`mark-html --write` already inserts bare markers. Paste this when the report still lists leftovers: mixed-content parents, text that JavaScript inserts, and identifiers that should stay in the source language.
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("English sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 The runtime records each source key on an internal `data-i18n-source` attribute the first time it runs, so a later locale switch still looks up the English string. Those attributes are not extracted.
 
 <a id="locale-specific-images-and-links"></a>
