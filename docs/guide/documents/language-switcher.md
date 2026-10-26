@@ -5,7 +5,7 @@ Use `docsOutput.postProcessing.languageListBlock` when translated markdown files
 
 This repository uses it for [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (flat output under `translated-docs/`). After `translate-docs`, each translated copy gets a refreshed block; for example [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) links to sibling locale files under `translated-docs/` and back to the English source at the repo root.
 
-Requires `docsOutput.style = "flat"` (or another layout where sibling locale files are addressable by relative path). See [Output layouts](/guide/documents/output-layouts).
+Requires `docsOutput.style = "flat"` (or another layout where sibling locale files are addressable by relative path). See [Output layouts](/guide/documents/output-layouts). First time adding this to a repository README: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Mark the block in source markdown

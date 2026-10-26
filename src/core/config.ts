@@ -784,14 +784,59 @@ export function loadI18nConfigFromFile(
 export const DEFAULT_CONFIG_FILENAME = "ai-i18n-tools.config.json";
 
 /**
+ * Flat README / Markdown docs block shared by `ui-markdown`, `docs-markdown`, and `init --with-readme`.
+ * Locale files land in `translated-docs/` (`README.de.md`). The language-list markers are filled by `translate-docs`.
+ */
+export function readmeDocsBlock(): NonNullable<RawI18nConfigInput["docs"]>[number] {
+  return {
+    description: "README and Markdown files (flat, locale-suffixed filenames)",
+    contentPaths: ["README.md"],
+    outputDir: "translated-docs",
+    addFrontmatter: false,
+    docsOutput: {
+      style: "flat",
+      flatPreserveRelativeDir: true,
+      linkRewriteDocsRoot: ".",
+      postProcessing: {
+        languageListBlock: {
+          start: '<small id="lang-list">',
+          end: "</small>",
+          separator: " · ",
+        },
+      },
+    },
+  };
+}
+
+function contentPathsIncludeReadme(contentPaths: unknown): boolean {
+  const list = Array.isArray(contentPaths)
+    ? contentPaths
+    : typeof contentPaths === "string"
+      ? [contentPaths]
+      : [];
+  return list.some((entry) => {
+    if (typeof entry !== "string") return false;
+    const norm = entry.replace(/\\/g, "/").replace(/^\.\//, "").replace(/\/+$/, "");
+    return norm === "README.md";
+  });
+}
+
+function rawConfigHasReadmeBlock(raw: RawI18nConfigInput): boolean {
+  const docs = raw.docs;
+  if (!Array.isArray(docs)) return false;
+  return docs.some((block) => contentPathsIncludeReadme(block?.contentPaths));
+}
+
+/**
  * Template objects for `init`.
  *
- * `ui-markdown` - UI strings (extraction/translation) for a React/Next.js app.
+ * `ui-markdown` - UI strings plus a flat README docs block (hybrid).
+ * `docs-markdown` - README and Markdown files only (no UI strings).
  * `ui-docusaurus` - Documents (markdown/JSON translation) for Docusaurus sites.
  * `ui-starlight` - Documents (markdown translation) for Astro Starlight sites.
  * `ui-vitepress` - Documents (markdown translation) for VitePress sites, plus JSON theme JSON via `json[]`.
  *
- * Both templates include all top-level fields so the generated file is self-documenting.
+ * Templates include the top-level fields the scaffold needs so the generated file is self-documenting.
  * See the documentation site and `docs/reference/configuration.md` for a full field reference.
  */
 export const initConfigTemplates = {
@@ -800,10 +845,10 @@ export const initConfigTemplates = {
     sourceLocale: "en-GB",
     targetLocales: ["de", "fr", "es", "pt-BR"],
     features: {
-      // UI strings: UI strings (extract runs automatically before translate)
+      // UI strings: extract runs automatically before translate-ui.
       translateUIStrings: true,
-      // Documents: document translation (enable when you have markdown to translate)
-      translateDocs: false,
+      // README and other Markdown files (flat output under translated-docs/).
+      translateDocs: true,
       // JSON bundles: nested JSON locale files (enable with a json[] block)
       translateJson: false,
       translateSVG: false,
@@ -825,17 +870,7 @@ export const initConfigTemplates = {
     batchSize: 20,
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
-    docs: [
-      {
-        contentPaths: [],
-        outputDir: "./i18n",
-        docsOutput: {
-          style: "flat",
-        },
-        // Merged into translated markdown front matter (translation_*, source_*); omit or false to skip.
-        addFrontmatter: true,
-      },
-    ],
+    docs: [readmeDocsBlock()],
   }),
 
   uiDocusaurus: (): RawI18nConfigInput => ({
@@ -1147,6 +1182,32 @@ export const initConfigTemplates = {
     ],
   }),
 
+  docsMarkdown: (): RawI18nConfigInput => ({
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en-GB",
+    targetLocales: ["de", "fr", "es", "pt-BR"],
+    features: {
+      translateUIStrings: false,
+      translateDocs: true,
+      translateJson: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: [],
+      stringsJson: "strings.json",
+      flatOutputDir: "locales",
+    },
+    concurrency: 3,
+    batchConcurrency: 4,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [readmeDocsBlock()],
+  }),
+
   uiJsonBundles: (): RawI18nConfigInput => ({
     ...defaultI18nConfigPartial,
     sourceLocale: "en",
@@ -1283,6 +1344,18 @@ function pythonUiTemplate(
   };
 }
 
+export type WriteInitConfigFileOptions = {
+  /** Append the shared README docs block and enable `translateDocs` when the template has no `README.md` block yet. */
+  withReadme?: boolean;
+};
+
+export type WriteInitConfigFileResult = {
+  /** True when this call appended a README docs block. False when the template already had one, or the option was off. */
+  readmeBlockAdded: boolean;
+  /** True when the written config contains a `README.md` docs block. */
+  hasReadmeBlock: boolean;
+};
+
 /**
  * Write a starter config JSON for `ai-i18n-tools init -P <provider>`.
  * See docs/GETTING_STARTED.md for a full annotated explanation of every field.
@@ -1291,8 +1364,9 @@ export function writeInitConfigFile(
   outPath: string,
   template: keyof typeof initConfigTemplates,
   cwd: string,
-  providerKey: string
-): void {
+  providerKey: string,
+  options?: WriteInitConfigFileOptions
+): WriteInitConfigFileResult {
   const key = typeof providerKey === "string" ? providerKey.trim() : "";
   if (!key) {
     throw new ConfigValidationError(
@@ -1302,8 +1376,21 @@ export function writeInitConfigFile(
   assertPresetInitProvider(key);
   const resolved = path.isAbsolute(outPath) ? outPath : path.join(cwd, outPath);
   const raw = initConfigTemplates[template]();
+  let readmeBlockAdded = false;
+  if (options?.withReadme && !rawConfigHasReadmeBlock(raw)) {
+    const docs = Array.isArray(raw.docs) ? [...raw.docs] : [];
+    docs.push(readmeDocsBlock());
+    raw.docs = docs;
+    raw.features = {
+      ...(raw.features ?? {}),
+      translateDocs: true,
+    };
+    readmeBlockAdded = true;
+  }
+  const hasReadmeBlock = rawConfigHasReadmeBlock(raw);
   const merged = applyInitProvider(mergeWithDefaults(raw), key);
   parseI18nConfig(merged);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
   fs.writeFileSync(resolved, `${JSON.stringify(merged, null, 2)}\n`, "utf8");
+  return { readmeBlockAdded, hasReadmeBlock };
 }

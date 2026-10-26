@@ -281,7 +281,7 @@ Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai
 9. `augmentConfigWithUiLanguagesMaster` - attach manifest display names from the bundled master catalog.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - validate locale codes against the master catalog when applicable.
 
-`init` writes starter configs from `initConfigTemplates`: `ui-markdown` (UI + optional app markdown), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; add `docs[]` for `.astro` page translation), `ui-json-bundles` (JSON `json[]` only), `ui-python`, `ui-python-gettext`, `ui-python-django`, and `ui-python-flask`. See [UI strings — Initialise](/guide/ui-strings/#step-1-initialise) and [Python applications](/guide/ui-strings/python).
+`init` writes starter configs from `initConfigTemplates`: `ui-markdown` (UI strings plus a flat README block), `docs-markdown` (README and Markdown only), `ui-docusaurus`, `ui-starlight`, `ui-vitepress` (VitePress docs + `vitepressThemeCatalog`), `ui-nextra` (Nextra docs + `nextraDictionaryPath`), `ui-astro-website` (plain Astro UI; add `docs[]` for `.astro` page translation), `ui-json-bundles` (JSON `json[]` only), `ui-python`, `ui-python-gettext`, `ui-python-django`, and `ui-python-flask`. `--with-readme` appends that same README block to any template that does not already list `README.md`, and turns `translateDocs` on. See [UI strings — Initialise](/guide/ui-strings/#step-1-initialise), [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme), and [Python applications](/guide/ui-strings/python).
 
 <a id="logger"></a>
 ### Logger

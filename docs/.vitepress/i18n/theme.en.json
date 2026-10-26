@@ -13,6 +13,7 @@
     "getStarted": "Get started",
     "addI18nToProject": "Add i18n to your project",
     "addI18nToWebsite": "Add i18n to a website or docs site",
+    "addI18nToReadme": "Add i18n to your README and Markdown docs",
     "combiningPipelines": "Combining pipelines",
     "tools": "Tools",
     "whatIs": "What is ai-i18n-tools?",

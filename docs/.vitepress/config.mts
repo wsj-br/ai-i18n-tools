@@ -51,13 +51,17 @@ function guideSidebar(t: ThemeCatalog) {
     },
     {
       text: t.sidebar.addI18nToProject,
+      // Header opens the section overview. The first child is the same page.
+      link: "/guide/add-i18n-to-your-project",
       items: [
+        { text: t.sidebar.overview, link: "/guide/add-i18n-to-your-project" },
         { text: t.sidebar.addI18nToJs, link: "/guide/add-i18n-to-js" },
         { text: t.sidebar.addI18nToPython, link: "/guide/add-i18n-to-python" },
         { text: t.sidebar.addI18nToWebsite, link: "/guide/add-i18n-to-website" },
+        { text: t.sidebar.addI18nToReadme, link: "/guide/add-i18n-to-readme" },
         { text: t.sidebar.combiningPipelines, link: "/guide/combining-pipelines" },
-        { text: t.sidebar.migratingFromIntlayer, link: "/guide/migrating-from-intlayer" },
         { text: t.sidebar.translatingIntlayer, link: "/guide/translating-intlayer" },
+        { text: t.sidebar.migratingFromIntlayer, link: "/guide/migrating-from-intlayer" },
       ],
     },
     {

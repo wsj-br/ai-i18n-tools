@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Scaffold a config from Node.js. The fourth argument is the built-in preset (`cwd` is the third):
+Scaffold a config from Node.js. The fourth argument is the built-in preset (`cwd` is the third). An optional fifth argument `{ withReadme: true }` appends the flat README docs block when the template does not already list `README.md`, and returns whether that block was added:
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 Key exports (commonly used — see `src/index.ts` for the full public surface):
@@ -53,7 +56,7 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries, including optional term `Context` notes. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Load `glossary.contextFiles` and fingerprint guidance for cache invalidation. |
 | `runTranslateUI` | Programmatic translate-UI entry point. |
-| `writeInitConfigFile` | Write a starter config JSON (`template`, `cwd`, and a required `providerKey`). |
+| `writeInitConfigFile` | Write a starter config JSON (`template`, `cwd`, a required `providerKey`, and optional `{ withReadme }`). Returns `{ readmeBlockAdded, hasReadmeBlock }`. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |
 

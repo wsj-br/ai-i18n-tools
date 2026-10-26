@@ -109,57 +109,105 @@ After the first successful `i18n:sync` / `translate-docs` run with `vitepressThe
 
 **Example AI agent prompt** (copy into Cursor or another coding agent):
 
+<details class="agent-prompt">
+<summary>Theme catalog prompt</summary>
+
 ````markdown
 # Load VitePress theme strings from the catalog
 
 ## Context
 
-ai-i18n-tools translates VitePress chrome through `docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes positional keys while English is still inline in `config.mts` (`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`, `locales.root.label`). The runnable example uses stable names instead (`nav.guide`, `sidebar.gettingStarted`, `site.title`): https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts
+ai-i18n-tools translates VitePress chrome through
+`docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes
+positional keys while English is still inline in `config.mts`
+(`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`,
+`locales.root.label`). The runnable example uses stable names instead
+(`nav.guide`, `sidebar.gettingStarted`, `site.title`):
+https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts
 
-Reshape to named keys once and keep those names. Renaming changes the segment hash, so the next `sync` re-translates the theme catalog for every locale (a few dozen short strings, once). After the refactor, `config.mts` has no inline display literals, `mergeThemeCatalogs` keeps `theme.en.json`, and that file is the source of truth. Do not tell the user to refresh the catalog from `config.mts` after this edit.
+Reshape to named keys once and keep those names. Renaming changes the segment
+hash, so the next `sync` re-translates the theme catalog for every locale (a few
+dozen short strings, once). After the refactor, `config.mts` has no inline
+display literals, `mergeThemeCatalogs` keeps `theme.en.json`, and that file is
+the source of truth. Do not tell the user to refresh the catalog from
+`config.mts` after this edit.
 
-`translate-docs` does not rewrite links in `config.mts`. Locale pages must prefix `link` and `activeMatch` or they point at English routes.
+`translate-docs` does not rewrite links in `config.mts`. Locale pages must
+prefix `link` and `activeMatch` or they point at English routes.
 
 ## Scope
 
-Edit `.vitepress/config.mts` and `theme.en.json` only. Skip markdown bodies, route paths, `base`, search provider choice, collapsed flags, and external URLs.
+Edit `.vitepress/config.mts` and `theme.en.json` only. Skip markdown bodies,
+route paths, `base`, search provider choice, collapsed flags, and external URLs.
 
 ## Call shape
 
-Precondition: `docsOutput.vitepressThemeCatalog` is set and `sync` has already written `catalogPath`. If `theme.en.json` is missing, stop and ask for that `sync` first.
+Precondition: `docsOutput.vitepressThemeCatalog` is set and `sync` has already
+written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
+`sync` first.
 
-1. Add `ai-i18n-tools` as a devDependency. Import `prefixVitepressThemeConfigLinks` from `ai-i18n-tools`.
-2. Add `loadTheme(localeFile)` that reads `docs/.vitepress/i18n/` via `import.meta.url` and `fileURLToPath`. If a locale file is missing (`fs.existsSync`), fall back to the English theme so a fresh checkout does not crash before the first translation.
-3. Rename positional keys in `theme.en.json` to short stable names. Update `themeConfigFor` to read those names. Keep links and structure in TypeScript. Only display strings come from the catalog.
-4. If you keep positional keys instead, read them with string indexes: `t.themeConfig.nav["0"].text`. A numeric index `nav[0]` is invisible to the unused-key check and warns for every nav and sidebar entry.
-5. Wrap the object `themeConfigFor` returns with `prefixVitepressThemeConfigLinks(themeConfig, localeRoutePrefix)`. Pass `/${code}` for each target locale and `null` for root. That prefixes `link` and `activeMatch`.
-6. Per locale entry: `label` (native language name), `lang`, `link: '/${code}/'`, and that locale's `title` and `description` from the catalog.
-7. Keys the extractor does not collect must be added to `theme.en.json` by hand, then referenced from `themeConfigFor`. That includes local-search copy under `search.options.locales.<code>.translations` (`button.buttonText`, `modal.noResultsText`, and the rest of that tree). Current VitePress docs do not use `options.placeholder` for local search. Also add `socialLinks[].ariaLabel`. A `notFound.title` inline in config is collected because `title` is a known key; `notFound.quote`, `notFound.linkText`, `notFound.linkLabel`, and `notFound.code` are not.
+1. Add `ai-i18n-tools` as a devDependency. Import
+   `prefixVitepressThemeConfigLinks` from `ai-i18n-tools`.
+2. Add `loadTheme(localeFile)` that reads `docs/.vitepress/i18n/` via
+   `import.meta.url` and `fileURLToPath`. If a locale file is missing
+   (`fs.existsSync`), fall back to the English theme so a fresh checkout does
+   not crash before the first translation.
+3. Rename positional keys in `theme.en.json` to short stable names. Update
+   `themeConfigFor` to read those names. Keep links and structure in TypeScript.
+   Only display strings come from the catalog.
+4. If you keep positional keys instead, read them with string indexes:
+   `t.themeConfig.nav["0"].text`. A numeric index `nav[0]` is invisible to the
+   unused-key check and warns for every nav and sidebar entry.
+5. Wrap the object `themeConfigFor` returns with
+   `prefixVitepressThemeConfigLinks(themeConfig, localeRoutePrefix)`. Pass
+   `/${code}` for each target locale and `null` for root. That prefixes `link`
+   and `activeMatch`.
+6. Per locale entry: `label` (native language name), `lang`,
+   `link: '/${code}/'`, and that locale's `title` and `description` from the
+   catalog.
+7. Keys the extractor does not collect must be added to `theme.en.json` by hand,
+   then referenced from `themeConfigFor`. That includes local-search copy under
+   `search.options.locales.<code>.translations` (`button.buttonText`,
+   `modal.noResultsText`, and the rest of that tree). Current VitePress docs do
+   not use `options.placeholder` for local search. Also add
+   `socialLinks[].ariaLabel`. A `notFound.title` inline in config is collected
+   because `title` is a known key; `notFound.quote`, `notFound.linkText`,
+   `notFound.linkLabel`, and `notFound.code` are not.
 
 ## Order
 
 1. Confirm the catalog file exists.
 2. Reshape keys, wire `loadTheme` and `themeConfigFor`, prefix links.
-3. Ask the user to run `sync` so locale theme files are regenerated from the new key names. Do not hand-translate them.
+3. Ask the user to run `sync` so locale theme files are regenerated from the new
+   key names. Do not hand-translate them.
 
 ## Do not
 
 - Do not translate strings yourself.
-- Do not leave a second copy of the same label in `config.mts` and in `theme.en.json`.
+- Do not leave a second copy of the same label in `config.mts` and in
+  `theme.en.json`.
 - Do not hand-edit `theme.<locale>.json`.
-- Do not change markdown paths, `base`, or the path of internal links (only the locale prefix).
+- Do not change markdown paths, `base`, or the path of internal links (only the
+  locale prefix).
 
 ## Verify
 
-- `pnpm docs:dev`: English and one target locale show translated nav, sidebar, footer, and search chrome.
-- A locale page's nav `link` and `activeMatch` include the locale prefix (`/pt-BR/guide/`, not `/guide/`).
+- `pnpm docs:dev`: English and one target locale show translated nav, sidebar,
+  footer, and search chrome.
+- A locale page's nav `link` and `activeMatch` include the locale prefix
+  (`/pt-BR/guide/`, not `/guide/`).
 - `pnpm docs:build` passes.
-- Removing a locale theme file still builds, because `loadTheme` falls back to English.
+- Removing a locale theme file still builds, because `loadTheme` falls back to
+  English.
 
 ## Report back
 
-List files changed, the old path key and the new name for each rename, any string you added by hand because the extractor skips it, and anything you left inline on purpose.
+List files changed, the old path key and the new name for each rename, any
+string you added by hand because the extractor skips it, and anything you left
+inline on purpose.
 ````
+
+</details>
 
 <a id="example-project"></a>
 ## Example project

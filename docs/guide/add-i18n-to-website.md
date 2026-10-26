@@ -8,14 +8,27 @@ For an app whose UI strings live in `t()` calls, use [Add i18n to a JS/TS app](/
 <a id="what-do-you-have"></a>
 ## What do you have?
 
-| Your site | Init template | Start here | Agent prompt |
-| --- | --- | --- | --- |
-| Astro Starlight or plain Astro | `ui-starlight` / hybrid UI strings | [Astro](/guide/integrations/astro) | Starlight: notes only. Astro `t()` files: [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) (skip i18next) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/guide/integrations/docusaurus) | Notes only (`<Translate>` is Docusaurus's own API) |
-| VitePress | `ui-vitepress` | [VitePress](/guide/integrations/vitepress) | [Theme catalog prompt](/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off) |
-| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/guide/integrations/nextra) | [Dictionary prompt](/guide/integrations/nextra#agent-prompt-dictionary) and [hybrid `t()` prompt](/guide/integrations/nextra#optional-t-for-app-react-hybrid) |
-| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/guide/integrations/fumadocs) | [UI catalog prompt](/guide/integrations/fumadocs#agent-prompt) |
-| Plain HTML pages | `ui-plain-html` or `docs-plain-html` | [Plain HTML apps](/guide/ui-strings/plain-html) | — |
+| Your site | Init template | Start here |
+| --- | --- | --- |
+| Astro Starlight or plain Astro | `ui-starlight` / hybrid UI strings | [Astro](/guide/integrations/astro) |
+| Docusaurus | `ui-docusaurus` | [Docusaurus](/guide/integrations/docusaurus) |
+| VitePress | `ui-vitepress` | [VitePress](/guide/integrations/vitepress) |
+| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/guide/integrations/nextra) |
+| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/guide/integrations/fumadocs) |
+| Plain HTML pages | `ui-plain-html` or `docs-plain-html` | [Plain HTML apps](/guide/ui-strings/plain-html) |
+| No site framework, just a README and Markdown files | `docs-markdown`, or any template plus `--with-readme` | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) |
+
+<details class="agent-prompt">
+<summary>Agent prompts</summary>
+
+- Astro Starlight: notes only. Astro `t()` files: [JS/TS prompt](/guide/add-i18n-to-js#agent-prompt) (skip i18next).
+- Docusaurus: notes only (`<Translate>` is Docusaurus's own API).
+- VitePress: [Theme catalog prompt](/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off).
+- Nextra: [Dictionary prompt](/guide/integrations/nextra#agent-prompt-dictionary) and [hybrid `t()` prompt](/guide/integrations/nextra#optional-t-for-app-react-hybrid).
+- Fumadocs: [UI catalog prompt](/guide/integrations/fumadocs#agent-prompt).
+- README and Markdown files: [README prompt](/guide/add-i18n-to-readme#agent-prompt).
+
+</details>
 
 <a id="steps"></a>
 ## Steps
@@ -60,6 +73,7 @@ A file belongs to one path.
 ## Not your case?
 
 - App UI strings: [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python).
+- A repository README next to the site, or Markdown files and no site framework: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). `init … --with-readme` adds that block beside a site template.
 - Standalone nested locale JSON: [JSON](/guide/json).
 - Translating both a site and app strings: [Combining pipelines](/guide/combining-pipelines).
 

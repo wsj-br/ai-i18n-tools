@@ -784,17 +784,24 @@ program
   .option(
     "-t, --template <name>",
     t(
-      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | ui-python | ui-python-gettext | ui-python-django | ui-python-flask"
+      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | docs-markdown | ui-python | ui-python-gettext | ui-python-django | ui-python-flask"
     ),
     "ui-markdown"
   )
   .option("--with-translate-ignore", t("Create a starter .translate-ignore"), false)
+  .option(
+    "--with-readme",
+    t("Also add a README.md translation block (flat output with a language list)"),
+    false
+  )
   .addHelpText(
     "after",
     `\n${t(
       `Examples:
   ai-i18n-tools init -P openrouter
   ai-i18n-tools init -t ui-docusaurus -P openai
+  ai-i18n-tools init -t docs-markdown -P openrouter
+  ai-i18n-tools init -t ui-python -P openrouter --with-readme
   ai-i18n-tools init -P cheaperinference --with-translate-ignore
 
 Built-in presets for -P / --provider (required):
@@ -805,14 +812,21 @@ Built-in presets for -P / --provider (required):
     )}\n`
   )
   .action(
-    (opts: { output: string; template: string; withTranslateIgnore?: boolean }, cmd: Command) => {
+    (
+      opts: {
+        output: string;
+        template: string;
+        withTranslateIgnore?: boolean;
+        withReadme?: boolean;
+      },
+      cmd: Command
+    ) => {
       const { providerOverride } = withConfig(cmd);
       if (!providerOverride) {
         console.error(
-          t(
-            "init requires -P / --provider <name>. Choose a built-in preset: {{presets}}",
-            { presets: listPresetInitProviderKeys().join(", ") }
-          )
+          t("init requires -P / --provider <name>. Choose a built-in preset: {{presets}}", {
+            presets: listPresetInitProviderKeys().join(", "),
+          })
         );
         process.exitCode = 1;
         return;
@@ -836,6 +850,7 @@ Built-in presets for -P / --provider (required):
         "ui-astro-website": "uiAstroWebsite",
         "ui-plain-html": "uiPlainHtml",
         "docs-plain-html": "docsPlainHtml",
+        "docs-markdown": "docsMarkdown",
         "ui-json-bundles": "uiJsonBundles",
         "ui-python": "uiPython",
         "ui-python-gettext": "uiPythonGettext",
@@ -846,13 +861,15 @@ Built-in presets for -P / --provider (required):
       if (!key) {
         console.error(
           t(
-            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", "ui-json-bundles", "ui-python", "ui-python-gettext", "ui-python-django", or "ui-python-flask".'
+            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", "docs-markdown", "ui-json-bundles", "ui-python", "ui-python-gettext", "ui-python-django", or "ui-python-flask".'
           )
         );
         process.exitCode = 1;
         return;
       }
-      writeInitConfigFile(opts.output, key, process.cwd(), providerKey);
+      const written = writeInitConfigFile(opts.output, key, process.cwd(), providerKey, {
+        withReadme: opts.withReadme,
+      });
       console.log(
         t("Wrote {{path}} ({{template}}, provider: {{provider}})", {
           path: opts.output,
@@ -860,6 +877,20 @@ Built-in presets for -P / --provider (required):
           provider: providerKey,
         })
       );
+      if (written.readmeBlockAdded) {
+        console.log(t("Added a README.md translation block to {{path}}", { path: opts.output }));
+      }
+      if (written.hasReadmeBlock) {
+        console.log(t("Add this line to README.md so the language list can be filled in:"));
+        console.log('<small id="lang-list"></small>');
+        if (!fs.existsSync(path.join(process.cwd(), "README.md"))) {
+          console.warn(
+            t(
+              "No README.md in this directory. Create one and add the language-list markers before you translate."
+            )
+          );
+        }
+      }
       if (key === "uiVitepress") {
         scaffoldVitepressInitFiles(process.cwd());
       }

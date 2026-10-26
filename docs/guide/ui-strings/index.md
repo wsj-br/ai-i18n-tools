@@ -28,7 +28,7 @@ This pipeline serves JS/TS projects (React, Next.js client and server components
 ai-i18n-tools init -P openrouter
 ```
 
-This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including the `provider` / `providers` block for that preset). Before running `translate-ui` or `sync`, set the API key for that provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Four keys matter for UI strings:
+This writes `ai-i18n-tools.config.json` with the `ui-markdown` template (including the `provider` / `providers` block for that preset). That template also turns on document translation for `README.md`, written as flat files under `translated-docs/`. README-only repositories use `init -t docs-markdown` instead. See [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Before running `translate-ui` or `sync`, set the API key for that provider in the environment or `.env` — Ollama excepted; see [Provider and API key](/guide/quick-start#provider-and-api-key). Four keys matter for UI strings:
 
 - `sourceLocale`: your source language BCP-47 code (for example `"en-GB"`). It must match `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 - `targetLocales`: BCP-47 codes for your target languages (for example `["de", "fr", "pt-BR"]`). Run `generate-ui-languages` to create the `ui-languages.json` manifest from this list.

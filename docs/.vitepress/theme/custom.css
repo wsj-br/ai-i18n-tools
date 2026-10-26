@@ -1,5 +1,22 @@
 :root {
   --vp-nav-logo-height: 32px;
+  --vp-c-brand-1: #4c1d95;
+  --vp-c-brand-2: #5b2bb0;
+  --vp-c-brand-3: #6d3ccb;
+  --vp-c-brand-soft: rgba(76, 29, 149, 0.14);
+
+  --brand-gold: #f2c879;
+  --brand-ink: #1e1b4b;
+  --brand-gradient: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 55%, #6d3ccb 100%);
+  --brand-display: "Bricolage Grotesque Variable", var(--vp-font-family-base);
+}
+
+.dark {
+  --vp-c-brand-1: #b79aff;
+  --vp-c-brand-2: #a585f5;
+  --vp-c-brand-3: #8b5cf6;
+  --vp-c-brand-soft: rgba(139, 92, 246, 0.2);
+  --brand-gold: #f6d28f;
 }
 
 /* Smoother paragraph wrapping — avoids awkward breaks around inline code. */
@@ -96,6 +113,351 @@
   width: 100%;
 }
 
+/* English onboarding landing page; translated homepages retain their layout. */
+.home-onboarding .VPHero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.home-onboarding .VPHero::before {
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 520px;
+  z-index: -2;
+  background:
+    radial-gradient(60% 60% at 20% 15%, rgba(109, 60, 203, 0.28), transparent 70%),
+    radial-gradient(55% 55% at 85% 10%, rgba(242, 200, 121, 0.22), transparent 70%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.home-onboarding .VPHero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.dark .home-onboarding .VPHero::before {
+  background:
+    radial-gradient(60% 60% at 20% 15%, rgba(139, 92, 246, 0.32), transparent 70%),
+    radial-gradient(55% 55% at 85% 10%, rgba(242, 200, 121, 0.14), transparent 70%);
+}
+
+.home-onboarding .VPHero .name {
+  display: inline-block;
+  width: fit-content;
+  max-width: none;
+  padding: 4px 12px;
+  border: 1px solid var(--vp-c-brand-soft);
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  background-clip: border-box;
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  color: var(--vp-c-brand-1);
+  font-family: var(--brand-display);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  animation: heroRise 0.5s ease both;
+}
+
+.home-onboarding .VPHero .text {
+  font-family: var(--brand-display);
+  font-size: clamp(2.25rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  text-wrap: balance;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: heroRise 0.5s ease 0.06s both;
+}
+
+.dark .home-onboarding .VPHero .text {
+  background: linear-gradient(135deg, #f5f0e6 0%, #b79aff 60%, #f6d28f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.home-onboarding .VPHero .image-src {
+  max-width: 180px;
+  max-height: 180px;
+  filter: drop-shadow(0 18px 40px rgba(30, 27, 75, 0.35));
+}
+
+.home-onboarding .VPHero .tagline {
+  font-size: 18px;
+  opacity: 0.9;
+  animation: heroRise 0.5s ease 0.12s both;
+}
+
+.home-onboarding .VPHero .actions {
+  animation: heroRise 0.5s ease 0.18s both;
+}
+
+.home-onboarding .VPHero .actions .VPButton.brand {
+  border: 0;
+  background: var(--brand-gradient);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  box-shadow: 0 8px 24px rgba(76, 29, 149, 0.28);
+}
+
+.home-onboarding .VPHero .actions .VPButton.brand:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(76, 29, 149, 0.38);
+}
+
+.home-onboarding .VPHero .actions .VPButton.alt:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-onboarding .home-paths,
+.home-onboarding .home-examples,
+.home-onboarding .home-features {
+  display: grid;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.home-onboarding .home-paths {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-onboarding .home-examples,
+.home-onboarding .home-features {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-onboarding .home-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  box-shadow: 0 1px 2px rgba(30, 27, 75, 0.04);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.home-onboarding .home-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  border-radius: 12px 12px 0 0;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.home-onboarding .home-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--vp-c-brand-1) 40%, var(--vp-c-divider));
+  box-shadow: 0 16px 40px rgba(30, 27, 75, 0.14);
+}
+
+.home-onboarding .home-card:hover::before {
+  opacity: 1;
+}
+
+.home-onboarding .home-card h3 {
+  margin: 0 0 12px;
+  font-family: var(--brand-display);
+  font-size: 19px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.home-onboarding .home-card p {
+  margin: 0 0 16px;
+  font-size: 15px;
+}
+
+.home-onboarding .home-card p:last-child {
+  margin: auto 0 0;
+  padding-top: 8px;
+}
+
+/* Tag line (e.g. "React · Next.js · Node.js · CLI") sits between the description and the link. */
+.home-onboarding .home-paths .home-card > p:nth-of-type(2):not(:last-child) {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-2);
+}
+
+.home-onboarding .home-card > p:last-child a {
+  font-weight: 600;
+}
+
+.home-onboarding .home-card > p:last-child a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.home-onboarding .home-card > p:last-child a:focus-visible::after {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 4px;
+}
+
+.home-onboarding .home-steps ol {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.home-onboarding .home-steps li {
+  counter-increment: step;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+}
+
+.home-onboarding .home-steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  border-radius: 9px;
+  font-family: var(--brand-display);
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand-gradient);
+  box-shadow: 0 6px 16px rgba(76, 29, 149, 0.3);
+}
+
+.home-onboarding .home-cta {
+  margin: 28px 0 8px;
+  padding: 32px 28px;
+  border: 1px solid var(--vp-c-brand-soft);
+  border-radius: 16px;
+  text-align: center;
+  background:
+    radial-gradient(80% 120% at 50% 0%, var(--vp-c-brand-soft), transparent 70%),
+    var(--vp-c-bg-soft);
+}
+
+.home-onboarding .vp-doc h2 {
+  font-family: var(--brand-display);
+  letter-spacing: -0.02em;
+}
+
+.home-onboarding .vp-doc h2::before {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  margin-right: 10px;
+  vertical-align: middle;
+  border-radius: 999px;
+  background: var(--brand-gradient);
+}
+
+.home-onboarding .vp-doc .vp-code-group,
+.home-onboarding .vp-doc div[class*="language-"] {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(30, 27, 75, 0.1);
+}
+
+.home-onboarding .vp-doc .custom-block.info {
+  border-left: 3px solid var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.home-onboarding a:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.home-onboarding [id] {
+  scroll-margin-top: 96px;
+}
+
+@media (max-width: 959px) {
+  .home-onboarding .home-examples,
+  .home-onboarding .home-features,
+  .home-onboarding .home-steps ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .home-onboarding .home-paths,
+  .home-onboarding .home-examples,
+  .home-onboarding .home-features,
+  .home-onboarding .home-steps ol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-onboarding .VPHero .image-src {
+    max-width: 140px;
+    max-height: 140px;
+  }
+
+  .home-onboarding .home-cta {
+    padding: 24px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-onboarding .VPHero .name,
+  .home-onboarding .VPHero .text,
+  .home-onboarding .VPHero .tagline,
+  .home-onboarding .VPHero .actions {
+    animation: none;
+  }
+
+  .home-onboarding .home-card,
+  .home-onboarding .VPHero .actions .VPButton.brand {
+    transition: none;
+  }
+
+  .home-onboarding .home-card:hover,
+  .home-onboarding .VPHero .actions .VPButton.brand:hover {
+    transform: none;
+  }
+}
+
 /* --- Doc pages --- */
 
 /* VitePress caps the prose column at 688px even on wide screens (see
@@ -126,6 +488,27 @@
 .vp-doc th code {
   overflow-wrap: anywhere;
 }
+
+/* Agent prompts are tall copy-paste blocks. The robot marks the disclosure
+   header; lines wrap inside the column so a long line does not add a
+   horizontal scrollbar at the bottom of the block. */
+.vp-doc details.agent-prompt > summary::before {
+  content: "🤖";
+  margin-inline-end: 0.4em;
+}
+
+.vp-doc details.agent-prompt div[class*='language-'] pre,
+.vp-doc details.agent-prompt div[class*='language-'] code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.vp-doc details.agent-prompt div[class*='language-'] code {
+  width: auto;
+  min-width: 100%;
+  max-width: 100%;
+}
+
 
 /* Provider preset tables: keep the key, the URL, and the env-var name on
    one line. The page scrolls horizontally when the URL is wider than the

@@ -3,6 +3,8 @@
 
 Read this when one project needs more than one kind of translation: app UI strings plus documentation, a docs site plus a root README, or documents plus SVG illustrations. If you only translate one kind of content, [Quick start](/guide/quick-start) is enough.
 
+An app plus its repository README is the common hybrid. Scaffold it with `init` (the `ui-markdown` template) or `init -t <template> --with-readme`, then follow [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). The mixed config later on this page is the same idea next to a docs site.
+
 <a id="what-sync-runs"></a>
 ## What sync runs
 

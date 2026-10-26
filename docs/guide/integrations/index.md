@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # Integrations
 
-Reference for the framework integrations: what they share and how their shell strings differ. To add languages to a site, start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). For an app, start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python).
+Reference for the framework integrations: what they share and how their shell strings differ. To add languages to a site, start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). For an app, start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python). For a repository README and other Markdown files, start at [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 
 Documentation integrations use the [Documents](/guide/documents/) pipeline (`translate-docs` / `sync`) for page content; shell strings (nav, sidebar, theme) are handled inside that same pipeline where noted — not via the separate [JSON](/guide/json) pipeline. Python applications use the [UI strings](/guide/ui-strings/python) pipeline (`extract` / `translate-ui`).
 

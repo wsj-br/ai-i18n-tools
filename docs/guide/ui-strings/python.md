@@ -19,6 +19,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 
 `ui-python` writes flat JSON and `i18n.py`. `ui-python-gettext` writes JSON and `.po` / `.mo`. `ui-python-flask` writes gettext catalogs under `translations/` and `i18n.py`. `ui-python-django` writes `locale/<lang>/LC_MESSAGES/django.po` and does not write `i18n.py`.
 
+Also translate the repository README: add `--with-readme` to the `init` command above. See [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
+
 Scan roots skip `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, and `.eggs`.
 
 <a id="calls"></a>

@@ -21,7 +21,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call th
 | PyQt / PySide | `ui-python` or a gettext template | Flat JSON and/or `.po` | No example directory |
 | PyWebView / PyWebKit | A Python template for the shell | Shell catalogs, plus HTML markers or one HTML file per locale | No example directory |
 
-`ui-python`, `ui-python-gettext`, and `ui-python-flask` write `i18n.py` when that file is missing. `ui-python-django` does not.
+`ui-python`, `ui-python-gettext`, and `ui-python-flask` write `i18n.py` when that file is missing. `ui-python-django` does not. Add `--with-readme` to also translate the repository README: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 
 <a id="framework-notes"></a>
 ## Framework notes

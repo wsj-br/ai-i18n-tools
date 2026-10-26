@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Documents
 
-Reference for `translate-docs`, the pipeline for Markdown, MDX, `.astro`, and plain HTML pages listed in `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Adding languages to a site for the first time? Start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
+Reference for `translate-docs`, the pipeline for Markdown, MDX, `.astro`, and plain HTML pages listed in `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Adding languages to a site for the first time? Start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). A repository README and other Markdown files, usually next to an app: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
 
 Framework shell strings (navbar, sidebar, theme) are translated in the same run, not by a separate pipeline. The framework guides in the table below say how each one does it: `docusaurusCatalogDir` for Docusaurus, `docsOutput.vitepressThemeCatalog` for VitePress, `docs[].nextraDictionaryPath` for Nextra, `docsOutput.fumadocsUiCatalog` for Fumadocs. Nextra `_meta.ts` and Fumadocs `meta.json` sidebar labels are collected automatically. Astro Starlight ships built-in UI strings for many locales, and optional overrides can use `jsonPathTemplate` on a `docs[]` block.
 
@@ -31,7 +31,7 @@ Each UI block includes its `strings.json` as glossary hints for documentation by
 | Fumadocs site | `init -t ui-fumadocs` + `fumadocsUiCatalog` for UI (sidebar `meta.json` is automatic) - [Fumadocs](/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/guide/integrations/astro#astro-starlight) |
 | Plain HTML pages | `init -t docs-plain-html` - [HTML pages](/guide/documents/html-pages) |
-| Flat documents (README, changelogs, etc.) | `docsOutput.style = "flat"` - [Output layouts](/guide/documents/output-layouts), optional [language switcher](/guide/documents/language-switcher) |
+| Flat documents (README, changelogs, etc.) | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) — `init -t docs-markdown` or `--with-readme`. Layout: [Output layouts](/guide/documents/output-layouts), [language switcher](/guide/documents/language-switcher) |
 | Where translated files land | [Output layouts](/guide/documents/output-layouts) |
 | Cross-page `#anchor` links | [Anchor links](/guide/documents/anchor-links) |
 | Link and asset URL rewriting (`regexAdjustments`) | [Link rewriting](/guide/documents/link-rewriting) |

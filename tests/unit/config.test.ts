@@ -995,6 +995,28 @@ describe("writeInitConfigFile", () => {
       expect(raw.provider).toBe("openrouter");
       expect(raw.providers?.openrouter?.translationModels?.[0]).toBe("google/gemini-2.5-flash");
       expect(raw.uiBatchConcurrency).toBe(2);
+      const hybrid = JSON.parse(fs.readFileSync(out, "utf8")) as {
+        features?: { translateDocs?: boolean; translateUIStrings?: boolean };
+        docs?: Array<{
+          contentPaths?: string[];
+          outputDir?: string;
+          addFrontmatter?: boolean;
+          docsOutput?: {
+            style?: string;
+            postProcessing?: { languageListBlock?: { start?: string } };
+          };
+        }>;
+      };
+      expect(hybrid.features?.translateUIStrings).toBe(true);
+      expect(hybrid.features?.translateDocs).toBe(true);
+      expect(hybrid.docs).toHaveLength(1);
+      expect(hybrid.docs?.[0]?.contentPaths).toEqual(["README.md"]);
+      expect(hybrid.docs?.[0]?.outputDir).toBe("translated-docs");
+      expect(hybrid.docs?.[0]?.addFrontmatter).toBe(false);
+      expect(hybrid.docs?.[0]?.docsOutput?.style).toBe("flat");
+      expect(hybrid.docs?.[0]?.docsOutput?.postProcessing?.languageListBlock?.start).toBe(
+        '<small id="lang-list">'
+      );
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -1078,6 +1100,105 @@ describe("writeInitConfigFile", () => {
         // so `init -P <provider>` followed by any command works on a fresh project.
         expect(() => loadI18nConfigFromFile(out, projectDir)).not.toThrow();
       }
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("writes a docs-only README config for docsMarkdown", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-docs-md-"));
+    const out = path.join(dir, "ai-i18n-tools.config.json");
+    try {
+      const written = writeInitConfigFile(out, "docsMarkdown", dir, "openrouter");
+      expect(written).toEqual({ readmeBlockAdded: false, hasReadmeBlock: true });
+      const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+        features?: { translateUIStrings?: boolean; translateDocs?: boolean };
+        ui?: { sourceRoots?: string[] };
+        docs?: Array<{
+          contentPaths?: string[];
+          docsOutput?: {
+            style?: string;
+            postProcessing?: { languageListBlock?: { end?: string } };
+          };
+        }>;
+      };
+      expect(raw.features?.translateUIStrings).toBe(false);
+      expect(raw.features?.translateDocs).toBe(true);
+      expect(raw.ui?.sourceRoots).toEqual([]);
+      expect(raw.docs).toHaveLength(1);
+      expect(raw.docs?.[0]?.contentPaths).toEqual(["README.md"]);
+      expect(raw.docs?.[0]?.docsOutput?.style).toBe("flat");
+      expect(raw.docs?.[0]?.docsOutput?.postProcessing?.languageListBlock?.end).toBe("</small>");
+      expect(() => loadI18nConfigFromFile(out, dir)).not.toThrow();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("adds one README block with --with-readme and does not duplicate an existing one", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "init-cfg-readme-"));
+    try {
+      const pythonOut = path.join(dir, "python", "ai-i18n-tools.config.json");
+      const python = writeInitConfigFile(pythonOut, "uiPython", dir, "openrouter", {
+        withReadme: true,
+      });
+      expect(python.readmeBlockAdded).toBe(true);
+      const pythonRaw = JSON.parse(fs.readFileSync(pythonOut, "utf8")) as {
+        features?: { translateDocs?: boolean; translateUIStrings?: boolean };
+        docs?: Array<{
+          contentPaths?: string[];
+          docsOutput?: {
+            style?: string;
+            postProcessing?: { languageListBlock?: { start?: string } };
+          };
+        }>;
+      };
+      expect(pythonRaw.features?.translateUIStrings).toBe(true);
+      expect(pythonRaw.features?.translateDocs).toBe(true);
+      expect(pythonRaw.docs).toHaveLength(1);
+      expect(pythonRaw.docs?.[0]?.contentPaths).toEqual(["README.md"]);
+      expect(pythonRaw.docs?.[0]?.docsOutput?.style).toBe("flat");
+      expect(pythonRaw.docs?.[0]?.docsOutput?.postProcessing?.languageListBlock?.start).toBe(
+        '<small id="lang-list">'
+      );
+      expect(() => loadI18nConfigFromFile(pythonOut, path.join(dir, "python"))).not.toThrow();
+
+      const vitepressOut = path.join(dir, "vitepress", "ai-i18n-tools.config.json");
+      const vitepress = writeInitConfigFile(vitepressOut, "uiVitepress", dir, "openrouter", {
+        withReadme: true,
+      });
+      expect(vitepress.readmeBlockAdded).toBe(true);
+      const vitepressRaw = JSON.parse(fs.readFileSync(vitepressOut, "utf8")) as {
+        docs?: Array<{ contentPaths?: string[]; docsOutput?: { style?: string } }>;
+      };
+      expect(vitepressRaw.docs).toHaveLength(2);
+      expect(vitepressRaw.docs?.[0]?.contentPaths).toEqual([
+        "docs/index.md",
+        "docs/guide",
+        "docs/reference",
+      ]);
+      expect(vitepressRaw.docs?.[1]?.contentPaths).toEqual(["README.md"]);
+      expect(vitepressRaw.docs?.[1]?.docsOutput?.style).toBe("flat");
+      expect(() => loadI18nConfigFromFile(vitepressOut, path.join(dir, "vitepress"))).not.toThrow();
+
+      for (const template of ["uiMarkdown", "docsMarkdown"] as const) {
+        const out = path.join(dir, template, "ai-i18n-tools.config.json");
+        const written = writeInitConfigFile(out, template, dir, "openrouter", { withReadme: true });
+        expect(written).toEqual({ readmeBlockAdded: false, hasReadmeBlock: true });
+        const raw = JSON.parse(fs.readFileSync(out, "utf8")) as {
+          docs?: Array<{ contentPaths?: string[] }>;
+        };
+        const readmeBlocks = (raw.docs ?? []).filter((block) =>
+          block.contentPaths?.includes("README.md")
+        );
+        expect(readmeBlocks).toHaveLength(1);
+      }
+
+      const plainOut = path.join(dir, "plain", "ai-i18n-tools.config.json");
+      const plain = writeInitConfigFile(plainOut, "uiPython", dir, "openrouter");
+      expect(plain).toEqual({ readmeBlockAdded: false, hasReadmeBlock: false });
+      const plainRaw = JSON.parse(fs.readFileSync(plainOut, "utf8")) as { docs?: unknown[] };
+      expect(plainRaw.docs).toEqual([]);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

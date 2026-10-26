@@ -45,6 +45,7 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 - A JS/TS app: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (smallest) or [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). Guide: [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
 - A Python app: python-streamlit, python-flask, python-fastapi, or python-gettext. Guide: [Add i18n to a Python app](/guide/add-i18n-to-python).
 - A website or docs site: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, or plain-html-docs. Guide: [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+- A repository README next to an app: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) or [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (the nextjs example also has a docs site). Guide: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 - Something else: multi-provider, test-markdown, and intlayer-migration.
 
 <a id="list-of-examples"></a>

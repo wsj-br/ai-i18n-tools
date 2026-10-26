@@ -2,7 +2,7 @@
 
 Standalone reference for assistants working **in a consumer repo** that depends on `ai-i18n-tools` (CLI, config, extract/translate behaviour, runtime imports). Developing the package itself: see `AGENTS.md` and `docs/reference/` in the upstream repo.
 
-Routing for a user who asks to add languages: a JS/TS app with plain text goes to [Add i18n to a JS/TS app](/guide/add-i18n-to-js), a Python app to [Add i18n to a Python app](/guide/add-i18n-to-python), and a website or docs site to [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+Routing for a user who asks to add languages: a JS/TS app with plain text goes to [Add i18n to a JS/TS app](/guide/add-i18n-to-js), a Python app to [Add i18n to a Python app](/guide/add-i18n-to-python), a website or docs site to [Add i18n to a website or docs site](/guide/add-i18n-to-website), and a repository README or other Markdown files (usually together with the app) to [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 
 ---
 
@@ -313,7 +313,7 @@ Full config field reference: [Configuration](/reference/configuration).
 
 When set, `glossary.userGlossary` points at an optional CSV used by `translate-ui` and `proofread-ui`. Optional `Context` cells and `glossary.contextFiles` add extra source-language guidance for all pipelines.
 
-- **Scaffold config:** `ai-i18n-tools init -P <provider> [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path]`
+- **Scaffold config:** `ai-i18n-tools init -P <provider> [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [--with-readme]` (`--with-readme` adds a flat `README.md` block; no-op on `ui-markdown` and `docs-markdown`, which already have one)
 - **Validate model ids:** `ai-i18n-tools check-models` (validates the union of `translationModels`, `uiModels`, and `localeModels`)
 - **List available models:** `ai-i18n-tools list-models` (use `-P` / `--provider` to inspect another configured provider)
 - **Suggest translation models:** `ai-i18n-tools suggest-models` ranks the active provider's chat models (quality or `--price`; `--list` scores the configured `translationModels`; `--max-output-price` and `--min-delta` thin the list; `--top` limits the list; `--json` / `--apply` write only `translationModels`; `--refresh` updates the benchmark cache). The dashboard **Models** tab uses the same ranking, filters, and config update. Optional weights are `modelSuggestion`.
@@ -376,7 +376,7 @@ Start here: [Integrations index](/guide/integrations/). Layout details: [Output 
 | Docusaurus | `ui-docusaurus` | `docusaurus` | `docs/guide.md` → `i18n/de/docusaurus-plugin-content-docs/current/guide.md` | `docs[].docusaurusCatalogDir` |
 | Astro Starlight | `ui-starlight` | `astro-starlight` | `src/content/docs/guide.md` → `src/content/docs/de/guide.md` | built-in UI (pages only); optional `en.json` overrides in a separate `docs[]` block |
 | Plain Astro pages | hybrid UI + docs | `astro-starlight` | `src/pages/index.astro` → `src/pages/{locale}/index.astro` | see [Astro hybrid](#astro-hybrid) |
-| Repo-root markdown | `ui-markdown` | `flat` or `nested` | `README.md` → `translated-docs/README.de.md` | — |
+| Repo-root markdown | `ui-markdown` (with UI strings) or `docs-markdown` (Markdown only). Any other template: `--with-readme` | `flat` | `README.md` → `translated-docs/README.de.md` | — |
 
 `docsOutput.style` values: `"nested"`, `"flat"`, `"doc-system"`, and aliases `"docusaurus"`, `"astro-starlight"`, `"vitepress"`, `"nextra"`, `"fumadocs"`.
 

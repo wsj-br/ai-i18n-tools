@@ -91,6 +91,107 @@ Import this file from the app entry before the first render. In Next.js, import 
 
 Do this by hand, or paste the [JS/TS prompt](#agent-prompt) into a coding agent. The argument to `t()` is the source-language sentence the user should see. Flat locale files are keyed by that sentence.
 
+<details class="agent-prompt" id="agent-prompt">
+<summary>JS/TS agent prompt</summary>
+
+Copy this into Cursor or another coding agent. It wraps user-facing literals. It does not translate them.
+
+````markdown
+# Wrap user-facing JS/TS strings in t()
+
+## Context
+
+ai-i18n-tools extracts only string literals passed to `t()` or `i18n.t()`. The
+literal is the source-language sentence and the catalog key (`t("Save")`, not
+`t("saveButton")`). After this edit the app must behave the same when the active
+locale is the source locale. Do not translate any string.
+
+Bootstrap and call-shape reference:
+https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/i18next-runtime
+https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/t-calls-and-plurals
+
+## Scope
+
+Read `ui.sourceRoots` in `ai-i18n-tools.config.json` and edit only those trees
+(JS/JSX/TS/TSX). Skip `className`, URLs and routes, import paths, ids, test ids,
+enum and error codes, object keys used as identifiers, log field names, CSS,
+regexes, comments, and text that is already inside `t()` or `i18n.t()`.
+
+## Call shape
+
+Install `i18next`. Install `react-i18next` when a component uses
+`useTranslation()`. Run `ai-i18n-tools extract` once so `strings.json` and
+`ui-languages.json` exist, then add the bootstrap from the Wire i18next guide.
+`SOURCE_LOCALE` must equal config `sourceLocale`.
+
+- React components: `const { t } = useTranslation()` and `{t("Save")}`.
+- Module-level constants and non-React files: `i18n.t("…")`. Move a constant
+  that would call `t()` at import time into a function or `useMemo(..., [t])`.
+- Placeholders: `t("Hello {{name}}", { name })`. No template literal as a key.
+- Plurals: `t("{{count}} items", { plurals: true, count })`.
+- Next.js: import the bootstrap from a client module before render. Do not call
+  `changeLanguage` on a shared i18next instance inside a server component. Use a
+  per-request `createInstance()`, or a stateless flat-bundle lookup.
+
+Before:
+
+```jsx
+<button>Save</button>
+```
+
+After:
+
+```jsx
+<button>{t("Save")}</button>
+```
+
+Before:
+
+```js
+console.log(`Hello ${name}`);
+```
+
+After:
+
+```js
+console.log(t("Hello {{name}}", { name }));
+```
+
+## Order
+
+1. Install the libraries.
+2. Run `ai-i18n-tools extract` once.
+3. Add the bootstrap.
+4. Wrap call sites.
+5. Run `ai-i18n-tools extract` again. Do not run a translation yourself and do
+   not hand-edit catalogs.
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not introduce semantic keys (`saveButton`, `nav.home`).
+- Do not hand-edit `strings.json`, flat locale JSON, or `ui-languages.json`.
+- Do not change behaviour, layout, or test selectors.
+
+## Verify
+
+- `ai-i18n-tools extract` writes a non-empty catalog of the sentences you
+  wrapped.
+- The project's build, type check, and tests pass.
+- With the source locale active, every wrapped string still shows the original
+  sentence. Switch one target locale after `translate-ui` and confirm those
+  sentences change.
+
+## Report back
+
+List files changed, each string you deliberately skipped with a one-line reason,
+and any ambiguous case you left for a human (the same word used with different
+meanings, concatenated sentences, or a plural you were not sure about).
+````
+
+</details>
+
+
 JSX:
 
 ```jsx
@@ -140,6 +241,8 @@ Restore a saved locale before the first render, as described in [Wire i18next](/
 
 Re-run `sync` after changing source text. The cache means only new or changed strings go to the model. Add the scripts from [Recommended package.json scripts](/guide/quick-start#recommended-packagejson-scripts), and run `sync` in CI so translations do not drift.
 
+The default `init` template also translates `README.md`. See [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
+
 <a id="coming-from-another-tool"></a>
 ## Coming from another tool
 
@@ -157,81 +260,4 @@ ai-i18n-tools includes its own string extractor. If you used `i18next-scanner`, 
 | One HTML file | [Plain HTML](/guide/ui-strings/plain-html) and `mark-html` |
 | Doc sites, or Astro page HTML | [Add i18n to a website or docs site](/guide/add-i18n-to-website) and [Astro website](/guide/ui-strings/astro-website). `t()` is only for shared data and frontmatter |
 | A Python app | [Add i18n to a Python app](/guide/add-i18n-to-python) |
-
-<a id="agent-prompt"></a>
-## Agent prompt
-
-Copy this into Cursor or another coding agent. It wraps user-facing literals. It does not translate them.
-
-````markdown
-# Wrap user-facing JS/TS strings in t()
-
-## Context
-
-ai-i18n-tools extracts only string literals passed to `t()` or `i18n.t()`. The literal is the source-language sentence and the catalog key (`t("Save")`, not `t("saveButton")`). After this edit the app must behave the same when the active locale is the source locale. Do not translate any string.
-
-Bootstrap and call-shape reference: https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/i18next-runtime and https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/t-calls-and-plurals
-
-## Scope
-
-Read `ui.sourceRoots` in `ai-i18n-tools.config.json` and edit only those trees (JS/JSX/TS/TSX). Skip `className`, URLs and routes, import paths, ids, test ids, enum and error codes, object keys used as identifiers, log field names, CSS, regexes, comments, and text that is already inside `t()` or `i18n.t()`.
-
-## Call shape
-
-Install `i18next`. Install `react-i18next` when a component uses `useTranslation()`. Run `ai-i18n-tools extract` once so `strings.json` and `ui-languages.json` exist, then add the bootstrap from the Wire i18next guide. `SOURCE_LOCALE` must equal config `sourceLocale`.
-
-- React components: `const { t } = useTranslation()` and `{t("Save")}`.
-- Module-level constants and non-React files: `i18n.t("…")`. Move a constant that would call `t()` at import time into a function or `useMemo(..., [t])`.
-- Placeholders: `t("Hello {{name}}", { name })`. No template literal as a key.
-- Plurals: `t("{{count}} items", { plurals: true, count })`.
-- Next.js: import the bootstrap from a client module before render. Do not call `changeLanguage` on a shared i18next instance inside a server component. Use a per-request `createInstance()`, or a stateless flat-bundle lookup.
-
-Before:
-
-```jsx
-<button>Save</button>
-```
-
-After:
-
-```jsx
-<button>{t("Save")}</button>
-```
-
-Before:
-
-```js
-console.log(`Hello ${name}`);
-```
-
-After:
-
-```js
-console.log(t("Hello {{name}}", { name }));
-```
-
-## Order
-
-1. Install the libraries.
-2. Run `ai-i18n-tools extract` once.
-3. Add the bootstrap.
-4. Wrap call sites.
-5. Run `ai-i18n-tools extract` again. Do not run a translation yourself and do not hand-edit catalogs.
-
-## Do not
-
-- Do not translate, rename, or reword the source text.
-- Do not introduce semantic keys (`saveButton`, `nav.home`).
-- Do not hand-edit `strings.json`, flat locale JSON, or `ui-languages.json`.
-- Do not change behaviour, layout, or test selectors.
-
-## Verify
-
-- `ai-i18n-tools extract` writes a non-empty catalog of the sentences you wrapped.
-- The project's build, type check, and tests pass.
-- With the source locale active, every wrapped string still shows the original sentence. Switch one target locale after `translate-ui` and confirm those sentences change.
-
-## Report back
-
-List files changed, each string you deliberately skipped with a one-line reason, and any ambiguous case you left for a human (the same word used with different meanings, concatenated sentences, or a plural you were not sure about).
-````
+| A repository README or other Markdown files | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) |

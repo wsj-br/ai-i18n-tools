@@ -4,14 +4,14 @@
 Keeping [Intlayer](https://intlayer.org/) and only need the translations filled in? `translate-intlayer` translates the missing and stale locale leaves inside your `*.content.ts` dictionaries, in place. Your dictionaries stay the source of truth, Intlayer stays at runtime, and ai-i18n-tools acts as the translation engine (provider selection, glossary, translation context, and model fallback).
 
 <a id="which-one"></a>
-## Migrate off, or translate in place?
+## Translate in place, or migrate off?
 
 | Your goal | Command | Guide |
 | --- | --- | --- |
-| Move the app off Intlayer onto ai-i18n-tools' `t('English source')` schema | `migrate-intlayer` | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
 | Keep Intlayer and fill the missing translations | `translate-intlayer` | this page |
+| Move the app off Intlayer onto ai-i18n-tools' `t('English source')` schema | `migrate-intlayer` | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
 
-`migrate-intlayer` is a one-time move: it rewrites call sites and leaves Intlayer behind. `translate-intlayer` is an ongoing task you re-run whenever you add source strings or edit existing ones.
+`translate-intlayer` is an ongoing task you re-run whenever you add source strings or edit existing ones. `migrate-intlayer` is a one-time move: it rewrites call sites and leaves Intlayer behind.
 
 <a id="what-translate-intlayer-does"></a>
 ## What `translate-intlayer` does

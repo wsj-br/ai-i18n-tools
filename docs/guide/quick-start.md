@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Quick start
 
-This page takes a project that speaks one language to its first translated files. It is for a JS/TS app, a Python app, or a website or documentation site. It assumes:
+This page takes a project that speaks one language to its first translated files. It is for a JS/TS app, a Python app, a website or documentation site, or a repository README and other Markdown files. It assumes:
 
 - Node.js `>=22.16.0`, or the [standalone executable](/guide/installation#standalone-executables) for a Python project.
 - An API key for an LLM provider, or a local Ollama install.
@@ -95,6 +95,19 @@ ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
 Your framework must have its own i18n routing enabled first. Then follow [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+
+<a id="a-readme-or-markdown-docs"></a>
+### A README or Markdown docs
+
+Most repositories want this together with the app: the default `ui-markdown` template already includes a flat README block. For any other template, add `--with-readme`. A repository with only Markdown uses `docs-markdown`.
+
+```bash
+ai-i18n-tools init -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t docs-markdown -P openrouter
+```
+
+Then follow [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Paste the language-list marker into `README.md` before `sync`. The app path, when you have one, is still [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python).
 
 <a id="something-else"></a>
 ### Something else
