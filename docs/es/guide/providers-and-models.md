@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # Proveedores de LLM
 
 Cada pipeline de traducción —`translate-ui`, `translate-docs`, `translate-json` y `translate-svg`— envía texto a un LLM a través del mismo cliente independiente del proveedor. Antes de que cualquiera de esos comandos pueda ejecutarse, configure **al menos un proveedor** en `ai-i18n-tools.config.json` y establezca la **clave API** correspondiente en su entorno o `.env` (ajustes preestablecidos integrados excepto **Ollama**). `init` escribe un bloque inicial `provider` / `providers`; aún debe proporcionar credenciales para el ajuste preestablecido activo.
@@ -37,8 +37,8 @@ Para cualquier clave **no preestablecida**, configure `baseUrl` y `apiKeyEnv` ex
 
 Establezca la clave de API del proveedor activo en su entorno o en el archivo `.env`. La CLI carga automáticamente `.env` desde el directorio de trabajo sin anular las variables ya establecidas en el shell. Consulte [Variables de entorno](/es/reference/environment-variables).
 
-<a id="cheaperinference-zero-data-retention"></a>
-### Retención de datos cero (Inferencia más económica)
+<a id="zero-data-retention-cheaper-inference"></a>
+### Sin retención de datos (inferencia más económica)
 
 `providers.cheaperinference.zeroDataRetention` es opcional y está desactivado por defecto. Actívalo cuando este proyecto deba enviar las indicaciones solo a través de proveedores que no las conserven.
 
@@ -54,7 +54,7 @@ Con el indicador activado, cada solicitud de chat incluye `"zdr": true`, y `list
 Deja la opción desactivada cuando la cuenta de Inferencia más económica no requiera retención de datos cero. Si la [Protección de datos](https://platform.cheaperinference.com/dashboard/data-protection) ya está activada para la cuenta, Inferencia más económica sigue rechazando un modelo sin una ruta de retención de datos cero. El error nombra a ese modelo. Para mantener la política de la cuenta, establece `zeroDataRetention` en `true` y cambia a un modelo del catálogo de retención de datos cero. Para mantener el modelo rechazado, desactiva la retención de datos cero en esa página. La cadena de reserva intenta entonces el siguiente modelo configurado.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### Modelos
 
 La elección de modelos, la lista de respaldo y `suggest-models`, `check-models`, `list-models` y `bench-models` están en [Modelos de IA](/es/guide/ai-models).

@@ -261,7 +261,8 @@ function wrapIfInsertion(source: string, object: ObjectExpression, literal: stri
 function buildOverwrite(prop: ObjectProperty, literal: string): Edit | null {
   const insertCall = asInsertCall(unwrapTs(prop.value as Expression));
   const arg = insertCall?.arguments[0];
-  const value = arg && arg.type !== "SpreadElement" && arg.type !== "ArgumentPlaceholder" ? arg : prop.value;
+  const value =
+    arg && arg.type !== "SpreadElement" && arg.type !== "ArgumentPlaceholder" ? arg : prop.value;
   const start = value.start;
   const end = value.end;
   if (start === null || start === undefined || end === null || end === undefined) {

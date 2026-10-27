@@ -5,11 +5,11 @@
 
 使用 `suggest-models` 或在翻译信息中心的 **模型** 下使用相同的排名，为该项目选择列表。两者都会根据已发布的基准对当前提供商的聊天模型进行排名，并可将结果写入 `translationModels`。请先设置提供商及其 API 密钥：[LLM 提供商](/zh-Hans/guide/providers-and-models)。
 
-<a id="suggest-models"></a>
+<a id="start-with-a-ranked-shortlist"></a>
 ## 从排名候选列表开始
 
-<a id="suggest-models-cli"></a>
-### 通过命令行
+<a id="from-the-command-line"></a>
+### 从命令行
 
 `suggest-models` 会对当前提供商目前提供的聊天模型进行排名，并打印一个简短的表格。默认按质量排名：翻译测量值和通用偏好分数比价格更重要。
 
@@ -29,8 +29,8 @@ ai-i18n-tools suggest-models --apply
 
 `--price` 会优先选择费率较低的模型，但仍会保持质量底线，因此没有测量值的廉价模型会排在有分数的模型之后。`--quality` 是默认设置。同时传递这两个标志会引发错误。
 
-<a id="suggest-models-dashboard"></a>
-### 通过信息中心
+<a id="from-the-dashboard"></a>
+### 从仪表板
 
 **模型** 标签页会显示相同的排名，每行都有一个复选框。
 
@@ -42,8 +42,8 @@ ai-i18n-tools dashboard
 
 **最高输出价格** 和 **最小指数增量** 与 `suggest-models --max-output-price` 和 `--min-delta` 相匹配。控件和列：[“模型”标签页](/zh-Hans/guide/translation-dashboard/models)。
 
-<a id="how-models-are-ranked"></a>
-### 排名如何选择
+<a id="how-the-ranking-chooses"></a>
+### 排名选择方式
 
 该候选列表是提供商实时聊天产品目录的基准排名。首次运行会下载三个公共数据集，可能需要一些时间。后续运行会重复使用位于 `<cacheDir>/benchmark-scores.json`（通常是 `.translation-cache/benchmark-scores.json`）的 7 天缓存。
 
@@ -61,8 +61,8 @@ ChrF 使用 languagebench 为您的 `sourceLocale` 和 `targetLocales` 提供的
 
 所有标志（包括 `--json`、`--list`）和分数公式：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
-<a id="why-more-than-one-model"></a>
-## 为什么列表中有多个模型
+<a id="why-the-list-has-more-than-one-model"></a>
+## 为什么列表包含多个模型
 
 <a id="model-fallback-chain"></a>
 ### 模型回退链
@@ -115,7 +115,7 @@ ChrF 使用 languagebench 为您的 `sourceLocale` 和 `targetLocales` 提供的
 
 来自 `init` 的预设列表和字段参考：[配置 — `provider` 和 `providers`](/zh-Hans/reference/configuration#provider-and-providers)。
 
-<a id="validate-and-compare-models"></a>
+<a id="check-list-and-benchmark"></a>
 ## 检查、列出和基准测试
 
 一旦候选列表在配置中，这些命令就会检查它。您可以在使用它们之前运行翻译。

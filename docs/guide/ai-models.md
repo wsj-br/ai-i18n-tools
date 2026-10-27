@@ -5,10 +5,10 @@ A model is one named system on your provider, such as `google/gemini-2.5-flash` 
 
 Choose the list for this project with `suggest-models`, or with the same ranking in the Translation Dashboard under **Models**. Both rank the active provider's chat models from published benchmarks and can write the result into `translationModels`. Set up the provider and its API key first: [LLM providers](/guide/providers-and-models).
 
-<a id="suggest-models"></a>
+<a id="start-with-a-ranked-shortlist"></a>
 ## Start with a ranked shortlist
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### From the command line
 
 `suggest-models` ranks the chat models the active provider currently offers and prints a short table. Quality is the default: translation measurements and a general preference score count more than price.
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` leads with a lower rate and still keeps a quality floor, so a cheap model with no measurement stays below models that have scores. `--quality` is the default. Passing both flags is an error.
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### From the dashboard
 
 The **Models** tab shows the same ranking, with a checkbox on each row.
@@ -42,7 +42,7 @@ Open **Models**. Choose **Quality** or **Price**. Check the rows you want. Check
 
 **Max output price** and **Min index delta** match `suggest-models --max-output-price` and `--min-delta`. Controls and columns: [Models tab](/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
+<a id="how-the-ranking-chooses"></a>
 ### How the ranking chooses
 
 The shortlist is a benchmark ranking of the provider's live chat catalog. The first run downloads three public datasets and can take a while. Later runs reuse the 7-day cache at `<cacheDir>/benchmark-scores.json` (usually `.translation-cache/benchmark-scores.json`).
@@ -61,7 +61,7 @@ Quality, the default profile, weights ChrF and Arena Score above price. Price re
 
 Every flag, including `--json`, `--list`, and the score formula: [suggest-models](/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## Why the list has more than one model
 
 <a id="model-fallback-chain"></a>
@@ -115,7 +115,7 @@ Example (OpenRouter). The ids show the shape of the three lists. Take `translati
 
 Preset lists from `init`, and the field reference: [Configuration — `provider` and `providers`](/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
+<a id="check-list-and-benchmark"></a>
 ## Check, list, and benchmark
 
 Once the shortlist is in config, these commands inspect it. Translation can run before you use them.

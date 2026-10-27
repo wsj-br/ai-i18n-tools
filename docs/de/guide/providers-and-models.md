@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # LLM-Anbieter
 
 Jede Übersetzungspipeline – `translate-ui`, `translate-docs`, `translate-json` und `translate-svg` – sendet Text über denselben anbieterunabhängigen Client an ein LLM. Bevor einer dieser Befehle ausgeführt werden kann, konfigurieren Sie **mindestens einen Anbieter** in `ai-i18n-tools.config.json` und legen Sie den passenden **API-Schlüssel** in Ihrer Umgebung oder in `.env` fest (integrierte Voreinstellungen außer **Ollama**). `init` schreibt einen Startblock `provider` / `providers`; Sie müssen weiterhin Anmeldeinformationen für die aktive Voreinstellung angeben.
@@ -37,8 +37,8 @@ Für jeden **nicht voreingestellten** Schlüssel legen Sie `baseUrl` und `apiKey
 
 Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der Datei `.env` fest. Die CLI lädt `.env` automatisch aus dem Arbeitsverzeichnis, ohne bereits in der Shell festgelegte Variablen zu überschreiben. Siehe [Umgebungsvariablen](/de/reference/environment-variables).
 
-<a id="cheaperinference-zero-data-retention"></a>
-### Null-Datenaufbewahrung (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### Keine Datenspeicherung (günstigere Inferenz)
 
 `providers.cheaperinference.zeroDataRetention` ist optional und standardmäßig deaktiviert. Aktivieren Sie sie, wenn dieses Projekt Prompts nur über Anbieter senden soll, die diese nicht speichern.
 
@@ -54,7 +54,7 @@ Wenn das Flag aktiviert ist, enthält jede Chat-Anfrage `"zdr": true`, und `list
 Lassen Sie das Flag deaktiviert, wenn das Cheaper Inference-Konto keine Null-Datenaufbewahrung erfordert. Wenn [Datenschutz](https://platform.cheaperinference.com/dashboard/data-protection) für das Konto bereits aktiviert ist, lehnt Cheaper Inference ein Modell ohne Route für Null-Datenaufbewahrung weiterhin ab. Die Fehlermeldung nennt dieses Modell. Um die Kontorichtlinie beizubehalten, setzen Sie `zeroDataRetention` auf `true` und wechseln Sie zu einem Modell aus dem Katalog für Null-Datenaufbewahrung. Um das abgelehnte Modell beizubehalten, deaktivieren Sie die Null-Datenaufbewahrung auf dieser Seite. Die Fallback-Kette versucht dann das nächste konfigurierte Modell.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### Modelle
 
 Die Auswahl der Modelle, die Fallback-Liste und `suggest-models`, `check-models`, `list-models` und `bench-models` finden Sie unter [KI-Modelle](/de/guide/ai-models).

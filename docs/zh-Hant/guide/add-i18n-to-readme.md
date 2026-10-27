@@ -145,7 +145,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 將混合式範例中的 `docs` 物件附加進來，並將 `features.translateDocs` 設為 `true`。如果設定檔中已有 `docs` 陣列（例如 VitePress 或 Docusaurus 網站），請將 README 物件作為第二個項目附加。`sync` 會執行每個區塊。[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 就是這樣做的：一個區塊用於文件網站，一個扁平區塊用於 `README.md`。
 
-<a id="language-list"></a>
+<a id="add-the-language-list"></a>
 ## 新增語言清單
 
 將此行放入 `README.md` 中，讀者應會在此處看到其他語言。其上一行的簡短標籤是一般文字，將會被翻譯。
@@ -239,8 +239,8 @@ jobs:
 
 使用您設定的提供者對應的環境變數。除非您在託管的執行器上安裝 Ollama，否則它不會在上面運作。
 
-<a id="quality"></a>
-## 註明翻譯為自動翻譯
+<a id="say-that-the-translation-is-automatic"></a>
+## 說明此為自動翻譯
 
 AI 翻譯可能有誤。在 README 底部加上簡短的註解，就像 [此存放庫的 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 中的註解一樣，告訴讀者其他語言是機器翻譯的，並且在使用前應先檢查。
 

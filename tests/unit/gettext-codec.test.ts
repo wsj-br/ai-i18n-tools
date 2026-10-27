@@ -243,8 +243,12 @@ print(tr.ngettext("1 file", "{count} files", 2))
           },
         ],
       });
-      expect(catalog.entries.some((entry) => entry.msgid === "Hello" && !entry.obsolete)).toBe(true);
-      expect(catalog.entries.some((entry) => entry.msgid === "Unused" && entry.obsolete)).toBe(true);
+      expect(catalog.entries.some((entry) => entry.msgid === "Hello" && !entry.obsolete)).toBe(
+        true
+      );
+      expect(catalog.entries.some((entry) => entry.msgid === "Unused" && entry.obsolete)).toBe(
+        true
+      );
       expect(catalog.entries.some((entry) => entry.msgid === "Gone" && entry.obsolete)).toBe(true);
 
       const rows = poEntriesFromCatalog(

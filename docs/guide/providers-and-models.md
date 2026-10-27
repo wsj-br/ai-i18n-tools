@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # LLM providers
 
 Every translation pipeline — `translate-ui`, `translate-docs`, `translate-json`, and `translate-svg` — sends text to an LLM through the same provider-agnostic client. Before any of those commands can run, configure **at least one provider** in `ai-i18n-tools.config.json` and set the matching **API key** in your environment or `.env` (built-in presets except **Ollama**). `init` writes a starter `provider` / `providers` block; you still must supply credentials for the active preset.
@@ -37,7 +37,7 @@ For any **non-preset** key, set `baseUrl` and `apiKeyEnv` explicitly in config.
 
 Set the active provider's API key in your environment or `.env` file. The CLI auto-loads `.env` from the working directory without overriding variables already set in the shell. See [Environment variables](/reference/environment-variables).
 
-<a id="cheaperinference-zero-data-retention"></a>
+<a id="zero-data-retention-cheaper-inference"></a>
 ### Zero data retention (Cheaper Inference)
 
 `providers.cheaperinference.zeroDataRetention` is optional and defaults to off. Set it when this project must send prompts only through providers that do not keep them.
@@ -54,7 +54,7 @@ With the flag on, every chat request includes `"zdr": true`, and `list-models`, 
 Leave the flag off when the Cheaper Inference account does not require zero data retention. If [Data Protection](https://platform.cheaperinference.com/dashboard/data-protection) is already on for the account, Cheaper Inference still refuses a model with no zero-data-retention route. The error names that model. To keep the account policy, set `zeroDataRetention` to `true` and switch to a model from the zero-data-retention catalog. To keep the refused model, turn zero data retention off on that page. The fallback chain then tries the next configured model.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### Models
 
 Choosing models, the fallback list, and `suggest-models`, `check-models`, `list-models`, and `bench-models` are on [AI Models](/guide/ai-models).

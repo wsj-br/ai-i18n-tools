@@ -27,7 +27,9 @@ describe("writeIntlayerContentFile", () => {
     ]);
     expect(result.changed).toBe(true);
     expect(result.appliedDotPaths).toEqual(["servers"]);
-    expect(result.output).toContain(`servers: t({\n      en: "Servers",\n      de: "Server",\n    })`);
+    expect(result.output).toContain(
+      `servers: t({\n      en: "Servers",\n      de: "Server",\n    })`
+    );
     expect(result.missingDotPaths).toEqual([]);
   });
 
@@ -141,6 +143,8 @@ describe("writeIntlayerContentFile", () => {
     const result = writeIntlayerContentFile(DICT, [
       { dotPath: "servers", localeKey: "de", text: "Server" },
     ]);
-    expect(result.output).toContain(`heading: t({\n      en: "Overview",\n      de: "Übersicht",\n    })`);
+    expect(result.output).toContain(
+      `heading: t({\n      en: "Overview",\n      de: "Übersicht",\n    })`
+    );
   });
 });

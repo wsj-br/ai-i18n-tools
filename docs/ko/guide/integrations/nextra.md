@@ -106,8 +106,8 @@ JSON 사이드카(`i18n/meta.en.json`) 또는 번역된 JSON을 가져오는 얇
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/`의 영어 소스, 커밋된 `pt-BR` 및 `zh-Hans` 페이지 트리, 인라인 `_meta.ts` 파일, `app/_dictionaries/{locale}.ts`. 하나의 서버 컴포넌트(`app/_components/feedback-links.tsx`)는 플랫 번들 조회를 통해 `t()`을 사용하여 사용자 지정 크롬이 사전 옆에 위치할 수 있도록 합니다. 3070 포트에서 `pnpm run dev`을 실행하세요.
 
-<a id="agent-prompt-dictionary"></a>
-## 에이전트 프롬프트: 사전 및 라우트
+<a id="agent-prompt-dictionary-and-routes"></a>
+## 에이전트 프롬프트: 사전 및 경로
 
 사이트에 아직 하드코딩된 레이아웃 문자열과 `content/en/` 트리가 없는 경우 이 프롬프트를 사용하세요. 기본 경로(사전 + `_meta.ts` + `translate-docs`)를 따릅니다. `t()`은 도입하지 않습니다.
 

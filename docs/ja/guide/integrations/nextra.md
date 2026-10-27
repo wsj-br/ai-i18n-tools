@@ -106,8 +106,8 @@ JSON サイドカー (`i18n/meta.en.json`) や、翻訳された JSON をイン�
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/` にある英語のソース、コミット済みの `pt-BR` と `zh-Hans` のページツリー、インラインの `_meta.ts` ファイル、および `app/_dictionaries/{locale}.ts`。1つのサーバーコンポーネント (`app/_components/feedback-links.tsx`) がフラットバンドルルックアップを介して `t()` を使用するため、カスタムUI (chrome) を辞書の横に配置できます。ポート3070で `pnpm run dev` を実行してください。
 
-<a id="agent-prompt-dictionary"></a>
-## エージェントプロンプト: 辞書とルート
+<a id="agent-prompt-dictionary-and-routes"></a>
+## エージェント プロンプト: 辞書とルート
 
 サイトにまだハードコードされたレイアウト文字列があり、`content/en/` ツリーがない場合に使用します。これはデフォルトのパス (辞書 + `_meta.ts` + `translate-docs`) に従います。`t()` は導入しません。
 

@@ -106,8 +106,8 @@ Opcional: anule la recopilación con `docs[].nextraMetaGlob` o restrinja los nom
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — Fuentes en inglés en `content/en/`, árboles de páginas `pt-BR` y `zh-Hans` confirmados, archivos `_meta.ts` en línea y `app/_dictionaries/{locale}.ts`. Un componente de servidor (`app/_components/feedback-links.tsx`) usa `t()` a través de una búsqueda de paquete plano para que el cromo personalizado pueda estar junto al diccionario. Ejecute `pnpm run dev` en el puerto 3070.
 
-<a id="agent-prompt-dictionary"></a>
-## Indicación del agente: diccionario y rutas
+<a id="agent-prompt-dictionary-and-routes"></a>
+## Prompt del agente: diccionario y rutas
 
 Use esto cuando el sitio todavía tenga cadenas de diseño codificadas y ningún árbol `content/en/`. Sigue la ruta predeterminada (diccionario + `_meta.ts` + `translate-docs`). No introduce `t()`.
 

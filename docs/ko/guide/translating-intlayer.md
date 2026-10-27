@@ -1,10 +1,10 @@
-<a id="translating-intlayer"></a>
-# Intlayer 인플레이스 번역
+<a id="translating-intlayer-in-place"></a>
+# Intlayer를 제자리에서 번역하기
 
 [Intlayer](https://intlayer.org/)는 형식화된 콘텐츠 사전에 번역을 보관하거나 번역 관리 시스템 및 인력 번역을 사용하는 애플리케이션에 좋은 솔루션입니다. `translate-intlayer`는 이러한 사용자를 위한 것입니다. 이 도구는 `*.content.ts` 사전 내에서 누락되거나 오래된 로캘 리프를 인플레이스 방식으로 채웁니다. 사전은 신뢰할 수 있는 단일 소스로 유지되고, Intlayer는 런타임에 유지되며, ai-i18n-tools는 번역 엔진(공급자 선택, 용어집, 번역 컨텍스트, 모델 폴백) 역할을 합니다.
 
-<a id="which-one"></a>
-## Intlayer를 유지할 것인가, 소스 문자열 호출로 이전할 것인가?
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
+## Intlayer 유지 또는 소스 문자열 호출로 이동?
 
 | 대상 사용자 | 명령어 | 가이드 |
 | --- | --- | --- |

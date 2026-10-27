@@ -145,7 +145,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 하이브리드 예시에서 `docs` 객체를 추가하고 `features.translateDocs`을 `true`로 설정합니다. 구성에 이미 `docs` 배열(예: VitePress 또는 Docusaurus 사이트)이 있는 경우, README 객체를 두 번째 항목으로 추가합니다. `sync`는 모든 블록을 실행합니다. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)은 다음과 같이 합니다: 문서 사이트용 블록 하나, `README.md`용 플랫 블록 하나.
 
-<a id="language-list"></a>
+<a id="add-the-language-list"></a>
 ## 언어 목록 추가
 
 독자들이 다른 언어를 볼 수 있도록 이 줄을 `README.md`에 넣으세요. 그 위에 있는 짧은 레이블은 일반적인 산문이며 번역될 것입니다.
@@ -239,8 +239,8 @@ jobs:
 
 구성한 공급자의 환경 변수를 사용하세요. Ollama는 호스팅된 러너에 설치하지 않으면 적용되지 않습니다.
 
-<a id="quality"></a>
-## 번역이 자동임을 명시
+<a id="say-that-the-translation-is-automatic"></a>
+## 자동 번역임을 알리기
 
 AI 번역은 틀릴 수 있습니다. [이 저장소의 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)에 있는 것과 같이 README 하단에 짧은 메모를 추가하여 독자들에게 다른 언어는 기계 번역되었으며 의존하기 전에 확인해야 한다고 알립니다.
 

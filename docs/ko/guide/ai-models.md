@@ -5,10 +5,10 @@
 
 `suggest-models`를 사용하거나 번역 대시보드의 **모델** 아래에서 동일한 순위를 사용하여 이 프로젝트의 목록을 선택하세요. 두 방법 모두 게시된 벤치마크를 기준으로 활성 공급자의 채팅 모델 순위를 매기고 그 결과를 `translationModels`에 쓸 수 있습니다. 먼저 공급자와 해당 API 키를 설정하세요. [LLM 공급자](/ko/guide/providers-and-models).
 
-<a id="suggest-models"></a>
-## 순위가 매겨진 후보 목록으로 시작하기
+<a id="start-with-a-ranked-shortlist"></a>
+## 순위별 최종 후보 목록으로 시작
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### 명령줄에서
 
 `suggest-models`는 활성 공급자가 현재 제공하는 채팅 모델의 순위를 매기고 간단한 표를 출력합니다. 기본값은 품질입니다. 번역 측정값과 일반 선호도 점수가 가격보다 더 중요하게 고려됩니다.
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price`는 더 낮은 요금을 우선으로 하면서도 최소한의 품질을 유지하므로, 측정값이 없는 저렴한 모델은 점수가 있는 모델보다 순위가 낮습니다. `--quality`이 기본값입니다. 두 플래그를 모두 전달하면 오류가 발생합니다.
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### 대시보드에서
 
 **모델** 탭에는 동일한 순위가 표시되며 각 행에 확인란이 있습니다.
@@ -42,8 +42,8 @@ ai-i18n-tools dashboard
 
 **최대 출력 가격** 및 **최소 지수 델타**는 `suggest-models --max-output-price` 및 `--min-delta`과 일치합니다. 컨트롤 및 열: [모델 탭](/ko/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
-### 순위 선정 방식
+<a id="how-the-ranking-chooses"></a>
+### 순위 선택 방식
 
 후보 목록은 공급자의 실시간 채팅 카탈로그에 대한 벤치마크 순위입니다. 처음 실행 시에는 세 개의 공개 데이터 세트를 다운로드하므로 시간이 걸릴 수 있습니다. 이후 실행 시에는 `<cacheDir>/benchmark-scores.json`(일반적으로 `.translation-cache/benchmark-scores.json`)에 있는 7일 캐시를 재사용합니다.
 
@@ -61,8 +61,8 @@ ChrF는 `sourceLocale` 및 `targetLocales`에 대한 languagebench의 번역 점
 
 `--json`, `--list` 및 점수 공식을 포함한 모든 플래그: [suggest-models](/ko/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
-## 목록에 모델이 두 개 이상 있는 이유
+<a id="why-the-list-has-more-than-one-model"></a>
+## 목록에 두 개 이상의 모델이 있는 이유
 
 <a id="model-fallback-chain"></a>
 ### 모델 대체 체인
@@ -115,7 +115,7 @@ ID가 하나이면 단일 장애점이 됩니다. 모델은 시간 초과되거�
 
 `init`의 사전 설정 목록 및 필드 참조: [구성 — `provider` 및 `providers`](/ko/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
+<a id="check-list-and-benchmark"></a>
 ## 확인, 나열 및 벤치마크
 
 최종 후보 목록이 구성에 포함되면 이 명령어로 검사할 수 있습니다. 이 명령어를 사용하기 전에 번역을 실행할 수 있습니다.

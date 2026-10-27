@@ -145,7 +145,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 追加混合示例中的 `docs` 对象，并将 `features.translateDocs` 设置为 `true`。如果配置中已有 `docs` 数组（例如，VitePress 或 Docusaurus 站点），则将 README 对象作为第二个条目追加。`sync` 会运行每个块。[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 就是这样做的：一个块用于文档站点，一个扁平块用于 `README.md`。
 
-<a id="language-list"></a>
+<a id="add-the-language-list"></a>
 ## 添加语言列表
 
 将此行放入 `README.md` 中读者应该能看到其他语言的地方。其上一行的简短标签是普通文本，将会被翻译。
@@ -239,8 +239,8 @@ jobs:
 
 使用为你所配置的提供程序设置的环境变量。除非你在托管的运行器上安装了 Ollama，否则它不会在该运行器上生效。
 
-<a id="quality"></a>
-## 声明翻译是自动的
+<a id="say-that-the-translation-is-automatic"></a>
+## 说明翻译是自动的
 
 AI 翻译可能会出错。在 README 底部添加一条简短的说明（如此仓库的 [README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 中的说明），告知读者其他语言是机器翻译的，在信赖这些翻译内容之前应进行核对。
 

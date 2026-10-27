@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # LLM プロバイダー
 
 すべての翻訳パイプライン — `translate-ui`, `translate-docs`, `translate-json`, および `translate-svg` — は、同じプロバイダ非依存クライアントを介してLLMにテキストを送信します。これらのコマンドを実行する前に、`ai-i18n-tools.config.json`で**少なくとも1つのプロバイダ**を設定し、環境または`.env`に対応する**APIキー**を設定してください（組み込みのプリセットのうち**Ollama**を除く）。`init`は初期設定用の`provider` / `providers`ブロックを書き出しますが、アクティブなプリセットの認証情報は引き続き指定する必要があります。
@@ -37,8 +37,8 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 アクティブなプロバイダーの API キーを環境または `.env` ファイルに設定します。CLI は、シェルですでに設定されている変数を上書きすることなく、作業ディレクトリから `.env` を自動的にロードします。[環境変数](/ja/reference/environment-variables) を参照してください。
 
-<a id="cheaperinference-zero-data-retention"></a>
-### ゼロデータ保持 (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### ゼロデータ保持 (より安価な推論)
 
 `providers.cheaperinference.zeroDataRetention` はオプションであり、デフォルトではオフです。このプロジェクトがプロンプトを保持しないプロバイダーのみを介して送信する必要がある場合に設定します。
 
@@ -54,7 +54,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 Cheaper Inference アカウントでゼロデータ保持が不要な場合は、このフラグをオフのままにしてください。アカウントで [データ保護](https://platform.cheaperinference.com/dashboard/data-protection) がすでにオンになっている場合、Cheaper Inference は、ゼロデータ保持ルートがないモデルを拒否します。エラーはそのモデル名を指定します。アカウントポリシーを維持するには、`zeroDataRetention` を `true` に設定し、ゼロデータ保持カタログのモデルに切り替えてください。拒否されたモデルを維持するには、そのページでゼロデータ保持をオフにしてください。フォールバックチェーンは、次に設定されたモデルを試行します。
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### モデル
 
 モデルの選択、フォールバックリスト、および `suggest-models`、`check-models`、`list-models`、`bench-models` は、[AI モデル](/ja/guide/ai-models) に記載されています。

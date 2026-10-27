@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # Provedores de LLM
 
 Cada pipeline de tradução — `translate-ui`, `translate-docs`, `translate-json` e `translate-svg` — envia texto para um LLM através do mesmo cliente agnóstico de provedor. Antes que qualquer um desses comandos possa ser executado, configure **pelo menos um provedor** em `ai-i18n-tools.config.json` e defina a **chave de API** correspondente em seu ambiente ou `.env` (predefinições integradas, exceto **Ollama**). `init` escreve um bloco inicial `provider` / `providers`; você ainda deve fornecer credenciais para a predefinição ativa.
@@ -37,8 +37,8 @@ Para qualquer chave **não predefinida**, defina `baseUrl` e `apiKeyEnv` explici
 
 Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI carrega automaticamente `.env` do diretório de trabalho sem substituir variáveis já definidas no shell. Consulte [Variáveis de ambiente](/pt-BR/reference/environment-variables).
 
-<a id="cheaperinference-zero-data-retention"></a>
-### Retenção zero de dados (Inferência Mais Barata)
+<a id="zero-data-retention-cheaper-inference"></a>
+### Retenção zero de dados (inferência mais barata)
 
 `providers.cheaperinference.zeroDataRetention` é opcional e está desativado por padrão. Defina-o quando este projeto precisar enviar prompts apenas por meio de provedores que não os armazenam.
 
@@ -54,7 +54,7 @@ Com a flag ativada, cada solicitação de chat inclui `"zdr": true`, e `list-mod
 Deixe a flag desativada quando a conta Cheaper Inference não exigir retenção zero de dados. Se a [Proteção de Dados](https://platform.cheaperinference.com/dashboard/data-protection) já estiver ativada para a conta, Cheaper Inference ainda recusa um modelo sem uma rota de retenção zero de dados. O erro nomeia esse modelo. Para manter a política da conta, defina `zeroDataRetention` como `true` e mude para um modelo do catálogo de retenção zero de dados. Para manter o modelo recusado, desative a retenção zero de dados naquela página. A cadeia de fallback então tenta o próximo modelo configurado.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### Modelos
 
 A escolha de modelos, a lista de fallback e `suggest-models`, `check-models`, `list-models` e `bench-models` estão em [Modelos de IA](/pt-BR/guide/ai-models).

@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Aplicações Python
 
 O `ai-i18n-tools` extrai strings de IU de arquivos Python e de arquivos `.ui` do Jinja, Django e Qt e, em seguida, grava em JSON simples com chaves baseadas na string do idioma de origem, em catálogos GNU gettext ou em ambos. O `sourceLocale` pode ser qualquer idioma. O auxiliar de tempo de execução é um `i18n.py` da biblioteca padrão (Python 3.10 ou mais recente). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid e FastAPI chamam esse auxiliar. O Django usa o próprio gettext do Django.
@@ -7,7 +7,7 @@ Como adicionar localidades a um aplicativo de idioma único existente: [Adiciona
 
 Cópias executáveis residem em `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` e `examples/python-gettext`. São projetos Python. Os três primeiros utilizam um virtualenv e `pip install -r requirements.txt`. O `python-gettext` utiliza apenas a biblioteca padrão. Eles não são pacotes npm. O arquivo de lançamento `ai-i18n-tools-python-examples.zip` contém os mesmos quatro diretórios. O tarball npm e o executável independente não contêm.
 
-<a id="init"></a>
+<a id="scaffold"></a>
 ## Scaffold
 
 ```bash
@@ -23,7 +23,7 @@ Traduza também o README do repositório: adicione `--with-readme` ao comando `i
 
 As raízes de verificação ignoram `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` e `.eggs`.
 
-<a id="calls"></a>
+<a id="calls-that-translate"></a>
 ## Chamadas que traduzem
 
 Procure primeiro a entrada do catálogo e, em seguida, interpole.
@@ -74,7 +74,7 @@ Arquivos Gettext usam `msgctxt` para contexto e `msgid` / `msgid_plural` para pl
 
 O `t(..., plurals=True)` com um local de origem em inglês e uma fonte de plural explícita ignora o modelo e armazena `one` / `other` a partir das strings de origem.
 
-<a id="locale"></a>
+<a id="locale-in-each-framework"></a>
 ## Localidade em cada framework
 
 `set_locale` retorna um token `ContextVar`. Redefina-o em `finally`, incluindo middleware FastAPI e Flask, para que solicitações simultâneas não vazem uma localidade.

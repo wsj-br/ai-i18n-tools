@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Python 應用程式
 
 `ai-i18n-tools` 會從 Python、Jinja、Django 和 Qt `.ui` 檔案中擷取 UI 字串，然後寫入以來源語言字串為鍵的扁平 JSON、GNU gettext 目錄，或兩者皆是。`sourceLocale` 可以是任何語言。執行階段協助程式是標準程式庫 `i18n.py` (Python 3.10 或更新版本)。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 會呼叫該協助程式。Django 則使用其自己的 gettext。
@@ -7,8 +7,8 @@
 
 可執行的副本位於 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它們是 Python 專案。前三個使用虛擬環境 (virtualenv) 和 `pip install -r requirements.txt`。`python-gettext` 僅使用標準函式庫。它們不是 npm 套件。發行封存檔 `ai-i18n-tools-python-examples.zip` 包含相同的四個目錄。npm tarball 和獨立執行檔則不包含。
 
-<a id="init"></a>
-## 鷹架 (Scaffold)
+<a id="scaffold"></a>
+## 鷹架
 
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
@@ -23,8 +23,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 
 掃描根目錄會跳過 `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache` 和 `.eggs`。
 
-<a id="calls"></a>
-## 進行翻譯的呼叫
+<a id="calls-that-translate"></a>
+## 翻譯呼叫
 
 先查詢目錄項目，然後進行插值。
 
@@ -74,7 +74,7 @@ Gettext 檔案使用 `msgctxt` 作為內容，並使用 `msgid` / `msgid_plural`
 
 `t(..., plurals=True)` 若具有英文來源地區設定和明確的複數來源，將會跳過模型並儲存來自來源字串的 `one` / `other`。
 
-<a id="locale"></a>
+<a id="locale-in-each-framework"></a>
 ## 各框架中的地區設定
 
 `set_locale` 會傳回 `ContextVar` 權杖。請在 `finally` 中重設它，包含 FastAPI 和 Flask 中介軟體，以確保並行請求不會洩漏地區設定。

@@ -36,7 +36,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call th
 
 Read `?lang=` or `Accept-Language` in middleware, call `set_locale`, and `reset_locale` in `finally` so concurrent requests keep their own locale. Details: [Locale — FastAPI](/guide/ui-strings/python#fastapi).
 
-<a id="flask"></a>
+<a id="flask-and-pyramid"></a>
 ### Flask and Pyramid
 
 The [python-flask](/examples#python-flask) example uses flat JSON. `init -t ui-python-flask` is the gettext layout under `translations/` for an app that already uses Flask-Babel-style catalogs. Either way, set the locale from the request and inject `_`, `t`, `current_locale`, `ui_languages`, and `direction` into the template context. Pyramid uses the same request-scoped pattern. Details: [Locale — Flask and Pyramid](/guide/ui-strings/python#flask).
@@ -46,12 +46,12 @@ The [python-flask](/examples#python-flask) example uses flat JSON. `init -t ui-p
 
 Keep `gettext`, `ngettext`, and `{% blocktrans %}`. `init -t ui-python-django` matches Django's `locale/` directory and the `django` domain, and leaves Django's runtime in place. Details: [Locale — Django](/guide/ui-strings/python#django).
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### Existing gettext
 
 Leave `_()`, `gettext()`, and `ngettext()` in place. Point `ui.gettext` at the current catalog tree and run `extract`, then `translate-ui`. The [python-gettext](/examples#python-gettext) example is gettext-only (`flatOutput: false`). `init -t ui-python-gettext` also writes flat JSON. Details: [Locale — Existing gettext](/guide/ui-strings/python#gettext).
 
-<a id="desktop"></a>
+<a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt, and PyWebView
 
 Call `t()` or `_()` when creating each Tkinter widget, then rebuild the visible text after `set_locale`. PyQt and PySide `self.tr("...")` calls are extracted, and Qt `.ui` files contribute `<string>` elements unless `notr="true"`. For PyWebView or PyWebKit, extract the Python shell with a template above and extract the HTML page with `data-i18n` markers or with one HTML document per locale. Details: [Locale — Tkinter](/guide/ui-strings/python#tkinter), [PyQt / PySide](/guide/ui-strings/python#pyqt), and [PyWebView](/guide/ui-strings/python#pywebview).

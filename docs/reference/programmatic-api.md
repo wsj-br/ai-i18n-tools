@@ -60,7 +60,7 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |
 
-<a id="python-runtime"></a>
+<a id="python-runtime-i18npy"></a>
 ## Python runtime (`i18n.py`)
 
 `init -t ui-python`, `ui-python-gettext`, and `ui-python-flask` write this module into the project when `i18n.py` is missing. It is a standard-library helper for Python 3.10 or newer. Import it from that file. The functions below are separate from the Node exports in the table above. Django projects keep Django's gettext, so `ui-python-django` does not write `i18n.py`.

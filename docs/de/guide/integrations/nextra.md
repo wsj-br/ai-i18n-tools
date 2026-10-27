@@ -106,7 +106,7 @@ Erstellen Sie **keine** JSON-Sidecars (`i18n/meta.en.json`) oder dünne `_meta.t
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) – Englische Quellen unter `content/en/`, committete `pt-BR`- und `zh-Hans`-Seitenbäume, Inline-`_meta.ts`-Dateien und `app/_dictionaries/{locale}.ts`. Eine Serverkomponente (`app/_components/feedback-links.tsx`) verwendet `t()` über einen Flat-Bundle-Lookup, sodass benutzerdefiniertes Chrome neben dem Wörterbuch platziert werden kann. Führen Sie `pnpm run dev` auf Port 3070 aus.
 
-<a id="agent-prompt-dictionary"></a>
+<a id="agent-prompt-dictionary-and-routes"></a>
 ## Agent-Prompt: Wörterbuch und Routen
 
 Verwenden Sie dies, wenn die Site noch hartcodierte Layout-Strings und keinen `content/en/`-Baum hat. Es folgt dem Standardpfad (Wörterbuch + `_meta.ts` + `translate-docs`). Es führt kein `t()` ein.

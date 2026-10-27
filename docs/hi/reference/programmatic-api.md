@@ -60,8 +60,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` द्वारा उपयोग किए जाने वाले प्रति अंतर्निहित प्रीसेट के लिए स्टार्टर `translationModels`। |
 | `PROVIDER_PRESETS` | अंतर्निहित प्रदाता प्रीसेट मैप (`baseUrl`, `apiKeyEnv`)। |
 
-<a id="python-runtime"></a>
-## Python रनटाइम (`i18n.py`)
+<a id="python-runtime-i18npy"></a>
+## पाइथन रनटाइम (`i18n.py`)
 
 `init -t ui-python`, `ui-python-gettext`, और `ui-python-flask` इस मॉड्यूल को प्रोजेक्ट में तब लिखते हैं जब `i18n.py` मौजूद न हो। यह Python 3.10 या उससे नए वर्ज़न के लिए एक स्टैंडर्ड-लाइब्रेरी हेल्पर है। इसे उस फ़ाइल से इम्पोर्ट करें। नीचे दिए गए फ़ंक्शन ऊपर दी गई तालिका में मौजूद Node एक्सपोर्ट्स से अलग हैं। Django प्रोजेक्ट्स Django के gettext को बनाए रखते हैं, इसलिए `ui-python-django` को `i18n.py` नहीं लिखना पड़ता है।
 

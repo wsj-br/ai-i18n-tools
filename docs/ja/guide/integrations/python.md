@@ -36,8 +36,8 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWe
 
 ミドルウェアで `?lang=` または `Accept-Language` を読み取り、`set_locale` を呼び出し、`finally` 内で `reset_locale` を実行することで、同時リクエストがそれぞれのロケールを保持できるようにします。詳細は [Locale — FastAPI](/ja/guide/ui-strings/python#fastapi) を参照してください。
 
-<a id="flask"></a>
-### Flask および Pyramid
+<a id="flask-and-pyramid"></a>
+### Flask と Pyramid
 
 [python-flask](/ja/examples#python-flask) の例ではフラットな JSON を使用します。`init -t ui-python-flask` は、すでに Flask-Babel 形式のカタログを使用しているアプリケーション向けの `translations/` 配下の gettext レイアウトです。いずれの場合も、リクエストからロケールを設定し、`_`、`t`、`current_locale`、`ui_languages`、および `direction` をテンプレートコンテキストに注入してください。Pyramid も同様のリクエストスコープのパターンを使用します。詳細: [Locale — Flask and Pyramid](/ja/guide/ui-strings/python#flask)。
 
@@ -46,12 +46,12 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWe
 
 `gettext`、`ngettext`、および `{% blocktrans %}` はそのまま維持してください。`init -t ui-python-django` は Django の `locale/` ディレクトリおよび `django` ドメインと一致し、Django のランタイムをそのまま利用します。詳細: [Locale — Django](/ja/guide/ui-strings/python#django)。
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### 既存の gettext
 
 `_()`、`gettext()`、および `ngettext()` はそのまま維持してください。`ui.gettext` を現在のカタログツリーに向け、`extract` を実行してから `translate-ui` を実行します。[python-gettext](/ja/examples#python-gettext) の例は gettext 専用 (`flatOutput: false`) です。`init -t ui-python-gettext` もフラットな JSON を書き出します。詳細: [Locale — Existing gettext](/ja/guide/ui-strings/python#gettext)。
 
-<a id="desktop"></a>
-### Tkinter、Qt、および PyWebView
+<a id="tkinter-qt-and-pywebview"></a>
+### Tkinter、Qt、PyWebView
 
 各 Tkinter ウィジェットを作成する際に `t()` または `_()` を呼び出し、`set_locale` の後に表示テキストを再構築してください。PyQt および PySide の `self.tr("...")` 呼び出しは抽出され、Qt の `.ui` ファイルは `notr="true"` でない限り `<string>` 要素を提供します。PyWebView または PyWebKit の場合は、上記のテンプレートを使用して Python シェルを抽出し、`data-i18n` マーカーを使用するか、ロケールごとに 1 つの HTML ドキュメントを作成して HTML ページを抽出してください。詳細: [Locale — Tkinter](/ja/guide/ui-strings/python#tkinter)、[PyQt / PySide](/ja/guide/ui-strings/python#pyqt)、および [PyWebView](/ja/guide/ui-strings/python#pywebview)。

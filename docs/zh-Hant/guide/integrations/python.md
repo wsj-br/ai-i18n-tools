@@ -36,8 +36,8 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView �
 
 在中間件中讀取 `?lang=` 或 `Accept-Language`，呼叫 `set_locale`，並在 `finally` 中執行 `reset_locale`，以便並行請求能各自維持其語言環境。詳細資訊：[Locale — FastAPI](/zh-Hant/guide/ui-strings/python#fastapi)。
 
-<a id="flask"></a>
-### Flask 與 Pyramid
+<a id="flask-and-pyramid"></a>
+### Flask 和 Pyramid
 
 [python-flask](/zh-Hant/examples#python-flask) 範例使用扁平化 JSON。`init -t ui-python-flask` 是 `translations/` 下的 gettext 配置，適用於已經使用 Flask-Babel 風格目錄的應用程式。無論哪種方式，請從請求中設定地區設定 (locale)，並將 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入到模板上下文中。Pyramid 使用相同的請求範圍模式。詳細資訊：[Locale — Flask and Pyramid](/zh-Hant/guide/ui-strings/python#flask)。
 
@@ -46,12 +46,12 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView �
 
 保留 `gettext`、`ngettext` 和 `{% blocktrans %}`。`init -t ui-python-django` 會對應 Django 的 `locale/` 目錄與 `django` 網域，並保留 Django 的執行階段。詳細資訊：[Locale — Django](/zh-Hant/guide/ui-strings/python#django)。
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### 現有的 gettext
 
 保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的目錄樹並執行 `extract`，然後執行 `translate-ui`。[python-gettext](/zh-Hant/examples#python-gettext) 範例僅使用 gettext (`flatOutput: false`)。`init -t ui-python-gettext` 也會寫入扁平化 JSON。詳細資訊：[Locale — Existing gettext](/zh-Hant/guide/ui-strings/python#gettext)。
 
-<a id="desktop"></a>
-### Tkinter、Qt 與 PyWebView
+<a id="tkinter-qt-and-pywebview"></a>
+### Tkinter、Qt 和 PyWebView
 
 在建立每個 Tkinter 元件時呼叫 `t()` 或 `_()`，然後在 `set_locale` 之後重建可見文字。PyQt 與 PySide 的 `self.tr("...")` 呼叫會被提取，且除非設定了 `notr="true"`，否則 Qt `.ui` 檔案會提供 `<string>` 元素。對於 PyWebView 或 PyWebKit，請使用上方的模板提取 Python shell，並使用 `data-i18n` 標記或每個地區設定一個 HTML 文件的方式來提取 HTML 頁面。詳細資訊：[Locale — Tkinter](/zh-Hant/guide/ui-strings/python#tkinter)、[PyQt / PySide](/zh-Hant/guide/ui-strings/python#pyqt) 以及 [PyWebView](/zh-Hant/guide/ui-strings/python#pywebview)。

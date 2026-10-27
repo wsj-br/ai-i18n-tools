@@ -1,10 +1,10 @@
-<a id="translating-intlayer"></a>
-# Intlayer an Ort und Stelle übersetzen
+<a id="translating-intlayer-in-place"></a>
+# Intlayer direkt übersetzen
 
 [Intlayer](https://intlayer.org/) ist eine gute Lösung für Anwendungen, die Übersetzungen in typisierten Content-Wörterbüchern speichern oder ein Übersetzungsmanagement-System und menschliche Übersetzung verwenden. `translate-intlayer` richtet sich an dieses Publikum. Es füllt die fehlenden und veralteten Locale-Blätter in Ihren `*.content.ts`-Wörterbüchern direkt auf. Die Wörterbücher bleiben die maßgebliche Quelle, Intlayer bleibt zur Laufzeit aktiv, und ai-i18n-tools fungiert als Übersetzungs-Engine (Anbieterauswahl, Glossar, Übersetzungskontext und Modell-Fallback).
 
-<a id="which-one"></a>
-## Intlayer beibehalten oder zu Source-String-Aufrufen wechseln?
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
+## Intlayer beibehalten oder zu Quellstring-Aufrufen wechseln?
 
 | Ihr Publikum | Befehl | Anleitung |
 | --- | --- | --- |

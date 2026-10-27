@@ -1,4 +1,4 @@
-<a id="migrating-from-intlayer"></a>
+<a id="migrating-from-intlayer-to-source-strings-calls"></a>
 # Migrating from Intlayer to source-strings calls
 
 

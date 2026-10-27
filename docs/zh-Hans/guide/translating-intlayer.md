@@ -1,9 +1,9 @@
-<a id="translating-intlayer"></a>
+<a id="translating-intlayer-in-place"></a>
 # 就地翻译 Intlayer
 
 对于将翻译保存在类型化内容字典中，或使用翻译管理系统和人工翻译的应用程序而言，[Intlayer](https://intlayer.org/) 是一个很好的解决方案。`translate-intlayer` 正是为此类用户设计的。它会就地填充您的 `*.content.ts` 字典中缺失和过时的区域设置叶节点。字典仍然是唯一事实来源，Intlayer 保留在运行时，而 ai-i18n-tools 则充当翻译引擎（负责提供商选择、术语表、翻译上下文和模型回退）。
 
-<a id="which-one"></a>
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
 ## 保留 Intlayer，还是迁移到源字符串调用？
 
 | 目标用户 | 命令 | 指南 |

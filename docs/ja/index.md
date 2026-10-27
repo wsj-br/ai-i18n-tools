@@ -26,8 +26,8 @@ hero:
 
 
 
-<a id="start-here"></a>
-## お手元のプロジェクトから始める
+<a id="start-with-the-project-you-have"></a>
+## 既存のプロジェクトから始める
 
 現在は単一言語ですか？ここから始めましょう。その言語はどの言語でもかまいません。`sourceLocale` として設定してください。このガイドでは、一般的な例として英語を使用します。国際化 (i18n) は、プロジェクトがさまざまな言語をサポートするための準備です。このガイドでは、セットアップから最初の翻訳体験までを案内します。これには、GitHub、GitLab、またはその他のホストでリポジトリにすでに表示されている README も含まれます。
 
@@ -42,6 +42,7 @@ hero:
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="javascript-or-typescript-app"></a>
 ### JavaScript または TypeScript アプリ
 
 プレーンテキストのボタン、ラベル、メッセージを多言語 UI に変換します。ランタイムをセットアップし、翻訳するテキストをマークし、言語の切り替えを実装します。準備ステップのためのコーディングエージェントのプロンプトが含まれています。
@@ -61,6 +62,7 @@ React · Next.js · Node.js · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-app"></a>
 ### Python アプリ
 
 ユーザー向けのテキストをラップし、生成されたヘルパーで翻訳済みメッセージを読み込むか、ネイティブの gettext をそのまま使用します。別途 Node.js をインストールする必要なく、スタンドアロンの実行可能ファイルから翻訳 CLI を実行できます。
@@ -78,6 +80,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="website-or-documentation"></a>
 ### ウェブサイトまたはドキュメント
 
 ローカライズされたページを公開し、サイトの言語ルートに接続します。ナビゲーション、テーマのラベル、言語メニューについては、フレームワーク固有の手順に従ってください。
@@ -95,7 +98,8 @@ VitePress・Starlight・Docusaurus・Astro
 <img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### リポジトリのREADMEとドキュメント
+<a id="repository-readme-and-docs"></a>
+### リポジトリの README とドキュメント
 
 `README.md`やその他のMarkdownファイルを、言語ごとに1つのファイルに翻訳し、それらの間にリンクの行を設けます。アプリのUI文字列と組み合わせるか、READMEを単独で翻訳します。
 
@@ -108,6 +112,7 @@ GitHub・GitLab・Bitbucket
 
 どのパスが適しているかわからない場合は、[プロジェクトにi18nを追加する](/ja/guide/add-i18n-to-your-project)にすべてのウォークスルーが記載されています。パイプラインがどのように連携するかについては、[ai-i18n-toolsの機能](/ja/guide/what-is-ai-i18n-tools)を参照してください。
 
+<a id="from-setup-to-your-first-new-language"></a>
 ## セットアップから最初の新しい言語まで
 
 <div class="home-steps">
@@ -120,7 +125,8 @@ GitHub・GitLab・Bitbucket
 
 ランタイムとルーティングのセットアップは、手動またはコーディングエージェントを使用して行います。CLIは、抽出、翻訳、検証、ファイル生成を処理します—ソースの自動書き換えや言語スイッチャーのインストールは行いません。[完全なクイックスタートに従ってください](/ja/guide/quick-start)。
 
-## ソーステキストを多言語対応に
+<a id="your-source-text-ready-for-more-languages"></a>
+## ソーステキストを多言語に対応させる
 
 この JS/TS のサンプルは、ランタイムのセットアップと翻訳後の結果の形式を示します。ソース文字列をマークすることで検出可能になり、生成された各ロケールファイルでその文章が翻訳にマッピングされます。
 
@@ -152,6 +158,7 @@ t("Save changes");
 
 ソースの文はコード内で読みやすいままです。アプリは実行時に生成されたロケールファイルを読み込みます。全体的な実装を確認したい場合は、[動作するNext.jsのサンプルを探索](/ja/examples#nextjs-app)してください。ウェブサイトは異なるパスをたどります。各段落をラップする代わりに[ローカライズされたページを生成](/ja/guide/add-i18n-to-website)します。
 
+<a id="built-for-the-next-update-too"></a>
 ## 次のアップデートにも対応
 
 <div class="home-features">
@@ -165,7 +172,8 @@ t("Save changes");
 <img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### プロバイダーとモデルの選択
+<a id="choose-your-provider-and-models"></a>
+### プロバイダーとモデルを選択
 
 OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはその他9つの組み込みオプションなど、サポートされているプロバイダーを使用できます。また、OpenAI互換のプロバイダーも使用できます。翻訳品質はモデルリスト (`translationModels`、およびロケールごとのオーバーライド) に従います。`suggest-models`、およびダッシュボードの**モデル**にある同じランキングは、公開されている翻訳ベンチマークからそのリストを構築します。
 
@@ -178,7 +186,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### 完了した作業を再利用
+<a id="reuse-work-already-done"></a>
+### 既存の作業を再利用
 
 キャッシュされた翻訳により、再実行時にはすべてを再翻訳するのではなく、新規または変更されたテキストに集中できます。
 
@@ -191,7 +200,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### AIの出力をローカルでレビュー
+<a id="review-ai-output-locally"></a>
+### AI の出力をローカルでレビュー
 
 翻訳ダッシュボードで、翻訳の検査、表現の修正、用語の管理を行います。
 
@@ -204,7 +214,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### アプリとコンテンツをまとめて管理
+<a id="keep-app-and-content-together"></a>
+### アプリとコンテンツを一緒に管理
 
 1つの設定で、アプリのメッセージ、ドキュメント、ネストされたロケールJSON、SVGテキストラベルを翻訳します。必要なものだけを有効にしてください。
 
@@ -217,7 +228,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### READMEをアプリと一緒に翻訳
+<a id="translate-the-readme-with-the-app"></a>
+### アプリと一緒に README を翻訳
 
 1つの `sync` でUI文字列とリポジトリのMarkdownをカバーし、READMEに言語の行を書き込みます。
 
@@ -226,7 +238,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 </article>
 </div>
 
-## まずは動作するプロジェクトを確認
+<a id="see-a-working-project-first"></a>
+## まず動作するプロジェクトを確認
 
 これらの例には、設定ファイルとコミット済みの翻訳ファイルが含まれています。APIキーなしで出力を確認できます。翻訳を再実行するには、設定済みのプロバイダーと、通常はキーが必要です。ローカルのOllamaはAPIキーを必要としません。
 
@@ -238,6 +251,7 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="a-multilingual-app"></a>
 ### 多言語アプリ
 
 動作するNext.jsプロジェクトで、Reactコンポーネント、ランタイムの連携、複数形、言語の切り替えを確認してください。
@@ -252,7 +266,8 @@ OpenAI、Anthropic、OpenRouter、Gemini、ローカルのOllama、またはそ�
 <img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### Pythonの実践
+<a id="python-in-practice"></a>
+### 実践的な Python
 
 Streamlitアプリが、アプリにJavaScriptランタイムを追加することなく、メッセージをラップして翻訳済みのJSONを使用する方法を確認してください。
 
@@ -265,6 +280,7 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 <img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="docs-in-more-languages"></a>
 ### 多言語のドキュメント
 
 翻訳されたVitePressページと、ローカライズされたナビゲーションおよびテーマのラベルを確認してください。
@@ -276,7 +292,8 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 
 プレーンなHTML、他のフレームワーク、既存のi18nワークフローを含む、[実行可能なすべての例](/ja/examples)をご覧ください。
 
-## すでにi18nを導入済みですか？うまく機能しているものはそのまま使い続けましょう。
+<a id="already-have-i18n-keep-what-works"></a>
+## 既存の i18n を活用
 
 最初からやり直す必要はありません。
 
@@ -287,6 +304,7 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 <img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="source-string-calls"></a>
 ### ソース文字列の呼び出し
 
 プロジェクトに既にある `t()` と gettext の呼び出しはそのままにしてください。
@@ -300,6 +318,7 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 <img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="json-bundles"></a>
 ### JSON バンドル
 
 i18next の名前空間を含む、ネストされたロケールファイルを翻訳します。サイトナビゲーションとテーマカタログは、このパスではなく [ドキュメント翻訳](/ja/guide/add-i18n-to-website#what-gets-translated) に属します。
@@ -313,6 +332,7 @@ i18next の名前空間を含む、ネストされたロケールファイルを
 <img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="intlayer-dictionaries"></a>
 ### Intlayer 辞書
 
 Intlayer をそのまま使用して未翻訳の箇所を翻訳するか、アプリをソース文字列の呼び出しに移行します。
@@ -324,7 +344,7 @@ Intlayer をそのまま使用して未翻訳の箇所を翻訳するか、ア�
 
 図を使用していますか？アプリやドキュメントと一緒に [SVG テキストラベルを翻訳](/ja/guide/svg-translation/) してください。
 
-<a id="quick-install"></a>
+<a id="ready-to-add-your-first-language"></a>
 ## 最初の言語を追加する準備はできましたか？
 
 <div class="home-cta">
@@ -347,8 +367,8 @@ Python の場合は、[スタンドアロンの実行可能ファイル](/ja/gui
 
 </div>
 
-<a id="explore-the-documentation"></a>
-## 必要に応じてさらに詳しく
+<a id="go-deeper-when-you-need-to"></a>
+## 必要に応じてさらに深く
 
 [インテグレーション](/ja/guide/integrations/) · [LLMプロバイダー](/ja/guide/providers-and-models) · [AIモデル](/ja/guide/ai-models) · [設定](/ja/reference/configuration) · [CLIリファレンス](/ja/reference/cli-commands/)
 

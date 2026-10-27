@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # Fournisseurs de LLM
 
 Chaque pipeline de traduction — `translate-ui`, `translate-docs`, `translate-json` et `translate-svg` — envoie du texte à un LLM via le même client indépendant du fournisseur. Avant que l'une de ces commandes ne puisse s'exécuter, configurez **au moins un fournisseur** dans `ai-i18n-tools.config.json` et définissez la **clé API** correspondante dans votre environnement ou `.env` (préréglages intégrés sauf **Ollama**). `init` écrit un bloc de démarrage `provider` / `providers` ; vous devez toujours fournir les informations d'identification pour le préréglage actif.
@@ -37,8 +37,8 @@ Pour toute clé **non prédéfinie**, définissez explicitement `baseUrl` et `ap
 
 Définissez la clé API du fournisseur actif dans votre environnement ou votre fichier `.env`. La CLI charge automatiquement `.env` depuis le répertoire de travail sans écraser les variables déjà définies dans le shell. Voir [Variables d'environnement](/fr/reference/environment-variables).
 
-<a id="cheaperinference-zero-data-retention"></a>
-### Rétention nulle des données (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### Aucune conservation des données (inférence moins chère)
 
 `providers.cheaperinference.zeroDataRetention` est facultatif et désactivé par défaut. Activez-le lorsque ce projet doit envoyer des invites uniquement via des fournisseurs qui ne les conservent pas.
 
@@ -54,7 +54,7 @@ Lorsque l'indicateur est activé, chaque requête de chat inclut `"zdr": true`, 
 Laissez l'indicateur désactivé lorsque le compte Cheaper Inference ne nécessite pas de rétention nulle des données. Si [Protection des données](https://platform.cheaperinference.com/dashboard/data-protection) est déjà activée pour le compte, Cheaper Inference refuse toujours un modèle sans route de rétention nulle des données. L'erreur nomme ce modèle. Pour conserver la politique du compte, définissez `zeroDataRetention` sur `true` et passez à un modèle du catalogue de rétention nulle des données. Pour conserver le modèle refusé, désactivez la rétention nulle des données sur cette page. La chaîne de secours essaie alors le modèle configuré suivant.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### Modèles
 
 Le choix des modèles, la liste de repli, ainsi que `suggest-models`, `check-models`, `list-models` et `bench-models` sont décrits dans la section [Modèles d'IA](/fr/guide/ai-models).

@@ -36,7 +36,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent
 
 Lisez `?lang=` ou `Accept-Language` dans le middleware, appelez `set_locale` et `reset_locale` dans `finally` afin que les requêtes simultanées conservent leur propre locale. Détails : [Locale — FastAPI](/fr/guide/ui-strings/python#fastapi).
 
-<a id="flask"></a>
+<a id="flask-and-pyramid"></a>
 ### Flask et Pyramid
 
 L'exemple [python-flask](/fr/examples#python-flask) utilise du JSON plat. `init -t ui-python-flask` est la disposition gettext sous `translations/` pour une application qui utilise déjà des catalogues de type Flask-Babel. Dans les deux cas, définissez la locale à partir de la requête et injectez `_`, `t`, `current_locale`, `ui_languages` et `direction` dans le contexte du modèle. Pyramid utilise le même modèle à portée de requête. Détails : [Locale — Flask and Pyramid](/fr/guide/ui-strings/python#flask).
@@ -46,12 +46,12 @@ L'exemple [python-flask](/fr/examples#python-flask) utilise du JSON plat. `init 
 
 Conservez `gettext`, `ngettext` et `{% blocktrans %}`. `init -t ui-python-django` correspond au répertoire `locale/` de Django et au domaine `django`, et laisse l'exécution de Django en place. Détails : [Locale — Django](/fr/guide/ui-strings/python#django).
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### gettext existant
 
 Laissez `_()`, `gettext()` et `ngettext()` en place. Pointez `ui.gettext` vers l'arborescence de catalogue actuelle et exécutez `extract`, puis `translate-ui`. L'exemple [python-gettext](/fr/examples#python-gettext) est uniquement gettext (`flatOutput: false`). `init -t ui-python-gettext` écrit également du JSON plat. Détails : [Locale — Existing gettext](/fr/guide/ui-strings/python#gettext).
 
-<a id="desktop"></a>
+<a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt et PyWebView
 
 Appelez `t()` ou `_()` lors de la création de chaque widget Tkinter, puis reconstruisez le texte visible après `set_locale`. Les appels PyQt et PySide `self.tr("...")` sont extraits, et les fichiers Qt `.ui` contribuent aux éléments `<string>` sauf si `notr="true"`. Pour PyWebView ou PyWebKit, extrayez le shell Python avec un modèle ci-dessus et extrayez la page HTML avec les marqueurs `data-i18n` ou avec un document HTML par locale. Détails : [Locale — Tkinter](/fr/guide/ui-strings/python#tkinter), [PyQt / PySide](/fr/guide/ui-strings/python#pyqt) et [PyWebView](/fr/guide/ui-strings/python#pywebview).

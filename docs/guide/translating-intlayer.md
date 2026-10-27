@@ -1,9 +1,9 @@
-<a id="translating-intlayer"></a>
+<a id="translating-intlayer-in-place"></a>
 # Translating Intlayer in place
 
 [Intlayer](https://intlayer.org/) is a good solution for applications that keep translations in typed content dictionaries, or that use a translation management system and human translation. `translate-intlayer` is for that audience. It fills the missing and stale locale leaves inside your `*.content.ts` dictionaries, in place. The dictionaries stay the source of truth, Intlayer stays at runtime, and ai-i18n-tools acts as the translation engine (provider selection, glossary, translation context, and model fallback).
 
-<a id="which-one"></a>
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
 ## Keep Intlayer, or move to source-string calls?
 
 | Your audience | Command | Guide |

@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Python 应用程序
 
 `ai-i18n-tools` 从 Python 以及 Jinja、Django 和 Qt `.ui` 文件中提取 UI 字符串，然后写入以源语言字符串为键的扁平 JSON、GNU gettext 目录或两者。`sourceLocale` 可以是任何语言。运行时帮助程序是一个标准库 `i18n.py`（Python 3.10 或更高版本）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 调用该帮助程序。Django 使用其自己的 gettext。
@@ -7,7 +7,7 @@
 
 可运行的副本位于 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它们是 Python 项目。前三个项目使用 virtualenv 和 `pip install -r requirements.txt`。`python-gettext` 仅使用标准库。它们不是 npm 包。发布存档 `ai-i18n-tools-python-examples.zip` 包含相同的四个目录。npm tarball 和独立可执行文件则不包含。
 
-<a id="init"></a>
+<a id="scaffold"></a>
 ## 脚手架
 
 ```bash
@@ -23,8 +23,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 
 扫描根目录会跳过 `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache` 和 `.eggs`。
 
-<a id="calls"></a>
-## 翻译调用
+<a id="calls-that-translate"></a>
+## 获取翻译文本的调用
 
 先查找目录条目，然后进行插值。
 
@@ -74,8 +74,8 @@ Gettext 文件使用 `msgctxt` 作为上下文，使用 `msgid` / `msgid_plural`
 
 具有英文源区域设置和显式复数源的 `t(..., plurals=True)` 会跳过模型，并从源字符串中存储 `one` / `other`。
 
-<a id="locale"></a>
-## 各框架中的区域设置
+<a id="locale-in-each-framework"></a>
+## 每个框架中的区域设置
 
 `set_locale` 返回一个 `ContextVar` 令牌。请在 `finally` 中重置它（包括 FastAPI 和 Flask 中间件），以确保并发请求不会泄露区域设置。
 

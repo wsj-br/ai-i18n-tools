@@ -78,9 +78,9 @@ describe("normalizeOneNextraLink", () => {
     expect(normalizeOneNextraLink("notes/extra.md", ctx({ relPath: "index.mdx" }))).toBe(
       "/notes/extra"
     );
-    expect(normalizeOneNextraLink("../README.md", ctx({ relPath: "content/en/guide/page.mdx" }))).toBe(
-      "/README"
-    );
+    expect(
+      normalizeOneNextraLink("../README.md", ctx({ relPath: "content/en/guide/page.mdx" }))
+    ).toBe("/README");
     expect(docsPathToNextraRoute("content/en", "content/en")).toBe("/");
   });
 });

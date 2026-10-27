@@ -106,8 +106,8 @@ Facultatif : remplacez la collection par `docs[].nextraMetaGlob` ou restreignez 
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — Sources anglaises à `content/en/`, arborescences de pages `pt-BR` et `zh-Hans` validées, fichiers `_meta.ts` en ligne et `app/_dictionaries/{locale}.ts`. Un composant serveur (`app/_components/feedback-links.tsx`) utilise `t()` via une recherche de bundle plat afin que le chrome personnalisé puisse se trouver à côté du dictionnaire. Exécutez `pnpm run dev` sur le port 3070.
 
-<a id="agent-prompt-dictionary"></a>
-## Invite de l'agent : dictionnaire et routes
+<a id="agent-prompt-dictionary-and-routes"></a>
+## Invite de l'agent : dictionnaire et routes
 
 Utilisez ceci lorsque le site a encore des chaînes de mise en page codées en dur et aucune arborescence `content/en/`. Il suit le chemin par défaut (dictionnaire + `_meta.ts` + `translate-docs`). Il n'introduit pas `t()`.
 

@@ -15863,7 +15863,7 @@
       },
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 308
+        "line": 311
       }
     ]
   },
@@ -17567,7 +17567,7 @@
     "locations": [
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 123
+        "line": 126
       }
     ]
   },
@@ -17600,7 +17600,7 @@
     "locations": [
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 294
+        "line": 297
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
@@ -17635,7 +17635,7 @@
     "locations": [
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 357
+        "line": 358
       }
     ]
   },
@@ -17666,7 +17666,7 @@
     "locations": [
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 419
+        "line": 420
       }
     ]
   },
@@ -17697,7 +17697,7 @@
     "locations": [
       {
         "file": "src/cli/translate-intlayer.ts",
-        "line": 429
+        "line": 430
       }
     ]
   },

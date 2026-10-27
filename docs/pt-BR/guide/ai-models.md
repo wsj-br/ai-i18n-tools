@@ -5,11 +5,11 @@ Um modelo é um sistema nomeado no seu provedor, como `google/gemini-2.5-flash` 
 
 Escolha a lista para este projeto com `suggest-models` ou com a mesma classificação no Painel de Tradução em **Modelos**. Ambos classificam os modelos de chat do provedor ativo a partir de benchmarks publicados e podem gravar o resultado em `translationModels`. Primeiro, configure o provedor e sua chave de API: [Provedores de LLM](/pt-BR/guide/providers-and-models).
 
-<a id="suggest-models"></a>
+<a id="start-with-a-ranked-shortlist"></a>
 ## Comece com uma lista restrita classificada
 
-<a id="suggest-models-cli"></a>
-### Pela linha de comando
+<a id="from-the-command-line"></a>
+### Da linha de comando
 
 `suggest-models` classifica os modelos de chat que o provedor ativo oferece no momento e imprime uma tabela curta. A qualidade é o padrão: as medições de tradução e uma pontuação de preferência geral contam mais do que o preço.
 
@@ -29,8 +29,8 @@ ai-i18n-tools suggest-models --apply
 
 `--price` prioriza uma taxa mais baixa e ainda mantém um piso de qualidade, de modo que um modelo barato sem medição fica abaixo dos modelos que têm pontuações. `--quality` é o padrão. Passar ambas as flags é um erro.
 
-<a id="suggest-models-dashboard"></a>
-### Pelo painel
+<a id="from-the-dashboard"></a>
+### Do painel
 
 A guia **Modelos** mostra a mesma classificação, com uma caixa de seleção em cada linha.
 
@@ -42,7 +42,7 @@ Abra **Modelos**. Escolha **Qualidade** ou **Preço**. Marque as linhas que voc�
 
 **Preço máximo de saída** e **Delta mínimo do índice** correspondem a `suggest-models --max-output-price` e `--min-delta`. Controles e colunas: [Guia Modelos](/pt-BR/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
+<a id="how-the-ranking-chooses"></a>
 ### Como a classificação escolhe
 
 A lista restrita é um ranking de benchmark do catálogo de chat ao vivo do provedor. A primeira execução baixa três conjuntos de dados públicos e pode levar algum tempo. Execuções posteriores reutilizam o cache de 7 dias em `<cacheDir>/benchmark-scores.json` (geralmente `.translation-cache/benchmark-scores.json`).
@@ -61,7 +61,7 @@ Qualidade, o perfil padrão, dá mais peso ao ChrF e à Pontuação da Arena do 
 
 Todas as flags, incluindo `--json`, `--list` e a fórmula de pontuação: [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## Por que a lista tem mais de um modelo
 
 <a id="model-fallback-chain"></a>
@@ -115,8 +115,8 @@ Exemplo (OpenRouter). Os ids mostram o formato das três listas. Obtenha `transl
 
 Listas predefinidas de `init` e a referência de campo: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
-## Verificar, listar e fazer benchmark
+<a id="check-list-and-benchmark"></a>
+## Verifique, liste e faça benchmark
 
 Depois que a lista de preferência estiver na configuração, estes comandos a inspecionam. A tradução pode ser executada antes de você usá-los.
 

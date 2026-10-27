@@ -5,6 +5,9 @@
 #   2. Build-safe upgrades: ncu --doctor per workspace package.
 #   3. Security: audit + audit fix; force-apply safe versions for vulnerable
 #      direct deps that doctor had to revert (and report build breakage).
+#   4. Python examples: install examples/python-* requirements in a fresh venv,
+#      run smoke_framework.py, and raise >= floors in requirements.txt and
+#      pyproject.toml. Skip with UPGRADE_SKIP_PYTHON=1.
 #
 # nvm-windows only affects the current PowerShell session. Dot-source so PATH
 # changes apply:
@@ -754,6 +757,17 @@ function Write-UpgradeSummary {
     }
 
     Write-Host ''
+    if ($env:UPGRADE_SKIP_PYTHON) {
+        Write-UpgradeWarn 'Python example requirements: skipped (UPGRADE_SKIP_PYTHON=1).'
+    }
+    elseif ($script:PythonPhaseRan -and $script:PythonUpgradeFailed) {
+        Write-UpgradeErr 'Python example requirements: failed. See the phase output above.'
+    }
+    elseif ($script:PythonPhaseRan) {
+        Write-UpgradeOk 'Python example requirements: floors match the version smoke_framework.py just installed.'
+    }
+
+    Write-Host ''
     Write-UpgradeLog "Manifest snapshot (restore if needed): $($script:SnapshotDir)"
     Write-Host ''
 }
@@ -773,6 +787,8 @@ function Invoke-UpgradeDependencies {
     $script:SecVerifyFailed = $false
     $script:PeerIssues = ''
     $script:DoctorBlocked = @()
+    $script:PythonUpgradeFailed = $false
+    $script:PythonPhaseRan = $false
 
     Write-Host ''
     Write-Host '--------------------------------'
@@ -828,6 +844,7 @@ function Invoke-UpgradeDependencies {
 
     Invoke-SecurityPhase
     Invoke-PeersPhase
+    Invoke-PythonRequirementsPhase
     Write-UpgradeSummary
 
     Set-Location $origPwd
@@ -838,7 +855,24 @@ function Invoke-UpgradeDependencies {
         Write-UpgradeErr '❌  Peer dependency issues remain (CI/UPGRADE_STRICT_PEERS treats these as failure).'
         return 1
     }
+    if ($script:PythonUpgradeFailed) { return 1 }
     return 0
+}
+
+function Invoke-PythonRequirementsPhase {
+    Write-Host ''
+    if ($env:UPGRADE_SKIP_PYTHON) {
+        Write-UpgradeWarn '⏭  Skipping Python example requirements (UPGRADE_SKIP_PYTHON=1).'
+        return
+    }
+    Write-UpgradeLog '🐍  Upgrading Python example requirements (verify: smoke_framework.py)...'
+    $script:PythonPhaseRan = $true
+    $scriptPath = Join-Path $script:UpgradeScriptDir 'upgrade-python-requirements.mjs'
+    & node $scriptPath --apply --repo-root $script:UpgradeRepoRoot
+    if ($LASTEXITCODE -ne 0) {
+        $script:PythonUpgradeFailed = $true
+        Write-UpgradeErr '❌  Python example requirement upgrade failed. Floors stay put when smoke does not pass.'
+    }
 }
 
 $exitCode = Invoke-UpgradeDependencies

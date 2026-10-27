@@ -227,9 +227,7 @@ describe("runTranslateIntlayer", () => {
     });
     // Edit the English source of the `servers` leaf.
     const file = path.join(dir, "src/content/dashboard.content.ts");
-    const edited = fs
-      .readFileSync(file, "utf8")
-      .replace(`en: "Servers",`, `en: "Server nodes",`);
+    const edited = fs.readFileSync(file, "utf8").replace(`en: "Servers",`, `en: "Server nodes",`);
     fs.writeFileSync(file, edited, "utf8");
 
     const sum = await runTranslateIntlayer({

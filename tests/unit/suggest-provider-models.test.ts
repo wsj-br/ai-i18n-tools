@@ -37,7 +37,7 @@ function project(cache: BenchmarkCacheFile): { dir: string; config: I18nConfig }
     cacheDir: ".translation-cache",
     provider: "openai",
     providers: { openai: { translationModels: ["chat-a"] } },
-  } as I18nConfig;
+  } as unknown as I18nConfig;
   return { dir, config };
 }
 
@@ -114,7 +114,7 @@ describe("suggestProviderModels", () => {
     expect(ollama.models.map((row) => row.id)).toEqual(
       expect.arrayContaining(["chat-a", "chat-b"])
     );
-    expect(headers.at(-1)?.Authorization).toBeUndefined();
+    expect(headers[headers.length - 1]?.Authorization).toBeUndefined();
   });
 
   it("sends OpenRouter attribution and surfaces benchmark source errors", async () => {

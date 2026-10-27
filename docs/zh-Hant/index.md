@@ -23,7 +23,7 @@ hero:
 
 
 
-<a id="start-here"></a>
+<a id="start-with-the-project-you-have"></a>
 ## 從您現有的專案開始
 
 今天只有一種語言？從這裡開始。該語言可以是任何語言：將其設定為 `sourceLocale`。在這些指南中，英文是一個常見的範例。國際化 (i18n) 為您的專案做好支援不同語言的準備；這些指南將帶您從設定到首次翻譯體驗，包括您的儲存庫已在 GitHub、GitLab 或任何其他主機上顯示的 README。
@@ -39,6 +39,7 @@ hero:
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="javascript-or-typescript-app"></a>
 ### JavaScript 或 TypeScript 應用程式
 
 將純文字按鈕、標籤和訊息變成多語言 UI。設定您的執行階段、標記要翻譯的文字，並連接語言切換功能。包含用於準備步驟的編碼代理提示。
@@ -58,6 +59,7 @@ React · Next.js · Node.js · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-app"></a>
 ### Python 應用程式
 
 使用產生的輔助程式包裝使用者可見的文字並載入翻譯後的訊息，或保留原生的 gettext。從獨立的可執行檔執行翻譯 CLI，無需另外安裝 Node.js。
@@ -75,6 +77,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="website-or-documentation"></a>
 ### 網站或文件
 
 發佈本地化頁面，並將其連接至您網站的語言路由。遵循特定於框架的步驟，以設定導覽、主題標籤和語言選單。
@@ -92,6 +95,7 @@ VitePress · Starlight · Docusaurus · Astro
 <img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="repository-readme-and-docs"></a>
 ### 儲存庫 README 與文件
 
 將 `README.md` 和其他 Markdown 檔案翻譯成每種語言一個檔案，並在檔案之間加上一排連結。將其與您應用程式的 UI 字串配對，或單獨翻譯 README。
@@ -105,6 +109,7 @@ GitHub · GitLab · Bitbucket
 
 不確定哪條路徑適合您？[為您的專案新增 i18n](/zh-Hant/guide/add-i18n-to-your-project) 列出了每個詳細教學。[查看 ai-i18n-tools 的功能](/zh-Hant/guide/what-is-ai-i18n-tools) 以了解管線如何組合在一起。
 
+<a id="from-setup-to-your-first-new-language"></a>
 ## 從設定到您的第一個新語言
 
 <div class="home-steps">
@@ -117,7 +122,8 @@ GitHub · GitLab · Bitbucket
 
 您可以手動或透過編碼代理來處理執行階段和路由設定。CLI 負責處理擷取、翻譯、驗證和檔案生成 — 而非自動重寫原始碼或安裝語言切換器。[遵循完整的快速入門](/zh-Hant/guide/quick-start)。
 
-## 您的原始文字。為更多語言做好準備。
+<a id="your-source-text-ready-for-more-languages"></a>
+## 您的來源文字。為更多語言做好準備。
 
 此 JS/TS 說明範例顯示了執行階段設定與翻譯後的結果樣貌。標記來源字串可使其被探索；每個產生的語系檔案會將該句子對應至其翻譯。
 
@@ -149,7 +155,8 @@ t("Save changes");
 
 原始句子在您的程式碼中保持可讀性。您的應用程式會在執行階段載入產生的語系檔案。想看看完整的接線方式嗎？[探索可運作的 Next.js 範例](/zh-Hant/examples#nextjs-app)。網站遵循不同的路徑：[產生本地化頁面](/zh-Hant/guide/add-i18n-to-website)，而非包裝每個段落。
 
-## 也為下一次更新而打造
+<a id="built-for-the-next-update-too"></a>
+## 也為下一次更新而建置
 
 <div class="home-features">
 <article class="home-card">
@@ -162,6 +169,7 @@ t("Save changes");
 <img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="choose-your-provider-and-models"></a>
 ### 選擇您的供應商和模型
 
 使用支援的供應商，例如 OpenAI、Anthropic、OpenRouter、Gemini、本機 Ollama 或其他九個內建選項。您也可以使用任何與 OpenAI 相容的供應商。翻譯品質遵循模型清單 (`translationModels`，加上每個地區設定的覆寫)。`suggest-models` 以及儀表板 **模型** 下的相同排名，會從已發布的翻譯基準建立該清單。
@@ -175,6 +183,7 @@ t("Save changes");
 <img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="reuse-work-already-done"></a>
 ### 重複使用已完成的工作
 
 快取的翻譯讓重新執行時能專注於新增或變更的文字，而無須再次翻譯所有內容。
@@ -188,7 +197,8 @@ t("Save changes");
 <img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### 在本機檢閱 AI 輸出內容
+<a id="review-ai-output-locally"></a>
+### 在本機檢閱 AI 輸出
 
 在「翻譯儀表板」中檢查翻譯、修正措辭並管理術語。
 
@@ -201,7 +211,8 @@ t("Save changes");
 <img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### 將應用程式與內容整合在一起
+<a id="keep-app-and-content-together"></a>
+### 將應用程式與內容放在一起
 
 透過單一設定檔，翻譯應用程式訊息、文件、巢狀的地區設定 JSON 以及 SVG 文字標籤。只啟用您需要的功能。
 
@@ -214,7 +225,8 @@ t("Save changes");
 <img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### 與應用程式一同翻譯 README
+<a id="translate-the-readme-with-the-app"></a>
+### 使用應用程式翻譯 README
 
 單一 `sync` 即可涵蓋 UI 字串和儲存庫的 Markdown，並將語言列寫入 README 中。
 
@@ -223,7 +235,8 @@ t("Save changes");
 </article>
 </div>
 
-## 先查看可運作的專案
+<a id="see-a-working-project-first"></a>
+## 先看看可運作的專案
 
 這些範例包含設定和已提交的翻譯檔案。無需 API 金鑰即可探索輸出結果；重新執行翻譯需要已設定的提供者，且通常需要金鑰。本機的 Ollama 不需要 API 金鑰。
 
@@ -235,6 +248,7 @@ t("Save changes");
 <img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="a-multilingual-app"></a>
 ### 多語言應用程式
 
 在一個可運作的 Next.js 專案中，查看 React 元件、執行階段的串接、複數形式和語言切換。
@@ -249,7 +263,8 @@ t("Save changes");
 <img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### Python 實務應用
+<a id="python-in-practice"></a>
+### Python 實務
 
 查看 Streamlit 應用程式如何包裝其訊息，並在不新增 JavaScript 執行階段的情況下使用翻譯後的 JSON。
 
@@ -262,7 +277,8 @@ t("Save changes");
 <img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### 多語言文件
+<a id="docs-in-more-languages"></a>
+### 更多語言的文件
 
 查看已翻譯的 VitePress 頁面，以及本地化的導覽和主題標籤。
 
@@ -273,7 +289,8 @@ t("Save changes");
 
 [瀏覽所有可執行的範例](/zh-Hant/examples)，包括純 HTML、其他框架以及現有的 i18n 工作流程。
 
-## 已經有 i18n 了嗎？保留可行的部分。
+<a id="already-have-i18n-keep-what-works"></a>
+## 已經有 i18n？保留可行的部分。
 
 您不必從頭來過。
 
@@ -284,6 +301,7 @@ t("Save changes");
 <img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="source-string-calls"></a>
 ### 來源字串呼叫
 
 保留專案中既有的 `t()` 與 gettext 呼叫。
@@ -297,6 +315,7 @@ t("Save changes");
 <img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="json-bundles"></a>
 ### JSON 套件
 
 翻譯巢狀的語系檔案，包含 i18next 命名空間。網站導覽和主題目錄屬於[文件翻譯](/zh-Hant/guide/add-i18n-to-website#what-gets-translated)，而非此路徑。
@@ -310,6 +329,7 @@ t("Save changes");
 <img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="intlayer-dictionaries"></a>
 ### Intlayer 字典
 
 保留 Intlayer 並填補缺少的翻譯，或將應用程式移至來源字串呼叫。
@@ -321,7 +341,7 @@ t("Save changes");
 
 也有圖表嗎？與您的應用程式或文件一起[翻譯 SVG 文字標籤](/zh-Hant/guide/svg-translation/)。
 
-<a id="quick-install"></a>
+<a id="ready-to-add-your-first-language"></a>
 ## 準備好新增您的第一種語言了嗎？
 
 <div class="home-cta">
@@ -344,7 +364,7 @@ t("Save changes");
 
 </div>
 
-<a id="explore-the-documentation"></a>
+<a id="go-deeper-when-you-need-to"></a>
 ## 需要時可深入了解
 
 [整合](/zh-Hant/guide/integrations/) · [LLM 供應商](/zh-Hant/guide/providers-and-models) · [AI 模型](/zh-Hant/guide/ai-models) · [設定](/zh-Hant/reference/configuration) · [CLI 參考](/zh-Hant/reference/cli-commands/)

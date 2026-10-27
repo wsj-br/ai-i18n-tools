@@ -5,10 +5,10 @@
 
 このプロジェクト用のリストは、`suggest-models`を使用するか、翻訳ダッシュボードの**モデル**にある同じランキングを使用して選択します。どちらの方法でも、公開されているベンチマークに基づいてアクティブなプロバイダーのチャットモデルをランク付けし、その結果を`translationModels`に書き込むことができます。まず、プロバイダーとそのAPIキーを設定してください: [LLMプロバイダー](/ja/guide/providers-and-models)。
 
-<a id="suggest-models"></a>
-## ランク付けされたショートリストから始める
+<a id="start-with-a-ranked-shortlist"></a>
+## 順位付き候補リストから始める
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### コマンドラインから
 
 `suggest-models`は、アクティブなプロバイダーが現在提供しているチャットモデルをランク付けし、短いテーブルを出力します。デフォルトは品質です。翻訳の測定値と一般的な優先度スコアが価格よりも重視されます。
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price`はより低いレートを優先しますが、品質の最低ラインは維持するため、測定値のない安価なモデルはスコアのあるモデルよりも下になります。`--quality`がデフォルトです。両方のフラグを渡すとエラーになります。
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### ダッシュボードから
 
 **モデル**タブには同じランキングが表示され、各行にチェックボックスがあります。
@@ -42,8 +42,8 @@ ai-i18n-tools dashboard
 
 **最大出力価格**と**最小インデックス差分**は、`suggest-models --max-output-price`と`--min-delta`に対応します。コントロールと列: [モデルタブ](/ja/guide/translation-dashboard/models)。
 
-<a id="how-models-are-ranked"></a>
-### ランキングの選択方法
+<a id="how-the-ranking-chooses"></a>
+### 順位付けの仕組み
 
 ショートリストは、プロバイダーのライブチャットカタログのベンチマークランキングです。初回実行時は3つの公開データセットをダウンロードするため、時間がかかることがあります。その後の実行では、`<cacheDir>/benchmark-scores.json`(通常は`.translation-cache/benchmark-scores.json`)にある7日間のキャッシュを再利用します。
 
@@ -61,8 +61,8 @@ ChrFは、プロジェクトの`sourceLocale`と`targetLocales`に対するlangu
 
 `--json`、`--list`、およびスコア計算式を含むすべてのフラグについては、[suggest-models](/ja/reference/cli-commands/models#suggest-models)を参照してください。
 
-<a id="why-more-than-one-model"></a>
-## なぜリストに複数のモデルがあるのか
+<a id="why-the-list-has-more-than-one-model"></a>
+## リストに複数のモデルが含まれる理由
 
 <a id="model-fallback-chain"></a>
 ### モデルフォールバックチェーン
@@ -115,7 +115,7 @@ ChrFは、プロジェクトの`sourceLocale`と`targetLocales`に対するlangu
 
 `init`からのプリセットリスト、およびフィールドリファレンス: [設定 — `provider`と`providers`](/ja/reference/configuration#provider-and-providers)。
 
-<a id="validate-and-compare-models"></a>
+<a id="check-list-and-benchmark"></a>
 ## 確認、一覧表示、ベンチマーク
 
 ショートリストが設定ファイルに記述されたら、これらのコマンドでそれを検査できます。これらを使用する前に翻訳を実行することも可能です。

@@ -13,6 +13,14 @@
 #      doctor had to revert (the safe version breaks the build), it force-applies
 #      the safe version anyway and reports the build errors so the code can be
 #      made compatible (a shell script cannot fix the code itself).
+#   4. Python examples: for each examples/python-* project that has third-party
+#      requirements, install them in a fresh venv, run smoke_framework.py, and
+#      raise the >= floors in requirements.txt and pyproject.toml to the newest
+#      release that still supports the example's requires-python. A newer
+#      interpreter must not record a release the CI minimum cannot install.
+#      python-gettext (stdlib only) is skipped.
+#      Set UPGRADE_SKIP_PYTHON=1 to skip this phase. UPGRADE_PYTHON selects the
+#      interpreter (default: python3, then python).
 #
 # Shells cannot export environment changes to a parent process; nvm must run in
 # your interactive shell (see https://github.com/nvm-sh/nvm/issues/2124). Run:
@@ -627,6 +635,25 @@ _peers_phase() {
   return 0
 }
 
+# --- Python example requirement floors ----------------------------------------
+# examples/python-* are not pnpm packages. Their requirements.txt floors are
+# minimums; pip install already takes the newest release that satisfies them.
+# After smoke_framework.py passes, record that installed version as the floor
+# in both requirements.txt and pyproject.toml.
+_python_requirements_phase() {
+  echo ""
+  if [ -n "${UPGRADE_SKIP_PYTHON:-}" ]; then
+    upgrade_warn "⏭  Skipping Python example requirements (UPGRADE_SKIP_PYTHON=1)."
+    return 0
+  fi
+  upgrade_log "🐍  Upgrading Python example requirements (verify: smoke_framework.py)..."
+  PYTHON_PHASE_RAN=1
+  if ! run_step node "$SCRIPT_DIR/upgrade-python-requirements.mjs" --apply --repo-root "$REPO_ROOT"; then
+    PYTHON_UPGRADE_FAILED=1
+    upgrade_err "❌  Python example requirement upgrade failed. Floors stay put when smoke does not pass."
+  fi
+}
+
 # --- summary ------------------------------------------------------------------
 _print_summary() {
   echo ""
@@ -701,6 +728,15 @@ _print_summary() {
   fi
 
   echo ""
+  if [ -n "${UPGRADE_SKIP_PYTHON:-}" ]; then
+    upgrade_warn "Python example requirements: skipped (UPGRADE_SKIP_PYTHON=1)."
+  elif [ "${PYTHON_PHASE_RAN:-0}" -eq 1 ] && [ "${PYTHON_UPGRADE_FAILED:-0}" -eq 1 ]; then
+    upgrade_err "Python example requirements: failed. See the phase output above."
+  elif [ "${PYTHON_PHASE_RAN:-0}" -eq 1 ]; then
+    upgrade_ok "Python example requirements: floors match the version smoke_framework.py just installed."
+  fi
+
+  echo ""
   upgrade_log "Manifest snapshot (restore if needed): ${SNAPSHOT_DIR}"
   echo ""
 }
@@ -713,7 +749,7 @@ _upgrade_dependencies() {
   local PKG_MGR ESLINT_REJECT SNAPSHOT_DIR
   local REVERTED_PKGS="" FORCED_PKGS="" SEC_REMAINING="" SEC_VERIFY_LOG=""
   local VULN_BEFORE="" VULN_AFTER="" SEC_VERIFY_FAILED=0 PEER_ISSUES=""
-  local DOCTOR_BLOCKED=""
+  local DOCTOR_BLOCKED="" PYTHON_UPGRADE_FAILED=0 PYTHON_PHASE_RAN=0
   local -a WORKSPACE_DIRS=()
 
   echo ""
@@ -767,6 +803,7 @@ _upgrade_dependencies() {
 
   _security_phase
   _peers_phase
+  _python_requirements_phase
   _print_summary
 
   cd "$orig_pwd" 2>/dev/null || true
@@ -781,6 +818,9 @@ _upgrade_dependencies() {
   # catch. Fail closed in CI / when UPGRADE_STRICT_PEERS=1 so automation notices.
   if [ -n "${PEER_ISSUES:-}" ] && { [ -n "${CI:-}" ] || [ -n "${UPGRADE_STRICT_PEERS:-}" ]; }; then
     upgrade_err "❌  Peer dependency issues remain (CI/UPGRADE_STRICT_PEERS treats these as failure)."
+    return 1
+  fi
+  if [ "${PYTHON_UPGRADE_FAILED:-0}" -eq 1 ]; then
     return 1
   fi
   return 0

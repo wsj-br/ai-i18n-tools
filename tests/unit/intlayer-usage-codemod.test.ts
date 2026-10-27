@@ -685,9 +685,7 @@ export function Header() {
       reason: "spread",
       jsxElement: "StatusBadge",
       writeAs: "<StatusBadge ok={t('OK')} fail={t('Failed')} />",
-      suggestions: [
-        { dotPath: "ok", label: "ok", sourceText: "OK", replacement: "t('OK')" },
-      ],
+      suggestions: [{ dotPath: "ok", label: "ok", sourceText: "OK", replacement: "t('OK')" }],
     };
     refreshReviewAfterLeafConversion(spreadReview, "ok", "OK", "Okay");
     expect(spreadReview.writeAs).toContain("Okay");

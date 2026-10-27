@@ -60,7 +60,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`が使用する組み込みプリセットごとのスターター`translationModels`。 |
 | `PROVIDER_PRESETS` | 組み込みプロバイダープリセットマップ（`baseUrl`、`apiKeyEnv`）。 |
 
-<a id="python-runtime"></a>
+<a id="python-runtime-i18npy"></a>
 ## Python ランタイム (`i18n.py`)
 
 `init -t ui-python`、`ui-python-gettext`、および `ui-python-flask` は、`i18n.py` が欠落している場合にこのモジュールをプロジェクトに書き込みます。これは Python 3.10 以降向けの標準ライブラリヘルパーです。そのファイルからインポートしてください。以下の関数は、上記の表にある Node エクスポートとは別個のものです。Django プロジェクトは Django の gettext を保持するため、`ui-python-django` は `i18n.py` を書き込みません。

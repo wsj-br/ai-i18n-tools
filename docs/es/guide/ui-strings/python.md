@@ -1,5 +1,5 @@
-<a id="python"></a>
-# Aplicaciones Python
+<a id="python-applications"></a>
+# Aplicaciones de Python
 
 `ai-i18n-tools` extrae cadenas de la interfaz de usuario de Python y de archivos `.ui` de Jinja, Django y Qt, luego escribe JSON plano cuyas claves son la cadena del idioma de origen, catálogos GNU gettext, o ambos. `sourceLocale` puede ser cualquier idioma. El asistente en tiempo de ejecución es un `i18n.py` de la biblioteca estándar (Python 3.10 o posterior). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid y FastAPI llaman a ese asistente. Django usa el propio gettext de Django.
 
@@ -7,8 +7,8 @@ Cómo añadir configuraciones regionales a una aplicación existente de un solo 
 
 Las copias ejecutables residen en `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` y `examples/python-gettext`. Son proyectos de Python. Los tres primeros utilizan un virtualenv y `pip install -r requirements.txt`. `python-gettext` utiliza únicamente la biblioteca estándar. No son paquetes npm. El archivo de lanzamiento `ai-i18n-tools-python-examples.zip` contiene los mismos cuatro directorios. El tarball de npm y el ejecutable independiente no los contienen.
 
-<a id="init"></a>
-## Scaffold
+<a id="scaffold"></a>
+## Generador
 
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
@@ -23,8 +23,8 @@ Traduzca también el README del repositorio: añada `--with-readme` al comando `
 
 Las raíces de escaneo omiten `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` y `.eggs`.
 
-<a id="calls"></a>
-## Llamadas que traducen
+<a id="calls-that-translate"></a>
+## Llamadas que se traducen
 
 Busque primero la entrada del catálogo y, a continuación, interpole.
 
@@ -74,7 +74,7 @@ Los archivos Gettext utilizan `msgctxt` para el contexto y `msgid` / `msgid_plur
 
 `t(..., plurals=True)` con una configuración regional de origen en inglés y un origen plural explícito omite el modelo y almacena `one` / `other` a partir de las cadenas de origen.
 
-<a id="locale"></a>
+<a id="locale-in-each-framework"></a>
 ## Configuración regional en cada framework
 
 `set_locale` devuelve un token `ContextVar`. Restablézcalo en `finally`, incluyendo el middleware de FastAPI y Flask, para que las solicitudes concurrentes no filtren una configuración regional.

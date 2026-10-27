@@ -28,7 +28,7 @@ hero:
 
 
 
-<a id="start-here"></a>
+<a id="start-with-the-project-you-have"></a>
 ## Empieza con el proyecto que ya tienes
 
 ¿Un solo idioma hoy? Empieza aquí. Ese idioma puede ser cualquiera: configúralo como `sourceLocale`. El inglés es un ejemplo común en estas guías. La internacionalización (i18n) prepara tu proyecto para admitir diferentes idiomas; estas guías te llevan desde la configuración hasta tu primera experiencia traducida, incluyendo el README que tu repositorio ya muestra en GitHub, GitLab o cualquier otro host.
@@ -44,7 +44,8 @@ hero:
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### Aplicación JavaScript o TypeScript
+<a id="javascript-or-typescript-app"></a>
+### Aplicación de JavaScript o TypeScript
 
 Convierte botones, etiquetas y mensajes de texto sin formato en una interfaz de usuario multilingüe. Configura tu entorno de ejecución, marca el texto a traducir y conecta el cambio de idioma. Incluye indicaciones del agente de codificación para el paso de preparación.
 
@@ -63,7 +64,8 @@ React · Next.js · Node.js · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### Aplicación Python
+<a id="python-app"></a>
+### Aplicación de Python
 
 Envuelve el texto orientado al usuario y carga los mensajes traducidos con un asistente generado, o mantén gettext nativo. Ejecuta la CLI de traducción desde un ejecutable independiente sin una instalación de Node.js separada.
 
@@ -80,6 +82,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="website-or-documentation"></a>
 ### Sitio web o documentación
 
 Publique páginas localizadas y conéctelas a las rutas de idioma de su sitio. Siga los pasos específicos del framework para la navegación, las etiquetas de tema y el menú de idioma.
@@ -97,6 +100,7 @@ VitePress · Starlight · Docusaurus · Astro
 <img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="repository-readme-and-docs"></a>
 ### README y documentos del repositorio
 
 Traduzca `README.md` y otros archivos Markdown en un archivo por idioma, con una fila de enlaces entre ellos. Combínelo con las cadenas de interfaz de usuario de su aplicación, o traduzca el README por sí solo.
@@ -110,7 +114,8 @@ GitHub · GitLab · Bitbucket
 
 ¿No está seguro de qué ruta se ajusta? [Añadir i18n a su proyecto](/es/guide/add-i18n-to-your-project) enumera todos los tutoriales. [Vea lo que hacen las herramientas ai-i18n](/es/guide/what-is-ai-i18n-tools) para saber cómo encajan las canalizaciones.
 
-## Desde la configuración hasta su primer idioma nuevo
+<a id="from-setup-to-your-first-new-language"></a>
+## De la configuración a tu primer idioma nuevo
 
 <div class="home-steps">
 
@@ -122,7 +127,8 @@ GitHub · GitLab · Bitbucket
 
 Usted se encarga de la configuración del tiempo de ejecución y el enrutamiento, manualmente o con un agente de codificación. La CLI se encarga de la extracción, traducción, validación y generación de archivos, no de la reescritura automática del código fuente ni de la instalación del conmutador de idioma. [Siga el inicio rápido completo](/es/guide/quick-start).
 
-## Su texto fuente. Listo para más idiomas.
+<a id="your-source-text-ready-for-more-languages"></a>
+## Tu texto de origen. Listo para más idiomas.
 
 Este ejemplo ilustrativo de JS/TS muestra la forma del resultado después de la configuración en tiempo de ejecución y la traducción. Marcar la cadena de origen la hace detectable; cada archivo de configuración regional generado asigna esa frase a su traducción.
 
@@ -154,7 +160,8 @@ t("Save changes");
 
 La frase de origen permanece legible en su código. Su aplicación carga los archivos de configuración regional generados en tiempo de ejecución. ¿Quiere ver el cableado completo? [Explore el ejemplo de Next.js en funcionamiento](/es/examples#nextjs-app). Los sitios web siguen una ruta diferente: [generan páginas localizadas](/es/guide/add-i18n-to-website) en lugar de envolver cada párrafo.
 
-## Construido también para la próxima actualización
+<a id="built-for-the-next-update-too"></a>
+## Diseñado también para la próxima actualización
 
 <div class="home-features">
 <article class="home-card">
@@ -167,6 +174,7 @@ La frase de origen permanece legible en su código. Su aplicación carga los arc
 <img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="choose-your-provider-and-models"></a>
 ### Elige tu proveedor y tus modelos
 
 Utilice proveedores compatibles como OpenAI, Anthropic, OpenRouter, Gemini, Ollama local u otras nueve opciones integradas. También puede utilizar cualquier proveedor compatible con OpenAI. La calidad de la traducción sigue la lista de modelos (`translationModels`, más las anulaciones por configuración regional). `suggest-models` y la misma clasificación en el panel de **Modelos** crean esa lista a partir de benchmarks de traducción publicados.
@@ -180,7 +188,8 @@ Utilice proveedores compatibles como OpenAI, Anthropic, OpenRouter, Gemini, Olla
 <img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### Reutilice el trabajo ya realizado
+<a id="reuse-work-already-done"></a>
+### Reutiliza el trabajo ya hecho
 
 Las traducciones en caché permiten que los reprocesamientos se centren en el texto nuevo o modificado en lugar de traducir todo de nuevo.
 
@@ -193,7 +202,8 @@ Las traducciones en caché permiten que los reprocesamientos se centren en el te
 <img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### Revise la salida de la IA localmente
+<a id="review-ai-output-locally"></a>
+### Revisa los resultados de la IA localmente
 
 Inspeccione las traducciones, corrija la redacción y gestione la terminología en el Panel de control de traducción.
 
@@ -206,7 +216,8 @@ Inspeccione las traducciones, corrija la redacción y gestione la terminología 
 <img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### Mantenga la aplicación y el contenido juntos
+<a id="keep-app-and-content-together"></a>
+### Mantén la aplicación y el contenido juntos
 
 Traduzca los mensajes de la aplicación, la documentación, el JSON de configuración regional anidado y las etiquetas de texto SVG desde una única configuración. Habilite solo lo que necesite.
 
@@ -219,7 +230,8 @@ Traduzca los mensajes de la aplicación, la documentación, el JSON de configura
 <img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### Traduzca el README con la aplicación
+<a id="translate-the-readme-with-the-app"></a>
+### Traduce el README con la aplicación
 
 Un `sync` cubre las cadenas de la interfaz de usuario y el Markdown del repositorio, y escribe una fila de idioma en el README.
 
@@ -228,7 +240,8 @@ Un `sync` cubre las cadenas de la interfaz de usuario y el Markdown del reposito
 </article>
 </div>
 
-## Vea un proyecto en funcionamiento primero
+<a id="see-a-working-project-first"></a>
+## Ve primero un proyecto en funcionamiento
 
 Estos ejemplos incluyen la configuración y los archivos traducidos confirmados. Explore la salida sin una clave de API; volver a ejecutar la traducción requiere un proveedor configurado y, por lo general, una clave. Ollama local no necesita clave de API.
 
@@ -240,6 +253,7 @@ Estos ejemplos incluyen la configuración y los archivos traducidos confirmados.
 <img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="a-multilingual-app"></a>
 ### Una aplicación multilingüe
 
 Vea los componentes de React, el cableado en tiempo de ejecución, los plurales y el cambio de idioma en un proyecto Next.js en funcionamiento.
@@ -254,6 +268,7 @@ Vea los componentes de React, el cableado en tiempo de ejecución, los plurales 
 <img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-in-practice"></a>
 ### Python en la práctica
 
 Vea cómo una aplicación Streamlit envuelve sus mensajes y utiliza JSON traducido sin añadir un entorno de ejecución de JavaScript a la aplicación.
@@ -267,7 +282,8 @@ Vea cómo una aplicación Streamlit envuelve sus mensajes y utiliza JSON traduci
 <img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### Documentación en más idiomas
+<a id="docs-in-more-languages"></a>
+### Documentos en más idiomas
 
 Vea las páginas de VitePress traducidas junto con la navegación localizada y las etiquetas del tema.
 
@@ -278,7 +294,8 @@ Vea las páginas de VitePress traducidas junto con la navegación localizada y l
 
 [Explore todos los ejemplos ejecutables](/es/examples), incluyendo HTML sin formato, otros frameworks y flujos de trabajo de i18n existentes.
 
-## ¿Ya tiene i18n? Conserve lo que funciona.
+<a id="already-have-i18n-keep-what-works"></a>
+## ¿Ya tienes i18n? Conserva lo que funciona.
 
 No tiene que empezar de nuevo.
 
@@ -289,6 +306,7 @@ No tiene que empezar de nuevo.
 <img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="source-string-calls"></a>
 ### Llamadas a cadenas de origen
 
 Mantén las llamadas a `t()` y gettext ya existentes en el proyecto.
@@ -302,6 +320,7 @@ Mantén las llamadas a `t()` y gettext ya existentes en el proyecto.
 <img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="json-bundles"></a>
 ### Paquetes JSON
 
 Traduce archivos de localización anidados, incluyendo espacios de nombres de i18next. La navegación del sitio y los catálogos de temas pertenecen a la [traducción de documentos](/es/guide/add-i18n-to-website#what-gets-translated), no a esta ruta.
@@ -315,6 +334,7 @@ Traduce archivos de localización anidados, incluyendo espacios de nombres de i1
 <img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="intlayer-dictionaries"></a>
 ### Diccionarios de Intlayer
 
 Mantén Intlayer y completa las traducciones faltantes, o migra la aplicación a llamadas de cadenas de origen.
@@ -326,7 +346,7 @@ Mantén Intlayer y completa las traducciones faltantes, o migra la aplicación a
 
 ¿También tienes diagramas? [Traduce las etiquetas de texto SVG](/es/guide/svg-translation/) junto con tu aplicación o documentos.
 
-<a id="quick-install"></a>
+<a id="ready-to-add-your-first-language"></a>
 ## ¿Listo para añadir tu primer idioma?
 
 <div class="home-cta">
@@ -349,7 +369,7 @@ Para Python, [descarga el ejecutable independiente](/es/guide/installation#stand
 
 </div>
 
-<a id="explore-the-documentation"></a>
+<a id="go-deeper-when-you-need-to"></a>
 ## Profundiza cuando lo necesites
 
 [Integraciones](/es/guide/integrations/) · [Proveedores de LLM](/es/guide/providers-and-models) · [Modelos de IA](/es/guide/ai-models) · [Configuración](/es/reference/configuration) · [Referencia de la CLI](/es/reference/cli-commands/)

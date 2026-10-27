@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Python アプリケーション
 
 `ai-i18n-tools`は、Python、Jinja、Django、Qtの`.ui`ファイルからUI文字列を抽出し、ソース言語の文字列をキーとするフラットなJSON、GNU gettextカタログ、またはその両方を書き込みます。`sourceLocale`はどの言語でもかまいません。ランタイムヘルパーは、標準ライブラリの`i18n.py`です（Python 3.10以降）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid、FastAPIがそのヘルパーを呼び出します。DjangoはDjango独自のgettextを使用します。
@@ -7,7 +7,7 @@
 
 実行可能なコピーは `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` に存在します。これらは Python プロジェクトです。最初の 3 つは virtualenv と `pip install -r requirements.txt` を使用します。`python-gettext` は標準ライブラリのみを使用します。これらは npm パッケージではありません。リリースアーカイブ `ai-i18n-tools-python-examples.zip` には同じ 4 つのディレクトリが含まれています。npm tarball およびスタンドアロン実行可能ファイルには含まれていません。
 
-<a id="init"></a>
+<a id="scaffold"></a>
 ## スキャフォールド
 
 ```bash
@@ -23,8 +23,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 
 スキャンルートは `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache`、および `.eggs` をスキップします。
 
-<a id="calls"></a>
-## 翻訳される呼び出し
+<a id="calls-that-translate"></a>
+## 翻訳用の呼び出し
 
 最初にカタログエントリを検索し、次に補間を行います。
 
@@ -74,8 +74,8 @@ Gettext ファイルはコンテキストに `msgctxt` を、複数形に `msgid
 
 英語のソースロケールと明示的な複数形ソースを持つ `t(..., plurals=True)` は、モデルをスキップし、ソース文字列から `one` / `other` を保存します。
 
-<a id="locale"></a>
-## 各フレームワークにおけるロケール
+<a id="locale-in-each-framework"></a>
+## 各フレームワークのロケール
 
 `set_locale` は `ContextVar` トークンを返します。FastAPI や Flask のミドルウェアを含め、`finally` でリセットしてください。これにより、同時リクエスト間でロケールが漏洩するのを防ぎます。
 

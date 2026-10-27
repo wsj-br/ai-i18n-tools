@@ -106,7 +106,7 @@ Optional: override collection with `docs[].nextraMetaGlob` or restrict translata
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — English sources at `content/en/`, committed `pt-BR` and `zh-Hans` page trees, inline `_meta.ts` files, and `app/_dictionaries/{locale}.ts`. One server component (`app/_components/feedback-links.tsx`) uses `t()` through a flat-bundle lookup so custom chrome can sit beside the dictionary. Run `pnpm run dev` on port 3070.
 
-<a id="agent-prompt-dictionary"></a>
+<a id="agent-prompt-dictionary-and-routes"></a>
 ## Agent prompt: dictionary and routes
 
 Use this when the site still has hardcoded layout strings and no `content/en/` tree. It follows the default path (dictionary + `_meta.ts` + `translate-docs`). It does not introduce `t()`.

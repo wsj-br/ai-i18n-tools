@@ -60,7 +60,7 @@ Exportations clés (couramment utilisées — voir `src/index.ts` pour la surfac
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` de démarrage par préréglage intégré utilisé par `init -P`. |
 | `PROVIDER_PRESETS` | Mappage prédéfini du fournisseur intégré (`baseUrl`, `apiKeyEnv`). |
 
-<a id="python-runtime"></a>
+<a id="python-runtime-i18npy"></a>
 ## Environnement d'exécution Python (`i18n.py`)
 
 `init -t ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent ce module dans le projet lorsque `i18n.py` est manquant. Il s'agit d'un utilitaire de la bibliothèque standard pour Python 3.10 ou version ultérieure. Importez-le depuis ce fichier. Les fonctions ci-dessous sont distinctes des exports Node du tableau ci-dessus. Les projets Django conservent le gettext de Django, donc `ui-python-django` n'écrit pas `i18n.py`.

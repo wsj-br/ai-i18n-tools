@@ -36,7 +36,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide e PyWebView chamam o a
 
 Leia `?lang=` ou `Accept-Language` no middleware, chame `set_locale` e `reset_locale` em `finally` para que solicitações simultâneas mantenham sua própria localidade. Detalhes: [Locale — FastAPI](/pt-BR/guide/ui-strings/python#fastapi).
 
-<a id="flask"></a>
+<a id="flask-and-pyramid"></a>
 ### Flask e Pyramid
 
 O exemplo [python-flask](/pt-BR/examples#python-flask) usa JSON simples. `init -t ui-python-flask` é o layout gettext em `translations/` para um aplicativo que já usa catálogos no estilo Flask-Babel. De qualquer forma, defina a localidade a partir da requisição e injete `_`, `t`, `current_locale`, `ui_languages` e `direction` no contexto do template. O Pyramid usa o mesmo padrão de escopo de requisição. Detalhes: [Locale — Flask and Pyramid](/pt-BR/guide/ui-strings/python#flask).
@@ -46,12 +46,12 @@ O exemplo [python-flask](/pt-BR/examples#python-flask) usa JSON simples. `init -
 
 Mantenha `gettext`, `ngettext` e `{% blocktrans %}`. `init -t ui-python-django` corresponde ao diretório `locale/` do Django e ao domínio `django`, e mantém o runtime do Django no lugar. Detalhes: [Locale — Django](/pt-BR/guide/ui-strings/python#django).
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### gettext existente
 
 Deixe `_()`, `gettext()` e `ngettext()` no lugar. Aponte `ui.gettext` para a árvore de catálogo atual e execute `extract`, depois `translate-ui`. O exemplo [python-gettext](/pt-BR/examples#python-gettext) é apenas gettext (`flatOutput: false`). `init -t ui-python-gettext` também grava JSON simples. Detalhes: [Locale — Existing gettext](/pt-BR/guide/ui-strings/python#gettext).
 
-<a id="desktop"></a>
+<a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt e PyWebView
 
 Chame `t()` ou `_()` ao criar cada widget Tkinter, depois reconstrua o texto visível após `set_locale`. As chamadas `self.tr("...")` do PyQt e PySide são extraídas, e os arquivos `.ui` do Qt contribuem com elementos `<string>`, a menos que `notr="true"`. Para PyWebView ou PyWebKit, extraia o shell Python com um template acima e extraia a página HTML com marcadores `data-i18n` ou com um documento HTML por localidade. Detalhes: [Locale — Tkinter](/pt-BR/guide/ui-strings/python#tkinter), [PyQt / PySide](/pt-BR/guide/ui-strings/python#pyqt) e [PyWebView](/pt-BR/guide/ui-strings/python#pywebview).

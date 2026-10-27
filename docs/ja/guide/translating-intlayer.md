@@ -1,10 +1,10 @@
-<a id="translating-intlayer"></a>
-# Intlayer をその場で翻訳する
+<a id="translating-intlayer-in-place"></a>
+# Intlayer をインプレースで翻訳する
 
 [Intlayer](https://intlayer.org/) は、翻訳を型付きコンテンツ辞書に保持するアプリケーション、または翻訳管理システムや人手翻訳を使用するアプリケーションに適したソリューションです。`translate-intlayer` はその読者向けです。これは、`*.content.ts` 辞書内の欠落しているロケールのリーフと古くなったロケールのリーフを、その場で埋めます。辞書は信頼できる唯一の情報源のまま、Intlayer は実行時に残り、ai-i18n-tools は翻訳エンジン（プロバイダー選択、用語集、翻訳コンテキスト、モデルのフォールバック）として機能します。
 
-<a id="which-one"></a>
-## Intlayer を維持するか、ソース文字列呼び出しへ移行するか
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
+## Intlayer を維持するか、ソース文字列の呼び出しに移行するか？
 
 | 対象読者 | コマンド | ガイド |
 | --- | --- | --- |

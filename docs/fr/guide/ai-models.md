@@ -5,10 +5,10 @@ Un modèle est un système nommé sur votre fournisseur, tel que `google/gemini-
 
 Choisissez la liste pour ce projet avec `suggest-models`, ou avec le même classement dans le tableau de bord de traduction sous **Modèles**. Les deux classent les modèles de chat du fournisseur actif à partir de benchmarks publiés et peuvent écrire le résultat dans `translationModels`. Configurez d'abord le fournisseur et sa clé d'API : [Fournisseurs de LLM](/fr/guide/providers-and-models).
 
-<a id="suggest-models"></a>
-## Commencer avec une liste restreinte classée
+<a id="start-with-a-ranked-shortlist"></a>
+## Commencer par une liste restreinte classée
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### Depuis la ligne de commande
 
 `suggest-models` classe les modèles de chat que le fournisseur actif propose actuellement et affiche un tableau succinct. La qualité est la valeur par défaut : les mesures de traduction et un score de préférence général comptent plus que le prix.
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` privilégie un tarif plus bas tout en maintenant un plancher de qualité, de sorte qu'un modèle bon marché sans mesure reste en dessous des modèles qui ont des scores. `--quality` est la valeur par défaut. Passer les deux indicateurs est une erreur.
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### Depuis le tableau de bord
 
 L'onglet **Modèles** affiche le même classement, avec une case à cocher sur chaque ligne.
@@ -42,8 +42,8 @@ Ouvrez **Modèles**. Choisissez **Qualité** ou **Prix**. Cochez les lignes que 
 
 **Prix de sortie max.** et **Delta d'indice min.** correspondent à `suggest-models --max-output-price` et `--min-delta`. Contrôles et colonnes : [Onglet Modèles](/fr/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
-### Comment le classement est établi
+<a id="how-the-ranking-chooses"></a>
+### Fonctionnement du classement
 
 La liste restreinte est un classement de benchmark du catalogue de chat en direct du fournisseur. La première exécution télécharge trois jeux de données publics et peut prendre un certain temps. Les exécutions ultérieures réutilisent le cache de 7 jours à l'emplacement `<cacheDir>/benchmark-scores.json` (généralement `.translation-cache/benchmark-scores.json`).
 
@@ -61,7 +61,7 @@ Qualité, le profil par défaut, accorde plus d'importance au score ChrF et à l
 
 Tous les indicateurs, y compris `--json`, `--list` et la formule de score : [suggest-models](/fr/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## Pourquoi la liste contient plusieurs modèles
 
 <a id="model-fallback-chain"></a>
@@ -115,8 +115,8 @@ Exemple (OpenRouter). Les ID montrent la forme des trois listes. Prenez `transla
 
 Listes prédéfinies de `init` et référence des champs : [Configuration — `provider` and `providers`](/fr/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
-## Vérifier, lister et évaluer
+<a id="check-list-and-benchmark"></a>
+## Vérifier, lister et benchmarker
 
 Une fois la liste restreinte configurée, ces commandes permettent de l'inspecter. La traduction peut s'exécuter avant que vous ne les utilisiez.
 

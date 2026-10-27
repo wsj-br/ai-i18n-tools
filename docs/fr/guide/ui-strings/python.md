@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Applications Python
 
 `ai-i18n-tools` extrait les chaînes d'IU de Python et des fichiers `.ui` Jinja, Django et Qt, puis écrit du JSON plat dont les clés sont les chaînes de la langue source, des catalogues GNU gettext, ou les deux. `sourceLocale` peut être n'importe quelle langue. L'utilitaire d'exécution est un `i18n.py` de la bibliothèque standard (Python 3.10 ou plus récent). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid et FastAPI appellent cet utilitaire. Django utilise son propre gettext.
@@ -7,8 +7,8 @@ Ajouter des locales à une application monolingue existante : [Ajouter l'i18n à
 
 Les copies exécutables se trouvent dans `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Ce sont des projets Python. Les trois premiers utilisent un virtualenv et `pip install -r requirements.txt`. `python-gettext` utilise uniquement la bibliothèque standard. Ce ne sont pas des paquets npm. L'archive de version `ai-i18n-tools-python-examples.zip` contient les quatre mêmes répertoires. L'archive tar npm et l'exécutable autonome ne les contiennent pas.
 
-<a id="init"></a>
-## Scaffold
+<a id="scaffold"></a>
+## Génération
 
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
@@ -23,8 +23,8 @@ Traduisez également le fichier README du dépôt : ajoutez `--with-readme` à l
 
 Les racines d'analyse ignorent `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` et `.eggs`.
 
-<a id="calls"></a>
-## Appels qui traduisent
+<a id="calls-that-translate"></a>
+## Appels de traduction
 
 Recherchez d'abord l'entrée du catalogue, puis effectuez l'interpolation.
 
@@ -74,7 +74,7 @@ Les fichiers Gettext utilisent `msgctxt` pour le contexte et `msgid` / `msgid_pl
 
 `t(..., plurals=True)` avec une locale source anglaise et une source plurielle explicite ignore le modèle et stocke `one` / `other` à partir des chaînes sources.
 
-<a id="locale"></a>
+<a id="locale-in-each-framework"></a>
 ## Locale dans chaque framework
 
 `set_locale` renvoie un jeton `ContextVar`. Réinitialisez-le dans `finally`, y compris dans les middlewares FastAPI et Flask, afin que les requêtes simultanées ne provoquent pas de fuite de paramètres régionaux.

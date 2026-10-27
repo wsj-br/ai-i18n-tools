@@ -116,7 +116,10 @@ function collectContentFiles(cwd: string, roots: string[]): string[] {
   return collectFilesByExtension(roots, [".ts"], cwd).filter((f) => isContentFile(f));
 }
 
-function translateUiBlock(config: I18nConfig, selector?: string): { block: UiConfig; index: number } {
+function translateUiBlock(
+  config: I18nConfig,
+  selector?: string
+): { block: UiConfig; index: number } {
   if (!selector?.trim()) {
     const block = config.ui[0];
     if (!block) {
@@ -320,9 +323,7 @@ export async function runTranslateIntlayer(
 
   // Dry run must not create the on-disk cache; read staleness from an existing DB only.
   const cache =
-    dryRun && !cacheDbExists
-      ? new TranslationCache(":memory:")
-      : new TranslationCache(cacheDirAbs);
+    dryRun && !cacheDbExists ? new TranslationCache(":memory:") : new TranslationCache(cacheDirAbs);
 
   if (dryRun) {
     try {
@@ -454,10 +455,7 @@ export async function runTranslateIntlayer(
   }
 }
 
-async function defaultTranslate(
-  config: I18nConfig,
-  opts: TranslateDelegateOptions
-): Promise<void> {
+async function defaultTranslate(config: I18nConfig, opts: TranslateDelegateOptions): Promise<void> {
   await runTranslateUI(config, {
     cwd: opts.cwd,
     locales: opts.locales,

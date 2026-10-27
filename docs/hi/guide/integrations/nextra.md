@@ -106,8 +106,8 @@ JSON साइडकार (`i18n/meta.en.json`) या पतली `_meta.ts` 
 
 [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/` पर अंग्रेज़ी स्रोत, कमिट किए गए `pt-BR` और `zh-Hans` पेज ट्री, इनलाइन `_meta.ts` फ़ाइलें, और `app/_dictionaries/{locale}.ts`। एक सर्वर कंपोनेंट (`app/_components/feedback-links.tsx`) एक फ़्लैट-बंडल लुकअप के माध्यम से `t()` का उपयोग करता है ताकि कस्टम क्रोम डिक्शनरी के बगल में बैठ सके। पोर्ट 3070 पर `pnpm run dev` चलाएँ।
 
-<a id="agent-prompt-dictionary"></a>
-## एजेंट प्रॉम्प्ट: डिक्शनरी और रूट्स
+<a id="agent-prompt-dictionary-and-routes"></a>
+## एजेंट प्रॉम्प्ट: शब्दकोश और रूट्स
 
 इसका उपयोग तब करें जब साइट में अभी भी हार्डकोडेड लेआउट स्ट्रिंग हों और कोई `content/en/` ट्री न हो। यह डिफ़ॉल्ट पाथ (डिक्शनरी + `_meta.ts` + `translate-docs`) का अनुसरण करता है। यह `t()` पेश नहीं करता है।
 

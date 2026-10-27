@@ -13,10 +13,10 @@
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "dependencies": {
-    "fumadocs-core": "^16.17.7",
-    "fumadocs-mdx": "^15.4.9",
-    "fumadocs-ui": "^16.17.7",
-    "next": "^16.4.2",
+    "fumadocs-core": "^16.17.8",
+    "fumadocs-mdx": "^15.4.10",
+    "fumadocs-ui": "^16.17.8",
+    "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

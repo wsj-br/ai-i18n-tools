@@ -145,7 +145,7 @@ The language-list settings are the same as in the hybrid example. They are omitt
 
 Append the `docs` object from the hybrid example and set `features.translateDocs` to `true`. If the config already has a `docs` array (a VitePress or Docusaurus site, for example), append the README object as a second entry. `sync` runs every block. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) does this: one block for the docs site, one flat block for `README.md`.
 
-<a id="language-list"></a>
+<a id="add-the-language-list"></a>
 ## Add the language list
 
 Put this line in `README.md`, where readers should see the other languages. A short label on the line above it is normal prose and will be translated.
@@ -239,7 +239,7 @@ jobs:
 
 Use the environment variable for the provider you configured. Ollama does not apply on a hosted runner unless you install it there.
 
-<a id="quality"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## Say that the translation is automatic
 
 AI translations can be wrong. A short note at the bottom of the README, like the one in [this repository's README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), tells readers the other languages were machine-translated and should be checked before you rely on them.

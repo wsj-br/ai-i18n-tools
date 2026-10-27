@@ -145,7 +145,7 @@ As configurações da lista de idiomas são as mesmas do exemplo híbrido. Elas 
 
 Anexe o objeto `docs` do exemplo híbrido e defina `features.translateDocs` como `true`. Se a configuração já tiver um array `docs` (um site VitePress ou Docusaurus, por exemplo), anexe o objeto README como uma segunda entrada. `sync` executa todos os blocos. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) faz isso: um bloco para o site de documentação, um bloco simples para `README.md`.
 
-<a id="language-list"></a>
+<a id="add-the-language-list"></a>
 ## Adicionar a lista de idiomas
 
 Coloque esta linha em `README.md`, onde os leitores devem ver os outros idiomas. Um rótulo curto na linha acima é prosa normal e será traduzido.
@@ -239,8 +239,8 @@ jobs:
 
 Use a variável de ambiente para o provedor que você configurou. Ollama não se aplica em um runner hospedado, a menos que você o instale lá.
 
-<a id="quality"></a>
-## Informe que a tradução é automática
+<a id="say-that-the-translation-is-automatic"></a>
+## Informar que a tradução é automática
 
 As traduções de IA podem estar incorretas. Uma nota curta no final do README, como a que está no [README deste repositório](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), informa aos leitores que os outros idiomas foram traduzidos por máquina e devem ser verificados antes de você confiar neles.
 

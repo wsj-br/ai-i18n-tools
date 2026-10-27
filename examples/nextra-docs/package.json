@@ -13,7 +13,7 @@
     "i18n:cleanup": "node ../../bin/ai-i18n-tools.mjs cleanup"
   },
   "dependencies": {
-    "next": "^16.4.2",
+    "next": "^16.4.3",
     "nextra": "^4.6.1",
     "nextra-theme-docs": "^4.6.1",
     "react": "^19.3.1",

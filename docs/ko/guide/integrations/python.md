@@ -36,7 +36,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생�
 
 미들웨어에서 `?lang=` 또는 `Accept-Language`을 읽고, `set_locale`를 호출하며, 동시 요청이 각자의 로케일을 유지하도록 `finally`에서 `reset_locale`을 수행하십시오. 자세한 내용: [Locale — FastAPI](/ko/guide/ui-strings/python#fastapi).
 
-<a id="flask"></a>
+<a id="flask-and-pyramid"></a>
 ### Flask 및 Pyramid
 
 [python-flask](/ko/examples#python-flask) 예제는 플랫 JSON을 사용합니다. `init -t ui-python-flask`은 이미 Flask-Babel 스타일 카탈로그를 사용하는 앱의 `translations/` 아래에 있는 gettext 레이아웃입니다. 어느 경우든 요청에서 로캘을 설정하고 `_`, `t`, `current_locale`, `ui_languages` 및 `direction`을 템플릿 컨텍스트에 삽입하십시오. Pyramid도 동일한 요청 범위 패턴을 사용합니다. 자세한 내용: [Locale — Flask and Pyramid](/ko/guide/ui-strings/python#flask).
@@ -46,12 +46,12 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생�
 
 `gettext`, `ngettext` 및 `{% blocktrans %}`를 유지하십시오. `init -t ui-python-django`은 Django의 `locale/` 디렉터리 및 `django` 도메인과 일치하며 Django의 런타임을 그대로 둡니다. 자세한 내용: [Locale — Django](/ko/guide/ui-strings/python#django).
 
-<a id="gettext"></a>
+<a id="existing-gettext"></a>
 ### 기존 gettext
 
 `_()`, `gettext()` 및 `ngettext()`를 그대로 두십시오. `ui.gettext`을 현재 카탈로그 트리로 지정하고 `extract`를 실행한 다음 `translate-ui`를 실행하십시오. [python-gettext](/ko/examples#python-gettext) 예제는 gettext 전용(`flatOutput: false`)입니다. `init -t ui-python-gettext`도 플랫 JSON을 작성합니다. 자세한 내용: [Locale — Existing gettext](/ko/guide/ui-strings/python#gettext).
 
-<a id="desktop"></a>
+<a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt 및 PyWebView
 
 각 Tkinter 위젯을 생성할 때 `t()` 또는 `_()`을 호출한 다음 `set_locale` 이후에 표시되는 텍스트를 다시 빌드하십시오. PyQt 및 PySide `self.tr("...")` 호출은 추출되며, `notr="true"`이 아닌 경우 Qt `.ui` 파일이 `<string>` 요소를 제공합니다. PyWebView 또는 PyWebKit의 경우 위 템플릿으로 Python 셸을 추출하고 `data-i18n` 마커를 사용하거나 로캘당 하나의 HTML 문서를 사용하여 HTML 페이지를 추출하십시오. 자세한 내용: [Locale — Tkinter](/ko/guide/ui-strings/python#tkinter), [PyQt / PySide](/ko/guide/ui-strings/python#pyqt) 및 [PyWebView](/ko/guide/ui-strings/python#pywebview).

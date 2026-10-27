@@ -5,10 +5,10 @@
 
 इस प्रोजेक्ट के लिए सूची `suggest-models` के साथ चुनें, या **मॉडल** के तहत ट्रांसलेशन डैशबोर्ड में उसी रैंकिंग के साथ चुनें। दोनों सक्रिय प्रोवाइडर के चैट मॉडल को प्रकाशित बेंचमार्क से रैंक करते हैं और परिणाम को `translationModels` में लिख सकते हैं। पहले प्रोवाइडर और उसकी API कुंजी सेट करें: [LLM प्रोवाइडर](/hi/guide/providers-and-models)।
 
-<a id="suggest-models"></a>
-## एक रैंक की गई शॉर्टलिस्ट से शुरू करें
+<a id="start-with-a-ranked-shortlist"></a>
+## रैंक की गई छोटी सूची से शुरू करें
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### कमांड लाइन से
 
 `suggest-models` उन चैट मॉडलों को रैंक करता है जो सक्रिय प्रोवाइडर वर्तमान में ऑफ़र करता है और एक छोटी तालिका प्रिंट करता है। क्वालिटी डिफ़ॉल्ट है: अनुवाद के माप और एक सामान्य प्राथमिकता स्कोर कीमत से ज़्यादा मायने रखते हैं।
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` कम दर के साथ आगे बढ़ता है और फिर भी एक क्वालिटी फ़्लोर बनाए रखता है, इसलिए बिना माप वाला एक सस्ता मॉडल उन मॉडलों से नीचे रहता है जिनके स्कोर हैं। `--quality` डिफ़ॉल्ट है। दोनों फ़्लैग पास करना एक त्रुटि है।
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### डैशबोर्ड से
 
 **मॉडल** टैब प्रत्येक पंक्ति पर एक चेकबॉक्स के साथ समान रैंकिंग दिखाता है।
@@ -42,7 +42,7 @@ ai-i18n-tools dashboard
 
 **अधिकतम आउटपुट कीमत** और **न्यूनतम इंडेक्स डेल्टा** `suggest-models --max-output-price` और `--min-delta` से मेल खाते हैं। नियंत्रण और कॉलम: [मॉडल टैब](/hi/guide/translation-dashboard/models)।
 
-<a id="how-models-are-ranked"></a>
+<a id="how-the-ranking-chooses"></a>
 ### रैंकिंग कैसे चुनती है
 
 शॉर्टलिस्ट प्रोवाइडर के लाइव चैट कैटलॉग की एक बेंचमार्क रैंकिंग है। पहला रन तीन सार्वजनिक डेटासेट डाउनलोड करता है और इसमें कुछ समय लग सकता है। बाद के रन `<cacheDir>/benchmark-scores.json` (आमतौर पर `.translation-cache/benchmark-scores.json`) पर 7-दिन के कैश का पुनः उपयोग करते हैं।
@@ -61,7 +61,7 @@ ChrF आपके `sourceLocale` और `targetLocales` के लिए languag
 
 हर फ़्लैग, जिसमें `--json`, `--list` शामिल हैं, और स्कोर फ़ॉर्मूला: [suggest-models](/hi/reference/cli-commands/models#suggest-models)।
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## सूची में एक से ज़्यादा मॉडल क्यों हैं
 
 <a id="model-fallback-chain"></a>
@@ -115,8 +115,8 @@ ChrF आपके `sourceLocale` और `targetLocales` के लिए languag
 
 `init` से प्रीसेट सूचियाँ, और फ़ील्ड संदर्भ: [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers)।
 
-<a id="validate-and-compare-models"></a>
-## जाँचें, सूचीबद्ध करें और बेंचमार्क करें
+<a id="check-list-and-benchmark"></a>
+## जाँच करें, सूचीबद्ध करें, और बेंचमार्क करें
 
 एक बार जब शॉर्टलिस्ट कॉन्फ़िग में आ जाती है, तो ये कमांड इसका निरीक्षण करते हैं। आप उनका उपयोग करने से पहले अनुवाद चला सकते हैं।
 

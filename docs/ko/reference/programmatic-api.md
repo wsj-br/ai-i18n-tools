@@ -60,8 +60,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |
 | `PROVIDER_PRESETS` | 내장 공급자 사전 설정 맵 (`baseUrl`, `apiKeyEnv`). |
 
-<a id="python-runtime"></a>
-## Python 런타임 (`i18n.py`)
+<a id="python-runtime-i18npy"></a>
+## 파이썬 런타임(`i18n.py`)
 
 `init -t ui-python`, `ui-python-gettext` 및 `ui-python-flask`는 `i18n.py`이(가) 누락된 경우 이 모듈을 프로젝트에 작성합니다. 이는 Python 3.10 이상을 위한 표준 라이브러리 도우미입니다. 해당 파일에서 가져오십시오. 아래 함수들은 위 표의 Node 내보내기와는 별개입니다. Django 프로젝트는 Django의 gettext를 유지하므로 `ui-python-django`는 `i18n.py`을(를) 작성하지 않습니다.
 

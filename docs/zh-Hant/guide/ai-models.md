@@ -5,10 +5,10 @@
 
 使用 `suggest-models` 或在翻譯儀表板的 **模型** 下使用相同的排名，為此專案選擇清單。兩者都會根據已發布的基準對當前供應商的聊天模型進行排名，並可將結果寫入 `translationModels`。請先設定供應商及其 API 金鑰：[LLM 供應商](/zh-Hant/guide/providers-and-models)。
 
-<a id="suggest-models"></a>
-## 從排名候選清單開始
+<a id="start-with-a-ranked-shortlist"></a>
+## 從排名後的候選清單開始
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### 從命令列
 
 `suggest-models` 會對當前供應商目前提供的聊天模型進行排名，並印出一份簡短的表格。預設為品質優先：翻譯測量指標和一般偏好分數的權重高於價格。
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` 會優先考慮較低的費率，但仍會維持品質底線，因此沒有測量值的廉價模型排名會低於有分數的模型。`--quality` 是預設值。同時傳遞這兩個旗標會導致錯誤。
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### 從儀表板
 
 **模型** 標籤頁會顯示相同的排名，且每一列都有一個核取方塊。
@@ -42,7 +42,7 @@ ai-i18n-tools dashboard
 
 **最高輸出價格** 和 **最小指數差異** 分別對應 `suggest-models --max-output-price` 和 `--min-delta`。控制項和欄位：[模型標籤頁](/zh-Hant/guide/translation-dashboard/models)。
 
-<a id="how-models-are-ranked"></a>
+<a id="how-the-ranking-chooses"></a>
 ### 排名如何選擇
 
 此候選清單是根據供應商的即時聊天目錄所做的基準排名。首次執行時會下載三個公開資料集，可能需要一些時間。之後的執行會重複使用位於 `<cacheDir>/benchmark-scores.json` (通常是 `.translation-cache/benchmark-scores.json`) 的 7 天快取。
@@ -61,8 +61,8 @@ ChrF 使用 languagebench 為您的 `sourceLocale` 和 `targetLocales` 提供的
 
 每個旗標，包括 `--json`、`--list` 以及分數公式：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
-<a id="why-more-than-one-model"></a>
-## 為何清單中有多個模型
+<a id="why-the-list-has-more-than-one-model"></a>
+## 為何清單中有超過一個模型
 
 <a id="model-fallback-chain"></a>
 ### 模型備用鏈
@@ -115,8 +115,8 @@ ChrF 使用 languagebench 為您的 `sourceLocale` 和 `targetLocales` 提供的
 
 來自 `init` 的預設清單，以及欄位參考：[設定 — `provider` 與 `providers`](/zh-Hant/reference/configuration#provider-and-providers)。
 
-<a id="validate-and-compare-models"></a>
-## 檢查、列出與基準測試
+<a id="check-list-and-benchmark"></a>
+## 檢查、列出和基準測試
 
 將候選清單放入設定後，這些指令會檢查它。您可以在使用這些指令前就執行翻譯。
 

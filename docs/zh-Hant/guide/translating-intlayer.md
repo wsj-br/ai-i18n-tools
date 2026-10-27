@@ -1,10 +1,10 @@
-<a id="translating-intlayer"></a>
+<a id="translating-intlayer-in-place"></a>
 # 就地翻譯 Intlayer
 
 [Intlayer](https://intlayer.org/) 對於將翻譯保存在類型化內容字典中，或使用翻譯管理系統和人工翻譯的應用程式來說，是個很好的解決方案。`translate-intlayer` 正是為這類使用者所設計。它會就地填補您 `*.content.ts` 字典內遺失和過時的語系葉節點。字典仍是真實來源，Intlayer 則在執行階段運作，而 ai-i18n-tools 則扮演翻譯引擎的角色（負責提供者選擇、詞彙表、翻譯情境和模型備援）。
 
-<a id="which-one"></a>
-## 保留 Intlayer，或移轉至來源字串呼叫？
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
+## 保留 Intlayer，或改用來源字串呼叫？
 
 | 您的使用者類型 | 指令 | 指南 |
 | --- | --- | --- |

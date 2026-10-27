@@ -9,6 +9,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — VitePress `chunkSizeWarningLimit` is 1000 so the Japanese and Korean local-search indexes (about 870 kB and 705 kB) no longer warn during `pnpm docs:build`.
+- **Fixed**: examples — `@tailwindcss/node` uses lightningcss 1.33 so Fumadocs `::highlight(fd-search)` rules no longer warn during `next build`. Tailwind 4.3 still pins 1.32, which does not recognize that pseudo-element.
+- **Added**: scripts — `upgrade-dependencies` installs each `examples/python-*` requirement at the newest PyPI release that still supports that example's `requires-python`, runs `smoke_framework.py`, and records that version as the `>=` floor in `requirements.txt` and `pyproject.toml`. `python-gettext` has no third-party packages and is skipped. Set `UPGRADE_SKIP_PYTHON=1` to skip this phase.
+- **Changed**: examples — Python example requirement floors now match the newest release `smoke_framework.py` passed against for Python 3.10: `fastapi` `0.162.0`, `uvicorn` `0.54.0`, `flask` `3.1.3`, `streamlit` `1.65.0` (`1.66` requires Python 3.11).
 - **Changed**: ci — Release binaries uploads with `actions/upload-artifact@v7` and downloads with `actions/download-artifact@v8`, which run on Node.js 24.
 - **Changed**: ci — Python example jobs use `actions/setup-python@v7`.
 - **Fixed**: scripts — `ensure-built` treats macOS Mach-O `pnpm-native` as a native binary, so `pnpm install` no longer runs it with `node`.

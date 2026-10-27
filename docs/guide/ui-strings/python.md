@@ -1,4 +1,4 @@
-<a id="python"></a>
+<a id="python-applications"></a>
 # Python applications
 
 `ai-i18n-tools` extracts UI strings from Python and from Jinja, Django, and Qt `.ui` files, then writes flat JSON keyed by the source-language string, GNU gettext catalogs, or both. `sourceLocale` can be any language. The runtime helper is a standard-library `i18n.py` (Python 3.10 or newer). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, and FastAPI call that helper. Django uses Django's own gettext.
@@ -7,7 +7,7 @@ Adding locales to an existing single-language app: [Add i18n to a Python app](/g
 
 Runnable copies live in `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, and `examples/python-gettext`. They are Python projects. The first three use a virtualenv and `pip install -r requirements.txt`. `python-gettext` uses only the standard library. They are not npm packages. The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories. The npm tarball and the standalone executable do not.
 
-<a id="init"></a>
+<a id="scaffold"></a>
 ## Scaffold
 
 ```bash
@@ -23,7 +23,7 @@ Also translate the repository README: add `--with-readme` to the `init` command 
 
 Scan roots skip `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, and `.eggs`.
 
-<a id="calls"></a>
+<a id="calls-that-translate"></a>
 ## Calls that translate
 
 Look up the catalog entry first, then interpolate.
@@ -74,7 +74,7 @@ Gettext files use `msgctxt` for context and `msgid` / `msgid_plural` for plurals
 
 `t(..., plurals=True)` with an English source locale and an explicit plural source skips the model and stores `one` / `other` from the source strings.
 
-<a id="locale"></a>
+<a id="locale-in-each-framework"></a>
 ## Locale in each framework
 
 `set_locale` returns a `ContextVar` token. Reset it in `finally`, including FastAPI and Flask middleware, so concurrent requests do not leak a locale.

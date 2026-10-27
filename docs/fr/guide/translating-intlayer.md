@@ -1,10 +1,10 @@
-<a id="translating-intlayer"></a>
-# Traduire Intlayer sur place
+<a id="translating-intlayer-in-place"></a>
+# Traduction d'Intlayer sur place
 
 [Intlayer](https://intlayer.org/) est une bonne solution pour les applications qui conservent les traductions dans des dictionnaires de contenu typés, ou qui utilisent un système de gestion de traduction et la traduction humaine. `translate-intlayer` s’adresse à ce public. Il remplit les feuilles de paramètres régionaux manquantes et obsolètes dans vos dictionnaires `*.content.ts`, sur place. Les dictionnaires restent la source de vérité, Intlayer reste à l’exécution, et ai-i18n-tools agit comme moteur de traduction (sélection du fournisseur, glossaire, contexte de traduction et repli du modèle).
 
-<a id="which-one"></a>
-## Conserver Intlayer ou passer aux appels de chaînes sources ?
+<a id="keep-intlayer-or-move-to-source-string-calls"></a>
+## Conserver Intlayer ou passer à des appels de chaîne source ?
 
 | Votre public | Commande | Guide |
 | --- | --- | --- |

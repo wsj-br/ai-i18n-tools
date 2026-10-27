@@ -1,5 +1,5 @@
-<a id="llm-providers-and-models"></a>
-# एलएलएम प्रोवाइडर्स
+<a id="llm-providers"></a>
+# LLM प्रदाता
 
 प्रत्येक अनुवाद पाइपलाइन — `translate-ui`, `translate-docs`, `translate-json`, और `translate-svg` — एक ही प्रदाता-अज्ञेयवादी क्लाइंट के माध्यम से LLM को टेक्स्ट भेजती है। इनमें से कोई भी कमांड चलने से पहले, `ai-i18n-tools.config.json` में **कम से कम एक प्रदाता** कॉन्फ़िगर करें और अपने वातावरण या `.env` (**Ollama** को छोड़कर अंतर्निहित प्रीसेट) में मिलान करने वाली **API कुंजी** सेट करें। `init` एक स्टार्टर `provider` / `providers` ब्लॉक लिखता है; आपको अभी भी सक्रिय प्रीसेट के लिए क्रेडेंशियल प्रदान करने होंगे।
 
@@ -37,8 +37,8 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 
 अपने वातावरण या `.env` फ़ाइल में सक्रिय प्रदाता की API कुंजी सेट करें। CLI शेल में पहले से सेट किए गए चर को ओवरराइड किए बिना कार्यशील निर्देशिका से `.env` को स्वचालित रूप से लोड करता है। [पर्यावरण चर](/hi/reference/environment-variables) देखें।
 
-<a id="cheaperinference-zero-data-retention"></a>
-### शून्य डेटा प्रतिधारण (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### शून्य डेटा प्रतिधारण (सस्ता अनुमान)
 
 `providers.cheaperinference.zeroDataRetention` वैकल्पिक है और डिफ़ॉल्ट रूप से बंद रहता है। इसे तब सेट करें जब इस प्रोजेक्ट को प्रॉम्प्ट केवल उन प्रोवाइडर के माध्यम से भेजने होंगे जो उन्हें नहीं रखते हैं।
 
@@ -54,8 +54,8 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 फ़्लैग को बंद रहने दें जब Cheaper Inference खाते को शून्य डेटा प्रतिधारण की आवश्यकता नहीं है। यदि खाते के लिए [डेटा सुरक्षा](https://platform.cheaperinference.com/dashboard/data-protection) पहले से चालू है, तो Cheaper Inference फिर भी शून्य-डेटा-प्रतिधारण मार्ग के बिना किसी मॉडल को अस्वीकार कर देता है। त्रुटि उस मॉडल का नाम बताती है। खाता नीति बनाए रखने के लिए, `zeroDataRetention` को `true` पर सेट करें और शून्य-डेटा-प्रतिधारण कैटलॉग से किसी मॉडल पर स्विच करें। अस्वीकृत मॉडल को रखने के लिए, उस पृष्ठ पर शून्य डेटा प्रतिधारण बंद कर दें। फ़ॉलबैक चेन फिर अगले कॉन्फ़िगर किए गए मॉडल को आज़माती है।
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
-### मॉडल्स
+<a id="models"></a>
+### मॉडल
 
 मॉडल्स चुनना, फ़ॉलबैक लिस्ट, और `suggest-models`, `check-models`, `list-models`, और `bench-models` [एआई मॉडल्स](/hi/guide/ai-models) पर हैं।
 

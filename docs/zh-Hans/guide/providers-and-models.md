@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # LLM 提供商
 
 每个翻译流水线 —— `translate-ui`、`translate-docs`、`translate-json` 和 `translate-svg` —— 都通过同一个与提供商无关的客户端将文本发送给 LLM。在这些命令运行之前，请在 `ai-i18n-tools.config.json` 中配置**至少一个提供商**，并在您的环境或 `.env` 中设置匹配的**API 密钥**（内置预设 **Ollama** 除外）。`init` 会写入一个初始的 `provider` / `providers` 块；您仍需为当前使用的预设提供凭据。
@@ -37,8 +37,8 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 在您的环境或`.env`文件中设置活动提供商的API密钥。CLI会自动从工作目录加载`.env`，而不会覆盖shell中已设置的变量。请参阅[环境变量](/zh-Hans/reference/environment-variables)。
 
-<a id="cheaperinference-zero-data-retention"></a>
-### 零数据保留 (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### 零数据保留（更便宜的推理）
 
 `providers.cheaperinference.zeroDataRetention` 是可选的，默认关闭。当此项目必须仅通过不保留提示的提供商发送提示时，请设置此项。
 
@@ -54,7 +54,7 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 当 Cheaper Inference 账户不需要零数据保留时，请关闭此标志。如果账户已启用 [数据保护](https://platform.cheaperinference.com/dashboard/data-protection)，Cheaper Inference 仍会拒绝没有零数据保留路由的模型。错误会指明该模型。为保留账户策略，请将 `zeroDataRetention` 设置为 `true`，并切换到零数据保留目录中的模型。为保留被拒绝的模型，请在该页面上关闭零数据保留。回退链会尝试下一个配置的模型。
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### 模型
 
 有关选择模型、备用列表以及 `suggest-models`、`check-models`、`list-models` 和 `bench-models` 的信息，请参阅 [AI 模型](/zh-Hans/guide/ai-models)。

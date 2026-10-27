@@ -1,5 +1,5 @@
-<a id="migrating-from-intlayer"></a>
-# 從 Intlayer 遷移至來源字串呼叫
+<a id="migrating-from-intlayer-to-source-strings-calls"></a>
+# 從 Intlayer 遷移至 source-strings 呼叫
 
 [Intlayer](https://intlayer.org/) 非常適合透過具類型內容字典或翻譯管理系統來管理翻譯的應用程式。`ai-i18n-tools` 則針對不同的工作流程：使用來源字串呼叫 (例如 `t('English source')`) 的程式碼。`t()` 內的字串是以 `sourceLocale` 撰寫，可以是任何語言。這些範例中的英文僅為範例。透過將來源字串直接保留在程式碼中，此方法簡化了維護並降低了複雜度。當此模型符合您的需求時，`migrate-intlayer` 會匯入您現有的字典，並自動重寫相容的呼叫位置。它會讓其餘的位置保持不變，並產生一份包含具體取代說明的報告，讓您能分階段完成遷移，或將報告放入 AI 編碼代理程式，為您完成遷移。
 

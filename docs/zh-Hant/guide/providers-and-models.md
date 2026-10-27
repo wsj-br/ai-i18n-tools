@@ -1,5 +1,5 @@
-<a id="llm-providers-and-models"></a>
-# LLM 提供者
+<a id="llm-providers"></a>
+# LLM 供應商
 
 每個翻譯管線 — `translate-ui`、`translate-docs`、`translate-json` 與 `translate-svg` — 都透過相同的供應商無關用戶端將文字傳送至 LLM。在任何這些指令執行之前，請在 `ai-i18n-tools.config.json` 中設定**至少一個供應商**，並在您的環境或 `.env` 中設定對應的**API 金鑰**（除了 **Ollama** 之外的內建預設值）。`init` 會寫入起始的 `provider` / `providers` 區塊；您仍須為使用中的預設值提供憑證。
 
@@ -37,8 +37,8 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 在您的環境或 `.env` 檔案中設定活動供應商的 API 鍵。CLI 會自動從工作目錄載入 `.env`，而不會覆寫 shell 中已設定的變數。請參閱[環境變數](/zh-Hant/reference/environment-variables)。
 
-<a id="cheaperinference-zero-data-retention"></a>
-### 零資料保留 (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### 零資料保留 (較便宜的推論)
 
 `providers.cheaperinference.zeroDataRetention` 為選用，預設為關閉。當此專案必須僅透過不保留提示的供應商傳送提示時，請設定此項。
 
@@ -54,7 +54,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 當 Cheaper Inference 帳戶不需要零資料保留時，請保持旗標關閉。如果帳戶已啟用[資料保護](https://platform.cheaperinference.com/dashboard/data-protection)，Cheaper Inference 仍會拒絕沒有零資料保留路由的模型。錯誤會指出該模型。若要保留帳戶政策，請將 `zeroDataRetention` 設定為 `true` 並切換到零資料保留目錄中的模型。若要保留被拒絕的模型，請在該頁面上關閉零資料保留。備援鏈會接著嘗試下一個已設定的模型。
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### 模型
 
 選擇模型、備援清單，以及 `suggest-models`、`check-models`、`list-models` 和 `bench-models` 的相關說明請見 [AI 模型](/zh-Hant/guide/ai-models)。

@@ -1,5 +1,5 @@
-<a id="migrating-from-intlayer"></a>
-# Migración de Intlayer a llamadas de cadenas de origen
+<a id="migrating-from-intlayer-to-source-strings-calls"></a>
+# Migración de Intlayer a llamadas de source-strings
 
 [Intlayer](https://intlayer.org/) es ideal para aplicaciones que gestionan traducciones mediante diccionarios de contenido tipado o sistemas de gestión de traducciones. `ai-i18n-tools` se dirige a un flujo de trabajo diferente: código que utiliza llamadas de cadenas de origen como `t('English source')`. La cadena dentro de `t()` está escrita en `sourceLocale`, que puede ser cualquier idioma. El inglés en estos ejemplos es solo una muestra. Al mantener esa cadena de origen directamente en el código, este enfoque simplifica el mantenimiento y reduce la complejidad. Cuando este modelo se ajusta a sus necesidades, `migrate-intlayer` importa sus diccionarios existentes y reescribe automáticamente los sitios de llamada compatibles. Deja los sitios restantes sin cambios y genera un informe con instrucciones de reemplazo específicas, lo que le permite completar la migración por etapas o entregar el informe a un agente de codificación de IA para que complete la migración por usted.
 

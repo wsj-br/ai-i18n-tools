@@ -5,10 +5,10 @@ Un modelo es un sistema con nombre en tu proveedor, como `google/gemini-2.5-flas
 
 Elige la lista para este proyecto con `suggest-models` o con la misma clasificación en el panel de traducción, en **Modelos**. Ambos clasifican los modelos de chat del proveedor activo a partir de benchmarks publicados y pueden escribir el resultado en `translationModels`. Primero, configura el proveedor y su clave de API: [Proveedores de LLM](/es/guide/providers-and-models).
 
-<a id="suggest-models"></a>
-## Empezar con una preselección clasificada
+<a id="start-with-a-ranked-shortlist"></a>
+## Comience con una lista corta clasificada
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### Desde la línea de comandos
 
 `suggest-models` clasifica los modelos de chat que el proveedor activo ofrece actualmente e imprime una tabla breve. La calidad es la opción predeterminada: las mediciones de traducción y una puntuación de preferencia general cuentan más que el precio.
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` prioriza una tarifa más baja y aun así mantiene un mínimo de calidad, por lo que un modelo barato sin medición se mantiene por debajo de los modelos que sí tienen puntuaciones. `--quality` es la opción predeterminada. Pasar ambos indicadores es un error.
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### Desde el panel
 
 La pestaña **Modelos** muestra la misma clasificación, con una casilla de verificación en cada fila.
@@ -42,7 +42,7 @@ Abre **Modelos**. Elige **Calidad** o **Precio**. Marca las filas que quieras. L
 
 **Precio máximo de salida** y **Delta de índice mínimo** se corresponden con `suggest-models --max-output-price` y `--min-delta`. Controles y columnas: [Pestaña Modelos](/es/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
+<a id="how-the-ranking-chooses"></a>
 ### Cómo elige la clasificación
 
 La preselección es una clasificación de benchmarks del catálogo de chat en vivo del proveedor. La primera ejecución descarga tres conjuntos de datos públicos y puede tardar un rato. Las ejecuciones posteriores reutilizan la caché de 7 días en `<cacheDir>/benchmark-scores.json` (normalmente `.translation-cache/benchmark-scores.json`).
@@ -61,7 +61,7 @@ ChrF utiliza las puntuaciones de traducción de languagebench para tus `sourceLo
 
 Todas las marcas, incluidas `--json`, `--list` y la fórmula de puntuación: [suggest-models](/es/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## Por qué la lista tiene más de un modelo
 
 <a id="model-fallback-chain"></a>
@@ -115,8 +115,8 @@ Ejemplo (OpenRouter). Los ID muestran la forma de las tres listas. Toma `transla
 
 Listas preestablecidas de `init` y la referencia de campos: [Configuración: `provider` y `providers`](/es/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
-## Comprobar, listar y evaluar
+<a id="check-list-and-benchmark"></a>
+## Comprobar, listar y evaluar comparativamente
 
 Una vez que la preselección esté en la configuración, estos comandos la inspeccionan. La traducción puede ejecutarse antes de que los uses.
 

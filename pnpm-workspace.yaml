@@ -109,6 +109,9 @@ minimumReleaseAgeExclude:
   - "@astrojs/telemetry@3.4.1"
 overrides:
   ai-i18n-tools: workspace:*
+  # Tailwind 4.3 pins lightningcss 1.32, which warns on the CSS Custom Highlight
+  # pseudo-element `::highlight()` that Fumadocs emits. 1.33 parses it.
+  "@tailwindcss/node>lightningcss": 1.33.0
   postcss@<8.5.10: ^8.5.10
   serialize-javascript@<7.0.5: ^7.0.5
   uuid@<14.0.0: ">=14.0.0"
@@ -149,6 +152,7 @@ overrides:
   # got/cacheable-request still accepts 4.2.0. 4.3.0 is outside GHSA-ch52-4w7c-c8xp
   # (<=4.2.0). The patch below still blocks max-stale reuse that 4.3.0 left open.
   http-cache-semantics@<=4.2.0: 4.3.0
+  zod@<4.6.6: ^4.6.6
 patchedDependencies:
   nextra-theme-docs@4.6.1: patches/nextra-theme-docs@4.6.1.patch
   # No release past braces <=3.0.3 (GHSA-vfj7-8cjw-p6xm). The patch is the fix.

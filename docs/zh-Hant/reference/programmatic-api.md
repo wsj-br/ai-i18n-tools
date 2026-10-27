@@ -60,7 +60,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |
 | `PROVIDER_PRESETS` | 內建提供者預設映射（`baseUrl`、`apiKeyEnv`）。 |
 
-<a id="python-runtime"></a>
+<a id="python-runtime-i18npy"></a>
 ## Python 執行階段 (`i18n.py`)
 
 當缺少 `i18n.py` 時，`init -t ui-python`、`ui-python-gettext` 和 `ui-python-flask` 會將此模組寫入專案。這是適用於 Python 3.10 或更新版本的標準函式庫輔助程式。請從該檔案匯入它。下方的函式與上表中的 Node 匯出項目是分開的。Django 專案會保留 Django 的 gettext，因此 `ui-python-django` 不會寫入 `i18n.py`。

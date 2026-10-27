@@ -339,8 +339,8 @@ export default defineConfig({
   vite: {
     build: {
       // Local search indexes are already split per locale and lazy-loaded by
-      // VitePress; the Japanese index sits just over Vite's 600 kB default.
-      chunkSizeWarningLimit: 700,
+      // VitePress. The Japanese index is the largest, about 870 kB.
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         onwarn(warning, warn) {
           if (warning.message.includes("/* #__PURE__ */")) return;

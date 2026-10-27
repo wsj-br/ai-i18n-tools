@@ -5,10 +5,10 @@ Ein Modell ist ein benanntes System bei Ihrem Anbieter, wie z. B. `google/gemini
 
 Wählen Sie die Liste für dieses Projekt mit `suggest-models` aus oder mit derselben Rangliste im Translation-Dashboard unter **Modelle**. Beide erstellen eine Rangliste der Chat-Modelle des aktiven Anbieters anhand veröffentlichter Benchmarks und können das Ergebnis in `translationModels` schreiben. Richten Sie zuerst den Anbieter und seinen API-Schlüssel ein: [LLM-Anbieter](/de/guide/providers-and-models).
 
-<a id="suggest-models"></a>
-## Mit einer Ranglisten-Shortlist beginnen
+<a id="start-with-a-ranked-shortlist"></a>
+## Beginnen Sie mit einer Rangliste
 
-<a id="suggest-models-cli"></a>
+<a id="from-the-command-line"></a>
 ### Über die Befehlszeile
 
 `suggest-models` erstellt eine Rangliste der Chat-Modelle, die der aktive Anbieter derzeit anbietet, und gibt eine kurze Tabelle aus. Qualität ist die Standardeinstellung: Übersetzungsmessungen und eine allgemeine Präferenzbewertung zählen mehr als der Preis.
@@ -29,7 +29,7 @@ ai-i18n-tools suggest-models --apply
 
 `--price` priorisiert einen niedrigeren Preis und behält dennoch eine Qualitätsuntergrenze bei, sodass ein günstiges Modell ohne Messwert unter Modellen mit Scores bleibt. `--quality` ist die Standardeinstellung. Die Übergabe beider Flags ist ein Fehler.
 
-<a id="suggest-models-dashboard"></a>
+<a id="from-the-dashboard"></a>
 ### Über das Dashboard
 
 Der Tab **Modelle** zeigt dieselbe Rangliste mit einem Kontrollkästchen in jeder Zeile.
@@ -42,8 +42,8 @@ ai-i18n-tools dashboard
 
 **Max. Ausgabepreis** und **Min. Index-Delta** entsprechen `suggest-models --max-output-price` und `--min-delta`. Steuerelemente und Spalten: [Tab „Modelle“](/de/guide/translation-dashboard/models).
 
-<a id="how-models-are-ranked"></a>
-### Wie die Rangliste auswählt
+<a id="how-the-ranking-chooses"></a>
+### Wie die Rangfolge bestimmt wird
 
 Die Shortlist ist eine Benchmark-Rangliste des Live-Chat-Katalogs des Anbieters. Beim ersten Durchlauf werden drei öffentliche Datensätze heruntergeladen, was eine Weile dauern kann. Spätere Durchläufe verwenden den 7-Tage-Cache unter `<cacheDir>/benchmark-scores.json` (normalerweise `.translation-cache/benchmark-scores.json`) wieder.
 
@@ -61,7 +61,7 @@ Qualität, das Standardprofil, gewichtet ChrF und Arena Score höher als den Pre
 
 Jedes Flag, einschließlich `--json`, `--list` und die Bewertungsformel: [Modelle vorschlagen](/de/reference/cli-commands/models#suggest-models).
 
-<a id="why-more-than-one-model"></a>
+<a id="why-the-list-has-more-than-one-model"></a>
 ## Warum die Liste mehr als ein Modell enthält
 
 <a id="model-fallback-chain"></a>
@@ -115,7 +115,7 @@ Beispiel (OpenRouter). Die IDs zeigen die Struktur der drei Listen. Nehmen Sie `
 
 Voreingestellte Listen von `init` und die Feldreferenz: [Konfiguration — `provider` und `providers`](/de/reference/configuration#provider-and-providers).
 
-<a id="validate-and-compare-models"></a>
+<a id="check-list-and-benchmark"></a>
 ## Prüfen, auflisten und benchmarken
 
 Sobald die Shortlist in der Konfiguration ist, prüfen diese Befehle sie. Die Übersetzung kann ausgeführt werden, bevor Sie sie verwenden.

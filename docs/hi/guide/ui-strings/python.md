@@ -1,5 +1,5 @@
-<a id="python"></a>
-# पायथन (Python) एप्लिकेशन
+<a id="python-applications"></a>
+# Python एप्लिकेशन
 
 `ai-i18n-tools` Python से और Jinja, Django, और Qt `.ui` फ़ाइलों से UI स्ट्रिंग निकालता है, फिर स्रोत-भाषा स्ट्रिंग, GNU gettext कैटलॉग, या दोनों द्वारा कुंजीबद्ध फ़्लैट JSON लिखता है। `sourceLocale` कोई भी भाषा हो सकती है। रनटाइम हेल्पर एक मानक-पुस्तकालय `i18n.py` है (Python 3.10 या नया)। Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, और FastAPI उस हेल्पर को कॉल करते हैं। Django अपने स्वयं के gettext का उपयोग करता है।
 
@@ -7,8 +7,8 @@
 
 रन करने योग्य प्रतियां `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext` में रहती हैं। ये पायथन प्रोजेक्ट्स हैं। पहले तीन virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। ये npm पैकेज नहीं हैं। रिलीज़ आर्काइव `ai-i18n-tools-python-examples.zip` में वही चार डायरेक्टरीज़ शामिल हैं। npm टारबॉल और स्टैंडअलोन निष्पादन योग्य फ़ाइल में ये नहीं हैं।
 
-<a id="init"></a>
-## स्कैफ़ोल्ड (Scaffold)
+<a id="scaffold"></a>
+## स्काफ़ोल्ड
 
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
@@ -23,8 +23,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 
 स्कैन रूट्स `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, और `.eggs` को छोड़ देते हैं।
 
-<a id="calls"></a>
-## कॉल जो अनुवाद करते हैं
+<a id="calls-that-translate"></a>
+## अनुवाद करने वाले कॉल
 
 पहले कैटलॉग प्रविष्टि देखें, फिर इंटरपोलेट करें।
 
@@ -74,8 +74,8 @@ Gettext फ़ाइलें संदर्भ के लिए `msgctxt` औ�
 
 एक इंग्लिश सोर्स लोकेल और स्पष्ट प्लुरल सोर्स के साथ `t(..., plurals=True)`, मॉडल को छोड़ देता है और सोर्स स्ट्रिंग्स से `one` / `other` को स्टोर करता है।
 
-<a id="locale"></a>
-## प्रत्येक फ्रेमवर्क में लोकेल
+<a id="locale-in-each-framework"></a>
+## हर फ़्रेमवर्क में लोकेल
 
 `set_locale` एक `ContextVar` टोकन लौटाता है। इसे `finally` में रीसेट करें, जिसमें FastAPI और Flask मिडलवेयर शामिल हैं, ताकि समवर्ती अनुरोध (concurrent requests) किसी लोकेल को लीक न करें।
 

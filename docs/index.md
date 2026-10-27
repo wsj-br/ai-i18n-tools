@@ -3,14 +3,16 @@ layout: home
 title: ai-i18n-tools
 pageClass: home-onboarding
 description: >-
-  Take your single-language app, website, or repository docs multilingual with guided setup,
-  AI translation, and cached reruns. Start with JavaScript, TypeScript, Python, or a README.
+  Take your single-language app, website, or repository docs multilingual with
+  guided setup, AI translation, and cached reruns. Start with JavaScript,
+  TypeScript, Python, or a README.
 hero:
   name: ai-i18n-tools
   text: Take your single-language project multilingual.
   tagline: >-
-    Add languages to your app, website, or repository docs with guided setup and AI translation.
-    Choose your provider and models, and reuse cached translations as your project grows.
+    Add languages to your app, website, or repository docs with guided setup and
+    AI translation. Choose your provider and models, and reuse cached
+    translations as your project grows.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools logo
@@ -23,7 +25,7 @@ hero:
       link: /examples
 ---
 
-<a id="start-here"></a>
+<a id="start-with-the-project-you-have"></a>
 ## Start with the project you have
 
 One language today? Start here. That language can be any language: set it as `sourceLocale`. English is a common example in these guides. Internationalisation (i18n) prepares your project to support different languages; these guides take you from setup to your first translated experience, including the README your repository already shows on GitHub, GitLab, or any other host.
@@ -39,6 +41,7 @@ One language today? Start here. That language can be any language: set it as `so
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="javascript-or-typescript-app"></a>
 ### JavaScript or TypeScript app
 
 Turn plain-text buttons, labels, and messages into a multilingual UI. Set up your runtime, mark the text to translate, and wire language switching. Includes coding-agent prompts for the preparation step.
@@ -58,6 +61,7 @@ React · Next.js · Node.js · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-app"></a>
 ### Python app
 
 Wrap user-facing text and load translated messages with a generated helper, or keep native gettext. Run the translation CLI from a standalone executable with no separate Node.js installation.
@@ -75,6 +79,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="website-or-documentation"></a>
 ### Website or documentation
 
 Publish localized pages and connect them to your site's language routes. Follow framework-specific steps for navigation, theme labels, and the language menu.
@@ -92,6 +97,7 @@ VitePress · Starlight · Docusaurus · Astro
 <img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="repository-readme-and-docs"></a>
 ### Repository README and docs
 
 Translate `README.md` and other Markdown files into one file per language, with a row of links between them. Pair it with your app's UI strings, or translate the README on its own.
@@ -105,6 +111,7 @@ GitHub · GitLab · Bitbucket
 
 Not sure which path fits? [Add i18n to your project](/guide/add-i18n-to-your-project) lists every walkthrough. [See what ai-i18n-tools does](/guide/what-is-ai-i18n-tools) for how the pipelines fit together.
 
+<a id="from-setup-to-your-first-new-language"></a>
 ## From setup to your first new language
 
 <div class="home-steps">
@@ -117,6 +124,7 @@ Not sure which path fits? [Add i18n to your project](/guide/add-i18n-to-your-pro
 
 You handle runtime and routing setup, by hand or with a coding agent. The CLI handles extraction, translation, validation, and file generation—not automatic source rewriting or language-switcher installation. [Follow the full quick start](/guide/quick-start).
 
+<a id="your-source-text-ready-for-more-languages"></a>
 ## Your source text. Ready for more languages.
 
 This illustrative JS/TS example shows the shape of the result after runtime setup and translation. Marking the source string makes it discoverable; each generated locale file maps that sentence to its translation.
@@ -149,6 +157,7 @@ t("Save changes");
 
 The source sentence stays readable in your code. Your app loads the generated locale files at runtime. Want to see the full wiring? [Explore the working Next.js example](/examples#nextjs-app). Websites follow a different path: [generate localized pages](/guide/add-i18n-to-website) instead of wrapping every paragraph.
 
+<a id="built-for-the-next-update-too"></a>
 ## Built for the next update, too
 
 <div class="home-features">
@@ -162,6 +171,7 @@ The source sentence stays readable in your code. Your app loads the generated lo
 <img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="choose-your-provider-and-models"></a>
 ### Choose your provider and models
 
 Use supported providers like OpenAI, Anthropic, OpenRouter, Gemini, local Ollama, or nine other built-in options. You can also use any OpenAI-compatible provider. Translation quality follows the model list (`translationModels`, plus per-locale overrides). `suggest-models`, and the same ranking under dashboard **Models**, builds that list from published translation benchmarks.
@@ -175,6 +185,7 @@ Use supported providers like OpenAI, Anthropic, OpenRouter, Gemini, local Ollama
 <img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="reuse-work-already-done"></a>
 ### Reuse work already done
 
 Cached translations let reruns focus on new or changed text rather than translating everything again.
@@ -188,6 +199,7 @@ Cached translations let reruns focus on new or changed text rather than translat
 <img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="review-ai-output-locally"></a>
 ### Review AI output locally
 
 Inspect translations, correct wording, and manage terminology in the Translation Dashboard.
@@ -201,6 +213,7 @@ Inspect translations, correct wording, and manage terminology in the Translation
 <img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="keep-app-and-content-together"></a>
 ### Keep app and content together
 
 Translate app messages, documentation, nested locale JSON, and SVG text labels from one config. Enable only what you need.
@@ -214,6 +227,7 @@ Translate app messages, documentation, nested locale JSON, and SVG text labels f
 <img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="translate-the-readme-with-the-app"></a>
 ### Translate the README with the app
 
 One `sync` covers UI strings and repository Markdown, and writes a language row into the README.
@@ -223,6 +237,7 @@ One `sync` covers UI strings and repository Markdown, and writes a language row 
 </article>
 </div>
 
+<a id="see-a-working-project-first"></a>
 ## See a working project first
 
 These examples include configuration and committed translated files. Explore the output without an API key; rerunning translation requires a configured provider and usually a key. Local Ollama needs no API key.
@@ -235,6 +250,7 @@ These examples include configuration and committed translated files. Explore the
 <img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="a-multilingual-app"></a>
 ### A multilingual app
 
 See React components, runtime wiring, plurals, and language switching in a working Next.js project.
@@ -249,6 +265,7 @@ See React components, runtime wiring, plurals, and language switching in a worki
 <img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-in-practice"></a>
 ### Python in practice
 
 See how a Streamlit app wraps its messages and uses translated JSON without adding a JavaScript runtime to the app.
@@ -262,6 +279,7 @@ See how a Streamlit app wraps its messages and uses translated JSON without addi
 <img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="docs-in-more-languages"></a>
 ### Docs in more languages
 
 See translated VitePress pages alongside localized navigation and theme labels.
@@ -273,6 +291,7 @@ See translated VitePress pages alongside localized navigation and theme labels.
 
 [Browse all runnable examples](/examples), including plain HTML, other frameworks, and existing-i18n workflows.
 
+<a id="already-have-i18n-keep-what-works"></a>
 ## Already have i18n? Keep what works.
 
 You do not have to start over.
@@ -284,6 +303,7 @@ You do not have to start over.
 <img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="source-string-calls"></a>
 ### Source-string calls
 
 Keep the `t()` and gettext calls already in the project.
@@ -297,6 +317,7 @@ Keep the `t()` and gettext calls already in the project.
 <img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="json-bundles"></a>
 ### JSON bundles
 
 Translate nested locale files, including i18next namespaces. Site navigation and theme catalogs belong to [document translation](/guide/add-i18n-to-website#what-gets-translated), not this path.
@@ -310,6 +331,7 @@ Translate nested locale files, including i18next namespaces. Site navigation and
 <img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="intlayer-dictionaries"></a>
 ### Intlayer dictionaries
 
 Keep Intlayer and fill missing translations, or move the app onto source-string calls.
@@ -321,7 +343,7 @@ Keep Intlayer and fill missing translations, or move the app onto source-string 
 
 Also have diagrams? [Translate SVG text labels](/guide/svg-translation/) alongside your app or docs.
 
-<a id="quick-install"></a>
+<a id="ready-to-add-your-first-language"></a>
 ## Ready to add your first language?
 
 <div class="home-cta">
@@ -344,7 +366,7 @@ For Python, [download the standalone executable](/guide/installation#standalone-
 
 </div>
 
-<a id="explore-the-documentation"></a>
+<a id="go-deeper-when-you-need-to"></a>
 ## Go deeper when you need to
 
 [Integrations](/guide/integrations/) · [LLM providers](/guide/providers-and-models) · [AI Models](/guide/ai-models) · [Configuration](/reference/configuration) · [CLI reference](/reference/cli-commands/)

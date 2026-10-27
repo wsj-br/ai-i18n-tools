@@ -25,7 +25,7 @@ describe("extractQtUiCalls", () => {
     const calls = extractQtUiCalls(xml, "forms\\dialog.ui");
     expect(calls.map((call) => call.literal)).toEqual([
       "File & Edit",
-      '<Save> "now" \'please\'',
+      "<Save> \"now\" 'please'",
       "Raw <text>",
       "Code A and B",
     ]);

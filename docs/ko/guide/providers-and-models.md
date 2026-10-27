@@ -1,4 +1,4 @@
-<a id="llm-providers-and-models"></a>
+<a id="llm-providers"></a>
 # LLM 제공자
 
 모든 번역 파이프라인 — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` — 은 동일한 프로바이더 독립적 클라이언트를 통해 텍스트를 LLM으로 전송합니다. 이러한 명령을 실행하기 전에 `ai-i18n-tools.config.json`에서 **최소 한 개의 프로바이더**를 구성하고, 환경 변수 또는 `.env`에 일치하는 **API 키**를 설정해야 합니다 (**Ollama**를 제외한 내장 프리셋). `init`은(는) 시작용 `provider` / `providers` 블록을 작성하지만, 활성 프리셋에 대한 자격 증명은 직접 제공해야 합니다.
@@ -37,8 +37,8 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 활성 공급자의 API 키를 환경 또는 `.env` 파일에 설정합니다. CLI는 셸에 이미 설정된 변수를 재정의하지 않고 작업 디렉터리에서 `.env`을 자동으로 로드합니다. [환경 변수](/ko/reference/environment-variables)를 참조하세요.
 
-<a id="cheaperinference-zero-data-retention"></a>
-### 제로 데이터 보존 (Cheaper Inference)
+<a id="zero-data-retention-cheaper-inference"></a>
+### 제로 데이터 보존(더 저렴한 추론)
 
 `providers.cheaperinference.zeroDataRetention`은(는) 선택 사항이며 기본적으로 비활성화되어 있습니다. 이 프로젝트가 프롬프트를 보존하지 않는 공급자를 통해서만 전송해야 할 때 설정하십시오.
 
@@ -54,7 +54,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 Cheaper Inference 계정에서 제로 데이터 보존이 필요하지 않은 경우 이 플래그를 비활성화 상태로 두십시오. 계정에 [데이터 보호](https://platform.cheaperinference.com/dashboard/data-protection)가 이미 활성화되어 있는 경우에도 Cheaper Inference는 제로 데이터 보존 경로가 없는 모델을 거부합니다. 오류 메시지에 해당 모델의 이름이 표시됩니다. 계정 정책을 유지하려면 `zeroDataRetention`을(를) `true`(으)로 설정하고 제로 데이터 보존 카탈로그의 모델로 전환하십시오. 거부된 모델을 유지하려면 해당 페이지에서 제로 데이터 보존을 비활성화하십시오. 그러면 폴백 체인이 다음으로 구성된 모델을 시도합니다.
 
 <a id="model-fallback-chain"></a>
-<a id="validate-and-compare-models"></a>
+<a id="models"></a>
 ### 모델
 
 모델 선택, 대체 목록 및 `suggest-models`, `check-models`, `list-models`, `bench-models`는 [AI 모델](/ko/guide/ai-models) 페이지에 있습니다.

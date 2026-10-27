@@ -1,5 +1,5 @@
-<a id="migrating-from-intlayer"></a>
-# Migration von Intlayer zu Quellstring-Aufrufen
+<a id="migrating-from-intlayer-to-source-strings-calls"></a>
+# Migration von Intlayer zu source-strings-Aufrufen
 
 [Intlayer](https://intlayer.org/) ist ideal für Anwendungen, die Übersetzungen über typisierte Inhaltswörterbücher oder Übersetzungsmanagement-Systeme verwalten. `ai-i18n-tools` zielt auf einen anderen Workflow ab: Code, der Quellstring-Aufrufe wie z. B. `t('English source')` verwendet. Der String in `t()` ist in `sourceLocale` geschrieben, was jede beliebige Sprache sein kann. Englisch in diesen Beispielen ist nur ein Beispiel. Indem dieser Quellstring direkt im Code beibehalten wird, vereinfacht dieser Ansatz die Wartung und reduziert die Komplexität. Wenn dieses Modell Ihren Anforderungen entspricht, importiert `migrate-intlayer` Ihre vorhandenen Wörterbücher und schreibt kompatible Aufrufstellen automatisch um. Es lässt verbleibende Stellen unverändert und generiert einen Bericht mit spezifischen Ersetzungsanweisungen, was Ihnen ermöglicht, die Migration in Etappen abzuschließen oder den Bericht in einen KI-Codierungsagenten einzugeben, um die Migration für Sie abzuschließen.
 

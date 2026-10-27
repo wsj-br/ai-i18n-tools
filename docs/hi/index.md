@@ -27,7 +27,7 @@ hero:
 
 
 
-<a id="start-here"></a>
+<a id="start-with-the-project-you-have"></a>
 ## अपने मौजूदा प्रोजेक्ट से शुरू करें
 
 आज एक भाषा है? यहीं से शुरू करें। वह भाषा कोई भी हो सकती है: इसे `sourceLocale` के रूप में सेट करें। इन गाइडों में अंग्रेजी एक सामान्य उदाहरण है। अंतर्राष्ट्रीयकरण (i18n) आपके प्रोजेक्ट को विभिन्न भाषाओं का समर्थन करने के लिए तैयार करता है; ये गाइड आपको सेटअप से लेकर आपके पहले अनुवादित अनुभव तक ले जाती हैं, जिसमें वह README भी शामिल है जो आपकी रिपॉजिटरी GitHub, GitLab या किसी अन्य होस्ट पर पहले से दिखाती है।
@@ -43,6 +43,7 @@ hero:
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="javascript-or-typescript-app"></a>
 ### JavaScript या TypeScript ऐप
 
 सादे-पाठ वाले बटनों, लेबलों और संदेशों को बहुभाषी UI में बदलें। अपना रनटाइम सेट करें, अनुवाद करने के लिए टेक्स्ट को चिह्नित करें और भाषा स्विचिंग को वायर करें। तैयारी के चरण के लिए कोडिंग-एजेंट प्रॉम्प्ट शामिल हैं।
@@ -62,6 +63,7 @@ React · Next.js · Node.js · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="python-app"></a>
 ### Python ऐप
 
 उपयोगकर्ता-सामने वाले टेक्स्ट को रैप करें और जेनरेट किए गए हेल्पर के साथ अनुवादित संदेशों को लोड करें, या नेटिव गेटटेक्स्ट (gettext) रखें। बिना किसी अलग Node.js इंस्टॉलेशन के स्टैंडअलोन निष्पादन योग्य से अनुवाद CLI चलाएँ।
@@ -79,6 +81,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="website-or-documentation"></a>
 ### वेबसाइट या दस्तावेज़
 
 स्थानीयकृत पृष्ठ प्रकाशित करें और उन्हें अपनी साइट के भाषा मार्गों से जोड़ें। नेविगेशन, थीम लेबल और भाषा मेनू के लिए फ़्रेमवर्क-विशिष्ट चरणों का पालन करें।
@@ -96,6 +99,7 @@ VitePress · Starlight · Docusaurus · Astro
 <img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="repository-readme-and-docs"></a>
 ### रिपॉजिटरी README और दस्तावेज़
 
 `README.md` और अन्य मार्कडाउन फ़ाइलों का प्रति भाषा एक फ़ाइल में अनुवाद करें, उनके बीच लिंक की एक पंक्ति के साथ। इसे अपने ऐप की UI स्ट्रिंग के साथ जोड़ें, या README का अकेले अनुवाद करें।
@@ -109,7 +113,8 @@ GitHub · GitLab · Bitbucket
 
 निश्चित नहीं हैं कि कौन सा तरीका सही है? [अपने प्रोजेक्ट में i18n जोड़ें](/hi/guide/add-i18n-to-your-project) हर वॉकथ्रू को सूचीबद्ध करता है। [देखें कि ai-i18n-tools क्या करता है](/hi/guide/what-is-ai-i18n-tools) यह जानने के लिए कि पाइपलाइनें कैसे एक साथ फिट होती हैं।
 
-## सेटअप से आपकी पहली नई भाषा तक
+<a id="from-setup-to-your-first-new-language"></a>
+## सेटअप से लेकर आपकी पहली नई भाषा तक
 
 <div class="home-steps">
 
@@ -121,7 +126,8 @@ GitHub · GitLab · Bitbucket
 
 आप रनटाइम और रूटिंग सेटअप को मैन्युअल रूप से या कोडिंग एजेंट के साथ संभालते हैं। CLI निष्कर्षण, अनुवाद, सत्यापन और फ़ाइल जनरेशन को संभालता है—स्वचालित स्रोत पुनर्लेखन या भाषा-स्विचर इंस्टॉलेशन को नहीं। [पूर्ण त्वरित शुरुआत का पालन करें](/hi/guide/quick-start)।
 
-## आपका स्रोत टेक्स्ट। अधिक भाषाओं के लिए तैयार।
+<a id="your-source-text-ready-for-more-languages"></a>
+## आपका सोर्स टेक्स्ट. और भाषाओं के लिए तैयार.
 
 यह JS/TS का उदाहरण, रनटाइम सेटअप और अनुवाद के बाद परिणाम का स्वरूप दिखाता है। सोर्स स्ट्रिंग को मार्क करने से उसे खोजा जा सकता है; हर जेनरेट की गई लोकेल फ़ाइल उस वाक्य को उसके अनुवाद से मैप करती है।
 
@@ -153,6 +159,7 @@ t("Save changes");
 
 स्रोत वाक्य आपके कोड में पठनीय रहता है। आपका ऐप रनटाइम पर जेनरेट की गई लोकेल फ़ाइलों को लोड करता है। पूरी वायरिंग देखना चाहते हैं? [कार्यशील Next.js उदाहरण देखें](/hi/examples#nextjs-app)। वेबसाइटें एक अलग तरीका अपनाती हैं: हर पैराग्राफ को रैप करने के बजाय [स्थानीयकृत पृष्ठ जेनरेट करें](/hi/guide/add-i18n-to-website)।
 
+<a id="built-for-the-next-update-too"></a>
 ## अगले अपडेट के लिए भी बनाया गया
 
 <div class="home-features">
@@ -166,6 +173,7 @@ t("Save changes");
 <img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="choose-your-provider-and-models"></a>
 ### अपना प्रोवाइडर और मॉडल चुनें
 
 OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन्य बिल्ट-इन विकल्पों जैसे समर्थित प्रोवाइडर्स का उपयोग करें। आप किसी भी OpenAI-संगत प्रोवाइडर का भी उपयोग कर सकते हैं। अनुवाद की गुणवत्ता मॉडल सूची (`translationModels`, साथ ही प्रति-लोकेल ओवरराइड) का पालन करती है। `suggest-models`, और डैशबोर्ड **मॉडल्स** के तहत वही रैंकिंग, प्रकाशित अनुवाद बेंचमार्क से उस सूची का निर्माण करती है।
@@ -179,7 +187,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### पहले से किए गए काम का पुन: उपयोग करें
+<a id="reuse-work-already-done"></a>
+### पहले से किए गए काम का दोबारा इस्तेमाल करें
 
 कैश किए गए अनुवादों से पुनरावृत्ति नए या बदले हुए टेक्स्ट पर ध्यान केंद्रित कर पाती है, बजाय इसके कि सब कुछ फिर से अनुवाद किया जाए।
 
@@ -192,6 +201,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="review-ai-output-locally"></a>
 ### AI आउटपुट की स्थानीय रूप से समीक्षा करें
 
 अनुवाद डैशबोर्ड में अनुवादों का निरीक्षण करें, शब्दों को सही करें और शब्दावली का प्रबंधन करें।
@@ -205,7 +215,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### ऐप और सामग्री को एक साथ रखें
+<a id="keep-app-and-content-together"></a>
+### ऐप और कंटेंट को एक साथ रखें
 
 एक कॉन्फ़िग से ऐप संदेशों, दस्तावेज़ों, नेस्टेड लोकले JSON और SVG टेक्स्ट लेबल का अनुवाद करें। केवल वही सक्षम करें जिसकी आपको आवश्यकता है।
 
@@ -218,6 +229,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="translate-the-readme-with-the-app"></a>
 ### ऐप के साथ README का अनुवाद करें
 
 एक `sync` UI स्ट्रिंग और रिपॉजिटरी मार्कडाउन को कवर करता है, और README में एक भाषा पंक्ति लिखता है।
@@ -227,7 +239,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 </article>
 </div>
 
-## पहले एक कार्यशील प्रोजेक्ट देखें
+<a id="see-a-working-project-first"></a>
+## पहले एक वर्किंग प्रोजेक्ट देखें
 
 इन उदाहरणों में कॉन्फ़िगरेशन और कमिट की गई अनुवादित फ़ाइलें शामिल हैं। आउटपुट को बिना किसी API कुंजी के एक्सप्लोर करें; अनुवाद को फिर से चलाने के लिए एक कॉन्फ़िगर किए गए प्रदाता और आमतौर पर एक कुंजी की आवश्यकता होती है। लोकल ओलामा को किसी API कुंजी की आवश्यकता नहीं है।
 
@@ -239,6 +252,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
+<a id="a-multilingual-app"></a>
 ### एक बहुभाषी ऐप
 
 एक कार्यरत Next.js प्रोजेक्ट में रिएक्ट कंपोनेंट्स, रनटाइम वायरिंग, बहुवचन और भाषा स्विचिंग देखें।
@@ -253,7 +267,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### व्यवहार में पायथन
+<a id="python-in-practice"></a>
+### व्यवहार में Python
 
 देखें कि एक स्ट्रीमलिट ऐप अपने संदेशों को कैसे रैप करता है और ऐप में जावास्क्रिप्ट रनटाइम जोड़े बिना अनुवादित JSON का उपयोग करता है।
 
@@ -266,7 +281,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-### अधिक भाषाओं में दस्तावेज़
+<a id="docs-in-more-languages"></a>
+### और भाषाओं में दस्तावेज़
 
 स्थानीयकृत नेविगेशन और थीम लेबल के साथ अनुवादित वाइटप्रेस पेज देखें।
 
@@ -277,7 +293,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 
 [सभी चलाने योग्य उदाहरण ब्राउज़ करें](/hi/examples), जिसमें सादा HTML, अन्य फ़्रेमवर्क और मौजूदा i18n वर्कफ़्लो शामिल हैं।
 
-## क्या आपके पास पहले से i18n है? जो काम करता है उसे बनाए रखें।
+<a id="already-have-i18n-keep-what-works"></a>
+## पहले से i18n है? जो काम करता है उसे बनाए रखें.
 
 आपको फिर से शुरू करने की आवश्यकता नहीं है।
 
@@ -288,7 +305,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### स्रोत-स्ट्रिंग कॉल
+<a id="source-string-calls"></a>
+### सोर्स-स्ट्रिंग कॉल्स
 
 प्रोजेक्ट में पहले से मौजूद `t()` और gettext कॉल को बनाए रखें।
 
@@ -301,7 +319,8 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
-### JSON बंडल
+<a id="json-bundles"></a>
+### JSON बंडल्स
 
 नेस्टेड लोकैल फ़ाइलों का अनुवाद करें, जिसमें i18next नेमस्पेस शामिल हैं। साइट नेविगेशन और थीम कैटलॉग [दस्तावेज़ अनुवाद](/hi/guide/add-i18n-to-website#what-gets-translated) से संबंधित हैं, इस पाथ से नहीं।
 
@@ -314,6 +333,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 <img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
 </div>
 
+<a id="intlayer-dictionaries"></a>
 ### Intlayer डिक्शनरी
 
 Intlayer को बनाए रखें और छूटे हुए अनुवाद भरें, या ऐप को सोर्स-स्ट्रिंग कॉल पर ले जाएँ।
@@ -325,8 +345,8 @@ Intlayer को बनाए रखें और छूटे हुए अन�
 
 क्या आपके पास डायग्राम भी हैं? अपने ऐप या दस्तावेज़ों के साथ [SVG टेक्स्ट लेबल का अनुवाद करें](/hi/guide/svg-translation/)।
 
-<a id="quick-install"></a>
-## अपनी पहली भाषा जोड़ने के लिए तैयार हैं?
+<a id="ready-to-add-your-first-language"></a>
+## क्या आप अपनी पहली भाषा जोड़ने के लिए तैयार हैं?
 
 <div class="home-cta">
 
@@ -348,8 +368,8 @@ Python के लिए, [स्टैंडअलोन एक्ज़ीक�
 
 </div>
 
-<a id="explore-the-documentation"></a>
-## जब आपको आवश्यकता हो तो गहराई से जानें
+<a id="go-deeper-when-you-need-to"></a>
+## जब ज़रूरत हो तब और गहराई में जाएँ
 
 [इंटीग्रेशन](/hi/guide/integrations/) · [LLM प्रोवाइडर्स](/hi/guide/providers-and-models) · [AI मॉडल्स](/hi/guide/ai-models) · [कॉन्फ़िगरेशन](/hi/reference/configuration) · [CLI संदर्भ](/hi/reference/cli-commands/)
 
