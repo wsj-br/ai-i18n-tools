@@ -194,7 +194,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 8. **인라인 코드 범위** (`` `code` ``) 및 **굵게 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
 9. **마크다운 강조**(선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-모델이 반환된 후 `translate-docs`은 맵을 복원하고 세그먼트의 유효성을 검사합니다. 동일한 이중 중괄호 토큰 멀티셋이 있어야 하고, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커, <code v-pre>{{CDF_N}}</code>)은 순서가 지정된 하위 시퀀스를 유지해야 하며(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code>)은 단어 순서에 따라 이동할 수 있음), 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 이미 소스에 존재해야 합니다(따라서 새로 만든 토큰은 실패합니다). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다. 기계적 검사가 권한을 유지합니다.
+모델이 반환된 후 `translate-docs`는 맵을 복원하고 세그먼트를 검증합니다. 검증 시에는 동일한 중괄호 두 개 토큰의 다중 집합이 있어야 하고, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커, <code v-pre>{{CDF_N}}</code>)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(단, <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code>와 같은 콘텐츠 토큰은 어순에 따라 이동할 수 있음). 또한 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남아 있는 모든 중괄호 두 개 식별자는 소스에 이미 존재했던 것이어야 합니다(따라서 새로 만들어진 토큰은 실패합니다). 문서 프롬프트는 모델에 각 토큰을 한 번씩 복사하고 구조적 토큰 순서를 유지하며 새로운 중괄호 두 개 래퍼를 만들지 않도록 요청하지만, 기계적 검사가 최종 결정권을 가집니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
