@@ -2,9 +2,10 @@
  * Spawn the active package manager (pnpm/npm/yarn) with the given args.
  *
  * During lifecycle scripts, `npm_execpath` points at the package manager entry.
- * Older JS CLIs need `node <path> …`; pnpm 12 may set a native ELF/PE binary
+ * Older JS CLIs need `node <path> …`; pnpm 12 may set a native binary
  * (`pnpm-native`) which must be executed directly — `node` on that path throws
- * `SyntaxError: Invalid or unexpected token` (ELF magic bytes).
+ * `SyntaxError: Invalid or unexpected token`. Linux is ELF, Windows is PE,
+ * and macOS is Mach-O.
  */
 import fs from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -28,6 +29,19 @@ export function isNativeBinary(filePath) {
     }
     // Windows PE (MZ)
     if (buf[0] === 0x4d && buf[1] === 0x5a) {
+      return true;
+    }
+    // Mach-O (macOS). Thin 64-bit little-endian is what corepack ships for
+    // Apple Silicon and modern Intel. Fat binaries use CA FE BA BE, which is
+    // also the Java class magic; npm_execpath is never a .class file.
+    if (
+      n >= 4 &&
+      ((buf[0] === 0xcf && buf[1] === 0xfa && buf[2] === 0xed && buf[3] === 0xfe) ||
+        (buf[0] === 0xce && buf[1] === 0xfa && buf[2] === 0xed && buf[3] === 0xfe) ||
+        (buf[0] === 0xfe && buf[1] === 0xed && buf[2] === 0xfa && buf[3] === 0xcf) ||
+        (buf[0] === 0xfe && buf[1] === 0xed && buf[2] === 0xfa && buf[3] === 0xce) ||
+        (buf[0] === 0xca && buf[1] === 0xfe && buf[2] === 0xba && buf[3] === 0xbe))
+    ) {
       return true;
     }
     return false;

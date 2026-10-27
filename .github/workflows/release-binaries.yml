@@ -1,7 +1,10 @@
-# Build unsigned Node.js SEA binaries and attach them to a GitHub Release.
+# Build unsigned Node.js SEA binaries and, when a release exists, attach them.
 # Runner labels: ubuntu-latest (linux-x64), ubuntu-24.04-arm (linux-arm64),
 # macos-latest (macos-arm64), macos-15-intel (macos-x64), windows-latest (win-x64).
 # macos-15-intel is a GitHub-hosted Intel macOS 15 larger runner.
+#
+# Manual runs: leave the tag empty to keep the binaries as Actions artifacts.
+# Set the tag to an existing release (for example v1.10.0) to upload.
 name: Release binaries
 
 on:
@@ -10,8 +13,8 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing release tag to upload binaries to (for example v1.10.0)
-        required: true
+        description: Release tag to upload binaries to. Leave empty to keep them as Actions artifacts only.
+        required: false
         type: string
 
 permissions:
@@ -75,6 +78,7 @@ jobs:
 
   publish:
     needs: build
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

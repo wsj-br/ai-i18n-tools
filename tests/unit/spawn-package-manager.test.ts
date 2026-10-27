@@ -32,6 +32,15 @@ describe("isNativeBinary", () => {
     expect(isNativeBinary(pe)).toBe(true);
   });
 
+  it("detects Mach-O magic (pnpm-native on macOS CI)", () => {
+    const macho64le = tmpFile("pnpm-native", Buffer.from([0xcf, 0xfa, 0xed, 0xfe, 0, 0, 0, 0]));
+    const macho32le = tmpFile("pnpm-native-32", Buffer.from([0xce, 0xfa, 0xed, 0xfe]));
+    const fat = tmpFile("pnpm-native-fat", Buffer.from([0xca, 0xfe, 0xba, 0xbe]));
+    expect(isNativeBinary(macho64le)).toBe(true);
+    expect(isNativeBinary(macho32le)).toBe(true);
+    expect(isNativeBinary(fat)).toBe(true);
+  });
+
   it("treats JS / shell placeholders as non-native", () => {
     const js = tmpFile("pnpm.mjs", 'console.log("ok");\n');
     const shell = tmpFile("pnpm", "# placeholder\nif ! command -v node; then exit 1; fi\n");

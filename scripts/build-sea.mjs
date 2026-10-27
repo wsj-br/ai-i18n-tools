@@ -154,7 +154,11 @@ smoke(binary, ["list-languages"], root);
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "ai-i18n-sea-"));
 try {
-  smoke(binary, ["init", "-t", "ui-python", "-o", "ai-i18n-tools.config.json"], temp);
+  smoke(
+    binary,
+    ["init", "-t", "ui-python", "-P", "openrouter", "-o", "ai-i18n-tools.config.json"],
+    temp
+  );
   smoke(binary, ["status"], temp);
 } finally {
   fs.rmSync(temp, { recursive: true, force: true });
