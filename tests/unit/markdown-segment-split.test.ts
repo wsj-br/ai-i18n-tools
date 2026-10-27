@@ -95,6 +95,35 @@ describe("splitMarkdownSegmentPiece", () => {
     expect(items[3]!.join("\n")).toContain("Only accessible");
   });
 
+  it("does not start a new list item on a marker inside a fenced sample", () => {
+    const content = [
+      "::: tip",
+      "- one",
+      "- two",
+      "```js",
+      "- not an item",
+      "const x = 1;",
+      "```",
+      "- three",
+      ":::",
+    ].join("\n");
+    const items = splitIntoTopLevelListItems(content.split("\n"));
+    const owner = items.filter((item) => item.join("\n").includes("const x = 1;"));
+    expect(owner).toHaveLength(1);
+    expect(owner[0]!.join("\n")).toContain("```js");
+    expect(owner[0]!.join("\n")).toContain("- not an item");
+    expect(owner[0]!.join("\n")).toContain("```");
+
+    const parts = splitMarkdownSegmentPiece(
+      { type: "admonition", content, translatable: true, startLine: 1 },
+      segmentSplittingSchema.parse({ enabled: true, maxListItemsPerChunk: 2 })
+    );
+    const part = parts.find((p) => p.content.includes("const x = 1;"));
+    expect(part?.content).toContain("```js");
+    expect(part?.content).toContain("```");
+    expect(part?.content.indexOf("```js")).toBeLessThan(part!.content.indexOf("- not an item"));
+  });
+
   it("splits long top-level lists into chunks with tight joins", () => {
     const seg = {
       type: "paragraph" as const,

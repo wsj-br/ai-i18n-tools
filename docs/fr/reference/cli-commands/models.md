@@ -8,7 +8,7 @@
 
 Valide chaque ID de modèle configuré par rapport à la liste `GET /models` du fournisseur actif (appartenance et `expiration_date`). Nécessite la clé API de ce fournisseur (aucune pour les fournisseurs sans clé comme Ollama). Se termine avec un code d'erreur non nul si un ID configuré est manquant ou a expiré, et respecte le délai d'expiration de la requête résolu (`requestTimeout` ou `requestTimeoutMs` sur le fournisseur, sinon la valeur de niveau supérieur). Lorsque le fournisseur renvoie des informations de tarification (par exemple, OpenRouter), affiche également le coût en USD par million de jetons pour l'invite/la complétion. Lorsque `providers.cheaperinference.zeroDataRetention` est vrai, la vérification utilise `GET /v1/models?zdr=true` et échoue un ID que le catalogue omet.
 
-**Voir aussi :** [Fournisseurs LLM](/fr/guide/providers-and-models)
+**Voir aussi :** [Modèles d'IA](/fr/guide/ai-models#check-models), [Fournisseurs de LLM](/fr/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Liste tous les modèles que le fournisseur actif annonce via sa liste `GET /mode
 
 **Options clés :** `-P` / `--provider`
 
-**Voir aussi :** [Fournisseurs LLM](/fr/guide/providers-and-models)
+**Voir aussi :** [Modèles d'IA](/fr/guide/ai-models#list-models), [Fournisseurs de LLM](/fr/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ Le pied de page attribue languagebench (CC BY-SA 4.0), l'Arena Score de LMArena 
 
 **Options clés :** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**Voir aussi :** [Fournisseurs LLM](/fr/guide/providers-and-models), [Onglet Modèles](/fr/guide/translation-dashboard/models)
+**Voir aussi :** [Modèles d'IA](/fr/guide/ai-models), [Onglet Modèles](/fr/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ Le pied de page attribue languagebench (CC BY-SA 4.0), l'Arena Score de LMArena 
 Les modèles sont par défaut l'union des ID `translationModels`, `uiModels` et `localeModels` du fournisseur actif (à remplacer par `--model`) ; l'échantillon est par défaut un bloc Markdown anglais intégré (à remplacer par `--text` / `--file`) ; la source/cible sont par défaut la configuration `sourceLocale` et la première locale cible `docs[]`, en revenant à la locale `targetLocales` de niveau supérieur (à remplacer par `--source` / `--target`). Exécute les modèles en parallèle, limité par la configuration `concurrency` (par défaut 4) ; chaque modèle est toujours chronométré individuellement. Nécessite la clé API du fournisseur actif.
 
 **Options clés :** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**Voir aussi :** [Modèles d'IA](/fr/guide/ai-models#bench-models)
 
 ---
 

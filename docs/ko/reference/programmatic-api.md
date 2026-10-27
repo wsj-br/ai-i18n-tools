@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Node.js에서 구성을 스캐폴드합니다. 네 번째 인수는 내장된 프리셋입니다 (`cwd`는 세 번째입니다):
+Node.js에서 구성을 스캐폴드합니다. 네 번째 인수는 기본 제공 프리셋입니다(세 번째 인수는 `cwd`). 선택 사항인 다섯 번째 인수 `{ withReadme: true }`은(는) 템플릿에 `README.md`이(가) 아직 나열되지 않은 경우 플랫 README 문서 블록을 추가하고, 해당 블록이 추가되었는지 여부를 반환합니다.
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 주요 내보내기 (일반적으로 사용됨 — 전체 공개 표면은 `src/index.ts` 참조):
@@ -53,7 +56,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `Glossary` / `GlossaryMatcher` | 번역 용어집을 로드하고 적용하며, 선택적인 용어 `Context` 메모를 포함합니다. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 캐시 무효화를 위한 `glossary.contextFiles` 및 지문 가이드를 로드합니다. |
 | `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점. |
-| `writeInitConfigFile` | 기본 구성 JSON을 작성합니다 (`template`, `cwd`, 그리고 필수 `providerKey`). |
+| `writeInitConfigFile` | 시작 구성 JSON(`template`, `cwd`, 필수 `providerKey` 및 선택 사항 `{ withReadme }`)을 작성합니다. `{ readmeBlockAdded, hasReadmeBlock }`을(를) 반환합니다. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |
 | `PROVIDER_PRESETS` | 내장 공급자 사전 설정 맵 (`baseUrl`, `apiKeyEnv`). |
 
@@ -75,5 +78,5 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `_(message)` | 리터럴 하나를 조회한 다음 카탈로그 문자열 또는 메시지 자체를 반환합니다. |
 | `t(template, *, plurals=False, count=None, **values)` | 리터럴을 조회한 다음 보간합니다. `translate`은(는) 동일한 함수입니다. Python 3.14에서 `translate(t"Hello, {name}!")`은(는) 템플릿과 해당 값을 유지합니다. 키워드 인수는 템플릿 문자열에서 가져온 값을 재정의합니다. |
 | `ngettext(singular, plural, n, **values)` | 복수형 조회 후 보간합니다. `count`은(는) 형식 문자열에서 사용할 수 있습니다. |
-| `pgettext(context, message, **values)` | 컨텍스트 조회(`msgctxt` 또는 `context` + U+0004 + 플랫 JSON의 영어 소스) 후 보간합니다. |
+| `pgettext(context, message, **values)` | 컨텍스트 조회(`msgctxt` 또는 `context` + U+0004 + 플랫 JSON의 소스 언어 문자열) 후 보간합니다. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 선택 상자입니다. `st.session_state.locale` 및 `st.query_params["lang"]`을(를) 작성하고, `set_locale`을(를) 호출하며, 선택한 코드를 반환합니다. |

@@ -8,7 +8,7 @@ GitHub 上 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 
 在不克隆完整仓库的情况下复制一个示例。
 
-<a id="node-examples"></a>
+<a id="nodejs-examples"></a>
 ### Node.js 示例
 
 每个 Node.js 示例都声明了与当前包版本匹配的 `ai-i18n-tools` 发布插入符号范围，并从 npm 安装 CLI：
@@ -38,6 +38,15 @@ pip install -r requirements.txt
 
 如果您克隆了 **整个** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 仓库，请在仓库根目录运行 `pnpm install` 和 `pnpm run build`，然后运行 `cd examples/<name>`。工作区 (Node.js) 示例通过其 `pnpm run i18n:*` 脚本使用本地 CLI，或者在 [PATH 设置](/zh-Hans/guide/installation#using-the-cli) 后使用裸 `ai-i18n-tools …`。该检出中的 Python 示例在构建后使用 `node ../../bin/ai-i18n-tools.mjs` 进行翻译。请参阅 [安装 — 克隆的 monorepo](/zh-Hans/guide/installation#cloned-monorepo)。
 
+<a id="which-example-matches-my-project"></a>
+## 哪个示例适合我的项目？
+
+- JS/TS 应用：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md)（最小）或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。指南：[向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)。
+- Python 应用：python-streamlit、python-flask、python-fastapi 或 python-gettext。指南：[向 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。
+- 网站或文档站点：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html 或 plain-html-docs。指南：[向网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website)。
+- 应用旁边的仓库 README：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)（nextjs 示例也有一个文档站点）。指南：[向 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
+- 其他：multi-provider、test-markdown 和 intlayer-migration。
+
 <a id="list-of-examples"></a>
 ## 示例列表
 
@@ -53,6 +62,7 @@ pip install -r requirements.txt
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
+<a id="intlayer-translate"></a>
 <a id="test-markdown"></a>
 <a id="python-streamlit"></a>
 <a id="python-flask"></a>
@@ -67,16 +77,17 @@ pip install -r requirements.txt
 | [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro 登录页面：全页 HTML + `t()` 混合 | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
 | [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight 文档站点 | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
 | [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress 文档站点 + 主题 JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
-| [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 字典 `.ts` 外壳 (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
+| [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 字典 `.ts` shell，外加一个 `t()` 服务器组件（`pt-BR`、`zh-Hans`） | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI 目录 (`pt`, `zh`, dot 解析器) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 纯 HTML + `data-i18n*` 标记；静态区域设置 JSON（仪表板式 UI） | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev`（`:3090`） |
 | [**纯 HTML 文档**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | 纯 HTML 文档：每个语言区域一个页面，本地化图像，hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | 选择或基准测试 LLM 提供商 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 回归测试 Markdown / CJK 翻译 (梵文, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()`（`migrate-intlayer`，重置 + AI 代理报告） | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev`（`:3091`） |
-| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit 仪表板，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
-| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
-| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI，ContextVar 区域设置，`t()` / `_()`，英文键 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**intlayer-translate**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate/README.md) | 保留 Intlayer，就地填充缺失的区域设置（`translate-intlayer`；`en` + `pt-BR` 已提供，`es` + `zh-Hans` 缺失） | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-translate intlayer-translate` | `pnpm reset && pnpm translate` (`pnpm dev` `:3093`) |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit 仪表板，`t()` / `_()`，源字符串 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja，`t()` / `_()`，源字符串 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI，ContextVar 区域设置，`t()` / `_()`，源字符串 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 现有的 GNU gettext CLI；`extract` / `translate-ui` 刷新 `.po` 和 `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 每个 **示例** 名称都链接到其 GitHub README，其中包含完整的设置、命令和项目布局 — 或者浏览[存储库中的示例索引](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)。

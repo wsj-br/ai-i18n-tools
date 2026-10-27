@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # दस्तावेज़
 
-मुख्य रूप से **मार्कडाउन, MDX, `.astro`, और सादे HTML** के लिए डिज़ाइन किया गया, जिसे `docs[]` कॉन्फ़िग ब्लॉक के माध्यम से प्रबंधित किया जाता है। प्रत्येक ब्लॉक का `contentPaths` फ़ील्ड उन फ़ाइलों या फ़ोल्डरों को सूचीबद्ध करता है जिनका अनुवाद करना है। सादे HTML पृष्ठों (प्रति लोकेल एक फ़ाइल) का वर्णन [HTML पृष्ठ](/hi/guide/documents/html-pages) में किया गया है।
+`translate-docs` के लिए संदर्भ, Markdown, MDX, `.astro`, और `docs[]` कॉन्फ़िग ब्लॉक में सूचीबद्ध सादे HTML पृष्ठों के लिए पाइपलाइन। प्रत्येक ब्लॉक का `contentPaths` फ़ील्ड अनुवाद करने के लिए फ़ाइलों या फ़ोल्डरों को सूचीबद्ध करता है। वे फ़ाइलें `sourceLocale` में लिखी जाती हैं, जो कोई भी भाषा हो सकती है। उदाहरणों में अंग्रेज़ी केवल एक नमूना है। पहली बार किसी साइट में भाषाएँ जोड़ रहे हैं? [किसी वेबसाइट या दस्तावेज़ साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) से शुरू करें। एक रिपॉजिटरी README और अन्य Markdown फ़ाइलें, जो आमतौर पर किसी ऐप के बगल में होती हैं: [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme)। सादे HTML पृष्ठ (प्रति स्थानीय एक फ़ाइल) [HTML पृष्ठ](/hi/guide/documents/html-pages) में वर्णित हैं।
 
-[Docusaurus](/hi/guide/integrations/docusaurus) साइटों पर, `docusaurusCatalogDir` को अपने `write-translations` कैटलॉग फ़ोल्डर (जैसे `docs-site/i18n/en`) पर भी सेट करें। फिर `translate-docs` में शेल JSON भी शामिल है - नेविगेशन बार, फ़ुटर और थीम स्ट्रिंग।
-
-[VitePress](/hi/guide/integrations/vitepress) साइटों पर, पेज बॉडी एक ही `docs[]` पाइपलाइन का उपयोग करते हैं। नेविगेशन, साइडबार और फ़ुटर लेबल `docsOutput.vitepressThemeCatalog` में रहते हैं - `translate-docs` अंग्रेजी कैटलॉग को बूटस्ट्रैप करता है और इसे पेजों के साथ अनुवाद करता है, कोई अलग पाइपलाइन नहीं।
-
-[Nextra](/hi/guide/integrations/nextra) साइटों पर, पेज बॉडी `docsOutput.style: "nextra"` के साथ एक ही `docs[]` पाइपलाइन का उपयोग करते हैं। `_meta.ts` साइडबार लेबल `translate-docs` द्वारा स्वचालित रूप से एकत्र और अनुवादित किए जाते हैं; थीम डिक्शनरी स्ट्रिंग उसी पाइपलाइन में `docs[].nextraDictionaryPath` के माध्यम से अनुवादित होते हैं।
-
-[Fumadocs](/hi/guide/integrations/fumadocs) साइटों पर, पेज बॉडी `fumadocsParser` `"dot"` (डिफ़ॉल्ट) या `"dir"` के साथ `docsOutput.style: "fumadocs"` का उपयोग करते हैं। `meta.json` साइडबार लेबल स्वचालित रूप से एकत्र किए जाते हैं; UI ओवरराइड `docsOutput.fumadocsUiCatalog` के माध्यम से अनुवादित होते हैं।
-
-[Astro Starlight](/hi/guide/integrations/astro#astro-starlight) साइटों पर, पेज बॉडी आपके Starlight सामग्री रूट (आमतौर पर `src/content/docs/`) पर `docsRoot` के साथ `docsOutput.style: "astro-starlight"` का उपयोग करते हैं। `translate-docs` अंग्रेजी ट्री के बगल में `src/content/docs/<locale>/` के तहत स्थानीयकृत मार्कडाउन/MDX लिखता है। Starlight कई लोकेल के लिए अंतर्निहित UI स्ट्रिंग भेजता है — कोई अलग थीम कैटलॉग पाइपलाइन नहीं; वैकल्पिक UI ओवरराइड `src/content/i18n/en.json` के लिए `docs[]` ब्लॉक पर `jsonPathTemplate` का उपयोग कर सकते हैं।
+फ़्रेमवर्क शेल स्ट्रिंग (navbar, sidebar, theme) एक ही रन में अनुवादित होते हैं, किसी अलग पाइपलाइन द्वारा नहीं। नीचे दी गई तालिका में फ़्रेमवर्क गाइड बताते हैं कि प्रत्येक इसे कैसे करता है: Docusaurus के लिए `docusaurusCatalogDir`, VitePress के लिए `docsOutput.vitepressThemeCatalog`, Nextra के लिए `docs[].nextraDictionaryPath`, Fumadocs के लिए `docsOutput.fumadocsUiCatalog`। Nextra `_meta.ts` और Fumadocs `meta.json` साइडबार लेबल स्वचालित रूप से एकत्र किए जाते हैं। Astro Starlight कई स्थानीय भाषाओं के लिए अंतर्निहित UI स्ट्रिंग के साथ आता है, और वैकल्पिक ओवरराइड `docs[]` ब्लॉक पर `jsonPathTemplate` का उपयोग कर सकते हैं।
 
 मार्कडाउन में एम्बेडेड PNG और अन्य रास्टर छवियों के लिए, [छवियां और स्क्रीनशॉट](/hi/guide/images-and-screenshots/) देखें। `translate-docs` केवल वैकल्पिक टेक्स्ट का अनुवाद करता है; यह रास्टर फ़ाइलों की प्रतिलिपि नहीं बनाता है।
 
@@ -26,7 +18,7 @@ README या दस्तावेज़ों में एक वैकल्
 <a id="per-locale-model-overrides"></a>
 ### प्रति-स्थानीय मॉडल ओवरराइड
 
-`translate-docs` और `sync` का दस्तावेज़ चरण मॉडल को **प्रति लक्ष्य लोकेल** हल करता है: कॉन्फ़िगर होने पर पहले `localeModels(locale)`, फिर प्रदाता की वैश्विक `translationModels` श्रृंखला। इसका उपयोग तब करें जब किसी विशिष्ट भाषा को आपकी डिफ़ॉल्ट फ़ॉलबैक सूची से भिन्न मॉडल की आवश्यकता हो - उदाहरण के लिए, जब वैश्विक श्रृंखला पुर्तगाली के साथ संघर्ष करती है तो `pt-BR` दस्तावेज़ों के लिए जेमिनी को प्राथमिकता देना। [प्रदाता और मॉडल](/hi/guide/providers-and-models#model-fallback-chain) और [कॉन्फ़िगरेशन - `localeModels`](/hi/reference/configuration#provider-and-providers) देखें।
+`translate-docs` और `sync` का डॉक्स स्टेप मॉडल को **प्रति टारगेट लोकेल** रिज़ॉल्व करते हैं: कॉन्फ़िगर होने पर पहले `localeModels(locale)`, फिर प्रोवाइडर की ग्लोबल `translationModels` चेन. इसका उपयोग तब करें जब किसी खास भाषा को आपकी डिफ़ॉल्ट फ़ॉलबैक सूची से अलग मॉडल की ज़रूरत हो - उदाहरण के लिए, `pt-BR` डॉक्यूमेंटेशन के लिए Gemini को प्राथमिकता देना जब ग्लोबल चेन को पुर्तगाली के साथ संघर्ष करना पड़ता है. [AI मॉडल](/hi/guide/ai-models#model-fallback-chain) और [कॉन्फ़िगरेशन - `localeModels`](/hi/reference/configuration#provider-and-providers) देखें.
 
 <a id="which-guide-to-read"></a>
 ## कौन सी गाइड पढ़ें
@@ -39,7 +31,7 @@ README या दस्तावेज़ों में एक वैकल्
 | Fumadocs साइट | `init -t ui-fumadocs` + UI के लिए `fumadocsUiCatalog` (साइडबार `meta.json` स्वचालित है) - [Fumadocs](/hi/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/hi/guide/integrations/astro#astro-starlight) |
 | सादे HTML पृष्ठ | `init -t docs-plain-html` - [HTML पृष्ठ](/hi/guide/documents/html-pages) |
-| फ़्लैट दस्तावेज़ (README, चेंजलॉग, आदि) | `docsOutput.style = "flat"` - [आउटपुट लेआउट](/hi/guide/documents/output-layouts), वैकल्पिक [भाषा स्विचर](/hi/guide/documents/language-switcher) |
+| फ़्लैट दस्तावेज़ (README, चेंजलॉग, आदि) | [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme) — `init -t docs-markdown` या `--with-readme`। लेआउट: [आउटपुट लेआउट](/hi/guide/documents/output-layouts), [भाषा स्विचर](/hi/guide/documents/language-switcher) |
 | जहाँ अनुवादित फ़ाइलें आती हैं | [आउटपुट लेआउट](/hi/guide/documents/output-layouts) |
 | क्रॉस-पेज `#anchor` लिंक | [एंकर लिंक](/hi/guide/documents/anchor-links) |
 | लिंक और एसेट URL रीराइटिंग (`regexAdjustments`) | [लिंक रीराइटिंग](/hi/guide/documents/link-rewriting) |
@@ -90,14 +82,14 @@ UI ओवरराइड के लिए `docsOutput.fumadocsUiCatalog` से�
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-वह टेम्पलेट केवल UI निष्कर्षण को सक्षम करता है। पेज HTML अनुवाद के लिए, `features.translateDocs` भी सेट करें और एक `docs[]` ब्लॉक जोड़ें ([एस्ट्रो वेबसाइट पेज (पार्स-और-रिप्लेस)](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) देखें)। [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) कॉन्फ़िग दोनों पाइपलाइन एक साथ दिखाता है।
+वह टेम्पलेट केवल UI एक्सट्रैक्शन को सक्षम करता है। पृष्ठ HTML अनुवाद के लिए, `features.translateDocs` भी सेट करें और एक `docs[]` ब्लॉक जोड़ें ([Astro वेबसाइट पृष्ठ (पार्स-और-बदलें)](/hi/guide/ui-strings/astro-website#pages-parse-and-replace) देखें)। [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) कॉन्फ़िग दोनों पाइपलाइन एक साथ दिखाता है।
 
 जनरेट किए गए `ai-i18n-tools.config.json` को संपादित करें:
 
-- `provider` और `providers` — `init -P <provider>` प्रीसेट करने वाले ढांचे; `translate-docs` या `sync` से पहले इसकी API कुंजी सेट करें (Ollama को किसी कुंजी की आवश्यकता नहीं है)। [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) और [LLM प्रदाता और मॉडल](/hi/guide/providers-and-models) देखें।
-- `sourceLocale` - स्रोत भाषा (यह `docusaurus.config.js` में `defaultLocale` से मिलना चाहिए)।
-- `targetLocales` - BCP-47 स्थानिक कोड का एरे (जैसे `["de", "fr", "es"]`)।
-- `cacheDir` - सभी पाइपलाइनों के लिए साझा SQLite कैश डायरेक्टरी (और `--write-logs` के लिए डिफ़ॉल्ट लॉग डायरेक्टरी)।
+- `provider` और `providers` — `init -P <provider>` उस प्रीसेट को स्कैफ़ोल्ड करता है; `translate-docs` या `sync` से पहले इसकी API कुंजी सेट करें (Ollama को किसी कुंजी की ज़रूरत नहीं है). [प्रोवाइडर और API कुंजी](/hi/guide/quick-start#provider-and-api-key), [LLM प्रोवाइडर](/hi/guide/providers-and-models), और [AI मॉडल](/hi/guide/ai-models) देखें.
+- `sourceLocale` - स्रोत भाषा (`docusaurus.config.js` में `defaultLocale` से मेल खाना चाहिए).
+- `targetLocales` - BCP-47 लोकेल कोड का ऐरे (उदा. `["de", "fr", "es"]`).
+- `cacheDir` - सभी पाइपलाइनों के लिए साझा SQLite कैश डायरेक्टरी (और `--write-logs` के लिए डिफ़ॉल्ट लॉग डायरेक्टरी).
 - `docs` - दस्तावेज़ ब्लॉकों का सरणी। प्रत्येक ब्लॉक में वैकल्पिक `description`, `contentPaths` (स्ट्रिंग या सरणी; फ़ाइल, निर्देशिका, या ग्लोब), `outputDir`, वैकल्पिक `docusaurusCatalogDir`, `docsOutput`, वैकल्पिक `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, आदि होते हैं।
 - `docs[].description` - रखरखावकर्ताओं के लिए वैकल्पिक छोटा नोट। जब सेट किया जाता है, तो यह `translate-docs` हेडलाइन और `status` अनुभाग शीर्षकों में दिखाई देता है।
 - `docs[].contentPaths` - मार्कडाउन/MDX/`.astro` स्रोत (और डोक्यूसौरस शेल JSON के लिए वैकल्पिक `docusaurusCatalogDir`)।

@@ -1,7 +1,7 @@
 <a id="models"></a>
 # Modelos
 
-A aba **Modelos** classifica os modelos de chat do provedor ativo para que você possa escolher `translationModels` sem copiar IDs manualmente. Ela utiliza a mesma classificação do [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models).
+A guia **Modelos** classifica os modelos de chat do provedor ativo para que você possa escolher `translationModels` sem precisar copiar os IDs manualmente. Ela usa a mesma classificação do [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models). O tutorial, incluindo o motivo pelo qual a lista contém mais de um modelo, está em [Modelos de IA](/pt-BR/guide/ai-models).
 
 Escolha **Qualidade** ou **Preço**. Qualidade prioriza o languagebench ChrF e o Arena Score. Preço prioriza uma taxa em USD mais baixa, mantendo um nível mínimo de qualidade. Quando a configuração possui mais de um provedor, um menu **Provedor** aparece; o padrão é o provedor com o qual o painel foi iniciado (`provider`, ou `-P` / `--provider` no comando `dashboard`). Alterar o provedor ou a prioridade recarrega a tabela. Pesos opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion).
 

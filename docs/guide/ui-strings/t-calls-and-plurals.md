@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## Using `t()` in source code
 
-Call `t()` with a **literal string** so the extract script can find it. To convert hardcoded source text into these calls, see [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
+Call `t()` with a **literal string** in `sourceLocale` so the extract script can find it. That language can be any language. The examples below use English. To convert hardcoded source text into these calls, see [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
 
 ```jsx
 import { useTranslation } from 'react-i18next';

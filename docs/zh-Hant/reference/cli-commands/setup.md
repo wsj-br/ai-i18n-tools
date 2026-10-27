@@ -13,19 +13,19 @@
 <a id="init"></a>
 ### `init`
 
-**概要：** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
+**綱要：** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-readme] [--with-translate-ignore]`
 
 撰寫入門設定檔（包含 `provider` / `providers`、`concurrency`、`uiBatchConcurrency`、`batchConcurrency`、`batchSize`、`maxBatchChars` 與 `docs[].addFrontmatter`）。呼叫 LLM 的翻譯指令需要在環境變數或 `.env` 中提供目前供應商的 API 金鑰（Ollama 除外）— 請參閱[供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
 
-**主要選項：** `-P` / `--provider` (必填), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**主要選項：** `-P` / `--provider`（必要）、`-t` / `--template`、`-o` / `--output`、`--with-readme`、`--with-translate-ignore`
 
 `-P` / `--provider` 為必填項。它選擇要建立骨架的**內建預設集**。必須為下列其中一項：`openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`。
 
 **範本（`-t`）：**
 
-| 值 | 建構內容 |
+| 值 | 產生的結構 |
 |-------|-----------|
-| `ui-markdown` | Markdown UI 字串工作流程 |
+| `ui-markdown` | UI 字串加上 README（扁平輸出、語言清單） |
 | `ui-docusaurus` | Docusaurus UI + 文件 |
 | `ui-starlight` | Starlight 文件 |
 | `ui-vitepress` | VitePress 文件（`docsOutput.style: "vitepress"`）加上主題字串的 `vitepressThemeCatalog` |
@@ -34,11 +34,19 @@
 | `ui-astro-website` | Astro 網站 UI 字串 |
 | `ui-plain-html` | 純 HTML 目錄（`data-i18n*` 標記、扁平化語系 JSON） |
 | `docs-plain-html` | 純 HTML 文件（每個語系一個檔案、語言清單、hreflang） |
+| `docs-markdown` | Markdown 文件：README 與 `.md` 檔案、扁平輸出、語言清單 |
 | `ui-json-bundles` | JSON（僅 `json[]`） |
-| `ui-python` | Python UI 字串、扁平化英文鍵 JSON 以及 `i18n.py` |
+| `ui-python` | Python UI 字串、以來源語言字串為鍵的扁平 JSON，以及 `i18n.py` |
 | `ui-python-gettext` | 包含扁平化 JSON 與 GNU `.po` / `.mo` 的 Python UI 字串，外加 `i18n.py` |
 | `ui-python-django` | Django `gettext` / `{% blocktrans %}` 目錄（`flatOutput: false`、網域 `django`，無 `i18n.py`） |
 | `ui-python-flask` | `translations/` 下的 Flask / Jinja 目錄（`flatOutput: false`）外加 `i18n.py` |
+
+`--with-readme` 會附加一個 `README.md` 文件區塊（`outputDir` `translated-docs`、`docsOutput.style` `"flat"`、一個 `languageListBlock`），並將 `features.translateDocs` 設定為 true。當文件區塊已列出 `README.md` 時，此指令不會執行任何動作，`ui-markdown` 與 `docs-markdown` 即是這種情況。此指令只會寫入設定檔。此指令會印出標記行以便貼到 `README.md` 中，並在該檔案遺失時發出警告。指南：[將 i18n 新增至您的 README 與 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。
+
+```bash
+ai-i18n-tools init -t docs-markdown -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+```
 
 `--with-translate-ignore` 會建立一個啟動器 `.translate-ignore`（包含 Python 虛擬環境與快取目錄）。
 

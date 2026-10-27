@@ -1,7 +1,7 @@
 <a id="models"></a>
 # Modelle
 
-Der Tab **Modelle** ordnet die Chat-Modelle des aktiven Anbieters, sodass Sie `translationModels` auswählen können, ohne IDs manuell kopieren zu müssen. Er verwendet dieselbe Rangfolge wie [`suggest-models`](/de/reference/cli-commands/models#suggest-models).
+Die Registerkarte **Modelle** stuft die Chat-Modelle des aktiven Anbieters ein, sodass Sie `translationModels` auswählen können, ohne IDs manuell kopieren zu müssen. Sie verwendet dasselbe Ranking wie [`suggest-models`](/de/reference/cli-commands/models#suggest-models). Eine exemplarische Vorgehensweise, die auch erklärt, warum die Liste mehr als ein Modell enthält, finden Sie unter [KI-Modelle](/de/guide/ai-models).
 
 Wählen Sie **Qualität** oder **Preis**. Qualität bevorzugt den Languagebench ChrF und den Arena Score. Preis bevorzugt einen niedrigeren USD-Tarif unter Beibehaltung eines Qualitäts-Mindeststandards. Wenn die Konfiguration mehr als einen Anbieter enthält, erscheint ein **Anbieter**-Menü; der Standardwert ist der Anbieter, mit dem das Dashboard gestartet wurde (`provider` oder `-P` / `--provider` beim `dashboard`-Befehl). Das Ändern des Anbieters oder der Priorität lädt die Tabelle neu. Optionale Gewichtungen finden Sie in [`modelSuggestion`](/de/reference/configuration#modelsuggestion).
 

@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Gerar uma configuração a partir do Node.js. O quarto argumento é o preset integrado (`cwd` é o terceiro):
+Crie a estrutura de uma configuração a partir do Node.js. O quarto argumento é a predefinição integrada (`cwd` é o terceiro). Um quinto argumento opcional `{ withReadme: true }` anexa o bloco de documentação README simples quando o modelo não lista `README.md` e retorna se esse bloco foi adicionado:
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 Exportações principais (comumente usadas — consulte `src/index.ts` para a superfície pública completa):
@@ -53,7 +56,7 @@ Exportações principais (comumente usadas — consulte `src/index.ts` para a su
 | `Glossary` / `GlossaryMatcher` | Carrega e aplica glossários de tradução, incluindo notas opcionais de `Context` de termos. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Carrega `glossary.contextFiles` e orientação de impressão digital para invalidação de cache. |
 | `runTranslateUI` | Ponto de entrada programático para a interface de tradução. |
-| `writeInitConfigFile` | Escreve um JSON de configuração inicial (`template`, `cwd` e um `providerKey` obrigatório). |
+| `writeInitConfigFile` | Grava um JSON de configuração inicial (`template`, `cwd`, um `providerKey` obrigatório e um `{ withReadme }` opcional). Retorna `{ readmeBlockAdded, hasReadmeBlock }`. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` inicial por preset integrado usado por `init -P`. |
 | `PROVIDER_PRESETS` | Mapa predefinido de provedor integrado (`baseUrl`, `apiKeyEnv`). |
 
@@ -75,5 +78,5 @@ Formatos de chamada, f-strings inseguras e configuração de localidade por fram
 | `_(message)` | Procura um literal e, em seguida, retorna a string do catálogo ou a própria mensagem. |
 | `t(template, *, plurals=False, count=None, **values)` | Procura o literal e, em seguida, interpola. `translate` é a mesma função. No Python 3.14, `translate(t"Hello, {name}!")` mantém o modelo e seus valores. Argumentos nomeados substituem valores obtidos de uma string de modelo. |
 | `ngettext(singular, plural, n, **values)` | Procura plural e, em seguida, interpola. `count` está disponível para a string de formato. |
-| `pgettext(context, message, **values)` | Procura contexto (`msgctxt`, ou `context` + U+0004 + a fonte em inglês em JSON simples) e, em seguida, interpola. |
+| `pgettext(context, message, **values)` | Consulta de contexto (`msgctxt` ou `context` + U+0004 + a string do idioma de origem em JSON simples), depois interpola. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Caixa de seleção do Streamlit. Grava `st.session_state.locale` e `st.query_params["lang"]`, chama `set_locale` e retorna o código escolhido. |

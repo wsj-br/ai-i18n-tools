@@ -10,14 +10,14 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call th
 
 | Framework | Init template | Catalog | Example |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | Flat English-key JSON | [python-streamlit](/examples#python-streamlit) |
-| FastAPI | `ui-python` | Flat English-key JSON | [python-fastapi](/examples#python-fastapi) |
-| Flask + Jinja, flat JSON | `ui-python` | Flat English-key JSON | [python-flask](/examples#python-flask) |
+| Streamlit | `ui-python` | Flat JSON keyed by the source string | [python-streamlit](/examples#python-streamlit) |
+| FastAPI | `ui-python` | Flat JSON keyed by the source string | [python-fastapi](/examples#python-fastapi) |
+| Flask + Jinja, flat JSON | `ui-python` | Flat JSON keyed by the source string | [python-flask](/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` under `translations/` | Use the Flask notes below |
 | Pyramid | `ui-python` or `ui-python-flask` | Same as Flask | Same wiring as Flask |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | No example directory |
 | Existing GNU gettext | `ui-python-gettext` | Flat JSON and `.po` / `.mo`, or gettext only | [python-gettext](/examples#python-gettext) |
-| Tkinter | `ui-python` | Flat English-key JSON | No example directory |
+| Tkinter | `ui-python` | Flat JSON keyed by the source string | No example directory |
 | PyQt / PySide | `ui-python` or a gettext template | Flat JSON and/or `.po` | No example directory |
 | PyWebView / PyWebKit | A Python template for the shell | Shell catalogs, plus HTML markers or one HTML file per locale | No example directory |
 

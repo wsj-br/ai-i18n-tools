@@ -280,6 +280,10 @@ export {
 } from "./processors/admonition-placeholders.js";
 export { protectDocAnchors, restoreDocAnchors } from "./processors/anchor-placeholders.js";
 export {
+  protectFencedCodeBlocks,
+  restoreFencedCodeBlocks,
+} from "./processors/code-fence-placeholders.js";
+export {
   stripHeadingIdSuffixes,
   reattachHeadingIdSuffixes,
 } from "./processors/heading-id-suffix-placeholders.js";

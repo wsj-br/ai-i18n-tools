@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-BCP-47 code for the source language (e.g. `"en-GB"`, `"en"`, `"pt-BR"`). No translation file is generated for this locale — the key string itself is the source text.
+BCP-47 code for the source language (for example `"en-GB"`, `"pt-BR"`, or `"ja"`). Any language is valid. English appears in the examples because many projects start there. No translation file is generated for this locale — the key string itself is the source text.
 
 **Must match** `SOURCE_LOCALE` exported from your runtime i18n setup file (`src/i18n.ts` / `src/i18n.js`).
 
@@ -167,9 +167,9 @@ A legacy top-level `openrouter` block (with `baseUrl`, `translationModels`, `def
 
 For a runnable example that configures several providers in one config and switches between them with `-P`, see [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter`, and `deepseek` on the same document).
 
-**Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure `translationModels` **as an ordered fallback chain** (rather than a single model) so the CLI can attempt the next model if a request fails.
+**Why use multiple models:** Different providers and models have varying costs and offer different levels of quality across languages and locales. Configure `translationModels` as an ordered fallback chain so the CLI can attempt the next model if a request fails. The guide for building that list is [AI Models](/guide/ai-models).
 
-Treat the list below as a **baseline** that you can expand: if translation for a specific locale is poor or unsuccessful, research which models support that language or script effectively (refer to online resources or your provider’s documentation), and add those model ids as further alternatives.
+Treat the list below as a **baseline**. Replace it from the benchmark ranking on [AI Models](/guide/ai-models). If translation for a specific locale stays poor, add a `localeModels` entry for that language or script, or add further ids from the provider's catalog.
 
 These model ids are what `ai-i18n-tools init -P openrouter` writes. Other presets get native model ids from `init -P <provider>` — see [Built-in providers](/guide/providers-and-models#built-in-providers).
 
@@ -273,7 +273,7 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
 - `flatOutput`
   When `true` (the default), `translate-ui` writes one flat JSON file per locale. Set `false` for a gettext-only block. A block with `flatOutput: false` must set `gettext`.
 - `gettext`
-  Optional GNU gettext output for this block. `outputDir` (default `./locales`) receives `<locale>/LC_MESSAGES/<domain>.po` and, when `compileMo` is true (the default), the matching `.mo`. `domain` defaults to `messages`. `potPath` is the template catalog. `ingestExistingPo` (default `true`) fills empty `strings.json` slots from non-fuzzy `msgstr` values during `extract` and does not replace a non-empty or user-edited translation. `localeFormat` is `posix` (default, `pt_BR`) or `bcp47` (`pt-BR`). Contextual rows use the gettext `\u0004` separator. The same English source in two contexts does not share a catalog id.
+  Optional GNU gettext output for this block. `outputDir` (default `./locales`) receives `<locale>/LC_MESSAGES/<domain>.po` and, when `compileMo` is true (the default), the matching `.mo`. `domain` defaults to `messages`. `potPath` is the template catalog. `ingestExistingPo` (default `true`) fills empty `strings.json` slots from non-fuzzy `msgstr` values during `extract` and does not replace a non-empty or user-edited translation. `localeFormat` is `posix` (default, `pt_BR`) or `bcp47` (`pt-BR`). Contextual rows use the gettext `\u0004` separator. The same source-language string in two contexts does not share a catalog id.
 - `targetLocales`
   Optional locale list for this block. When omitted or empty, the block uses root `targetLocales`.
 - `languagesManifestPath`
@@ -394,11 +394,11 @@ Rewrite relative links after translation (auto-enabled when `docsOutput.style = 
 - `docsOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `docsOutput.rewriteVitepressLinks`
-When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside English under `docsRoot`. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in English source — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
+When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside the source-locale files under `docsRoot`. The source language is `sourceLocale` and can be any language. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in the source-locale files — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
 When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside English sources; dir writes locale folders like Nextra. See [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
+`"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside the source-locale files; dir writes locale folders like Nextra. The source language is `sourceLocale` and can be any language. See [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 When `true`, run the Fumadocs link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"fumadocs"`. Rewrites content paths and relative `.mdx` links to `/docs/…` routes.
 - `docsOutput.fumadocsUiCatalog`

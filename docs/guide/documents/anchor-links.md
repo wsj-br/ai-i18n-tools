@@ -13,7 +13,7 @@ Here the link target is `setup.md`, and `#first-run` is the anchor: it should sc
 ## Why anchor links need attention
 
 - `rewriteRelativeLinks` fixes the **filename** for each locale (`setup.md` → `setup.de.md`).
-- Many renderers derive the `#` slug from the **visible heading text**. After translation, headings differ per locale, so an auto-generated slug can change while the rewritten link might still say `#first-run` — or your English `#…` anchor no longer matches the slug the renderer builds from the translated heading.
+- Many renderers derive the `#` slug from the **visible heading text**. After translation, headings differ per locale, so an auto-generated slug can change while the rewritten link might still say `#first-run` — or the source-locale `#…` anchor no longer matches the slug the renderer builds from the translated heading. The source language is `sourceLocale` and can be any language.
 - Result: readers land on the right **file** but the **wrong line**, or the browser finds no matching heading.
 
 <a id="what-to-do"></a>

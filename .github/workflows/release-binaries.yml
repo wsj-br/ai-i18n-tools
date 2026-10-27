@@ -112,6 +112,11 @@ jobs:
             examples/python-gettext \
             -x '*/__pycache__/*' '*.pyc' '*/.venv/*'
           cd dist-sea/release
-          gh release upload "$tag" ai-i18n-tools-* SHA256SUMS.txt ai-i18n-tools-python-examples.zip \
+          gh release upload "$tag" \
+            ai-i18n-tools-* \
+            SHA256SUMS.txt \
+            ai-i18n-tools-python-examples.zip \
+            "$GITHUB_WORKSPACE/install.sh" \
+            "$GITHUB_WORKSPACE/install.ps1" \
             --clobber
           echo "Uploaded unsigned binaries. They are not notarized or Authenticode-signed."

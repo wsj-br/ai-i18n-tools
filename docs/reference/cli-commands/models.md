@@ -8,7 +8,7 @@
 
 Validate each configured model id against the active provider's `GET /models` list (membership and `expiration_date`). Requires that provider's API key (none for keyless providers like Ollama). Exits non-zero when any configured id is missing or expired, and respects the resolved request timeout (`requestTimeout` or `requestTimeoutMs` on the provider, otherwise the top-level value). When the provider returns pricing (e.g. OpenRouter), also shows USD per 1M tokens for prompt/completion. When `providers.cheaperinference.zeroDataRetention` is true, the check uses `GET /v1/models?zdr=true` and fails an id that catalog leaves out.
 
-**See also:** [LLM providers](/guide/providers-and-models)
+**See also:** [AI Models](/guide/ai-models#check-models), [LLM providers](/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ List every model the active provider advertises via its `GET /models` list (sort
 
 **Key options:** `-P` / `--provider`
 
-**See also:** [LLM providers](/guide/providers-and-models)
+**See also:** [AI Models](/guide/ai-models#list-models), [LLM providers](/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ The footer attributes languagebench (CC BY-SA 4.0), the LMArena Arena Score (CC 
 
 **Key options:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**See also:** [LLM providers](/guide/providers-and-models), [Models tab](/guide/translation-dashboard/models)
+**See also:** [AI Models](/guide/ai-models), [Models tab](/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ Benchmark each configured model by translating one sample in isolation (single-m
 Models default to the union of the active provider's `translationModels`, `uiModels`, and `localeModels` ids (override with `--model`); the sample defaults to a built-in English markdown block (override with `--text` / `--file`); source/target default to config `sourceLocale` and the first `docs[]` target locale, falling back to the top-level `targetLocales` (override with `--source` / `--target`). Runs models in parallel, bounded by config `concurrency` (default 4); each model is still timed individually. Requires the active provider's API key.
 
 **Key options:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**See also:** [AI Models](/guide/ai-models#bench-models)
 
 ---
 

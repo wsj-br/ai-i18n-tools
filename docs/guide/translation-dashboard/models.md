@@ -1,7 +1,7 @@
 <a id="models"></a>
 # Models
 
-The **Models** tab ranks the active provider's chat models so you can choose `translationModels` without copying ids by hand. It uses the same ranking as [`suggest-models`](/reference/cli-commands/models#suggest-models).
+The **Models** tab ranks the active provider's chat models so you can choose `translationModels` without copying ids by hand. It uses the same ranking as [`suggest-models`](/reference/cli-commands/models#suggest-models). The walkthrough, including why the list holds more than one model, is [AI Models](/guide/ai-models).
 
 Pick **Quality** or **Price**. Quality favors languagebench ChrF and Arena Score. Price favors a lower USD rate and still keeps a quality floor. When the config has more than one provider, a **Provider** menu appears; the default is the provider the dashboard was started with (`provider`, or `-P` / `--provider` on the `dashboard` command). Changing the provider or the priority reloads the table. Optional weights live in [`modelSuggestion`](/reference/configuration#modelsuggestion).
 

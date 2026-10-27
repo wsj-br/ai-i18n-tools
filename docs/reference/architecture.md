@@ -68,7 +68,7 @@ Uses `i18next-scanner`'s `Parser.parseFuncFromString` to find `t("literal")` and
 
 For `.html` / `.htm` sources (when listed in `ui.uiExtractor.extensions`), `extract` instead routes the file through `html-i18n-marks.ts`, which scans `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` marker attributes (configurable via `ui.uiExtractor.htmlI18nAttributes`). A bare marker takes its source text from the element's own `textContent` or attribute; a valued marker (`data-i18n="Key"`) uses the value. `data-i18n-locale-src` and `data-i18n-locale-href` are reserved for the browser runtime and are never extracted. The same module powers the `mark-html` command, which inserts the bare markers automatically (including `alt` and `aria-label`) and never inserts the locale URL markers. HTML files never reach the Babel / i18next-scanner passes. Generated locale HTML under a docs `outputDir` is excluded from this scan.
 
-Plain Astro SSG sites can skip i18next: load flat `{locale}.json` at build time and resolve `t('English')` by source-text key (see `examples/astro-website/src/i18n/t.ts` and [UI strings — Astro website](/guide/ui-strings/astro-website)).
+Plain Astro SSG sites can skip i18next: load flat `{locale}.json` at build time and resolve `t('source text')` by source-text key. The source language is `sourceLocale` and can be any language (see `examples/astro-website/src/i18n/t.ts` and [UI strings — Astro website](/guide/ui-strings/astro-website)).
 
 Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation). The drop-in script is `ai-i18n-tools/html-runtime/i18n.js`.
 
@@ -126,7 +126,7 @@ i18next loads these as resource bundles and looks up translations by the source 
 - Send a JSON array of strings and request a JSON array of translations in return.
 - Include glossary hints when available.
 
-`LlmClient.translateUIBatch` tries each model in order, falling back on parse, network, or wrong-script errors (including romanized/Latin fallback for native-script locales). The CLI builds that list per target locale from `localeModels`, optional `uiModels`, and `translationModels` (see [Providers and models](/guide/providers-and-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` tries each model in order, falling back on parse, network, or wrong-script errors (including romanized/Latin fallback for native-script locales). The CLI builds that list per target locale from `localeModels`, optional `uiModels`, and `translationModels` (see [AI Models](/guide/ai-models#model-fallback-chain)).
 
 ---
 
@@ -162,7 +162,7 @@ Plain Astro apps often enable **both** UI strings and documents in one config (r
 | Layer | Mechanism | Output |
 | --- | --- | --- |
 | Template HTML | `AstroTemplateExtractor` + `translate-docs` | Per-locale `.astro` under `docs[].outputDir` |
-| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | Flat `public/locales/{locale}.json` (English source as key) |
+| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | Flat `public/locales/{locale}.json` (source-language string as key; `sourceLocale` can be any language) |
 
 The `sync` command runs enabled steps in order: **extract** then **translate-ui** (when `features.translateUIStrings`) → optional **translate-svg** → **translate-docs** → optional **translate-json** (unless skipped with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`). Init template `ui-astro-website` scaffolds UI strings only; add `docs[]` and `features.translateDocs` for page HTML.
 
@@ -182,19 +182,20 @@ This command does **not** run inside `translate-docs` or `sync`; run it explicit
 
 Before translation, sensitive syntax is replaced with opaque tokens to prevent LLM corruption, applied in this order (restore is the reverse):
 
-1. **Heading-id suffixes** (classic `{#id}` / MDX `{/* #id */}` at end of an ATX heading) — peeled off the line entirely and **not** sent to the model. After restore they are pinned back to the end of the matching heading so Docusaurus still sees a valid id. Mid-heading comments stay in the text and are handled by the later MDX / `{#…}` layers.
-2. **HTML tags and comments** (`<strong>`, `<!-- ... -->`, etc.) - lowercase HTML tags from a known allowlist are replaced with <code v-pre>{{HTM_N}}</code> tokens. Capitalised JSX tags (`<Highlight>`, `<Tabs>`, `</Tab>`) are handled separately by the MDX layer (step 5).
-3. **Admonition markers** (`:::note`, `:::`) - only the directive prefix on the opening line is replaced with <code v-pre>{{ADM_OPEN_N}}</code>; any same-line title is left for the model to translate. Restored with exact original text.
-4. **Doc anchors** (HTML `<a id="…">`, leftover mid-heading Docusaurus `{#…}`) - preserved verbatim.
-5. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
+1. **Fenced code blocks** (three or more backticks or tildes, including a longer fence that wraps a shorter one) - the whole fence, info string included, is replaced with <code v-pre>{{CDF_N}}</code> and kept in order with the other structural tokens. That holds samples inside containers such as `::: code-group` or `::: tip` in place. Fence info strings (VitePress tab labels) stay in the source language. An unclosed opener is left as text so a later container closer is not swallowed.
+2. **Heading-id suffixes** (classic `{#id}` / MDX `{/* #id */}` at end of an ATX heading) — peeled off the line entirely and **not** sent to the model. After restore they are pinned back to the end of the matching heading so Docusaurus still sees a valid id. Mid-heading comments stay in the text and are handled by the later MDX / `{#…}` layers. Headings inside a masked fence are not peeled.
+3. **HTML tags and comments** (`<strong>`, `<!-- ... -->`, etc.) - lowercase HTML tags from a known allowlist are replaced with <code v-pre>{{HTM_N}}</code> tokens. Capitalised JSX tags (`<Highlight>`, `<Tabs>`, `</Tab>`) are handled separately by the MDX layer (step 6).
+4. **Admonition markers** (`:::note`, `:::`) - only the directive prefix on the opening line is replaced with <code v-pre>{{ADM_OPEN_N}}</code>; any same-line title is left for the model to translate. Restored with exact original text.
+5. **Doc anchors** (HTML `<a id="…">`, leftover mid-heading Docusaurus `{#…}`) - preserved verbatim.
+6. **MDX-only constructs** (`src/processors/mdx-placeholders.ts`):
    - **MDX comments** (`{/* … */}`, including a mid-heading `{/* #my-id */}` that was not a line-end suffix) replaced with <code v-pre>{{MDX_N}}</code>.
    - **Capitalised JSX tags** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - preserved as <code v-pre>{{MDX_N}}</code> with translatable string attributes (`label`, `tooltip`, `aria-label`) rewritten to <code v-pre>{{JXA_N}}</code> inside the tag unless the attribute name appears in `docs[].protectAttributes`; `label:` inside `<Tabs values={[ { label: '…' } ]}>` object literals (skippable via `docs[].protectKeys`) and `<TabItem value="…">` (when no `label` attribute exists, skipping lowercase slug-like values) are also extracted. Appended to the segment as `||JXA_N: …||` lines, merged back by `restoreMdx`.
    - **MDX brace expressions** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - depth-aware matching, replaced with <code v-pre>{{MDX_N}}</code>.
-6. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
-7. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
-8. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
+7. **Markdown URLs** (`](url)`, `src="…"`) - restored from a map after translation.
+8. **Inline code spans** (`` `code` ``) and **bold-wrapped inline code** (`**`code`**`) - preserved.
+9. **Markdown emphasis** (optional, auto-enabled for CJK/RTL locales) - emphasis delimiters masked.
 
-After the model returns, `translate-docs` restores maps and validates the segment: the same multiset of double-brace tokens must be present, structural tokens (<code v-pre>{{HTM_N}}</code>, admonition markers) must keep their ordered subsequence (content tokens such as <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code> may move with word order), restored HTML tag kinds must match the unprotected source, and any leftover double-brace identifier must already have existed in the source (so invented tokens fail). The document prompt also asks models to copy each token once, keep structural-token order, and not invent new double-brace wrappers; mechanical checks remain authoritative.
+After the model returns, `translate-docs` restores maps and validates the segment: the same multiset of double-brace tokens must be present, structural tokens (<code v-pre>{{HTM_N}}</code>, admonition markers, <code v-pre>{{CDF_N}}</code>) must keep their ordered subsequence (content tokens such as <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code> may move with word order), restored HTML tag kinds must match the unprotected source, and any leftover double-brace identifier must already have existed in the source (so invented tokens fail). The document prompt also asks models to copy each token once, keep structural-token order, and not invent new double-brace wrappers; mechanical checks remain authoritative.
 
 Shared attribute/key protection for Astro templates and MDX JSX is implemented in `src/processors/expression-attribute-protection.ts` and driven per block by `docs[].protectAttributes` and `docs[].protectKeys` (see [protectAttributes / protectKeys](/reference/configuration#protectattributes-protectkeys)).
 
@@ -263,7 +264,7 @@ Provider-agnostic chat client built on the Vercel AI SDK (`ai` + `@ai-sdk/openai
 - **OpenRouter extras** (only when `openrouter` is active): throughput routing via the `provider` request field and `HTTP-Referer` / `X-Title` headers. Token usage is reported for every provider. OpenRouter and Cheaper Inference also return a billed USD amount (`usage.cost`; Cheaper Inference falls back to `cheaper_inference.billing.billed_cost_usd`). When the provider omits that amount, USD cost is calculated from `providers.<name>.modelPricing`, then the provider-wide `pricing` default, then the models.dev input and output list price, and stored on the `api_calls` row. A provider-reported cost (including `0`) is never replaced. Unknown cost stays unset. Pricing a call reads only the models.dev slice of `<cacheDir>/benchmark-scores.json`; it does not download languagebench or the Arena file.
 - **Debug traffic log**: if `debugTrafficFilePath` is set, appends request and response JSON to a file (programmatic). CLI `--debug-failed` writes `FAILED-TRANSLATION` files under `cacheDir` with the system/user prompt, raw assistant reply, and validation errors for failed UI, docs, JSON, and SVG translation-check attempts. Provider API / empty-body failures print on the console instead of dumping a prompt-only file.
 
-`suggest-models` and the dashboard Models tab do not call the LLM. They rank the active provider's chat catalog with languagebench ChrF, LMArena Arena Score, and models.dev prices, then optionally replace `providers.<name>.translationModels`. Aggregates live in `<cacheDir>/benchmark-scores.json`. See [suggest-models](/reference/cli-commands/models#suggest-models).
+`suggest-models` and the dashboard Models tab do not call the LLM. They rank the active provider's chat catalog with languagebench ChrF, LMArena Arena Score, and models.dev prices, then optionally replace `providers.<name>.translationModels`. Aggregates live in `<cacheDir>/benchmark-scores.json`. See [AI Models](/guide/ai-models) and [suggest-models](/reference/cli-commands/models#suggest-models).
 
 <a id="config-loading"></a>
 ### Config loading

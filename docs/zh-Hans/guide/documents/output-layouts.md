@@ -64,9 +64,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docsRoot` 之外的路径回退到[嵌套](#nested)布局（`{outputDir}/{locale}/{relPath}`）。
+`docsRoot` 之外的路径会回退到[嵌套](#nested-default)布局 (`{outputDir}/{locale}/{relPath}`)。
 
-将 `docs[].docsOutput.docsRoot` 设置为你的英文源根目录（例如 `"docs"`、`"src/content/docs"` 或 `"content/en"`）。当 `docsOutput.style = "doc-system"` 时，你必须显式设置 `localeSubpath`（预设请使用下方的别名）。当翻译页面直接位于 `{outputDir}/{locale}/` 之下时（Starlight 风格），请使用 `localeSubpath: ""`。
+将 `docs[].docsOutput.docsRoot` 设置为以 `sourceLocale` 编写的文件的根目录（例如，当源语言为英语时，为 `"docs"`、`"src/content/docs"` 或 `"content/en"`）。`sourceLocale` 可以是任何语言。当 `docsOutput.style = "doc-system"` 时，你必须显式设置 `localeSubpath`（对预设使用下面的别名）。当翻译页面直接位于 `{outputDir}/{locale}/` 下时，使用 `localeSubpath: ""`（Starlight 风格）。
 
 来自 `docusaurusCatalogDir` 的 Docusaurus shell JSON 以及 doc-system 预设下的其他 JSON 产物遵循与 markdown 相同的文件夹布局。当 `style: "flat"` 时，JSON 标签文件仍使用嵌套形式，除非你设置 `jsonPathTemplate`。
 
@@ -76,9 +76,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 **别名**（相同的 `doc-system` 引擎、预设 `localeSubpath` 和默认值）：
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` 默认为 `docusaurus-plugin-content-docs/current`（Docusaurus i18n 插件布局）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`；`localePathLowercase` 默认为 `true`。翻译后的页面位于 `{outputDir}/{locale}/` 下，当英文内容位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配。也用于普通的 Astro 语言区域页面（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）— 请参阅 [Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
-- `docsOutput.style = "vitepress"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；保留 BCP-47 语言区域文件夹名称（`localePathLowercase` 默认为 `false`）。请参阅 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)。
-- `docsOutput.style = "nextra"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；英文源文件位于语言区域文件夹下（例如 `content/en/`）。请参阅 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` 默认为 `""`；`localePathLowercase` 默认为 `true`。翻译页面位于 `{outputDir}/{locale}/` 下，当源区域设置位于内容根目录且 `outputDir` 等于 `docsRoot` 时，与 [Starlight](https://starlight.astro.build/guides/i18n/) 匹配。也用于普通的 Astro 区域设置页面 (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — 参见 [Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#pages-parse-and-replace)。
+- `docsOutput.style = "vitepress"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；BCP-47 区域设置文件夹名称被保留（`localePathLowercase` 默认为 `false`）。参见 [VitePress 集成](/zh-Hans/guide/integrations/vitepress)。
+- `docsOutput.style = "nextra"` — 与 `doc-system` 布局相同，但 `localeSubpath` 为空；源区域设置位于一个区域设置文件夹下（例如，当源语言为英语时，为 `content/en/`）。参见 [Nextra 集成](/zh-Hans/guide/integrations/nextra)。
 
 Docusaurus 预设（主要的文档页面）：
 
@@ -121,7 +121,7 @@ Nextra 主题字典 (`.ts`) 和 `_meta.ts` 侧边栏标签不在 markdown 中 �
 
 `docsOutput.style = "fumadocs"` — 通过 `docsOutput.fumadocsParser` 实现的 Fumadocs 内容布局：
 
-- **`"dot"`（默认）** — 文件名中的区域设置后缀位于 `outputDir` 下的英文源旁边（而非区域设置文件夹）。这与 `doc-system` 路径形式是分开的。
+- **`"dot"`（默认）** — 文件名中的区域设置后缀，与 `outputDir` 下的源区域设置文件并列（不是区域设置文件夹）。这与 `doc-system` 路径形状是分开的。源语言是 `sourceLocale`，可以是任何语言。
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

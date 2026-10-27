@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Python 應用程式
 
-`ai-i18n-tools` 從 Python 以及 Jinja、Django 和 Qt `.ui` 檔案中提取 UI 字串，然後寫入扁平化的英文鍵值 JSON、GNU gettext 目錄，或兩者皆有。執行階段輔助程式是一個標準函式庫 `i18n.py`（Python 3.10 或更新版本）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 會呼叫該輔助程式。Django 則使用 Django 自身的 gettext。
+`ai-i18n-tools` 會從 Python、Jinja、Django 和 Qt `.ui` 檔案中擷取 UI 字串，然後寫入以來源語言字串為鍵的扁平 JSON、GNU gettext 目錄，或兩者皆是。`sourceLocale` 可以是任何語言。執行階段協助程式是標準程式庫 `i18n.py` (Python 3.10 或更新版本)。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 會呼叫該協助程式。Django 則使用其自己的 gettext。
 
-將地區設定新增至現有的單語言應用程式：[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函式列表：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
+將地區設定新增至現有的單一語言應用程式：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，包括 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-i18n-py) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函數清單：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
 
 可執行的副本位於 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它們是 Python 專案。前三個使用虛擬環境 (virtualenv) 和 `pip install -r requirements.txt`。`python-gettext` 僅使用標準函式庫。它們不是 npm 套件。發行封存檔 `ai-i18n-tools-python-examples.zip` 包含相同的四個目錄。npm tarball 和獨立執行檔則不包含。
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` 寫入扁平 JSON 和 `i18n.py`。`ui-python-gettext` 寫入 JSON 和 `.po` / `.mo`。`ui-python-flask` 在 `translations/` 和 `i18n.py` 下寫入 gettext 目錄。`ui-python-django` 寫入 `locale/<lang>/LC_MESSAGES/django.po` 且不會寫入 `i18n.py`。
+
+也請翻譯儲存庫的 README：將 `--with-readme` 新增至上述的 `init` 指令。請參閱 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 
 掃描根目錄會跳過 `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache` 和 `.eggs`。
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## 目錄
 
-扁平 JSON 鍵為英文原始碼。內容使用 `context` + U+0004 + 英文原始碼。複數插槽保留為 `{md5}_one`、`{md5}_other` 以及 `translate-ui` 已經寫入的其他 CLDR 格式。輔助程式會使用 MD5 對修剪後的單數形式進行雜湊處理，並讀取前 8 個十六進位字元。
+扁平 JSON 的鍵是來源語言字串，即 `sourceLocale` 中的文字。該語言可以是任何語言。情境會使用 `context` + U+0004 + 該來源字串。複數位置會保留 `{md5}_one`、`{md5}_other` 以及 `translate-ui` 已寫入的其他 CLDR 形式。協助程式會使用 MD5 將修剪過的單數形式進行雜湊處理，並讀取前 8 個十六進位字元。
 
 Gettext 檔案使用 `msgctxt` 作為內容，並使用 `msgid` / `msgid_plural` 作為複數形式。`ui.gettext.compileMo` 會將 `.mo` 寫在 `.po` 旁邊。`purge-locale` 會刪除該地區設定的 `.po` 和 `.mo`。當 `flatOutput` 為 false 時，它會保持扁平 JSON 檔案不變，因為它們未被寫入。
 

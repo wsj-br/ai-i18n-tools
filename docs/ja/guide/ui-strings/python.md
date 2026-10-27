@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Python アプリケーション
 
-`ai-i18n-tools` は、Python、Jinja、Django、および Qt `.ui` ファイルから UI 文字列を抽出し、フラットな英語キーの JSON、GNU gettext カタログ、またはその両方を出力します。ランタイムヘルパーは標準ライブラリの `i18n.py` (Python 3.10 以降) です。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid、および FastAPI はこのヘルパーを呼び出します。Django は Django 独自の gettext を使用します。
+`ai-i18n-tools`は、Python、Jinja、Django、Qtの`.ui`ファイルからUI文字列を抽出し、ソース言語の文字列をキーとするフラットなJSON、GNU gettextカタログ、またはその両方を書き込みます。`sourceLocale`はどの言語でもかまいません。ランタイムヘルパーは、標準ライブラリの`i18n.py`です（Python 3.10以降）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid、FastAPIがそのヘルパーを呼び出します。DjangoはDjango独自のgettextを使用します。
 
-既存の単一言語アプリへのロケールの追加: [Pythonアプリへのi18nの追加](/ja/guide/add-i18n-to-python)。フレームワークの選択: [Python統合](/ja/guide/integrations/python)。関数リスト: [Pythonランタイム (`i18n.py`)](/ja/reference/programmatic-api#python-runtime)。
+既存の単一言語アプリにロケールを追加する：[`i18n.py`プロンプト](/ja/guide/add-i18n-to-python#agent-prompt-i18n-py)と[Django / gettextプロンプト](/ja/guide/add-i18n-to-python#agent-prompt-django-gettext)を含む[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)。フレームワーク選択：[Python統合](/ja/guide/integrations/python)。関数リスト：[Pythonランタイム（`i18n.py`）](/ja/reference/programmatic-api#python-runtime)。
 
 実行可能なコピーは `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` に存在します。これらは Python プロジェクトです。最初の 3 つは virtualenv と `pip install -r requirements.txt` を使用します。`python-gettext` は標準ライブラリのみを使用します。これらは npm パッケージではありません。リリースアーカイブ `ai-i18n-tools-python-examples.zip` には同じ 4 つのディレクトリが含まれています。npm tarball およびスタンドアロン実行可能ファイルには含まれていません。
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` はフラットな JSON と `i18n.py` を書き込みます。`ui-python-gettext` は JSON と `.po` / `.mo` を書き込みます。`ui-python-flask` は `translations/` および `i18n.py` 配下に gettext カタログを書き込みます。`ui-python-django` は `locale/<lang>/LC_MESSAGES/django.po` を書き込み、`i18n.py` は書き込みません。
+
+リポジトリのREADMEも翻訳します：上記の`init`コマンドに`--with-readme`を追加してください。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)を参照してください。
 
 スキャンルートは `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache`、および `.eggs` をスキップします。
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## カタログ
 
-フラットな JSON キーは英語のソースです。コンテキストは `context` + U+0004 + 英語のソースを使用します。複数形のスロットは `{md5}_one`、`{md5}_other`、および `translate-ui` がすでに書き込んでいる他の CLDR 形式のままになります。ヘルパーはトリミングされた単数形を MD5 でハッシュ化し、最初の 8 文字の 16 進数を読み取ります。
+フラットなJSONのキーは、ソース言語の文字列、つまり`sourceLocale`内のテキストです。その言語はどの言語でもかまいません。コンテキストは、`context` + U+0004 + そのソース文字列を使用します。複数形のスロットは、`translate-ui`がすでに書き込む`{md5}_one`、`{md5}_other`、およびその他のCLDR形式のままです。ヘルパーは、トリミングされた単数形をMD5でハッシュ化し、最初の8桁の16進文字を読み取ります。
 
 Gettext ファイルはコンテキストに `msgctxt` を、複数形に `msgid` / `msgid_plural` を使用します。`ui.gettext.compileMo` は `.mo` を `.po` の隣に書き込みます。`purge-locale` はそのロケールの `.po` と `.mo` を削除します。`flatOutput` が false の場合、フラットな JSON ファイルは書き込まれていないため、そのまま残されます。
 

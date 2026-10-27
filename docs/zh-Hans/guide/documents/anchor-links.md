@@ -12,9 +12,9 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="why-anchor-links-need-attention"></a>
 ## 为什么锚点链接需要注意
 
-- `rewriteRelativeLinks` 会为每个区域设置修复**文件名**（`setup.md` → `setup.de.md`）。
-- 许多渲染器会从**可见的标题文本**派生出`#` slug。翻译后，不同区域的标题会不同，因此自动生成的 slug 可能会发生变化，而重写的链接可能仍然显示`#first-run` — 或者您的英文`#…`锚点不再匹配渲染器根据翻译后的标题构建的 slug。
-- 结果：读者会跳转到正确的**文件**但**错误的行**，或者浏览器找不到匹配的标题。
+- `rewriteRelativeLinks` 会为每个区域设置固定**文件名** (`setup.md` → `setup.de.md`)。
+- 许多渲染器会从**可见的标题文本**派生出 `#` 段名。翻译后，每个区域设置的标题会有所不同，因此自动生成的段名可能会改变，而重写的链接可能仍然指向 `#first-run` — 或者源区域设置的 `#…` 锚点不再与渲染器从翻译后的标题构建的段名相匹配。源语言是 `sourceLocale`，可以是任何语言。
+- 结果：读者会跳转到正确的**文件**，但却是错误的**行**，或者浏览器找不到匹配的标题。
 
 <a id="what-to-do"></a>
 ## 如何操作

@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-从 Node.js 生成配置。第四个参数是内置预设（`cwd` 是第三个）：
+通过 Node.js 搭建配置。第四个参数是内置预设（`cwd` 是第三个）。当模板尚未列出 `README.md` 时，一个可选的第五个参数 `{ withReadme: true }` 会附加扁平化的 README 文档块，并返回是否已添加该块：
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 主要导出（常用 — 完整公共接口请参阅 `src/index.ts`）：
@@ -53,7 +56,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `Glossary` / `GlossaryMatcher` | 加载并应用翻译术语表，包括可选的术语 `Context` 说明。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 加载 `glossary.contextFiles` 和用于缓存失效的指纹指引。 |
 | `runTranslateUI` | 程序化翻译 UI 入口点。 |
-| `writeInitConfigFile` | 编写一个启动配置 JSON（`template`、`cwd` 和一个必需的 `providerKey`）。 |
+| `writeInitConfigFile` | 写入一个初始配置文件 JSON（`template`、`cwd`、一个必需的 `providerKey` 和一个可选的 `{ withReadme }`）。返回 `{ readmeBlockAdded, hasReadmeBlock }`。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` 所用各内置预设的初始 `translationModels`。 |
 | `PROVIDER_PRESETS` | 内置提供程序预设映射（`baseUrl`、`apiKeyEnv`）。 |
 
@@ -75,5 +78,5 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `_(message)` | 查找一个字面量，然后返回目录字符串或消息本身。 |
 | `t(template, *, plurals=False, count=None, **values)` | 查找字面量，然后进行插值。`translate` 是相同的函数。在 Python 3.14 上，`translate(t"Hello, {name}!")` 会保留模板及其值。关键字参数会覆盖从模板字符串中获取的值。 |
 | `ngettext(singular, plural, n, **values)` | 复数查找，然后进行插值。`count` 可用于格式字符串。 |
-| `pgettext(context, message, **values)` | 上下文查找（`msgctxt`，或 `context` + U+0004 + 扁平 JSON 中的英文源文本），然后进行插值。 |
+| `pgettext(context, message, **values)` | 上下文查找（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 格式的源语言字符串），然后进行插值。 |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 选择框。写入 `st.session_state.locale` 和 `st.query_params["lang"]`，调用 `set_locale`，并返回所选代码。 |

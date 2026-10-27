@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-將 `docs[].docsOutput.docsRoot` 設定為您的英文來源根目錄 (例如 `"docs"` 或 `"src/content/docs"`)。當您直接設定 `style: "doc-system"` 時，您還必須將 `localeSubpath` 設定為您的網站用於 `{locale}/` 和翻譯檔案之間的路徑區段。別名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是預設的 `doc-system` 版面配置，具有預設的 `localeSubpath` 值 (請參閱 [輸出版面配置](/zh-Hant/guide/documents/output-layouts))。
+將 `docs[].docsOutput.docsRoot` 設定為以 `sourceLocale` 編寫的檔案根目錄 (例如 `"docs"` 或 `"src/content/docs"`)。`sourceLocale` 可以是任何語言。當您直接設定 `style: "doc-system"` 時，也必須將 `localeSubpath` 設定為您網站在 `{locale}/` 和翻譯檔案之間使用的路徑區段。別名 `"docusaurus"`、`"astro-starlight"` 和 `"vitepress"` 是預設的 `doc-system` 版面配置，具有預設的 `localeSubpath` 值 (請參閱 [輸出版面配置](/zh-Hant/guide/documents/output-layouts))。
 
 | 預設別名 | 預設 `localeSubpath` | 範例輸出 |
 |--------------|-------------------------|----------------|
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 平面鏈接改寫器 **not** 對 `doc-system` 執行（與 `"flat"` 不同）。`postProcessing.regexAdjustments` 會看到來自來源 markdown 的原始 URL — 通常是絕對路徑或站點根路徑，例如 `/img/screenshots/en-GB/foo.png`。
 
-**每個地區設定資料夾** 版面配置適用於螢幕截圖位於共用靜態 URL 樹狀結構中：從第一天起就使用地區設定編碼的資料夾和一個通用 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 規則 (請參閱 [設定 — 文件系統](#config---docsoutputstyle--doc-system))。
+當螢幕擷取畫面位於共用靜態 URL 樹狀目錄中時，適用 **各語系資料夾** 版面配置：從一開始就使用以語系編碼的資料夾，以及一條通用的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 規則 (請參閱 [設定 — 文件系統](/zh-Hant/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system))。
 
 **並置螢幕截圖** 適用於每個地區設定的翻譯文件將資產儲存在 Markdown 旁邊 (無 URL 重寫)。您的螢幕截圖指令碼必須將 PNG 寫入從 `{outputDir}`、`{locale}` 和 `{localeSubpath}` 派生的路徑 — 下面的 Docusaurus 預設值是參考版面配置。
 
@@ -65,9 +65,9 @@ images/screenshots/en-GB/settings.png
 
 1. 在新增任何截圖之前先建立符號連結 `documentation/docs/assets → ../static/assets`。Docusaurus 的 webpack 預設會追蹤符號連結，這可讓原始文件使用相對路徑，而翻譯後的文件也能沿用相同的相對路徑。
 
-2. 將所有文件資源（PNG 與 SVG 檔案）統一放在 `static/assets/` 目錄中。不要將它們分開存放於 `static/img/`（SVG）與 `static/assets/`（PNG）。統一存放位置可讓每一份文件頁面（不論英文或翻譯版）都能引用相同的相對路徑 `../assets/name.ext`。
+2. 將所有文件資產 (PNG 和 SVG) 放入 `static/assets/` (一個目錄)。請勿將它們分散在 `static/img/` (SVG) 和 `static/assets/` (PNG) 之間。統一的位置代表每個文件頁面 (無論是來源語系還是翻譯版本) 都可以參照相同的相對路徑 `../assets/name.ext`。
 
-在原始 Markdown 中引用資源時，一律使用穩定的相對路徑 `../assets/name.ext`。切勿對文件資源使用絕對路徑 `/img/` 或 `/assets/` 的 URL —— 因為這些 URL 在英文原始檔（由 `static/` 提供服務）與翻譯語系（與翻譯文件共置）之間會有所不同，這將迫使您必須撰寫 `regexAdjustments` 規則來橋接。
+在來源 Markdown 中，使用穩定的相對路徑 `../assets/name.ext` 來參照每個資產。切勿對文件資產使用絕對 `/img/` 或 `/assets/` URL — 因為這些 URL 在來源語系頁面 (從 `static/` 提供) 和翻譯語系 (與翻譯文件並存) 之間有所不同，這會強制需要一條 `regexAdjustments` 規則來橋接它們。
 
 當您稍後新增 i18n 時，螢幕截圖指令碼會採用 `getScreenshotDir` 分割 (請參閱 [並置螢幕截圖](/zh-Hant/guide/images-and-screenshots/colocated-screenshots))，而 `translate-svg` 會使用 `pathTemplate`。無需調整正規表達式。
 

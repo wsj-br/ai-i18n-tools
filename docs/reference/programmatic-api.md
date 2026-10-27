@@ -78,5 +78,5 @@ Call shapes, unsafe f-strings, and per-framework locale wiring: [Python applicat
 | `_(message)` | Look up one literal, then return the catalog string or the message itself. |
 | `t(template, *, plurals=False, count=None, **values)` | Look up the literal, then interpolate. `translate` is the same function. On Python 3.14, `translate(t"Hello, {name}!")` keeps the template and its values. Keyword arguments override values taken from a template string. |
 | `ngettext(singular, plural, n, **values)` | Plural lookup, then interpolate. `count` is available to the format string. |
-| `pgettext(context, message, **values)` | Context lookup (`msgctxt`, or `context` + U+0004 + the English source in flat JSON), then interpolate. |
+| `pgettext(context, message, **values)` | Context lookup (`msgctxt`, or `context` + U+0004 + the source-language string in flat JSON), then interpolate. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit select box. Writes `st.session_state.locale` and `st.query_params["lang"]`, calls `set_locale`, and returns the chosen code. |

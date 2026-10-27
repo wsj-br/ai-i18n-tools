@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
 
-1. `ai-i18n-tools init -t ui-plain-html -P openai` के साथ स्कैफ़ोल्ड करें, या नीचे कॉन्फ़िग जोड़ें।
-2. स्रोत HTML को मार्क करें (या `mark-html` को इसे करने दें)।
-3. `ui.sourceRoots` और `ui.uiExtractor.extensions` को उन फ़ाइलों पर इंगित करें।
-4. `extract` चलाएँ, फिर `translate-ui` (या `sync-ui` के साथ दोनों चलाएँ)।
+1. `ai-i18n-tools init -t ui-plain-html -P openai` के साथ स्केफ़ोल्ड करें, या नीचे दिया गया कॉन्फ़िग जोड़ें। जब रिपॉजिटरी README का भी अनुवाद किया जाना चाहिए तो `--with-readme` जोड़ें ([अपनी README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme))।
+2. स्रोत HTML को चिह्नित करें (या `mark-html` को ऐसा करने दें)।
+3. उन फ़ाइलों पर `ui.sourceRoots` और `ui.uiExtractor.extensions` को इंगित करें।
+4. `extract` चलाएँ, फिर `translate-ui` (या दोनों को `sync-ui` के साथ चलाएँ)।
 5. `i18n.js` को पेज के बगल में कॉपी करें और इसे अपनी स्क्रिप्ट से पहले लोड करें।
 6. फ़ोल्डर को HTTP पर सर्व करें। `file://` लोकेल JSON को `fetch` नहीं कर सकता।
 
@@ -94,7 +94,7 @@ ai-i18n-tools sync-ui
 <a id="marking-html-for-translation"></a>
 ## अनुवाद के लिए HTML को चिह्नित करना
 
-बेयर मार्कर्स को प्राथमिकता दें। अंग्रेज़ी स्रोत टेक्स्ट एलिमेंट पर ही रहता है, और वही टेक्स्ट कैटलॉग कुंजी होता है। `extract` इसे पढ़ता है; रनटाइम अनुवाद को वापस उसी प्रॉपर्टी पर लिखता है।
+बेयर मार्कर पसंद करें। स्रोत-भाषा का टेक्स्ट एलिमेंट पर रहता है, और वह टेक्स्ट कैटलॉग कुंजी होता है। यह `sourceLocale` में लिखा गया है, जो कोई भी भाषा हो सकती है। `extract` इसे पढ़ता है; रनटाइम अनुवाद को उसी प्रॉपर्टी पर वापस लिखता है।
 
 - `data-i18n` — कुंजी `textContent` है। रनटाइम `textContent` सेट करता है।
 - `data-i18n-title` — कुंजी `title` है।
@@ -217,6 +217,52 @@ ai-i18n-tools sync-ui
 
 `mark-html` ऊपर दिए गए बेयर मार्कर डालता है। यह एक ड्राई रन है जब तक कि आप `--write` पास नहीं करते। यह `data-i18n-ignore` सबट्री, कोड-जैसे तत्वों (`code`, `pre`, `kbd`, `samp`, `var`), और खाली या केवल संख्यात्मक टेक्स्ट को छोड़ देता है। यह मिश्रित-सामग्री वाले पैरेंट की रिपोर्ट करता है और उन्हें `<span data-i18n>` में रैप करने के लिए आपके लिए छोड़ देता है। यह कभी भी मानयुक्त मार्कर नहीं लिखता है।
 
+<a id="agent-prompt"></a>
+### एजेंट प्रॉम्प्ट
+
+`mark-html --write` पहले से ही बेयर मार्कर सम्मिलित करता है। इसे तब पेस्ट करें जब रिपोर्ट में अभी भी बचे हुए आइटम सूचीबद्ध हों: मिश्रित-सामग्री वाले पैरेंट, वह टेक्स्ट जिसे JavaScript सम्मिलित करता है, और ऐसे पहचानकर्ता जो स्रोत भाषा में ही रहने चाहिए।
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 रनटाइम पहली बार चलने पर प्रत्येक स्रोत कुंजी को एक आंतरिक `data-i18n-source` विशेषता पर रिकॉर्ड करता है, ताकि बाद में लोकैल स्विच करने पर भी अंग्रेजी स्ट्रिंग को देखा जा सके। उन विशेषताओं को एक्सट्रैक्ट नहीं किया जाता है।
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ ai-i18n-tools sync-ui
 | नए DOM नोड्स अंग्रेजी में रहते हैं | उन्हें सम्मिलित करने के बाद `window.i18n.apply()` को कॉल करें। |
 | पुर्तगाली में छवि `chart.png` रहती है | तत्व को `data-i18n-locale-src` की आवश्यकता है, और लोकेल स्रोत लोकेल नहीं होना चाहिए। |
 
-रनटाइम में `normalizeI18nText`, [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) में `normalizeI18nText` से मेल खाता है: ट्रिम करें, फिर रिक्त स्थान को संकुचित करें। चूँकि अंग्रेज़ी स्रोत टेक्स्ट कैटलॉग कुंजी है, इसलिए अनुपलब्ध अनुवाद अंग्रेज़ी पर फ़ॉल बैक हो जाता है।
+रनटाइम में `normalizeI18nText`, [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) में `normalizeI18nText` से मेल खाता है: ट्रिम करें, फिर व्हाइटस्पेस को कोलैप्स करें। क्योंकि स्रोत-भाषा का टेक्स्ट कैटलॉग कुंजी है, एक गुम अनुवाद उस स्रोत टेक्स्ट पर वापस आ जाता है।
 
 चलाने योग्य डेमो [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) है। `pnpm dev` इसे [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) पर सर्व करता है।
 

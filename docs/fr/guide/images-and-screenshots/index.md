@@ -44,7 +44,7 @@ Si vous commencez avec des chemins qui omettent le sous-répertoire des paramèt
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Définissez `docs[].docsOutput.docsRoot` sur la racine de votre source anglaise (par exemple, `"docs"` ou `"src/content/docs"`). Lorsque vous définissez `style: "doc-system"` directement, vous devez également définir `localeSubpath` sur le segment de chemin que votre site utilise entre `{locale}/` et le fichier traduit. Les alias `"docusaurus"`, `"astro-starlight"` et `"vitepress"` sont des mises en page `doc-system` prédéfinies avec des valeurs `localeSubpath` par défaut (voir [Mises en page de sortie](/fr/guide/documents/output-layouts)).
+Définissez `docs[].docsOutput.docsRoot` sur la racine des fichiers écrits en `sourceLocale` (par exemple `"docs"` ou `"src/content/docs"`). `sourceLocale` peut être n'importe quelle langue. Lorsque vous définissez `style: "doc-system"` directement, vous devez également définir `localeSubpath` sur le segment de chemin que votre site utilise entre `{locale}/` et le fichier traduit. Les alias `"docusaurus"`, `"astro-starlight"` et `"vitepress"` sont des mises en page `doc-system` prédéfinies avec des valeurs `localeSubpath` par défaut (voir [Mises en page de sortie](/fr/guide/documents/output-layouts)).
 
 | Alias prédéfini | `localeSubpath` par défaut | Exemple de sortie |
 |--------------|-------------------------|----------------|
@@ -54,7 +54,7 @@ Définissez `docs[].docsOutput.docsRoot` sur la racine de votre source anglaise 
 
 Le réécritureur de liens plat ne s'exécute **pas** pour `doc-system` (contrairement à `"flat"`). `postProcessing.regexAdjustments` voit l'URL d'origine du markdown source — généralement un chemin absolu ou racine du site comme `/img/screenshots/en-GB/foo.png`.
 
-La mise en page **par dossier de paramètres régionaux** s'applique lorsque les captures d'écran se trouvent dans une arborescence d'URL statique partagée : utilisez un dossier codé par paramètres régionaux dès le premier jour et une règle générique `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (voir [Configuration — système de documentation](#config---docsoutputstyle--doc-system)).
+La mise en page **Dossier par locale** s'applique lorsque les captures d'écran se trouvent dans une arborescence d'URL statique partagée : utilisez un dossier codé par locale dès le premier jour et une règle générique `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (voir [Configuration — système de documentation](/fr/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 Les **captures d'écran colocalisées** s'appliquent lorsque les documents traduits de chaque paramètre régional stockent les ressources à côté du markdown (pas de réécriture d'URL). Votre script de capture d'écran doit écrire les fichiers PNG dans des chemins dérivés de `{outputDir}`, `{locale}` et `{localeSubpath}` — le préréglage Docusaurus ci-dessous est la mise en page de référence.
 
@@ -65,9 +65,9 @@ Deux habitudes lors de la configuration du projet éliminent tous les ponts rege
 
 1. Créez un lien symbolique `documentation/docs/assets → ../static/assets` avant d'ajouter des captures d'écran. Webpack de Docusaurus suit les liens symboliques par défaut, ce qui permet aux documents sources d'utiliser des chemins relatifs que les documents traduits utiliseront également.
 
-2. Placez toutes les ressources de documentation — PNG et SVG — dans `static/assets/` (un seul répertoire). Ne les séparez pas entre `static/img/` (SVGs) et `static/assets/` (PNGs). Un emplacement unique signifie que chaque page de documentation, en anglais ou traduite, peut référencer le même chemin relatif `../assets/name.ext`.
+2. Placez tous les actifs de documentation — PNG et SVG — dans `static/assets/` (un seul répertoire). Ne les séparez pas entre `static/img/` (SVG) et `static/assets/` (PNG). Un emplacement unifié signifie que chaque page de documentation, en locale source et traduite, peut référencer le même chemin relatif `../assets/name.ext`.
 
-Référencez chaque ressource avec le chemin relatif stable `../assets/name.ext` dans le markdown source. N'utilisez jamais d'URL absolue `/img/` ou `/assets/` pour les ressources de documentation — ces URL diffèrent entre la source anglaise (servie depuis `static/`) et les versions traduites (colocalisées avec les documents traduits), ce qui oblige à utiliser une règle `regexAdjustments` pour combler l'écart.
+Référencez chaque actif avec le chemin relatif stable `../assets/name.ext` dans le markdown source. N'utilisez jamais d'URL absolues `/img/` ou `/assets/` pour les actifs de documentation — ces URL diffèrent entre les pages de la locale source (servies depuis `static/`) et les locales traduites (colocalisées avec les documents traduits), ce qui force une règle `regexAdjustments` à les relier.
 
 Lorsque vous ajoutez l'i18n plus tard, le script de capture d'écran adopte la division `getScreenshotDir` (voir [Captures d'écran colocalisées](/fr/guide/images-and-screenshots/colocated-screenshots)) et `translate-svg` utilise un `pathTemplate`. Aucun ajustement d'expression régulière n'est nécessaire.
 

@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-UI のコピーをソースの `src/i18n/en/translation.json` ではなく、**ロケールごとにネストされた JSON ファイル** (例: `t("…")`) に保持するプロジェクト向けに設計されています。CLI はこれらのファイル内の文字列値を走査し、アクティブな LLM プロバイダーを介してそれらを翻訳し、`json[].outputPathTemplate` を使用してロケールごとの出力を書き込みます。`translate-docs` および `translate-svg` と同じ SQLite キャッシュ (`cacheDir`) を使用します。
+対象読者: ロケールごとにネストされたJSONファイル（例: `src/i18n/en/translation.json`）にコピーをすでに保持しており、そのレイアウトを維持したいプロジェクト。ソースがプレーンテキストで、まだ`t()`がない場合は、代わりに[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)から始めてください。
+
+CLIは、それらのファイル内の文字列値を走査し、アクティブなLLMプロバイダー上のモデルで翻訳して、`json[].outputPathTemplate` を使用してロケールごとの出力を書き込みます。`translate-docs` および `translate-svg` (`cacheDir`) と同じSQLiteキャッシュを使用します。
 
 このパイプラインは実行し**ない** `extract` — カタログ`strings.json`はありません。それを有効にするには、`features.translateJson`とトップレベルの`json[]`に1つ以上のエントリが必要です。
 
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-`translate-json`はモデルを**ターゲットロケール**ごとに解決します: `localeModels(locale)`は最初に構成されたときに、次に`translationModels`。ネストされたJSONバンドルの特定のロケールに専用のモデルが必要な場合にこれを使用します。たとえば、`zh-Hans` / `zh-Hant`テーマファイル。詳しくは、[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照してください。
+`translate-json` は、**ターゲットロケールごと**にモデルを解決します。設定されている場合は最初に `localeModels(locale)`、次に `translationModels` の順に解決します。これは、`zh-Hans` / `zh-Hant` テーマファイルのように、特定のロケールで専用モデルを使用するメリットがあるネストされた JSON バンドルに使用します。[AI モデル](/ja/guide/ai-models#model-fallback-chain) を参照してください。
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### ステップ 1: ネストされたJSON向けに初期化
@@ -105,7 +107,8 @@ ai-i18n-tools status
 | Fumadocs `meta.json` ラベルおよび UI オーバーライドカタログ | ドキュメント — `translate-docs`（`style: "fumadocs"`時に`meta.json`を自動、オプションで`fumadocsUiCatalog`）; `json[]`を**使用しないで**ください — [Fumadocs インテグレーション](/ja/guide/integrations/fumadocs)を参照 |
 | スタンドアロンのネストされたロケールJSON (ZenBrowserスタイルの`translation.json`ツリー) | JSON — `json[]` + `translate-json` |
 | i18next ネームスペースファイル（`public/locales/en/common.json`、<code v-pre>{{name}}</code> トークン、`key_one` / `key_other` サフィックス） | JSON — `json[]` + `translate-json`（[i18next ネームスペースファイル](#i18next-namespace-files) を参照） |
-| Intlayer の `*.content.ts` 辞書 + `useIntlayer` | [Intlayer からの移行](/ja/guide/migrating-from-intlayer) — `migrate-intlayer`、その後 UI 文字列 |
+| Intlayer `*.content.ts` 辞書 + `useIntlayer` (Intlayerからの移行) | [Intlayerからの移行](/ja/guide/migrating-from-intlayer) — `migrate-intlayer`、次にUI文字列 |
+| Intlayer `*.content.ts` 辞書 (Intlayerを維持し、翻訳を埋める) | [Intlayerをその場で翻訳する](/ja/guide/translating-intlayer) — `translate-intlayer` |
 | `<text>` / `<title>` / `<desc>` を含む図解された `.svg` ファイル | `features.translateSVG` + [`svg`](/ja/reference/configuration#svg) + `translate-svg` (オプション; 3 つの主要パイプラインのいずれでもありません) |
 
 フィールドリファレンス: [設定リファレンス](/ja/reference/configuration#json)の[`json`](#json)。クリーンアップのキャッシュキーは`file_tracking`で`json-block:{blockIndex}:{projectRelPath}`を使用します。
@@ -113,7 +116,7 @@ ai-i18n-tools status
 <a id="i18next-namespace-files"></a>
 ### i18next ネームスペースファイル
 
-JSON パイプラインは、一般的な i18next のキー/値ロケールファイル（ネストされたオブジェクト、文字列配列、値内の <code v-pre>{{name}}</code> 補間、独立した複数形サフィックスキー（`welcome_one`、`welcome_other`））を対象とします。**ただし**、`t("some.key")` の呼び出し箇所は書き換えません。これらはキーベースのまま維持されます。プロジェクトを ai-i18n-tools の英語ソース文字列 `t()` スキーマに移行するには、呼び出し箇所を `t("English text")` に変更します（または、ソースが Intlayer の `.content.ts` の場合は `migrate-intlayer` を実行します）。
+JSONパイプラインは、一般的なi18nextのキー/値形式のロケールファイルに対応しています。これには、ネストされたオブジェクト、文字列配列、値における<code v-pre>{{name}}</code>補間、および独立した複数形の接尾辞キー (`welcome_one`、`welcome_other`) が含まれます。`t("some.key")`の呼び出し箇所は書き換え**ません**。これらはキーベースのまま維持されます。プロジェクトをai-i18n-toolsのソース文字列`t()`スキーマに移行するには、呼び出し箇所を`t("source text")`に変更してください。テキストは`sourceLocale`で記述され、どの言語でも使用できます。ソースがIntlayer `.content.ts`の場合は、`migrate-intlayer`を実行してください。Intlayerをそのまま使用し、その辞書のみを翻訳するには、[`translate-intlayer`](/ja/guide/translating-intlayer)を使用してください。
 
 例（`public/locales/en/` 配下のソース英語ネームスペース）:
 

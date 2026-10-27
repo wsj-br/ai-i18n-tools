@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Applications Python
 
-`ai-i18n-tools` extrait les chaînes d'interface utilisateur de Python ainsi que des fichiers Jinja, Django et Qt `.ui`, puis génère des fichiers JSON à clés anglaises, des catalogues GNU gettext, ou les deux. L'assistant d'exécution est un module de la bibliothèque standard `i18n.py` (Python 3.10 ou version ultérieure). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid et FastAPI appellent cet assistant. Django utilise le gettext propre à Django.
+`ai-i18n-tools` extrait les chaînes d'IU de Python et des fichiers `.ui` Jinja, Django et Qt, puis écrit du JSON plat dont les clés sont les chaînes de la langue source, des catalogues GNU gettext, ou les deux. `sourceLocale` peut être n'importe quelle langue. L'utilitaire d'exécution est un `i18n.py` de la bibliothèque standard (Python 3.10 ou plus récent). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid et FastAPI appellent cet utilitaire. Django utilise son propre gettext.
 
-Ajout de paramètres régionaux à une application monolingue existante : [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python). Sélecteur de framework : [Intégrations Python](/fr/guide/integrations/python). Liste des fonctions : [Runtime Python (`i18n.py`)](/fr/reference/programmatic-api#python-runtime).
+Ajouter des locales à une application monolingue existante : [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), y compris l'[invite `i18n.py`](/fr/guide/add-i18n-to-python#agent-prompt-i18n-py) et l'[invite Django / gettext](/fr/guide/add-i18n-to-python#agent-prompt-django-gettext). Sélecteur de framework : [Intégrations Python](/fr/guide/integrations/python). Liste des fonctions : [Exécution Python (`i18n.py`)](/fr/reference/programmatic-api#python-runtime).
 
 Les copies exécutables se trouvent dans `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Ce sont des projets Python. Les trois premiers utilisent un virtualenv et `pip install -r requirements.txt`. `python-gettext` utilise uniquement la bibliothèque standard. Ce ne sont pas des paquets npm. L'archive de version `ai-i18n-tools-python-examples.zip` contient les quatre mêmes répertoires. L'archive tar npm et l'exécutable autonome ne les contiennent pas.
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` écrit du JSON plat et `i18n.py`. `ui-python-gettext` écrit du JSON et `.po` / `.mo`. `ui-python-flask` écrit des catalogues gettext sous `translations/` et `i18n.py`. `ui-python-django` écrit `locale/<lang>/LC_MESSAGES/django.po` et n'écrit pas `i18n.py`.
+
+Traduisez également le fichier README du dépôt : ajoutez `--with-readme` à la commande `init` ci-dessus. Voir [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme).
 
 Les racines d'analyse ignorent `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` et `.eggs`.
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## Catalogues
 
-Les clés JSON plates sont la source anglaise. Un contexte utilise `context` + U+0004 + la source anglaise. Les emplacements pluriels restent `{md5}_one`, `{md5}_other` et les autres formes CLDR que `translate-ui` écrit déjà. L'assistant hache le singulier tronqué avec MD5 et lit les 8 premiers caractères hexadécimaux.
+Les clés JSON plates sont la chaîne de la langue source, le texte dans `sourceLocale`. Cette langue peut être n'importe quelle langue. Un contexte utilise `context` + U+0004 + cette chaîne source. Les emplacements pluriels restent `{md5}_one`, `{md5}_other` et les autres formes CLDR que `translate-ui` écrit déjà. L'utilitaire hache le singulier tronqué avec MD5 et lit les 8 premiers caractères hexadécimaux.
 
 Les fichiers Gettext utilisent `msgctxt` pour le contexte et `msgid` / `msgid_plural` pour les pluriels. `ui.gettext.compileMo` écrit le `.mo` à côté du `.po`. `purge-locale` supprime le `.po` et le `.mo` de cette locale. Lorsque `flatOutput` est faux, il laisse les fichiers JSON plats intacts car ils n'ont pas été écrits.
 

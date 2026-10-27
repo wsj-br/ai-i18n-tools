@@ -1,9 +1,13 @@
 <a id="migrating-from-intlayer"></a>
-# 从 Intlayer 迁移
+# 从 Intlayer 迁移到源字符串调用
 
-正在从 [Intlayer](https://intlayer.org/) 迁移？此命令会将您现有的翻译字典以及应用中最基础的翻译用法迁移至 ai-i18n-tools。它会自动执行安全的更新，并针对仍需您处理的事项生成清晰的报告。这样您就可以逐步完成迁移，而无需事先了解所有差异。
+[Intlayer](https://intlayer.org/) 对于通过类型化内容字典或翻译管理系统来管理翻译的应用程序而言是理想之选。`ai-i18n-tools` 针对的是不同的工作流：使用源字符串调用（例如 `t('English source')`）的代码。`t()` 中的字符串是用 `sourceLocale` 编写的，它可以是任何语言。这些示例中的英语只是一个例子。通过将源字符串直接保留在代码中，这种方法简化了维护并降低了复杂性。当此模型符合您的需求时，`migrate-intlayer` 会导入您现有的字典并自动重写兼容的调用点。它会保持其余调用点不变，并生成一份包含具体替换说明的报告，让您可以分阶段完成迁移，或者将报告交给 AI 编码代理来为您完成迁移。
 
 已在使用 i18next JSON 翻译文件？您无需使用此迁移命令；请改用 [JSON 管道](/zh-Hans/guide/json#i18next-namespace-files)。
+
+::: tip 就地翻译还是迁出？
+本页面将帮助您将应用从 Intlayer 迁出，转而使用 ai-i18n-tools 的源字符串 `t()` 调用（例如 `t('English source')`）。字符串是用 `sourceLocale` 编写的，它可以是任何语言。如果您想在运行时保留 Intlayer，只填充缺失的翻译，请改用 [`translate-intlayer`](/zh-Hans/guide/translating-intlayer) — 它会就地翻译，并保留 `*.content.ts` 调用。
+:::
 
 <a id="what-migrate-intlayer-does"></a>
 ## `migrate-intlayer` 的作用

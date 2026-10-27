@@ -1,130 +1,362 @@
 ---
 layout: home
 title: ai-i18n-tools
+pageClass: home-onboarding
 description: >-
-  JavaScript/TypeScript 애플리케이션, Python 애플리케이션 및 문서화 사이트를 원하는 LLM 공급자로 국제화하기 위한
-  CLI 및 툴킷입니다.
+  안내 설정, AI 번역, 캐시된 재실행을 통해 단일 언어 앱, 웹사이트 또는 리포지토리 문서를 다국어로 만들어 보세요. JavaScript,
+  TypeScript, Python 또는 README로 시작하세요.
 hero:
   name: ai-i18n-tools
-  text: 모든 LLM으로 앱과 문서를 번역하세요
+  text: 단일 언어 프로젝트를 다국어로 만들어 보세요.
   tagline: >-
-    JavaScript, TypeScript, Python에서 t() 문자열을 추출합니다. OpenAI, Anthropic, Gemini,
-    OpenRouter, Ollama 또는 모든 OpenAI 호환 API를 사용하여 단일 구성으로 Markdown, MDX, HTML
-    페이지, JSON 번들 및 SVG 레이블을 번역합니다. 코드베이스를 다시 작성할 필요 없이 프로젝트 또는 로케일별로 모델을 전환할 수
-    있습니다.
+    가이드 설정과 AI 번역을 통해 앱, 웹사이트 또는 리포지토리 문서에 언어를 추가하세요. 공급자와 모델을 선택하고, 프로젝트가 커짐에
+    따라 캐시된 번역을 재사용하세요.
   image:
     src: /ai-i18n-tools_logo.svg
     alt: ai-i18n-tools 로고
   actions:
     - theme: brand
-      text: 시작하기
-      link: /ko/guide/quick-start
+      text: 프로젝트 선택
+      link: '#start-here'
     - theme: alt
-      text: GitHub에서 보기
-      link: https://github.com/wsj-br/ai-i18n-tools
-    - theme: alt
-      text: npm 패키지
-      link: https://www.npmjs.com/package/ai-i18n-tools
-features:
-  - icon: 🌐
-    title: UI 문자열
-    details: >-
-      JavaScript, TypeScript, Astro, Python에서 t() 및 _()를 추출하거나 하나의 HTML 파일에서
-      data-i18n 마커를 추출합니다. 로케일별 플랫 JSON 또는 GNU gettext 카탈로그.
-  - icon: 📄
-    title: 문서
-    details: >-
-      VitePress, Starlight, Docusaurus, Nextra, Fumadocs 및 일반 정적 사이트를 위한
-      Markdown, MDX, Astro, HTML 페이지를 번역합니다.
-  - icon: 📦
-    title: JSON 번들
-    details: UI 복사가 소스 t() 호출 외부에 있을 때 중첩된 로케일 JSON — 테마 레이블, 카탈로그 및 앱 오버라이드.
-  - icon: 🔄
-    title: 스마트 캐싱
-    details: 모든 파이프라인에서 공유되는 SQLite 캐시. 다시 실행 시 새로 추가되거나 변경된 세그먼트만 모델로 전송됩니다.
-  - icon: 🔌
-    title: 공급자 독립적
-    details: 주요 LLM API용 내장 프리셋과 커스텀 OpenAI 호환 엔드포인트. -P로 활성 공급자를 오버라이드할 수 있습니다.
-  - icon: ⚡
-    title: 하나의 동기화 명령
-    details: >-
-      단일 설정에서 extract, translate-ui, translate-svg, translate-docs,
-      translate-json을 올바른 순서로 실행합니다.
-  - icon: 🐍
-    title: Python, Node.js 불필요
-    details: >-
-      각 GitHub Release의 독립형 실행 파일이 Python 앱을 위한 CLI를 실행합니다. Streamlit, FastAPI,
-      Flask, Django 및 gettext가 포함되어 있습니다.
-  - icon: 📊
-    title: 모델 순위 목록
-    details: >-
-      suggest-models는 활성 공급자의 채팅 모델 순위를 지정하며 translationModels를 작성할 수 있습니다. 동일한
-      순위가 대시보드의 Models 탭에도 표시됩니다.
+      text: 예제 살펴보기
+      link: /ko/examples
 ---
 
 
 
-<div class="home-badges">
+<a id="start-here"></a>
+## 기존 프로젝트로 시작하기
 
-[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg?event=release)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
+현재 단일 언어를 사용하시나요? 여기서 시작하세요. 어떤 언어든 가능하며, `sourceLocale`(으)로 설정하면 됩니다. 이 가이드에서는 영어를 일반적인 예로 사용합니다. 국제화(i18n)는 프로젝트가 여러 언어를 지원하도록 준비하는 과정입니다. 이 가이드는 설정부터 GitHub, GitLab 또는 다른 호스트에 이미 표시된 리포지토리의 README를 포함한 첫 번역 경험까지 안내합니다.
+
+<div class="home-paths">
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/typescript.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img class="icon-mono" src="/icons/brands/nextjs.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/nodejs.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### JavaScript 또는 TypeScript 앱
+
+일반 텍스트 버튼, 레이블, 메시지를 다국어 UI로 전환하세요. 런타임을 설정하고, 번역할 텍스트를 표시하고, 언어 전환을 연결하세요. 준비 단계를 위한 코딩 에이전트 프롬프트를 포함합니다.
+
+React · Next.js · Node.js · CLI
+
+[JS/TS 앱에 i18n 추가하기](/ko/guide/add-i18n-to-js)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/python.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/fastapi.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/flask.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### Python 앱
+
+사용자에게 표시되는 텍스트를 래핑하고 생성된 헬퍼로 번역된 메시지를 로드하거나, 네이티브 gettext를 유지하세요. 별도의 Node.js 설치 없이 독립 실행 파일에서 번역 CLI를 실행할 수 있습니다.
+
+Streamlit · FastAPI · Flask · Django · CLI
+
+[Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/astro.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/docusaurus.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### 웹사이트 또는 문서
+
+현지화된 페이지를 게시하고 사이트의 언어 경로에 연결하세요. 탐색, 테마 레이블, 언어 메뉴에 대한 프레임워크별 단계를 따르세요.
+
+VitePress · Starlight · Docusaurus · Astro
+
+[웹사이트 또는 문서 사이트에 i18n 추가하기](/ko/guide/add-i18n-to-website)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img class="icon-mono" src="/icons/brands/github.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/gitlab.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/bitbucket.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### 리포지토리 README 및 문서
+
+`README.md` 및 기타 마크다운 파일을 언어별로 하나의 파일로 번역하고 파일들 사이에 링크 행을 추가하세요. 앱의 UI 문자열과 함께 사용하거나 README만 단독으로 번역할 수 있습니다.
+
+GitHub · GitLab · Bitbucket
+
+[README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme)
+
+</article>
+</div>
+
+어떤 경로가 적합한지 잘 모르시겠나요? [프로젝트에 i18n 추가하기](/ko/guide/add-i18n-to-your-project)에서 모든 단계별 가이드를 확인할 수 있습니다. 파이프라인이 어떻게 함께 작동하는지 알아보려면 [ai-i18n-tools의 기능 보기](/ko/guide/what-is-ai-i18n-tools)를 참조하세요.
+
+## 설정부터 첫 번째 새 언어 추가까지
+
+<div class="home-steps">
+
+1. **프로젝트 준비.** 언어, 번역 공급자, 시도할 모델을 선택합니다. 앱의 경우 사용자에게 표시되는 텍스트를 표시하고 번역 런타임을 설정합니다. 사이트의 경우 프레임워크의 언어 라우팅을 활성화합니다. 가이드에는 소스 변경이 필요한 경우를 위한 코딩 에이전트 프롬프트가 포함되어 있습니다.
+2. **사용할 수 있는 파일로 번역.** 설정이 준비되면 `sync`을(를) 실행합니다. 지원되는 앱 문자열을 추출하고 활성화한 콘텐츠를 번역하며 로캘 파일 또는 현지화된 페이지를 작성합니다.
+3. **로드, 확인 및 계속 진행.** 출력을 앱이나 사이트에 연결하고 언어 전환을 연결하며 대상 언어를 확인합니다. 소스 변경 후 다시 실행하여 새 텍스트나 변경된 텍스트를 번역합니다.
 
 </div>
 
-<a id="quick-install"></a>
-## 빠른 설치
+런타임 및 라우팅 설정은 직접 또는 코딩 에이전트를 사용하여 처리합니다. CLI는 추출, 번역, 유효성 검사, 파일 생성을 처리하며, 자동 소스 재작성이나 언어 전환기 설치는 처리하지 않습니다. [전체 빠른 시작 가이드 따르기](/ko/guide/quick-start)를 참조하세요.
 
-게시된 패키지는 **ESM 전용**입니다. Node.js `>=22.16.0`이(가) 필요합니다.
+## 소스 텍스트. 더 많은 언어를 지원할 준비.
 
-```bash
-pnpm add ai-i18n-tools
-# Set the API key for the provider you pass to init — see the preset table
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# or, for OpenAI: export OPENAI_API_KEY=sk-your-key-here
-ai-i18n-tools init -P openrouter
-ai-i18n-tools suggest-models
-ai-i18n-tools sync
+이 설명용 JS/TS 예제는 런타임 설정 및 번역 후 결과의 형태를 보여줍니다. 소스 문자열을 마킹하면 검색할 수 있게 되며, 각각 생성된 로케일 파일은 해당 문장을 번역에 매핑합니다.
+
+::: code-group
+
+```js [Prepared source]
+t("Save changes");
 ```
 
-`suggest-models`은 활성 공급자의 모델 순위를 매깁니다. `--apply`을 추가하여 스캐폴딩된 `translationModels` 목록을 대체하세요. [빠른 시작](/ko/guide/quick-start) 및 [모델](/ko/guide/translation-dashboard/models) 탭을 참조하세요.
+```json [Generated de.json]
+{
+  "Save changes": "Änderungen speichern"
+}
+```
 
-<a id="python-no-nodejs"></a>
-### Python, Node.js 불필요
+```json [Generated pt-BR.json]
+{
+  "Save changes": "Salvar alterações"
+}
+```
 
-[GitHub 릴리스](https://github.com/wsj-br/ai-i18n-tools/releases)에서 일치하는 파일: `ai-i18n-tools-linux-x64`, `ai-i18n-tools-linux-arm64`, `ai-i18n-tools-macos-arm64`, `ai-i18n-tools-macos-x64` 또는 `ai-i18n-tools-win-x64.exe`를 다운로드합니다. `SHA256SUMS.txt`를 확인하고, Unix에서 `chmod +x`를 실행한 다음, 파일을 `PATH`에 넣습니다. 바이너리는 서명되지 않았습니다. 단계: [독립 실행 파일](/ko/guide/installation#standalone-executables). 그런 다음 `ai-i18n-tools init -t ui-python -P cheaperinference`. 연습: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).
+```json [Generated zh-Hans.json]
+{
+  "Save changes": "保存更改"
+}
+```
 
-[설치](/ko/guide/installation)에서 [베어 CLI 명령어 구성](/ko/guide/installation#using-the-cli) (包括 [클론된 모노레포 개발](/ko/guide/installation#cloned-monorepo)) 및 [快速 시작](/ko/guide/quick-start)에서 스캐폴드 템플릿에 대해 참조하십시오.
-
-<a id="which-pipeline-should-i-use"></a>
-## 어떤 파이프라인을 사용해야 하나요?
-
-| 콘텐츠 | 명령어 |
-| --- | --- |
-| 소스 코드에서 `t()` 또는 `_()`(JavaScript, TypeScript 또는 Python), gettext 또는 마커가 포함된 하나의 HTML 파일 사용 | **UI 문자열** — `extract` / `translate-ui` |
-| 지역화된 페이지, 문서 사이트 또는 로캘당 하나의 HTML 파일 | **문서** — `translate-docs` |
-| 독립형 중첩 JSON 로케일 파일 | **JSON** — `translate-json` |
-
-SVG 일러스트레이션은 별도의 `translate-svg` 경로를 사용합니다 — `docs[].contentPaths`이(가) 아닙니다. 전체 비교는 [ai-i18n-tools란?](/ko/guide/what-is-ai-i18n-tools)을 참조하세요.
-
-<a id="explore-the-documentation"></a>
-## 문서 살펴보기
-
-- [**가이드**](/ko/guide/what-is-ai-i18n-tools) — 번역 모드, 설치, 빠른 시작 및 프레임워크 통합
-- [**통합**](/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro 및 Python
-- [**공급자 및 모델**](/ko/guide/providers-and-models) — 프리셋, 폴백 체인, 순위가 매겨진 제안(`suggest-models`) 및 `-P` 재정의
-- [**CLI 참조**](/ko/reference/cli-commands/) — 모든 명령어, 플래그 및 워크플로우
-- [**구성**](/ko/reference/configuration) — 전체 `ai-i18n-tools.config.json` 스키마
-- [**예제**](/ko/examples) — 17개의 실행 가능한 데모 프로젝트(`npx degit` 또는 Python 예제 zip)
-- [**아키텍처**](/ko/reference/architecture) — 내부 구조, 프로그래밍 방식 API 및 확장 지점
-
-패키지를 자체 프로젝트에 통합하시나요? [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md)부터 시작하세요. [저장소 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)는 자세한 내용을 위해 이곳으로 연결되는 짧은 GitHub/npm 랜딩 페이지입니다.
-
-<br/>
-<br/>
-
-::: tip 면책 조항
-제품명 및 아이콘은 각 소유주의 재산이며 식별 목적으로만 사용됩니다. 이 소프트웨어는 해당 브랜드와 제휴하지 않으며 공식 승인을 받지 않았습니다.
-
-영어(영국)를 제외한 모든 인터페이스 및 문서 언어는 이 패키지(ai-i18n-tools)를 사용하여 AI로 번역되었으며, 일부 표현이 부정확하거나 오류가 포함될 수 있습니다.
 :::
 
+소스 문장은 코드 내에서 가독성을 유지합니다. 앱은 런타임에 생성된 로케일 파일을 로드합니다. 전체 연결 구조를 보고 싶으신가요? [작동하는 Next.js 예시 살펴보기](/ko/examples#nextjs-app)를 참조하세요. 웹사이트는 다른 경로를 따릅니다. 즉, 모든 단락을 래핑하는 대신 [현지화된 페이지를 생성](/ko/guide/add-i18n-to-website)합니다.
+
+## 다음 업데이트에도 대비
+
+<div class="home-features">
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/openai.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img class="icon-mono" src="/icons/brands/anthropic.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/openrouter.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/gemini.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img class="icon-mono" src="/icons/brands/ollama.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### 공급자 및 모델 선택
+
+OpenAI, Anthropic, OpenRouter, Gemini, 로컬 Ollama 또는 9개의 다른 내장 옵션과 같이 지원되는 공급자를 사용하세요. 또한 모든 OpenAI 호환 공급자를 사용할 수 있습니다. 번역 품질은 모델 목록(`translationModels`, 로캘별 재정의 포함)을 따릅니다. `suggest-models` 및 대시보드 **모델** 아래의 동일한 순위는 게시된 번역 벤치마크를 기반으로 해당 목록을 구성합니다.
+
+[LLM 공급자](/ko/guide/providers-and-models) · [AI 모델](/ko/guide/ai-models)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/refresh-cw.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### 이미 완료된 작업 재사용
+
+캐시된 번역을 사용하면 모든 것을 다시 번역하는 대신 재실행 시 새 텍스트나 변경된 텍스트에 집중할 수 있습니다.
+
+[번역 상태 유지하기](/ko/guide/quick-start#keep-it-translated)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/layout-dashboard.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### 로컬에서 AI 출력 검토
+
+번역 대시보드에서 번역을 검사하고, 표현을 수정하고, 용어를 관리하세요.
+
+[대시보드 보기](/ko/guide/translation-dashboard/)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/layers.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### 앱과 콘텐츠를 함께 관리
+
+하나의 구성으로 앱 메시지, 문서, 중첩된 로케일 JSON, SVG 텍스트 라벨을 번역하세요. 필요한 것만 활성화하면 됩니다.
+
+[파이프라인 결합하기](/ko/guide/combining-pipelines)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/file-text.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### 앱과 함께 README 번역
+
+하나의 `sync`으로 UI 문자열과 리포지토리 Markdown을 처리하고 README에 언어 행을 작성합니다.
+
+[README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme)
+
+</article>
+</div>
+
+## 먼저 작동하는 프로젝트 살펴보기
+
+이 예제에는 구성 및 커밋된 번역 파일이 포함되어 있습니다. API 키 없이 출력을 살펴보세요. 번역을 다시 실행하려면 구성된 공급자와 일반적으로 키가 필요합니다. 로컬 Ollama는 API 키가 필요하지 않습니다.
+
+<div class="home-examples">
+<article class="home-card">
+
+<div class="home-card-logos">
+<img class="icon-mono" src="/icons/brands/nextjs.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img class="icon-light" src="/icons/brands/react.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### 다국어 앱
+
+작동하는 Next.js 프로젝트에서 React 컴포넌트, 런타임 연결, 복수형 및 언어 전환을 확인해 보세요.
+
+[Next.js 예제 살펴보기](/ko/examples#nextjs-app)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/python.svg" alt="" aria-hidden="true" width="26" height="26" />
+<img src="/icons/brands/streamlit.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### Python 활용
+
+Streamlit 앱이 앱에 JavaScript 런타임을 추가하지 않고 메시지를 래핑하고 번역된 JSON을 사용하는 방법을 확인해 보세요.
+
+[Streamlit 예제 살펴보기](/ko/examples#python-streamlit)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/brands/vitepress.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+### 다국어 문서
+
+현지화된 탐색 및 테마 레이블과 함께 번역된 VitePress 페이지를 확인해 보세요.
+
+[VitePress 예제 살펴보기](/ko/examples#vitepress-docs)
+
+</article>
+</div>
+
+일반 HTML, 다른 프레임워크, 기존 i18n 워크플로를 포함한 [모든 실행 가능한 예제를 둘러보세요](/ko/examples).
+
+## 이미 i18n을 사용하고 계신가요? 잘 작동하는 것은 그대로 유지하세요.
+
+처음부터 다시 시작할 필요가 없습니다.
+
+<div class="home-existing">
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/code.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### 소스 문자열 호출
+
+프로젝트에 이미 있는 `t()` 및 gettext 호출을 유지하세요.
+
+[JS/TS UI 문자열](/ko/guide/ui-strings/) · [Python 및 gettext](/ko/guide/ui-strings/python)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/braces.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### JSON 번들
+
+i18next 네임스페이스를 포함한 중첩된 로케일 파일을 번역합니다. 사이트 탐색 및 테마 카탈로그는 이 경로가 아닌 [문서 번역](/ko/guide/add-i18n-to-website#what-gets-translated)에 속합니다.
+
+[JSON 번들 번역하기](/ko/guide/json)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-icon">
+<img src="/icons/ui/languages.svg" alt="" aria-hidden="true" width="22" height="22" />
+</div>
+
+### Intlayer 사전
+
+Intlayer를 유지하고 누락된 번역을 채우거나, 앱을 소스 문자열 호출로 이동합니다.
+
+[인플레이스 번역](/ko/guide/translating-intlayer) · [소스 문자열 호출로 마이그레이션하기](/ko/guide/migrating-from-intlayer)
+
+</article>
+</div>
+
+다이어그램도 있으신가요? 앱 또는 문서와 함께 [SVG 텍스트 레이블을 번역](/ko/guide/svg-translation/)하세요.
+
+<a id="quick-install"></a>
+## 첫 언어를 추가할 준비가 되셨나요?
+
+<div class="home-cta">
+
+전체 둘러보기를 보려면 [프로젝트를 선택](#start-here)하거나, 설치 및 구성을 위해 [빠른 시작을 여세요](/ko/guide/quick-start).
+
+Node.js 프로젝트의 경우 [npm 패키지](/ko/guide/installation)를 설치하세요.
+
+<a id="python-no-nodejs"></a>
+
+Python의 경우, [독립 실행 파일을 다운로드](/ko/guide/installation#standalone-executables)하세요. 별도의 Node.js 설치가 필요하지 않습니다.
+
+<div class="home-badges">
+
+[![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE)
+
+[![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Linux arm64](https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS arm64](https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS x64](https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases)
+
+</div>
+
+</div>
+
+<a id="explore-the-documentation"></a>
+## 필요할 때 더 자세히 알아보기
+
+[통합](/ko/guide/integrations/) · [LLM 공급자](/ko/guide/providers-and-models) · [AI 모델](/ko/guide/ai-models) · [구성](/ko/reference/configuration) · [CLI 참조](/ko/reference/cli-commands/)
+
 <br/>
+
+<br/>
+
+::: info 이 사이트에 대하여
+비영어 인터페이스와 문서는 ai-i18n-tools로 번역되었습니다. AI 번역에는 오류가 포함될 수 있습니다.
+
+모든 제품명, 로고 및 상표는 해당 소유자의 자산입니다. 아이콘과 이름은 식별 목적으로만 사용됩니다. 이 프로젝트는 해당 브랜드와 제휴하거나 보증하지 않습니다.
+:::

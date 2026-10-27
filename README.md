@@ -11,11 +11,11 @@
 
 [![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Linux arm64](https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS arm64](https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS x64](https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases)
 
-**Translate your app, website, and docs with any LLM. One config, cached reruns, your provider.**
+**Translate your app, website, and docs with the models you choose on any LLM provider. One config, cached reruns.**
 
-CLI and toolkit that adds languages to JavaScript/TypeScript apps, Python apps, and documentation sites. It finds the text, translates it, and writes the files your project loads. Built-in presets cover OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale.
+CLI and toolkit that adds languages to JavaScript/TypeScript apps, Python apps, and documentation sites. The language you start from is `sourceLocale`, and it can be any language. It finds the text, translates it, and writes the files your project loads. Built-in presets cover OpenAI, Anthropic, Gemini, OpenRouter, Ollama, and any OpenAI-compatible API. Switch provider or model per project or per locale.
 
-Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), [plain Markdown](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) (a repository README and other `.md` files), and plain HTML. Python apps use `t()` / `_()` or GNU gettext (Streamlit, FastAPI, Flask, Django, and desktop toolkits). Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings), and works with [Intlayer](https://intlayer.org/) projects: translate dictionaries in place with `translate-intlayer`, or migrate off Intlayer with `migrate-intlayer`.
+Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), [plain Markdown](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) (a repository README and other `.md` files), and plain HTML. Python apps use `t()` / `_()` or GNU gettext (Streamlit, FastAPI, Flask, Django, and desktop toolkits). Keeps your existing [i18next](https://www.i18next.com/) catalogs (namespace JSON or `t()` source strings). Works with [Intlayer](https://intlayer.org/) in two ways: keep Intlayer and fill its dictionaries with `translate-intlayer`, or move to source-string `t()` calls with `migrate-intlayer`. Intlayer stays a good fit for typed content dictionaries and translation management systems.
 
 <a id="features"></a>
 ## Features
@@ -43,7 +43,7 @@ Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.as
 | Code that already calls `t()` or `_()` | [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) |
 | Standalone nested JSON locale files | [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) |
 | SVG diagrams with text labels | [SVG translation](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/) |
-| Intlayer dictionaries (move off, or translate in place) | [Migrating from Intlayer](https://wsj-br.github.io/ai-i18n-tools/guide/migrating-from-intlayer) · [Translating Intlayer in place](https://wsj-br.github.io/ai-i18n-tools/guide/translating-intlayer) |
+| Intlayer dictionaries (keep Intlayer, or move to source-string calls) | [Translating Intlayer in place](https://wsj-br.github.io/ai-i18n-tools/guide/translating-intlayer) · [Migrating from Intlayer to source-string calls](https://wsj-br.github.io/ai-i18n-tools/guide/migrating-from-intlayer) |
 
 See [What is ai-i18n-tools?](https://wsj-br.github.io/ai-i18n-tools/guide/what-is-ai-i18n-tools) for how the pipelines fit together.
 
@@ -69,7 +69,21 @@ Configure the bare `ai-i18n-tools` command (direnv, PATH, `package.json` scripts
 <a id="python-no-nodejs"></a>
 ### Python, no Node.js
 
-Download the matching asset from the [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases): `ai-i18n-tools-linux-x64`, `ai-i18n-tools-linux-arm64`, `ai-i18n-tools-macos-arm64`, `ai-i18n-tools-macos-x64`, or `ai-i18n-tools-win-x64.exe`. Check `SHA256SUMS.txt`, run `chmod +x` on Unix, and put the file on `PATH`. The binaries are not notarized or Authenticode-signed. The four Python examples are in the repository and in `ai-i18n-tools-python-examples.zip` on the release. They are not inside the npm tarball or the executable. Full steps: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/guide/installation#standalone-executables).
+Linux and macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
+```
+
+The installer picks the executable for this machine, checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual download steps: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/guide/installation#standalone-executables).
+
+The four Python examples are in the repository and in `ai-i18n-tools-python-examples.zip` on the release. They are not inside the npm tarball or the executable.
 
 <a id="quick-start"></a>
 ## Quick start
@@ -89,7 +103,7 @@ A JS/TS app must wrap its text in `t()` first. Run on plain text, `sync` finishe
 
 Templates for websites: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, and `ui-plain-html` or `docs-plain-html`. README and Markdown only: `docs-markdown`. Add `--with-readme` to any other template to include the README block. Other Python templates: `ui-python-gettext`, `ui-python-flask`, `ui-python-django`. Nested i18next JSON: `ui-json-bundles`. Full list: [CLI setup reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/setup).
 
-`suggest-models` ranks the active provider's chat models, and `suggest-models --apply` replaces `translationModels`. The same ranking is on the [Models](https://wsj-br.github.io/ai-i18n-tools/guide/translation-dashboard/models) tab. Command reference: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/models#suggest-models).
+`suggest-models` ranks the active provider's chat models from published benchmarks, and `suggest-models --apply` replaces `translationModels`. The same ranking is on the [Models](https://wsj-br.github.io/ai-i18n-tools/guide/translation-dashboard/models) tab. Guide: [AI Models](https://wsj-br.github.io/ai-i18n-tools/guide/ai-models). Command reference: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/models#suggest-models).
 
 Prefer `sync` over chaining individual translate commands. Full walkthrough: [Quick start](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start). More than one kind of content in one project: [Combining pipelines](https://wsj-br.github.io/ai-i18n-tools/guide/combining-pipelines).
 
@@ -97,8 +111,9 @@ Prefer `sync` over chaining individual translate commands. Full walkthrough: [Qu
 ## Documentation
 
 - [Documentation site](https://wsj-br.github.io/ai-i18n-tools/) — guides, integrations, and reference
-- [Installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [Quick start](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [Providers and models](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models)
+- [Installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation) · [Quick start](https://wsj-br.github.io/ai-i18n-tools/guide/quick-start) · [LLM providers](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models) · [AI Models](https://wsj-br.github.io/ai-i18n-tools/guide/ai-models)
 - [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [Plain HTML](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/python) · [Documents](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [HTML pages](https://wsj-br.github.io/ai-i18n-tools/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
+- [Intlayer](https://intlayer.org/) — [translate dictionaries in place](https://wsj-br.github.io/ai-i18n-tools/guide/translating-intlayer) · [move to source-string calls](https://wsj-br.github.io/ai-i18n-tools/guide/migrating-from-intlayer)
 - [Integrations](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, and [Python](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/python)
 - [Add i18n to your project](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-your-project) — [JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) · [Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) · [website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) · [README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) · [Combining pipelines](https://wsj-br.github.io/ai-i18n-tools/guide/combining-pipelines)
 - [CLI reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuration](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Runtime helpers](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)

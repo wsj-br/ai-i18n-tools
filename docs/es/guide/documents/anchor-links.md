@@ -12,9 +12,9 @@ Aquí, el destino del enlace es `setup.md`, y `#first-run` es el anclaje: deber�
 <a id="why-anchor-links-need-attention"></a>
 ## Por qué los enlaces de anclaje necesitan atención
 
-- `rewriteRelativeLinks` fija el **nombre de archivo** para cada idioma (`setup.md` → `setup.de.md`).
-- Muchos renderizadores derivan el slug de `#` del **texto visible del encabezado**. Después de la traducción, los encabezados varían por idioma, por lo que un slug generado automáticamente puede cambiar mientras que el enlace reescrito aún diga `#first-run` — o su anclaje en inglés `#…` ya no coincida con el slug que el renderizador construye a partir del encabezado traducido.
-- Resultado: los lectores llegan al **archivo** correcto pero a la **línea incorrecta**, o el navegador no encuentra ningún encabezado coincidente.
+- `rewriteRelativeLinks` corrige el **nombre de archivo** para cada localización (`setup.md` → `setup.de.md`).
+- Muchos renderizadores derivan el slug `#` del **texto visible del encabezado**. Después de la traducción, los encabezados difieren por localización, por lo que un slug autogenerado puede cambiar mientras que el enlace reescrito aún podría decir `#first-run` — o el ancla `#…` de la localización de origen ya no coincide con el slug que el renderizador construye a partir del encabezado traducido. El idioma de origen es `sourceLocale` y puede ser cualquier idioma.
+- Resultado: los lectores llegan al **archivo** correcto pero a la **línea incorrecta**, o el navegador no encuentra ningún encabezado que coincida.
 
 <a id="what-to-do"></a>
 ## Qué hacer

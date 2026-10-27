@@ -1,9 +1,13 @@
 <a id="migrating-from-intlayer"></a>
-# Migration von Intlayer
+# Migration von Intlayer zu Quellstring-Aufrufen
 
-Wechseln Sie von [Intlayer](https://intlayer.org/)? Dieser Befehl überführt Ihre vorhandenen Übersetzungswörterbücher und die grundlegende Übersetzungsverwendung in Ihrer App in ai-i18n-tools. Er führt automatisch sichere Aktualisierungen durch und erstellt anschließend einen übersichtlichen Bericht für alles, was noch Ihre Aufmerksamkeit erfordert. Dies ermöglicht Ihnen einen schrittweisen Umstieg, ohne dass Sie vorab alle Unterschiede kennen müssen.
+[Intlayer](https://intlayer.org/) ist ideal für Anwendungen, die Übersetzungen über typisierte Inhaltswörterbücher oder Übersetzungsmanagement-Systeme verwalten. `ai-i18n-tools` zielt auf einen anderen Workflow ab: Code, der Quellstring-Aufrufe wie z. B. `t('English source')` verwendet. Der String in `t()` ist in `sourceLocale` geschrieben, was jede beliebige Sprache sein kann. Englisch in diesen Beispielen ist nur ein Beispiel. Indem dieser Quellstring direkt im Code beibehalten wird, vereinfacht dieser Ansatz die Wartung und reduziert die Komplexität. Wenn dieses Modell Ihren Anforderungen entspricht, importiert `migrate-intlayer` Ihre vorhandenen Wörterbücher und schreibt kompatible Aufrufstellen automatisch um. Es lässt verbleibende Stellen unverändert und generiert einen Bericht mit spezifischen Ersetzungsanweisungen, was Ihnen ermöglicht, die Migration in Etappen abzuschließen oder den Bericht in einen KI-Codierungsagenten einzugeben, um die Migration für Sie abzuschließen.
 
 Verwenden Sie bereits i18next-JSON-Übersetzungsdateien? Dann benötigen Sie diesen Migrationsbefehl nicht; verwenden Sie stattdessen die [JSON-Pipeline](/de/guide/json#i18next-namespace-files).
+
+::: tip Direkt übersetzen oder migrieren?
+Diese Seite migriert Ihre App von Intlayer auf die Quellstring-`t()`-Aufrufe von ai-i18n-tools, wie z. B. `t('English source')`. Der String ist in `sourceLocale` geschrieben, was jede beliebige Sprache sein kann. Wenn Sie Intlayer zur Laufzeit beibehalten und nur die fehlenden Übersetzungen ergänzen möchten, verwenden Sie stattdessen [`translate-intlayer`](/de/guide/translating-intlayer) – es übersetzt die `*.content.ts` direkt.
+:::
 
 <a id="what-migrate-intlayer-does"></a>
 ## Was `migrate-intlayer` macht

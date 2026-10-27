@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-Código BCP-47 para el idioma de origen (por ejemplo, `"en-GB"`, `"en"`, `"pt-BR"`). No se genera ningún archivo de traducción para esta configuración regional — la propia cadena clave es el texto fuente.
+Código BCP-47 para el idioma de origen (por ejemplo `"en-GB"`, `"pt-BR"` o `"ja"`). Cualquier idioma es válido. El inglés aparece en los ejemplos porque muchos proyectos comienzan ahí. No se genera ningún archivo de traducción para esta configuración regional: la propia cadena clave es el texto de origen.
 
 **Debe coincidir** con `SOURCE_LOCALE` exportado desde su archivo de configuración de i18n en tiempo de ejecución (`src/i18n.ts` / `src/i18n.js`).
 
@@ -167,9 +167,9 @@ Un bloque `openrouter` de nivel superior heredado (con `baseUrl`, `translationMo
 
 Para un ejemplo ejecutable que configura varios proveedores en una configuración y cambia entre ellos con `-P`, consulte [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` y `deepseek` en el mismo documento).
 
-**Por qué usar múltiples modelos:** Diferentes proveedores y modelos tienen costos variables y ofrecen diferentes niveles de calidad entre idiomas y locales. Configura `translationModels` **como una cadena de respaldo ordenada** (en lugar de un solo modelo) para que la CLI pueda intentar el siguiente modelo si una solicitud falla.
+**Por qué usar varios modelos:** los distintos proveedores y modelos tienen costes variables y ofrecen diferentes niveles de calidad según el idioma y la configuración regional. Configure `translationModels` como una cadena de respaldo ordenada para que la CLI pueda probar con el siguiente modelo si una solicitud falla. La guía para crear esa lista es [Modelos de IA](/es/guide/ai-models).
 
-Considere la siguiente lista como una **línea base** que puede ampliar: si la traducción para una configuración regional específica es deficiente o no tiene éxito, investigue qué modelos admiten ese idioma o script de manera efectiva (consulte los recursos en línea o la documentación de su proveedor) y agregue esos ID de modelo como alternativas adicionales.
+Considere la lista siguiente como un **punto de partida**. Reemplácela con la clasificación de la comparativa de [Modelos de IA](/es/guide/ai-models). Si la traducción para una configuración regional específica sigue siendo deficiente, añada una entrada `localeModels` para ese idioma o sistema de escritura, o añada más ID del catálogo del proveedor.
 
 Estos IDs de modelo son los que `ai-i18n-tools init -P openrouter` escribe. Otros preajustes obtienen IDs de modelo nativos de `init -P <provider>` — consulta [Proveedores integrados](/es/guide/providers-and-models#built-in-providers).
 
@@ -270,13 +270,13 @@ Las rutas resueltas de `stringsJson`, `flatOutputDir` y de manifiesto deben ser 
 - `flatOutputDir`
   Directorio donde se escriben los archivos JSON por configuración regional de este bloque (`de.json`, etc.).
 - `flatOutput`
-  Cuando es `true` (el valor predeterminado), `translate-ui` escribe un archivo JSON plano por configuración regional. Establezca `false` para un bloque exclusivo de gettext. Un bloque con `flatOutput: false` debe establecer `gettext`.
+  Cuando `true` (el valor predeterminado), `translate-ui` escribe un archivo JSON plano por configuración regional. Establezca `false` para un bloque solo de gettext. Un bloque con `flatOutput: false` debe establecer `gettext`.
 - `gettext`
-  Salida GNU gettext opcional para este bloque. `outputDir` (predeterminado `./locales`) recibe `<locale>/LC_MESSAGES/<domain>.po` y, cuando `compileMo` es true (el valor predeterminado), el `.mo` coincidente. `domain` tiene como valor predeterminado `messages`. `potPath` es el catálogo de plantillas. `ingestExistingPo` (predeterminado `true`) rellena los espacios `strings.json` vacíos a partir de valores `msgstr` no difusos durante `extract` y no reemplaza una traducción no vacía o editada por el usuario. `localeFormat` es `posix` (predeterminado, `pt_BR`) o `bcp47` (`pt-BR`). Las filas contextuales utilizan el separador `\u0004` de gettext. La misma fuente en inglés en dos contextos no comparte un ID de catálogo.
+  Salida opcional de GNU gettext para este bloque. `outputDir` (valor predeterminado `./locales`) recibe `<locale>/LC_MESSAGES/<domain>.po` y, cuando `compileMo` es verdadero (el valor predeterminado), el `.mo` coincidente. `domain` tiene como valor predeterminado `messages`. `potPath` es el catálogo de plantillas. `ingestExistingPo` (valor predeterminado `true`) rellena las ranuras vacías de `strings.json` con valores no difusos de `msgstr` durante `extract` y no reemplaza una traducción no vacía o editada por el usuario. `localeFormat` es `posix` (predeterminado, `pt_BR`) o `bcp47` (`pt-BR`). Las filas contextuales usan el separador `\u0004` de gettext. La misma cadena de idioma de origen en dos contextos no comparte un ID de catálogo.
 - `targetLocales`
-  Lista de configuraciones regionales opcional para este bloque. Cuando se omite o está vacía, el bloque utiliza la `targetLocales` raíz.
+  Lista opcional de configuraciones regionales para este bloque. Cuando se omite o está vacía, el bloque usa la raíz `targetLocales`.
 - `languagesManifestPath`
-  Ruta opcional donde `extract` y `generate-ui-languages` escriben el `ui-languages.json` de este bloque. Cuando se omite, el bloque 0 utiliza la `languagesManifestPath` raíz (que a su vez tiene como valor predeterminado la `{flatOutputDir}/ui-languages.json` de este bloque). Los bloques posteriores tienen como valor predeterminado `{flatOutputDir}/ui-languages.json`.
+  Ruta opcional donde `extract` y `generate-ui-languages` escriben el `ui-languages.json` de este bloque. Cuando se omite, el bloque 0 usa la raíz `languagesManifestPath` (que a su vez tiene como valor predeterminado el `{flatOutputDir}/ui-languages.json` de este bloque). Los bloques posteriores tienen como valor predeterminado `{flatOutputDir}/ui-languages.json`.
 - `uiGlossary`
   Cuando es `true` (el valor predeterminado), el `strings.json` de este bloque es una fuente de sugerencias de glosario para `translate-docs`, `translate-json` y `translate-svg`. `translate-ui`, `proofread-ui` y el linting de fuentes utilizan solo `glossary.userGlossary`. Establezca `false` para mantener un catálogo fuera de esas sugerencias (por ejemplo, un catálogo de cadenas de CLI que no debería orientar la documentación).
 - `uiExtractor.funcNames` (o el heredado `reactExtractor.funcNames`)
@@ -365,7 +365,10 @@ Módulo de diccionario de tema de Nextra en inglés opcional (por ejemplo, `"app
 - `nextraDictionaryOutputTemplate`
 Plantilla de salida opcional para módulos de diccionario de configuración regional (predeterminado: `{dir}/{locale}.ts` en relación con el directorio del diccionario).
 
-**Estructura de salida**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+Diseño de salida para este bloque.
 
 - `outputDir`
 Directorio raíz para la salida traducida de este bloque.
@@ -384,19 +387,19 @@ Cuando `true`, los diseños de salida integrados (`nested`, `flat`, `doc-system`
 - `docsOutput.flatPreserveRelativeDir`
 Cuando `docsOutput.style = "flat"`, mantenga los subdirectorios de origen para que los archivos con el mismo nombre base no colisionen. Predeterminado `false`.
 - `docsOutput.rewriteRelativeLinks`
-Reescribir enlaces relativos después de la traducción (se habilita automáticamente cuando `docsOutput.style = "flat"` y no hay un `pathTemplate` personalizado).
+Reescribir enlaces relativos después de la traducción (habilitado automáticamente cuando `docsOutput.style = "flat"` y no hay `pathTemplate` personalizado).
 - `docsOutput.linkRewriteDocsRoot`
-Raíz del repositorio utilizada al calcular los prefijos de reescritura de enlaces planos. Por lo general, deje esto como `"."` a menos que su documentación traducida se encuentre en una raíz de proyecto diferente.
+Raíz del repositorio utilizada al calcular prefijos de reescritura de enlaces planos. Normalmente, déjelo como `"."` a menos que sus documentos traducidos se encuentren bajo una raíz de proyecto diferente.
 - `docsOutput.rewriteVitepressLinks`
-Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Está habilitado de forma predeterminada cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño de `doc-system` donde las carpetas de configuración regional se encuentren junto al inglés bajo `docsRoot`. Reescribe las rutas `docs/guide/…` al estilo README a las rutas del sitio (`/guide/…`) y los enlaces `../guide/…` relativos a la configuración regional. Para los enlaces a archivos del repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en el texto fuente en inglés; consulte [Integración de VitePress — README como página de inicio de la documentación](/es/guide/integrations/vitepress#readme-and-the-docs-homepage).
+Cuando `true`, ejecute el normalizador de enlaces de VitePress después de la traducción. Se habilita de forma predeterminada cuando `docsOutput.style` es `"vitepress"`. Úselo con cualquier diseño `doc-system` donde las carpetas de configuración regional se encuentren junto a los archivos de configuración regional de origen bajo `docsRoot`. El idioma de origen es `sourceLocale` y puede ser cualquier idioma. Reescribe las rutas `docs/guide/…` estilo README a rutas del sitio (`/guide/…`) y enlaces `../guide/…` relativos a la configuración regional. Para enlaces a archivos del repositorio fuera del árbol de VitePress (`LICENSE`, `examples/`), use URL completas en los archivos de configuración regional de origen — consulte [Integración de VitePress — README como página de inicio de la documentación](/es/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Está habilitado de forma predeterminada cuando `docsOutput.style` es `"nextra"`. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas del sitio neutrales respecto a la configuración regional (`/guide/…`) para `i18n` de Next.js. Consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
+Cuando `true`, ejecute el normalizador de enlaces de Nextra después de la traducción. Se habilita de forma predeterminada cuando `docsOutput.style` es `"nextra"`. Reescribe las rutas `content/en/…` y `.mdx` relativas a rutas del sitio neutrales a la configuración regional (`/guide/…`) para Next.js `i18n`. Consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a las fuentes en inglés; dir escribe carpetas de localización como Nextra. Consulte [Integración de Fumadocs — Diseño de página](/es/guide/integrations/fumadocs#page-layout).
+`"dot"` (predeterminado) o `"dir"`. Dot escribe `stem.{locale}.mdx` junto a los archivos de configuración regional de origen; dir escribe carpetas de configuración regional como Nextra. El idioma de origen es `sourceLocale` y puede ser cualquier idioma. Consulte [Integración de Fumadocs — Diseño de página](/es/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
-Cuando `true`, ejecute el normalizador de enlaces de Fumadocs después de la traducción. Por defecto, está habilitado cuando `docsOutput.style` es `"fumadocs"`. Reescribe las rutas de contenido y los enlaces `.mdx` relativos a las rutas `/docs/…`.
+Cuando `true`, ejecute el normalizador de enlaces de Fumadocs después de la traducción. Se habilita de forma predeterminada cuando `docsOutput.style` es `"fumadocs"`. Reescribe las rutas de contenido y los enlaces `.mdx` relativos a rutas `/docs/…`.
 - `docsOutput.fumadocsUiCatalog`
-Opcional. Catálogo de anulación de la interfaz de usuario de Fumadocs y traducción dentro de `translate-docs`. Campos: `sourcePath` (por ejemplo, `lib/layout.shared.ts`), `catalogPath` (JSON en inglés generado), `outputPathTemplate` opcional (predeterminado: `ui.{locale}.json` junto a `catalogPath`).
+Opcional. Arranque del catálogo de anulación de la interfaz de usuario de Fumadocs + traducción dentro de `translate-docs`. Campos: `sourcePath` (p. ej., `lib/layout.shared.ts`), `catalogPath` (JSON en inglés generado), `outputPathTemplate` opcional (predeterminado: `ui.{locale}.json` junto a `catalogPath`).
 - `docs[].fumadocsMetaGlob`
 Glob(s) opcional(es) para la colección `meta.json` cuando `docsOutput.style` es `"fumadocs"`. Predeterminado: `meta.json` recursivo bajo `docsOutput.docsRoot`.
 - `docs[].fumadocsMetaTranslatableKeys`
@@ -515,6 +518,8 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (opcional)
 
 Pesos para [`suggest-models`](/es/reference/cli-commands/models#suggest-models) y la [pestaña Modelos del panel](/es/guide/translation-dashboard/models). Omita el bloque, o bien omita un perfil, y dicho perfil conservará los pesos integrados. El bloque no se sobrescribe mediante `--apply` o **Actualizar configuración**; estos solo escriben los ID de modelo.

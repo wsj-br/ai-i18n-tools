@@ -1,59 +1,77 @@
 <a id="what-is-ai-i18n-tools"></a>
 # ai-i18n-tools とは
 
-ai-i18n-tools は、好みの LLM プロバイダーを使用してアプリとドキュメントを翻訳するのに役立つコマンドラインツールキットです。単一の設定ファイルからすべてを制御し、有効にする翻訳機能を選択できます。「sync」コマンドを使用して、必要なモードを一度に実行できます。
+アプリ、ウェブサイト、ドキュメントサイト、またはリポジトリのREADMEが1つの言語で書かれており、それを多言語化したいと考えているとします。その言語は`sourceLocale`であり、どの言語でもかまいません。このガイドでは、英語が一般的な例です。ai-i18n-toolsはテキストを検索し、選択したLLMプロバイダーのモデルで翻訳し、プロジェクトがすでに読み込んでいるファイルに書き込みます。すべての結果をキャッシュするため、再実行時には新規または変更されたテキストのみがモデルに送信されます。
+
+<a id="what-you-do-and-what-the-tool-does"></a>
+## あなたが行うこととツールが行うこと
+
+| ユーザー | ツール |
+| --- | --- |
+| 言語、プロバイダー、試行するモデルを選択 | テキストを抽出し、翻訳し、結果を検証して、カタログまたはページを書き込みます |
+| ユーザー向けテキストをツールから見えるようにする: アプリコード内の `t()` 呼び出し、サイト用フレームワーク標準の国際化機能、またはREADME内の言語リストマーカー | 翻訳をキャッシュし、再実行のたびに再利用する |
+| 結果をアプリ、サイトのルーティング、またはREADMEの言語行に組み込む | 進行状況を表示し、ダッシュボードで翻訳を確認できるようにする |
+
+このツールはソースを書き換えません。ラップ手順用に、コーディングエージェント向けのプロンプトが提供されています。i18next やサイト用フレームワークの国際化機能はインストールせず、言語切り替え機能も構築しませんが、そのための実行時ヘルパーは提供されています。
+
+<a id="where-do-i-start"></a>
+## どこから始めればよいですか？
+
+ウォークスルーは [プロジェクトに国際化を追加する](/ja/guide/add-i18n-to-your-project) にまとめられており、共通セットアップとプロジェクトの種類ごとのページがあります。行を選択してください:
+
+| 対象 | ここから開始 |
+| --- | --- |
+| ソース内にプレーンテキストがあるジェイエス／ティーエスアプリ（React、Next.js、Node、コマンドラインインターフェイス） | [ジェイエス／ティーエスアプリに国際化を追加する](/ja/guide/add-i18n-to-js) |
+| パイソンアプリ（Streamlit、FastAPI、Flask、Django、gettext、デスクトップ） | [パイソンアプリに国際化を追加する](/ja/guide/add-i18n-to-python) |
+| ウェブサイトまたはドキュメントサイト（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、プレーンHTML） | [ウェブサイトまたはドキュメントサイトに国際化を追加する](/ja/guide/add-i18n-to-website) |
+| リポジトリのREADMEとその他のマークダウン形式ファイル（通常はアプリの隣） | [READMEとマークダウン形式のドキュメントに国際化を追加する](/ja/guide/add-i18n-to-readme) |
+| スタンドアロンのネストされたJSONロケールファイル | [JSON](/ja/guide/json) |
+| テキストラベルを含むSVG図 | [SVG翻訳](/ja/guide/svg-translation/) |
+| Intlayer辞書（Intlayerから移行） | [Intlayerからの移行](/ja/guide/migrating-from-intlayer) |
+| Intlayer辞書（Intlayerを維持し、その場で翻訳） | [Intlayerをその場で翻訳する](/ja/guide/translating-intlayer) |
+
+<a id="which-should-i-use"></a>
+
+<a id="how-it-works"></a>
+## 仕組み
+
+1. コマンドラインインターフェイスをインストールし、プロバイダーの認証キーを設定します: [インストール](/ja/guide/installation)。
+2. `init` を実行して `ai-i18n-tools.config.json` を書き込みます: [クイックスタート](/ja/guide/quick-start)。
+3. プロジェクトを準備します: 文字列を `t()` でラップする、サイト用フレームワークの国際化機能を有効にする、またはREADMEに言語リストマーカーを追加します。
+4. `sync` を実行します。テキストを抽出し、新しい内容を翻訳して、出力を書き込みます。
+5. 出力をアプリまたはサイトで読み込み、言語切り替え機能を追加し、ソースが変更されたら `sync` を再実行します。
 
 <a id="translation-modes"></a>
 ## 翻訳モード
 
-- **UI文字列** — JS/TSおよびPythonソース（GNU gettextを含む類似のマーカー）から `t("…")` および `_()` 呼び出しを抽出し、ロケールごとのフラットなJSONまたは `.po` / `.mo` カタログを書き出します。コマンド: `extract`、`translate-ui`。ガイド: [UI文字列](/ja/guide/ui-strings/)。Python: [Pythonアプリケーション](/ja/guide/ui-strings/python)。
-- **ドキュメント** — `docs[].contentPaths` にリストされているMarkdown、MDX、および `.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、その他の静的ドキュメントサイトで動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/)。
-- **JSON** — 最上位の `json[]` で定義されたネストされたJSONロケールバンドル（テーマラベル、i18nオーバーライド、ソースに含まれないアプリのコピー）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
-- **SVG** — SVGイラスト内の表示テキスト（`<text>`、`<title>`、`<desc>`）を翻訳し、ロケールごとに1つの出力ファイルを書き出します。ドキュメント翻訳とは分離されており、`translate-docs` はSVGアセットを変更しません。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
+内部では、ツールは4つのパイプラインを実行します。設定で必要なものを有効にし、`sync` がそれらを順番に実行します。
 
-これら 4 つのモードはすべて、アクティブな [LLM プロバイダー](/ja/guide/providers-and-models) を使用し、同じ設定ファイルを共有し、SQLite キャッシュを再利用するため、再実行では新しいテキストまたは変更されたテキストのみがモデルに送信されます。
+- ユーザーインターフェイス文字列 — ジェイエス／ティーエスおよびパイソンのソースから `t("…")` と `_()` の呼び出し（GNU gettext などの同様のマーカーを含む）を抽出し、ロケールごとのフラットなJSON、または `.po` / `.mo` カタログを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [ユーザーインターフェイス文字列](/ja/guide/ui-strings/)。パイソン: [パイソンアプリケーション](/ja/guide/ui-strings/python)。
+- ドキュメント — `docs[].contentPaths` に列挙されたマークダウン、MDX、`.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、その他の静的ドキュメントサイト、およびリポジトリREADME（`flat` の `docsOutput.style`）で動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/) および [READMEとマークダウン形式のドキュメントに国際化を追加する](/ja/guide/add-i18n-to-readme)。
+- JSON — トップレベルの `json[]` で定義された、ネストされたJSONロケールバンドル（テーマラベル、国際化の上書き、ソース内にないアプリ文言）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
+- SVG — SVGイラスト内の表示テキスト（`<text>`、`<title>`、`<desc>`）を翻訳し、ロケールごとに1つの出力ファイルを書き込みます。ドキュメント翻訳とは別です。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
 
-<a id="which-should-i-use"></a>
-## どれを使用すべきですか？
-
-| コンテンツ | モード | コマンド |
-| --- | --- | --- |
-| ソースコードで `t()`、`_()`、gettext、またはHTML `data-i18n` マーカーを使用 | UI文字列 | `extract` / `translate-ui` |
-| ローカライズされたページまたはドキュメントサイト | ドキュメント | `translate-docs` |
-| スタンドアロンのネストされた JSON ロケールファイル | JSON | `translate-json` |
-| SVG にラベルが付いた図またはイラスト | SVG | `translate-svg` |
-
-多くのプロジェクトでは、複数のモードを組み合わせて使用します。たとえば、VitePress サイトの場合は UI 文字列とドキュメント、図解付きガイドの場合はドキュメントと SVG などです。[クイックスタート](/ja/guide/quick-start) でスキャフォールドテンプレートを、[設定](/ja/reference/configuration) で完全な設定スキーマを参照してください。
+多くのプロジェクトではモードを組み合わせて使用します。一般的な組み合わせは、UI文字列とリポジトリのREADMEです。VitePressなどのドキュメントサイトも、よくある組み合わせです。詳しくは、[パイプラインの組み合わせ](/ja/guide/combining-pipelines)と[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)をご覧ください。
 
 <a id="examples"></a>
 ## 例
 
-リポジトリには、`examples/` の下に実行可能なサンプルプロジェクトが同梱されています。それぞれに独自の設定、コミットされたロケール出力、および README が含まれています。API キーなしで翻訳されたファイルを探索できます。翻訳を再実行するにはプロバイダーキーが必要です ([プロバイダーとモデル](/ja/guide/providers-and-models) を参照)。
+このリポジトリには、`examples/`配下に実行可能なサンプルプロジェクトが含まれています。各プロジェクトには、それぞれ独自の設定、コミット済みのロケール出力、READMEがあります。APIキーがなくても翻訳済みファイルを確認できますが、翻訳を再実行するにはプロバイダーキーが必要です。
 
-| 例 | 内容 |
+| 対象 | 例 |
 | --- | --- |
-| [console-app](/ja/examples#console-app) | 最小のエンドツーエンドアプリ: `t()` UI 文字列と README 翻訳 |
-| [nextjs-app](/ja/examples#nextjs-app) | Next.js UI、複数形、SVG、ネストされたDocusaurusドキュメント、フラットなREADME、ダッシュボード |
-| [docusaurus-docs](/ja/examples#docusaurus-docs) | スタンドアロンのDocusaurusドキュメントサイト |
-| [astro-website](/ja/examples#astro-website) | Astro マーケティングサイト: 全ページ HTML 翻訳と `t()` 文字列 |
-| [astro-docs](/ja/examples#astro-docs) | Astro Starlight ドキュメントサイト |
-| [vitepress-docs](/ja/examples#vitepress-docs) | VitePressドキュメントとテーマカタログ |
-| [nextra-docs](/ja/examples#nextra-docs) | Nextraドキュメントと`_meta.ts`サイドバーラベルおよびテーマ辞書 |
-| [fumadocs-docs](/ja/examples#fumadocs-docs) | Fumadocsドキュメントと`meta.json`サイドバーラベルおよびUIカタログ |
-| [plain-html](/ja/examples#plain-html) | `data-i18n*` マーカーとロケール JSON を含む静的 HTML |
-| [multi-provider](/ja/examples#multi-provider) | 同じドキュメントで LLM プロバイダーを比較 |
-| [test-markdown](/ja/examples#test-markdown) | Markdown パイプラインのストレステスト (CJK、デーヴァナーガリー、エッジケース) |
-| [intlayer-migration](/ja/examples#intlayer-migration) | `migrate-intlayer` を介した Intlayer `.content.ts` → `t()` |
-| [python-streamlit](/ja/examples#python-streamlit) | Streamlitダッシュボード、`t()` / `_()`、英語キーJSON |
-| [python-flask](/ja/examples#python-flask) | Flask + Jinja、`t()` / `_()`、英語キーJSON |
-| [python-fastapi](/ja/examples#python-fastapi) | FastAPI、リクエストスコープのロケール、英語キーJSON |
-| [python-gettext](/ja/examples#python-gettext) | 既存のGNU gettext; `extract` / `translate-ui` が `.po` と `.mo` を更新 |
+| JS/TSアプリ | [console-app](/ja/examples#console-app), [nextjs-app](/ja/examples#nextjs-app) |
+| アプリに付随するリポジトリのREADME | [console-app](/ja/examples#console-app), [nextjs-app](/ja/examples#nextjs-app) |
+| Pythonアプリ | [python-streamlit](/ja/examples#python-streamlit), [python-fastapi](/ja/examples#python-fastapi), [python-gettext](/ja/examples#python-gettext) |
+| ドキュメントサイト | [docusaurus-docs](/ja/examples#docusaurus-docs), [vitepress-docs](/ja/examples#vitepress-docs), [astro-docs](/ja/examples#astro-docs) |
+| ウェブサイトまたはプレーンHTML | [astro-website](/ja/examples#astro-website), [plain-html](/ja/examples#plain-html) |
 
-[例](/ja/examples) で `npx degit` コピーコマンドと選択ガイドを参照してください。
+全リストと`npx degit`のコピーコマンドについては、[サンプル](/ja/examples)をご覧ください。
 
 <a id="next-steps"></a>
 ## 次のステップ
 
-1. [インストール](/ja/guide/installation) — npmパッケージをインストールするか、Pythonプロジェクト用に[スタンドアロン実行ファイル](/ja/guide/installation#standalone-executables)をダウンロードし、プロバイダーのAPIキーを設定します。
-2. [クイックスタート](/ja/guide/quick-start) — 設定をスキャフォールドし、最初の翻訳を実行します。
-3. [プロバイダーとモデル](/ja/guide/providers-and-models) — プロバイダー、モデルのフォールバックチェーン、および `-P` オーバーライドを選択します。
+1. [インストール](/ja/guide/installation) — npm パッケージをインストールするか、Python プロジェクト用に [スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables) をダウンロードして、プロバイダーの API キーを設定します。
+2. [クイックスタート](/ja/guide/quick-start) — 設定の雛形を作成し、最初の翻訳を実行します。
+3. [LLM プロバイダー](/ja/guide/providers-and-models) — プロバイダーと API キーを選択し、`-P` で上書きします。
+4. [AI モデル](/ja/guide/ai-models) — `suggest-models` またはダッシュボードの **モデル** タブで候補リストをランク付けし、翻訳が失敗した場合に次のモデルを試せるように、複数のモデルを保持します。

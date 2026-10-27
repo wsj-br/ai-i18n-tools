@@ -1,5 +1,6 @@
 import { protectAdmonitionSyntax, restoreAdmonitionSyntax } from "./admonition-placeholders.js";
 import { protectDocAnchors, restoreDocAnchors } from "./anchor-placeholders.js";
+import { protectFencedCodeBlocks, restoreFencedCodeBlocks } from "./code-fence-placeholders.js";
 import {
   protectBoldWrappedInlineCode,
   restoreBoldWrappedInlineCode,
@@ -21,10 +22,10 @@ import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js"
 
 /**
  * Chains placeholder protection for document translation:
- * heading-id suffixes (peeled, not sent) → html tags/comments → admonitions → doc anchors →
- * MDX (comments/JSX/expressions) → markdown URLs → **`inline`** (whole span) → remaining
- * `` `code` `` → emphasis (optional). Restore is the inverse order; heading-id suffixes are
- * pinned back to the end of ATX heading lines last.
+ * fenced code blocks → heading-id suffixes (peeled, not sent) → html tags/comments →
+ * admonitions → doc anchors → MDX (comments/JSX/expressions) → markdown URLs →
+ * **`inline`** (whole span) → remaining `` `code` `` → emphasis (optional). Restore is the
+ * inverse order; fenced code is restored last so a sample cannot absorb a heading-id suffix.
  */
 export class PlaceholderHandler {
   protectForTranslation(
@@ -47,10 +48,12 @@ export class PlaceholderHandler {
     urlMap: string[];
     boldCodeMap: string[];
     ilcMap: string[];
+    codeFenceMap: string[];
     emphasisProtected: boolean;
   } {
     const emphasisOn = options?.emphasis !== false;
-    const headingIds = stripHeadingIdSuffixes(text);
+    const fences = protectFencedCodeBlocks(text);
+    const headingIds = stripHeadingIdSuffixes(fences.protected);
     const htmlTags = protectHtmlTags(headingIds.text);
     const ad = protectAdmonitionSyntax(htmlTags.protected);
     const doc = protectDocAnchors(ad.protected);
@@ -74,6 +77,7 @@ export class PlaceholderHandler {
       urlMap: urls.urlMap,
       boldCodeMap: boldCode.boldCodeMap,
       ilcMap: ilc.ilcMap,
+      codeFenceMap: fences.codeFenceMap,
       emphasisProtected: emphasisOn,
     };
   }
@@ -100,6 +104,8 @@ export class PlaceholderHandler {
       urlMap: string[];
       boldCodeMap: string[];
       ilcMap: string[];
+      /** Optional for callers that protected before fenced-code masking shipped. */
+      codeFenceMap?: string[];
       /** When false or omitted, `restoreMarkdownEmphasis` is skipped (must match {@link protectForTranslation}). */
       emphasisProtected?: boolean;
     }
@@ -116,6 +122,7 @@ export class PlaceholderHandler {
     s = restoreAdmonitionSyntax(s, state.openMap, state.endMap, state.titleCloseMap ?? []);
     s = restoreHtmlTags(s, state.htmlTagMap);
     s = reattachHeadingIdSuffixes(s, state.headingIdSuffixes ?? []);
+    s = restoreFencedCodeBlocks(s, state.codeFenceMap ?? []);
     return s;
   }
 

@@ -64,9 +64,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docsRoot` 외부의 경로는 [중첩](#nested) 레이아웃(`{outputDir}/{locale}/{relPath}`)으로 대체됩니다.
+`docsRoot` 외부의 경로는 [중첩](#nested-default) 레이아웃(`{outputDir}/{locale}/{relPath}`)을 사용합니다.
 
-`docs[].docsOutput.docsRoot`를 영어 소스 루트로 설정하세요(예: `"docs"`, `"src/content/docs"` 또는 `"content/en"`). `docsOutput.style = "doc-system"`인 경우, `localeSubpath`를 명시적으로 설정해야 합니다(프리셋의 경우 아래 별칭을 사용하세요). 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치할 때(Starlight 방식) `localeSubpath: ""`를 사용하세요.
+`docs[].docsOutput.docsRoot`을 `sourceLocale`으로 작성된 파일의 루트로 설정하세요(예: 소스가 영어인 경우 `"docs"`, `"src/content/docs"` 또는 `"content/en"`). `sourceLocale`는 모든 언어가 될 수 있습니다. `docsOutput.style = "doc-system"`인 경우, `localeSubpath`을 명시적으로 설정해야 합니다(사전 설정을 위해 아래의 별칭을 사용하세요). 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 있는 경우(Starlight 스타일) `localeSubpath: ""`을 사용하세요.
 
 `docusaurusCatalogDir`의 Docusaurus 셸 JSON 및 doc-system 프리셋 하의 기타 JSON 산출물은 마크다운과 동일한 폴더 레이아웃을 따릅니다. `style: "flat"`인 경우, `jsonPathTemplate`를 설정하지 않는 한 JSON 라벨 파일은 여전히 중첩 형태를 사용합니다.
 
@@ -76,9 +76,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 **별칭** (동일한 `doc-system` 엔진, 프리셋 `localeSubpath` 및 기본값):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath`의 기본값은 `docusaurus-plugin-content-docs/current`입니다(Docusaurus i18n 플러그인 레이아웃).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`이며, `localePathLowercase`의 기본값은 `true`입니다. 번역된 페이지는 `{outputDir}/{locale}/` 하위에 배치되며, 영어 원본이 콘텐츠 루트에 위치하고 `outputDir`이(가) `docsRoot`과(와) 동일할 때 [Starlight](https://starlight.astro.build/guides/i18n/) 레이아웃과 일치합니다. 일반 Astro 로케일 페이지(`src/pages/index.astro` → `src/pages/{locale}/index.astro`)에도 사용되며, 자세한 내용은 [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)를 참조하십시오.
-- `docsOutput.style = "vitepress"` — `localeSubpath`이(가) 비어 있을 때 `doc-system`와 동일한 레이아웃을 사용하며, BCP-47 로케일 폴더 이름이 유지됩니다(`localePathLowercase`의 기본값은 `false`). [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하십시오.
-- `docsOutput.style = "nextra"` — `localeSubpath`이(가) 비어 있을 때 `doc-system`와 동일한 레이아웃을 사용하며, 영어 원본은 로케일 폴더 하위에 위치합니다(예: `content/en/`). [Nextra 통합](/ko/guide/integrations/nextra)을 참조하십시오.
+- `docsOutput.style = "astro-starlight"` — `localeSubpath`의 기본값은 `""`이고, `localePathLowercase`의 기본값은 `true`입니다. 번역된 페이지는 `{outputDir}/{locale}/` 아래에 있으며, 소스 로케일이 콘텐츠 루트에 있고 `outputDir`가 `docsRoot`과 같을 때 [Starlight](https://starlight.astro.build/guides/i18n/)와 일치합니다. 일반 Astro 로케일 페이지(`src/pages/index.astro` → `src/pages/{locale}/index.astro`)에도 사용됩니다 — [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#pages-parse-and-replace)를 참조하세요.
+- `docsOutput.style = "vitepress"` — `localeSubpath`가 비어 있는 `doc-system`와 동일한 레이아웃입니다. BCP-47 로케일 폴더 이름이 유지됩니다(`localePathLowercase`의 기본값은 `false`입니다). [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하세요.
+- `docsOutput.style = "nextra"` — `localeSubpath`가 비어 있는 `doc-system`와 동일한 레이아웃입니다. 소스 로케일은 로케일 폴더 아래에 있습니다(예: 소스가 영어인 경우 `content/en/`). [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요.
 
 Docusaurus 사전 설정(기본 문서 페이지):
 
@@ -121,7 +121,7 @@ Nextra 테마 사전(`.ts`)과 `_meta.ts` 사이드바 라벨은 마크다운에
 
 `docsOutput.style = "fumadocs"` — `docsOutput.fumadocsParser`를 통한 Fumadocs 콘텐츠 레이아웃:
 
-- **`"dot"` (기본값)** — 영어 소스 아래 `outputDir` 경로의 파일명에 로케일 접미사를 사용합니다(로케일 폴더가 아님). 이는 `doc-system` 경로 형태와 별개입니다.
+- **`"dot"` (기본값)** — `outputDir` 아래의 소스 로케일 파일과 나란히 파일 이름에 로케일 접미사를 사용합니다(로케일 폴더가 아님). 이것은 `doc-system` 경로 형태와는 별개입니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다.
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

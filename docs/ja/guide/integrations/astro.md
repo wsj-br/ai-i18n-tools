@@ -3,12 +3,12 @@
 
 ai-i18n-toolsを[Astro](https://astro.build/)で利用するには、一般的な2つのセットアップがあります。**Astro Starlight**ドキュメントサイトと、**プレーンなAstro**マーケティングサイトまたはアプリサイトです。どちらもページコンテンツにはDocuments (`translate-docs`)を使用します。プレーンなAstroサイトでは、フロントマターや共有データ内の`t()`文字列にUI文字列 (`extract` / `translate-ui`)を組み合わせて使用することがよくあります。
 
-[UI文字列](/ja/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[ドキュメント](/ja/guide/documents/)、および以下の実行可能な例も参照してください。
+関連情報: [UI 文字列](/ja/guide/ui-strings/astro-website)、[ドキュメント](/ja/guide/documents/)、および以下の実行可能なサンプル。
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
 
-[Astro Starlight](https://starlight.astro.build/)ドキュメントサイトには、`init -t ui-starlight`と`docsOutput.style: "astro-starlight"`を使用します。このプリセットは、空の`localeSubpath`を持つ`doc-system`のエイリアスです。翻訳されたページは、英語のソースツリーの横にある`src/content/docs/<locale>/`に配置されます。
+[Astro Starlight](https://starlight.astro.build/) のドキュメントサイトには `init -t ui-starlight` と `docsOutput.style: "astro-starlight"` を使用します。このプリセットは、`localeSubpath` が空の `doc-system` のエイリアスです。翻訳されたページは、ソースロケールのツリーの横にある `src/content/docs/<locale>/` の下に配置されます。`sourceLocale` には任意の言語を指定できます。
 
 <a id="quick-start"></a>
 ### クイックスタート
@@ -43,11 +43,21 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 }
 ```
 
-`contentPaths`を英語の`.md` / `.mdx`ファイルとディレクトリに指定します。`docsRoot`をStarlightがコンテンツルートとして使用するのと同じフォルダに設定します。
+`contentPaths` には、`sourceLocale` で書かれた `.md` / `.mdx` のファイルとディレクトリを指定します。その言語には任意の言語を指定できます。`docsRoot` には、Starlight がコンテンツルートとして使用するのと同じフォルダーを設定します。
 
 Starlight UIのオーバーライドは、必要に応じて別の`docs[]`ブロックで`src/content/i18n/en.json`を`jsonPathTemplate`とともに使用できます。詳細については、[ドキュメント — ドキュメントの初期化](/ja/guide/documents/#step-1-initialise-for-documentation)を参照してください。
 
 Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲーションラベル、検索プレースホルダー、目次など）を提供しています。別のシェル/テーマパイプラインを設定する必要はありません。ページコンテンツには`translate-docs`のみを使用してください。他のフレームワークについては、[フレームワークのシェル翻訳](/ja/guide/integrations/#framework-shell-translation)を参照してください。
+
+明示的なサイドバーの `label`、サイトの `title`、および `astro.config.mjs` 内の `social[].label` は、このツールが翻訳しない英語のリテラルです。ページの翻訳された frontmatter (`title`) からラベルが取得されるように、`slug` エントリを使用することを推奨します。独自の文言が必要なグループや外部リンクでは、Starlight のロケールごとの `translations` マップを使用します (デフォルトロケールでは `label`、その他のロケールでは `translations['pt-BR']`)。現在の Starlight スキーマでは `social[].label` には translations フィールドがないため、記述されたままになります。`slug` エントリを使用している [Starlight sidebar](https://starlight.astro.build/guides/sidebar/#internationalization) および [examples/astro-docs/astro.config.mjs](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs) を参照してください。
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### 既存のサイトで i18n を有効にする
+
+- Starlight の設定で `locales` を指定します。英語をプレフィックスなしにする (`label` と必須の `lang`) 場合は、`root` エントリを含めます。
+- デフォルト言語がそのルートロケールである場合は `defaultLocale: 'root'` を設定します。Starlight のデフォルトがすでに一致している場合にのみ `defaultLocale` を省略します。
+- 英語のページは `src/content/docs/` に残ります。`translate-docs` は `src/content/docs/<locale>/` を書き込みます。
+- `targetLocales` を非ルートロケールのキーに合わせます (注意: Starlight のディレクトリキーは `pt-br` のように、多くの場合小文字です)。
 
 <a id="example-project"></a>
 ### プロジェクト例
@@ -64,7 +74,7 @@ Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲ
 | パイプライン | 使用対象 | コマンド | 出力 |
 |----------|---------|----------|--------|
 | **ページ HTML** | テンプレート本体の見出し、段落、ナビゲーションラベル、インライン配列 | `translate-docs` | ロケールごとに `src/pages/{locale}/index.astro` |
-| **UI 文字列 (`t()`)** | フロントマター データ、タブラベル、共有配列 | `extract` → `translate-ui` | `public/locales/{locale}.json` (英語ソースをキーとして) |
+| **UI 文字列 (`t()`)** | Frontmatter データ、タブのラベル、共有配列 | `extract` → `translate-ui` | `public/locales/{locale}.json` (キーとしてソース言語の文字列を使用) |
 
 <a id="quick-start-1"></a>
 ### クイックスタート
@@ -103,7 +113,7 @@ pnpm dev
 
 言語を追加または削除する際には、3つのリストを揃えてください。`ai-i18n-tools.config.json`内の`targetLocales`、`astro.config.mjs`内の`i18n.locales`（Astroは`pt-br`のような**小文字**のルートコードを使用します）、および`ui-languages.json`（`generate-ui-languages`経由）。フラットバンドルの**ファイル名**は設定のケース（`pt-BR.json`）を使用します。Astroの`pt-br`ルートをマニフェストの`code`フィールド経由でそのファイルにマッピングします。
 
-**ビルド時**に、英語のソースリテラルをキーとして検索することで`t('…')`を解決します。`examples/astro-website/src/i18n/t.ts`を参照してください。ロード後に言語を切り替えるクライアントアイランドを追加しない限り、静的サイトでは`ai-i18n-tools/runtime`やi18nextは必要ありません。
+**ビルド時**に、ソース言語のリテラルをキーとしてルックアップすることで `t('…')` を解決します (`examples/astro-website/src/i18n/t.ts` を参照)。`sourceLocale` には任意の言語を指定できます。この例では英語を使用しています。静的サイトの場合、ロード後に言語を切り替えるクライアントアイランドを追加しない限り、`ai-i18n-tools/runtime` や i18next は必要ありません。
 
 <a id="example-project-1"></a>
 ### プロジェクト例

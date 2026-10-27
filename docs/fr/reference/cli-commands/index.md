@@ -34,6 +34,7 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 | [`extract`](ui-strings#extract) | Met à jour `strings.json` à partir de littéraux source et de marqueurs HTML. |
 | [`mark-html`](ui-strings#mark-html) | Insère des marqueurs `data-i18n*` dans les fichiers HTML. |
 | [`migrate-intlayer`](ui-strings#migrate-intlayer) | Importer les dictionnaires Intlayer `.content.ts` et réécrire les sites `useIntlayer` / `getIntlayer` simples en `t()`. |
+| [`translate-intlayer`](ui-strings#translate-intlayer) | Traduire les feuilles de locale manquantes/obsolètes dans les dictionnaires Intlayer `.content.ts` sur place. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | Écrit `ui-languages.json` à partir de locales de configuration. |
 | [`translate-ui`](ui-strings#translate-ui) | Traduit les chaînes d'interface utilisateur (`strings.json` → JSON de locale). |
 | [`sync-ui`](ui-strings#sync-ui) | Extrait, puis traduit les chaînes d'interface utilisateur. |
@@ -89,7 +90,7 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
@@ -100,6 +101,7 @@ ai-i18n-tools list-languages [search]
 ai-i18n-tools extract
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …

@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-소스 언어의 BCP-47 코드(예: `"en-GB"`, `"en"`, `"pt-BR"`). 이 로케일에 대해서는 번역 파일이 생성되지 않으며, 키 문자열 자체가 소스 텍스트입니다.
+소스 언어의 BCP-47 코드입니다(예: `"en-GB"`, `"pt-BR"` 또는 `"ja"`). 모든 언어가 유효합니다. 많은 프로젝트가 영어로 시작하기 때문에 예시에는 영어가 사용되었습니다. 이 로케일의 경우 번역 파일이 생성되지 않으며, 키 문자열 자체가 소스 텍스트가 됩니다.
 
 **일치해야 함** 런타임 i18n 설정 파일(`src/i18n.ts` / `src/i18n.js`)에서 내보낸 `SOURCE_LOCALE`과.
 
@@ -167,9 +167,9 @@
 
 하나의 설정에서 여러 프로바이더를 구성하고 `-P`로 전환하는 실행 가능한 예제는 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)를 참조하세요(`openai`, `anthropic`, `openrouter`, `deepseek`가 동일한 문서에 있습니다).
 
-**여러 모델을 사용하는 이유:** 공급자와 모델마다 비용이 다르고 언어 및 로케일에 따라 다른 수준의 품질을 제공합니다. `translationModels`를 **순서대로 대체되는 체인**으로 구성하십시오 (단일 모델이 아닌). 그러면 요청 실패 시 CLI가 다음 모델을 시도할 수 있습니다.
+**여러 모델을 사용하는 이유:** 공급자와 모델마다 비용이 다르며 언어 및 로케일에 따라 제공하는 품질 수준도 다양합니다. `translationModels`을(를) 순서가 지정된 대체 체인으로 구성하여 요청이 실패할 경우 CLI가 다음 모델을 시도하도록 하세요. 해당 목록을 빌드하는 가이드는 [AI 모델](/ko/guide/ai-models)입니다.
 
-아래 목록을 확장할 수 있는 **기준선**으로 간주하십시오. 특정 로케일에 대한 번역이 불량하거나 성공적이지 않은 경우, 해당 언어 또는 스크립트를 효과적으로 지원하는 모델을 조사하고(온라인 리소스 또는 공급자 설명서 참조) 해당 모델 ID를 추가 대안으로 추가하십시오.
+아래 목록을 **기준**으로 삼으세요. [AI 모델](/ko/guide/ai-models)의 벤치마크 순위를 참조하여 목록을 교체하세요. 특정 로케일의 번역 품질이 계속 낮은 경우 해당 언어 또는 스크립트에 대한 `localeModels` 항목을 추가하거나 공급자 카탈로그에서 ID를 더 추가하세요.
 
 이 모델 ID는 `ai-i18n-tools init -P openrouter`가 작성하는 것입니다. 다른 사전 설정은 `init -P <provider>`에서 기본 모델 ID를 가져옵니다. — [내장 제공자](/ko/guide/providers-and-models#built-in-providers)를 참조하세요.
 
@@ -270,13 +270,13 @@
 - `flatOutputDir`
   이 블록의 로캘별 JSON 파일이 기록되는 디렉터리입니다(`de.json` 등).
 - `flatOutput`
-  `true`(기본값)인 경우, `translate-ui`는 로캘당 하나의 평면 JSON 파일을 작성합니다. gettext 전용 블록을 사용하려면 `false`을 설정하십시오. `flatOutput: false`가 있는 블록은 반드시 `gettext`를 설정해야 합니다.
+  `true`(기본값)인 경우, `translate-ui`는 로케일당 하나의 플랫 JSON 파일을 작성합니다. gettext 전용 블록의 경우 `false`으로 설정합니다. `flatOutput: false`가 있는 블록은 `gettext`를 설정해야 합니다.
 - `gettext`
-  이 블록에 대한 선택적 GNU gettext 출력입니다. `outputDir`(기본값 `./locales`)은 `<locale>/LC_MESSAGES/<domain>.po`를 수신하며, `compileMo`이 true(기본값)인 경우 일치하는 `.mo`을 수신합니다. `domain`의 기본값은 `messages`입니다. `potPath`는 템플릿 카탈로그입니다. `ingestExistingPo`(기본값 `true`)는 `extract` 중에 비어 있는 `strings.json` 슬롯을 비퍼지(non-fuzzy) `msgstr` 값으로 채우며, 비어 있지 않거나 사용자가 편집한 번역은 대체하지 않습니다. `localeFormat`은 `posix`(기본값, `pt_BR`) 또는 `bcp47`(`pt-BR`)입니다. 컨텍스트 행은 gettext `\u0004` 구분 기호를 사용합니다. 두 컨텍스트에서 동일한 영어 소스는 카탈로그 ID를 공유하지 않습니다.
+  이 블록에 대한 선택적 GNU gettext 출력입니다. `outputDir`(기본값 `./locales`)은 `<locale>/LC_MESSAGES/<domain>.po`를 수신하며, `compileMo`이 true(기본값)인 경우 일치하는 `.mo`도 수신합니다. `domain`의 기본값은 `messages`입니다. `potPath`는 템플릿 카탈로그입니다. `ingestExistingPo`(기본값 `true`)는 `extract` 중에 퍼지(fuzzy)가 아닌 `msgstr` 값으로 비어 있는 `strings.json` 슬롯을 채우며, 비어 있지 않거나 사용자가 편집한 번역은 대체하지 않습니다. `localeFormat`은 `posix`(기본값, `pt_BR`) 또는 `bcp47`(`pt-BR`)입니다. 컨텍스트 행은 gettext `\u0004` 구분 기호를 사용합니다. 두 컨텍스트에 있는 동일한 소스 언어 문자열은 카탈로그 ID를 공유하지 않습니다.
 - `targetLocales`
-  이 블록에 대한 선택적 로캘 목록입니다. 생략하거나 비워두면 블록은 루트 `targetLocales`을 사용합니다.
+  이 블록에 대한 선택적 로케일 목록입니다. 생략되거나 비어 있는 경우, 블록은 루트 `targetLocales`을 사용합니다.
 - `languagesManifestPath`
-  `extract` 및 `generate-ui-languages`이 이 블록의 `ui-languages.json`을 작성하는 선택적 경로입니다. 생략하면 블록 0은 루트 `languagesManifestPath`(자체적으로 이 블록의 `{flatOutputDir}/ui-languages.json`으로 기본 설정됨)를 사용합니다. 이후 블록은 `{flatOutputDir}/ui-languages.json`로 기본 설정됩니다.
+  `extract` 및 `generate-ui-languages`이 이 블록의 `ui-languages.json`을 작성하는 선택적 경로입니다. 생략된 경우, 블록 0은 루트 `languagesManifestPath`(기본값은 이 블록의 `{flatOutputDir}/ui-languages.json`)를 사용합니다. 이후 블록의 기본값은 `{flatOutputDir}/ui-languages.json`입니다.
 - `uiGlossary`
   `true`(기본값)인 경우, 이 블록의 `strings.json`는 `translate-docs`, `translate-json`, `translate-svg`를 위한 용어집 힌트 소스가 됩니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 해당 힌트에서 제외하려면(예: 문서화를 유도해서는 안 되는 CLI 문자열 카탈로그) `false`를 설정하십시오.
 - `uiExtractor.funcNames` (또는 레거시 `reactExtractor.funcNames`)
@@ -365,7 +365,10 @@ Nextra `_meta` 개체에서 문자열 값이 번역되는 선택적 속성 이�
 - `nextraDictionaryOutputTemplate`
 로케일 사전 모듈에 대한 선택적 출력 템플릿(기본값: 사전 디렉터리를 기준으로 `{dir}/{locale}.ts`).
 
-**출력 레이아웃**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+이 블록의 출력 레이아웃입니다.
 
 - `outputDir`
 이 블록에 대한 번역된 출력의 루트 디렉터리입니다.
@@ -384,21 +387,21 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다. 기본값은 `false`입니다.
 - `docsOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 정의 `pathTemplate`이(가) 없을 때 자동으로 활성화됨).
+번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동 활성화).
 - `docsOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있는 경우가 아니라면 일반적으로 `"."`(으)로 유지하십시오.
+플랫 링크 재작성 접두사를 계산할 때 사용되는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한, 일반적으로 `"."`로 둡니다.
 - `docsOutput.rewriteVitepressLinks`
-`true`인 경우, 번역 후 VitePress 링크 정규화기를 실행합니다. `docsOutput.style`이(가) `"vitepress"`일 때 기본적으로 활성화됩니다. `docsRoot` 아래에서 로케일 폴더가 영어 폴더와 나란히 위치하는 모든 `doc-system` 레이아웃과 함께 사용합니다. README 스타일의 `docs/guide/…` 경로를 사이트 라우트(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 저장소 파일(`LICENSE`, `examples/`)에 대한 링크는 영어 소스에서 전체 URL을 사용하십시오. [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하십시오.
+`true`인 경우, 번역 후 VitePress 링크 노멀라이저를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 활성화가 기본값입니다. 로케일 폴더가 `docsRoot` 아래의 소스 로케일 파일 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 리포지토리 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 소스 로케일 파일에 전체 URL을 사용하세요. [VitePress 통합 — 문서를 홈페이지로 사용하는 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하세요.
 - `docsOutput.rewriteNextraLinks`
-`true`인 경우, 번역 후 Nextra 링크 정규화기를 실행합니다. `docsOutput.style`이(가) `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`에 대해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 라우트(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하십시오.
+`true`인 경우, 번역 후 Nextra 링크 노멀라이저를 실행합니다. `docsOutput.style`가 `"nextra"`일 때 활성화가 기본값입니다. Next.js `i18n`를 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 경로(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 - `docsOutput.fumadocsParser`
-`"dot"` (기본값) 또는 `"dir"`. Dot은 영어 소스 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하십시오.
+`"dot"`(기본값) 또는 `"dir"`입니다. Dot은 소스 로케일 파일 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하세요.
 - `docsOutput.rewriteFumadocsLinks`
-`true`일 때, 번역 후 Fumadocs 링크 정규화기를 실행합니다. `docsOutput.style`이 `"fumadocs"`일 때 기본적으로 활성화됩니다. 콘텐츠 경로와 상대 `.mdx` 링크를 `/docs/…` 라우트로 재작성합니다.
+`true`인 경우, 번역 후 Fumadocs 링크 노멀라이저를 실행합니다. `docsOutput.style`이 `"fumadocs"`일 때 활성화가 기본값입니다. 콘텐츠 경로와 상대 `.mdx` 링크를 `/docs/…` 경로로 재작성합니다.
 - `docsOutput.fumadocsUiCatalog`
-선택 사항. `translate-docs` 내부의 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역입니다. 필드: `sourcePath` (예: `lib/layout.shared.ts`), `catalogPath` (생성된 영어 JSON), 선택적 `outputPathTemplate` (기본값: `catalogPath` 옆의 `ui.{locale}.json`).
+선택 사항. `translate-docs` 내에서 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역. 필드: `sourcePath`(예: `lib/layout.shared.ts`), `catalogPath`(생성된 영어 JSON), 선택적 `outputPathTemplate`(기본값: `catalogPath` 옆의 `ui.{locale}.json`).
 - `docs[].fumadocsMetaGlob`
-`docsOutput.style`이 `"fumadocs"`일 때 `meta.json` 컬렉션에 대한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
+`docsOutput.style`이 `"fumadocs"`일 때 `meta.json` 수집을 위한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름입니다(기본값: `title`, `description`).
 - `docsOutput.localizedAssets`
@@ -515,6 +518,8 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (선택 사항)
 
 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models) 및 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에 대한 가중치입니다. 이 블록을 생략하거나 하나의 프로필을 생략하면 해당 프로필은 기본 제공 가중치를 유지합니다. 이 블록은 `--apply` 또는 **구성 업데이트**에 의해 다시 작성되지 않습니다. 해당 작업은 모델 ID만 작성합니다.

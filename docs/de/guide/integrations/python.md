@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Auswahlhilfe für Python-Anwendungen. Extraktion, Kataloge und Aufrufformen finden Sie unter [Python-Anwendungen](/de/guide/ui-strings/python). Die Schritt-für-Schritt-Anleitung für eine bestehende Anwendung mit einer einzigen Sprache finden Sie unter [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python).
+Auswahlhilfe für Python-Anwendungen. Extraktion, Kataloge und Aufrufmuster finden sich in [Python-Anwendungen](/de/guide/ui-strings/python). Die Schritt-für-Schritt-Anleitung für eine bestehende Single-Locale-Anwendung ist [i18n zu einer Python-Anwendung hinzufügen](/de/guide/add-i18n-to-python), mit einer [`i18n.py`-Eingabeaufforderung](/de/guide/add-i18n-to-python#agent-prompt-i18n-py) und einer [Django-/gettext-Eingabeaufforderung](/de/guide/add-i18n-to-python#agent-prompt-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide und PyWebView rufen den generierten `i18n.py`-Helfer auf (Python 3.10 oder neuer). Django verwendet das gettext von Django. Vier ausführbare Kopien sind im Repository enthalten: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` und `examples/python-gettext`. Pyramid, Django, Tkinter, Qt und PyWebView verfügen über kein separates Beispielverzeichnis.
 
@@ -10,18 +10,18 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide und PyWebView rufen de
 
 | Framework | Init-Vorlage | Katalog | Beispiel |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | Flaches JSON mit englischen Schlüsseln | [python-streamlit](/de/examples#python-streamlit) |
-| FastAPI | `ui-python` | Flaches JSON mit englischen Schlüsseln | [python-fastapi](/de/examples#python-fastapi) |
-| Flask + Jinja, flaches JSON | `ui-python` | Flaches JSON mit englischen Schlüsseln | [python-flask](/de/examples#python-flask) |
+| Streamlit | `ui-python` | Flaches JSON, das nach dem Quellstring geschlüsselt ist | [python-streamlit](/de/examples#python-streamlit) |
+| FastAPI | `ui-python` | Flaches JSON, das nach dem Quellstring geschlüsselt ist | [python-fastapi](/de/examples#python-fastapi) |
+| Flask + Jinja, flaches JSON | `ui-python` | Flaches JSON, das nach dem Quellstring geschlüsselt ist | [python-flask](/de/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` unter `translations/` | Siehe die Flask-Hinweise unten |
 | Pyramid | `ui-python` oder `ui-python-flask` | Wie bei Flask | Gleiche Einbindung wie bei Flask |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | Kein Beispielverzeichnis |
 | Bestehendes GNU gettext | `ui-python-gettext` | Flaches JSON und `.po` / `.mo` oder nur gettext | [python-gettext](/de/examples#python-gettext) |
-| Tkinter | `ui-python` | Flaches JSON mit englischen Schlüsseln | Kein Beispielverzeichnis |
+| Tkinter | `ui-python` | Flaches JSON, das nach dem Quellstring geschlüsselt ist | Kein Beispielverzeichnis |
 | PyQt / PySide | `ui-python` oder eine gettext-Vorlage | Flaches JSON und/oder `.po` | Kein Beispielverzeichnis |
 | PyWebView / PyWebKit | Eine Python-Vorlage für die Shell | Shell-Kataloge sowie HTML-Marker oder eine HTML-Datei pro Sprache | Kein Beispielverzeichnis |
 
-`ui-python`, `ui-python-gettext` und `ui-python-flask` schreiben `i18n.py`, wenn diese Datei fehlt. `ui-python-django` tut dies nicht.
+`ui-python`, `ui-python-gettext` und `ui-python-flask` schreiben `i18n.py`, wenn diese Datei fehlt. `ui-python-django` tut dies nicht. Fügen Sie `--with-readme` hinzu, um auch die README-Datei des Repositorys zu übersetzen: [i18n zu Ihrer README-Datei und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme).
 
 <a id="framework-notes"></a>
 ## Framework-Hinweise

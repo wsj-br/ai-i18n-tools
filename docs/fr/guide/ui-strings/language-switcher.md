@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+Le gestionnaire ci-dessus bascule la langue après que l'application est déjà affichée. Restaurez également une locale enregistrée avant le premier rendu : [Locale de démarrage](/fr/guide/ui-strings/i18next-runtime#startup-locale).
+
 `getUILanguageLabel(lang, t)` - affiche `t(englishName)` lorsqu'il est traduit, ou `englishName / t(englishName)` lorsque les deux diffèrent. Convient pour les écrans de paramètres.
 
 `getUILanguageLabelNative(lang)` - affiche `englishName / label` (aucun appel `t()` sur chaque ligne). Convient pour les menus d'en-tête où vous souhaitez que le nom natif soit visible.

@@ -19,7 +19,7 @@ ai-i18n-tools init -P openrouter
 
 This writes `ai-i18n-tools.config.json`. Four keys matter for now:
 
-- `sourceLocale`: the language your text is written in.
+- `sourceLocale`: the language your text is written in. Any language is valid. English is a common example in this guide.
 - `targetLocales`: the languages to add.
 - `ui.sourceRoots`: the folders `extract` scans, for example `src/`.
 - `ui.stringsJson` and `ui.flatOutputDir`: where the catalog and the per-locale files are written.
@@ -253,8 +253,8 @@ ai-i18n-tools includes its own string extractor. If you used `i18next-scanner`, 
 
 | Your code today | Read |
 | --- | --- |
-| Already `t("English…")` or `i18n.t("English…")` | [UI strings](/guide/ui-strings/) steps 2–3, then [Wire i18next](/guide/ui-strings/i18next-runtime) |
-| i18next namespace JSON (`t("saveButton")` plus `en/translation.json`) | [JSON](/guide/json). Do not switch those keys to English sentences unless you are ready to change every call |
+| Already `t("…")` or `i18n.t("…")` with the source-language sentence | [UI strings](/guide/ui-strings/) steps 2–3, then [Wire i18next](/guide/ui-strings/i18next-runtime) |
+| i18next namespace JSON (`t("saveButton")` plus `en/translation.json`) | [JSON](/guide/json). Do not switch those keys to source-language sentences unless you are ready to change every call |
 | Intlayer dictionaries, moving off Intlayer | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
 | Intlayer dictionaries, keeping Intlayer | [Translating Intlayer in place](/guide/translating-intlayer) |
 | One HTML file | [Plain HTML](/guide/ui-strings/plain-html) and `mark-html` |

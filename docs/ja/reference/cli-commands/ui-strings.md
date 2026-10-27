@@ -17,13 +17,32 @@
 
 **概要:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-Intlayerの`*.content.ts`辞書を`strings.json`およびフラットなロケールファイルにインポートし、単純な`useIntlayer` / `getIntlayer`の呼び出し箇所を`t('English source')`に書き換えます。デフォルトではドライランです（レポートは引き続き書き込まれます）。`--write`はカタログをシードし、安全な書き換えを適用します。LLMは呼び出しません。
+Intlayer `*.content.ts` 辞書を `strings.json` とフラットなロケール ファイルにインポートし、単純な `useIntlayer` / `getIntlayer` 呼び出しサイトを `t('source string')` に書き換えます。文字列は `sourceLocale` で記述され、任意の言語を使用できます。デフォルトではドライランです (レポートは引き続き書き込まれます)。`--write` はカタログをシードし、安全な書き換えを適用します。LLM は呼び出しません。
 
 レポートは`--write`が残したすべてのものの引き継ぎであり、残りの作業を順序付けた**ステップバイステップのTODO**で締めくくられます。これには、各手動サイトに対する具体的な`t()`またはJSX呼び出し、`import { t }`行、辞書ファイルおよび後で削除する`IntlayerProvider`の残留ファイル、`extract`してから`translate-ui`する必要があるソース文字列、そしてアプリのi18nモジュールに貼り付けて上書きするi18nextランタイムブートストラップが含まれます。ロケール制御は`loadLocale`だけでなく`i18n.changeLanguage`も呼び出す必要があります。`extract`は`ui-languages.json`を記述し、そのブートストラップがこれをインポートします。`strings.json`、フラットなロケールファイル、または`ui-languages.json`を手動で編集しないでください。
 
 **主なオプション:** `--write`, `--report`, `--content-glob` (デフォルト `**/*.content.ts`), `--t-import`
 
 **関連情報:** [Intlayerからの移行](/ja/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**概要:** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+Intlayer `*.content.ts` 辞書内の欠落している、または古いロケールのリーフをインプレースで翻訳し、辞書を信頼できる情報源 (source of truth) として維持します。[`migrate-intlayer`](#migrate-intlayer) とは異なり、これはアプリを Intlayer から移行するのではなく、`t({ … })` リーフを埋めるだけです。ランタイムで Intlayer を維持し、ai-i18n-tools を翻訳エンジンとして使用したい場合に使用します。
+
+すべての `t({ … })` リーフを抽出し、選択した UI ブロックの `strings.json` にソーステキストをシードし、[`translate-ui`](#translate-ui) と同じエンジン (プロバイダーの選択、用語集、翻訳コンテキスト、モデルのフォールバック) を実行してから、新しいロケールごとの文字列を各 `t({ … })` オブジェクトに書き戻します。編集は外科的です。欠落している、または古いロケールの行のみが変更されるため、フォーマットとコメントは保持されます。Intlayer `{token}` プレースホルダーは、翻訳のために <code v-pre>{{token}}</code> に変換され、再び元に戻ります (round-trip)。
+
+リーフとロケールの組み合わせは、ロケールがリーフに存在しない場合 (欠落)、またはそのロケールの前回実行以降にソースロケールのテキストが変更された場合 (古い) に翻訳されます。古さは `cacheDir` で追跡されるため、そのソース文字列を編集すると、次回の実行時にそのリーフが再翻訳されます。ソース言語は `sourceLocale` で、任意の言語を使用できます。`--dry-run` は、LLM を呼び出したり何も書き込んだりせずに、欠落/古いカウントを報告します。`features.translateUIStrings` と UI ブロックの `stringsJson` (`translate-ui` と同じ) が必要です。
+
+**主なオプション:** `-l` / `--locale`、`--ui-block`、`--dry-run`、`-j` / `--concurrency`
+
+`[paths...]`: スキャンするファイル/ディレクトリ/glob (デフォルト: ブロックの `sourceRoots`)。`-l` / `--locale`: 埋めるターゲットロケールをカンマ区切りで指定 (デフォルト: ブロックで設定された `targetLocales`)。`--ui-block`: 0 から始まるインデックス、説明、または `stringsJson` パス (デフォルト: ブロック 0)。`-j` はロケールを並列化します。
+
+**関連項目:** [migrate-intlayer](#migrate-intlayer)、[Intlayer からの移行](/ja/guide/migrating-from-intlayer)
 
 ---
 

@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+위 핸들러는 앱이 이미 표시된 후에 언어를 전환합니다. 첫 페인트 전에도 저장된 로캘을 복원하세요: [시작 로캘](/ko/guide/ui-strings/i18next-runtime#startup-locale).
+
 `getUILanguageLabel(lang, t)` - 번역되었을 때 `t(englishName)`을 표시하고, 두 값이 다를 경우 `englishName / t(englishName)`를 표시합니다. 설정 화면에 적합합니다.
 
 `getUILanguageLabelNative(lang)` - `englishName / label`을 표시합니다(`t()` 호출 없이 각 행에 대해). 헤더 메뉴에서 네이티브 이름을 표시하고자 할 때 적합합니다.

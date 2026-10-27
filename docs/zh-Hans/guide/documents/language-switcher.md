@@ -5,7 +5,7 @@
 
 此存储库将其用于 [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)（`translated-docs/` 下的平面输出）。在 `translate-docs` 之后，每个翻译副本都会获得一个刷新的块；例如，[translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) 链接到 `translated-docs/` 下的同级区域设置文件，并链接回存储库根目录的英文源。
 
-需要 `docsOutput.style = "flat"`（或可以通过相对路径寻址同级区域设置文件的其他布局）。请参阅[输出布局](/zh-Hans/guide/documents/output-layouts)。
+需要 `docsOutput.style = "flat"`（或其他可按相对路径寻址同级区域设置文件的布局）。请参阅[输出布局](/zh-Hans/guide/documents/output-layouts)。首次将此添加到仓库 README 中：[将 i18n 添加到您的 README 和 Markdown 文档中](/zh-Hans/guide/add-i18n-to-readme)。
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. 在源 Markdown 中标记块
@@ -47,8 +47,8 @@
 ## 3. 运行时发生的情况
 
 1. **提取** — 语言列表切片**不会**发送给模型（`translatable: false`）。
-2. **每个翻译文件** — 在分段翻译和可选的扁平链接重写之后，`postProcessing` 会重建块：每个区域设置一个 Markdown 链接，标签来自 `ui-languages.json`（如果存在）（否则是捆绑的主目录，否则是 `localeDisplayNames`），路径相对于正在写入的文件。
-3. **源刷新** — 在完成 `translate-docs` / `sync` 文档传递后，相同的规范块会被写回 **英文源文件**中的 `contentPaths`，因此添加一个区域设置可以在不手动编辑每个链接的情况下更新仓库中的切换器。
+2. **每个已翻译文件** — 在片段翻译和可选的扁平链接重写之后，`postProcessing` 会重建该块：每个区域设置一个 Markdown 链接；标签优先来自 `ui-languages.json`（如果存在），否则来自捆绑的主目录，否则来自 `localeDisplayNames`；路径相对于正在写入的文件。
+3. **源刷新** — 在一次 `translate-docs` / `sync` 文档处理结束时，同一个规范块会写回 `contentPaths` 中的**源区域设置文件**，因此添加区域设置会更新存储库中的切换器，而无需手动编辑每个链接。这些文件以 `sourceLocale` 写入，可以是任何语言。
 
 如果文件没有匹配的块，CLI 会记录一个警告（当 `--verbose` 时）并保持正文不变。
 
@@ -72,4 +72,4 @@
 <a id="html-pages"></a>
 ## HTML 页面
 
-纯 HTML 文档使用另一对注释，即 `<!-- ai-i18n:lang-list -->` 和 `<!-- ai-i18n:hreflang -->`。语言列表可以是链接或 `<select>`，并且 hreflang 替代链接会同时写入英文源文件以及各个本地化文件中。请参阅 [HTML 页面](/zh-Hans/guide/documents/html-pages#language-list-and-hreflang)。
+纯 HTML 文档使用另一对注释 `<!-- ai-i18n:lang-list -->` 和 `<!-- ai-i18n:hreflang -->`。语言列表可以是链接或 `<select>`，并且 hreflang 备用项会写入源区域设置文件以及每个目标区域设置文件中。请参阅[HTML 页面](/zh-Hans/guide/documents/html-pages#language-list-and-hreflang)。

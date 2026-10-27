@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+El controlador anterior cambia el idioma después de que la aplicación ya se esté mostrando. Restaure una configuración regional guardada antes del primer renderizado también: [Configuración regional de inicio](/es/guide/ui-strings/i18next-runtime#startup-locale).
+
 `getUILanguageLabel(lang, t)` - muestra `t(englishName)` cuando está traducido, o `englishName / t(englishName)` cuando ambos difieren. Adecuado para pantallas de configuración.
 
 `getUILanguageLabelNative(lang)` - muestra `englishName / label` (sin llamada `t()` en cada fila). Adecuado para menús de cabecera donde desea que el nombre nativo sea visible.

@@ -67,7 +67,7 @@
 
 `.html` / `.htm` 소스의 경우(`ui.uiExtractor.extensions`에 나열된 경우), `extract`은(는) 대신 파일을 `html-i18n-marks.ts`을(를) 통해 라우팅하며, 이는 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 마커 속성(`ui.uiExtractor.htmlI18nAttributes`을(를) 통해 구성 가능)을 스캔합니다. 빈 마커는 요소 자체의 `textContent` 또는 속성에서 소스 텍스트를 가져오고, 값이 있는 마커(`data-i18n="Key"`)는 해당 값을 사용합니다. `data-i18n-locale-src` 및 `data-i18n-locale-href`은(는) 브라우저 런타임을 위해 예약되어 있으며 절대 추출되지 않습니다. 동일한 모듈이 `mark-html` 명령을 구동하며, 이 명령은 빈 마커를 자동으로 삽입하고(`alt` 및 `aria-label` 포함) 로케일 URL 마커는 절대 삽입하지 않습니다. HTML 파일은 Babel / i18next-scanner 패스에 도달하지 않습니다. docs `outputDir` 아래에 생성된 로케일 HTML은 이 스캔에서 제외됩니다.
 
-순수 Astro SSG 사이트는 i18next를 생략할 수 있습니다: 빌드 시점에 플랫 `{locale}.json`을(를) 로드하고 소스 텍스트 키로 `t('English')`을(를) 해석합니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/ko/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight) 참조).
+순수 Astro SSG 사이트는 i18next를 건너뛸 수 있습니다. 빌드 시 플랫 `{locale}.json`을 로드하고 소스 텍스트 키로 `t('source text')`을 확인합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/ko/guide/ui-strings/astro-website) 참조).
 
 일반 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다. [번역을 위한 HTML 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요. 드롭인 스크립트는 `ai-i18n-tools/html-runtime/i18n.js`입니다.
 
@@ -125,7 +125,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 - 문자열의 JSON 배열을 전송하고 그에 대한 번역의 JSON 배열을 반환하도록 요청합니다.
 - 사용 가능한 경우 용어집 힌트를 포함합니다.
 
-`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석, 네트워크 또는 잘못된 스크립트 오류 발생 시 대체합니다(네이티브 스크립트 로캘의 경우 로마자/라틴 문자 대체 포함). CLI는 `localeModels`, 선택적 `uiModels`, `translationModels`에서 대상 로캘별로 해당 목록을 작성합니다([제공자 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 참조).
+`LlmClient.translateUIBatch`는 구문 분석, 네트워크 또는 잘못된 스크립트 오류(네이티브 스크립트 로케일에 대한 로마자/라틴어 대체 포함) 발생 시 대체하면서 순서대로 각 모델을 시도합니다. CLI는 대상 로케일별로 `localeModels`, 선택적 `uiModels`, `translationModels`에서 해당 목록을 빌드합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조).
 
 ---
 
@@ -147,10 +147,10 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 
 모든 추출기는 `BaseExtractor`를 확장하고 `extract(content, filepath): Segment[]`를 구현합니다.
 
-- `MarkdownExtractor` - 마크다운을 타입화된 세그먼트로 분할합니다: `frontmatter`, `heading`, `paragraph`, `code`, `admonition`. YAML frontmatter는 **번역 불가**로 분류됩니다(`slug`, `id` 및 기타 라우팅 키는 안정적으로 유지됨). 최상위 `export ...` 블록(예: React 컴포넌트 정의)은 기존 `import ...` 처리와 함께 번역 불가능한 `other` 세그먼트로 분류됩니다. 대문자 JSX 태그로 시작하는 여러 줄 블록(예: `<Tabs>` 블록)은 번역 가능한 단락으로 분류됩니다. 번역 불가능한 세그먼트(코드 블록, 원시 HTML)는 있는 그대로 보존됩니다.
-- `AstroTemplateExtractor` - `.astro` 마케팅 페이지를 위한 파싱 및 교체(`doc-translate.ts`의 `translateAstroFile`를 통한 `translate-docs`). 사용자 대상 HTML 텍스트 노드 및 번역 가능한 속성(`alt`, `title`, `aria-label`, `placeholder`)과 사용자 대상일 때 템플릿 `{expression}` 블록 내부의 문자열 리터럴을 추출합니다. frontmatter TypeScript, `<script>`, `<style>`, 보호된 속성/키 값 및 `t('…')` 내부의 리터럴을 건너뜁니다. 재조립 과정에서는 출력 경로가 더 깊을 때 상대 임포트를 조정합니다(예: `src/pages/de/index.astro`). [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)를 참조하세요.
+- `MarkdownExtractor` - 마크다운을 유형별 세그먼트(`frontmatter`, `heading`, `paragraph`, `code`, `admonition`)로 분할합니다. YAML 프런트매터는 **번역 불가능**으로 분류됩니다(`slug`, `id` 및 기타 라우팅 키는 안정적으로 유지됨). 최상위 수준 `export ...` 블록(예: React 컴포넌트 정의)은 기존 `import ...` 처리와 함께 번역 불가능한 `other` 세그먼트로 분류됩니다. 대문자 JSX 태그로 시작하는 여러 줄 블록(예: `<Tabs>` 블록)은 번역 가능한 단락으로 분류됩니다. 번역 불가능한 세그먼트(코드 블록, 원시 HTML)는 그대로 보존됩니다.
+- `AstroTemplateExtractor` - `.astro` 마케팅 페이지에 대한 구문 분석 및 바꾸기(`doc-translate.ts`에서 `translateAstroFile`를 통해 `translate-docs`). 사용자에게 표시되는 HTML 텍스트 노드와 번역 가능한 속성(`alt`, `title`, `aria-label`, `placeholder`)을 추출하고, 사용자에게 표시되는 경우 템플릿 `{expression}` 블록 내의 문자열 리터럴도 추출합니다. 프런트매터 TypeScript, `<script>`, `<style>`, 보호된 속성/키 값 및 `t('…')` 내의 리터럴은 건너뜁니다. 재조립 시 출력 경로가 더 깊어지면(예: `src/pages/de/index.astro`) 상대적 가져오기를 조정합니다. [Astro 웹사이트 페이지](/ko/guide/ui-strings/astro-website#pages-parse-and-replace)를 참조하세요.
 - `JsonExtractor` - Docusaurus JSON 레이블 파일에서 문자열 값을 추출합니다(MDX 본문이 아닌 Docusaurus UI 카탈로그).
-- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`translate-docs`이(가) 아닌 `config.svg` 아래의 파일에 대해 `translate-svg`에서 사용됨).
+- `SvgExtractor` - SVG에서 `<text>`, `<title>`, `<desc>` 콘텐츠를 추출합니다(`translate-docs`가 아닌 `translate-svg`이 `config.svg` 아래의 파일에 사용).
 - `html-i18n-marks.ts` - `extract`에서 `.html` / `.htm` 소스용으로, 그리고 `mark-html` 명령에서 사용하는 집중형 HTML 태그 스캐너입니다. `collectHtmlI18nStrings` / `collectHtmlI18nLocations`는 `data-i18n*` 마커 속성을 읽습니다(일반 마커 → 요소 `textContent` / `title` / `placeholder`; 값이 있는 마커 → 값). `markHtmlContent`은 일반 마커를 리프 텍스트 / 제목 / 플레이스홀더 요소에 삽입합니다(멱등성, `data-i18n-ignore` 존중, 코드와 유사하거나 혼합 콘텐츠인 요소는 건너뜁니다). 공유되는 `normalizeI18nText` 도우미는 빌드 시간 키를 브라우저 런타임과 동일하게 유지합니다.
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -161,7 +161,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 | 계층 | 메커니즘 | 출력 |
 | --- | --- | --- |
 | 템플릿 HTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` 아래의 로케일별 `.astro` |
-| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 평면형 `public/locales/{locale}.json` (영문 소스를 키로 사용) |
+| 프런트매터 / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 플랫 `public/locales/{locale}.json` (소스 언어 문자열을 키로 사용, `sourceLocale`는 모든 언어 가능) |
 
 `sync` 명령은 활성화된 단계를 순서대로 실행합니다: **추출** 다음 **UI 번역** (`features.translateUIStrings`인 경우) → 선택적 **SVG 번역** → **문서 번역** → 선택적 **JSON 번역** (`--no-ui`, `--no-svg`, `--no-docs` 또는 `--no-json`로 건너뛰지 않는 한). 초기 템플릿 `ui-astro-website`는 UI 문자열만 스캐폴드합니다. 페이지 HTML을 위해 `docs[]` 및 `features.translateDocs`를 추가합니다.
 
@@ -181,19 +181,20 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 
 번역 전에 민감한 구문은 LLM 손상을 방지하기 위해 불투명한 토큰으로 교체되며, 이 순서로 적용됩니다 (복원은 반대 순서입니다):
 
-1. **제목-id 접미사** (ATX 제목 끝의 클래식 `{#id}` / MDX `{/* #id */}`) — 줄에서 완전히 분리되어 모델에 **전송되지 않습니다**. 복원 후 일치하는 제목의 끝에 다시 고정되어 Docusaurus가 여전히 유효한 id를 인식할 수 있습니다. 제목 중간의 주석은 텍스트에 그대로 남으며 이후의 MDX / `{#…}` 레이어에서 처리됩니다.
-2. **HTML 태그 및 주석** (`<strong>`, `<!-- ... -->` 등) - 알려진 허용 목록의 소문자 HTML 태그는 <code v-pre>{{HTM_N}}</code> 토큰으로 대체됩니다. 대문자 JSX 태그(`<Highlight>`, `<Tabs>`, `</Tab>`)는 MDX 레이어(5단계)에서 별도로 처리됩니다.
-3. **Admonition 마커** (`:::note`, `:::`) - 여는 줄의 디렉티브 접두사만 <code v-pre>{{ADM_OPEN_N}}</code>로 대체되며, 같은 줄의 제목은 모델이 번역하도록 남겨집니다. 원본 텍스트 그대로 복원됩니다.
-4. **문서 앵커** (HTML `<a id="…">`, 제목 중간에 남은 Docusaurus `{#…}`) - 그대로 보존됩니다.
-5. **MDX 전용 구문** (`src/processors/mdx-placeholders.ts`):
-   - **MDX 주석** (`{/* … */}`, 줄 끝 접미사가 아닌 제목 중간의 `{/* #my-id */}` 포함)는 <code v-pre>{{MDX_N}}</code>로 대체됩니다.
-   - **대문자 JSX 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - <code v-pre>{{MDX_N}}</code>로 보존되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 속성 이름이 `docs[].protectAttributes`에 나타나지 않는 한 태그 내에서 <code v-pre>{{JXA_N}}</code>로 재작성됩니다; `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내의 `label:`(`docs[].protectKeys`를 통해 건너뛸 수 있음) 및 `<TabItem value="…">`(`label` 속성이 없을 때, 소문자 슬러그 형태의 값을 건너뜀)도 추출됩니다. 세그먼트에 `||JXA_N: …||` 줄로 추가되며 `restoreMdx`에 의해 다시 병합됩니다.
-   - **MDX 중괄호 표현식** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - 깊이 인식 매칭, <code v-pre>{{MDX_N}}</code>로 대체됩니다.
-6. **마크다운 URL** (`](url)`, `src="…"`) - 번역 후 맵에서 복원됩니다.
-7. **인라인 코드 스팬** (`` `code` ``) 및 **굵게 처리된 인라인 코드** (`**`code`**`) - 보존됩니다.
-8. **마크다운 강조** (선택 사항, CJK/RTL 로케일에서 자동 활성화) - 강조 구분자가 마스킹됩니다.
+1. **펜스 코드 블록**(백틱 또는 물결표 3개 이상, 더 짧은 펜스를 감싸는 더 긴 펜스 포함) - 정보 문자열을 포함한 전체 펜스는 <code v-pre>{{CDF_N}}</code>로 대체되며 다른 구조 토큰과 순서대로 유지됩니다. 이는 `::: code-group` 또는 `::: tip`와 같은 컨테이너 내부의 샘플을 제자리에 유지합니다. 펜스 정보 문자열(VitePress 탭 레이블)은 원본 언어로 유지됩니다. 닫히지 않은 시작 태그는 텍스트로 남겨져 나중에 오는 컨테이너 닫는 태그가 삼켜지지 않도록 합니다.
+2. **헤딩 ID 접미사**(ATX 헤딩 끝에 있는 기존 `{#id}` / MDX `{/* #id */}`) — 줄에서 완전히 제거되며 모델로 **전송되지 않습니다**. 복원 후에는 일치하는 헤딩 끝에 다시 고정되어 Docusaurus가 유효한 ID를 계속 인식하도록 합니다. 헤딩 중간 주석은 텍스트에 남아 있으며 나중에 MDX / `{#…}` 레이어에서 처리됩니다. 마스킹된 펜스 내부의 헤딩은 제거되지 않습니다.
+3. **HTML 태그 및 주석** (`<strong>`, `<!-- ... -->` 등) - 알려진 허용 목록의 소문자 HTML 태그는 <code v-pre>{{HTM_N}}</code> 토큰으로 대체됩니다. 대문자 JSX 태그 (`<Highlight>`, `<Tabs>`, `</Tab>`)는 MDX 레이어(6단계)에서 별도로 처리됩니다.
+4. **어드모니션 마커** (`:::note`, `:::`) - 시작 줄의 지시어 접두사만 <code v-pre>{{ADM_OPEN_N}}</code>로 대체됩니다. 같은 줄의 제목은 모델이 번역하도록 남겨둡니다. 정확한 원본 텍스트로 복원됩니다.
+5. **문서 앵커** (HTML `<a id="…">`, 헤딩 중간에 남은 Docusaurus `{#…}`) - 원문 그대로 보존.
+6. **엠디엑스 전용 구성** (`src/processors/mdx-placeholders.ts`):
+   - **엠디엑스 주석** (`{/* … */}`, 행 끝 접미사가 아니었던 중간 헤딩의 `{/* #my-id */}` 포함) <code v-pre>{{MDX_N}}</code>로 대체됩니다.
+   - **대문자로 시작하는 제이에스엑스 태그** (`<Highlight>`, `<Tabs>`, `<TabItem>`, `<TOCInline />`, `</Highlight>`) - <code v-pre>{{MDX_N}}</code>로 보존되며, 번역 가능한 문자열 속성(`label`, `tooltip`, `aria-label`)은 속성 이름이 `docs[].protectAttributes`에 나타나지 않는 한 태그 내부에서 <code v-pre>{{JXA_N}}</code>로 다시 작성됩니다; `label:`은 `<Tabs values={[ { label: '…' } ]}>` 객체 리터럴 내부( `docs[].protectKeys`로 건너뛸 수 있음 )와 `<TabItem value="…">`( `label` 속성이 없을 때, 소문자 슬러그 유사 값은 건너뜀 )에서도 추출됩니다. 세그먼트에 `||JXA_N: …||` 행으로 추가되고 `restoreMdx`으로 다시 병합됩니다.
+   - **엠디엑스 중괄호 표현** (`{frontMatter.title}`, <code v-pre>style={{…}}</code>) - 깊이 인식 매칭으로 <code v-pre>{{MDX_N}}</code>로 대체됩니다.
+7. **마크다운 유알엘** (`](url)`, `src="…"`) - 번역 후 맵에서 복원됩니다.
+8. **인라인 코드 범위** (`` `code` ``) 및 **굵게 감싼 인라인 코드** (`**`코드`**`) - 보존됩니다.
+9. **마크다운 강조**(선택 사항, CJK/RTL 로케일에 대해 자동 활성화) - 강조 구분 기호가 마스킹됩니다.
 
-모델이 반환된 후, `translate-docs`는 맵을 복원하고 세그먼트의 유효성을 검사합니다: 동일한 이중 중괄호 토큰의 다중 집합이 존재해야 하며, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커)은 순서가 지정된 하위 시퀀스를 유지해야 합니다(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`)은 단어 순서에 따라 이동할 수 있음). 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 소스에 이미 존재했어야 합니다(따라서 새로 만든 토큰은 실패함). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다; 기계적 검사는 여전히 권위를 갖습니다.
+모델이 반환된 후 `translate-docs`은 맵을 복원하고 세그먼트의 유효성을 검사합니다. 동일한 이중 중괄호 토큰 멀티셋이 있어야 하고, 구조적 토큰(<code v-pre>{{HTM_N}}</code>, 경고 마커, <code v-pre>{{CDF_N}}</code>)은 순서가 지정된 하위 시퀀스를 유지해야 하며(콘텐츠 토큰(예: <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>)은 단어 순서에 따라 이동할 수 있음), 복원된 HTML 태그 종류는 보호되지 않은 소스와 일치해야 하며, 남은 이중 중괄호 식별자는 이미 소스에 존재해야 합니다(따라서 새로 만든 토큰은 실패합니다). 문서 프롬프트는 또한 모델에게 각 토큰을 한 번 복사하고, 구조적 토큰 순서를 유지하며, 새로운 이중 중괄호 래퍼를 만들지 않도록 요청합니다. 기계적 검사가 권한을 유지합니다.
 
 Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processors/expression-attribute-protection.ts`에 구현되어 있으며 `docs[].protectAttributes` 및 `docs[].protectKeys`에 의해 블록별로 구동됩니다([protectAttributes / protectKeys](/ko/reference/configuration#protectattributes-protectkeys) 참조).
 
@@ -262,7 +263,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 - **OpenRouter 추가 기능**(`openrouter`이 활성 상태인 경우에만): `provider` 요청 필드 및 `HTTP-Referer` / `X-Title` 헤더를 통한 처리량 라우팅. 토큰 사용량은 모든 공급자에 대해 보고됩니다. OpenRouter 및 Cheaper Inference는 청구된 USD 금액(`usage.cost`; Cheaper Inference는 `cheaper_inference.billing.billed_cost_usd`로 폴백)도 반환합니다. 공급자가 해당 금액을 생략하면 USD 비용은 `providers.<name>.modelPricing`, 그다음 공급자 전체 `pricing` 기본값, 그다음 models.dev 입력 및 출력 목록 가격에서 계산되어 `api_calls` 행에 저장됩니다. 공급자가 보고한 비용(`0` 포함)은 절대 대체되지 않습니다. 알 수 없는 비용은 설정되지 않은 상태로 유지됩니다. 호출 가격 책정은 `<cacheDir>/benchmark-scores.json`의 models.dev 슬라이스만 읽으며, languagebench나 Arena 파일은 다운로드하지 않습니다.
 - **디버그 트래픽 로그**: `debugTrafficFilePath`가 설정된 경우 요청 및 응답 JSON을 파일에 추가합니다(프로그래밍 방식). CLI `--debug-failed`는 실패한 UI, 문서, JSON 및 SVG 번역 확인 시도에 대한 시스템/사용자 프롬프트, 원시 어시스턴트 응답 및 유효성 검사 오류를 포함하는 `FAILED-TRANSLATION` 파일을 `cacheDir` 아래에 작성합니다. 공급자 API / 빈 본문 실패는 프롬프트 전용 파일을 덤프하는 대신 콘솔에 출력됩니다.
 
-`suggest-models` 및 대시보드 모델 탭은 LLM을 호출하지 않습니다. 이들은 languagebench ChrF, LMArena Arena 점수 및 models.dev 가격을 사용하여 활성 공급자의 채팅 카탈로그 순위를 매긴 다음, 선택적으로 `providers.<name>.translationModels`을 대체합니다. 집계 데이터는 `<cacheDir>/benchmark-scores.json`에 상주합니다. [suggest-models](/ko/reference/cli-commands/models#suggest-models)을 참조하십시오.
+`suggest-models` 및 대시보드 모델 탭은 LLM을 호출하지 않습니다. languagebench ChrF, LMArena Arena Score, models.dev 가격을 사용하여 활성 공급자의 채팅 카탈로그 순위를 매긴 다음 선택적으로 `providers.<name>.translationModels`을 대체합니다. 집계는 `<cacheDir>/benchmark-scores.json`에 있습니다. [AI 모델](/ko/guide/ai-models) 및 [suggest-models](/ko/reference/cli-commands/models#suggest-models)를 참조하세요.
 
 <a id="config-loading"></a>
 ### 설정 로드
@@ -280,7 +281,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 9. `augmentConfigWithUiLanguagesMaster` - 번들로 제공되는 마스터 카탈로그에서 매니페스트 표시 이름을 첨부합니다.
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 해당되는 경우 마스터 카탈로그에 대해 로케일 코드를 검증합니다.
 
-`init`은 `initConfigTemplates`에서 시작 구성을 작성합니다: `ui-markdown`(UI + 선택적 앱 마크다운), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `vitepressThemeCatalog`), `ui-nextra`(Nextra 문서 + `nextraDictionaryPath`), `ui-astro-website`(일반 Astro UI; `.astro` 페이지 번역을 위해 `docs[]` 추가), `ui-json-bundles`(JSON `json[]` 전용), `ui-python`, `ui-python-gettext`, `ui-python-django` 및 `ui-python-flask`. [Quick start — Initialise](/ko/guide/quick-start#step-1-initialise) 및 [Python applications](/ko/guide/ui-strings/python)을 참조하십시오.
+`init`는 `initConfigTemplates`에서 다음 시작 구성을 작성합니다: `ui-markdown`(UI 문자열 및 플랫 README 블록), `docs-markdown`(README 및 Markdown만 해당), `ui-docusaurus`, `ui-starlight`, `ui-vitepress`(VitePress 문서 + `vitepressThemeCatalog`), `ui-nextra`(Nextra 문서 + `nextraDictionaryPath`), `ui-astro-website`(일반 Astro UI, `.astro` 페이지 번역을 위해 `docs[]` 추가), `ui-json-bundles`(JSON `json[]`만 해당), `ui-python`, `ui-python-gettext`, `ui-python-django`, `ui-python-flask`. `--with-readme`는 `README.md`이(가) 아직 목록에 없는 템플릿에 동일한 README 블록을 추가하고 `translateDocs`을(를) 켭니다. [UI 문자열 — 초기화](/ko/guide/ui-strings/#step-1-initialise), [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme), [Python 애플리케이션](/ko/guide/ui-strings/python)을(를) 참조하세요.
 
 <a id="logger"></a>
 ### 로거
@@ -292,10 +293,10 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 
 도구는 사용자가 번역한 콘텐츠와 별개로 자체 UI — CLI 도움말, 고交通 로그/요약/오류 메시지 및 번역 대시보드를 지역화합니다.
 
-- **로케일 확인** (`resolveUiLocale` 내 `src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`) 순서로 UI 로케일을 선택합니다. 선택된 후보는 정규화되어 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 매칭되며, 일치하지 않으면 소스 로케일(`en-GB`)로 폴백합니다. CLI는 도움말 생성 전(argv 파싱 전 스캔) 한 번, 그리고 구성 로드 후 `uiLanguage`이(가) 적용되도록 다시 한 번 로케일을 확인합니다(플래그와 환경 변수가 여전히 우선합니다).
-- **런타임** (`src/i18n/index.ts`): <code v-pre>{{name}}</code> 보간을 사용하는 최소한의 `t(source, vars)`로, 영문 소스 문자열을 키로 사용하여 `src/i18n/locales/<code>.json`의 로케일별 플랫 번들(빌드 시 `dist/i18n/locales`에 복사됨)과 매칭됩니다. 키나 번들이 누락된 경우 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일하게 키를 기본값으로 사용하는 모델로, 해시 조회를 사용하지 않습니다.
-- **대시보드**: 서버는 확인된 UI 로케일에 대해 `{ locale, dir, bundle }`을(를) 반환하는 `GET /api/ui-i18n`을(를) 노출하며, 프론트엔드는 `<html lang>` / `dir`을(를) 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
-- **독푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`에 있는 대시보드의 `data-i18n*` 마커에서 가져옵니다.
+- **로캘 확인**(`src/core/ui-locale.ts`의 `resolveUiLocale`): `-L` / `--ui-lang` > `AI_I18N_LANG` > config `uiLanguage` > 호스트 OS 로캘(`Intl.DateTimeFormat().resolvedOptions().locale`) 순서로 UI 로캘을 선택합니다. 후보 로캘은 정규화된 후 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 대조되며, 일치하지 않으면 소스 로캘(`en-GB`)로 대체됩니다. CLI는 도움말이 빌드되기 전(argv 스캔 사전 구문 분석)에 한 번 확인하고, 구성 로드 후 `uiLanguage`가 적용되도록 다시 확인합니다(플래그 및 환경 변수가 여전히 우선합니다).
+- **런타임**(`src/i18n/index.ts`): <code v-pre>{{name}}</code> 보간을 사용하는 최소한의 `t(source, vars)`입니다. `src/i18n/locales/<code>.json`의 플랫 로캘별 번들에 대해 영어 소스 문자열을 키로 사용하며(빌드 시 `dist/i18n/locales`에 복사됨), 누락된 키나 번들은 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일한 기본값 키 모델이며 해시 조회가 없습니다.
+- **대시보드**: 서버는 확인된 UI 로캘에 대해 `{ locale, dir, bundle }`을(를) 반환하는 `GET /api/ui-i18n`을(를) 노출합니다. 프런트엔드는 `<html lang>` / `dir`을(를) 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
+- **도그푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`에 있는 대시보드의 `data-i18n*` 마커에서 가져옵니다.
 
 ---
 

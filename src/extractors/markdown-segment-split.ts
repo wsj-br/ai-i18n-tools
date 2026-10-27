@@ -1,4 +1,9 @@
 import type { Segment, SegmentSplittingConfig } from "../core/types.js";
+import {
+  isCodeFenceClose,
+  matchCodeFenceOpen,
+  type OpenCodeFence,
+} from "../processors/code-fence.js";
 
 /** Lines that form a GFM-style pipe table (header + separator + optional data rows). */
 function isPipeTableLines(lines: string[]): boolean {
@@ -65,10 +70,23 @@ export function listMarkerIndent(line: string): number | null {
  * Top-level markdown list items: siblings at the first item’s indent (and any outdent).
  * Nested markers with greater indent stay with their parent so `- **Error Responses**:`
  * plus `  - \`404\`` is one item, not a mid-list slice starting at the nested line.
+ * Markers inside a fenced code block stay with the item that opened the fence.
  */
 export function splitIntoTopLevelListItems(lines: string[]): string[][] {
   let baseline: number | null = null;
+  let open: OpenCodeFence | null = null;
   for (const line of lines) {
+    if (open) {
+      if (isCodeFenceClose(line, open)) {
+        open = null;
+      }
+      continue;
+    }
+    const fence = matchCodeFenceOpen(line);
+    if (fence) {
+      open = fence;
+      continue;
+    }
     const indent = listMarkerIndent(line);
     if (indent !== null) {
       baseline = indent;
@@ -78,7 +96,21 @@ export function splitIntoTopLevelListItems(lines: string[]): string[][] {
 
   const items: string[][] = [];
   let current: string[] = [];
+  open = null;
   for (const line of lines) {
+    if (open) {
+      current.push(line);
+      if (isCodeFenceClose(line, open)) {
+        open = null;
+      }
+      continue;
+    }
+    const fence = matchCodeFenceOpen(line);
+    if (fence) {
+      open = fence;
+      current.push(line);
+      continue;
+    }
     const indent = listMarkerIndent(line);
     const isTop = baseline !== null && indent !== null && indent <= baseline;
     if (isTop && current.length > 0) {
@@ -95,17 +127,34 @@ export function splitIntoTopLevelListItems(lines: string[]): string[][] {
 }
 
 export function isMarkdownListBlock(lines: string[]): boolean {
-  const nonEmpty = lines.filter((l) => l.trim());
-  if (nonEmpty.length < 2) {
+  const outsideFence: string[] = [];
+  let open: OpenCodeFence | null = null;
+  for (const line of lines) {
+    if (open) {
+      if (isCodeFenceClose(line, open)) {
+        open = null;
+      }
+      continue;
+    }
+    const fence = matchCodeFenceOpen(line);
+    if (fence) {
+      open = fence;
+      continue;
+    }
+    if (line.trim()) {
+      outsideFence.push(line);
+    }
+  }
+  if (outsideFence.length < 2) {
     return false;
   }
   let listLines = 0;
-  for (const l of nonEmpty) {
+  for (const l of outsideFence) {
     if (/^\s{0,3}(?:[-*+]|\d+\.)\s/.test(l)) {
       listLines++;
     }
   }
-  return listLines >= 2 && listLines >= Math.ceil(nonEmpty.length * 0.5);
+  return listLines >= 2 && listLines >= Math.ceil(outsideFence.length * 0.5);
 }
 
 function splitListSegment(

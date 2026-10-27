@@ -38,6 +38,6 @@ Einige Modelle übersetzen die Bedeutung, schreiben das Ergebnis aber in lateini
 
 **Behebung**
 
-1. Vergewissern Sie sich, dass der Gebietsschema-Code dem gewünschten Skript entspricht (`hi` vs. `hi-Latn`, `zh-Hans` vs. `zh-Hant`, `sr` vs. `sr-Latn`).
-2. Führen Sie die Übersetzung erneut aus, damit Cache-Zeilen mit falschem Skript abgelehnt werden: `translate-ui --force` für UI-Strings oder `translate-docs --check-cache` / `sync --check-cache` (die Dateiebene wird nur für Gebietsschemata mit einem erwarteten Skript umgangen; ein gültiger Segment-Cache wird weiterhin verwendet). `--force-update` verarbeitet jedes Gebietsschema neu.
-3. Wenn ein Modell die Skriptprüfung immer wieder nicht besteht, fügen Sie einen `localeModels`-Eintrag für dieses Gebietsschema hinzu, damit zuerst ein stärkeres Modell versucht wird – siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
+1. Stellen Sie sicher, dass der Locale-Code mit der gewünschten Schrift übereinstimmt (`hi` vs. `hi-Latn`, `zh-Hans` vs. `zh-Hant`, `sr` vs. `sr-Latn`).
+2. Führen Sie die Übersetzung erneut aus, damit Cache-Zeilen mit der falschen Schrift abgelehnt werden: `translate-ui --force` für UI-Strings oder `translate-docs --check-cache` / `sync --check-cache` (das Überspringen auf Dateiebene wird nur für Locales mit einer erwarteten Schrift umgangen; der gültige Segment-Cache wird weiterhin wiederverwendet). `--force-update` verarbeitet jedes Locale erneut.
+3. Wenn ein Modell die Schriftprüfung wiederholt nicht besteht, fügen Sie einen `localeModels`-Eintrag für dieses Locale hinzu, damit zuerst ein stärkeres Modell ausprobiert wird – siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain).

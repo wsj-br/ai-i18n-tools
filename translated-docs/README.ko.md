@@ -9,11 +9,13 @@
 
 [![npm version](https://img.shields.io/npm/v/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![npm downloads](https://img.shields.io/npm/dm/ai-i18n-tools.svg)](https://www.npmjs.com/package/ai-i18n-tools) [![Node.js](https://img.shields.io/node/v/ai-i18n-tools.svg)](https://nodejs.org/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) [![CI](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml/badge.svg?event=release)](https://github.com/wsj-br/ai-i18n-tools/actions/workflows/ci.yml)
 
-**원하는 AI 모델로 앱과 문서를 번역하세요 — 벤더 종속성 없음, 재작성 불필요.**
+[![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Linux arm64](https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS arm64](https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS x64](https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases)
 
-JavaScript/TypeScript 앱, Python 앱 및 문서 사이트를 국제화하기 위한 CLI 및 툴킷입니다. `t()` 문자열을 추출하고, Markdown, MDX, HTML 페이지, JSON 번들 및 SVG 레이블을 번역하세요. 이 모든 작업은 단일 설정 파일에서 이루어지며, OpenAI, Anthropic, Gemini, OpenRouter, Ollama 및 모든 OpenAI 호환 API에 대한 기본 제공 프리셋을 지원합니다. 코드베이스를 변경하지 않고 프로젝트별 또는 로케일별로 공급자나 모델을 전환할 수 있습니다.
+**모든 LLM 제공업체에서 원하는 모델로 앱, 웹사이트, 문서를 번역하세요. 하나의 구성, 캐시된 재실행.**
 
-[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), 일반 Markdown 및 일반 HTML과 함께 작동합니다. Python 앱은 `t()` / `_()` 또는 GNU gettext(Streamlit, FastAPI, Flask, Django 및 데스크톱 툴킷)를 사용합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지하며, `migrate-intlayer`을 사용하여 [Intlayer](https://intlayer.org/) 프로젝트를 마이그레이션합니다.
+JavaScript/TypeScript 앱, Python 앱 및 문서 사이트에 언어를 추가하는 CLI 및 툴킷입니다. 시작 언어는 `sourceLocale`이며, 어떤 언어든 가능합니다. 텍스트를 찾아 번역하고 프로젝트가 로드하는 파일을 작성합니다. 내장된 사전 설정은 OpenAI, Anthropic, Gemini, OpenRouter, Ollama 및 모든 OpenAI 호환 API를 지원합니다. 프로젝트 또는 로케일별로 공급자나 모델을 전환할 수 있습니다.
+
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), [일반 Markdown](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) (저장소 README 및 기타 `.md` 파일), 그리고 일반 HTML과 함께 작동합니다. Python 앱은 `t()` / `_()` 또는 GNU gettext(Streamlit, FastAPI, Flask, Django 및 데스크톱 툴킷)를 사용합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지합니다. [Intlayer](https://intlayer.org/)와 두 가지 방식으로 작동합니다: Intlayer를 유지하고 `translate-intlayer`로 사전을 채우거나, `migrate-intlayer`를 사용하여 소스 문자열 `t()` 호출로 전환할 수 있습니다. Intlayer는 유형화된 콘텐츠 사전 및 번역 관리 시스템에 계속 적합합니다.
 
 <a id="features"></a>
 ## 기능
@@ -29,17 +31,21 @@ JavaScript/TypeScript 앱, Python 앱 및 문서 사이트를 국제화하기 �
 | **Python** | 각 GitHub 릴리스의 독립 실행형 실행 파일 — Node.js 설치 없이 CLI 실행 가능 |
 | **순위가 지정된 모델** | `suggest-models`은 활성 공급자의 채팅 모델 순위를 지정하며 `translationModels`을 작성할 수 있음 |
 
-<a id="which-pipeline"></a>
-## 어떤 파이프라인을 사용하나요?
+<a id="where-do-i-start"></a>
+## 어디서부터 시작해야 하나요?
 
-| 콘텐츠 | 명령어 |
+| 가지고 있는 것 | 시작 지점 |
 | --- | --- |
-| 소스에서 `t()` 또는 `_()`(JavaScript, TypeScript 또는 Python), gettext 또는 `data-i18n*` 마커가 포함된 단일 HTML 파일 사용 | **UI 문자열** — `extract` / `translate-ui` |
-| 지역화된 페이지, 문서 사이트 또는 로캘당 하나의 HTML 파일 | **문서** — `translate-docs` |
-| 독립형 중첩 JSON 로케일 파일 | **JSON** — `translate-json` |
-| SVG로 레이블이 지정된 다이어그램 또는 일러스트레이션 | **SVG** — `translate-svg` |
+| 소스에 일반 텍스트가 있는 JS/TS 앱(React, Next.js, Node, CLI) | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
+| Python 앱(Streamlit, FastAPI, Flask, Django, gettext) | [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| 웹사이트 또는 문서 사이트(VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, 일반 HTML) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
+| 저장소 README 및 기타 Markdown 파일(앱 유무와 관계없이) | [README 및 Markdown 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
+| 이미 `t()` 또는 `_()`를 호출하는 코드 | [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) |
+| 독립형 중첩 JSON 로케일 파일 | [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) |
+| 텍스트 레이블이 있는 SVG 다이어그램 | [SVG 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/) |
+| Intlayer 사전(Intlayer 유지 또는 소스 문자열 호출로 전환) | [Intlayer 제자리 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translating-intlayer) · [Intlayer에서 소스 문자열 호출로 마이그레이션](https://wsj-br.github.io/ai-i18n-tools/ko/guide/migrating-from-intlayer) |
 
-전체 비교는 [ai-i18n-tools란 무엇입니까?](https://wsj-br.github.io/ai-i18n-tools/ko/guide/what-is-ai-i18n-tools)를 참조하세요.
+파이프라인이 어떻게 연결되는지 알아보려면 [ai-i18n-tools란 무엇인가요?](https://wsj-br.github.io/ai-i18n-tools/ko/guide/what-is-ai-i18n-tools)를 참조하세요.
 
 <a id="install"></a>
 ## 설치
@@ -47,8 +53,8 @@ JavaScript/TypeScript 앱, Python 앱 및 문서 사이트를 국제화하기 �
 ESM 전용입니다. Node.js `>=22.16.0`이 필요합니다.
 
 ```bash
-pnpm add ai-i18n-tools
-# or: npm install ai-i18n-tools
+pnpm add -D ai-i18n-tools
+# or: npm install --save-dev ai-i18n-tools
 ```
 
 `init`에 전달하는 제공자에 대한 API 키를 설정합니다 (Ollama는 필요 없습니다):
@@ -63,35 +69,56 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="python-no-nodejs"></a>
 ### Python, Node.js 불필요
 
-[GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases)에서 일치하는 에셋을 다운로드하십시오: `ai-i18n-tools-linux-x64`, `ai-i18n-tools-linux-arm64`, `ai-i18n-tools-macos-arm64`, `ai-i18n-tools-macos-x64` 또는 `ai-i18n-tools-win-x64.exe`. `SHA256SUMS.txt`를 확인하고, Unix에서 `chmod +x`을 실행한 다음, 파일을 `PATH`에 배치하십시오. 바이너리는 공증되거나 Authenticode 서명이 되어 있지 않습니다. 4개의 Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. 이 예제들은 npm tarball이나 실행 파일 내부에는 포함되어 있지 않습니다. 전체 단계: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation#standalone-executables).
+Linux 및 macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
+```
+
+설치 프로그램은 이 시스템에 맞는 실행 파일을 선택하고, `SHA256SUMS.txt`를 확인하며, `ai-i18n-tools`로 명령을 설치하고, `PATH`에 추가합니다. 바이너리는 공증되거나 Authenticode 서명되지 않았습니다. 수동 다운로드 단계: [독립형 실행 파일](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation#standalone-executables).
+
+네 가지 Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. npm tarball 또는 실행 파일 내에는 없습니다.
 
 <a id="quick-start"></a>
 ## 빠른 시작
 
-```bash
-ai-i18n-tools init -P openrouter   # scaffold config (UI strings template)
-ai-i18n-tools suggest-models         # optional ranked shortlist
-ai-i18n-tools suggest-models --apply # write that list to translationModels
-ai-i18n-tools sync                   # extract + translate per features
-```
+가지고 있는 것에 대한 구성을 스캐폴드한 다음, 경로에 맞는 가이드를 따르세요:
 
-`init`의 목록은 시작점입니다. `suggest-models`은 활성 공급자의 채팅 모델 순위를 지정합니다. `--apply`는 `translationModels`을 대체합니다. 동일한 순위가 [모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translation-dashboard/models) 탭에 표시됩니다. 명령어 참조: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/models#suggest-models).
+| 가지고 있는 것 | 스캐폴드 | 다음을 따르세요 |
+| --- | --- | --- |
+| JS/TS 앱 | `ai-i18n-tools init -P openrouter` | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
+| Python 앱 | `ai-i18n-tools init -t ui-python -P openrouter` | [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| 웹사이트 또는 문서 사이트 | `ai-i18n-tools init -t ui-vitepress -P openrouter` (프레임워크에 맞게 템플릿을 교체하세요) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
+| 앱 유무와 관계없이 README | `ai-i18n-tools init -P openrouter` (JS/TS 앱 + README) 또는 `init -t docs-markdown` | [README 및 마크다운 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
 
-기타 스캐폴드: `-t ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, `ui-plain-html`, `docs-plain-html`, `ui-json-bundles`, `ui-python`, `ui-python-gettext`, `ui-python-django` 또는 `ui-python-flask`.
+프로젝트가 준비되면 `ai-i18n-tools sync`을(를) 실행한 다음 `ai-i18n-tools status`을(를) 실행하여 무엇이 번역되었는지 확인하세요.
 
-개별 번역 명령어를 연결하는 것보다 `sync`을 사용하는 것을 권장합니다. 전체 가이드: [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start). Python: [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python).
+JS/TS 앱은 먼저 텍스트를 `t()`으로 래핑해야 합니다. 일반 텍스트에서 실행하면 `sync`은 오류 없이 완료되지만 유용한 내용을 작성하지 않습니다. 또한 사이트 프레임워크는 `sync` 전에 자체 i18n 라우팅이 활성화되어 있어야 합니다.
+
+웹사이트용 템플릿: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, 그리고 `ui-plain-html` 또는 `docs-plain-html`. README 및 마크다운 전용: `docs-markdown`. README 블록을 포함하려면 다른 템플릿에 `--with-readme`를 추가하세요. 기타 Python 템플릿: `ui-python-gettext`, `ui-python-flask`, `ui-python-django`. 중첩된 i18next JSON: `ui-json-bundles`. 전체 목록: [CLI 설정 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/setup).
+
+`suggest-models`은(는) 게시된 벤치마크를 기준으로 활성 공급자의 채팅 모델 순위를 매기며, `suggest-models --apply`은(는) `translationModels`을(를) 대체합니다. 동일한 순위가 [모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translation-dashboard/models) 탭에 있습니다. 가이드: [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models). 명령어 참조: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/models#suggest-models).
+
+개별 번역 명령을 연결하는 것보다 `sync`을(를) 선호하세요. 전체 연습: [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start). 한 프로젝트에 여러 종류의 콘텐츠: [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines).
 
 <a id="documentation"></a>
 ## 문서
 
 - [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/) — 가이드, 통합 및 참조
-- [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [공급자 및 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models)
+- [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [LLM 공급자](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models) · [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models)
 - [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/python) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
-- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro 및 [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
-- [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python)
-- [CLI 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 헬퍼](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
-- [예제](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모 (`npx degit …`)
-- [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 저장소 내 어시스턴트를 위한 통합 가이드
+- [Intlayer](https://intlayer.org/) — [사전을 바로 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translating-intlayer) · [소스 문자열 호출로 이동](https://wsj-br.github.io/ai-i18n-tools/ko/guide/migrating-from-intlayer)
+- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, 및 [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
+- [프로젝트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-your-project) — [JS/TS 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) · [Python 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) · [웹사이트 또는 문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) · [README 및 마크다운 문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) · [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines)
+- [CLI 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 도우미](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
+- [예시](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모 (`npx degit …`)
+- [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 저장소의 어시스턴트 통합 가이드
 
 <a id="contributing"></a>
 ## 기여하기

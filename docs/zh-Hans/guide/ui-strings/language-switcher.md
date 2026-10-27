@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+上述处理程序会在应用显示后切换语言。请同时在首次绘制前恢复已保存的区域设置：[启动区域设置](/zh-Hans/guide/ui-strings/i18next-runtime#startup-locale)。
+
 `getUILanguageLabel(lang, t)` — 当翻译时显示 `t(englishName)`，或者当两者不同时显示 `englishName / t(englishName)`。适用于设置屏幕。
 
 `getUILanguageLabelNative(lang)` — 显示 `englishName / label`（每行不调用 `t()`）。适用于您希望显示原生名称的标题菜单。

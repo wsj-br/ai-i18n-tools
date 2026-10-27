@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # 文档
 
-主要用于通过 `docs[]` 配置块管理的**Markdown、MDX、`.astro` 和纯 HTML**。每个配置块的 `contentPaths` 字段列出了需要翻译的文件或文件夹。纯 HTML 页面（每个语言环境一个文件）在 [HTML 页面](/zh-Hans/guide/documents/html-pages) 中有详细说明。
+`translate-docs` 的参考，这是用于处理在 `docs[]` 配置块中列出的 Markdown、MDX、`.astro` 和纯 HTML 页面的流水线。每个块的 `contentPaths` 字段列出了要翻译的文件或文件夹。这些文件以 `sourceLocale` 编写，可以是任何语言。示例中的英语只是一个例子。首次向网站添加语言？请从[向网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website)开始。对于仓库 README 和其他通常与应用放在一起的 Markdown 文件，请参阅[向 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。[HTML 页面](/zh-Hans/guide/documents/html-pages)中描述了纯 HTML 页面（每个区域设置一个文件）。
 
-在 [Docusaurus](/zh-Hans/guide/integrations/docusaurus) 站点上，还需将 `docusaurusCatalogDir` 设置为你的 `write-translations` 目录文件夹（例如 `docs-site/i18n/en`）。这样 `translate-docs` 也会包含 shell JSON——导航栏、页脚和主题字符串。
-
-在 [VitePress](/zh-Hans/guide/integrations/vitepress) 站点上，页面正文使用相同的 `docs[]` 流水线。导航、侧边栏和页脚标签位于 `docsOutput.vitepressThemeCatalog` 中——`translate-docs` 会引导加载英文目录并在翻译页面的同时对其进行翻译，无需单独的流水线。
-
-在 [Nextra](/zh-Hans/guide/integrations/nextra) 站点中，页面正文使用与 `docsOutput.style: "nextra"` 相同的 `docs[]` 管道。`_meta.ts` 侧边栏标签由 `translate-docs` 自动收集并翻译；主题字典字符串通过同一管道中的 `docs[].nextraDictionaryPath` 进行翻译。
-
-在 [Fumadocs](/zh-Hans/guide/integrations/fumadocs) 站点中，页面正文使用 `docsOutput.style: "fumadocs"` 以及 `fumadocsParser` `"dot"`（默认）或 `"dir"`。`meta.json` 侧边栏标签会自动收集；UI 覆盖通过 `docsOutput.fumadocsUiCatalog` 翻译。
-
-在 [Astro Starlight](/zh-Hans/guide/integrations/astro#astro-starlight) 站点上，页面正文使用 `docsOutput.style: "astro-starlight"`，并将 `docsRoot` 设置为你的 Starlight 内容根目录（通常是 `src/content/docs/`）。`translate-docs` 会在英文目录树旁边的 `src/content/docs/<locale>/` 下写入本地化的 markdown/MDX 文件。Starlight 内置了许多语言环境的 UI 字符串——无需单独的主题目录流水线；可选的 UI 覆盖可以在 `docs[]` 块上使用 `jsonPathTemplate` 来处理 `src/content/i18n/en.json`。
+框架外壳字符串（导航栏、侧边栏、主题）在同一次运行中翻译，而不是通过单独的流水线。下表中的框架指南说明了每种框架的实现方式：Docusaurus 使用 `docusaurusCatalogDir`，VitePress 使用 `docsOutput.vitepressThemeCatalog`，Nextra 使用 `docs[].nextraDictionaryPath`，Fumadocs 使用 `docsOutput.fumadocsUiCatalog`。Nextra `_meta.ts` 和 Fumadocs `meta.json` 的侧边栏标签是自动收集的。Astro Starlight 为许多区域设置提供了内置的 UI 字符串，可选的覆盖项可以在 `docs[]` 块上使用 `jsonPathTemplate`。
 
 对于嵌入在 Markdown 中的 PNG 和其他栅格图像，请参阅[图像和屏幕截图](/zh-Hans/guide/images-and-screenshots/)。`translate-docs` 仅翻译替代文本；它不复制栅格文件。
 
@@ -26,7 +18,7 @@
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
 
-`translate-docs` 和 `sync` 的文档步骤会 **按目标语言环境** 解析模型：优先使用已配置的 `localeModels(locale)`，然后使用提供商的全局 `translationModels` 链。当某种特定语言需要与默认回退列表中不同的模型时使用此功能——例如，当全局链在处理葡萄牙语时表现不佳，可为 `pt-BR` 文档优先使用 Gemini。参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)和[配置 - `localeModels`](/zh-Hans/reference/configuration#provider-and-providers)。
+`translate-docs` 和 `sync` 的文档步骤会 **根据目标语言环境** 解析模型：如果已配置，则优先使用 `localeModels(locale)`，然后是提供商的全局 `translationModels` 链。当特定语言需要与默认备用列表不同的模型时，请使用此功能——例如，当全局链难以处理葡萄牙语时，在 `pt-BR` 文档中优先使用 Gemini。请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain) 和 [配置 - `localeModels`](/zh-Hans/reference/configuration#provider-and-providers)。
 
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
@@ -39,7 +31,7 @@
 | Fumadocs 站点 | `init -t ui-fumadocs` + `fumadocsUiCatalog` 用于 UI（侧边栏 `meta.json` 是自动的）— [Fumadocs](/zh-Hans/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` — [Astro Starlight](/zh-Hans/guide/integrations/astro#astro-starlight) |
 | 纯 HTML 页面 | `init -t docs-plain-html` - [HTML 页面](/zh-Hans/guide/documents/html-pages) |
-| 扁平文档（README、变更日志等） | `docsOutput.style = "flat"` — [输出布局](/zh-Hans/guide/documents/output-layouts)，可选[语言切换器](/zh-Hans/guide/documents/language-switcher) |
+| 扁平文档（README、更新日志等） | [向 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme) — `init -t docs-markdown` 或 `--with-readme`。布局：[输出布局](/zh-Hans/guide/documents/output-layouts)、[语言切换器](/zh-Hans/guide/documents/language-switcher) |
 | 翻译文件存放位置 | [输出布局](/zh-Hans/guide/documents/output-layouts) |
 | 跨页面 `#anchor` 链接 | [锚点链接](/zh-Hans/guide/documents/anchor-links) |
 | 链接和资产 URL 重写 (`regexAdjustments`) | [链接重写](/zh-Hans/guide/documents/link-rewriting) |
@@ -90,14 +82,14 @@ ai-i18n-tools init -t ui-fumadocs -P groq
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-该模板仅启用 UI 提取。对于页面 HTML 翻译，还要设置 `features.translateDocs` 并添加一个 `docs[]` 块（请参阅 [Astro 网站页面（解析和替换）](/zh-Hans/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 配置显示了两个管道。
+该模板仅启用 UI 提取。对于页面 HTML 翻译，还需设置 `features.translateDocs` 并添加一个 `docs[]` 块（请参阅[Astro 网站页面（解析和替换）](/zh-Hans/guide/ui-strings/astro-website#pages-parse-and-replace))。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 配置一起展示了这两种流水线。
 
 编辑生成的 `ai-i18n-tools.config.json`：
 
-- `provider` 和 `providers` — 预设的 `init -P <provider>` 脚手架；在 `translate-docs` 或 `sync` 之前设置其 API 密钥（Ollama 不需要密钥）。请参阅 [提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key) 和 [LLM 提供商和模型](/zh-Hans/guide/providers-and-models)。
+- `provider` 和 `providers` — `init -P <provider>` 会搭建该预设；请在 `translate-docs` 或 `sync` 之前设置其 API 密钥（Ollama 不需要密钥）。请参阅[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)、[LLM 提供商](/zh-Hans/guide/providers-and-models)和[AI 模型](/zh-Hans/guide/ai-models)。
 - `sourceLocale` - 源语言（必须与 `docusaurus.config.js` 中的 `defaultLocale` 匹配）。
 - `targetLocales` - BCP-47 区域设置代码数组（例如 `["de", "fr", "es"]`）。
-- `cacheDir` - 所有管道的共享 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
+- `cacheDir` - 适用于所有流水线的共享 SQLite 缓存目录（以及 `--write-logs` 的默认日志目录）。
 - `docs` - 文档块数组。每个块包含可选的 `description`、`contentPaths`（字符串或数组；文件、目录或 glob）、`outputDir`、可选的 `docusaurusCatalogDir`、`docsOutput`、可选的 `segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter` 等。
 - `docs[].description` - 为维护者提供的可选简短说明。设置后，它会显示在 `translate-docs` 标题和 `status` 章节标题中。
 - `docs[].contentPaths` - markdown/MDX/`.astro` 源文件（以及用于 Docusaurus shell JSON 的可选 `docusaurusCatalogDir`）。
@@ -136,7 +128,7 @@ ai-i18n-tools status
 
 `translate-docs` 会检查每个已翻译的段落是否保留了 markdown 结构（包括从文档解析出的强调标记），以及内部占位符标记是否能干净地还原。在一段话中堆叠大量 `bold` 片段并围绕 `` `inline code` ``、在加粗中嵌套反引号（例如模板字面量 `` `fetch(\`/locales/${code}.json\`)` ``），或在长句中交织加粗与代码的写法都很脆弱：某些语言区域需要不同的语序，这会改变翻译后 `**` 与 `` ` `` 的对齐方式，并触发诸如 `AST mismatch` 之类的 CLI 错误。
 
-在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 `**` 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
+在恢复后，`translate-docs` 也会拒绝重用或丢弃了 HTML 标签占位符的片段（因此恢复的标签不再与源映射匹配），或者模型生成了源中不存在的多余双花括号标记（例如编造的词汇表样式标记）的片段。恢复前的检查要求 <code v-pre>{{…}}</code> 标记的多重集相同，且结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）的有序子序列相同；当每个 id / 类型的计数仍然匹配时，诸如 <code v-pre>{{ILC_N}}</code>、<code v-pre>{{URL_N}}</code> 等内容标记以及像 <code v-pre>**</code> 这样的强调标记可以随自然语序移动。这些失败情况使用与多余的官方内部标记相同的模型回退路径。
 
 **如果您遇到此类验证失败，建议优先简化源语言文本** - 拆分段落、将示例移入围栏代码块，或者用更少的嵌套粗体/代码对来描述相同的概念 - 而不是期望每个模型和语言环境都能完美重现密集的内联标记。
 

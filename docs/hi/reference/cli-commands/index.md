@@ -34,6 +34,7 @@
 | [`extract`](ui-strings#extract) | स्रोत शाब्दिक और एचटीएमएल मार्कर से `strings.json` अपडेट करें। |
 | [`mark-html`](ui-strings#mark-html) | एचटीएमएल फ़ाइलों में `data-i18n*` मार्कर डालें। |
 | [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayer `.content.ts` शब्दकोश आयात करें और सरल `useIntlayer` / `getIntlayer` साइटों को `t()` में पुनर्लेखित करें। |
+| [`translate-intlayer`](ui-strings#translate-intlayer) | इंटलेयर `.content.ts` डिक्शनरी में गुम/पुरानी लोकैल लीव्स का यथास्थान अनुवाद करें। |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | कॉन्फ़िग लोकेल से `ui-languages.json` लिखें। |
 | [`translate-ui`](ui-strings#translate-ui) | यूआई स्ट्रिंग्स का अनुवाद करें (`strings.json` → लोकेल जेएसओएन)। |
 | [`sync-ui`](ui-strings#sync-ui) | यूआई स्ट्रिंग्स निकालें, फिर अनुवाद करें। |
@@ -89,7 +90,7 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
@@ -100,6 +101,7 @@ ai-i18n-tools list-languages [search]
 ai-i18n-tools extract
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …

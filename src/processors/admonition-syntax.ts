@@ -1,3 +1,5 @@
+import { isCodeFenceClose, matchCodeFenceOpen, type OpenCodeFence } from "./code-fence.js";
+
 /**
  * Shared admonition fence syntax, used by the markdown extractor (segmentation),
  * the placeholder protector (`admonition-placeholders.ts`), and the malformed-admonition
@@ -94,6 +96,68 @@ export const MKDOCS_ADMONITION_MISSING_TYPE_RE = /^\s*(?:!!!|\?{3}\+?)[ \t]*$/;
 
 /** Body lines must be indented at least this many columns past the marker. */
 export const MKDOCS_ADMONITION_BODY_INDENT = 4;
+
+/**
+ * Title text on a container opener, `""` for a bare opener or closer, or `null` when `line`
+ * is ordinary prose. Custom containers (`::: code-group`) count as bare when they have no title.
+ */
+function containerBoundaryTitle(line: string): string | null {
+  if (ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
+    return "";
+  }
+  const bracketed = line.match(ADMONITION_BRACKETED_TITLE_RE);
+  if (bracketed) {
+    return bracketed[3] ?? "";
+  }
+  const fencedDiv = line.match(ADMONITION_FENCED_DIV_RE);
+  if (fencedDiv) {
+    return fencedDiv[4] ?? "";
+  }
+  const directive = line.match(ADMONITION_DIRECTIVE_WITH_TAIL_RE);
+  if (directive) {
+    return directive[4] ?? "";
+  }
+  const mkdocs = line.match(MKDOCS_ADMONITION_OPENER_RE);
+  if (mkdocs) {
+    return mkdocs[5] ?? "";
+  }
+  const custom = /^:{3,}[ \t]*\S+(?:[ \t]+(.*))?$/.exec(line);
+  if (custom) {
+    return custom[1] ?? "";
+  }
+  return null;
+}
+
+/**
+ * True when a container has a title or body prose the model should translate.
+ * Fenced code, including VitePress tab labels on the info string, is not prose.
+ * A container whose body is only fences (such as `::: code-group`) is copied through unchanged.
+ */
+export function containerHasTranslatableProse(content: string): boolean {
+  const lines = content.split("\n");
+  let fence: OpenCodeFence | null = null;
+  for (const line of lines) {
+    if (fence) {
+      if (isCodeFenceClose(line, fence)) {
+        fence = null;
+      }
+      continue;
+    }
+    const opened = matchCodeFenceOpen(line);
+    if (opened) {
+      fence = opened;
+      continue;
+    }
+    if (line.trim() === "") {
+      continue;
+    }
+    const title = containerBoundaryTitle(line);
+    if (title === null || title.trim().length > 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function leadingWhitespaceWidth(line: string): number {
   const match = /^[ \t]*/.exec(line);

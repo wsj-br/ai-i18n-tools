@@ -1,9 +1,9 @@
 <a id="llm-providers-and-models"></a>
-# LLM प्रदाता और मॉडल
+# एलएलएम प्रोवाइडर्स
 
 प्रत्येक अनुवाद पाइपलाइन — `translate-ui`, `translate-docs`, `translate-json`, और `translate-svg` — एक ही प्रदाता-अज्ञेयवादी क्लाइंट के माध्यम से LLM को टेक्स्ट भेजती है। इनमें से कोई भी कमांड चलने से पहले, `ai-i18n-tools.config.json` में **कम से कम एक प्रदाता** कॉन्फ़िगर करें और अपने वातावरण या `.env` (**Ollama** को छोड़कर अंतर्निहित प्रीसेट) में मिलान करने वाली **API कुंजी** सेट करें। `init` एक स्टार्टर `provider` / `providers` ब्लॉक लिखता है; आपको अभी भी सक्रिय प्रीसेट के लिए क्रेडेंशियल प्रदान करने होंगे।
 
-आप कॉन्फ़िग में **किस API एंडपॉइंट को कॉल करना है** और **किन मॉडलों को आज़माना है** को एक बार कॉन्फ़िगर करते हैं; सभी अनुवाद कमांड उस सेटअप और उसी SQLite कैश को साझा करते हैं।
+आप कॉन्फ़िग में एक बार **किस API एंडपॉइंट को कॉल करना है** यह कॉन्फ़िगर करते हैं; सभी ट्रांसलेशन कमांड उस सेटअप और उसी SQLite कैश को शेयर करते हैं। वह प्रोवाइडर कौन से मॉडल आज़माता है यह एक अलग स्टेप है: [एआई मॉडल्स](/hi/guide/ai-models)।
 
 CLI शीर्ष-स्तरीय `provider` कुंजी (या `providers` में एकमात्र प्रविष्टि जब केवल एक कॉन्फ़िगर किया गया हो) से सक्रिय प्रदाता को हल करता है। प्रत्येक प्रदाता ब्लॉक एक क्रमबद्ध `translationModels` फ़ॉलबैक श्रृंखला को सूचीबद्ध करता है; अंतर्निहित प्रीसेट स्वचालित रूप से `baseUrl` और API-कुंजी पर्यावरण चर को इनहेरिट करते हैं (आवश्यकता पड़ने पर उन्हें प्रति प्रदाता ओवरराइड करें)।
 
@@ -54,101 +54,10 @@ CLI शीर्ष-स्तरीय `provider` कुंजी (या `provi
 फ़्लैग को बंद रहने दें जब Cheaper Inference खाते को शून्य डेटा प्रतिधारण की आवश्यकता नहीं है। यदि खाते के लिए [डेटा सुरक्षा](https://platform.cheaperinference.com/dashboard/data-protection) पहले से चालू है, तो Cheaper Inference फिर भी शून्य-डेटा-प्रतिधारण मार्ग के बिना किसी मॉडल को अस्वीकार कर देता है। त्रुटि उस मॉडल का नाम बताती है। खाता नीति बनाए रखने के लिए, `zeroDataRetention` को `true` पर सेट करें और शून्य-डेटा-प्रतिधारण कैटलॉग से किसी मॉडल पर स्विच करें। अस्वीकृत मॉडल को रखने के लिए, उस पृष्ठ पर शून्य डेटा प्रतिधारण बंद कर दें। फ़ॉलबैक चेन फिर अगले कॉन्फ़िगर किए गए मॉडल को आज़माती है।
 
 <a id="model-fallback-chain"></a>
-### मॉडल फ़ॉलबैक श्रृंखला
-
-`translationModels` एक **क्रमबद्ध सूची** है, न कि एक ही विकल्प। CLI पहले मॉडल को आज़माता है; अनुरोध पर, पार्स करने पर, या गलत-स्क्रिप्ट विफलता पर यह अगली प्रविष्टि पर चला जाता है। कई मॉडल कॉन्फ़िगर करें ताकि एक क्षणिक आउटेज या एक मॉडल जो किसी स्थान के साथ संघर्ष करता है (उदाहरण के लिए देवनागरी के बजाय रोमनकृत हिंदी) पूरे रन को अवरुद्ध न करे। मूल-स्क्रिप्ट स्थानों के लिए रोमनकृत आउटपुट अस्वीकृत है; एक स्थान जिसे रोमनकृत रहना चाहिए उसे एक स्पष्ट `-Latn` सबटैग (उदाहरण के लिए `hi-Latn`) के साथ कॉन्फ़िगर किया जाना चाहिए।
-
-**रिज़ॉल्यूशन टियर** (डुप्लिकेट हटाए गए, क्रम संरक्षित):
-
-| पाइपलाइन | क्रम |
-| --- | --- |
-| UI (`translate-ui`, बहुवचन, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
-| दस्तावेज़, JSON, SVG | `localeModels(locale)` → `translationModels` |
-
-वैकल्पिक `providers.<active>.uiModels` एक UI-केवल सूची है जिसे किसी भी मिलान करने वाले प्रति-स्थान ओवरराइड के बाद और वैश्विक `translationModels` श्रृंखला से पहले आज़माया जाता है। वैकल्पिक `providers.<active>.localeModels` एक BCP-47 स्थान को उन मॉडलों से मैप करता है जिन्हें प्रत्येक पाइपलाइन में उस स्थान के लिए **पहले** आज़माया जाता है (`pt-br` `pt-BR` से मेल खाता है)। जब कोई `localeModels` प्रविष्टि मेल नहीं खाती है, तो केवल पाइपलाइन-विशिष्ट टियर लागू होते हैं।
-
-विभिन्न प्रदाता और मॉडल भाषाओं में लागत, गति और गुणवत्ता में भिन्न होते हैं। `npx ai-i18n-tools init -P <provider>` से मॉडल सूची को एक शुरुआती बिंदु मानें — इसे तब विस्तृत करें जब कोई स्थान लगातार खराब परिणाम देता हो, या उस स्थान के लिए एक `localeModels` प्रविष्टि जोड़ें। पूर्व-निर्धारित सूचियाँ और तर्क: [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers)।
-
-**UI स्ट्रिंग्स:** वैकल्पिक `uiModels` आपको `translate-ui`, बहुवचन जनरेशन, और `proofread-ui` को वैश्विक `translationModels` श्रृंखला से पहले प्रीमियम मॉडल के माध्यम से रूट करने देता है — उपयोगी क्योंकि UI कॉपी छोटी लेकिन उपयोगकर्ता-सामने होती है।
-
-**एशियाई लोकेल:** `ja`, `ko`, `zh-Hans`, और `zh-Hant` के लिए वैकल्पिक `localeModels` प्रविष्टियों को प्रत्येक पाइपलाइन में सबसे पहले आज़माया जाता है; `z-ai/glm-5.3` और `minimax/minimax-m2.7` जैसे मॉडल अक्सर सामान्य-उद्देश्य वाले फ़ॉलबैक की तुलना में CJK स्क्रिप्ट पर बेहतर प्रदर्शन करते हैं।
-
-उदाहरण कॉन्फ़िग (OpenRouter)। `translationModels` और `uiModels` वे सूचियाँ हैं जिनका उपयोग यह रिपॉजिटरी `ai-i18n-tools.config.json` में करती है। `localeModels` CJK लोकेल्स के लिए एक वैकल्पिक अनुशंसित ऐड-ऑन है; यह रिपॉजिटरी इसे सेट नहीं करती है।
-
-```json
-{
-  "provider": "openrouter",
-  "providers": {
-    "openrouter": {
-      "translationModels": [
-        "qwen/qwen3.7-max",
-        "~anthropic/claude-sonnet-latest",
-        "openai/gpt-5.4",
-        "google/gemini-3.5-flash",
-        "tencent/hy-mt2-30b-a3b",
-        "mistralai/mistral-large",
-        "openai/gpt-4o-mini",
-        "cohere/command-r-plus-08-2024",
-        "qwen/qwen-2.5-72b-instruct"  
-      ],
-      "uiModels": [
-        "~anthropic/claude-sonnet-latest",
-        "openai/gpt-5.4"
-      ],
-      "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
-      ]
-    }
-  }
-}
-```
-
 <a id="validate-and-compare-models"></a>
-### मॉडल को मान्य और तुलना करें
+### मॉडल्स
 
-`translationModels` बदलने से पहले, पुष्टि करें कि प्रत्येक आईडी सक्रिय प्रदाता पर अभी भी उपलब्ध है:
-
-```bash
-npx ai-i18n-tools check-models
-```
-
-`check-models` प्रोवाइडर के `GET /models` एंडपॉइंट को कॉल करता है, `translationModels`, `uiModels`, और `localeModels` से हर आईडी को मान्य करता है, उन आईडी की रिपोर्ट करता है जो गायब हैं या `expiration_date` से समाप्त हो चुकी हैं, और जब कोई भी कॉन्फ़िगर की गई आईडी अमान्य होती है तो गैर-शून्य पर बाहर निकलता है। जब प्रोवाइडर मूल्य निर्धारण लौटाता है (OpenRouter और Cheaper Inference ऐसा करते हैं), तो यह प्रति 1M टोकन USD भी दिखाता है। [`zeroDataRetention`](/hi/guide/providers-and-models#cheaperinference-zero-data-retention) चालू होने पर, `check-models` और `list-models` `GET /models?zdr=true` का उपयोग करते हैं।
-
-प्रदाता द्वारा विज्ञापित पूरी कैटलॉग ब्राउज़ करें:
-
-```bash
-npx ai-i18n-tools list-models
-```
-
-एक वास्तविक अनुवाद नमूने पर कॉन्फ़िगर किए गए मॉडल का बेंचमार्क करें — `translationModels`, `uiModels`, और `localeModels` से प्रत्येक अद्वितीय आईडी अलग से चलती है ताकि आप वॉल-क्लॉक समय, टोकन उपयोग और लागत की तुलना कर सकें:
-
-```bash
-npx ai-i18n-tools bench-models
-```
-
-एक रैंक की गई शॉर्टलिस्ट (डिफ़ॉल्ट रूप से गुणवत्ता, या `--price`) के लिए पूछें और वैकल्पिक रूप से शीर्ष ids को `translationModels` में लिखें। [Models tab](/hi/guide/translation-dashboard/models) वही रैंकिंग, फ़िल्टर और कॉन्फ़िगरेशन अपडेट दिखाता है।
-
-```bash
-npx ai-i18n-tools suggest-models
-npx ai-i18n-tools suggest-models --list
-npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 8 --json
-npx ai-i18n-tools suggest-models --apply
-npx ai-i18n-tools suggest-models --refresh
-```
-
-तालिका के कॉलम रैंक, मॉडल आईडी, इंडेक्स, मापा गया ChrF, मापा गया एरिना स्कोर, और इनपुट/आउटपुट USD प्रति 1M टोकन हैं। एक गुम माप `—` है। `--list` उन मॉडलों के लिए उन कॉलमों को प्रिंट करता है जो पहले से ही `translationModels` में हैं। `--max-output-price` उन मॉडलों को रखता है जिनकी आउटपुट USD प्रति 1M टोकन उस सीमा के बराबर या उससे कम है और उन मॉडलों को छोड़ देता है जिनकी कोई आउटपुट कीमत नहीं है। `--min-delta` एक मॉडल को तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतने अंक नीचे हो। `--top` (डिफ़ॉल्ट 8) उन फ़िल्टरों के बाद तालिका, `--json`, और `--apply` को सीमित करता है। `--apply` केवल `translationModels` को बदलता है। `--refresh` 7-दिवसीय बेंचमार्क कैश को फिर से डाउनलोड करता है। वैकल्पिक भार [`modelSuggestion`](/hi/reference/configuration#modelsuggestion) हैं। [suggest-models](/hi/reference/cli-commands/models#suggest-models) देखें।
-
-नमूना पाठ, लोकेल या मॉडल सूची को ओवरराइड करें:
-
-```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
-```
-
-कमांड विवरण: [CLI संदर्भ](/hi/reference/cli-commands/)।
+मॉडल्स चुनना, फ़ॉलबैक लिस्ट, और `suggest-models`, `check-models`, `list-models`, और `bench-models` [एआई मॉडल्स](/hi/guide/ai-models) पर हैं।
 
 <a id="multiple-providers"></a>
 ### एकाधिक प्रदाता
@@ -169,6 +78,7 @@ npx ai-i18n-tools bench-models -P deepseek
 <a id="further-reference"></a>
 ### आगे का संदर्भ
 
-- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट तालिका, कस्टम एंडपॉइंट, अनुरोध टाइमआउट, लागत दरें, Cheaper Inference शून्य डेटा प्रतिधारण, OpenRouter-विशिष्ट व्यवहार।
-- [आर्किटेक्चर — LLM क्लाइंट](/hi/reference/architecture) — मॉडल फ़ॉलबैक, बैचिंग और लागत रिपोर्टिंग आंतरिक रूप से कैसे काम करते हैं।
-- [पर्यावरण चर](/hi/reference/environment-variables) — API-की पर्यावरण चर और बेस-URL ओवरराइड।
+- [एआई मॉडल्स](/hi/guide/ai-models) — रैंक की गई शॉर्टलिस्ट, फ़ॉलबैक लिस्ट, और मॉडल कमांड्स।
+- [कॉन्फ़िगरेशन — `provider` और `providers`](/hi/reference/configuration#provider-and-providers) — प्रीसेट टेबल, कस्टम एंडपॉइंट्स, रिक्वेस्ट टाइमआउट, कॉस्ट रेट्स, चीपर इंफ़्रेंस ज़ीरो डेटा रिटेंशन, OpenRouter-स्पेसिफ़िक बिहेवियर।
+- [आर्किटेक्चर — एलएलएम क्लाइंट](/hi/reference/architecture) — मॉडल फ़ॉलबैक, बैचिंग, और कॉस्ट रिपोर्टिंग आंतरिक रूप से कैसे काम करते हैं।
+- [एनवायरनमेंट वेरिएबल्स](/hi/reference/environment-variables) — API-की env vars और बेस-URL ओवरराइड्स।

@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docs[].docsOutput.docsRoot`를 영어 소스 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정합니다. `style: "doc-system"`를 직접 설정하는 경우, `localeSubpath`를 사이트에서 `{locale}/`와 번역된 파일 사이에 사용하는 경로 세그먼트로 설정해야 합니다. 별칭 `"docusaurus"`, `"astro-starlight"`, `"vitepress"`은 기본 `localeSubpath` 값이 있는 사전 설정 `doc-system` 레이아웃입니다([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
+`docs[].docsOutput.docsRoot`을 `sourceLocale`에 작성된 파일의 루트(예: `"docs"` 또는 `"src/content/docs"`)로 설정합니다. `sourceLocale`는 모든 언어가 될 수 있습니다. `style: "doc-system"`를 직접 설정하는 경우, 사이트가 `{locale}/`과 번역된 파일 사이에서 사용하는 경로 세그먼트로 `localeSubpath`도 설정해야 합니다. 별칭 `"docusaurus"`, `"astro-starlight"`, `"vitepress"`은 기본 `localeSubpath` 값이 있는 사전 설정된 `doc-system` 레이아웃입니다([출력 레이아웃](/ko/guide/documents/output-layouts) 참조).
 
 | 사전 설정된 별칭 | 기본 `localeSubpath` | 예제 출력 |
 |--------------|-------------------------|----------------|
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 플랫 링크 리라이터는 `doc-system`에 대해 **작동하지 않습니다** (`"flat"`와는 다르게). `postProcessing.regexAdjustments`는 소스 마크다운에서 원래 URL을 봅니다 — 일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로 또는 사이트 루트 경로입니다.
 
-**로케일별 폴더** 레이아웃은 스크린샷이 공유 정적 URL 트리에 있을 때 적용됩니다. 처음부터 로케일 코딩된 폴더와 일반 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용합니다([구성 — 문서 시스템](#config---docsoutputstyle--doc-system) 참조).
+**로캘별 폴더** 레이아웃은 스크린샷이 공유 정적 URL 트리에 있을 때 적용됩니다. 처음부터 로캘 코드가 있는 폴더와 하나의 일반 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용하세요([구성 — 문서 시스템](/ko/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) 참조).
 
 **동일 위치 스크린샷**은 각 로케일의 번역된 문서가 마크다운 옆에 자산을 저장할 때 적용됩니다(URL 재작성 없음). 스크린샷 스크립트는 `{outputDir}`, `{locale}`, `{localeSubpath}`에서 파생된 경로에 PNG를 작성해야 합니다. 아래 Docusaurus 사전 설정은 참조 레이아웃입니다.
 
@@ -65,9 +65,9 @@ images/screenshots/en-GB/settings.png
 
 1. 스크린샷을 추가하기 전에 심볼릭 링크 `documentation/docs/assets → ../static/assets`을(를) 생성하세요. Docusaurus의 webpack은 기본적으로 심볼릭 링크를 따르며, 이를 통해 원본 문서와 번역 문서 모두에서 동일한 상대 경로를 사용할 수 있습니다.
 
-2. 모든 문서 자산(PNG 및 SVG 파일)을 `static/assets/`(하나의 디렉터리)에 저장하세요. 자산을 `static/img/`(SVG)과 `static/assets/`(PNG)로 나누지 마세요. 하나의 통합된 위치를 사용하면 영어 및 번역된 모든 문서 페이지에서 동일한 상대 경로 `../assets/name.ext`를 참조할 수 있습니다.
+2. 모든 문서 애셋(PNG 및 SVG)을 `static/assets/`(하나의 디렉터리)에 넣습니다. 애셋을 `static/img/`(SVG)과 `static/assets/`(PNG)로 나누지 마세요. 위치를 통합하면 소스 로캘과 번역된 모든 문서 페이지가 동일한 상대 경로 `../assets/name.ext`을 참조할 수 있습니다.
 
-소스 마크다운에서는 항상 안정적인 상대 경로 `../assets/name.ext`을(를) 사용하여 자산을 참조하세요. 절대 경로 `/img/` 또는 `/assets/` URL을 문서 자산에 사용하지 마세요. 이러한 URL은 영어 원본(`static/`에서 제공됨)과 번역된 로케일(번역된 문서와 함께 제공됨) 간에 달라지며, 이로 인해 `regexAdjustments` 규칙을 사용하여 연결해야 합니다.
+소스 마크다운에서 안정적인 상대 경로 `../assets/name.ext`으로 모든 애셋을 참조하세요. 문서 애셋에 절대 `/img/` 또는 `/assets/` URL을 사용하지 마세요. 이러한 URL은 소스 로캘 페이지(`static/`에서 제공)와 번역된 로캘(번역된 문서와 함께 위치) 간에 다르므로, 둘을 연결하기 위해 `regexAdjustments` 규칙이 필요하게 됩니다.
 
 나중에 i18n을 추가하면 스크린샷 스크립트가 `getScreenshotDir` 분할을 채택하고([동일 위치 스크린샷](/ko/guide/images-and-screenshots/colocated-screenshots) 참조) `translate-svg`은 `pathTemplate`를 사용합니다. 정규식 조정은 필요하지 않습니다.
 

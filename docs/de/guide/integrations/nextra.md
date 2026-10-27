@@ -20,7 +20,7 @@ Aktivieren Sie `features.translateDocs`, wenn Sie Seiteninhalte, `_meta.ts`-Seit
 <a id="page-layout"></a>
 ## Seitenlayout
 
-Nextra 4 mit i18n behält **englische MDX-Quelldateien in einem Gebietsschema-Ordner** (typischerweise `content/en/`). Übersetzte Kopien werden in gleichrangige Gebietsschema-Ordner geschrieben:
+Nextra 4 mit i18n speichert das **MDX der Quell-Locale in einem Locale-Ordner** (typischerweise `content/en/`, wenn Englisch die Quelle ist). `sourceLocale` kann jede Sprache sein. Übersetzte Kopien werden in gleichrangige Locale-Ordner geschrieben:
 
 ```text
 content/en/index.mdx              →  content/pt-BR/index.mdx
@@ -41,9 +41,21 @@ Konfigurieren Sie einen `docs[]`-Block:
 }
 ```
 
-Verweisen Sie `contentPaths` auf Ihre englischen `.mdx`-Dateien und -Verzeichnisse. Setzen Sie `docsRoot` auf den englischen Gebietsschema-Ordner innerhalb von `content/`.
+Zeigen Sie `contentPaths` auf die in `sourceLocale` geschriebenen `.mdx`-Dateien und -Verzeichnisse. Diese Sprache kann jede Sprache sein. Setzen Sie `docsRoot` auf den Quell-Locale-Ordner innerhalb von `content/` (zum Beispiel `content/en`, wenn Englisch die Quelle ist).
 
 Verbinden Sie die Nextra-[Internationalisierung](https://nextra.site/docs/guide/i18n): Setzen Sie `i18n.locales` und `defaultLocale` in `next.config` und halten Sie `targetLocales` in `ai-i18n-tools.config.json` mit diesen Gebietsschema-Codes und den `content/{locale}/`-Ordnernamen übereinstimmend.
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### i18n auf einer bestehenden Site aktivieren
+
+Eine rein englische Nextra 4-Site benötigt einen Locale-Ordner, einen Routenparameter und eine Next.js i18n-Konfiguration, bevor `translate-docs` etwas schreiben kann. Der [Wörterbuch-Prompt](#agent-prompt-dictionary) erledigt dies in einem Durchgang. Checkliste:
+
+- Verschieben Sie MDX nach `content/en/` (Englisch ist ein Locale-Ordner, nicht das Inhalts-Root).
+- `i18n.locales` und `defaultLocale` in `next.config`.
+- Eine `app/[lang]/`-Route, `getPageMap('/${lang}')` und `<Layout i18n={…}>`.
+- `app/_dictionaries/en.ts` plus `get-dictionary.ts`, übergeben an `<Layout>`, `<Navbar>` und `<Footer>`.
+- Optionales `proxy.ts`, das `nextra/locales` re-exportiert (siehe [Optionaler Locale-Proxy](#optional-locale-proxy)).
+- `targetLocales` ausgerichtet an diesen Locale-Codes, dann `sync`.
 
 <a id="theme-strings"></a>
 ## Theme-Strings
@@ -92,14 +104,99 @@ Erstellen Sie **keine** JSON-Sidecars (`i18n/meta.en.json`) oder dünne `_meta.t
 <a id="example-project"></a>
 ## Beispielprojekt
 
-[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) – Englische Quellen unter `content/en/`, festgeschriebene `pt-BR`- und `zh-Hans`-Seitenbäume, Inline-`_meta.ts`-Dateien und `app/_dictionaries/{locale}.ts`. Führen Sie `pnpm run dev` auf Port 3070 aus.
+[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) – Englische Quellen unter `content/en/`, committete `pt-BR`- und `zh-Hans`-Seitenbäume, Inline-`_meta.ts`-Dateien und `app/_dictionaries/{locale}.ts`. Eine Serverkomponente (`app/_components/feedback-links.tsx`) verwendet `t()` über einen Flat-Bundle-Lookup, sodass benutzerdefiniertes Chrome neben dem Wörterbuch platziert werden kann. Führen Sie `pnpm run dev` auf Port 3070 aus.
+
+<a id="agent-prompt-dictionary"></a>
+## Agent-Prompt: Wörterbuch und Routen
+
+Verwenden Sie dies, wenn die Site noch hartcodierte Layout-Strings und keinen `content/en/`-Baum hat. Es folgt dem Standardpfad (Wörterbuch + `_meta.ts` + `translate-docs`). Es führt kein `t()` ein.
+
+<details class="agent-prompt">
+<summary>Wörterbuch- und Routen-Prompt</summary>
+
+````markdown
+# Add Nextra 4 i18n with a theme dictionary
+
+## Context
+
+ai-i18n-tools translates Nextra page bodies, `_meta.ts` object literals, and the
+theme dictionary module (`nextraDictionaryPath`, usually
+`app/_dictionaries/en.ts`) with `translate-docs`. The English sentence in that
+dictionary is the source text. Do not translate strings yourself. Reference:
+https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs
+
+## Scope
+
+Edit `next.config`, `app/[lang]/layout.tsx`, `app/_dictionaries/en.ts`,
+`app/_dictionaries/get-dictionary.ts`, and move MDX under `content/en/`. Skip
+`docsRepositoryBase` (a URL). Keep native language names in a `LOCALE_LABELS`
+map untranslated (`English`, `Português (Brasil)`). Do not move `_meta.ts`
+sidebar labels into the dictionary or into `t()`.
+
+## Call shape
+
+- `next.config`: `i18n.locales` and `defaultLocale`.
+- English MDX and `_meta.ts` live under `content/en/`. `getPageMap('/${lang}')`
+  loads the matching tree.
+- `app/_dictionaries/en.ts` exports the English chrome (`siteTitle`, `footer`,
+  `editLink`, search placeholder, table-of-contents title, last-updated label).
+  `get-dictionary.ts` dynamically imports `./${locale}`.
+- Pass those fields into `<Layout>`, `<Navbar>`, and `<Footer>`. Set
+  `<Layout i18n>` from `LOCALE_LABELS`.
+- Config: `features.translateDocs`, `docsOutput.style: "nextra"`,
+  `docsRoot: "content/en"`, `nextraDictionaryPath: "app/_dictionaries/en.ts"`.
+  `targetLocales` matches `i18n.locales` except the default locale.
+
+## Order
+
+1. Route, config, and dictionary wiring.
+2. Move existing MDX into `content/en/` and point `contentPaths` at that folder.
+3. Ask the user to run `sync`. Do not write `app/_dictionaries/pt-BR.ts` or
+   `content/pt-BR/` by hand.
+
+## Do not
+
+- Do not translate, rename, or reword the English dictionary strings.
+- Do not add `t()`, `getRequestConfig`, or a `dictionary.ts` filename. The
+  English module is `app/_dictionaries/en.ts`.
+- Do not duplicate a string in both the dictionary and a later `t()` call.
+- Do not hand-edit generated locale dictionaries or locale `_meta.ts` files.
+
+## Verify
+
+- `pnpm build` passes.
+- `/` shows the English dictionary strings. After `sync`, one non-English route
+  shows translated chrome and page titles.
+- Sidebar labels come from `content/en/**/_meta.ts`, not from the dictionary.
+
+## Report back
+
+List files changed, each layout string you left untranslated and why (URLs,
+native language names), and any MDX you were not sure belonged under
+`content/en/`.
+````
+
+</details>
 
 <a id="optional-t-for-app-react-hybrid"></a>
 ## Optional: `t()` für `app/` React (Hybrid)
 
-**Standard:** `_meta.ts` / `_meta.tsx` Objekt-Literal-Strings werden innerhalb von **`translate-docs`** übersetzt – kein `t()` erforderlich.
+**Standard:** `_meta.ts`-Objektliterale und `app/_dictionaries/en.ts` werden von `translate-docs` übersetzt. Für dieses Chrome ist kein `t()` erforderlich.
 
-**Optionaler Hybrid:** Teams können zusätzlich **`t()` + `translate-ui`** für `app/`-Layout-Chrome, benutzerdefinierte MDX-Komponenten oder `_meta.tsx`-Beschriftungen verwenden, die nur innerhalb von JSX-Komponenten (über die Objekt-Literal-Extraktion in v1 hinaus) existieren. Dies ersetzt **nicht** translate-meta für Meta-Dateien, es sei denn, Sie refaktorieren explizit Sidebar-Beschriftungen in Komponenten.
+**Optionaler Hybrid:** Benutzerdefinierte Serverkomponenten können `t("source sentence")` und `translate-ui` aufrufen. Der Satz ist in `sourceLocale` geschrieben, was jede Sprache sein kann. Kopieren Sie keine Wörterbuch-Strings oder `_meta.ts`-Titel in diese Aufrufe. `extract` sieht nur Literale innerhalb von `t()`, daher sollte `ui.sourceRoots` nur die Ordner auflisten, die diese Aufrufe enthalten (das Beispiel verwendet `app/_components`), nicht `app/_dictionaries`.
+
+Ein i18next-Singleton auf Modulebene mit `changeLanguage` ist in einer Serverkomponente unsicher: gleichzeitige Anfragen teilen es sich. Das Beispiel verwendet stattdessen einen zustandslosen Lookup. `getT(lang)` lädt `locales/{lang}.json` für eine Ziel-Locale, behandelt die Quellroute als leeres Bundle (das englische Literal ist bereits der Text) und interpoliert mit `interpolateTemplate` aus `ai-i18n-tools/runtime`. Platzhalter sind <code v-pre>{{name}}</code> mit ASCII-Wortschlüsseln. Dies ist die gleiche Idee wie [examples/astro-website/src/i18n/t.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-website/src/i18n/t.ts).
+
+Dieser Lookup wählt keine Pluralformen aus. Eine Komponente, die `plurals: true` benötigt, sollte den i18next-Pfad von [i18next verdrahten](/de/guide/ui-strings/i18next-runtime) in einer Client-Komponente oder einen pro-Anfrage-`createInstance()` verwenden.
+
+Konfiguration für den Hybrid, neben dem bestehenden Docs-Block:
+
+- `features.translateUIStrings`
+- `ui.sourceRoots` – Ordner, die `t()`-Aufrufe enthalten
+- `ui.stringsJson`
+- `ui.flatOutputDir`
+
+Das `sourceLocale` des Beispiels ist `en-GB` und die Site-Route ist `en`. Mit dem zustandslosen Lookup benötigt die `en`-Route kein Bundle, sodass diese Diskrepanz keine Rolle spielt. Es spielt nur eine Rolle, wenn Sie diese Komponente auf den i18next-Bootstrap umstellen, der Bundles nach `sourceLocale` schlüsselt.
 
 | Inhalt | Standard-Pipeline | Optionale Alternative |
 |---------|------------------|----------------------|
@@ -107,25 +204,81 @@ Erstellen Sie **keine** JSON-Sidecars (`i18n/meta.en.json`) oder dünne `_meta.t
 | `_meta.ts` / `_meta.tsx` Objekttitel | `translate-docs` | Refaktorierung zu `t()` in JSX (Hybrid) |
 | `app/`-Layout, `_components/` | `nextraDictionaryPath` + Wörterbuch `.ts` | `t()` + `translate-ui` |
 
-**Beispiel für einen KI-Agenten-Prompt** (in Cursor oder einen anderen Codierungsagenten kopieren, wenn Layout-Chrome zu `t()` migriert wird):
+Siehe `app/_components/feedback-links.tsx` und `lib/ui-t.ts` in [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/). `pnpm run i18n:sync-ui` in diesem Beispiel führt Extraktion und `translate-ui` aus, ohne die Docs-Pipeline zu beeinflussen.
 
-```markdown
-Add i18n to our Nextra 4 app/ layout using ai-i18n-tools translate-ui (optional hybrid).
+**Beispiel-KI-Agenten-Prompt** (in Cursor oder einen anderen Coding-Agenten kopieren, wenn `t()` neben dem Wörterbuch hinzugefügt wird):
 
-Context:
-- We already translate MDX pages and _meta.ts via translate-docs (default).
-- We want t() in app/[lang]/layout.tsx and app/_components/ for labels not covered by nextraDictionaryPath.
-- English-as-key: t("Edit this page on GitHub") in source; strings.json + locales/{locale}.json from extract + translate-ui.
-- Do not move _meta.ts sidebar labels into t() unless we explicitly ask — translate-docs handles _meta object literals.
+<details class="agent-prompt">
+<summary>Hybrid t()-Prompt</summary>
 
-Requirements:
-1. Wire getRequestConfig / i18n provider for the app router locale param.
-2. Replace hard-coded layout strings with t() calls; keep structure and Nextra theme APIs unchanged.
-3. Enable features.translateUIStrings, set ui.sourceRoots to app/ (and mdx-components if needed).
-4. Do not duplicate dictionary.ts strings that nextraDictionaryPath already translates — pick one approach per string.
+````markdown
+# Add a stateless t() lookup to a Nextra 4 server component
 
-After editing: run extract, translate-ui (or sync), verify en + one target locale in dev.
-```
+## Context
+
+MDX pages, `_meta.ts`, and `app/_dictionaries/en.ts` stay on `translate-docs`.
+Do not duplicate those strings in `t()`. This task adds `t("source sentence")`
+only in custom components that the dictionary does not cover. The literal is the
+catalog key and is written in `sourceLocale`, which can be any language. Do not translate any string.
+
+Follow `lib/ui-t.ts` and `app/_components/feedback-links.tsx` in
+https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs
+
+## Scope
+
+Edit the named components and `ai-i18n-tools.config.json`. Do not edit
+`app/_dictionaries`, `content/**/_meta.ts`, or generated locale trees. Skip
+URLs, native language names, and `docsRepositoryBase`.
+
+## Call shape
+
+Create `lib/ui-t.ts`. `getT(lang)` loads `locales/{lang}.json` through a
+dynamic-import map for target locales, uses an empty bundle for the source
+route, and returns
+`(source, vars) => interpolateTemplate(flat[source] ?? source, vars ?? {})` with
+`interpolateTemplate` imported from `ai-i18n-tools/runtime`.
+
+Replace hardcoded sentences in the named server components with `t("source sentence")`. The sentence is written in `sourceLocale`, which can be any language.
+A placeholder is `t("You are reading {{page}}.", { page })`.
+
+Do not use `getRequestConfig` (that is a next-intl API) and do not call
+`changeLanguage` on a shared i18next instance. This lookup does not resolve
+plurals. Leave plural copy on the i18next client path.
+
+Set `features.translateUIStrings`, `ui.sourceRoots` to only the folders that
+contain `t()` calls, `ui.stringsJson`, and `ui.flatOutputDir`.
+
+## Order
+
+1. Add `lib/ui-t.ts` and the `t()` calls.
+2. Set the four `ui` config keys.
+3. Run `ai-i18n-tools extract` (or `sync-ui`). Do not hand-write
+   `locales/*.json`.
+
+## Do not
+
+- Do not translate, rename, or reword the source sentences.
+- Do not put `t()` keys in `app/_dictionaries` or move `_meta.ts` titles into
+  `t()`.
+- Do not hand-edit `strings.json` or flat locale files.
+- Do not change layout or Nextra theme props that already receive dictionary
+  strings.
+
+## Verify
+
+- `extract` writes a non-empty catalog containing the new sentences and nothing
+  from the dictionary.
+- The project build passes.
+- The source route still shows the English sentences. After `translate-ui`, one
+  non-English route renders the translated component.
+
+## Report back
+
+List files changed, each string you left in the dictionary on purpose, and any
+plural or server-concurrency case you did not convert.
+````
+
+</details>
 
 <a id="link-conventions"></a>
 ## Link-Konventionen
@@ -144,7 +297,7 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 
 `rewriteNextraLinks` ist standardmäßig aktiviert, wenn `style` `"nextra"` ist.
 
-| Autor in englischer Quelle | Nach Normalisierer |
+| Autor in der Quell-Locale | Nach dem Normalisierer |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/de/guide/getting-started)` |
 | `[Guide](/de/guide/getting-started.mdx)` | `[Guide](/de/guide/getting-started)` |

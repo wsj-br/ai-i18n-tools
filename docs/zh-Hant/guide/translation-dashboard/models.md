@@ -1,7 +1,7 @@
 <a id="models"></a>
 # 模型
 
-**模型** 頁籤會針對目前供應商的聊天模型進行排名，讓您無需手動複製 ID 即可選擇 `translationModels`。它採用與 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 相同的排名方式。
+「**模型**」分頁會為現用供應商的對話模型進行排序，讓您不必手動複製 ID 即可選擇 `translationModels`。此分頁使用的排序方式與 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 相同。如需逐步操作說明，以及瞭解清單為何包含多個模型，請參閱 [AI 模型](/zh-Hant/guide/ai-models)。
 
 選擇 **品質** 或 **價格**。品質優先考慮 languagebench ChrF 和 Arena Score。價格則優先考慮較低的美元費率，同時維持一定的品質底線。當設定中包含多個供應商時，會出現 **供應商** 選單；預設值為啟動儀表板時所使用的供應商（`provider`，或在 `dashboard` 指令上的 `-P` / `--provider`）。變更供應商或優先順序會重新載入表格。選用的權重位於 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion) 中。
 

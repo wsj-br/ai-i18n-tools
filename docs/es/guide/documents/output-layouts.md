@@ -64,9 +64,9 @@ El reescritor de enlaces planos utiliza la ruta de salida por archivo al calcula
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Las rutas fuera de `docsRoot` recurren al diseño [anidado](#nested) (`{outputDir}/{locale}/{relPath}`).
+Las rutas fuera de `docsRoot` recurren al diseño [anidado](#nested-default) (`{outputDir}/{locale}/{relPath}`).
 
-Establezca `docs[].docsOutput.docsRoot` en su raíz de origen en inglés (por ejemplo, `"docs"`, `"src/content/docs"` o `"content/en"`). Cuando `docsOutput.style = "doc-system"`, debe establecer `localeSubpath` explícitamente (use un alias a continuación para los ajustes preestablecidos). Use `localeSubpath: ""` cuando las páginas traducidas se encuentren directamente debajo de `{outputDir}/{locale}/` (estilo Starlight).
+Establezca `docs[].docsOutput.docsRoot` en la raíz de los archivos escritos en `sourceLocale` (por ejemplo, `"docs"`, `"src/content/docs"` o `"content/en"` cuando el inglés es el idioma de origen). `sourceLocale` puede ser cualquier idioma. Cuando `docsOutput.style = "doc-system"`, debe establecer `localeSubpath` explícitamente (use un alias a continuación para los ajustes preestablecidos). Use `localeSubpath: ""` cuando las páginas traducidas se encuentren directamente bajo `{outputDir}/{locale}/` (al estilo Starlight).
 
 El JSON de shell de Docusaurus de `docusaurusCatalogDir` y otros artefactos JSON bajo los ajustes preestablecidos del sistema de documentos siguen el mismo diseño de carpeta que markdown. Con `style: "flat"`, los archivos de etiquetas JSON aún usan la forma anidada a menos que establezca `jsonPathTemplate`.
 
@@ -75,10 +75,10 @@ El JSON de shell de Docusaurus de `docusaurusCatalogDir` y otros artefactos JSON
 
 **Alias** (mismo motor `doc-system`, preajuste `localeSubpath` y valores predeterminados):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` tiene como valor predeterminado `docusaurus-plugin-content-docs/current` (estructura del plugin de i18n de Docusaurus).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` tiene como valor predeterminado `""`; `localePathLowercase` tiene como valor predeterminado `true`. Las páginas traducidas se encuentran bajo `{outputDir}/{locale}/`, coincidiendo con [Starlight](https://starlight.astro.build/guides/i18n/) cuando el inglés está en la raíz del contenido y `outputDir` es igual a `docsRoot`. También se usa para páginas de configuración regional de Astro básicas (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — consulte las [páginas del sitio web de Astro](/es/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
-- `docsOutput.style = "vitepress"` — misma estructura que `doc-system` con `localeSubpath` vacío; se conservan los nombres de las carpetas de configuración regional BCP-47 (`localePathLowercase` tiene como valor predeterminado `false`). Consulte la [integración con VitePress](/es/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — misma estructura que `doc-system` con `localeSubpath` vacío; los archivos fuente en inglés se encuentran bajo una carpeta de configuración regional (por ejemplo, `content/en/`). Consulte la [integración con Nextra](/es/guide/integrations/nextra).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` se establece por defecto en `docusaurus-plugin-content-docs/current` (diseño del plugin i18n de Docusaurus).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` se establece por defecto en `""`; `localePathLowercase` se establece por defecto en `true`. Páginas traducidas bajo `{outputDir}/{locale}/`, coincidiendo con [Starlight](https://starlight.astro.build/guides/i18n/) cuando la configuración regional de origen reside en la raíz del contenido y `outputDir` es igual a `docsRoot`. También se usa para páginas de configuración regional de Astro simples (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — consulte [páginas del sitio web de Astro](/es/guide/ui-strings/astro-website#pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` — el mismo diseño que `doc-system` con `localeSubpath` vacío; se conservan los nombres de las carpetas de configuración regional BCP-47 (`localePathLowercase` se establece por defecto en `false`). Consulte [integración de VitePress](/es/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — el mismo diseño que `doc-system` con `localeSubpath` vacío; la configuración regional de origen reside bajo una carpeta de configuración regional (por ejemplo, `content/en/` cuando el inglés es el idioma de origen). Consulte [integración de Nextra](/es/guide/integrations/nextra).
 
 Valor preestablecido de Docusaurus (páginas principales de documentación):
 
@@ -121,7 +121,7 @@ El diccionario de temas de Nextra (`.ts`) y las etiquetas de la barra lateral de
 
 `docsOutput.style = "fumadocs"` — diseño de contenido de Fumadocs a través de `docsOutput.fumadocsParser`:
 
-- **`"dot"` (predeterminado)** — sufijo de configuración regional en el nombre del archivo junto a las fuentes en inglés en `outputDir` (no una carpeta de configuración regional). Esto es independiente de la forma de la ruta `doc-system`.
+- **`"dot"` (predeterminado)** — sufijo de configuración regional en el nombre de archivo junto a los archivos de la configuración regional de origen bajo `outputDir` (no es una carpeta de configuración regional). Esto es independiente de la forma de ruta `doc-system`. El idioma de origen es `sourceLocale` y puede ser cualquier idioma.
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

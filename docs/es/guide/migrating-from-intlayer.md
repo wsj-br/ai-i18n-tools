@@ -1,9 +1,13 @@
 <a id="migrating-from-intlayer"></a>
-# Migración desde Intlayer
+# Migración de Intlayer a llamadas de cadenas de origen
 
-¿Migrando desde [Intlayer](https://intlayer.org/)? Este comando traslada los diccionarios de traducción existentes y el uso más básico de traducciones de tu aplicación a ai-i18n-tools. Realiza actualizaciones seguras de forma automática y, a continuación, genera un informe claro sobre cualquier aspecto que aún requiera tu atención. Esto te permite realizar la migración de forma gradual sin necesidad de comprender todas las diferencias de antemano.
+[Intlayer](https://intlayer.org/) es ideal para aplicaciones que gestionan traducciones mediante diccionarios de contenido tipado o sistemas de gestión de traducciones. `ai-i18n-tools` se dirige a un flujo de trabajo diferente: código que utiliza llamadas de cadenas de origen como `t('English source')`. La cadena dentro de `t()` está escrita en `sourceLocale`, que puede ser cualquier idioma. El inglés en estos ejemplos es solo una muestra. Al mantener esa cadena de origen directamente en el código, este enfoque simplifica el mantenimiento y reduce la complejidad. Cuando este modelo se ajusta a sus necesidades, `migrate-intlayer` importa sus diccionarios existentes y reescribe automáticamente los sitios de llamada compatibles. Deja los sitios restantes sin cambios y genera un informe con instrucciones de reemplazo específicas, lo que le permite completar la migración por etapas o entregar el informe a un agente de codificación de IA para que complete la migración por usted.
 
 ¿Ya usas archivos de traducción JSON de i18next? No necesitas este comando de migración; en su lugar, utiliza la [canalización JSON](/es/guide/json#i18next-namespace-files).
+
+::: tip ¿Traducir in situ o migrar?
+Esta página traslada su aplicación de Intlayer a las llamadas de cadena de origen `t()` de ai-i18n-tools, como `t('English source')`. La cadena está escrita en `sourceLocale`, que puede ser cualquier idioma. Si desea mantener Intlayer en tiempo de ejecución y solo rellenar las traducciones que faltan, utilice [`translate-intlayer`](/es/guide/translating-intlayer) en su lugar — traduce las `*.content.ts` que deja in situ.
+:::
 
 <a id="what-migrate-intlayer-does"></a>
 ## Qué hace `migrate-intlayer`

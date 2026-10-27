@@ -8,7 +8,7 @@
 
 各設定済みモデルIDを、アクティブなプロバイダーの`GET /models`リスト（メンバーシップと`expiration_date`）に対して検証します。そのプロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーの場合は不要）。設定済みのIDが不足しているか期限切れの場合、ゼロ以外の値で終了し、解決されたリクエストタイムアウト（`requestTimeout`またはプロバイダー上の`requestTimeoutMs`、それ以外の場合はトップレベルの値）を尊重します。プロバイダーが価格情報（例：OpenRouter）を返す場合、プロンプト/完了の100万トークンあたりのUSDも表示します。`providers.cheaperinference.zeroDataRetention`がtrueの場合、チェックは`GET /v1/models?zdr=true`を使用し、カタログから除外されたIDは失敗とします。
 
-**関連項目:** [LLMプロバイダー](/ja/guide/providers-and-models)
+**関連項目:** [AI モデル](/ja/guide/ai-models#check-models)、[LLM プロバイダー](/ja/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **主なオプション:** `-P` / `--provider`
 
-**関連項目:** [LLMプロバイダー](/ja/guide/providers-and-models)
+**関連項目:** [AI モデル](/ja/guide/ai-models#list-models)、[LLM プロバイダー](/ja/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ ChrFは、メトリックが`chrf`であるlanguagebenchの`translation_from`お
 
 **主要なオプション:** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
-**参照:** [LLM プロバイダー](/ja/guide/providers-and-models)、[Models タブ](/ja/guide/translation-dashboard/models)
+**関連項目:** [AI モデル](/ja/guide/ai-models)、[モデル タブ](/ja/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ ChrFは、メトリックが`chrf`であるlanguagebenchの`translation_from`お
 モデルはデフォルトで、アクティブなプロバイダーの`translationModels`、`uiModels`、`localeModels`のIDの和集合になります（`--model`で上書き）。サンプルはデフォルトで組み込みの英語マークダウンブロックになります（`--text` / `--file`で上書き）。ソース/ターゲットはデフォルトで設定の`sourceLocale`と最初の`docs[]`ターゲットロケールになり、トップレベルの`targetLocales`にフォールバックします（`--source` / `--target`で上書き）。モデルは並行して実行され、設定の`concurrency`（デフォルトは4）によって制限されます。ただし、各モデルは個別に計時されます。アクティブなプロバイダーのAPIキーが必要です。
 
 **主なオプション:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**関連項目:** [AI モデル](/ja/guide/ai-models#bench-models)
 
 ---
 

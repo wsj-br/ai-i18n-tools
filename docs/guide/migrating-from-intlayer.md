@@ -1,12 +1,14 @@
 <a id="migrating-from-intlayer"></a>
-# Migrating from Intlayer
+# Migrating from Intlayer to source-strings calls
 
-Moving from [Intlayer](https://intlayer.org/)? This command brings your existing translation dictionaries and the simplest translation usage in your app into ai-i18n-tools. It makes safe updates automatically, then creates a clear report for anything that still needs your attention. This lets you move over gradually without needing to understand every difference upfront.
+
+[Intlayer](https://intlayer.org/) is ideal for applications that manage translations via typed content dictionaries or translation management systems. `ai-i18n-tools` targets a different workflow: code that uses source-string calls such as `t('English source')`. The string inside `t()` is written in `sourceLocale`, which can be any language. English in these examples is only a sample. By keeping that source string directly in the code, this approach simplifies maintenance and reduces complexity. When this model fits your needs, `migrate-intlayer` imports your existing dictionaries and automatically rewrites compatible call sites. It leaves remaining sites unchanged and generates a report with specific replacement instructions, allowing you to complete the migration in stages or drop the report into a AI coding agent to complete the migration for you.
+
 
 Already using i18next JSON translation files? You do not need this migration command; use the [JSON pipeline](/guide/json#i18next-namespace-files) instead.
 
 ::: tip Translate in place, or migrate off?
-This page moves your app off Intlayer onto ai-i18n-tools' `t('English source')` schema. If you want to keep Intlayer at runtime and only fill the missing translations, use [`translate-intlayer`](/guide/translating-intlayer) instead — it translates the `*.content.ts` leaves in place.
+This page moves your app off Intlayer onto ai-i18n-tools' source-string `t()` calls, such as `t('English source')`. The string is written in `sourceLocale`, which can be any language. If you want to keep Intlayer at runtime and only fill the missing translations, use [`translate-intlayer`](/guide/translating-intlayer) instead — it translates the `*.content.ts` leaves in place.
 :::
 
 <a id="what-migrate-intlayer-does"></a>

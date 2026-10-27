@@ -1,14 +1,14 @@
 <a id="svg"></a>
 # SVG
 
-專為翻譯包含人類可讀標籤的**SVG 插圖與圖表**而設計。`translate-svg` 命令會讀取來源 `.svg` 檔案，從 `<text>`、`<title>` 及 `<desc>` 元素中擷取文字，透過啟用的 LLM 提供者翻譯這些字串，並寫入**每個目標語言區域各一個輸出 SVG**。
+專為翻譯含有可讀標籤的 **SVG 插圖與圖表** 而設計。`translate-svg` 指令會讀取來源 `.svg` 檔案，從 `<text>`、`<title>` 及 `<desc>` 元素中擷取文字，使用現行 LLM 供應商的模型翻譯這些字串，並為**每個目標地區語言寫入一個輸出 SVG**。
 
 這是唯一會發出特定語言環境的 **二進位** SVG 檔案的管線。`translate-docs` 會翻譯 Markdown 替代文字和連結參考，但它不會修改或複製 SVG 資產。當頁面需要帶有翻譯標籤的圖表時，請啟用 `features.translateSVG` 並設定頂層 `svg` 區塊。
 
 <a id="per-locale-model-overrides"></a>
 ## 各語言區域的模型覆寫
 
-`translate-svg` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。每個地區的 SVG 運行使用其自己的回退鏈 — 在 CJK 地區的圖表標籤需要腳本調優的模型時非常有用（例如 `ja`）。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
+`translate-svg` 會**依目標地區語言**解析模型：若有設定，則優先使用 `localeModels(locale)`，其次是 `translationModels`。每個地區語言的 SVG 執行作業都會使用其專屬的備援鏈 — 這在 CJK 地區語言的圖表標籤需要使用針對書寫系統優化的模型 (例如 `ja`) 時相當實用。請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain)。
 
 SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的 SQLite 快取。已翻譯的文字區段會從快取中提供；只有新的或變更的來源文字才會傳送至 LLM。
 

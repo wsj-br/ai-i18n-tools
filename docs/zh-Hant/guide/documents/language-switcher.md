@@ -5,7 +5,7 @@
 
 此儲存庫將其用於 [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (在 `translated-docs/` 下的平面輸出)。在 `translate-docs` 之後，每個翻譯副本都會獲得一個刷新的區塊；例如 [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) 連結到 `translated-docs/` 下的同級地區設定檔案，並返回到儲存庫根目錄的英文來源。
 
-需要 `docsOutput.style = "flat"` (或另一個可以透過相對路徑定址同級地區設定檔案的佈局)。請參閱 [輸出佈局](/zh-Hant/guide/documents/output-layouts)。
+需要 `docsOutput.style = "flat"` (或其他可透過相對路徑定址同層級語系檔案的版面配置)。請參閱 [輸出版面配置](/zh-Hant/guide/documents/output-layouts)。首次將此新增至儲存庫 README 時：[將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. 在來源 Markdown 中標記區塊
@@ -46,9 +46,9 @@
 <a id="3-what-happens-at-runtime"></a>
 ## 3. 執行時會發生什麼
 
-1. **提取** — 語言列表片段**不會**傳送給模型 (`translatable: false`)。
-2. **每個翻譯檔案** — 在區段翻譯和選用的平面連結重寫之後，`postProcessing` 會重建區塊：每個地區語言一個 Markdown 連結，標籤來自 `ui-languages.json` (如果存在，否則使用捆綁的主目錄，否則使用 `localeDisplayNames`)，路徑相對於正在寫入的檔案。
-3. **來源更新** — 在完成 `translate-docs` / `sync` 文件傳遞後，相同的標準區塊會寫回 **英文來源檔案**中的 `contentPaths`，因此新增地區語言會更新儲存庫中的切換器，而無需手動編輯每個連結。
+1. **擷取** — 語言清單片段**不會**傳送至模型 (`translatable: false`)。
+2. **每個已翻譯檔案** — 在區段翻譯和選用的扁平連結重寫後，`postProcessing` 會重建區塊：每個語系一個 Markdown 連結，若有 `ui-languages.json` 則使用其中的標籤 (否則使用捆綁的主目錄，再否則使用 `localeDisplayNames`)，路徑相對於正在寫入的檔案。
+3. **來源重新整理** — 在 `translate-docs` / `sync` 文件處理結束時，同一個標準區塊會寫回 `contentPaths` 中的**來源語系檔案**，如此一來，新增語系時便會更新儲存庫中的切換器，無須手動編輯每個連結。這些檔案是以 `sourceLocale` 寫入，可以是任何語言。
 
 如果檔案沒有匹配的區塊，CLI 會記錄警告 (當 `--verbose` 時) 並保持內文不變。
 
@@ -72,4 +72,4 @@
 <a id="html-pages"></a>
 ## HTML 頁面
 
-純 HTML 文件使用另一對註解符號，即 `<!-- ai-i18n:lang-list -->` 和 `<!-- ai-i18n:hreflang -->`。語言清單可以是連結或 `<select>`，並且 hreflang 替代項目會寫入英文原始檔以及各個語系檔案中。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages#language-list-and-hreflang)。
+純 HTML 文件使用另一對註解 `<!-- ai-i18n:lang-list -->` 和 `<!-- ai-i18n:hreflang -->`。語言清單可以是連結或 `<select>`，且 hreflang 備用連結會寫入來源語系檔案以及每個目標語系檔案。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages#language-list-and-hreflang)。

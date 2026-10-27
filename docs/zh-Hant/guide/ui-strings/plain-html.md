@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## 快速開始
 
-1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 建立骨架，或新增以下配置。
-2. 標記來源 HTML (或讓 `mark-html` 執行此操作)。
-3. 將 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向這些檔案。
-4. 執行 `extract`，然後執行 `translate-ui` (或使用 `sync-ui` 同時執行兩者)。
+1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 建立架構，或新增以下設定。若儲存庫的 README 也需要翻譯，請新增 `--with-readme`（[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme))。
+2. 標記來源 HTML（或讓 `mark-html` 處理）。
+3. 將 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向那些檔案。
+4. 執行 `extract`，然後執行 `translate-ui`（或使用 `sync-ui` 同時執行兩者）。
 5. 將 `i18n.js` 複製到網頁旁邊，並在您自己的指令碼之前載入它。
 6. 透過 HTTP 提供該資料夾。`file://` 無法 `fetch` 地區設定 JSON。
 
@@ -94,7 +94,7 @@ ai-i18n-tools sync-ui
 <a id="marking-html-for-translation"></a>
 ## 標記 HTML 以進行翻譯
 
-建議使用純標記。英文來源文字會保留在元素上，且該文字即為目錄索引鍵。`extract` 會讀取它；執行階段會將翻譯寫回相同的屬性。
+建議使用裸標記。來源語言文字會保留在元素上，而該文字就是目錄索引鍵。它以 `sourceLocale` 編寫，可以是任何語言。`extract` 會讀取它；執行階段會將翻譯寫回相同的屬性。
 
 - `data-i18n` — 索引鍵為 `textContent`。執行階段會設定 `textContent`。
 - `data-i18n-title` — 索引鍵為 `title`。
@@ -217,6 +217,52 @@ ai-i18n-tools sync-ui
 
 `mark-html` 會插入上述的無值標記。除非您傳遞 `--write`，否則這只是一次試執行。它會略過 `data-i18n-ignore` 子樹、類似程式碼的元素（`code`、`pre`、`kbd`、`samp`、`var`），以及空白或純數字的文字。它會回報混合內容的父元素，並留給您使用 `<span data-i18n>` 進行包裝。它絕不會寫入具值標記。
 
+<a id="agent-prompt"></a>
+### 代理提示
+
+`mark-html --write` 已會插入裸標記。當報告仍列出殘留項目時，請貼上此內容：混合內容的父項、JavaScript 插入的文字，以及應保留在來源語言中的識別碼。
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 執行階段在首次執行時，會將每個來源索引鍵記錄在內部的 `data-i18n-source` 屬性上，因此後續切換地區設定時仍會查詢英文字串。這些屬性不會被擷取。
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ ai-i18n-tools sync-ui
 | 新的 DOM 節點維持英文 | 請在插入這些節點後呼叫 `window.i18n.apply()`。 |
 | 影像在葡萄牙語中維持 `chart.png` | 該元素需要 `data-i18n-locale-src`，且地區設定不得為來源地區設定。 |
 
-執行階段的 `normalizeI18nText` 會比對 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText`：先去除首尾空白，再合併空白字元。由於英文來源文字是目錄鍵，缺少的翻譯會回退至英文。
+執行階段中的 `normalizeI18nText` 會與 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText` 進行比對：先修剪，然後摺疊空白字元。由於來源語言文字就是目錄索引鍵，遺失的翻譯會遞補為該來源文字。
 
 可執行的範例為 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)。`pnpm dev` 會於 [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) 提供此服務。
 

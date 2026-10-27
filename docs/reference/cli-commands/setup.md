@@ -36,7 +36,7 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 | `docs-plain-html` | Plain HTML documents (one file per locale, language list, hreflang) |
 | `docs-markdown` | Markdown docs: README and `.md` files, flat output, language list |
 | `ui-json-bundles` | JSON (`json[]` only) |
-| `ui-python` | Python UI strings, flat English-key JSON, and `i18n.py` |
+| `ui-python` | Python UI strings, flat JSON keyed by the source-language string, and `i18n.py` |
 | `ui-python-gettext` | Python UI strings with flat JSON and GNU `.po` / `.mo`, plus `i18n.py` |
 | `ui-python-django` | Django `gettext` / `{% blocktrans %}` catalogs (`flatOutput: false`, domain `django`, no `i18n.py`) |
 | `ui-python-flask` | Flask / Jinja catalogs under `translations/` (`flatOutput: false`) plus `i18n.py` |

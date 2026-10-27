@@ -22,7 +22,7 @@ Le port d'écoute par défaut est **8675**. Si ce port n'est pas disponible, le 
 
 L'interface utilisateur du tableau de bord utilise la même résolution de localisation que la CLI : `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → localisation du système d'exploitation. Voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
-![Tableau de bord de traduction affichant l'onglet Documentation avec les filtres et les lignes de segments mis en cache](/translation-dashboard.png)
+![Tableau de bord de traduction affichant l'onglet Statistiques](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## Quel onglet dois-je utiliser ?

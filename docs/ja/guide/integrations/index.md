@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # インテグレーション
 
-ドキュメントサイト、Astroプロジェクト、およびPythonアプリケーション向けのフレームワーク固有ガイドです。ドキュメントの統合では、ページコンテンツに[Documents](/ja/guide/documents/)パイプライン（`translate-docs` / `sync`）を使用します。ナビゲーション、サイドバー、テーマなどのシェル文字列は、別途の[JSON](/ja/guide/json)パイプラインではなく、注記がある場合に限り同じパイプライン内で処理されます。Pythonアプリケーションでは[UI strings](/ja/guide/ui-strings/python)パイプライン（`extract` / `translate-ui`）を使用します。
+フレームワーク統合のリファレンスです。共通点とシェル文字列の違いについて説明します。サイトに言語を追加するには、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)から始めてください。アプリの場合は、[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)または[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)から始めてください。リポジトリのREADMEやその他のMarkdownファイルの場合は、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)から始めてください。
+
+ドキュメント統合では、ページコンテンツ用に[ドキュメント](/ja/guide/documents/)パイプライン（`translate-docs` / `sync`）を使用します。シェル文字列（ナビゲーション、サイドバー、テーマ）は、注記がある場合は、別の[JSON](/ja/guide/json)パイプライン経由ではなく、同じパイプライン内で処理されます。Pythonアプリケーションでは、[UI文字列](/ja/guide/ui-strings/python)パイプライン（`extract` / `translate-ui`）を使用します。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
 
-| あなたのサイト | 初期テンプレート | ここから開始 |
-| --- | --- | --- |
-| Astro StarlightまたはプレーンなAstro | `ui-starlight` / ハイブリッドUI文字列 | [Astro](/ja/guide/integrations/astro) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/ja/guide/integrations/docusaurus) |
-| VitePress | `ui-vitepress` | [VitePress](/ja/guide/integrations/vitepress) |
-| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/ja/guide/integrations/nextra) |
-| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/ja/guide/integrations/fumadocs) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, デスクトップ) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/ja/guide/integrations/python) |
+フレームワークごとのinitテンプレートとエージェントプロンプトを含む選択テーブルは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#what-do-you-have)にあります。Pythonフレームワーク：[Python](/ja/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共通の概念

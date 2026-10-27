@@ -44,9 +44,16 @@ docs-site/docs/guide/quick-start.md
 }
 ```
 
-`contentPaths`を英語の`.md`/`.mdx`ファイルとディレクトリにポイントします。`docsRoot`をDocusaurusがコンテンツルートとして使用する同じフォルダーに設定します。`outputDir`を`i18n/`の下にある各ロケールフォルダーの親フォルダーに設定します。
+`contentPaths`で、`sourceLocale`で書かれた`.md` / `.mdx`のファイルとディレクトリを指定します。この言語は任意の言語にできます。`docsRoot`を、Docusaurusがコンテンツルートとして使用するのと同じフォルダーに設定します。`outputDir`を、`i18n/`配下にある各ロケールフォルダーの親に設定します。
 
 Docusaurusの[i18n](https://docusaurus.io/docs/i18n/introduction)を接続します。`targetLocales`を`ai-i18n-tools.config.json`に、`locales`配列を`docusaurus.config.js`に合わせます。各`localeConfigs[locale].path`は、`i18n/`の下にあるフォルダ名（例：`path: "fr"` for `i18n/fr/`）と一致する必要があります。
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### 既存のサイトで i18n を有効にする
+
+- URLパスをロケールコードと異なるものにする必要がある場合は、`docusaurus.config.js`に`i18n`ブロックを追加し、`defaultLocale`、`locales`、`localeConfigs[locale].path`を含めます。
+- `docusaurus write-translations`を実行して`i18n/<defaultLocale>/`を作成し、そのフォルダーを`docusaurusCatalogDir`で指定して`sync`を実行します。
+- `src/pages`と`src/components`内のカスタムReactはマークダウンではありません。`write-translations`がユーザー向けのコピーを`code.json`に収集できるように、`@docusaurus/Translate`の`<Translate>`または`translate()`でマークします。メッセージは静的文字列である必要があります。`write-translations`は`i18n/<locale>/code.json`を書き込みます。`docusaurusCatalogDir`が設定されている場合、`translate-docs`はそのJSONを残りのシェルカタログと一緒に翻訳します。ai-i18n-toolsは、それらのJSXツリーで`t()`をスキャンしません。
 
 <a id="shell-strings-write-translations"></a>
 ## シェル文字列（write-translations）

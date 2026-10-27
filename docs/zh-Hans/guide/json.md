@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-专为将 UI 文本保存在每个区域设置的**嵌套 JSON 文件**（例如 `src/i18n/en/translation.json`）而不是源代码中的 `t("…")` 的项目而设计。CLI 会遍历这些文件中的字符串值，通过活动的 LLM 提供程序翻译它们，并使用 `json[].outputPathTemplate` 写入每个区域设置的输出。它使用与 `translate-docs` 和 `translate-svg` (`cacheDir`) 相同的 SQLite 缓存。
+适用对象：已经按区域设置将文案保存在嵌套 JSON 文件（例如 `src/i18n/en/translation.json`）中并希望保留该布局的项目。如果你的源文件是纯文本，并且尚未使用 `t()`，请改为从[向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)开始。
+
+该 CLI 会遍历这些文件中的字符串值，使用活动 LLM 提供商上的模型对其进行翻译，并使用 `json[].outputPathTemplate` 写入各区域设置的输出。它使用与 `translate-docs` 和 `translate-svg` (`cacheDir`) 相同的 SQLite 缓存。
 
 此管道**不**运行 `extract` — 没有 `strings.json` 目录。使用 `features.translateJson` 和顶级 `json[]` 中的一个或多个条目来启用它。
 
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
 
-`translate-json` 解析模型 **按目标区域设置**：首先使用 `localeModels(locale)`，如果已配置，则使用 `translationModels`。在某些区域设置中，使用专用模型可以带来更好的效果，例如 `zh-Hans` / `zh-Hant` 主题文件。请参阅 [提供程序和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。
+`translate-json` 会**按目标语言区域**解析模型：如果已配置，则首先使用 `localeModels(locale)`，然后使用 `translationModels`。可将其用于某些语言区域可从专用模型中受益的嵌套 JSON 包——例如 `zh-Hans` / `zh-Hant` 主题文件。请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain)。
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### 步骤 1：初始化嵌套 JSON
@@ -105,7 +107,8 @@ ai-i18n-tools status
 | Fumadocs `meta.json` 标签和 UI 覆盖目录 | 文档 — `translate-docs`（当 `style: "fumadocs"` 时自动 `meta.json`，可选 `fumadocsUiCatalog`）；**不要**使用 `json[]` — 参见 [Fumadocs 集成](/zh-Hans/guide/integrations/fumadocs) |
 | 独立嵌套区域设置 JSON（ZenBrowser 风格的 `translation.json` 树） | JSON — `json[]` + `translate-json` |
 | i18next 命名空间文件（`public/locales/en/common.json`、<code v-pre>{{name}}</code> 标记、`key_one` / `key_other` 后缀） | JSON — `json[]` + `translate-json`（参见 [i18next 命名空间文件](#i18next-namespace-files)） |
-| Intlayer `*.content.ts` 字典 + `useIntlayer` | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) — `migrate-intlayer`，然后是 UI 字符串 |
+| Intlayer `*.content.ts` 词典 + `useIntlayer`（弃用 Intlayer） | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) — `migrate-intlayer`，然后是 UI 字符串 |
+| Intlayer `*.content.ts` 词典（保留 Intlayer，填充翻译） | [就地翻译 Intlayer](/zh-Hans/guide/translating-intlayer) — `translate-intlayer` |
 | 带有 `<text>` / `<title>` / `<desc>` 的图示 `.svg` 文件 | `features.translateSVG` + [`svg`](/zh-Hans/reference/configuration#svg) + `translate-svg`（可选；不是三个主要管道之一） |
 
 字段参考：[配置参考](/zh-Hans/reference/configuration#json) 中的 [`json`](#json)。用于清理的缓存键在 `file_tracking` 中使用 `json-block:{blockIndex}:{projectRelPath}`。
@@ -113,7 +116,7 @@ ai-i18n-tools status
 <a id="i18next-namespace-files"></a>
 ### i18next 命名空间文件
 
-JSON 管道涵盖典型的 i18next 键/值区域设置文件：嵌套对象、字符串数组、值中的 <code v-pre>{{name}}</code> 插值，以及独立的复数后缀键（`welcome_one`、`welcome_other`）。它**不会**重写 `t("some.key")` 调用点——这些调用点仍保持基于键的方式。要将项目迁移到 ai-i18n-tools 的英文源字符串 `t()` 架构，请将调用点更改为 `t("English text")`（或当源为 Intlayer `.content.ts` 时运行 `migrate-intlayer`）。
+JSON 管道涵盖典型的 i18next 键值区域设置文件：嵌套对象、字符串数组、值中的 <code v-pre>{{name}}</code> 插值以及独立的复数后缀键（`welcome_one`、`welcome_other`）。它**不**会重写 `t("some.key")` 调用点——这些调用点仍基于键。要将项目迁移到 ai-i18n-tools 的源字符串 `t()` 架构，请将调用点更改为 `t("source text")`。文本以 `sourceLocale` 编写，它可以是任何语言。当源为 Intlayer `.content.ts` 时，运行 `migrate-intlayer`。要保留 Intlayer 并仅翻译其词典，请使用 [`translate-intlayer`](/zh-Hans/guide/translating-intlayer)。
 
 示例（源英文命名空间位于 `public/locales/en/` 下）：
 

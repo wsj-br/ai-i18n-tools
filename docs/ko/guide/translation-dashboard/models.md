@@ -1,7 +1,7 @@
 <a id="models"></a>
 # 모델
 
-**모델** 탭은 활성 공급자의 채팅 모델 순위를 매기므로 `translationModels`을(를) 수동으로 복사할 필요 없이 선택할 수 있습니다. 이 탭은 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models)과(와) 동일한 순위 지정 방식을 사용합니다.
+**모델** 탭은 활성 공급자의 채팅 모델 순위를 매겨 ID를 수동으로 복사하지 않고도 `translationModels`을(를) 선택할 수 있도록 합니다. 이는 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models)와(과) 동일한 순위를 사용합니다. 목록에 두 개 이상의 모델이 포함된 이유를 포함한 단계별 안내는 [AI 모델](/ko/guide/ai-models)에 있습니다.
 
 **품질** 또는 **가격**을(를) 선택하세요. 품질은 languagebench ChrF 및 Arena 점수를 우선시합니다. 가격은 낮은 USD 요금을 우선시하면서도 품질 하한선을 유지합니다. 구성에 공급자가 둘 이상인 경우 **공급자** 메뉴가 나타납니다. 기본값은 대시보드가 시작된 공급자(`provider` 또는 `dashboard` 명령의 `-P` / `--provider`)입니다. 공급자나 우선순위를 변경하면 테이블이 다시 로드됩니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion)에 있습니다.
 

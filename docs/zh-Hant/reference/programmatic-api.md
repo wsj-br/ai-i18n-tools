@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-從 Node.js 建立設定骨架。第四個引數是內建預設 (`cwd` 是第三個)：
+從 Node.js 搭建設定檔的鷹架。第四個引數是內建的預設組（`cwd` 是第三個）。一個選用的第五個引數 `{ withReadme: true }` 會在範本尚未列出 `README.md` 時附加扁平化的 README 文件區塊，並傳回該區塊是否已新增：
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 主要匯出（常用 — 請參閱 `src/index.ts` 以取得完整的公開介面）：
@@ -53,7 +56,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表，包括可選術語 `Context` 註解。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 載入 `glossary.contextFiles` 和快取失效的指紋指引。 |
 | `runTranslateUI` | 程式化翻譯 UI 的進入點。 |
-| `writeInitConfigFile` | 寫入一個入門設定 JSON (`template`、`cwd`，以及一個必要的 `providerKey`)。 |
+| `writeInitConfigFile` | 寫入入門設定檔 JSON（`template`、`cwd`、一個必要的 `providerKey`，以及選用的 `{ withReadme }`）。傳回 `{ readmeBlockAdded, hasReadmeBlock }`。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |
 | `PROVIDER_PRESETS` | 內建提供者預設映射（`baseUrl`、`apiKeyEnv`）。 |
 
@@ -75,5 +78,5 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `_(message)` | 查閱一個字面值，然後傳回目錄字串或訊息本身。 |
 | `t(template, *, plurals=False, count=None, **values)` | 查閱字面值，然後進行插值。`translate` 是相同的函式。在 Python 3.14 上，`translate(t"Hello, {name}!")` 會保留範本及其值。關鍵字引數會覆寫從範本字串取得的值。 |
 | `ngettext(singular, plural, n, **values)` | 複數查閱，然後進行插值。`count` 可用於格式化字串。 |
-| `pgettext(context, message, **values)` | 內容查閱（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 中的英文來源），然後進行插值。 |
+| `pgettext(context, message, **values)` | 脈絡查詢（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 中的來源語言字串），然後內插。 |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 選擇方塊。寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，呼叫 `set_locale`，並傳回選擇的代碼。 |

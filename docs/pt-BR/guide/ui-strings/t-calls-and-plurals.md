@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## Usando `t()` no código-fonte
 
-Chame `t()` com uma **string literal** para que o script de extração possa encontrá-la:
+Chame `t()` com uma **string literal** em `sourceLocale` para que o script de extração possa encontrá-la. Esse idioma pode ser qualquer um. Os exemplos abaixo usam inglês. Para converter o texto-fonte codificado permanentemente nessas chamadas, consulte [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js).
 
 ```jsx
 import { useTranslation } from 'react-i18next';

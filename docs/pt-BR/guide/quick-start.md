@@ -1,101 +1,147 @@
 <a id="quick-start"></a>
 # Início rápido
 
-O modelo padrão `init` (`ui-markdown`) habilita apenas a extração e tradução de **UI**. Os modelos `ui-docusaurus`, `ui-starlight`, `ui-vitepress`, `ui-nextra` e `ui-fumadocs` habilitam a tradução de **documentos** (`translate-docs`); o `ui-vitepress` também cria a estrutura de `docsOutput.vitepressThemeCatalog` para strings de tema do VitePress, o `ui-nextra` cria a estrutura de `docs[].nextraDictionaryPath` para o dicionário de tema do Nextra (a barra lateral `_meta.ts` é coletada automaticamente) e o `ui-fumadocs` cria a estrutura de `docsOutput.fumadocsUiCatalog` para substituições de UI do Fumadocs (a barra lateral `meta.json` é coletada automaticamente). O modelo `ui-astro-website` cria a estrutura de extração de **UI** para aplicativos Astro simples (incluindo arquivos `.astro`); adicione um bloco `docs[]` (consulte [Páginas do site Astro (parse-and-replace)](/pt-BR/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)) quando você também desejar `translate-docs` para o HTML da página `.astro`. A referência [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) usa **ambos** os pipelines. Os modelos Python são `ui-python`, `ui-python-gettext`, `ui-python-flask` e `ui-python-django` — consulte [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python). Use `sync` quando desejar um comando que execute a extração, tradução de UI, tradução opcional de arquivos SVG e tradução de documentação de acordo com sua configuração.
+Esta página aborda como levar um projeto de um único idioma aos seus primeiros arquivos traduzidos. Ela se destina a um app JS/TS, um app Python, um site ou site de documentação, ou um README de repositório e outros arquivos Markdown. Ela pressupõe:
 
-Projetos Python podem usar o executável independente e ignorar a instalação do Node.js. Etapas de download: [Instalação — Executáveis independentes](/pt-BR/guide/installation#standalone-executables).
+- Node.js `>=22.16.0` ou o [executável autônomo](/pt-BR/guide/installation#standalone-executables) para um projeto Python.
+- Uma chave de API para um provedor de LLM ou uma instalação local do Ollama.
+- O projeto está sob controle de versão, para que você possa revisar o que a ferramenta escreve.
+
+Duas coisas diferem entre os projetos: como a ferramenta encontra seu texto e como seu app carrega o resultado. A seção [Escolha seu caminho](#pick-your-path) abaixo direciona você para o guia certo para isso.
 
 <a id="runnable-examples"></a>
-### Exemplos executáveis
+## Exemplos executáveis
 
-Projetos executáveis e fixtures residem em [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/). Consulte o catálogo de [Exemplos](/pt-BR/examples) para obter a lista completa, comandos de cópia e quais pastas usam `pnpm` em vez de um ambiente virtual Python.
-
-**Execute um exemplo Node.js de forma independente** (sem clonar todo o monorepo):
+Prefere ver um projeto finalizado primeiro? Copie um sem clonar o repositório:
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
-pnpm run i18n:sync    # example scripts call the locally installed CLI
+pnpm run i18n:sync
 ```
 
-Substitua `console-app` por qualquer outro nome de pasta de exemplo do Node.js. Cada um desses exemplos declara um intervalo de versão (caret range) publicado de `ai-i18n-tools` que corresponde à versão atual do pacote e instala a CLI a partir do npm. Exemplos em Python não possuem `package.json`. Copie-os com o mesmo comando `degit` ou use `ai-i18n-tools-python-examples.zip` do GitHub Release e, em seguida, siga [Exemplos — Python](/pt-BR/examples#python-examples).
+Substitua `console-app` por qualquer outro exemplo de Node.js. Os exemplos em Python não têm `package.json`; copie-os da mesma forma ou baixe `ai-i18n-tools-python-examples.zip` do Release do GitHub. A lista completa, com o que cada um demonstra, está na página [Exemplos](/pt-BR/examples).
 
-**Do repositório completo ai-i18n-tools** — se você clonou o repositório inteiro (não apenas uma pasta de exemplo com degit):
+<a id="install"></a>
+## Instalar
 
 ```bash
-pnpm install          # repository root
-pnpm run build        # after changing CLI source
-cd examples/console-app
-pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
+pnpm add -D ai-i18n-tools
 ```
 
-A entrada do espaço de trabalho [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) (`ai-i18n-tools: workspace:*`) vincula os exemplos do espaço de trabalho ao seu checkout local automaticamente. Os fixtures autônomos (`multi-provider`, `test-markdown`) não são pacotes de espaço de trabalho — de sua pasta, use `node ../../bin/ai-i18n-tools.mjs …`. Para executar a CLI da **raiz do repositório** (documentos/i18n deste próprio pacote), use `ai-i18n-tools` puro após `direnv allow`, ou `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` — consulte [Instalação — Monorepo clonado](/pt-BR/guide/installation#cloned-monorepo) e o [Guia de Desenvolvimento](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development).
+`npm install --save-dev ai-i18n-tools` e `yarn add --dev ai-i18n-tools` também funcionam. Projetos em Python instalam o executável autônomo e não precisam do Node.js. Linux e macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Outras opções de instalação: [Instalação](/pt-BR/guide/installation).
 
-<a id="provider-and-api-key-required-for-translation"></a>
-### Provedor e chave de API (obrigatório para tradução)
+<a id="provider-and-api-key"></a>
+## Provedor e chave de API
 
-Todo comando que chama um LLM — `translate-ui`, `translate-docs`, `translate-json`, `translate-svg` e `sync` — precisa **de ambos**:
+Todo comando que chama um LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg` e `sync`) precisa de ambos:
 
-1. **Pelo menos um provedor** em `ai-i18n-tools.config.json`: um bloco `providers.<name>` com `translationModels` e uma chave de nível superior `provider` quando mais de um provedor estiver configurado. `init -P <provider>` gera esse preset; adicione provedores ou ajuste listas de modelos — consulte [Provedores e modelos de LLM](/pt-BR/guide/providers-and-models).
-2. **A chave de API correspondente** em seu ambiente ou em um arquivo `.env` na raiz do projeto. Cada preset integrado lê uma variável de ambiente nomeada da [tabela de presets](/pt-BR/guide/providers-and-models#built-in-providers) (por exemplo, `OPENROUTER_API_KEY` com `-P openrouter`, ou `OPENAI_API_KEY` com `-P openai`); **Ollama** é a exceção — ele usa um endpoint local e não precisa de chave. Consulte [Instalação — defina sua chave de API do provedor](/pt-BR/guide/installation#using-the-cli).
+1. Pelo menos um provedor em `ai-i18n-tools.config.json`: um bloco `providers.<name>` com `translationModels` e uma chave `provider` de nível superior quando mais de um provedor estiver configurado. `init -P <provider>` estrutura essa predefinição. Para adicionar provedores, consulte [Provedores de LLM](/pt-BR/guide/providers-and-models). Para escolher a lista de modelos, consulte [Modelos de IA](/pt-BR/guide/ai-models).
+2. A chave de API correspondente no seu ambiente ou em um arquivo `.env` na raiz do projeto. Cada predefinição integrada lê uma variável nomeada da [tabela de predefinições](/pt-BR/guide/providers-and-models#built-in-providers), por exemplo, `OPENROUTER_API_KEY` com `-P openrouter` ou `OPENAI_API_KEY` com `-P openai`. O Ollama usa um endpoint local e não precisa de chave.
 
-`extract`, `status` e outros comandos que não chamam o LLM não precisam de um provedor ou chave de API.
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+```
+
+`extract`, `status` e outros comandos que não chamam o LLM não precisam de nenhum dos dois. Mais sobre arquivos de ambiente e PATH: [Instalação](/pt-BR/guide/installation#using-the-cli).
+
+<a id="pick-your-path"></a>
+## Escolha seu caminho
+
+Identifique o que você tem, execute os comandos no bloco correspondente e depois continue no guia vinculado.
 
 <a id="core-cli-commands"></a>
-### Comandos principais da CLI
 
-Execute a partir da **raiz do seu projeto** após instalar `ai-i18n-tools` e [configurar seu shell para o comando básico](/pt-BR/guide/installation#using-the-cli). Os exemplos abaixo usam `ai-i18n-tools` diretamente.
+<a id="a-jsts-app"></a>
+### Um app JS/TS
+
+Seus botões e mensagens ainda são texto simples no código-fonte, então a ferramenta ainda não tem o que encontrar. Eles precisam primeiro ser envolvidos em `t()`, e o app precisa de um pequeno arquivo de configuração do i18next.
 
 ```bash
-# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# export OPENAI_API_KEY=sk-your-key-here
-# export CHEAPERINFERENCE_API_KEY=your-key-here
-
-# UI strings (ui-markdown template enables extract + translate-ui)
 ai-i18n-tools init -P openrouter
-ai-i18n-tools suggest-models          # optional: ranked shortlist
-ai-i18n-tools suggest-models --apply  # replace translationModels
-ai-i18n-tools extract
-ai-i18n-tools translate-ui
-
-# Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
-# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
-# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
-# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
-# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
-# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
-# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
-ai-i18n-tools translate-docs
-
-# JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles -P ollama
-ai-i18n-tools translate-json
-
-# Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-ai-i18n-tools sync
-
-# Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-ai-i18n-tools status
-# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools suggest-models --apply
 ```
 
-A lista de modelos escrita por `init` é um ponto de partida. `suggest-models` classifica os modelos de chat do provedor ativo. `suggest-models --apply` substitui `translationModels` e deixa `uiModels` e `localeModels` inalterados. A mesma classificação está na guia [Modelos](/pt-BR/guide/translation-dashboard/models). Referência de comando: [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
+Depois, siga o guia [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js). Ele aborda a etapa de envolvimento, com um prompt de agente, antes de `extract` e `translate-ui`.
+
+<a id="a-python-app"></a>
+### Um app Python
+
+```bash
+ai-i18n-tools init -t ui-python -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+Use `ui-python-gettext`, `ui-python-flask` ou `ui-python-django` para essas configurações. Depois, siga o guia [Adicionar i18n a um app Python](/pt-BR/guide/add-i18n-to-python).
+
+<a id="a-website-or-documentation-site"></a>
+### Um site ou site de documentação
+
+Escolha o template para seu framework:
+
+| Seu site | Template |
+| --- | --- |
+| Astro Starlight | `ui-starlight` |
+| Docusaurus | `ui-docusaurus` |
+| VitePress | `ui-vitepress` |
+| Nextra | `ui-nextra` |
+| Fumadocs | `ui-fumadocs` |
+| Site Astro simples | `ui-astro-website` |
+| Páginas HTML simples | `ui-plain-html` ou `docs-plain-html` |
+
+```bash
+ai-i18n-tools init -t ui-vitepress -P openrouter
+```
+
+Seu framework deve ter o próprio roteamento i18n ativado primeiro. Depois, siga [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website).
+
+<a id="a-readme-or-markdown-docs"></a>
+### Um README ou documentos Markdown
+
+A maioria dos repositórios quer isso junto com o aplicativo: o template padrão `ui-markdown` já inclui um bloco README simples. Para qualquer outro template, adicione `--with-readme`. Um repositório apenas com Markdown usa `docs-markdown`.
+
+```bash
+ai-i18n-tools init -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t docs-markdown -P openrouter
+```
+
+Depois, siga [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme). Cole o marcador da lista de idiomas em `README.md` antes de `sync`. O caminho do aplicativo, quando você tiver um, ainda é [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js) ou [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python).
+
+<a id="something-else"></a>
+### Outros
+
+- JSON i18next aninhado que permanece como está: `ai-i18n-tools init -t ui-json-bundles -P openrouter`, depois [JSON](/pt-BR/guide/json).
+- Diagramas SVG com rótulos de texto: [Tradução de SVG](/pt-BR/guide/svg-translation/).
+- Saindo do Intlayer: [Migrando do Intlayer](/pt-BR/guide/migrating-from-intlayer).
+- Mantendo o Intlayer e apenas preenchendo suas traduções: [Traduzindo o Intlayer no local](/pt-BR/guide/translating-intlayer).
+
+A lista completa de templates, com todas as opções de `init`, está na [Referência de configuração da CLI](/pt-BR/reference/cli-commands/setup).
+
+<a id="run-and-check"></a>
+## Executar e verificar
+
+Quando seu projeto estiver pronto:
+
+```bash
+ai-i18n-tools sync
+ai-i18n-tools status
+```
+
+`sync` executa cada etapa que sua configuração habilita, em ordem. `status` mostra o que é traduzido por localidade. Uma primeira execução em um projeto no qual a ferramenta não consegue ver texto termina sem erros e não escreve nada útil, então se `status` não mostrar nenhuma string, volte para o guia do seu caminho.
+
+`suggest-models` classifica os modelos de chat do provedor ativo com base em benchmarks publicados. `suggest-models --apply` substitui `translationModels` e não altera `uiModels` e `localeModels`. A mesma classificação está na guia **Modelos** do painel. Como a classificação funciona e por que a lista contém mais de um modelo: [Modelos de IA](/pt-BR/guide/ai-models). Referência de comando: [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
+
+<a id="keep-it-translated"></a>
+## Mantenha traduzido
+
+Reexecute `sync` sempre que o texto de origem mudar. Um cache SQLite significa que apenas o texto novo ou alterado vai para o modelo, então as reexecuções são baratas. Executar `sync` em CI evita que as traduções se desalinhem. `ai-i18n-tools dashboard` abre o [Painel de Tradução](/pt-BR/guide/translation-dashboard/) para revisar e editar as traduções em cache.
 
 <a id="recommended-packagejson-scripts"></a>
-### Scripts recomendados do `package.json`
+### Scripts recomendados para package.json
 
-Com o pacote instalado localmente, os scripts `package.json` resolvem `ai-i18n-tools` de `node_modules/.bin` sem configuração extra do shell. Para shells interativos, configure o PATH primeiro — consulte [Usando a CLI](/pt-BR/guide/installation#using-the-cli).
-
-**Prefira** `sync` para qualquer tarefa que antes era “execute `translate-ui`, depois `translate-svg`, depois `translate-docs`, depois `translate-json`”: `ai-i18n-tools sync` executa **extract** (quando habilitado), **translate-ui**, opcional **translate-svg**, **translate-docs** e opcional **translate-json** — na ordem correta e com flags compartilhadas — de acordo com sua configuração. Encadear essas etapas manualmente é propenso a erros (ordem, extração, flags de localidade). Use `i18n:translate:ui`, `i18n:translate:svg`, `i18n:translate:docs` e `i18n:translate:json` apenas quando precisar de uma etapa **única** isoladamente.
+Com o pacote instalado localmente, os scripts resolvem `ai-i18n-tools` de `node_modules/.bin` sem configuração extra do shell. Para um shell interativo, configure o PATH primeiro: consulte [Como usar a CLI](/pt-BR/guide/installation#using-the-cli).
 
 ```json
 {
@@ -112,130 +158,12 @@ Com o pacote instalado localmente, os scripts `package.json` resolvem `ai-i18n-t
 }
 ```
 
-**Dica:** Passe `-L <code>` ou defina `AI_I18N_LANG` se você quiser a saída da CLI e o painel em outro idioma — consulte [Idioma da IU da ferramenta](/pt-BR/guide/tool-ui-language).
+Prefira `sync` em vez de encadear os scripts de tradução individuais. Use os scripts de etapa única apenas quando precisar de uma etapa isoladamente.
+
+Para ter a saída da CLI e o painel em outro idioma, passe `-L <code>` ou defina `AI_I18N_LANG`: consulte [Idioma da interface da ferramenta](/pt-BR/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
-## Sincronização combinada
 
-Habilite todos os recursos em uma única configuração para executar strings de interface do usuário e documentos juntos:
+Traduzindo mais de um tipo de conteúdo, como strings de aplicativos e um site de documentação juntos? Consulte [Como combinar pipelines](/pt-BR/guide/combining-pipelines).
 
-<details>
-<summary>Exemplo de configuração combinada de UI + docs</summary>
-
-```json
-{
-  "sourceLocale": "en-GB",
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
-  "features": {
-    "translateUIStrings": true,
-    "translateDocs": true,
-    "translateSVG": false
-  },
-  "glossary": {
-    "userGlossary": "glossary-user.csv"
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "src/locales/strings.json",
-    "flatOutputDir": "src/locales/"
-  },
-  "cacheDir": ".translation-cache",
-  "docs": [
-    {
-      "contentPaths": ["docs/"],
-      "outputDir": "i18n/",
-      "docsOutput": { "style": "flat" }
-    }
-  ]
-}
-```
-
-</details>
-
-<br />
-
-Os blocos de UI incluem seus catálogos `strings.json` como dicas de glossário para a documentação por padrão (`uiGlossary`). `glossary.userGlossary` adiciona substituições CSV para termos do produto. Consulte o [Glossário](/pt-BR/guide/glossary).
-
-Execute `ai-i18n-tools sync` para executar um pipeline: quando `features.translateUIStrings` estiver habilitado, **extraia** e depois **traduza** strings da UI; opcionalmente **traduza SVG** (bloco `features.translateSVG` + `svg`); **traduza a documentação** (`docs[]` conforme configurado); depois, opcionalmente, **traduza JSON** (`features.translateJson` + `json[]`). Pule partes com `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`. As etapas de documentação e `json[]` aceitam `--dry-run`, `-p` / `--path`, `--force`, `--force-update` e `--check-cache` (flags somente de documentação são ignoradas quando `--no-docs`; JSON usa as mesmas flags de cache quando `--no-json` não está definido).
-
-Use `docs[].targetLocales` em um bloco para traduzir os arquivos desse bloco para um **subconjunto menor** do que a interface (as localidades efetivas da documentação são a **união** entre blocos):
-
-```json
-{
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
-  "docs": [
-    {
-      "contentPaths": ["docs/"],
-      "outputDir": "i18n/",
-      "targetLocales": ["de", "fr", "es"]
-    }
-  ]
-}
-```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
-### Configuração de documentação mista (`docsOutput.style = "docusaurus"` + `"flat"`)
-
-Você pode combinar múltiplos pipelines de documentação na mesma configuração adicionando mais de uma entrada em `docs`. Essa é uma configuração comum quando um projeto possui um site Docusaurus (`docsOutput.style = "docusaurus"`) além de arquivos markdown no nível raiz (por exemplo, um README de repositório com `docsOutput.style = "flat"`) que devem ser traduzidos com nomes de arquivo sufixados pela localidade.
-
-<details>
-<summary>Exemplo de configuração mista Docusaurus + README plana</summary>
-
-```json
-{
-  "sourceLocale": "en-GB",
-  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
-  "features": {
-    "translateUIStrings": true,
-    "translateDocs": true
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "locales/strings.json",
-    "flatOutputDir": "public/locales/"
-  },
-  "cacheDir": ".translation-cache",
-  "docs": [
-    {
-      "description": "Docusaurus site content (markdown)",
-      "contentPaths": ["docs-site/docs/"],
-      "outputDir": "docs-site/i18n",
-      "docusaurusCatalogDir": "docs-site/i18n/en",
-      "addFrontmatter": true,
-      "docsOutput": {
-        "style": "docusaurus",
-        "docsRoot": "docs-site/docs"
-      }
-    },
-    {
-      "description": "Root README with docsOutput.style flat",
-      "contentPaths": ["README.md"],
-      "outputDir": "translated-docs",
-      "addFrontmatter": false,
-      "docsOutput": {
-        "style": "flat",
-        "postProcessing": {
-          "languageListBlock": {
-            "start": "<small id=\"lang-list\">",
-            "end": "</small>",
-            "separator": " · ",
-            "label": "local"
-          }
-        }
-      }
-    }
-  ]
-}
-```
-
-</details>
-
-<br />
-
-Como isso é executado com `ai-i18n-tools sync`:
-
-- Strings de interface são extraídas/traduzidas de `src/` para `public/locales/`.
-- O primeiro bloco de documentação traduz **markdown** de `docs-site/docs/` para `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/` (páginas de documentação localizadas).
-- Com `docs[].docusaurusCatalogDir` definido e `features.translateDocs` habilitado, esse mesmo bloco também traduz o **JSON do shell do Docusaurus** em `docs-site/i18n/en/` para cada pasta de localidade de destino — navbar, rodapé e catálogos de tema/plugin, não o conteúdo do corpo MDX.
-- O segundo bloco de documentação traduz `README.md` para arquivos com sufixo de localidade em `translated-docs/` (`docsOutput.style = "flat"`).
-- Todos os blocos de docs compartilham `cacheDir`, portanto segmentos inalterados são reutilizados entre execuções para reduzir chamadas à API e custos.
+A seguir: o guia para o seu caminho em [Escolha seu caminho](#pick-your-path).

@@ -1,27 +1,27 @@
 <a id="python"></a>
 # Python
 
-Python 애플리케이션용 선택기입니다. 추출, 카탈로그 및 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱에 대한 단계별 가이드는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 참조하십시오.
+Python 애플리케이션용 선택기입니다. 추출, 카탈로그, 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱에 대한 단계별 안내는 [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)이며, [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-i18n-py)와 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext)가 포함됩니다.
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생성된 `i18n.py` 헬퍼(Python 3.10 이상)를 호출합니다. Django는 Django의 gettext를 유지합니다. 저장소에는 `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` 및 `examples/python-gettext`라는 4개의 실행 가능한 복사본이 포함되어 있습니다. Pyramid, Django, Tkinter, Qt 및 PyWebView에는 별도의 예제 디렉터리가 없습니다.
 
 <a id="which-template"></a>
 ## 어떤 템플릿을 사용할 것인가
 
-| 프레임워크 | 초기화 템플릿 | 카탈로그 | 예제 |
+| 프레임워크 | Init 템플릿 | 카탈로그 | 예제 |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | 플랫 영어 키 JSON | [python-streamlit](/ko/examples#python-streamlit) |
-| FastAPI | `ui-python` | 플랫 영어 키 JSON | [python-fastapi](/ko/examples#python-fastapi) |
-| Flask + Jinja, 플랫 JSON | `ui-python` | 플랫 영어 키 JSON | [python-flask](/ko/examples#python-flask) |
+| Streamlit | `ui-python` | 소스 문자열을 키로 사용하는 플랫 JSON | [python-streamlit](/ko/examples#python-streamlit) |
+| FastAPI | `ui-python` | 소스 문자열을 키로 사용하는 플랫 JSON | [python-fastapi](/ko/examples#python-fastapi) |
+| Flask + Jinja, flat JSON | `ui-python` | 소스 문자열을 키로 사용하는 플랫 JSON | [python-flask](/ko/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `translations/` 하위의 `.po` / `.mo` | 아래의 Flask 참고 사항을 사용하십시오 |
 | Pyramid | `ui-python` 또는 `ui-python-flask` | Flask와 동일 | Flask와 동일한 배선 |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | 예제 디렉터리 없음 |
 | 기존 GNU gettext | `ui-python-gettext` | 플랫 JSON 및 `.po` / `.mo`, 또는 gettext 전용 | [python-gettext](/ko/examples#python-gettext) |
-| Tkinter | `ui-python` | 플랫 영어 키 JSON | 예제 디렉터리 없음 |
+| Tkinter | `ui-python` | 소스 문자열을 키로 사용하는 플랫 JSON | 예제 디렉터리 없음 |
 | PyQt / PySide | `ui-python` 또는 gettext 템플릿 | 플랫 JSON 및/또는 `.po` | 예제 디렉터리 없음 |
 | PyWebView / PyWebKit | 셸용 Python 템플릿 | 셸 카탈로그 및 HTML 마커 또는 로케일당 HTML 파일 하나 | 예제 디렉터리 없음 |
 
-`ui-python`, `ui-python-gettext` 및 `ui-python-flask`는 해당 파일이 누락된 경우 `i18n.py`을 작성합니다. `ui-python-django`는 그렇지 않습니다.
+`ui-python`, `ui-python-gettext`, `ui-python-flask`는 해당 파일이 없을 때 `i18n.py` 파일을 작성합니다. `ui-python-django`는 그렇지 않습니다. 리포지토리 README도 번역하려면 `--with-readme`를 추가하세요: [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme).
 
 <a id="framework-notes"></a>
 ## 프레임워크 참고 사항

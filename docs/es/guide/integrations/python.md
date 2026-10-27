@@ -1,27 +1,27 @@
 <a id="python"></a>
 # Python
 
-Selector para aplicaciones Python. La extracción, los catálogos y las formas de llamada residen en [aplicaciones Python](/es/guide/ui-strings/python). El procedimiento paso a paso para una aplicación existente de un solo idioma es [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python).
+Selector para aplicaciones Python. La extracción, los catálogos y las formas de llamada residen en [aplicaciones Python](/es/guide/ui-strings/python). El paso a paso para una aplicación existente de una sola configuración regional es [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python), con un [prompt de `i18n.py`](/es/guide/add-i18n-to-python#agent-prompt-i18n-py) y un [prompt de Django / gettext](/es/guide/add-i18n-to-python#agent-prompt-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide y PyWebView llaman al asistente `i18n.py` generado (Python 3.10 o superior). Django mantiene el gettext de Django. Se incluyen cuatro copias ejecutables en el repositorio: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` y `examples/python-gettext`. Pyramid, Django, Tkinter, Qt y PyWebView no tienen un directorio de ejemplos independiente.
 
 <a id="which-template"></a>
 ## Qué plantilla elegir
 
-| Framework | Plantilla de inicio | Catálogo | Ejemplo |
+| Framework | Plantilla de inicialización | Catálogo | Ejemplo |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | JSON plano con claves en inglés | [python-streamlit](/es/examples#python-streamlit) |
-| FastAPI | `ui-python` | JSON plano con claves en inglés | [python-fastapi](/es/examples#python-fastapi) |
-| Flask + Jinja, JSON plano | `ui-python` | JSON plano con claves en inglés | [python-flask](/es/examples#python-flask) |
+| Streamlit | `ui-python` | JSON plano indexado por la cadena de origen | [python-streamlit](/es/examples#python-streamlit) |
+| FastAPI | `ui-python` | JSON plano indexado por la cadena de origen | [python-fastapi](/es/examples#python-fastapi) |
+| Flask + Jinja, JSON plano | `ui-python` | JSON plano indexado por la cadena de origen | [python-flask](/es/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` bajo `translations/` | Utilice las notas de Flask a continuación |
 | Pyramid | `ui-python` o `ui-python-flask` | Igual que Flask | Misma configuración que Flask |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | Sin directorio de ejemplos |
 | GNU gettext existente | `ui-python-gettext` | JSON plano y `.po` / `.mo`, o solo gettext | [python-gettext](/es/examples#python-gettext) |
-| Tkinter | `ui-python` | JSON plano con claves en inglés | Sin directorio de ejemplos |
+| Tkinter | `ui-python` | JSON plano indexado por la cadena de origen | Sin directorio de ejemplo |
 | PyQt / PySide | `ui-python` o una plantilla gettext | JSON plano y/o `.po` | Sin directorio de ejemplos |
 | PyWebView / PyWebKit | Una plantilla Python para el shell | Catálogos de shell, además de marcadores HTML o un archivo HTML por idioma | Sin directorio de ejemplos |
 
-`ui-python`, `ui-python-gettext` y `ui-python-flask` escriben `i18n.py` cuando falta ese archivo. `ui-python-django` no lo hace.
+`ui-python`, `ui-python-gettext` y `ui-python-flask` escriben `i18n.py` cuando falta ese archivo. `ui-python-django` no lo hace. Añada `--with-readme` para traducir también el README del repositorio: [Añada i18n a su README y documentos Markdown](/es/guide/add-i18n-to-readme).
 
 <a id="framework-notes"></a>
 ## Notas sobre los frameworks

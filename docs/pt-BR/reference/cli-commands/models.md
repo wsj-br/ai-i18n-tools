@@ -8,7 +8,7 @@
 
 Valida cada ID de modelo configurado em relação à lista `GET /models` do provedor ativo (associação e `expiration_date`). Requer a chave de API desse provedor (nenhuma para provedores sem chave como Ollama). Retorna um código de saída diferente de zero quando qualquer ID configurado está ausente ou expirado, e respeita o tempo limite de solicitação resolvido (`requestTimeout` ou `requestTimeoutMs` no provedor, caso contrário, o valor de nível superior). Quando o provedor retorna preços (por exemplo, OpenRouter), também mostra USD por 1M de tokens para prompt/conclusão. Quando `providers.cheaperinference.zeroDataRetention` é verdadeiro, a verificação usa `GET /v1/models?zdr=true` e falha um ID que o catálogo omite.
 
-**Ver também:** [Provedores LLM](/pt-BR/guide/providers-and-models)
+**Consulte também:** [Modelos de IA](/pt-BR/guide/ai-models#check-models), [Provedores de LLM](/pt-BR/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Lista todos os modelos que o provedor ativo anuncia por meio de sua lista `GET /
 
 **Opções principais:** `-P` / `--provider`
 
-**Ver também:** [Provedores LLM](/pt-BR/guide/providers-and-models)
+**Consulte também:** [Modelos de IA](/pt-BR/guide/ai-models#list-models), [Provedores de LLM](/pt-BR/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ O rodapé atribui o languagebench (CC BY-SA 4.0), o LMArena Arena Score (CC BY 4
 
 **Opções principais:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**Veja também:** [Provedores de LLM](/pt-BR/guide/providers-and-models), [Guia Models](/pt-BR/guide/translation-dashboard/models)
+**Consulte também:** [Modelos de IA](/pt-BR/guide/ai-models), [Guia Modelos](/pt-BR/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ Avalia cada modelo configurado traduzindo uma amostra isoladamente (cliente de m
 Os modelos padrão são a união dos IDs `translationModels`, `uiModels` e `localeModels` do provedor ativo (substitua por `--model`); a amostra padrão é um bloco de markdown em inglês integrado (substitua por `--text` / `--file`); a origem/destino padrão é a configuração `sourceLocale` e o primeiro local de destino `docs[]`, retornando ao `targetLocales` de nível superior (substitua por `--source` / `--target`). Executa modelos em paralelo, limitado pela configuração `concurrency` (padrão 4); cada modelo ainda é cronometrado individualmente. Requer a chave de API do provedor ativo.
 
 **Opções principais:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**Consulte também:** [Modelos de IA](/pt-BR/guide/ai-models#bench-models)
 
 ---
 

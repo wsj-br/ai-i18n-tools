@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Générer une configuration à partir de Node.js. Le quatrième argument est le préréglage intégré (`cwd` est le troisième) :
+Générer une configuration à partir de Node.js. Le quatrième argument est le préréglage intégré (`cwd` est le troisième). Un cinquième argument facultatif `{ withReadme: true }` ajoute le bloc de documentation README au format plat si le modèle ne contient pas déjà `README.md`, et indique si ce bloc a été ajouté :
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 Exportations clés (couramment utilisées — voir `src/index.ts` pour la surface publique complète) :
@@ -53,7 +56,7 @@ Exportations clés (couramment utilisées — voir `src/index.ts` pour la surfac
 | `Glossary` / `GlossaryMatcher` | Charger et appliquer les glossaires de traduction, y compris les notes de `Context` de terme facultatives. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Charger les `glossary.contextFiles` et les directives d'empreinte pour l'invalidation du cache. |
 | `runTranslateUI` | Point d'entrée programmatique pour l'interface de traduction. |
-| `writeInitConfigFile` | Écrit un JSON de configuration de base (`template`, `cwd`, et un `providerKey` requis). |
+| `writeInitConfigFile` | Écrit un fichier JSON de configuration de démarrage (`template`, `cwd`, un `providerKey` requis, et un `{ withReadme }` facultatif). Renvoie `{ readmeBlockAdded, hasReadmeBlock }`. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` de démarrage par préréglage intégré utilisé par `init -P`. |
 | `PROVIDER_PRESETS` | Mappage prédéfini du fournisseur intégré (`baseUrl`, `apiKeyEnv`). |
 
@@ -75,5 +78,5 @@ Formes d'appel, f-strings non sécurisées et configuration des paramètres rég
 | `_(message)` | Recherche un littéral, puis renvoie la chaîne du catalogue ou le message lui-même. |
 | `t(template, *, plurals=False, count=None, **values)` | Recherche le littéral, puis effectue l'interpolation. `translate` est la même fonction. Sur Python 3.14, `translate(t"Hello, {name}!")` conserve le modèle et ses valeurs. Les arguments nommés remplacent les valeurs extraites d'une chaîne de modèle. |
 | `ngettext(singular, plural, n, **values)` | Recherche au pluriel, puis effectue l'interpolation. `count` est disponible pour la chaîne de formatage. |
-| `pgettext(context, message, **values)` | Recherche contextuelle (`msgctxt`, ou `context` + U+0004 + la source anglaise en JSON plat), puis effectue l'interpolation. |
+| `pgettext(context, message, **values)` | Recherche de contexte (`msgctxt`, ou `context` + U+0004 + la chaîne de caractères en langue source au format JSON plat), puis interpoler. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Zone de sélection Streamlit. Écrit `st.session_state.locale` et `st.query_params["lang"]`, appelle `set_locale` et renvoie le code choisi. |

@@ -17,13 +17,32 @@ Atualiza `strings.json` a partir de literais `t("…")` / `i18n.t("…")`, descr
 
 **Sinopse:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-Importa dicionários Intlayer `*.content.ts` para arquivos de localidade simples e `strings.json`, e reescreve chamadas simples de `useIntlayer` / `getIntlayer` para `t('English source')`. Execução a seco por padrão (o relatório ainda é gravado). `--write` preenche o catálogo e aplica reescritas seguras. Não chama um LLM.
+Importa dicionários `*.content.ts` do Intlayer para `strings.json` e arquivos de localidade simples, e reescreve locais de chamada simples de `useIntlayer` / `getIntlayer` para `t('source string')`. A string é escrita em `sourceLocale`, que pode ser qualquer idioma. Execução de teste por padrão (o relatório ainda é escrito). `--write` preenche o catálogo e aplica reescritas seguras. Não chama um LLM.
 
 O relatório é a transição de tudo o que `--write` deixa para trás, e termina com um **TODO passo a passo** que organiza o restante do trabalho: uma chamada concreta `t()` ou JSX para cada site manual, a linha `import { t }`, os arquivos de dicionário e os resíduos de `IntlayerProvider` a serem excluídos posteriormente, strings de origem que precisam de `extract` e, em seguida, `translate-ui`, e um bootstrap de runtime do i18next para colar sobre o módulo i18n do aplicativo. O controle de localidade deve chamar `i18n.changeLanguage` e também `loadLocale`. `extract` grava `ui-languages.json`, que esse bootstrap importa. Não edite `strings.json`, os arquivos de localidade planos, ou `ui-languages.json` manualmente.
 
 **Opções principais:** `--write`, `--report`, `--content-glob` (padrão `**/*.content.ts`), `--t-import`
 
 **Ver também:** [Migrando do Intlayer](/pt-BR/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**Sinopse:** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+Traduza as folhas de localidade ausentes e desatualizadas dentro dos dicionários `*.content.ts` do Intlayer no local, mantendo os dicionários como a fonte da verdade. Diferente de [`migrate-intlayer`](#migrate-intlayer), isso não move o aplicativo para fora do Intlayer; apenas preenche as folhas `t({ … })`. Use-o quando quiser manter o Intlayer em tempo de execução e usar o ai-i18n-tools como o mecanismo de tradução.
+
+Ele extrai cada folha `t({ … })`, preenche o `strings.json` do bloco de UI escolhido com o texto de origem, executa o mesmo mecanismo que [`translate-ui`](#translate-ui) (seleção de provedor, glossário, contexto de tradução e fallback de modelo) e, em seguida, escreve as novas strings por localidade de volta em cada objeto `t({ … })`. As edições são cirúrgicas: apenas as linhas de localidade ausentes ou desatualizadas mudam, para que sua formatação e comentários sejam preservados. Os placeholders `{token}` do Intlayer fazem uma viagem de ida e volta para <code v-pre>{{token}}</code> para tradução e vice-versa.
+
+Uma folha+localidade é traduzida quando a localidade está ausente da folha (ausente) ou quando o texto da localidade de origem mudou desde a última execução para essa localidade (desatualizado). A desatualização é rastreada em `cacheDir`, portanto, editar essa string de origem retraduz essa folha na próxima execução. O idioma de origem é `sourceLocale` e pode ser qualquer idioma. `--dry-run` relata as contagens de ausentes/desatualizados sem chamar um LLM ou escrever nada. Requer `features.translateUIStrings` e o `stringsJson` do bloco de UI (o mesmo que `translate-ui`).
+
+**Opções principais:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
+
+`[paths...]`: arquivos/diretórios/globs para escanear (padrão: o `sourceRoots` do bloco). `-l` / `--locale`: localidades de destino separadas por vírgula para preencher (padrão: o `targetLocales` configurado do bloco). `--ui-block`: índice baseado em zero, descrição ou caminho `stringsJson` (padrão: bloco 0). `-j` paraleliza as localidades.
+
+**Consulte também:** [migrate-intlayer](#migrate-intlayer), [Migrando do Intlayer](/pt-BR/guide/migrating-from-intlayer)
 
 ---
 

@@ -12,9 +12,9 @@ Aqui, o destino do link é `setup.md`, e `#first-run` é a âncora: deve rolar a
 <a id="why-anchor-links-need-attention"></a>
 ## Por que os links âncora precisam de atenção
 
-- `rewriteRelativeLinks` corrige o **nome do arquivo** para cada localidade (`setup.md` → `setup.de.md`).
-- Muitos renderizadores derivam o slug `#` do **texto visível do título**. Após a tradução, os títulos diferem por localidade, então um slug gerado automaticamente pode mudar enquanto o link reescrito ainda pode dizer `#first-run` — ou seu âncora em inglês `#…` não corresponde mais ao slug que o renderizador cria a partir do título traduzido.
-- Resultado: os leitores chegam ao **arquivo** certo, mas na **linha errada**, ou o navegador não encontra um título correspondente.
+- `rewriteRelativeLinks` fixa o **nome de arquivo** para cada localidade (`setup.md` → `setup.de.md`).
+- Muitos renderizadores derivam o slug `#` do **texto do cabeçalho visível**. Após a tradução, os cabeçalhos diferem por localidade, então um slug gerado automaticamente pode mudar, enquanto o link reescrito ainda pode dizer `#first-run` — ou a âncora `#…` da localidade de origem não corresponde mais ao slug que o renderizador cria a partir do cabeçalho traduzido. O idioma de origem é `sourceLocale` e pode ser qualquer idioma.
+- Resultado: os leitores chegam ao **arquivo** certo, mas na **linha errada**, ou o navegador não encontra nenhum cabeçalho correspondente.
 
 <a id="what-to-do"></a>
 ## O que fazer

@@ -2148,7 +2148,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 399
+        "line": 400
       }
     ]
   },
@@ -2181,7 +2181,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 432
+        "line": 433
       }
     ]
   },
@@ -2214,7 +2214,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 545
+        "line": 546
       }
     ]
   },
@@ -2245,7 +2245,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 876
+        "line": 877
       }
     ]
   },
@@ -2276,7 +2276,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 893
+        "line": 894
       }
     ]
   },
@@ -2309,7 +2309,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1190
+        "line": 1191
       }
     ]
   },
@@ -2342,7 +2342,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1221
+        "line": 1222
       }
     ]
   },
@@ -2375,7 +2375,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1232
+        "line": 1233
       }
     ]
   },
@@ -2408,11 +2408,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1278
+        "line": 1279
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1650
+        "line": 1651
       }
     ]
   },
@@ -2445,7 +2445,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1599
+        "line": 1600
       }
     ]
   },
@@ -2478,7 +2478,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1617
+        "line": 1618
       }
     ]
   },
@@ -2511,7 +2511,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1773
+        "line": 1774
       }
     ]
   },
@@ -2544,19 +2544,19 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1837
+        "line": 1838
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2226
+        "line": 2227
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2960
+        "line": 2961
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3211
+        "line": 3212
       }
     ]
   },
@@ -2589,15 +2589,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1865
+        "line": 1866
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2254
+        "line": 2255
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2614
+        "line": 2615
       }
     ]
   },
@@ -2630,7 +2630,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1886
+        "line": 1887
       }
     ]
   },
@@ -2663,15 +2663,15 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 1956
+        "line": 1957
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2345
+        "line": 2346
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2713
+        "line": 2714
       }
     ]
   },
@@ -2704,7 +2704,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2279
+        "line": 2280
       }
     ]
   },
@@ -2735,7 +2735,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2634
+        "line": 2635
       }
     ]
   },
@@ -2766,7 +2766,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2646
+        "line": 2647
       }
     ]
   },
@@ -2799,11 +2799,11 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2911
+        "line": 2912
       },
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3485
+        "line": 3486
       }
     ]
   },
@@ -2836,7 +2836,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 2988
+        "line": 2989
       }
     ]
   },
@@ -2869,7 +2869,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3007
+        "line": 3008
       }
     ]
   },
@@ -2902,7 +2902,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3239
+        "line": 3240
       }
     ]
   },
@@ -2935,7 +2935,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3283
+        "line": 3284
       }
     ]
   },
@@ -2968,7 +2968,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3507
+        "line": 3508
       }
     ]
   },
@@ -3001,7 +3001,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3508
+        "line": 3509
       }
     ]
   },
@@ -3034,7 +3034,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3511
+        "line": 3512
       }
     ]
   },
@@ -3065,7 +3065,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3582
+        "line": 3583
       },
       {
         "file": "src/cli/translate-ui-strings.ts",
@@ -3102,7 +3102,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3603
+        "line": 3604
       }
     ]
   },
@@ -3135,7 +3135,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3608
+        "line": 3609
       }
     ]
   },
@@ -3168,7 +3168,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3627
+        "line": 3628
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3207,7 +3207,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3630
+        "line": 3631
       }
     ]
   },
@@ -3238,7 +3238,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3632
+        "line": 3633
       }
     ]
   },
@@ -3271,7 +3271,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3640
+        "line": 3641
       }
     ]
   },
@@ -3304,7 +3304,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3643
+        "line": 3644
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3345,7 +3345,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3646
+        "line": 3647
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3386,7 +3386,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3660
+        "line": 3661
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3423,7 +3423,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3662
+        "line": 3663
       }
     ]
   },
@@ -3456,7 +3456,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3665
+        "line": 3666
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3493,7 +3493,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3668
+        "line": 3669
       }
     ]
   },
@@ -3526,7 +3526,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 3671
+        "line": 3672
       }
     ]
   },
@@ -3559,7 +3559,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 4052
+        "line": 4053
       },
       {
         "file": "src/cli/translate-svg.ts",
@@ -3600,7 +3600,7 @@
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
-        "line": 4100
+        "line": 4101
       }
     ]
   },
@@ -6113,12 +6113,6 @@
       "ko": "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | docs-markdown | ui-python | ui-python-gettext | ui-python-django | ui-python-flask",
       "zh-Hant": "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | docs-markdown | ui-python | ui-python-gettext | ui-python-django | ui-python-flask"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 786
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6129,7 +6123,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 786
+      }
+    ]
   },
   "d5eeace2": {
     "source": "Create a starter .translate-ignore",
@@ -6177,12 +6177,6 @@
       "ko": "또한 README.md 번역 블록(언어 목록이 있는 플랫 출력)을 추가합니다.",
       "zh-Hant": "也新增一個 README.md 翻譯區塊 (包含語言列表的平面輸出)"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 794
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6193,7 +6187,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 794
+      }
+    ]
   },
   "de12966d": {
     "source": "Examples:\n  ai-i18n-tools init -P openrouter\n  ai-i18n-tools init -t ui-docusaurus -P openai\n  ai-i18n-tools init -t docs-markdown -P openrouter\n  ai-i18n-tools init -t ui-python -P openrouter --with-readme\n  ai-i18n-tools init -P cheaperinference --with-translate-ignore\n\nBuilt-in presets for -P / --provider (required):\n  {{presets}}",
@@ -6208,12 +6208,6 @@
       "ko": "예시:\n  ai-i18n-tools init -P openrouter\n  ai-i18n-tools init -t ui-docusaurus -P openai\n  ai-i18n-tools init -t docs-markdown -P openrouter\n  ai-i18n-tools init -t ui-python -P openrouter --with-readme\n  ai-i18n-tools init -P cheaperinference --with-translate-ignore\n\n-P / --provider에 대한 내장 프리셋(필수):\n  {{presets}}",
       "zh-Hant": "範例：\n  ai-i18n-tools init -P openrouter\n  ai-i18n-tools init -t ui-docusaurus -P openai\n  ai-i18n-tools init -t docs-markdown -P openrouter\n  ai-i18n-tools init -t ui-python -P openrouter --with-readme\n  ai-i18n-tools init -P cheaperinference --with-translate-ignore\n\n-P / --provider 的內建預設值 (必填)：\n  {{presets}}"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 799
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6224,7 +6218,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 799
+      }
+    ]
   },
   "8da837b4": {
     "source": "init requires -P / --provider <name>. Choose a built-in preset: {{presets}}",
@@ -6270,12 +6270,6 @@
       "ko": "템플릿은 \"ui-markdown\", \"ui-docusaurus\", \"ui-starlight\", \"ui-vitepress\", \"ui-nextra\", \"ui-fumadocs\", \"ui-astro-website\", \"ui-plain-html\", \"docs-plain-html\", \"docs-markdown\", \"ui-json-bundles\", \"ui-python\", \"ui-python-gettext\", \"ui-python-django\", 또는 \"ui-python-flask\"여야 합니다.",
       "zh-Hant": "範本必須是「ui-markdown」、「ui-docusaurus」、「ui-starlight」、「ui-vitepress」、「ui-nextra」、「ui-fumadocs」、「ui-astro-website」、「ui-plain-html」、「docs-plain-html」、「docs-markdown」、「ui-json-bundles」、「ui-python」、「ui-python-gettext」、「ui-python-django」或「ui-python-flask」。"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 863
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6286,7 +6280,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 863
+      }
+    ]
   },
   "dbda5189": {
     "source": "Wrote {{path}} ({{template}}, provider: {{provider}})",
@@ -6334,12 +6334,6 @@
       "ko": "{{path}}에 README.md 번역 블록을 추가했습니다.",
       "zh-Hant": "已新增一個 README.md 翻譯區塊到 {{path}}"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 881
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6350,7 +6344,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 881
+      }
+    ]
   },
   "ce76b898": {
     "source": "Add this line to README.md so the language list can be filled in:",
@@ -6365,12 +6365,6 @@
       "ko": "언어 목록을 채울 수 있도록 이 줄을 README.md에 추가하세요:",
       "zh-Hant": "將此行新增到 README.md，以便填入語言列表："
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 884
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6381,7 +6375,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 884
+      }
+    ]
   },
   "7a555e08": {
     "source": "No README.md in this directory. Create one and add the language-list markers before you translate.",
@@ -6396,12 +6396,6 @@
       "ko": "이 디렉터리에 README.md가 없습니다. 번역하기 전에 하나를 만들고 언어 목록 마커를 추가하세요.",
       "zh-Hant": "此目錄中沒有 README.md。請建立一個並新增語言列表標記，然後再翻譯。"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 888
-      }
-    ],
     "models": {
       "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
@@ -6412,7 +6406,13 @@
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 888
+      }
+    ]
   },
   "276a0acf": {
     "source": "Wrote i18n.py",

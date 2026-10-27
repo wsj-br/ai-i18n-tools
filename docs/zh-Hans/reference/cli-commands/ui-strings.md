@@ -17,13 +17,32 @@
 
 **概要：** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-将 Intlayer `*.content.ts` 字典导入到 `strings.json` 和扁平化区域设置文件中，并将简单的 `useIntlayer` / `getIntlayer` 调用点重写为 `t('English source')`。默认进行试运行（仍会写入报告）。`--write` 会初始化目录并应用安全的重写。不调用 LLM。
+将 Intlayer `*.content.ts` 词典导入 `strings.json` 和扁平化区域设置文件，并将简单的 `useIntlayer` / `getIntlayer` 调用站点重写为 `t('source string')`。字符串以 `sourceLocale` 编写，它可以是任何语言。默认情况下为试运行（但仍会写入报告）。`--write` 会为目录植入种子数据并应用安全的重写。不会调用 LLM。
 
 该报告是 `--write` 留下的所有内容的交接文档，并以**分步待办事项**结尾，安排了剩余的工作：每个手动站点对应的具体 `t()` 或 JSX 调用、`import { t }` 行、之后需要删除的字典文件和 `IntlayerProvider` 遗留内容、需要先 `extract` 再 `translate-ui` 的源字符串，以及一段用于覆盖应用 i18n 模块的 i18next 运行时引导代码。区域设置控件必须调用 `i18n.changeLanguage` 以及 `loadLocale`。`extract` 会写入 `ui-languages.json`，并由该引导代码导入。请勿手动编辑 `strings.json`、扁平化区域设置文件或 `ui-languages.json`。
 
 **主要选项：** `--write`, `--report`, `--content-glob` (默认 `**/*.content.ts`), `--t-import`
 
 **另请参阅：** [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**概要：** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+就地翻译 Intlayer `*.content.ts` 词典内缺失和过时的区域设置叶节点，并保持词典作为信源。与 [`migrate-intlayer`](#migrate-intlayer) 不同，此命令不会将应用从 Intlayer 迁移出去；它只填充 `t({ … })` 叶节点。当您希望在运行时保留 Intlayer 并使用 ai-i18n-tools 作为翻译引擎时，请使用此命令。
+
+它会提取每个 `t({ … })` 叶节点，用源文本为所选 UI 块的 `strings.json` 植入种子数据，运行与 [`translate-ui`](#translate-ui) 相同的引擎（提供商选择、术语表、翻译上下文和模型回退），然后将每个区域设置的新字符串写回到每个 `t({ … })` 对象中。编辑是“外科手术式”的：只有缺失或过时的区域设置行会发生更改，因此您的格式和注释都会被保留。Intlayer `{token}` 占位符会往返转换为 <code v-pre>{{token}}</code> 以进行翻译，然后再转换回来。
+
+当叶节点中缺少某个区域设置（缺失）时，或者当源区域设置的文本自上次针对该区域设置运行以来已发生更改（过时）时，会翻译“叶节点+区域设置”。过时状态在 `cacheDir` 中进行跟踪，因此编辑该源字符串会在下次运行时重新翻译该叶节点。源语言是 `sourceLocale`，并且可以是任何语言。`--dry-run` 会报告缺失/过时的计数，而不会调用 LLM 或写入任何内容。需要 `features.translateUIStrings` 和 UI 块的 `stringsJson`（与 `translate-ui` 相同）。
+
+**关键选项：** `-l` / `--locale`、`--ui-block`、`--dry-run`、`-j` / `--concurrency`
+
+`[paths...]`：要扫描的文件/目录/glob 模式（默认值：块的 `sourceRoots`）。`-l` / `--locale`：要填充的目标区域设置，以逗号分隔（默认值：块配置的 `targetLocales`）。`--ui-block`：从零开始的索引、描述或 `stringsJson` 路径（默认值：块 0）。`-j` 可并行处理区域设置。
+
+**另请参阅：** [migrate-intlayer](#migrate-intlayer)、[从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)
 
 ---
 

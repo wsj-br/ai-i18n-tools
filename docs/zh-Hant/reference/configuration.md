@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-來源語言的 BCP-47 代碼（例如 `"en-GB"`、`"en"`、`"pt-BR"`）。此語系不會產生翻譯檔案——鍵值字串本身即為來源文字。
+來源語言的 BCP-47 代碼（例如 `"en-GB"`、`"pt-BR"` 或 `"ja"`）。任何語言皆可。範例中出現英文是因為許多專案都從英文開始。此語區不會產生翻譯檔案——鍵字串本身就是來源文字。
 
 **必須符合** 從您的執行階段 i18n 設定檔（`src/i18n.ts` / `src/i18n.js`）匯出的 `SOURCE_LOCALE`。
 
@@ -167,9 +167,9 @@
 
 如需在一個設定中配置多個供應商並透過 `-P` 在其間切換的可執行範例，請參閱 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（同一文件中的 `openai`、`anthropic`、`openrouter` 與 `deepseek`）。
 
-**為何使用多個模型：** 不同的提供者和模型在成本和品質上有所差異，且在不同語言和地區的表現也不同。將 `translationModels` 設定為**有序的備用鏈**（而非單一模型），以便在請求失敗時，CLI 可以嘗試下一個模型。
+**為何要使用多個模型：** 不同的供應商和模型有不同的成本，且在不同語言和地區設定中提供的品質水準也不同。將 `translationModels` 設定為一個有序的備援鏈，這樣一來，如果請求失敗，CLI 就能嘗試下一個模型。建立該列表的指南是 [AI 模型](/zh-Hant/guide/ai-models)。
 
-將以下列表視為您可以擴展的**基準**：如果特定語言環境的翻譯品質不佳或不成功，請研究哪些模型能有效支援該語言或文字（參考線上資源或您的提供者文件），並將這些模型 ID 添加為進一步的替代方案。
+請將下方的列表視為一個 **基準**。使用 [AI 模型](/zh-Hant/guide/ai-models) 上的基準測試排名來取代它。如果特定地區設定的翻譯品質仍然不佳，請為該語言或文字新增一個 `localeModels` 項目，或從供應商的目錄中新增更多 ID。
 
 這些模型 ID 是 `ai-i18n-tools init -P openrouter` 所寫入的。其他預設會從 `init -P <provider>` 取得原生模型 ID — 請參閱 [內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
 
@@ -270,13 +270,13 @@
 - `flatOutputDir`
   寫入此區塊各語言環境 JSON 檔案的目錄（`de.json` 等）。
 - `flatOutput`
-  當 `true`（預設值）時，`translate-ui` 會為每個語系寫入一個扁平的 JSON 檔案。將 `false` 設定為僅限 gettext 區塊。具有 `flatOutput: false` 的區塊必須設定 `gettext`。
+  當為 `true`（預設值）時，`translate-ui` 會為每個語區寫入一個扁平的 JSON 檔案。設定為 `false` 以用於僅限 gettext 的區塊。具有 `flatOutput: false` 的區塊必須設定 `gettext`。
 - `gettext`
-  此區塊的選用 GNU gettext 輸出。`outputDir`（預設值 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，並且當 `compileMo` 為 true（預設值）時，接收相符的 `.mo`。`domain` 預設為 `messages`。`potPath` 是範本目錄。`ingestExistingPo`（預設值 `true`）在 `extract` 期間從非模糊的 `msgstr` 值填補空的 `strings.json` 槽位，並且不會取代非空或使用者編輯的翻譯。`localeFormat` 是 `posix`（預設值，`pt_BR`）或 `bcp47` (`pt-BR`)。上下文相關的列使用 gettext `\u0004` 分隔符。兩個上下文中的相同英文來源不共用目錄 ID。
+  此區塊的選用 GNU gettext 輸出。`outputDir`（預設為 `./locales`）會接收 `<locale>/LC_MESSAGES/<domain>.po`，且當 `compileMo` 為 true（預設值）時，會接收相符的 `.mo`。`domain` 預設為 `messages`。`potPath` 是範本目錄。`ingestExistingPo`（預設為 `true`）會在 `extract` 期間，從非模糊的 `msgstr` 值填入空的 `strings.json` 位置，且不會取代非空白或使用者編輯過的翻譯。`localeFormat` 為 `posix`（預設，`pt_BR`）或 `bcp47`（`pt-BR`）。內容相關的資料列使用 gettext `\u0004` 分隔符號。在兩個內容中相同的來源語言字串不會共用目錄 ID。
 - `targetLocales`
-  此區塊的選用語系清單。省略或為空時，區塊使用根 `targetLocales`。
+  此區塊的選用語區清單。若省略或為空，區塊會使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 寫入此區塊 `ui-languages.json` 的選用路徑。省略時，區塊 0 使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續區塊預設為 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 寫入此區塊 `ui-languages.json` 的選用路徑。若省略，區塊 0 會使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續的區塊預設為 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
   當 `true`（預設值）時，此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的詞彙提示來源。`translate-ui`、`proofread-ui` 和來源 linting 僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如，不應引導文件說明的 CLI 字串目錄）。
 - `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）
@@ -365,7 +365,10 @@ SQLite 快取目錄（由所有 `docs` 區塊共用）。預設值 `.translation
 - `nextraDictionaryOutputTemplate`
 選用的地區字典模組輸出地區字典模組輸出範本（預設：相對於字典目錄的 `{dir}/{locale}.ts`）。
 
-**輸出佈局**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+此區塊的輸出佈局。
 
 - `outputDir`
 此區塊翻譯輸出的根目錄。
@@ -384,21 +387,21 @@ Docusaurus 版面配置的來源文件根目錄（例如 `"docs"`）。省略時
 - `docsOutput.flatPreserveRelativeDir`
 當 `docsOutput.style = "flat"` 時，保留來源子目錄，以便具有相同基本名稱的檔案不會衝突。預設 `false`。
 - `docsOutput.rewriteRelativeLinks`
-在翻譯後重寫相對連結（當 `docsOutput.style = "flat"` 且沒有自訂 `pathTemplate` 時自動啟用）。
+翻譯後重寫相對連結（當 `docsOutput.style = "flat"` 且無自訂 `pathTemplate` 時自動啟用）。
 - `docsOutput.linkRewriteDocsRoot`
-計算扁平連結重寫前綴時所使用的儲存庫根目錄。通常請維持為 `"."`，除非您的翻譯文件位於不同的專案根目錄下。
+計算扁平連結重寫前綴時使用的 Repo 根目錄。除非您的翻譯文件位於不同的專案根目錄下，否則通常將此保留為 `"."`。
 - `docsOutput.rewriteVitepressLinks`
-當 `true` 時，在翻譯後執行 VitePress 連結標準化程式。當 `docsOutput.style` 為 `"vitepress"` 時預設啟用。適用於任何 `doc-system` 版面配置，其中語系資料夾與英文並列於 `docsRoot` 之下。會將 README 風格的 `docs/guide/…` 路徑重寫為網站路由 (`/guide/…`) 及語系相對的 `../guide/…` 連結。對於指向 VitePress 樹狀結構外之儲存庫檔案的連結 (`LICENSE`、`examples/`)，請在英文來源中使用完整 URL — 請參閱 [VitePress 整合 — 以 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-and-the-docs-homepage)。
+當為 `true` 時，在翻譯後執行 VitePress 連結標準化器。當 `docsOutput.style` 為 `"vitepress"` 時，預設為啟用。與任何 `doc-system` 佈局一起使用，其中語區資料夾位於 `docsRoot` 下的來源語區檔案旁。來源語言為 `sourceLocale`，可以是任何語言。將 README 風格的 `docs/guide/…` 路徑重寫為網站路由（`/guide/…`）和語區相對的 `../guide/…` 連結。對於指向 VitePress 樹狀目錄外部的 repo 檔案（`LICENSE`、`examples/`）的連結，請在來源語區檔案中使用完整 URL——請參閱 [VitePress 整合——將 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 - `docsOutput.rewriteNextraLinks`
-當 `true` 時，在翻譯後執行 Nextra 連結標準化程式。當 `docsOutput.style` 為 `"nextra"` 時預設啟用。會將 `content/en/…` 與相對 `.mdx` 路徑重寫為 Next.js `i18n` 的語系中立網站路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
+當為 `true` 時，在翻譯後執行 Nextra 連結標準化器。當 `docsOutput.style` 為 `"nextra"` 時，預設為啟用。為 Next.js `i18n` 將 `content/en/…` 和相對的 `.mdx` 路徑重寫為語區中立的網站路由（`/guide/…`）。請參閱 [Nextra 整合——連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"` (預設) 或 `"dir"`。Dot 會將 `stem.{locale}.mdx` 寫在英文原始碼旁；dir 會寫入類似 Nextra 的語系資料夾。請參閱 [Fumadocs 整合 — 頁面佈局](/zh-Hant/guide/integrations/fumadocs#page-layout)。
+`"dot"`（預設）或 `"dir"`。Dot 會在來源語區檔案旁寫入 `stem.{locale}.mdx`；dir 會寫入類似 Nextra 的語區資料夾。來源語言為 `sourceLocale`，可以是任何語言。請參閱 [Fumadocs 整合——頁面佈局](/zh-Hant/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
-當 `true` 時，在翻譯後執行 Fumadocs 連結正規化工具。當 `docsOutput.style` 為 `"fumadocs"` 時預設為啟用。將內容路徑和相對 `.mdx` 連結重寫為 `/docs/…` 路由。
+當為 `true` 時，在翻譯後執行 Fumadocs 連結標準化器。當 `docsOutput.style` 為 `"fumadocs"` 時，預設為啟用。將內容路徑和相對的 `.mdx` 連結重寫為 `/docs/…` 路由。
 - `docsOutput.fumadocsUiCatalog`
-選用。在 `translate-docs` 內進行 Fumadocs UI 覆寫目錄啟動程序 + 翻譯。欄位：`sourcePath` (例如 `lib/layout.shared.ts`)、`catalogPath` (生成的英文 JSON)、選用的 `outputPathTemplate` (預設：`ui.{locale}.json` 位於 `catalogPath` 旁)。
+選用。在 `translate-docs` 內進行 Fumadocs UI 覆寫目錄引導 + 翻譯。欄位：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（產生的英文 JSON）、選用的 `outputPathTemplate`（預設：`catalogPath` 旁的 `ui.{locale}.json`）。
 - `docs[].fumadocsMetaGlob`
-當 `docsOutput.style` 為 `"fumadocs"` 時，用於 `meta.json` 集合的選用 glob。預設：在 `docsOutput.docsRoot` 下遞迴 `meta.json`。
+當 `docsOutput.style` 為 `"fumadocs"` 時，用於 `meta.json` 集合的選用 glob。預設：`docsOutput.docsRoot` 下的遞迴 `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 在 Fumadocs `meta.json` 中翻譯其字串值的屬性名稱（預設值：`title`、`description`）。
 - `docsOutput.localizedAssets`
@@ -515,7 +518,9 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 ---
 
 <a id="modelsuggestion"></a>
-### `modelSuggestion`（選填）
+
+<a id="modelsuggestion-optional"></a>
+### `modelSuggestion`（選用）
 
 用於 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 與 [儀表板模型分頁](/zh-Hant/guide/translation-dashboard/models) 的權重。若省略此區塊或省略其中一個設定檔，該設定檔將保留內建權重。此區塊不會被 `--apply` 或 **更新設定** 所覆寫；這些操作僅會寫入模型 ID。
 

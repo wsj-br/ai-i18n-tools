@@ -61,6 +61,7 @@
     "svgColocated": "Colocated SVG",
     "svgTroubleshooting": "Troubleshooting",
     "providers": "LLM providers",
+    "aiModels": "AI Models",
     "runtimeHelpers": "Runtime helpers",
     "dashboard": "Translation Dashboard",
     "dashboardDocumentationCache": "Documentation cache",

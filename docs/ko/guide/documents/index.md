@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # 문서
 
-주로 **마크다운, MDX, `.astro` 및 일반 HTML**을 위해 설계되었으며 `docs[]` 구성 블록을 통해 관리됩니다. 각 블록의 `contentPaths` 필드에는 번역할 파일 또는 폴더가 나열됩니다. 일반 HTML 페이지(로케일당 하나의 파일)는 [HTML 페이지](/ko/guide/documents/html-pages)에 설명되어 있습니다.
+`translate-docs`는 `docs[]` 구성 블록에 나열된 Markdown, MDX, `.astro` 및 일반 HTML 페이지용 파이프라인에 대한 참조입니다. 각 블록의 `contentPaths` 필드에는 번역할 파일 또는 폴더가 나열됩니다. 이 파일들은 `sourceLocale`로 작성되며, 어떤 언어든 될 수 있습니다. 예제의 영어는 샘플일 뿐입니다. 사이트에 처음으로 언어를 추가하시나요? [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website)에서 시작하세요. 리포지토리 README 및 일반적으로 앱과 함께 있는 기타 Markdown 파일의 경우: [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme). 일반 HTML 페이지(로케일당 하나의 파일)는 [HTML 페이지](/ko/guide/documents/html-pages)에 설명되어 있습니다.
 
-[Docusaurus](/ko/guide/integrations/docusaurus) 사이트에서는 `docusaurusCatalogDir`를 `write-translations` 카탈로그 폴더(예: `docs-site/i18n/en`)로도 설정하세요. 그러면 `translate-docs`가 navbar, footer, 테마 문자열 등 shell JSON도 함께 포함합니다.
-
-[VitePress](/ko/guide/integrations/vitepress) 사이트에서는 페이지 본문이 동일한 `docs[]` 파이프라인을 사용합니다. Nav, sidebar, footer 레이블은 `docsOutput.vitepressThemeCatalog`에 있습니다 — `translate-docs`가 영어 카탈로그를 부트스트랩하고 페이지와 함께 번역하므로 별도의 파이프라인이 필요 없습니다.
-
-[Nextra](/ko/guide/integrations/nextra) 사이트에서는 페이지 본문이 `docsOutput.style: "nextra"`과(와) 함께 동일한 `docs[]` 파이프라인을 사용합니다. `_meta.ts` 사이드바 레이블은 `translate-docs`에 의해 자동으로 수집 및 번역되며, 테마 사전 문자열은 동일한 파이프라인에서 `docs[].nextraDictionaryPath`를 통해 번역됩니다.
-
-[Fumadocs](/ko/guide/integrations/fumadocs) 사이트에서는 페이지 본문이 `fumadocsParser` `"dot"`(기본값) 또는 `"dir"`과(와) 함께 `docsOutput.style: "fumadocs"`를 사용합니다. `meta.json` 사이드바 레이블은 자동으로 수집되며, UI 재정의는 `docsOutput.fumadocsUiCatalog`를 통해 번역됩니다.
-
-[Astro Starlight](/ko/guide/integrations/astro#astro-starlight) 사이트에서는 페이지 본문이 Starlight 콘텐츠 루트(일반적으로 `src/content/docs/`)의 `docsRoot`와 함께 `docsOutput.style: "astro-starlight"`를 사용합니다. `translate-docs`는 영어 트리 옆 `src/content/docs/<locale>/` 아래에 현지화된 markdown/MDX를 작성합니다. Starlight는 많은 로케일에 대해 내장 UI 문자열을 제공하므로 별도의 테마 카탈로그 파이프라인이 필요 없습니다. 선택적 UI 재정의는 `src/content/i18n/en.json`에 대해 `docs[]` 블록에서 `jsonPathTemplate`를 사용할 수 있습니다.
+프레임워크 셸 문자열(탐색 모음, 사이드바, 테마)은 별도의 파이프라인이 아닌 동일한 실행에서 번역됩니다. 아래 표의 프레임워크 가이드에서 각각의 방법을 설명합니다. Docusaurus는 `docusaurusCatalogDir`, VitePress는 `docsOutput.vitepressThemeCatalog`, Nextra는 `docs[].nextraDictionaryPath`, Fumadocs는 `docsOutput.fumadocsUiCatalog`입니다. Nextra `_meta.ts` 및 Fumadocs `meta.json` 사이드바 레이블은 자동으로 수집됩니다. Astro Starlight는 많은 로케일에 대한 내장 UI 문자열을 제공하며, 선택적 재정의는 `docs[]` 블록에서 `jsonPathTemplate`을 사용할 수 있습니다.
 
 마크다운에 포함된 PNG 및 기타 래스터 이미지에 대해서는 [이미지 및 스크린샷](/ko/guide/images-and-screenshots/)을 참조하십시오. `translate-docs`는 alt 텍스트만 번역하며 래스터 파일을 복사하지 않습니다.
 
@@ -26,7 +18,7 @@ README나 문서에서 선택적 **언어 전환기** 블록을 사용하려면 
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
 
-`translate-docs`와 `sync`의 문서 단계는 **대상 로케일별**로 모델을 결정합니다: 설정된 경우 `localeModels(locale)`가 먼저, 그 다음 provider의 글로벌 `translationModels` 체인이 적용됩니다. 특정 언어가 기본 폴백 목록과 다른 모델이 필요할 때 사용하세요 — 예를 들어, 글로벌 체인이 포르투갈어를 처리하는 데 어려움이 있을 때 `pt-BR` 문서에 Gemini를 선호하는 경우입니다. [Provider 및 모델](/ko/guide/providers-and-models#model-fallback-chain) 및 [구성 - `localeModels`](/ko/reference/configuration#provider-and-providers)을 참조하세요.
+`translate-docs` 및 `sync`의 문서 단계는 **대상 로케일별로** 모델을 확인합니다. 구성된 경우 `localeModels(locale)`를 먼저 확인하고, 그 다음 공급자의 전역 `translationModels` 체인을 확인합니다. 특정 언어에 기본 대체 목록과 다른 모델이 필요한 경우 이 기능을 사용하세요. 예를 들어 전역 체인이 포르투갈어를 처리하는 데 어려움을 겪을 때 `pt-BR` 문서에 Gemini를 선호하는 경우입니다. [AI 모델](/ko/guide/ai-models#model-fallback-chain) 및 [구성 - `localeModels`](/ko/reference/configuration#provider-and-providers)을 참조하세요.
 
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
@@ -39,7 +31,7 @@ README나 문서에서 선택적 **언어 전환기** 블록을 사용하려면 
 | Fumadocs 사이트 | UI용 `init -t ui-fumadocs` + `fumadocsUiCatalog` (sidebar `meta.json`는 자동) - [Fumadocs](/ko/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/ko/guide/integrations/astro#astro-starlight) |
 | 일반 HTML 페이지 | `init -t docs-plain-html` - [HTML 페이지](/ko/guide/documents/html-pages) |
-| 단일 문서 (README, changelog 등) | `docsOutput.style = "flat"` - [출력 레이아웃](/ko/guide/documents/output-layouts), 선택적 [언어 전환기](/ko/guide/documents/language-switcher) |
+| 플랫 문서(README, 변경 로그 등) | [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme) — `init -t docs-markdown` 또는 `--with-readme`. 레이아웃: [출력 레이아웃](/ko/guide/documents/output-layouts), [언어 전환기](/ko/guide/documents/language-switcher) |
 | 번역된 파일이 저장되는 위치 | [출력 레이아웃](/ko/guide/documents/output-layouts) |
 | 페이지 간 `#anchor` 링크 | [앵커 링크](/ko/guide/documents/anchor-links) |
 | 링크 및 애셋 URL 재작성(`regexAdjustments`) | [링크 재작성](/ko/guide/documents/link-rewriting) |
@@ -90,14 +82,14 @@ UI 재정의에 대해 `docsOutput.fumadocsUiCatalog`를 설정하세요 — [Fu
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-이 템플릿은 UI 추출만 활성화합니다. 페이지 HTML 번역을 위해서는 `features.translateDocs`도 설정하고 `docs[]` 블록을 추가하십시오([Astro 웹사이트 페이지(구문 분석 및 교체)](/ko/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) 참조). [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 구성은 두 파이프라인을 함께 보여줍니다.
+해당 템플릿은 UI 추출만 활성화합니다. 페이지 HTML을 번역하려면 `features.translateDocs`을 설정하고 `docs[]` 블록을 추가하세요([Astro 웹사이트 페이지(구문 분석 및 바꾸기)](/ko/guide/ui-strings/astro-website#pages-parse-and-replace) 참조). [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 구성은 두 파이프라인을 함께 보여줍니다.
 
 생성된 `ai-i18n-tools.config.json`을 편집하세요:
 
-- `provider` 및 `providers` — 미리 설정된 `init -P <provider>` 템플릿입니다. `translate-docs` 또는 `sync` 전에 API 키를 설정하세요 (Ollama는 키가 필요 없습니다). [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key) 및 [LLM 공급자 및 모델](/ko/guide/providers-and-models)을(를) 참조하세요.
-- `sourceLocale` - 소스 언어 (`docusaurus.config.js`의 `defaultLocale`와(과) 일치해야 합니다).
-- `targetLocales` - BCP-47 로케일 코드 배열 (예: `["de", "fr", "es"]`).
-- `cacheDir` - 모든 파이프라인을 위한 공유 SQLite 캐시 디렉터리 (및 `--write-logs`의 기본 로그 디렉터리).
+- `provider` 및 `providers` — `init -P <provider>`는 해당 사전 설정을 스캐폴딩합니다. `translate-docs` 또는 `sync` 전에 API 키를 설정하세요(Ollama는 키가 필요하지 않습니다). [공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key), [LLM 공급자](/ko/guide/providers-and-models), [AI 모델](/ko/guide/ai-models)을 참조하세요.
+- `sourceLocale` - 소스 언어(`docusaurus.config.js`의 `defaultLocale`와 일치해야 함).
+- `targetLocales` - BCP-47 로케일 코드 배열(예: `["de", "fr", "es"]`).
+- `cacheDir` - 모든 파이프라인에 대한 공유 SQLite 캐시 디렉터리(`--write-logs`의 기본 로그 디렉터리).
 - `docs` - 문서 블록 배열. 각 블록에는 선택적 `description`, `contentPaths`(문자열 또는 배열; 파일, 디렉터리 또는 glob), `outputDir`, 선택적 `docusaurusCatalogDir`, `docsOutput`, 선택적 `segmentSplitting`, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter` 등이 있습니다.
 - `docs[].description` - 유지 관리자를 위한 선택적 짧은 메모. 설정하면 `translate-docs` 헤드라인과 `status` 섹션 헤더에 나타납니다.
 - `docs[].contentPaths` - markdown/MDX/`.astro` 소스(및 Docusaurus 셸 JSON을 위한 선택적 `docusaurusCatalogDir`).
@@ -136,7 +128,7 @@ ai-i18n-tools status
 
 `translate-docs`는 각 번역된 세그먼트가 마크다운 구조(문서에서 파싱된 강조 포함)를 유지하고 내부 플레이스홀더 토큰이 깔끔하게 복원되는지 확인합니다. `` `inline code` `` 주변에 여러 `bold` 스팬을 쌓거나, 굵게 안에 백틱을 중첩하거나(예: `` `fetch(\`/locales/${code}.json\`)` ``와 같은 템플릿 리터럴), 하나의 긴 문장에 굵게와 코드를 엮는 단락은 취약합니다. 일부 로캘은 다른 어순이 필요하므로, 번역 후 `**` 및 `` ` ``가 정렬되는 방식이 변경되어 `AST mismatch`과 같은 CLI 오류가 발생할 수 있습니다.
 
-복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 `**`와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
+복원 후, `translate-docs`는 HTML 태그 플레이스홀더가 재사용되거나 누락된 세그먼트(따라서 복원된 태그가 소스 맵과 더 이상 일치하지 않음) 또는 모델이 소스에 없는 이중 중괄호 토큰(예: 가짜 용어집 스타일 토큰)을 임의로 생성한 세그먼트도 거부합니다. 복원 전 검사에는 동일한 <code v-pre>{{…}}</code> 토큰의 다중 집합과 동일한 순서의 구조적 토큰 하위 시퀀스(<code v-pre>{{HTM_N}}</code>, admonition 마커)가 필요합니다. <code v-pre>{{ILC_N}}</code>, <code v-pre>{{URL_N}}</code>와 같은 콘텐츠 토큰 및 <code v-pre>**</code>와 같은 강조 마커는 각 ID/유형 수가 여전히 일치하는 한 자연스러운 어순에 따라 이동할 수 있습니다. 이러한 실패는 남은 공식 내부 토큰과 동일한 모델 폴백 경로를 사용합니다.
 
 **이러한 종류의 유효성 검사 실패가 발생하면, 소스 언어 텍스트를 단순화하는 것을 선호하십시오** - 단락을 분할하거나, 예제를 펜스 코드 블록으로 이동하거나, 겹겨진 굵게/코드 쌍을 줄여 동일한 아이디어를 설명하십시오 - 모든 모델과 로케일이 조밀한 인라인 마크업을 완벽하게 재현할 것으로 기대하지 마십시오.
 

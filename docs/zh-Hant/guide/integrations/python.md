@@ -1,27 +1,27 @@
 <a id="python"></a>
 # Python
 
-Python 應用程式選擇器。提取、目錄與呼叫形狀位於 [Python 應用程式](/zh-Hant/guide/ui-strings/python)。針對現有單一語言環境應用程式的逐步指南為 [將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。
+Python 應用程式選擇器。擷取、目錄和呼叫形式可在 [Python 應用程式](/zh-Hant/guide/ui-strings/python) 中找到。為現有的單一語系應用程式新增功能的逐步說明請見 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，其中包含 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-i18n-py) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView 會呼叫產生的 `i18n.py` 輔助程式（Python 3.10 或更新版本）。Django 則保留 Django 的 gettext。儲存庫中隨附四個可執行的副本：`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 與 `examples/python-gettext`。Pyramid、Django、Tkinter、Qt 與 PyWebView 沒有獨立的範例目錄。
 
 <a id="which-template"></a>
 ## 選擇模板
 
-| 框架 | 初始化模板 | 目錄 | 範例 |
+| 框架 | 初始化範本 | 目錄 | 範例 |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | 平面英文鍵 JSON | [python-streamlit](/zh-Hant/examples#python-streamlit) |
-| FastAPI | `ui-python` | 平面英文鍵 JSON | [python-fastapi](/zh-Hant/examples#python-fastapi) |
-| Flask + Jinja, 平面 JSON | `ui-python` | 平面英文鍵 JSON | [python-flask](/zh-Hant/examples#python-flask) |
+| Streamlit | `ui-python` | 以來源字串為鍵的扁平 JSON | [python-streamlit](/zh-Hant/examples#python-streamlit) |
+| FastAPI | `ui-python` | 以來源字串為鍵的扁平 JSON | [python-fastapi](/zh-Hant/examples#python-fastapi) |
+| Flask + Jinja, flat JSON | `ui-python` | 以來源字串為鍵的扁平 JSON | [python-flask](/zh-Hant/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` 位於 `translations/` 下 | 請參閱下方的 Flask 說明 |
 | Pyramid | `ui-python` 或 `ui-python-flask` | 同 Flask | 與 Flask 的連接方式相同 |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | 無範例目錄 |
 | 現有 GNU gettext | `ui-python-gettext` | 平面 JSON 與 `.po` / `.mo`，或僅使用 gettext | [python-gettext](/zh-Hant/examples#python-gettext) |
-| Tkinter | `ui-python` | 平面英文鍵 JSON | 無範例目錄 |
+| Tkinter | `ui-python` | 以來源字串為鍵的扁平 JSON | 沒有範例目錄 |
 | PyQt / PySide | `ui-python` 或 gettext 模板 | 平面 JSON 與/或 `.po` | 無範例目錄 |
 | PyWebView / PyWebKit | 用於 Shell 的 Python 模板 | Shell 目錄，外加 HTML 標記或每個語言環境一個 HTML 檔案 | 無範例目錄 |
 
-當 `i18n.py` 檔案遺失時，`ui-python`、`ui-python-gettext` 與 `ui-python-flask` 會寫入該檔案。`ui-python-django` 則不會。
+`ui-python`、`ui-python-gettext` 和 `ui-python-flask` 會在 `i18n.py` 檔案遺失時寫入該檔案。`ui-python-django` 則不會。新增 `--with-readme` 以同時翻譯儲存庫的 README：[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 
 <a id="framework-notes"></a>
 ## 框架說明

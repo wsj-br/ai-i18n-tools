@@ -235,7 +235,8 @@
 
 .home-onboarding .home-paths,
 .home-onboarding .home-examples,
-.home-onboarding .home-features {
+.home-onboarding .home-features,
+.home-onboarding .home-existing {
   display: grid;
   gap: 16px;
   margin: 24px 0;
@@ -246,7 +247,8 @@
 }
 
 .home-onboarding .home-examples,
-.home-onboarding .home-features {
+.home-onboarding .home-features,
+.home-onboarding .home-existing {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -296,6 +298,69 @@
   letter-spacing: -0.01em;
 }
 
+.home-onboarding .home-card-logos,
+.home-onboarding .home-card-icon {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin: 0 0 8px;
+}
+
+.home-onboarding .home-card-logos {
+  gap: 12px;
+}
+
+.home-onboarding .home-card-logos img {
+  display: block;
+  width: 26px;
+  height: 26px;
+  max-width: 26px;
+  margin: 0 !important;
+  object-fit: contain;
+}
+
+/* React's brand cyan disappears on the light card. A dark chip keeps it readable. */
+.home-onboarding .home-card-logos img.icon-light {
+  width: 20px;
+  height: 20px;
+  max-width: 20px;
+  padding: 3px;
+  border-radius: 6px;
+  background: var(--brand-ink);
+  box-sizing: content-box;
+}
+
+.dark .home-onboarding .home-card-logos img.icon-mono {
+  filter: invert(1);
+}
+
+.home-onboarding .home-card-icon {
+  position: relative;
+  justify-content: center;
+  width: 40px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--vp-c-brand-soft);
+}
+
+.home-onboarding .home-card-icon::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--brand-gradient);
+  pointer-events: none;
+}
+
+.home-onboarding .home-card-icon img {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 !important;
+}
+
 .home-onboarding .home-card p {
   margin: 0 0 16px;
   font-size: 15px;
@@ -326,9 +391,18 @@
   border-radius: inherit;
 }
 
+/* This row has two real links per card, so the stretch overlay would hide one of them. */
+.home-onboarding .home-existing .home-card > p:last-child a::after {
+  content: none;
+}
+
 .home-onboarding .home-card > p:last-child a:focus-visible::after {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 4px;
+}
+
+.home-onboarding .home-existing .home-card > p:last-child a:focus-visible::after {
+  content: none;
 }
 
 .home-onboarding .home-steps ol {
@@ -416,6 +490,7 @@
 @media (max-width: 959px) {
   .home-onboarding .home-examples,
   .home-onboarding .home-features,
+  .home-onboarding .home-existing,
   .home-onboarding .home-steps ol {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -425,6 +500,7 @@
   .home-onboarding .home-paths,
   .home-onboarding .home-examples,
   .home-onboarding .home-features,
+  .home-onboarding .home-existing,
   .home-onboarding .home-steps ol {
     grid-template-columns: minmax(0, 1fr);
   }

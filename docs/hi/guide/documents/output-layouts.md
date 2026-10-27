@@ -64,9 +64,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docsRoot` के बाहर के पाथ [नेस्टेड](#nested) लेआउट (`{outputDir}/{locale}/{relPath}`) पर वापस आ जाते हैं।
+`docsRoot` के बाहर के पाथ [नेस्टेड](#nested-default) लेआउट (`{outputDir}/{locale}/{relPath}`) पर वापस आ जाते हैं।
 
-`docs[].docsOutput.docsRoot` को अपने अंग्रेज़ी स्रोत रूट पर सेट करें (जैसे `"docs"`, `"src/content/docs"`, या `"content/en"`)। जब `docsOutput.style = "doc-system"`, तो आपको `localeSubpath` को स्पष्ट रूप से सेट करना होगा (प्रीसेट के लिए नीचे एक उपनाम का उपयोग करें)। जब अनुवादित पृष्ठ सीधे `{outputDir}/{locale}/` (स्टारलाइट-शैली) के अंतर्गत हों तो `localeSubpath: ""` का उपयोग करें।
+`docs[].docsOutput.docsRoot` को `sourceLocale` में लिखी गई फ़ाइलों के रूट पर सेट करें (उदाहरण के लिए `"docs"`, `"src/content/docs"`, या `"content/en"` जब अंग्रेज़ी स्रोत हो)। `sourceLocale` कोई भी भाषा हो सकती है। जब `docsOutput.style = "doc-system"` हो, तो आपको `localeSubpath` को स्पष्ट रूप से सेट करना होगा (प्रीसेट के लिए नीचे एक उपनाम का उपयोग करें)। `localeSubpath: ""` का उपयोग तब करें जब अनुवादित पृष्ठ सीधे `{outputDir}/{locale}/` के अंतर्गत हों (स्टारलाइट-शैली)।
 
 `docusaurusCatalogDir` से Docusaurus शेल JSON और doc-system प्रीसेट के अंतर्गत अन्य JSON आर्टिफैक्ट्स मार्कडाउन के समान फ़ोल्डर लेआउट का पालन करते हैं। `style: "flat"` के साथ, JSON लेबल फ़ाइलें अभी भी नेस्टेड आकार का उपयोग करती हैं जब तक कि आप `jsonPathTemplate` सेट नहीं करते।
 
@@ -75,10 +75,10 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 **उपनाम** (वही `doc-system` इंजन, प्रीसेट `localeSubpath` और डिफ़ॉल्ट):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` का डिफ़ॉल्ट `docusaurus-plugin-content-docs/current` है (Docusaurus i18n प्लगइन लेआउट)।
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` का डिफ़ॉल्ट `""` है; `localePathLowercase` का डिफ़ॉल्ट `true` है। अनुवादित पृष्ठ `{outputDir}/{locale}/` के अंतर्गत, [Starlight](https://starlight.astro.build/guides/i18n/) से मेल खाते हैं जब अंग्रेज़ी कंटेंट रूट पर होती है और `outputDir`, `docsRoot` के बराबर होता है। सामान्य Astro लोकेल पृष्ठों (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) के लिए भी उपयोग किया जाता है — [Astro वेबसाइट पृष्ठ](/hi/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace) देखें।
-- `docsOutput.style = "vitepress"` — रिक्त `localeSubpath` के साथ `doc-system` जैसा ही लेआउट; BCP-47 लोकेल फ़ोल्डर नाम सुरक्षित रखे जाते हैं (`localePathLowercase` का डिफ़ॉल्ट `false` है)। [VitePress एकीकरण](/hi/guide/integrations/vitepress) देखें।
-- `docsOutput.style = "nextra"` — रिक्त `localeSubpath` के साथ `doc-system` जैसा ही लेआउट; अंग्रेज़ी स्रोत एक लोकेल फ़ोल्डर के अंतर्गत स्थित होता है (उदा. `content/en/`)। [Nextra एकीकरण](/hi/guide/integrations/nextra) देखें।
+- `docsOutput.style = "docusaurus"` — `localeSubpath` डिफ़ॉल्ट रूप से `docusaurus-plugin-content-docs/current` (Docusaurus i18n प्लगइन लेआउट) पर सेट होता है।
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` डिफ़ॉल्ट रूप से `""` पर सेट होता है; `localePathLowercase` डिफ़ॉल्ट रूप से `true` पर सेट होता है। `{outputDir}/{locale}/` के अंतर्गत अनुवादित पृष्ठ, [स्टारलाइट](https://starlight.astro.build/guides/i18n/) से मेल खाते हैं जब स्रोत लोकले सामग्री रूट पर रहता है और `outputDir` `docsRoot` के बराबर होता है। सादे एस्ट्रो लोकले पृष्ठों (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) के लिए भी उपयोग किया जाता है — [एस्ट्रो वेबसाइट पृष्ठ](/hi/guide/ui-strings/astro-website#pages-parse-and-replace) देखें।
+- `docsOutput.style = "vitepress"` — `doc-system` जैसा ही लेआउट, जिसमें `localeSubpath` खाली है; BCP-47 लोकले फ़ोल्डर नाम संरक्षित रहते हैं (`localePathLowercase` डिफ़ॉल्ट रूप से `false` पर सेट होता है)। [वाइटप्रेस इंटीग्रेशन](/hi/guide/integrations/vitepress) देखें।
+- `docsOutput.style = "nextra"` — `doc-system` जैसा ही लेआउट, जिसमें `localeSubpath` खाली है; स्रोत लोकले एक लोकले फ़ोल्डर के अंतर्गत रहता है (उदाहरण के लिए `content/en/` जब अंग्रेज़ी स्रोत हो)। [नेक्स्ट्रा इंटीग्रेशन](/hi/guide/integrations/nextra) देखें।
 
 Docusaurus प्रीसेट (प्राथमिक दस्तावेज़ पृष्ठ):
 
@@ -121,7 +121,7 @@ Nextra थीम डिक्शनरी (`.ts`) और `_meta.ts` साइड
 
 `docsOutput.style = "fumadocs"` — `docsOutput.fumadocsParser` के माध्यम से Fumadocs सामग्री लेआउट:
 
-- **`"dot"` (डिफ़ॉल्ट)** — `outputDir` के अंतर्गत अंग्रेज़ी स्रोतों के बगल में फ़ाइल नाम में लोकेल प्रत्यय (लोकेल फ़ोल्डर नहीं)। यह `doc-system` पाथ आकार से अलग है।
+- **`"dot"` (डिफ़ॉल्ट)** — `outputDir` के अंतर्गत स्रोत-लोकले फ़ाइलों के बगल में फ़ाइल नाम में लोकले प्रत्यय (लोकले फ़ोल्डर नहीं)। यह `doc-system` पाथ आकार से अलग है। स्रोत भाषा `sourceLocale` है और कोई भी भाषा हो सकती है।
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

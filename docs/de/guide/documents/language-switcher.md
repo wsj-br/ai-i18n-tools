@@ -5,7 +5,7 @@ Verwenden Sie `docsOutput.postProcessing.languageListBlock`, wenn übersetzte Ma
 
 Dieses Repository verwendet es für [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (flache Ausgabe unter `translated-docs/`). Nach `translate-docs` erhält jede übersetzte Kopie einen aktualisierten Block; zum Beispiel verlinkt [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) auf gleichgeordnete Gebietsschema-Dateien unter `translated-docs/` und zurück zur englischen Quelle im Repo-Stammverzeichnis.
 
-Erfordert `docsOutput.style = "flat"` (oder ein anderes Layout, bei dem gleichgeordnete Gebietsschema-Dateien über einen relativen Pfad adressierbar sind). Siehe [Ausgabelayouts](/de/guide/documents/output-layouts).
+Erfordert `docsOutput.style = "flat"` (oder ein anderes Layout, bei dem gleichrangige Sprachdateien über relative Pfade adressierbar sind). Siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts). Wenn Sie dies zum ersten Mal zu einem Repository-README hinzufügen: [Fügen Sie i18n zu Ihrem README und Ihren Markdown-Dokumenten hinzu](/de/guide/add-i18n-to-readme).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Block in der Quell-Markdown-Datei markieren
@@ -46,9 +46,9 @@ Stammkonfiguration ([ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18
 <a id="3-what-happens-at-runtime"></a>
 ## 3. Was zur Laufzeit passiert
 
-1. **Extraktion** — der Sprachlisten-Abschnitt wird **nicht** an das Modell gesendet (`translatable: false`).
-2. **Pro übersetzte Datei** — nach der Segmentübersetzung und optionaler Umwandlung flacher Links baut `postProcessing` den Block neu auf: ein Markdown-Link pro Gebietsschema, Beschriftungen aus `ui-languages.json`, falls vorhanden (ansonsten aus dem gebündelten Hauptkatalog, sonst `localeDisplayNames`), Pfade relativ zur geschriebenen Datei.
-3. **Aktualisierung der Quelle** — am Ende eines `translate-docs` / `sync` Dokumentationsdurchlaufs wird derselbe kanonische Block in die **englischen Quelldateien** in `contentPaths` zurückgeschrieben, sodass das Hinzufügen eines Gebietsschemas den Wechsler im Repository aktualisiert, ohne dass jeder Link manuell bearbeitet werden muss.
+1. **Extraktion** — der Sprachlisten-Slice wird **nicht** an das Modell gesendet (`translatable: false`).
+2. **Pro übersetzter Datei** — nach der Segmentübersetzung und optionalem Umschreiben von Flat-Links baut `postProcessing` den Block neu auf: ein Markdown-Link pro Sprache, Beschriftungen aus `ui-languages.json`, falls vorhanden (ansonsten gebündelter Masterkatalog, ansonsten `localeDisplayNames`), Pfade relativ zur geschriebenen Datei.
+3. **Quellaktualisierung** — am Ende eines `translate-docs`- / `sync`-Dokumentationsdurchlaufs wird derselbe kanonische Block zurück in die **Quellsprachen-Dateien** in `contentPaths` geschrieben, sodass das Hinzufügen einer Sprache den Switcher im Repository aktualisiert, ohne jeden Link manuell bearbeiten zu müssen. Diese Dateien werden in `sourceLocale` geschrieben, was jede beliebige Sprache sein kann.
 
 Wenn eine Datei keinen passenden Block enthält, protokolliert die CLI eine Warnung (wenn `--verbose`) und lässt den Inhalt unverändert.
 
@@ -72,4 +72,4 @@ Die Zeile unmittelbar vor `<small id="lang-list">` (z. B. `**Read in other lan
 <a id="html-pages"></a>
 ## HTML-Seiten
 
-Reine HTML-Dokumente verwenden ein anderes Kommentarpaar, `<!-- ai-i18n:lang-list -->` und `<!-- ai-i18n:hreflang -->`. Die Sprachliste kann aus Links oder einem `<select>` bestehen, und hreflang-Alternativen werden sowohl in die englische Quelldatei als auch in jede Locale-Datei geschrieben. Siehe [HTML-Seiten](/de/guide/documents/html-pages#language-list-and-hreflang).
+Einfache HTML-Dokumente verwenden ein anderes Kommentarpaar, `<!-- ai-i18n:lang-list -->` und `<!-- ai-i18n:hreflang -->`. Die Sprachliste kann aus Links oder einem `<select>` bestehen, und hreflang-Alternativen werden sowohl in die Quellsprachen-Datei als auch in jede Zielsprachen-Datei geschrieben. Siehe [HTML-Seiten](/de/guide/documents/html-pages#language-list-and-hreflang).

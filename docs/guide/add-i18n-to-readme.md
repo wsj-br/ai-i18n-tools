@@ -61,7 +61,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 Four keys matter:
 
-- `sourceLocale`: the language the README is written in.
+- `sourceLocale`: the language the README is written in. Any language is valid. English is a common example in this guide.
 - `targetLocales`: the languages to add.
 - `features.translateDocs`: must be true. A hybrid config also sets `features.translateUIStrings`.
 - `docs[].contentPaths`: the Markdown files and folders to translate. The scaffold lists `README.md`.

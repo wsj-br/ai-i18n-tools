@@ -3,12 +3,12 @@
 
 ai-i18n-tools 可与 [Astro](https://astro.build/) 在两种常见设置中使用：**Astro Starlight** 文档站点和**纯 Astro** 营销或应用程序站点。两者都使用文档 (`translate-docs`) 作为页面内容；纯 Astro 站点通常将其与 UI 字符串 (`extract` / `translate-ui`) 结合用于 frontmatter 和共享数据中的 `t()` 字符串。
 
-另请参阅[UI 字符串](/zh-Hans/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)、[文档](/zh-Hans/guide/documents/)以及下面的可运行示例。
+另请参阅 [UI 字符串](/zh-Hans/guide/ui-strings/astro-website)、[文档](/zh-Hans/guide/documents/) 以及下方的可运行示例。
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
 
-将 `init -t ui-starlight` 和 `docsOutput.style: "astro-starlight"` 用于 [Astro Starlight](https://starlight.astro.build/) 文档站点。此预设是 `doc-system` 的别名，带有一个空的 `localeSubpath` — 翻译页面位于 `src/content/docs/<locale>/` 下，与英文源树并列。
+将 `init -t ui-starlight` 和 `docsOutput.style: "astro-starlight"` 用于 [Astro Starlight](https://starlight.astro.build/) 文档网站。该预设是 `doc-system` 的别名，其中 `localeSubpath` 为空 —— 翻译后的页面会放置在源语言区域树旁的 `src/content/docs/<locale>/` 下。`sourceLocale` 可以是任何语言。
 
 <a id="quick-start"></a>
 ### 快速入门
@@ -43,11 +43,21 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 }
 ```
 
-将 `contentPaths` 指向您的英文 `.md` / `.mdx` 文件和目录。将 `docsRoot` 设置为 Starlight 用作其内容根目录的相同文件夹。
+将 `contentPaths` 指向用 `sourceLocale` 编写的 `.md` / `.mdx` 文件和目录。该语言可以是任何语言。将 `docsRoot` 设置为 Starlight 用作其内容根目录的同一文件夹。
 
 Starlight UI 覆盖可以在需要时在单独的 `docs[]` 块中使用 `src/content/i18n/en.json` 和 `jsonPathTemplate` — 请参阅[文档 — 初始化以获取文档](/zh-Hans/guide/documents/#step-1-initialise-for-documentation)。
 
 Starlight 内置了许多区域设置的 UI 字符串（导航标签、搜索占位符、目录等）。没有单独的 shell/主题流水线需要配置 —— 仅将 `translate-docs` 用于页面内容。对于其他框架，请参阅[框架 shell 翻译](/zh-Hans/guide/integrations/#framework-shell-translation)。
+
+显式侧边栏 `label`、网站 `title` 以及 `astro.config.mjs` 中的 `social[].label` 是本工具不会翻译的英文字面量。推荐使用 `slug` 条目，这样标签会来自页面的已翻译 frontmatter (`title`)。需要自定义文本的分组或外部链接，可使用 Starlight 的各语言区域 `translations` 映射（默认语言区域使用 `label`，其他语言区域使用 `translations['pt-BR']`）。在当前的 Starlight 架构中，`social[].label` 没有 translations 字段；它将保持原样。请参阅 [Starlight 侧边栏](https://starlight.astro.build/guides/sidebar/#internationalization) 和 [examples/astro-docs/astro.config.mjs](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs)，其中使用了 `slug` 条目。
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### 在现有站点中启用 i18n
+
+- 在 Starlight 配置中设置 `locales`，当英语应不带前缀时（`label` 和必需的 `lang`），需包含一个 `root` 条目。
+- 当默认语言是该根语言区域时，设置 `defaultLocale: 'root'`。仅当 Starlight 的默认设置已匹配时，才省略 `defaultLocale`。
+- 英语页面保留在 `src/content/docs/` 中；`translate-docs` 会写入 `src/content/docs/<locale>/`。
+- `targetLocales` 与非根语言区域的键对齐（注意大小写：Starlight 的目录键通常是小写的，例如 `pt-br`）。
 
 <a id="example-project"></a>
 ### 示例项目
@@ -64,7 +74,7 @@ Starlight 内置了许多区域设置的 UI 字符串（导航标签、搜索占
 | 管道 | 用于 | 命令 | 输出 |
 |----------|---------|----------|--------|
 | **页面 HTML** | 模板正文中的标题、段落、导航标签、内联数组 | `translate-docs` | 每个区域设置 `src/pages/{locale}/index.astro` |
-| **UI 字符串（`t()`）** | 前端数据、选项卡标签、共享数组 | `extract` → `translate-ui` | `public/locales/{locale}.json`（以英文原文作为键） |
+| **UI 字符串 (`t()`)** | Frontmatter 数据、选项卡标签、共享数组 | `extract` → `translate-ui` | `public/locales/{locale}.json`（源语言字符串作为键） |
 
 <a id="quick-start-1"></a>
 ### 快速入门
@@ -103,7 +113,7 @@ pnpm dev
 
 添加或删除语言时，请保持三个列表对齐：`targetLocales` 在 `ai-i18n-tools.config.json` 中，`i18n.locales` 在 `astro.config.mjs` 中（Astro 使用**小写**路由代码，例如 `pt-br`），以及 `ui-languages.json`（通过 `generate-ui-languages`）。平面捆绑包**文件名**使用配置大小写 (`pt-BR.json`)；通过清单 `code` 字段将 Astro 的 `pt-br` 路由映射到该文件。
 
-通过查找英文源文字作为键，在**构建时**解析 `t('…')` — 请参阅 `examples/astro-website/src/i18n/t.ts`。除非您添加在加载后切换语言的客户端岛，否则静态站点不需要 `ai-i18n-tools/runtime` 或 i18next。
+在**构建时**通过查找作为键的源语言字面量来解析 `t('…')` —— 请参阅 `examples/astro-website/src/i18n/t.ts`。`sourceLocale` 可以是任何语言。该示例使用英语。对于静态网站，你不需要 `ai-i18n-tools/runtime` 或 i18next，除非你添加了在加载后切换语言的客户端孤岛。
 
 <a id="example-project-1"></a>
 ### 示例项目

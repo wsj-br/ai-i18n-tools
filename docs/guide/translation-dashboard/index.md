@@ -22,7 +22,7 @@ The default listen port is **8675**. If that port is unavailable, the server tri
 
 The dashboard UI uses the same locale resolution as the CLI: `-L` / `--ui-lang` → `AI_I18N_LANG` → config `uiLanguage` → OS locale. See [Tool UI language](/guide/tool-ui-language).
 
-![Translation Dashboard showing the Documentation tab with filters and cached segment rows](/translation-dashboard.png)
+![Translation Dashboard showing the Statistics tab](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## Which tab should I use?

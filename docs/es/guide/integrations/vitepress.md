@@ -41,14 +41,24 @@ Configure un bloque `docs[]`:
 }
 ```
 
-Apunte `contentPaths` a sus archivos y directorios `.md` en inglés. Establezca `docsRoot` en la misma carpeta que VitePress utiliza como raíz de su contenido.
+Apunte `contentPaths` a los archivos y directorios `.md` escritos en `sourceLocale`. Ese idioma puede ser cualquier idioma. Establezca `docsRoot` en la misma carpeta que VitePress usa como su raíz de contenido.
 
-Conecte la [internacionalización](https://vitepress.dev/guide/i18n) de VitePress: inglés en `root`, cada configuración regional de destino en `locales[code].link` (por ejemplo, `/pt-BR/`). Mantenga `targetLocales` en `ai-i18n-tools.config.json` alineado con las claves `locales` en `.vitepress/config.mts`.
+Conecte la [internacionalización](https://vitepress.dev/guide/i18n) de VitePress: la configuración regional de origen en `root`, cada configuración regional de destino en `locales[code].link` (por ejemplo, `/pt-BR/`). Mantenga `targetLocales` en `ai-i18n-tools.config.json` alineado con las claves `locales` en `.vitepress/config.mts`.
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### Habilitar i18n en un sitio existente
+
+Una configuración de VitePress solo en inglés necesita estas partes antes de que aparezcan las páginas traducidas. La [solicitud del agente](#wire-configmts-to-generated-theme-json-one-off) cubre la mitad del catálogo de temas.
+
+- `locales.root` para inglés (`label`, `lang` y `themeConfig`).
+- Una entrada de `locales[code]` por cada configuración regional de destino: `label`, `lang`, `link: '/${code}/'` y `title` / `description` por configuración regional.
+- Enlaces `themeConfig` y `activeMatch` prefijados por configuración regional con `prefixVitepressThemeConfigLinks` (consulte [Enlaces de navegación/barra lateral del tema](#theme-navsidebar-links)).
+- `targetLocales` alineado con esas claves `locales`, luego `sync` para que existan `docs/<locale>/` y `theme.<locale>.json`.
 
 <a id="theme-strings"></a>
 ## Cadenas de tema
 
-La navegación, la barra lateral, el pie de página, el marcador de posición de búsqueda y otras etiquetas `themeConfig` de VitePress no se extraen de markdown. Configure **`docsOutput.vitepressThemeCatalog`** para que **`translate-docs`** arranque el catálogo en inglés desde `.vitepress/config.mts` (cuando las cadenas están en línea) y traduzca los archivos JSON del tema de la configuración regional:
+La navegación, la barra lateral, el pie de página, el marcador de posición de búsqueda y otras etiquetas `themeConfig` de VitePress no se extraen de markdown. Configure **`docsOutput.vitepressThemeCatalog`** para que **`translate-docs`** inicialice el catálogo de la configuración regional de origen desde `.vitepress/config.mts` (cuando las cadenas están en línea) y traduzca los archivos JSON del tema de la configuración regional:
 
 ```json
 {
@@ -72,14 +82,14 @@ La navegación, la barra lateral, el pie de página, el marcador de posición de
 }
 ```
 
-- **`catalogPath`** — JSON anidado en inglés generado (salida de arranque). Los autores no mantienen este archivo manualmente cuando el inglés reside en `config.mts`; vuelva a ejecutar `sync` para actualizarlo.
+- **`catalogPath`** — JSON anidado en inglés. La inicialización desde `config.mts` se aplica solo mientras esas cadenas en inglés sigan en línea en la configuración. Después de que `themeConfigFor` lea el catálogo, `mergeThemeCatalogs` mantiene el archivo existente y `theme.en.json` es la fuente de la verdad. Edite ese archivo cuando cambie la redacción (o vuelva a poner el inglés en `config.mts` para un `sync`). Cambiar el nombre de una clave cambia el hash del segmento (`path`, un byte NUL y luego el valor), por lo que el siguiente `sync` vuelve a traducir esa cadena una vez para cada configuración regional de destino.
 - **`outputPathTemplate`** (opcional) — salidas por configuración regional; predeterminado: el mismo directorio que `catalogPath` con `theme.{locale}.json`.
 
 `init -t ui-vitepress` también genera `docs/.vitepress/config.mts` y `docs/.vitepress/i18n/theme.en.json` iniciales cuando esos archivos aún no existen. La configuración carga el catálogo a través de `loadTheme()` y conecta las etiquetas i18n estándar de VitePress (incluido `langMenuLabel`) en `themeConfigFor()`.
 
 Cargue el archivo por configuración regional en `.vitepress/config.mts` a través de `loadTheme()` y compile `locales[code].themeConfig` a partir del JSON traducido. Consulte [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts).
 
-**Cadenas del menú de idioma:** `locales[code].label` es el nombre visible de cada idioma en el menú desplegable (por ejemplo, `Português (Brasil)`). `themeConfig.langMenuLabel` es la **aria-label** en el botón de cambio de idioma (predeterminado de VitePress: `Change language`). Coloque `langMenuLabel` en el catálogo de temas y conecte `langMenuLabel: t.langMenuLabel` dentro de `themeConfigFor()`; no lo confunda con las cadenas `label` por configuración regional.
+**Cadenas del menú de idioma:** `locales[code].label` es el nombre visible de cada idioma en el menú desplegable (por ejemplo, `Português (Brasil)`). `themeConfig.langMenuLabel` es la **aria-label** del botón de cambio de idioma. VitePress usa `Change language` cuando se omite la opción. El catálogo de ejemplo almacena `Language` en su lugar, y tanto `theme.en.json` como `config.hardcoded.example.mts` usan la misma frase. Ponga `langMenuLabel` en el catálogo de temas y conecte `langMenuLabel: t.langMenuLabel` dentro de `themeConfigFor()` — no lo confunda con las cadenas `label` por configuración regional.
 
 Durante `sync` / `translate-docs`, ai-i18n-tools advierte cuando una clave de catálogo en `theme.en.json` no se referencia desde `config.mts` (por ejemplo, una `t.langMenuLabel` faltante en `themeConfigFor()`).
 
@@ -99,30 +109,105 @@ Después de la primera ejecución exitosa de `i18n:sync` / `translate-docs` con 
 
 **Ejemplo de instrucción para agente de IA** (copiar en Cursor u otro agente de codificación):
 
-```markdown
-Refactor our VitePress config to load theme strings from generated JSON files instead of hardcoded literals.
+<details class="agent-prompt">
+<summary>Solicitud del catálogo de temas</summary>
 
-Context:
-- ai-i18n-tools already generated English and locale theme catalogs via `docsOutput.vitepressThemeCatalog`.
-- English catalog: `docs/.vitepress/i18n/theme.en.json`
-- Locale catalogs: `docs/.vitepress/i18n/theme.{locale}.json` (e.g. pt-BR, zh-Hans)
-- Target file: `docs/.vitepress/config.mts` (or our project's equivalent path)
-- Reference pattern: https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/docs/.vitepress/config.mts
+````markdown
+# Load VitePress theme strings from the catalog
 
-Requirements:
-1. Add `loadTheme(localeFile: string)` that reads JSON from `docs/.vitepress/i18n/` (use `import.meta.url` / `fileURLToPath` for ESM paths).
-2. Add `themeConfigFor(t)` that builds VitePress `themeConfig` from the catalog — keep all **links and structure** in TypeScript; only **display strings** come from JSON keys matching `theme.en.json`.
-3. Wire `locales.root` and each target locale in `locales[code]` to `loadTheme('theme.en.json')` or `loadTheme('theme.{code}.json')`, then `themeConfig: themeConfigFor(theme)`.
-4. Align locale codes with `ai-i18n-tools.config.json` `targetLocales` and existing VitePress `locales` keys.
-5. Do **not** change markdown content paths, `base`, or link targets — only move translatable labels out of inline string literals.
-6. Preserve any project-specific options (ignoreDeadLinks, head config, etc.).
+## Context
 
-After editing:
-- Run `pnpm docs:dev` (or our docs dev script) and confirm English + at least one translated locale show correct nav/sidebar/footer/search placeholder.
-- If a string exists in config but not in `theme.en.json`, add a matching key to the JSON shape in `themeConfigFor` and note that the user should re-run `i18n:sync` to refresh catalogs from config if needed.
+ai-i18n-tools translates VitePress chrome through
+`docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes
+positional keys while English is still inline in `config.mts`
+(`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`,
+`locales.root.label`). The runnable example uses stable names instead
+(`nav.guide`, `sidebar.gettingStarted`, `site.title`):
+https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts
 
-Do not introduce a hand-maintained duplicate of theme strings — config must read from the generated JSON files only.
-```
+Reshape to named keys once and keep those names. Renaming changes the segment
+hash, so the next `sync` re-translates the theme catalog for every locale (a few
+dozen short strings, once). After the refactor, `config.mts` has no inline
+display literals, `mergeThemeCatalogs` keeps `theme.en.json`, and that file is
+the source of truth. Do not tell the user to refresh the catalog from
+`config.mts` after this edit.
+
+`translate-docs` does not rewrite links in `config.mts`. Locale pages must
+prefix `link` and `activeMatch` or they point at English routes.
+
+## Scope
+
+Edit `.vitepress/config.mts` and `theme.en.json` only. Skip markdown bodies,
+route paths, `base`, search provider choice, collapsed flags, and external URLs.
+
+## Call shape
+
+Precondition: `docsOutput.vitepressThemeCatalog` is set and `sync` has already
+written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
+`sync` first.
+
+1. Add `ai-i18n-tools` as a devDependency. Import
+   `prefixVitepressThemeConfigLinks` from `ai-i18n-tools`.
+2. Add `loadTheme(localeFile)` that reads `docs/.vitepress/i18n/` via
+   `import.meta.url` and `fileURLToPath`. If a locale file is missing
+   (`fs.existsSync`), fall back to the English theme so a fresh checkout does
+   not crash before the first translation.
+3. Rename positional keys in `theme.en.json` to short stable names. Update
+   `themeConfigFor` to read those names. Keep links and structure in TypeScript.
+   Only display strings come from the catalog.
+4. If you keep positional keys instead, read them with string indexes:
+   `t.themeConfig.nav["0"].text`. A numeric index `nav[0]` is invisible to the
+   unused-key check and warns for every nav and sidebar entry.
+5. Wrap the object `themeConfigFor` returns with
+   `prefixVitepressThemeConfigLinks(themeConfig, localeRoutePrefix)`. Pass
+   `/${code}` for each target locale and `null` for root. That prefixes `link`
+   and `activeMatch`.
+6. Per locale entry: `label` (native language name), `lang`,
+   `link: '/${code}/'`, and that locale's `title` and `description` from the
+   catalog.
+7. Keys the extractor does not collect must be added to `theme.en.json` by hand,
+   then referenced from `themeConfigFor`. That includes local-search copy under
+   `search.options.locales.<code>.translations` (`button.buttonText`,
+   `modal.noResultsText`, and the rest of that tree). Current VitePress docs do
+   not use `options.placeholder` for local search. Also add
+   `socialLinks[].ariaLabel`. A `notFound.title` inline in config is collected
+   because `title` is a known key; `notFound.quote`, `notFound.linkText`,
+   `notFound.linkLabel`, and `notFound.code` are not.
+
+## Order
+
+1. Confirm the catalog file exists.
+2. Reshape keys, wire `loadTheme` and `themeConfigFor`, prefix links.
+3. Ask the user to run `sync` so locale theme files are regenerated from the new
+   key names. Do not hand-translate them.
+
+## Do not
+
+- Do not translate strings yourself.
+- Do not leave a second copy of the same label in `config.mts` and in
+  `theme.en.json`.
+- Do not hand-edit `theme.<locale>.json`.
+- Do not change markdown paths, `base`, or the path of internal links (only the
+  locale prefix).
+
+## Verify
+
+- `pnpm docs:dev`: English and one target locale show translated nav, sidebar,
+  footer, and search chrome.
+- A locale page's nav `link` and `activeMatch` include the locale prefix
+  (`/pt-BR/guide/`, not `/guide/`).
+- `pnpm docs:build` passes.
+- Removing a locale theme file still builds, because `loadTheme` falls back to
+  English.
+
+## Report back
+
+List files changed, the old path key and the new name for each rename, any
+string you added by hand because the extractor skips it, and anything you left
+inline on purpose.
+````
+
+</details>
 
 <a id="example-project"></a>
 ## Proyecto de ejemplo
@@ -169,7 +254,7 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 
 `rewriteVitepressLinks` está habilitado por defecto cuando `style` es `"vitepress"`.
 
-| Autor en la fuente en inglés | Después del normalizador (salida raíz en inglés) | Después del normalizador (salida `docs/<locale>/` traducida) |
+| Autor en la configuración regional de origen | Después del normalizador (salida raíz de la configuración regional de origen) | Después del normalizador (salida `docs/<locale>/` traducida) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
 | `[JSON](/es/guide/json)` | `[JSON](/es/guide/json)` | `[JSON](/pt-BR/guide/json)` (el prefijo de la configuración regional coincide con la carpeta) |
 | `[Quick start](/es/guide/quick-start)` en el cuerpo o `hero.actions[].link` | sin cambios (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
@@ -177,7 +262,7 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 | `hero.image.src: /ai-i18n-tools_logo.svg` | sin cambios | sin cambios (recurso `docs/public/` compartido) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | sin cambios (URL completa) | sin cambios (URL completa) |
 
-Las fuentes raíz en inglés bajo `docs/` mantienen rutas de sitio **neutrales en cuanto a la configuración regional** (`/guide/…`). Los archivos escritos en `docs/<locale>/…` obtienen automáticamente el prefijo de configuración regional en las rutas de contenido interno, incluida la **información de diseño de la página de inicio** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Los recursos públicos compartidos, como `/ai-i18n-tools_logo.svg` y `/translation-dashboard.png`, permanecen sin prefijo en cada configuración regional.
+Los archivos de la configuración regional de origen en `docs/` mantienen rutas de sitio **neutrales a la configuración regional** (`/guide/…`). Este ejemplo usa inglés como `sourceLocale`. Cualquier idioma es válido. Los archivos escritos en `docs/<locale>/…` obtienen automáticamente el prefijo de la configuración regional en las rutas de contenido internas, incluyendo el **frontmatter del diseño de la página de inicio** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Los activos públicos compartidos, como `/ai-i18n-tools_logo.svg` y `/translation-dashboard.png`, permanecen sin prefijo en cada configuración regional.
 
 <a id="theme-navsidebar-links"></a>
 ### Enlaces de navegación/barra lateral del tema

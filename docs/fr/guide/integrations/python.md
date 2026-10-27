@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Sélecteur pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [Applications Python](/fr/guide/ui-strings/python). La procédure pas à pas pour une application existante monolingue est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python).
+Sélecteur pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [Applications Python](/fr/guide/ui-strings/python). Le guide pas à pas pour une application existante à locale unique est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), avec une [invite `i18n.py`](/fr/guide/add-i18n-to-python#agent-prompt-i18n-py) et une [invite Django / gettext](/fr/guide/add-i18n-to-python#agent-prompt-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent l'assistant `i18n.py` généré (Python 3.10 ou version ultérieure). Django conserve le gettext de Django. Quatre copies exécutables sont fournies dans le dépôt : `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Pyramid, Django, Tkinter, Qt et PyWebView ne possèdent pas de répertoire d'exemples distinct.
 
@@ -10,18 +10,18 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent
 
 | Framework | Modèle d'initialisation | Catalogue | Exemple |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | JSON à clés anglaises plates | [python-streamlit](/fr/examples#python-streamlit) |
-| FastAPI | `ui-python` | JSON à clés anglaises plates | [python-fastapi](/fr/examples#python-fastapi) |
-| Flask + Jinja, JSON plat | `ui-python` | JSON à clés anglaises plates | [python-flask](/fr/examples#python-flask) |
+| Streamlit | `ui-python` | JSON plat indexé par la chaîne source | [python-streamlit](/fr/examples#python-streamlit) |
+| FastAPI | `ui-python` | JSON plat indexé par la chaîne source | [python-fastapi](/fr/examples#python-fastapi) |
+| Flask + Jinja, JSON plat | `ui-python` | JSON plat indexé par la chaîne source | [python-flask](/fr/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` sous `translations/` | Utiliser les notes Flask ci-dessous |
 | Pyramid | `ui-python` ou `ui-python-flask` | Identique à Flask | Même configuration que Flask |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | Pas de répertoire d'exemples |
 | GNU gettext existant | `ui-python-gettext` | JSON plat et `.po` / `.mo`, ou gettext uniquement | [python-gettext](/fr/examples#python-gettext) |
-| Tkinter | `ui-python` | JSON à clés anglaises plates | Pas de répertoire d'exemples |
+| Tkinter | `ui-python` | JSON plat indexé par la chaîne source | Pas de répertoire d'exemple |
 | PyQt / PySide | `ui-python` ou un modèle gettext | JSON plat et/ou `.po` | Pas de répertoire d'exemples |
 | PyWebView / PyWebKit | Un modèle Python pour le shell | Catalogues shell, plus marqueurs HTML ou un fichier HTML par locale | Pas de répertoire d'exemples |
 
-`ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent `i18n.py` lorsque ce fichier est manquant. `ui-python-django` ne le fait pas.
+`ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent `i18n.py` lorsque ce fichier est manquant. `ui-python-django` ne le fait pas. Ajoutez `--with-readme` pour également traduire le README du dépôt : [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme).
 
 <a id="framework-notes"></a>
 ## Notes sur les frameworks

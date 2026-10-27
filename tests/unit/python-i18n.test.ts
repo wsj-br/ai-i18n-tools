@@ -183,7 +183,7 @@ describe("template, Qt, and pyproject extractors", () => {
       "{{ pgettext('menu', 'File') }}",
       "{{ ngettext() }}",
       "{{ pgettext('only-context') }}",
-      "{% trans \"Say \\\"hi\\\"\" %}",
+      '{% trans "Say \\"hi\\"" %}',
       "{% %}",
       "{% unfinished",
       "{# unclosed comment",
@@ -224,5 +224,119 @@ describe("template, Qt, and pyproject extractors", () => {
       value: { description: 'Say "hi"' },
     });
     expect(readPyprojectDescription('[project]\nname = "demo"\n').ok).toBe(false);
+  });
+
+  it("reads spaced tables, literal strings, comments, and the first description only", () => {
+    expect(readPyprojectDescription('[  project  ]\ndescription="  Hello  "\n')).toMatchObject({
+      ok: true,
+      value: { description: "Hello", line: 2, table: "project" },
+    });
+    expect(
+      readPyprojectDescription("[tool.poetry]\ndescription = 'Hello # there' # tail\n")
+    ).toMatchObject({
+      ok: true,
+      value: { description: "Hello # there", line: 2, table: "poetry" },
+    });
+    expect(
+      readPyprojectDescription('# comment\n[project]\ndescription = "Hello # world" # trailing\n')
+    ).toMatchObject({
+      ok: true,
+      value: { description: "Hello # world", line: 3, table: "project" },
+    });
+    expect(
+      readPyprojectDescription(
+        '[project]\ndescription = "first"\n[tool.poetry]\ndescription = "second"\n'
+      )
+    ).toMatchObject({
+      ok: true,
+      value: { description: "first", table: "project" },
+    });
+    expect(readPyprojectDescription('[project]\r\ndescription = """Hello"""\r\n')).toMatchObject({
+      ok: true,
+      value: { description: "Hello", line: 2 },
+    });
+    expect(readPyprojectDescription("[project]\ndescription = '''Hello'''\n")).toMatchObject({
+      ok: true,
+      value: { description: "Hello", table: "project" },
+    });
+    expect(readPyprojectDescription('[project]\ndescription = ""\n')).toMatchObject({
+      ok: true,
+      value: { description: "" },
+    });
+  });
+
+  it("decodes basic-string escapes and keeps single-quoted backslashes literal", () => {
+    expect(
+      readPyprojectDescription('[project]\ndescription = "a\\nb\\tc\\\\d\\q"\n')
+    ).toMatchObject({
+      ok: true,
+      value: { description: "a\nb\tc\\dq" },
+    });
+    expect(readPyprojectDescription("[project]\ndescription = 'a\\\\nb'\n")).toMatchObject({
+      ok: true,
+      value: { description: "a\\\\nb" },
+    });
+  });
+
+  it("joins a multiline triple-quoted description and trims the ends", () => {
+    const content = ["[project]", 'description = """', "Hello", "there", '"""', ""].join("\n");
+    expect(readPyprojectDescription(content)).toMatchObject({
+      ok: true,
+      value: { description: "Hello\nthere", line: 2, table: "project" },
+    });
+    expect(readPyprojectDescription('[project]\ndescription = """Hello\nthere"""\n')).toMatchObject(
+      {
+        ok: true,
+        value: { description: "Hello\nthere", line: 2 },
+      }
+    );
+  });
+
+  it("ignores descriptions outside project and poetry and skips non-keys", () => {
+    expect(
+      readPyprojectDescription(
+        '[build-system]\ndescription = "nope"\n[tool.poetry]\ndescription = "yes"\n'
+      )
+    ).toMatchObject({
+      ok: true,
+      value: { description: "yes", table: "poetry" },
+    });
+    expect(readPyprojectDescription('description = "nope"\n[project]\nname = "x"\n').ok).toBe(
+      false
+    );
+    expect(
+      readPyprojectDescription(
+        '[project]\ndescription_file = "README.md"\ndescription\nname = "x"\n'
+      ).ok
+    ).toBe(false);
+    expect(readPyprojectDescription("").ok).toBe(false);
+  });
+
+  it("reports unsupported descriptions with the source line", () => {
+    expect(readPyprojectDescription("[project]\ndescription = 1\n")).toEqual({
+      ok: false,
+      reason: "unsupported",
+      line: 2,
+    });
+    expect(readPyprojectDescription('[project]\ndescription = "unterminated\n')).toEqual({
+      ok: false,
+      reason: "unsupported",
+      line: 2,
+    });
+    expect(readPyprojectDescription("[project]\ndescription = 'unterminated\n")).toEqual({
+      ok: false,
+      reason: "unsupported",
+      line: 2,
+    });
+    expect(readPyprojectDescription('[project]\ndescription = """Hello\n')).toEqual({
+      ok: false,
+      reason: "unsupported",
+      line: 2,
+    });
+    expect(readPyprojectDescription("[project]\ndescription = { a = 1 }\n")).toEqual({
+      ok: false,
+      reason: "unsupported",
+      line: 2,
+    });
   });
 });

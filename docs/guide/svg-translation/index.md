@@ -1,14 +1,14 @@
 <a id="svg"></a>
 # SVG
 
-Designed to translate **SVG illustrations and diagrams** that contain human-readable labels. The `translate-svg` command reads source `.svg` files, extracts text from `<text>`, `<title>`, and `<desc>` elements, translates those strings via the active LLM provider, and writes **one output SVG per target locale**.
+Designed to translate **SVG illustrations and diagrams** that contain human-readable labels. The `translate-svg` command reads source `.svg` files, extracts text from `<text>`, `<title>`, and `<desc>` elements, translates those strings with the models on the active LLM provider, and writes **one output SVG per target locale**.
 
 This is the only pipeline that emits locale-specific **binary** SVG files. `translate-docs` translates markdown alt text and link references, but it does not modify or copy SVG assets. When a page needs a diagram with translated labels, enable `features.translateSVG` and configure the top-level `svg` block.
 
 <a id="per-locale-model-overrides"></a>
 ## Per-locale model overrides
 
-`translate-svg` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Each locale's SVG run uses its own fallback chain — useful when diagram labels in CJK locales need a script-tuned model (for example `ja`). See [Providers and models](/guide/providers-and-models#model-fallback-chain).
+`translate-svg` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Each locale's SVG run uses its own fallback chain — useful when diagram labels in CJK locales need a script-tuned model (for example `ja`). See [AI Models](/guide/ai-models#model-fallback-chain).
 
 SVG translation uses the same SQLite cache as `translate-docs` and `translate-json` (`cacheDir`). Already-translated text segments are served from cache; only new or changed source text is sent to the LLM.
 

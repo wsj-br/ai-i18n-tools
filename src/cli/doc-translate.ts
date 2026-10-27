@@ -305,6 +305,7 @@ function emptyMarkdownProtectShell(): Omit<
     urlMap: [],
     boldCodeMap: [],
     ilcMap: [],
+    codeFenceMap: [],
     emphasisProtected: false,
   };
 }

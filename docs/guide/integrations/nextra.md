@@ -20,7 +20,7 @@ Enable `features.translateDocs` when you translate page content, `_meta.ts` side
 <a id="page-layout"></a>
 ## Page layout
 
-Nextra 4 with i18n keeps **English source MDX under a locale folder** (typically `content/en/`). Translated copies are written to sibling locale folders:
+Nextra 4 with i18n keeps the **source-locale MDX under a locale folder** (typically `content/en/` when English is the source). `sourceLocale` can be any language. Translated copies are written to sibling locale folders:
 
 ```text
 content/en/index.mdx              →  content/pt-BR/index.mdx
@@ -41,7 +41,7 @@ Configure one `docs[]` block:
 }
 ```
 
-Point `contentPaths` at your English `.mdx` files and directories. Set `docsRoot` to the English locale folder inside `content/`.
+Point `contentPaths` at the `.mdx` files and directories written in `sourceLocale`. That language can be any language. Set `docsRoot` to the source-locale folder inside `content/` (for example `content/en` when English is the source).
 
 Wire Nextra [internationalization](https://nextra.site/docs/guide/i18n): set `i18n.locales` and `defaultLocale` in `next.config`, and keep `targetLocales` in `ai-i18n-tools.config.json` aligned with those locale codes and the `content/{locale}/` folder names.
 
@@ -183,7 +183,7 @@ native language names), and any MDX you were not sure belonged under
 
 **Default:** `_meta.ts` object literals and `app/_dictionaries/en.ts` are translated by `translate-docs`. No `t()` is required for that chrome.
 
-**Optional hybrid:** custom server components can call `t("English")` and `translate-ui`. Do not copy dictionary strings or `_meta.ts` titles into those calls. `extract` only sees literals inside `t()`, so `ui.sourceRoots` should list only the folders that contain those calls (the example uses `app/_components`), not `app/_dictionaries`.
+**Optional hybrid:** custom server components can call `t("source sentence")` and `translate-ui`. The sentence is written in `sourceLocale`, which can be any language. Do not copy dictionary strings or `_meta.ts` titles into those calls. `extract` only sees literals inside `t()`, so `ui.sourceRoots` should list only the folders that contain those calls (the example uses `app/_components`), not `app/_dictionaries`.
 
 A module-level i18next singleton with `changeLanguage` is unsafe in a server component: concurrent requests share it. The example uses a stateless lookup instead. `getT(lang)` loads `locales/{lang}.json` for a target locale, treats the source route as an empty bundle (the English literal is already the text), and interpolates with `interpolateTemplate` from `ai-i18n-tools/runtime`. Placeholders are <code v-pre>{{name}}</code> with ASCII word keys. This is the same idea as [examples/astro-website/src/i18n/t.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-website/src/i18n/t.ts).
 
@@ -217,9 +217,9 @@ See `app/_components/feedback-links.tsx` and `lib/ui-t.ts` in [examples/nextra-d
 ## Context
 
 MDX pages, `_meta.ts`, and `app/_dictionaries/en.ts` stay on `translate-docs`.
-Do not duplicate those strings in `t()`. This task adds `t("English sentence")`
+Do not duplicate those strings in `t()`. This task adds `t("source sentence")`
 only in custom components that the dictionary does not cover. The literal is the
-catalog key. Do not translate any string.
+catalog key and is written in `sourceLocale`, which can be any language. Do not translate any string.
 
 Follow `lib/ui-t.ts` and `app/_components/feedback-links.tsx` in
 https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs
@@ -238,7 +238,7 @@ route, and returns
 `(source, vars) => interpolateTemplate(flat[source] ?? source, vars ?? {})` with
 `interpolateTemplate` imported from `ai-i18n-tools/runtime`.
 
-Replace hardcoded sentences in the named server components with `t("English")`.
+Replace hardcoded sentences in the named server components with `t("source sentence")`. The sentence is written in `sourceLocale`, which can be any language.
 A placeholder is `t("You are reading {{page}}.", { page })`.
 
 Do not use `getRequestConfig` (that is a next-intl API) and do not call
@@ -297,7 +297,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteNextraLinks` defaults to enabled when `style` is `"nextra"`.
 
-| Author in English source | After normalizer |
+| Author in the source locale | After normalizer |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
 | `[Guide](../guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |

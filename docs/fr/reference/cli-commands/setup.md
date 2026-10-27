@@ -13,19 +13,19 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 <a id="init"></a>
 ### `init`
 
-**Synopsis :** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
+**Synopsis :** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-readme] [--with-translate-ignore]`
 
 Écrivez un fichier de configuration de démarrage (inclut `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars` et `docs[].addFrontmatter`). Les commandes de traduction qui appellent un LLM nécessitent la clé API du fournisseur actif dans l'environnement ou `.env` (sauf Ollama) — voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
 
-**Options clés :** `-P` / `--provider` (obligatoire), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**Options clés :** `-P` / `--provider` (obligatoire), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
 `-P` / `--provider` est obligatoire. Il sélectionne le **préréglage intégré** à échafauder. Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
 
 **Modèles (`-t`) :**
 
-| Valeur | Échafaudages |
+| Valeur | Génère |
 |-------|-----------|
-| `ui-markdown` | Flux de travail des chaînes d'interface utilisateur Markdown |
+| `ui-markdown` | Chaînes d'IU plus README (sortie à plat, liste de langues) |
 | `ui-docusaurus` | Interface utilisateur Docusaurus + documents |
 | `ui-starlight` | Documents Starlight |
 | `ui-vitepress` | Documents VitePress (`docsOutput.style: "vitepress"`) plus `vitepressThemeCatalog` pour les chaînes de thème |
@@ -34,11 +34,19 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 | `ui-astro-website` | Chaînes d'interface utilisateur de site Web Astro |
 | `ui-plain-html` | Catalogue HTML simple (marqueurs `data-i18n*`, JSON plat des locales) |
 | `docs-plain-html` | Documents HTML simples (un fichier par locale, liste des langues, hreflang) |
+| `docs-markdown` | Documentation Markdown : fichiers README et `.md`, sortie à plat, liste de langues |
 | `ui-json-bundles` | JSON (`json[]` uniquement) |
-| `ui-python` | Chaînes d'interface utilisateur Python, JSON à clés anglaises plates et `i18n.py` |
+| `ui-python` | Chaînes d'IU Python, JSON à plat indexé par la chaîne de la langue source, et `i18n.py` |
 | `ui-python-gettext` | Chaînes d'interface utilisateur Python avec JSON plat et `.po` / `.mo` GNU, plus `i18n.py` |
 | `ui-python-django` | Catalogues `gettext` / `{% blocktrans %}` Django (`flatOutput: false`, domaine `django`, sans `i18n.py`) |
 | `ui-python-flask` | Catalogues Flask / Jinja sous `translations/` (`flatOutput: false`) plus `i18n.py` |
+
+`--with-readme` ajoute un bloc de documentation `README.md` (`outputDir` `translated-docs`, `docsOutput.style` `"flat"`, un `languageListBlock`) et définit `features.translateDocs` à true. Il ne fait rien si un bloc de documentation liste déjà `README.md`, ce qui est le cas pour `ui-markdown` et `docs-markdown`. Il écrit uniquement la configuration. Il affiche la ligne de marqueur à coller dans `README.md` et avertit si ce fichier est manquant. Guide : [Ajouter l'i18n à vos fichiers README et documentation Markdown](/fr/guide/add-i18n-to-readme).
+
+```bash
+ai-i18n-tools init -t docs-markdown -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+```
 
 `--with-translate-ignore` crée un `.translate-ignore` de démarrage (incluant les répertoires virtualenv Python et de cache).
 

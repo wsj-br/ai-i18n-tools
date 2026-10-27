@@ -1,9 +1,13 @@
 <a id="migrating-from-intlayer"></a>
-# Intlayer에서 마이그레이션
+# Intlayer에서 소스 문자열 호출로 마이그레이션
 
-[Intlayer](https://intlayer.org/)에서 이전하시나요? 이 명령어는 기존 번역 사전과 앱 내 가장 기본적인 번역 사용 방식을 ai-i18n-tools로 가져옵니다. 자동으로 안전하게 업데이트를 수행한 후, 여전히 확인이 필요한 항목에 대한 명확한 보고서를 생성합니다. 이를 통해 모든 차이점을 사전에 파악할 필요 없이 점진적으로 이전할 수 있습니다.
+[Intlayer](https://intlayer.org/)는 타입이 지정된 콘텐츠 사전 또는 번역 관리 시스템을 통해 번역을 관리하는 애플리케이션에 이상적입니다. `ai-i18n-tools`는 다른 워크플로, 즉 `t('English source')`과 같은 소스 문자열 호출을 사용하는 코드를 대상으로 합니다. `t()` 내부의 문자열은 `sourceLocale`로 작성되며, 이는 모든 언어가 될 수 있습니다. 이 예제의 영어는 샘플일 뿐입니다. 소스 문자열을 코드에 직접 유지함으로써 이 접근 방식은 유지 관리를 단순화하고 복잡성을 줄입니다. 이 모델이 요구 사항에 부합하는 경우, `migrate-intlayer`는 기존 사전을 가져오고 호환되는 호출 사이트를 자동으로 재작성합니다. 나머지 사이트는 변경하지 않고 그대로 두며, 특정 교체 지침이 포함된 보고서를 생성합니다. 이를 통해 마이그레이션을 단계적으로 완료하거나 보고서를 AI 코딩 에이전트에 전달하여 마이그레이션을 완료할 수 있습니다.
 
 이미 i18next JSON 번역 파일을 사용하고 계신가요? 이 마이그레이션 명령어는 필요하지 않습니다. 대신 [JSON 파이프라인](/ko/guide/json#i18next-namespace-files)을 사용하십시오.
+
+::: tip 인플레이스 번역 또는 마이그레이션?
+이 페이지에서는 앱을 Intlayer에서 ai-i18n-tools의 `t('English source')`과 같은 소스 문자열 `t()` 호출로 전환하는 방법을 설명합니다. 문자열은 `sourceLocale`로 작성되며, 이는 모든 언어가 될 수 있습니다. 런타임에 Intlayer를 유지하고 누락된 번역만 채우려면 대신 [`translate-intlayer`](/ko/guide/translating-intlayer)를 사용하세요. 이 도구는 `*.content.ts`를 인플레이스 방식으로 번역합니다.
+:::
 
 <a id="what-migrate-intlayer-does"></a>
 ## `migrate-intlayer`의 기능

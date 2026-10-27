@@ -3,12 +3,12 @@
 
 Use ai-i18n-tools com [Astro](https://astro.build/) em duas configurações comuns: sites de documentação **Astro Starlight** e sites de marketing ou aplicativos **Astro simples**. Ambos usam Documentos (`translate-docs`) para o conteúdo da página; sites Astro simples geralmente combinam isso com strings de UI (`extract` / `translate-ui`) para strings `t()` em frontmatter e dados compartilhados.
 
-Consulte também [strings da UI](/pt-BR/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight), [Documentos](/pt-BR/guide/documents/) e os exemplos executáveis abaixo.
+Consulte também [strings da UI](/pt-BR/guide/ui-strings/astro-website), [Documentos](/pt-BR/guide/documents/) e os exemplos executáveis abaixo.
 
 <a id="astro-starlight"></a>
 ## Astro Starlight
 
-Use `init -t ui-starlight` e `docsOutput.style: "astro-starlight"` para sites de documentação [Astro Starlight](https://starlight.astro.build/). O preset é um alias para `doc-system` com um `localeSubpath` vazio — páginas traduzidas ficam em `src/content/docs/<locale>/` ao lado da árvore de origem em inglês.
+Use `init -t ui-starlight` e `docsOutput.style: "astro-starlight"` para sites de documentação do [Astro Starlight](https://starlight.astro.build/). A predefinição é um alias para `doc-system` com um `localeSubpath` vazio — as páginas traduzidas ficam em `src/content/docs/<locale>/` ao lado da árvore de localidade de origem. `sourceLocale` pode ser qualquer idioma.
 
 <a id="quick-start"></a>
 ### Início rápido
@@ -43,11 +43,21 @@ Configure um bloco `docs[]`:
 }
 ```
 
-Aponte `contentPaths` para seus arquivos e diretórios `.md` / `.mdx` em inglês. Defina `docsRoot` para a mesma pasta que o Starlight usa como sua raiz de conteúdo.
+Aponte `contentPaths` para os arquivos e diretórios `.md` / `.mdx` escritos em `sourceLocale`. Esse pode ser qualquer idioma. Defina `docsRoot` para a mesma pasta que o Starlight usa como sua raiz de conteúdo.
 
 As substituições da UI do Starlight podem usar `src/content/i18n/en.json` com `jsonPathTemplate` em um bloco `docs[]` separado quando necessário — consulte [Documentos — inicializar para documentação](/pt-BR/guide/documents/#step-1-initialise-for-documentation).
 
 O Starlight fornece strings de UI integradas para muitos idiomas (rótulos de navegação, placeholder de pesquisa, sumário e assim por diante). Não há um pipeline separado de shell/tema para configurar — use `translate-docs` apenas para o conteúdo da página. Para outros frameworks, consulte [Tradução do shell do Framework](/pt-BR/guide/integrations/#framework-shell-translation).
+
+`label`s explícitos da barra lateral, o `title` do site e `social[].label` em `astro.config.mjs` são literais em inglês que esta ferramenta não traduz. Prefira entradas `slug` para que o rótulo venha do frontmatter traduzido da página (`title`). Um grupo ou um link externo que precisa de seu próprio texto usa o mapa `translations` por localidade do Starlight (`label` para a localidade padrão, `translations['pt-BR']` para as outras). `social[].label` não tem um campo de traduções no esquema atual do Starlight; ele permanece como está escrito. Consulte a [barra lateral do Starlight](https://starlight.astro.build/guides/sidebar/#internationalization) e [examples/astro-docs/astro.config.mjs](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs), que usa entradas `slug`.
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### Habilitar i18n em um site existente
+
+- `locales` na configuração do Starlight, incluindo uma entrada `root` quando o inglês não deve ter prefixo (`label` e o `lang` obrigatório).
+- `defaultLocale: 'root'` quando o idioma padrão é essa localidade raiz. Omita `defaultLocale` somente se o padrão do Starlight já corresponder.
+- As páginas em inglês permanecem em `src/content/docs/`; `translate-docs` grava em `src/content/docs/<locale>/`.
+- `targetLocales` alinhado com as chaves de localidade não raiz (atenção às maiúsculas e minúsculas: as chaves de diretório do Starlight geralmente são minúsculas, como `pt-br`).
 
 <a id="example-project"></a>
 ### Projeto de exemplo
@@ -64,7 +74,7 @@ A maioria das equipes usa um **híbrido** de dois pipelines na mesma página:
 | Pipeline | Uso para | Comandos | Saída |
 |----------|---------|----------|--------|
 | **HTML da página** | Cabeçalhos, parágrafos, rótulos de navegação, arrays embutidos no corpo do template | `translate-docs` | `src/pages/{locale}/index.astro` por localidade |
-| **Strings de interface (`t()`)** | Dados frontmatter, rótulos de abas, arrays compartilhados | `extract` → `translate-ui` | `public/locales/{locale}.json` (fonte em inglês como chave) |
+| **Strings da UI (`t()`)** | Dados do frontmatter, rótulos de abas, arrays compartilhados | `extract` → `translate-ui` | `public/locales/{locale}.json` (string do idioma de origem como chave) |
 
 <a id="quick-start-1"></a>
 ### Início rápido
@@ -103,7 +113,7 @@ Estruture a extração da UI com `init -t ui-astro-website -P ollama`, depois me
 
 Mantenha três listas alinhadas ao adicionar ou remover um idioma: `targetLocales` em `ai-i18n-tools.config.json`, `i18n.locales` em `astro.config.mjs` (Astro usa códigos de rota em **minúsculas**, como `pt-br`), e `ui-languages.json` (via `generate-ui-languages`). Os **nomes de arquivo** do pacote plano usam o casing da configuração (`pt-BR.json`); mapeie a rota `pt-br` do Astro para esse arquivo através do campo `code` do seu manifesto.
 
-Resolva `t('…')` no **tempo de compilação** procurando o literal da fonte em inglês como a chave — consulte `examples/astro-website/src/i18n/t.ts`. Você não precisa de `ai-i18n-tools/runtime` ou i18next para um site estático, a menos que adicione ilhas de cliente que mudam de idioma após o carregamento.
+Resolva `t('…')` em **tempo de compilação** procurando o literal do idioma de origem como a chave — consulte `examples/astro-website/src/i18n/t.ts`. `sourceLocale` pode ser qualquer idioma. O exemplo usa inglês. Você não precisa de `ai-i18n-tools/runtime` ou i18next para um site estático, a menos que você adicione ilhas de cliente que trocam de idioma após o carregamento.
 
 <a id="example-project-1"></a>
 ### Projeto de exemplo

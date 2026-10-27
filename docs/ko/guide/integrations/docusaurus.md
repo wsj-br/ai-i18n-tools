@@ -44,9 +44,16 @@ docs-site/docs/guide/quick-start.md
 }
 ```
 
-`contentPaths`을(를) 영어 `.md` / `.mdx` 파일 및 디렉터리를 가리키도록 합니다. `docsRoot`을(를) Docusaurus가 콘텐츠 루트로 사용하는 동일한 폴더로 설정합니다. `outputDir`을(를) `i18n/` 아래의 각 로케일 폴더의 상위 폴더로 설정합니다.
+`contentPaths`을(를) `sourceLocale`로 작성된 `.md` / `.mdx` 파일 및 디렉터리로 지정합니다. 그 언어는 어떤 언어든 가능합니다. `docsRoot`를 Docusaurus가 콘텐츠 루트로 사용하는 것과 동일한 폴더로 설정합니다. `outputDir`를 `i18n/` 아래에 있는 각 로케일 폴더의 상위 폴더로 설정합니다.
 
 Docusaurus [국제화](https://docusaurus.io/docs/i18n/introduction)를 연결합니다. `ai-i18n-tools.config.json`의 `targetLocales`을(를) `docusaurus.config.js`의 `locales` 배열과 일치시킵니다. 각 `localeConfigs[locale].path`은(는) `i18n/` 아래의 폴더 이름(예: `i18n/fr/`의 경우 `path: "fr"`)과 일치해야 합니다.
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### 기존 사이트에서 i18n 활성화하기
+
+- URL 경로가 로케일 코드와 달라야 하는 경우 `docusaurus.config.js`에 `i18n` 블록(`defaultLocale`, `locales`, `localeConfigs[locale].path`)을 추가합니다.
+- `docusaurus write-translations`을(를) 실행하여 `i18n/<defaultLocale>/`이(가) 존재하도록 한 다음, `docusaurusCatalogDir`을(를) 해당 폴더로 지정하고 `sync`을(를) 실행합니다.
+- `src/pages` 및 `src/components`의 사용자 지정 React는 마크다운이 아닙니다. `write-translations`이(가) `code.json`에 수집할 수 있도록 `@docusaurus/Translate`의 `<Translate>` 또는 `translate()`(으)로 사용자에게 표시되는 텍스트를 표시합니다. 메시지는 정적 문자열이어야 합니다. `write-translations`은(는) `i18n/<locale>/code.json`을(를) 작성합니다. `docusaurusCatalogDir`이(가) 설정되면 `translate-docs`은(는) 나머지 셸 카탈로그와 함께 해당 JSON을 번역합니다. ai-i18n-tools는 해당 JSX 트리에서 `t()`을(를) 스캔하지 않습니다.
 
 <a id="shell-strings-write-translations"></a>
 ## 셸 문자열 (write-translations)

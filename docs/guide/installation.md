@@ -18,6 +18,27 @@ yarn add ai-i18n-tools
 
 GitHub Releases attach a Node.js single-executable build. Python projects run the CLI from that binary, including `extract`, `translate-ui`, and `suggest-models`, with no Node.js install.
 
+Linux and macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
+```
+
+The installer detects the system, downloads the matching executable, checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools` (`ai-i18n-tools.exe` on Windows), and adds the install directory to `PATH`. The default directory is `~/.local/bin`. Open a new terminal if the command is not found yet. Set `AI_I18N_VERSION` (for example `v1.11.0`) to pin a release, or `AI_I18N_INSTALL_DIR` to choose another directory.
+
+The binaries are not notarized or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning. The macOS installer clears the quarantine flag after the checksum matches.
+
+Each release also attaches `SHA256SUMS.txt`, `install.sh`, `install.ps1`, and `ai-i18n-tools-python-examples.zip` (the four Python examples). The npm tarball and the executable do not contain those examples. They stay in the repository as well.
+
+<details>
+<summary>Manual instructions to install <code>ai-i18n-tools</code> executable</summary>
+
 | Platform | Asset |
 | --- | --- |
 | Linux x64 | `ai-i18n-tools-linux-x64` |
@@ -26,14 +47,41 @@ GitHub Releases attach a Node.js single-executable build. Python projects run th
 | macOS x64 | `ai-i18n-tools-macos-x64` |
 | Windows x64 | `ai-i18n-tools-win-x64.exe` |
 
-Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). The npm tarball and the executable do not contain those examples. They stay in the repository as well.
+1. Download the asset that matches the machine, and `SHA256SUMS.txt`, from the [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) page.
+2. Check the checksum. On Linux, `grep ' ai-i18n-tools-linux-x64$' SHA256SUMS.txt | sha256sum -c -` (use the asset name you downloaded). On macOS, the same line with `shasum -a 256 -c -`. On Windows, `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe).Hash` and compare it with the hash in `SHA256SUMS.txt`.
+3. Rename the downloaded file to `ai-i18n-tools` and put that directory on `PATH`.
 
-1. Download the asset that matches the machine from the [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) page.
-2. Check the checksum against `SHA256SUMS.txt`.
-3. On Linux and macOS, run `chmod +x` on the file and move it onto `PATH` (or call it by path).
-4. On Windows, place `ai-i18n-tools-win-x64.exe` on `PATH`. Renaming it to `ai-i18n-tools.exe` keeps the same command name as the other platforms.
+Linux and macOS, using the Linux x64 asset as the example (substitute the asset you downloaded):
 
-The binaries are not notarized or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning.
+```bash
+mkdir -p "$HOME/.local/bin"
+mv ai-i18n-tools-linux-x64 "$HOME/.local/bin/ai-i18n-tools"
+chmod +x "$HOME/.local/bin/ai-i18n-tools"
+```
+
+If `$HOME/.local/bin` is not already on `PATH`, add this to the shell profile (`.bashrc`, `.bash_profile`, `.profile`, or `.zshrc`) and open a new terminal:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Windows (PowerShell), renaming `ai-i18n-tools-win-x64.exe` to `ai-i18n-tools.exe`:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.local\bin" | Out-Null
+Move-Item -Force .\ai-i18n-tools-win-x64.exe "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+$installDir = "$env:USERPROFILE\.local\bin"
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ([string]::IsNullOrEmpty($userPath)) {
+  [Environment]::SetEnvironmentVariable("Path", $installDir, "User")
+} elseif ($userPath -notlike "*${installDir}*") {
+  [Environment]::SetEnvironmentVariable("Path", "$installDir;$userPath", "User")
+}
+```
+
+Open a new terminal and run `ai-i18n-tools --version`. The command name is `ai-i18n-tools` on every platform.
+
+</details>
 
 Set the API key for the active provider the same way as an npm install (see below). Then:
 
@@ -49,7 +97,7 @@ Walkthrough: [Add i18n to a Python app](/guide/add-i18n-to-python). Command refe
 <a id="set-the-api-key"></a>
 ### Set the API key
 
-Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) require provider configuration in `ai-i18n-tools.config.json` and an API key for the active provider. Run `ai-i18n-tools init -P <provider>` to scaffold that preset; edit `provider` / `providers` to add models — see [LLM providers and models](/guide/providers-and-models). The model list from `init` is a starting point. `ai-i18n-tools suggest-models` ranks the active provider's chat models, and `suggest-models --apply` replaces `translationModels`. The same ranking is on the [Models](/guide/translation-dashboard/models) tab. Ollama is the only built-in preset that needs no API key.
+Translation commands (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`) require provider configuration in `ai-i18n-tools.config.json` and an API key for the active provider. Run `ai-i18n-tools init -P <provider>` to scaffold that preset. Provider presets and API keys: [LLM providers](/guide/providers-and-models). The model list from `init` is a starting point. Replace it from [AI Models](/guide/ai-models) with `suggest-models` or the dashboard **Models** tab. Ollama is the only built-in preset that needs no API key.
 
 Set the key that matches the provider you pass to `init` (see the [preset table](/guide/providers-and-models#built-in-providers)):
 

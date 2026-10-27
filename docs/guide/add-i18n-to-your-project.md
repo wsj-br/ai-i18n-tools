@@ -1,14 +1,14 @@
 <a id="add-i18n-to-your-project"></a>
 # Add i18n to your project
 
-This section is the set of walkthroughs for a project that speaks one language today. Start here. Each page below takes one kind of project from setup to the first translated files. [Get started](/guide/what-is-ai-i18n-tools) covers what the tool is, install options, and the provider list. You can open a walkthrough without reading those pages first.
+This section is the set of walkthroughs for a project that speaks one language today. Start here. Each page below takes one kind of project from setup to the first translated files. [Get started](/guide/what-is-ai-i18n-tools) covers what the tool is, install options, and providers and models. You can open a walkthrough without reading those pages first.
 
 <a id="what-you-do-and-what-the-tool-does"></a>
 ## What you do and what the tool does
 
 | You | The tool |
 | --- | --- |
-| Pick the languages and a provider | Extracts text, translates it, checks the result, and writes catalogs or pages |
+| Pick the languages, a provider, and the models to try | Extracts text, translates it, checks the result, and writes catalogs or pages |
 | Make the text visible: `t()` in app code, your site framework's i18n, or a language-list marker in a README | Caches every translation and reuses it on the next run |
 | Load the files and check one language | Shows progress, and lets you review wording in the [Translation Dashboard](/guide/translation-dashboard/) |
 
@@ -48,4 +48,5 @@ The walkthroughs stop once the first language is wired. The reference pages take
 - [UI strings](/guide/ui-strings/), [Documents](/guide/documents/), [JSON](/guide/json), and [SVG](/guide/svg-translation/) for one pipeline at a time.
 - [Integrations](/guide/integrations/) for framework shell strings (navigation, sidebar, theme).
 - [Quick start](/guide/quick-start) for the command list and recommended `package.json` scripts.
-- [Providers and models](/guide/providers-and-models) for the model fallback chain.
+- [LLM providers](/guide/providers-and-models) for presets and API keys.
+- [AI Models](/guide/ai-models) for the ranked shortlist and the fallback chain.

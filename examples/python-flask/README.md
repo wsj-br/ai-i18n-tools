@@ -17,9 +17,11 @@ Open `/?lang=es` or `/?lang=pt-BR`. The app also reads `Accept-Language`. Each r
 
 ## Translate with the standalone binary
 
+Install the command (no Node.js install). Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`.
+
 ```bash
-./ai-i18n-tools extract
-./ai-i18n-tools translate-ui
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 From a Node checkout, use `node ../../bin/ai-i18n-tools.mjs`.

@@ -1,7 +1,7 @@
 <a id="models"></a>
 # Modèles
 
-L'onglet **Modèles** classe les modèles de chat du fournisseur actif afin que vous puissiez choisir `translationModels` sans copier manuellement les identifiants. Il utilise le même classement que [`suggest-models`](/fr/reference/cli-commands/models#suggest-models).
+L'onglet **Modèles** classe les modèles de chat du fournisseur actif afin que vous puissiez choisir `translationModels` sans copier manuellement leurs ID. Il utilise le même classement que [`suggest-models`](/fr/reference/cli-commands/models#suggest-models). La présentation détaillée, qui explique notamment pourquoi la liste contient plusieurs modèles, se trouve dans [Modèles d'IA](/fr/guide/ai-models).
 
 Choisissez **Qualité** ou **Prix**. La qualité privilégie le score ChrF de languagebench et l'Arena Score. Le prix privilégie un tarif en USD plus bas tout en conservant un seuil de qualité. Lorsque la configuration comporte plusieurs fournisseurs, un menu **Fournisseur** apparaît ; la valeur par défaut est le fournisseur avec lequel le tableau de bord a été démarré (`provider`, ou `-P` / `--provider` lors de la commande `dashboard`). Changer de fournisseur ou de priorité recharge le tableau. Les pondérations optionnelles se trouvent dans [`modelSuggestion`](/fr/reference/configuration#modelsuggestion).
 

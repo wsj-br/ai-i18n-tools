@@ -47,6 +47,17 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 
 Alinee `targetLocales` con `defineI18n().languages` en `lib/i18n.ts` exactamente (el ejemplo utiliza códigos cortos `pt` y `zh`).
 
+<a id="enable-i18n-in-an-existing-site"></a>
+### Habilitar i18n en un sitio existente
+
+Una aplicación Fumadocs solo en inglés necesita una ruta de configuración regional y `defineI18n` antes de que `translate-docs` pueda escribir archivos hermanos. La [solicitud del agente](#agent-prompt) recorre un sitio existente. Lista de verificación:
+
+- `defineI18n` en `lib/i18n.ts` con `languages`, `defaultLanguage` y `parser: "dot"` o `"dir"`.
+- Rutas `app/[lang]/` y `createI18nMiddleware` de `proxy.ts` (el archivo del ejemplo).
+- `i18n.translations()` en `lib/layout.shared.ts`, pasado a `i18nProvider`.
+- MDX en inglés en la raíz de la colección (punto) o bajo `content/docs/en/` (directorio).
+- `targetLocales` igual a `languages` menos el idioma predeterminado, luego `sync`.
+
 <a id="dir-parser-nextra-style"></a>
 ### Analizador de directorios (estilo Nextra)
 
@@ -77,8 +88,8 @@ Consulte `ai-i18n-tools.config.dir.example.json` en [examples/fumadocs-docs](htt
 
 Fumadocs utiliza archivos JSON `meta.json` para la estructura y los títulos de la barra lateral. Cuando `docsOutput.style` es `"fumadocs"`, **`translate-docs`** recopila `meta.json` bajo `docsRoot` (o `docs[].fumadocsMetaGlob`), traduce los valores de cadena para las claves enumeradas en `docs[].fumadocsMetaTranslatableKeys` (predeterminado: `title`, `description`) y escribe las salidas de configuración regional:
 
-| Analizador | Fuente en inglés | Salida |
-|--------|----------------|--------|
+| Analizador | Configuración regional de origen | Salida |
+|--------|--------------------------|--------|
 | **punto** | `content/docs/**/meta.json` | `content/docs/**/meta.{locale}.json` |
 | **dir** | `content/docs/en/**/meta.json` | `content/docs/{locale}/**/meta.json` |
 
@@ -87,7 +98,7 @@ Fumadocs utiliza archivos JSON `meta.json` para la estructura y los títulos de 
 <a id="ui-catalog"></a>
 ## Catálogo de interfaz de usuario
 
-El "chrome" del diseño de Fumadocs (marcador de posición de búsqueda, nombres de visualización de configuración regional y otras anulaciones de `defineTranslations` / `i18n.translations()` en `lib/layout.shared.ts`) no se extrae de markdown. Configure **`docsOutput.fumadocsUiCatalog`** para que **`translate-docs`** arranque el catálogo en inglés desde `sourcePath` y traduzca el JSON por configuración regional:
+La interfaz de diseño de Fumadocs (marcador de posición de búsqueda, nombres de visualización de configuración regional y otras anulaciones de `defineTranslations` / `i18n.translations()` en `lib/layout.shared.ts`) no se extrae de markdown. Configure **`docsOutput.fumadocsUiCatalog`** para que **`translate-docs`** inicialice el catálogo de configuración regional de origen desde `sourcePath` y traduzca JSON por configuración regional:
 
 ```json
 {
@@ -112,12 +123,98 @@ El "chrome" del diseño de Fumadocs (marcador de posición de búsqueda, nombres
 }
 ```
 
-- **`catalogPath`** — JSON plano en inglés generado (salida de arranque). Vuelva a ejecutar `sync` cuando cambien las anulaciones en inglés en `layout.shared.ts`.
+- **`catalogPath`** — JSON plano en inglés. El bootstrap lee solo el objeto `en` de `.add({ … })` en `sourcePath`. Los literales de cadena en ese objeto se convierten en claves de catálogo (`displayName`, `Search(search trigger)`). `.add()` solo acepta claves registradas por los preajustes de la interfaz de usuario de Fumadocs, por lo que un título de navegación como `site.title` no puede residir allí. El ejemplo mantiene `site.title` en el JSON y lee `catalog["site.title"]` para `nav.title`. Las claves ya presentes en el archivo pero ausentes del objeto `en` permanecen: la fusión es `{ ...existing, ...extracted }`. Vuelva a ejecutar `sync` cuando cambien los literales en inglés.
 - **`outputPathTemplate`** (opcional) — salidas por configuración regional; predeterminado: `ui.{locale}.json` junto a `catalogPath`.
 
-Cargue el JSON por configuración regional en `layout.shared.ts` a través de `loadUiCatalog(locale)` y combínelo con `i18nProvider(translations, lang)` en su diseño raíz. Consulte [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts).
+Una clave traducida no hace nada hasta que la aplicación la lee. `i18n.translations().get(lang)` devuelve solo las claves registradas con `.extend()` (los preajustes de la interfaz de usuario de Fumadocs). Extienda el catálogo de configuración regional en `.add()` para que esas claves se apliquen, y coloque `displayName` nativo **después** de la extensión para que una traducción del nombre en inglés no lo reemplace:
+
+```ts
+"pt-BR": {
+  ...loadUiCatalog("pt-BR"),
+  displayName: "Português (Brasil)",
+},
+```
+
+`site.title` no es una clave de la interfaz de usuario de Fumadocs. El ejemplo lo lee del catálogo para `nav.title`. Una etiqueta de búsqueda que existe solo en `ui.pt-BR.json` permanece en el preajuste incorporado hasta que esa extensión (u otra lectura) la use.
+
+Consulte [examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts).
 
 Las locales estándar pueden estar cubiertas por los ajustes preestablecidos de `@fumadocs/language/*` sin costo de LLM; el catálogo traduce las **anulaciones de proyecto** en el bloque de inglés solo.
+
+<a id="agent-prompt"></a>
+## Solicitud del agente
+
+Copie esto cuando un sitio Fumadocs solo en inglés deba obtener configuraciones regionales. Conecta el enrutamiento y el catálogo de la interfaz de usuario. No traduce cadenas.
+
+<details class="agent-prompt">
+<summary>Solicitud de catálogo de interfaz de usuario</summary>
+
+````markdown
+# Enable Fumadocs i18n and the UI catalog
+
+## Context
+
+ai-i18n-tools translates Fumadocs MDX, `meta.json` titles, and the English block
+of `i18n.translations().add({ en: { … } })` via `translate-docs` and
+`docsOutput.fumadocsUiCatalog`. The literal in that `en` object is the source
+string. Locale JSON takes effect only for keys the app reads: either a catalog
+spread into `.add()` for registered UI keys, or a direct read such as
+`catalog["site.title"]` for the nav title. Do not translate any string.
+
+Reference:
+https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs
+
+## Scope
+
+Edit `lib/i18n.ts`, `lib/layout.shared.ts`, `proxy.ts`, `app/[lang]/` routes,
+and `ai-i18n-tools.config.json`. Skip URLs, slugs, and native language names
+(`displayName` on each locale entry).
+
+## Call shape
+
+- `defineI18n({ languages, defaultLanguage, parser })`. Use `"dot"` unless the
+  project already keeps English under a locale folder (`"dir"`).
+- `export default createI18nMiddleware(i18n)` from `proxy.ts`.
+- Move pages under `app/[lang]/…` and pass `lang` into `baseOptions` and
+  `i18nProvider(translations, lang)`.
+- In `lib/layout.shared.ts`, keep English UI overrides as string literals inside
+  `.add({ en: { … } })`. For each other locale, spread `loadUiCatalog(locale)`
+  and then set `displayName` to the native name.
+- Config: `features.translateDocs`, `docsOutput.style: "fumadocs"`,
+  `fumadocsParser` matching `defineI18n`, and `fumadocsUiCatalog.sourcePath`
+  pointing at `lib/layout.shared.ts`. `targetLocales` must equal `languages`
+  except the default language, character for character.
+
+## Order
+
+1. Routing and `defineI18n`.
+2. English literals in the `en` block, and the catalog spread for other locales.
+3. Ask the user to run `sync`. Do not hand-write `ui.<locale>.json` or
+   translated MDX.
+
+## Do not
+
+- Do not translate, rename, or reword the English literals.
+- Do not put native language names only in the `en` block (they would be
+  extracted and translated).
+- Do not hand-edit locale JSON, `meta.<locale>.json`, or locale MDX.
+- Do not use `json[]` for this catalog.
+
+## Verify
+
+- `pnpm build` passes.
+- The default locale still shows the English overrides.
+- After `sync`, one other locale shows the translated search trigger and nav
+  title, and `displayName` in the language menu is still the native name.
+
+## Report back
+
+List files changed, each key you added to the `en` block, each key you left
+unread (and so unused) with a one-line reason, and whether the parser is `dot`
+or `dir`.
+````
+
+</details>
 
 **No** utilice `json[]` para las cadenas de interfaz de usuario de Fumadocs — esa canalización es para paquetes de locales de aplicaciones no relacionados.
 
@@ -138,8 +235,8 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 
 `rewriteFumadocsLinks` se habilita de forma predeterminada cuando `style` es `"fumadocs"`.
 
-| Autor en fuente en inglés | Después del normalizador |
-|--------------------------|------------------|
+| Autor en la configuración regional de origen | Después del normalizador |
+|----------------------------------|--------------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
 | `[Guide](/es/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |

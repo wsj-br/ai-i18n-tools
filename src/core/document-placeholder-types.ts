@@ -9,7 +9,13 @@ const IDENT_TOKEN_RE = /\{\{\s*([A-Za-z_][A-Za-z0-9_-]*)\s*\}\}/g;
 const JXA_APPENDIX_RE = /\|\|\s*JXA\d+:/i;
 
 export const EMPHASIS_PLACEHOLDER_KINDS = ["IT", "IU", "SE", "SU", "ST"] as const;
-export const STRUCTURAL_PLACEHOLDER_KINDS = ["HTM", "ADM_OPEN", "ADM_END", "ADM_TCLOSE"] as const;
+export const STRUCTURAL_PLACEHOLDER_KINDS = [
+  "HTM",
+  "ADM_OPEN",
+  "ADM_END",
+  "ADM_TCLOSE",
+  "CDF",
+] as const;
 export const NUMBERED_CONTENT_PLACEHOLDER_KINDS = [
   "URL",
   "ILC",
@@ -185,6 +191,9 @@ export function buildMarkdownPreservation(kinds: Set<DocumentPlaceholderKind>): 
   const head =
     "Markdown structure: Preserve heading levels (#\u2013######), list markers and indentation, blockquotes (>), horizontal rules, and meaningful line breaks.";
   const tokenBits: string[] = [];
+  if (kinds.has("CDF")) {
+    tokenBits.push("Fenced code blocks are sent as {{CDF_N}}");
+  }
   if (kinds.has("ILC")) {
     tokenBits.push("Inline `` `code` `` is sent as {{ILC_N}}");
   }

@@ -116,14 +116,14 @@ Optional tuning: `VIRTUAL_TIME_MS` (default **8000**) delays capture so locale J
 `[scripts/screenshot-translation-dashboard.sh](../scripts/screenshot-translation-dashboard.sh)` refreshes `docs/public/translation-dashboard.png` for the [Translation Dashboard](../docs/guide/translation-dashboard/) guide page (shared absolute URL across all VitePress locales).
 
 
-| Dependency                | Role                                                               |
-| ------------------------- | ------------------------------------------------------------------ |
-| `chromium-headless-shell` | `--screenshot` (default **1300×900**); set `CHROME_BIN` if needed. |
-| `curl`                    | Waits until the dashboard URL responds before capture.             |
-| **Built CLI**             | Run `pnpm build` so `dist/cli/index.js` exists.                    |
+| Dependency                       | Role                                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Google Chrome, Brave, or Firefox | Headless screenshot (default **1300×900**). Uses the first installed, in that order. Set `CHROME_BIN` to force a binary. |
+| `curl`                           | Waits until the dashboard URL responds before capture.                                                                   |
+| **Built CLI**                    | Run `pnpm build` so `dist/cli/index.js` exists.                                                                          |
 
 
-By default the script starts `ai-i18n-tools dashboard -L en-GB --no-open` on port **8675**, captures, then stops the server. `-L en-GB` pins the dashboard UI so the shot stays English regardless of host OS locale or `AI_I18N_LANG`. If the dashboard is already running, set `BASE_URL` (for example `http://127.0.0.1:8675/`) and `SKIP_DASHBOARD_START=1`. Optional tuning: `VIRTUAL_TIME_MS`, `WINDOW_SIZE`, `PORT`.
+By default the script starts `ai-i18n-tools dashboard -L en-GB --no-open` on port **8675**, captures, then stops the server. `-L en-GB` pins the dashboard UI so the shot stays English regardless of host OS locale or `AI_I18N_LANG`. If the dashboard is already running, set `BASE_URL` (for example `http://127.0.0.1:8675/`) and `SKIP_DASHBOARD_START=1`. The capture opens the Statistics tab and waits until that view has loaded (at least `SETTLE_MS`, default **3s**, and no longer than `VIRTUAL_TIME_MS`). Optional tuning: `SETTLE_MS`, `VIRTUAL_TIME_MS`, `WINDOW_SIZE`, `PORT`, `OUT`, `CHROME_BIN`.
 
 ## Setting Up the Workspace
 

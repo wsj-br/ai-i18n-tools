@@ -77,6 +77,8 @@ REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || true)
 tmp="$(mktemp)"
 trap 'rm -f "$tmp"' EXIT
 
+echo "Cleaning up GitHub Actions failed actions for ${REPO}"
+
 for conclusion in "${CONCLUSIONS[@]}"; do
   gh run list \
     --repo "$REPO" \

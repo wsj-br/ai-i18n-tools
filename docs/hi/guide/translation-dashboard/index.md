@@ -22,7 +22,7 @@ ai-i18n-tools dashboard
 
 डैशबोर्ड UI CLI के समान लोकेल रिज़ॉल्यूशन का उपयोग करता है: `-L` / `--ui-lang` → `AI_I18N_LANG` → कॉन्फ़िग `uiLanguage` → OS लोकेल। [टूल UI भाषा](/hi/guide/tool-ui-language) देखें।
 
-![अनुवाद डैशबोर्ड फ़िल्टर और कैश किए गए सेगमेंट पंक्तियों के साथ दस्तावेज़ टैब दिखा रहा है](/translation-dashboard.png)
+![आँकड़े टैब दिखाने वाला अनुवाद डैशबोर्ड](/translation-dashboard.png)
 
 <a id="which-tab-should-i-use"></a>
 ## मुझे कौन सा टैब उपयोग करना चाहिए?

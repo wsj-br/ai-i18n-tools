@@ -17,13 +17,32 @@
 
 **概要：** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-將 Intlayer `*.content.ts` 字典匯入至 `strings.json` 與扁平化語系檔案，並將簡單的 `useIntlayer` / `getIntlayer` 呼叫位置重寫為 `t('English source')`。預設為模擬執行（仍會寫入報告）。`--write` 會植入目錄並套用安全的重寫。不會呼叫 LLM。
+將 Intlayer `*.content.ts` 字典匯入 `strings.json` 和扁平化語系檔案，並將簡單的 `useIntlayer` / `getIntlayer` 呼叫位置重寫為 `t('source string')`。字串以 `sourceLocale` 撰寫，可以是任何語言。預設為模擬執行 (仍會寫入報告)。`--write` 會為目錄植入資料並套用安全的重寫。不會呼叫 LLM。
 
 此報告是 `--write` 所留下所有內容的交接文件，結尾附有 **逐步待辦事項** 以安排後續工作：每個手動站點的具體 `t()` 或 JSX 呼叫、`import { t }` 行、字典檔與後續需刪除的 `IntlayerProvider` 殘留檔案、需要先 `extract` 再 `translate-ui` 的來源字串，以及用來覆寫應用程式 i18n 模組的 i18next 執行階段啟動程式碼。區域設定控制項必須呼叫 `i18n.changeLanguage` 與 `loadLocale`。`extract` 會寫入 `ui-languages.json`，並由該啟動程式碼匯入。請勿手動編輯 `strings.json`、扁平化區域設定檔案或 `ui-languages.json`。
 
 **主要選項：** `--write`, `--report`, `--content-glob` (預設 `**/*.content.ts`), `--t-import`
 
 **另請參閱：** [從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**概要：** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+就地翻譯 Intlayer `*.content.ts` 字典中遺失和過時的語系葉節點，並維持字典作為真實來源 (source of truth)。與 [`migrate-intlayer`](#migrate-intlayer) 不同，此操作不會將應用程式從 Intlayer 移出；它只會填入 `t({ … })` 葉節點。當您想在執行階段保留 Intlayer 並使用 ai-i18n-tools 作為翻譯引擎時，請使用此功能。
+
+它會擷取每個 `t({ … })` 葉節點，用來源文字為所選 UI 區塊的 `strings.json` 植入資料，執行與 [`translate-ui`](#translate-ui) 相同的引擎 (供應商選擇、詞彙表、翻譯情境和模型備援)，然後將每個語系的新字串寫回各個 `t({ … })` 物件中。編輯是精準的：只會變更遺失或過時的語系行，因此您的格式和註解都會保留。Intlayer `{token}` 預留位置會往返轉換為 <code v-pre>{{token}}</code> 以進行翻譯，然後再轉換回來。
+
+當葉節點中缺少該語系 (遺失)，或自上次針對該語系執行後來源語系文字已變更 (過時) 時，就會翻譯「葉節點+語系」。過時狀態會在 `cacheDir` 中追蹤，因此編輯該來源字串會在下次執行時重新翻譯該葉節點。來源語言為 `sourceLocale`，可以是任何語言。`--dry-run` 會報告遺失/過時的計數，而不會呼叫 LLM 或寫入任何內容。需要 `features.translateUIStrings` 和 UI 區塊的 `stringsJson` (與 `translate-ui` 相同)。
+
+**主要選項：** `-l` / `--locale`、`--ui-block`、`--dry-run`、`-j` / `--concurrency`
+
+`[paths...]`：要掃描的檔案/目錄/glob 模式 (預設：區塊的 `sourceRoots`)。`-l` / `--locale`：要填入的目標語系，以逗號分隔 (預設：區塊設定的 `targetLocales`)。`--ui-block`：從零開始的索引、描述或 `stringsJson` 路徑 (預設：區塊 0)。`-j` 會平行處理語系。
+
+**另請參閱：** [migrate-intlayer](#migrate-intlayer)、[從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)
 
 ---
 

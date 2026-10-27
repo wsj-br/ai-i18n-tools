@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # i18next zur Laufzeit verdrahten
 
+Diese Seite verdrahtet die Nachschlagefunktion zur Laufzeit. Sie erkennt keine Zeichenfolgen. Wenn die App noch unformatierte Literale in der Ausgangssprache enthält, umschließen Sie diese zuerst: [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js). Die App installiert `i18next` und `react-i18next`, wenn Komponenten `useTranslation()` verwenden. `ai-i18n-tools` installiert keines der beiden Pakete.
+
 Erstellen Sie Ihre i18n-Setup-Datei mit den von `'ai-i18n-tools/runtime'` exportierten Hilfsprogrammen. API-Signaturen finden Sie unter [Laufzeit-Hilfsprogramme](/de/guide/runtime-helpers).
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## `SOURCE_LOCALE` synchron halten
 
-**Drei Werte synchron halten:** `sourceLocale` in `ai-i18n-tools.config.json`, `SOURCE_LOCALE` in dieser Datei und der Plural-flache JSON-Name `translate-ui`, den als `{sourceLocale}.json` unter Ihrem flachen Ausgabeverzeichnis schreibt (häufig `public/locales/`). Verwenden Sie denselben Basisnamen in der statischen `import` (Beispiel oben: `en-GB` → `en-GB.json`). Das `lng`-Feld in `sourcePluralFlatBundle` muss `SOURCE_LOCALE` entsprechen. Statische ES `import`-Pfade können keine Variablen verwenden; wenn Sie die Quelllokalisierung ändern, aktualisieren Sie `SOURCE_LOCALE` und den Importpfad gemeinsam. Alternativ laden Sie die Datei mit einem dynamischen `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` oder `readFileSync`, sodass der Pfad aus `SOURCE_LOCALE` gebildet wird.
+`sourceLocale` kann eine beliebige Sprache sein. Das folgende Snippet verwendet `en-GB` als Beispiel. **Halten Sie drei Werte aufeinander abgestimmt:** `sourceLocale` in `ai-i18n-tools.config.json`, `SOURCE_LOCALE` in dieser Datei und das flache JSON für Pluralformen, das `translate-ui` als `{sourceLocale}.json` unter Ihrem flachen Ausgabeverzeichnis (oft `public/locales/`) schreibt. Verwenden Sie denselben Basisnamen in der statischen `import` (Beispiel oben: `en-GB` → `en-GB.json`). Das Feld `lng` in `sourcePluralFlatBundle` muss `SOURCE_LOCALE` entsprechen. Statische ES `import`-Pfade können keine Variablen verwenden; wenn Sie das Quell-Locale ändern, aktualisieren Sie `SOURCE_LOCALE` und den Importpfad gemeinsam. Alternativ laden Sie diese Datei mit einem dynamischen `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` oder `readFileSync`, sodass der Pfad aus `SOURCE_LOCALE` erstellt wird.
 
 Der Snippet verwendet `./locales/…` und `./public/locales/…`, als ob `i18n` neben diesen Ordnern liegt. Wenn sich Ihre Datei unter `src/` (typisch) befindet, verwenden Sie `../locales/…` und `../public/locales/…`, damit Importe zu denselben Pfaden wie `ui.stringsJson`, `languagesManifestPath` und `ui.flatOutputDir` aufgelöst werden.
 
 Importieren Sie `i18n.js`, bevor React gerendert wird (z. B. am Anfang Ihres Einstiegspunkts). Wenn der Benutzer die Sprache ändert, rufen Sie `await loadLocale(code)` und dann `await i18n.changeLanguage(code)` auf.
+
+<a id="startup-locale"></a>
+### Start-Locale
+
+Rufen Sie `loadLocale(saved)` und dann `i18n.changeLanguage(saved)` vor dem ersten Rendern auf, nicht nur im Sprachumschalter. [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) tut dies, bevor es ausgibt. In Next.js führt das Lesen von `localStorage` in einem Effekt nach der Hydration dazu, dass zuerst das Quell-Locale angezeigt wird, was zu einer Diskrepanz mit dem Server-HTML führen kann. Bevorzugen Sie ein Cookie, das der Server lesen kann, oder laden Sie das gespeicherte Locale im Client-Modul vor dem ersten Client-Rendern.
 
 `SOURCE_LOCALE` wird exportiert, damit jede andere Datei, die es benötigt (z. B. ein Sprachwechsler), es direkt aus `'./i18n'` importieren kann. Wenn Sie eine bestehende i18next-Konfiguration migrieren, ersetzen Sie alle hartkodierten Quell-Sprachcodes (z. B. `'en-GB'`-Prüfungen, die in Komponenten verstreut sind) durch Importe von `SOURCE_LOCALE` aus Ihrer i18n-Bootstrap-Datei.
 

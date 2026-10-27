@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # इंटीग्रेशन
 
-डॉक्यूमेंटेशन साइटों, Astro प्रोजेक्ट्स और Python एप्लिकेशन के लिए फ्रेमवर्क-विशिष्ट गाइड। डॉक्यूमेंटेशन इंटीग्रेशन पेज सामग्री के लिए [Documents](/hi/guide/documents/) पाइपलाइन (`translate-docs` / `sync`) का उपयोग करते हैं; शेल स्ट्रिंग्स (nav, sidebar, theme) को उसी पाइपलाइन के भीतर संभाला जाता है जहाँ उल्लेख किया गया है — न कि अलग [JSON](/hi/guide/json) पाइपलाइन के माध्यम से। Python एप्लिकेशन [UI strings](/hi/guide/ui-strings/python) पाइपलाइन (`extract` / `translate-ui`) का उपयोग करते हैं।
+फ्रेमवर्क इंटीग्रेशन के लिए संदर्भ: वे क्या साझा करते हैं और उनकी शेल स्ट्रिंग कैसे भिन्न होती हैं। किसी साइट में भाषाएँ जोड़ने के लिए, [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) से शुरू करें। किसी ऐप के लिए, [किसी JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [किसी Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) से शुरू करें। किसी रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए, [अपनी README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) से शुरू करें।
+
+डॉक्यूमेंटेशन इंटीग्रेशन पेज सामग्री के लिए [डॉक्यूमेंट्स](/hi/guide/documents/) पाइपलाइन (`translate-docs` / `sync`) का उपयोग करते हैं; शेल स्ट्रिंग (नेविगेशन, साइडबार, थीम) को उसी पाइपलाइन के भीतर संभाला जाता है जहाँ उल्लेख किया गया है — अलग [JSON](/hi/guide/json) पाइपलाइन के माध्यम से नहीं। Python एप्लिकेशन [UI स्ट्रिंग](/hi/guide/ui-strings/python) पाइपलाइन (`extract` / `translate-ui`) का उपयोग करते हैं।
 
 <a id="which-guide-to-read"></a>
 ## कौन सी गाइड पढ़ें
 
-| आपकी साइट | प्रारंभिक टेम्पलेट | यहां से शुरू करें |
-| --- | --- | --- |
-| एस्ट्रो स्टारलाइट या सादा एस्ट्रो | `ui-starlight` / हाइब्रिड UI स्ट्रिंग्स | [एस्ट्रो](/hi/guide/integrations/astro) |
-| डॉक्यूसॉरस | `ui-docusaurus` | [डॉक्यूसॉरस](/hi/guide/integrations/docusaurus) |
-| वाइटप्रेस | `ui-vitepress` | [वाइटप्रेस](/hi/guide/integrations/vitepress) |
-| नेक्सट्रा 4 (नेक्स्ट.जेएस ऐप राउटर) | `ui-nextra` | [नेक्सट्रा](/hi/guide/integrations/nextra) |
-| फुमाडॉक्स 4 (नेक्स्ट.जेएस ऐप राउटर) | `ui-fumadocs` | [फुमाडॉक्स](/hi/guide/integrations/fumadocs) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, desktop) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/hi/guide/integrations/python) |
+प्रत्येक फ्रेमवर्क के लिए इनिट टेम्प्लेट और एजेंट प्रॉम्प्ट के साथ, चॉइसर तालिका [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#what-do-you-have) में है। Python फ्रेमवर्क: [Python](/hi/guide/integrations/python)।
 
 <a id="shared-concepts"></a>
 ## साझा अवधारणाएं

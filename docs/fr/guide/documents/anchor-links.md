@@ -12,9 +12,9 @@ Ici, la cible du lien est `setup.md`, et `#first-run` est l'ancre : elle doit fa
 <a id="why-anchor-links-need-attention"></a>
 ## Pourquoi les liens d'ancrage nécessitent une attention particulière
 
-- `rewriteRelativeLinks` fixe le **nom de fichier** pour chaque langue (`setup.md` → `setup.de.md`).
-- De nombreux moteurs de rendu dérivent le slug `#` du **texte visible du titre**. Après traduction, les titres diffèrent selon la langue, donc un slug généré automatiquement peut changer alors que le lien réécrit pourrait toujours indiquer `#first-run` — ou bien votre ancre anglaise `#…` ne correspond plus au slug que le moteur construit à partir du titre traduit.
-- Résultat : les lecteurs arrivent sur le bon **fichier** mais à la mauvaise **ligne**, ou le navigateur ne trouve aucune correspondance pour le titre.
+- `rewriteRelativeLinks` corrige le **nom de fichier** pour chaque locale (`setup.md` → `setup.de.md`).
+- De nombreux moteurs de rendu dérivent le slug `#` du **texte d'en-tête visible**. Après traduction, les en-têtes diffèrent par locale, de sorte qu'un slug auto-généré peut changer tandis que le lien réécrit pourrait toujours indiquer `#first-run` — ou l'ancre `#…` de la locale source ne correspond plus au slug que le moteur de rendu construit à partir de l'en-tête traduit. La langue source est `sourceLocale` et peut être n'importe quelle langue.
+- Résultat : les lecteurs atterrissent sur le bon **fichier** mais la **mauvaise ligne**, ou le navigateur ne trouve aucun en-tête correspondant.
 
 <a id="what-to-do"></a>
 ## Que faire

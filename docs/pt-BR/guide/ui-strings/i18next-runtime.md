@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # Conectar i18next em tempo de execução
 
+Esta página configura a pesquisa em tempo de execução. Ela não descobre strings. Se o aplicativo ainda tiver literais do idioma de origem sem encapsulamento, encapsule-os primeiro: [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js). O aplicativo instala o `i18next` e o `react-i18next` quando os componentes usam o `useTranslation()`. O `ai-i18n-tools` não instala nenhum dos pacotes.
+
 Crie seu arquivo de configuração i18n usando os auxiliares exportados por `'ai-i18n-tools/runtime'`. Para assinaturas de API, consulte [Auxiliares de tempo de execução](/pt-BR/guide/runtime-helpers).
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## Mantendo `SOURCE_LOCALE` alinhado
 
-**Mantenha três valores alinhados:** `sourceLocale` em `ai-i18n-tools.config.json`, `SOURCE_LOCALE` neste arquivo e o JSON plano de plurais que `translate-ui` escreve como `{sourceLocale}.json` no seu diretório de saída plano (geralmente `public/locales/`). Use o mesmo nome base no `import` estático (exemplo acima: `en-GB` → `en-GB.json`). O campo `lng` em `sourcePluralFlatBundle` deve ser igual a `SOURCE_LOCALE`. Os caminhos estáticos ES `import` não podem usar variáveis; se você alterar o idioma de origem, atualize `SOURCE_LOCALE` e o caminho de importação juntos. Alternativamente, carregue esse arquivo com um `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` ou `readFileSync` para que o caminho seja construído a partir de `SOURCE_LOCALE`.
+`sourceLocale` pode ser qualquer idioma. O trecho de código abaixo usa `en-GB` como exemplo. **Mantenha três valores alinhados:** `sourceLocale` em `ai-i18n-tools.config.json`, `SOURCE_LOCALE` neste arquivo e o JSON plano de plural que o `translate-ui` grava como `{sourceLocale}.json` no seu diretório de saída plano (geralmente `public/locales/`). Use esse mesmo nome base no `import` estático (exemplo acima: `en-GB` → `en-GB.json`). O campo `lng` em `sourcePluralFlatBundle` deve ser igual a `SOURCE_LOCALE`. Caminhos de `import` ES estáticos não podem usar variáveis; se você alterar a localidade de origem, atualize o `SOURCE_LOCALE` e o caminho de importação juntos. Como alternativa, carregue esse arquivo com um `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` ou `readFileSync` dinâmico para que o caminho seja construído a partir de `SOURCE_LOCALE`.
 
 O snippet usa `./locales/…` e `./public/locales/…` como se `i18n` estivesse ao lado dessas pastas. Se seu arquivo estiver em `src/` (o que é comum), use `../locales/…` e `../public/locales/…` para que as importações sejam resolvidas para os mesmos caminhos que `ui.stringsJson`, `languagesManifestPath` e `ui.flatOutputDir`.
 
 Importe `i18n.js` antes que o React renderize (por exemplo, no topo do seu ponto de entrada). Quando o usuário alterar o idioma, chame `await loadLocale(code)` e, em seguida, `await i18n.changeLanguage(code)`.
+
+<a id="startup-locale"></a>
+### Localidade de inicialização
+
+Chame `loadLocale(saved)` e depois `i18n.changeLanguage(saved)` antes da primeira renderização, não apenas no seletor de idioma. [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) faz isso antes de imprimir. No Next.js, ler `localStorage` em um efeito após a hidratação renderiza a localidade de origem primeiro e pode causar uma incompatibilidade com o HTML do servidor. Prefira um cookie que o servidor possa ler ou carregue a localidade salva no módulo do cliente antes da primeira renderização do cliente.
 
 `SOURCE_LOCALE` é exportado para que qualquer outro arquivo que precise dele (por exemplo, um seletor de idioma) possa importá-lo diretamente de `'./i18n'`. Se você estiver migrando uma configuração i18next existente, substitua strings fixas de idioma de origem (por exemplo, verificações `'en-GB'` espalhadas pelos componentes) por imports de `SOURCE_LOCALE` do seu arquivo de inicialização i18n.
 

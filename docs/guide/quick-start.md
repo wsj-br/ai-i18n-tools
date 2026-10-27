@@ -30,14 +30,14 @@ Replace `console-app` with any other Node.js example. Python examples have no `p
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools` and `yarn add --dev ai-i18n-tools` work too. Python projects download the standalone executable instead and need no Node.js. PATH setup and the other install options: [Installation](/guide/installation).
+`npm install --save-dev ai-i18n-tools` and `yarn add --dev ai-i18n-tools` work too. Python projects install the standalone executable and need no Node.js. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Other install options: [Installation](/guide/installation).
 
 <a id="provider-and-api-key"></a>
 ## Provider and API key
 
 Every command that calls an LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, and `sync`) needs both of these:
 
-1. At least one provider in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init -P <provider>` scaffolds that preset. To add providers or tune model lists, see [LLM providers and models](/guide/providers-and-models).
+1. At least one provider in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init -P <provider>` scaffolds that preset. To add providers, see [LLM providers](/guide/providers-and-models). To choose the model list, see [AI Models](/guide/ai-models).
 2. The matching API key in your environment or a project-root `.env` file. Each built-in preset reads a named variable from the [preset table](/guide/providers-and-models#built-in-providers), for example `OPENROUTER_API_KEY` with `-P openrouter` or `OPENAI_API_KEY` with `-P openai`. Ollama uses a local endpoint and needs no key.
 
 ```bash
@@ -131,7 +131,7 @@ ai-i18n-tools status
 
 `sync` runs every step your config enables, in order. `status` shows what is translated per locale. A first run on a project the tool cannot see text in finishes without error and writes nothing useful, so if `status` shows no strings, go back to the guide for your path.
 
-`suggest-models` ranks the active provider's chat models. `suggest-models --apply` replaces `translationModels` and leaves `uiModels` and `localeModels` alone. The same ranking is on the [Models](/guide/translation-dashboard/models) tab. Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
+`suggest-models` ranks the active provider's chat models from published benchmarks. `suggest-models --apply` replaces `translationModels` and leaves `uiModels` and `localeModels` alone. The same ranking is on the dashboard **Models** tab. How the ranking works, and why the list holds more than one model: [AI Models](/guide/ai-models). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
 <a id="keep-it-translated"></a>
 ## Keep it translated

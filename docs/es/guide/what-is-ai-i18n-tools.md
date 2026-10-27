@@ -1,59 +1,77 @@
 <a id="what-is-ai-i18n-tools"></a>
 # ¿Qué es ai-i18n-tools?
 
-ai-i18n-tools es una herramienta de línea de comandos y un kit de herramientas que le ayuda a traducir su aplicación y documentación utilizando su proveedor de LLM preferido. Usted controla todo desde un único archivo de configuración, eligiendo qué funciones de traducción habilitar. Utilice el comando "sync" para ejecutar los modos que necesite de una sola vez.
+Tienes una aplicación, un sitio web, un sitio de documentación o un archivo README de un repositorio en un idioma y quieres añadir más idiomas. Ese idioma es `sourceLocale` y puede ser cualquier idioma. El inglés es un ejemplo común en estas guías. ai-i18n-tools encuentra el texto, lo traduce con los modelos del proveedor de LLM que elijas y escribe los archivos que tu proyecto ya carga. Almacena en caché cada resultado, por lo que las reejecuciones solo envían el texto nuevo o modificado al modelo.
+
+<a id="what-you-do-and-what-the-tool-does"></a>
+## Qué haces tú y qué hace la herramienta
+
+| Tú | La herramienta |
+| --- | --- |
+| Elige los idiomas, un proveedor y los modelos que probar | Extrae el texto, lo traduce, valida el resultado y escribe los catálogos o las páginas |
+| Haz que el texto visible para el usuario sea visible para la herramienta: llamadas a `t()` en el código de la aplicación, la propia i18n de tu framework para un sitio, o un marcador de lista de idiomas en un README | Almacena en caché las traducciones y las reutiliza en cada nueva ejecución |
+| Integra el resultado en la aplicación, el enrutamiento del sitio o la fila de idiomas del README | Muestra el progreso y te permite revisar las traducciones en el panel de control |
+
+La herramienta no reescribe tu código fuente. Se proporcionan indicaciones del agente de codificación para el paso de encapsulado. No instala i18next ni la i18n de tu framework de sitio, y no construye tu selector de idioma, aunque se proporcionan ayudantes en tiempo de ejecución para ello.
+
+<a id="where-do-i-start"></a>
+## ¿Por dónde empiezo?
+
+Los tutoriales están agrupados en [Añadir i18n a tu proyecto](/es/guide/add-i18n-to-your-project), con la configuración compartida y una página para cada tipo de proyecto. Elige una fila:
+
+| Tienes | Empieza aquí |
+| --- | --- |
+| Una aplicación JS/TS (React, Next.js, Node, CLI) con texto plano en el código fuente | [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) |
+| Una aplicación Python (Streamlit, FastAPI, Flask, Django, gettext, de escritorio) | [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) |
+| Un sitio web o sitio de documentación (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, HTML plano) | [Añadir i18n a un sitio web o de documentación](/es/guide/add-i18n-to-website) |
+| Un README de repositorio y otros archivos Markdown, normalmente junto a una aplicación | [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme) |
+| Archivos de localización JSON anidados independientes | [JSON](/es/guide/json) |
+| Diagramas SVG con etiquetas de texto | [Traducción SVG](/es/guide/svg-translation/) |
+| Diccionarios de Intlayer (migrar de Intlayer) | [Migrar de Intlayer](/es/guide/migrating-from-intlayer) |
+| Diccionarios de Intlayer (mantener Intlayer, traducir in situ) | [Traducir Intlayer in situ](/es/guide/translating-intlayer) |
+
+<a id="which-should-i-use"></a>
+
+<a id="how-it-works"></a>
+## Cómo funciona
+
+1. Instala la CLI y configura la clave API de tu proveedor: [Instalación](/es/guide/installation).
+2. Ejecuta `init` para escribir `ai-i18n-tools.config.json`: [Inicio rápido](/es/guide/quick-start).
+3. Prepara el proyecto: encapsula cadenas en `t()`, habilita la i18n de tu framework de sitio o añade el marcador de lista de idiomas a un README.
+4. Ejecuta `sync`. Extrae texto, traduce lo que es nuevo y escribe la salida.
+5. Carga la salida en tu aplicación o sitio, añade un selector de idioma y vuelve a ejecutar `sync` cuando cambie el código fuente.
 
 <a id="translation-modes"></a>
 ## Modos de traducción
 
-- **Cadenas de la interfaz de usuario (UI)** — Extraiga las llamadas `t("…")` y `_()` del código fuente JS/TS y Python (y marcadores similares, incluyendo GNU gettext) y escriba catálogos JSON o `.po` / `.mo` planos por configuración regional. Comandos: `extract`, `translate-ui`. Guía: [Cadenas de la interfaz de usuario](/es/guide/ui-strings/). Python: [Aplicaciones Python](/es/guide/ui-strings/python).
-- **Documentos** — Traduzca páginas Markdown, MDX y `.astro` enumeradas en `docs[].contentPaths`. Funciona con VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro y otros sitios de documentación estática. Comando: `translate-docs`. Guía: [Documentos](/es/guide/documents/).
-- **JSON** — Traduzca paquetes JSON de configuración regional anidados (etiquetas de temas, anulaciones de i18n, copias de aplicaciones que no están en el código fuente) definidos en `json[]` de nivel superior. Comando: `translate-json`. Guía: [JSON](/es/guide/json).
-- **SVG** — Traduzca el texto visible dentro de ilustraciones SVG (`<text>`, `<title>`, `<desc>`) y escriba un archivo de salida por configuración regional. Independiente de la traducción de documentos: `translate-docs` no modifica los activos SVG. Comando: `translate-svg`. Guía: [Traducción de SVG](/es/guide/svg-translation/).
+Internamente, la herramienta ejecuta cuatro pipelines. Tu configuración habilita los que necesitas, y `sync` los ejecuta en orden.
 
-Los cuatro modos utilizan el [proveedor de LLM](/es/guide/providers-and-models) activo, comparten el mismo archivo de configuración y reutilizan una caché de SQLite para que las nuevas ejecuciones solo envíen texto nuevo o modificado al modelo.
+- Cadenas de UI — Extrae llamadas a `t("…")` y `_()` del código fuente JS/TS y Python (y marcadores similares, incluyendo GNU gettext) y escribe JSON plano por localización o catálogos `.po` / `.mo`. Comandos: `extract`, `translate-ui`. Guía: [Cadenas de UI](/es/guide/ui-strings/). Python: [Aplicaciones Python](/es/guide/ui-strings/python).
+- Documentos — Traduce páginas Markdown, MDX y `.astro` listadas en `docs[].contentPaths`. Funciona con VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro y otros sitios de documentación estáticos, y con un README de repositorio (`docsOutput.style` de `flat`). Comando: `translate-docs`. Guías: [Documentos](/es/guide/documents/) y [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme).
+- JSON — Traduce paquetes de localización JSON anidados (etiquetas de tema, anulaciones de i18n, texto de aplicación no en el código fuente) definidos en el nivel superior `json[]`. Comando: `translate-json`. Guía: [JSON](/es/guide/json).
+- SVG — Traduce texto visible dentro de ilustraciones SVG (`<text>`, `<title>`, `<desc>`) y escribe un archivo de salida por localización. Separado de la traducción de documentos. Comando: `translate-svg`. Guía: [Traducción SVG](/es/guide/svg-translation/).
 
-<a id="which-should-i-use"></a>
-## ¿Cuál debo usar?
-
-| Su contenido | Modo | Comando |
-| --- | --- | --- |
-| El código fuente utiliza marcadores `t()`, `_()`, gettext o HTML `data-i18n` | Cadenas de la interfaz de usuario | `extract` / `translate-ui` |
-| Páginas localizadas o sitios de documentación | Documentos | `translate-docs` |
-| Archivos de configuración regional JSON anidados independientes | JSON | `translate-json` |
-| Diagramas o ilustraciones con etiquetas en SVG | SVG | `translate-svg` |
-
-Muchos proyectos combinan modos, por ejemplo, cadenas de interfaz de usuario más documentos para un sitio de VitePress, o documentos más SVG para guías ilustradas. Consulte [Inicio rápido](/es/guide/quick-start) para plantillas de andamiaje y [Configuración](/es/reference/configuration) para el esquema de configuración completo.
+Muchos proyectos combinan modos. La combinación común es cadenas de interfaz de usuario más el README del repositorio. Un sitio de documentación como VitePress es la otra combinación frecuente. Consulta [Combinar pipelines](/es/guide/combining-pipelines) y [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme).
 
 <a id="examples"></a>
 ## Ejemplos
 
-El repositorio incluye proyectos de ejemplo ejecutables en `examples/`, cada uno con su propia configuración, salidas de configuración regional confirmadas y README. Puede explorar archivos traducidos sin una clave API; la repetición de la traducción requiere una clave de proveedor (consulte [Proveedores y modelos](/es/guide/providers-and-models)).
+El repositorio incluye proyectos de ejemplo ejecutables en `examples/`, cada uno con su propia configuración, salidas de localización confirmadas y README. Explora los archivos traducidos sin una clave de API; volver a ejecutar la traducción requiere una clave de proveedor.
 
-| Ejemplo | Lo que muestra |
+| Si tienes | Ejemplo |
 | --- | --- |
-| [console-app](/es/examples#console-app) | Aplicación de extremo a extremo más pequeña: cadenas de interfaz de usuario `t()` más traducción de README |
-| [nextjs-app](/es/examples#nextjs-app) | Interfaz de usuario de Next.js, plurales, SVG, documentos anidados de Docusaurus, README plano, panel de control |
-| [docusaurus-docs](/es/examples#docusaurus-docs) | Sitio de documentación independiente de Docusaurus |
-| [astro-website](/es/examples#astro-website) | Sitio de marketing de Astro: traducción de HTML de página completa más cadenas `t()` |
-| [astro-docs](/es/examples#astro-docs) | Sitio de documentación de Astro Starlight |
-| [vitepress-docs](/es/examples#vitepress-docs) | Documentos de VitePress más catálogo de temas |
-| [nextra-docs](/es/examples#nextra-docs) | Documentos de Nextra más etiquetas de barra lateral `_meta.ts` y diccionario de temas |
-| [fumadocs-docs](/es/examples#fumadocs-docs) | Documentos de Fumadocs más etiquetas de barra lateral `meta.json` y catálogo de interfaz de usuario |
-| [HTML plano](/es/examples#plain-html) | HTML estático con marcadores `data-i18n*` y JSON de locale |
-| [multi-provider](/es/examples#multi-provider) | Comparar proveedores de LLM en el mismo documento |
-| [test-markdown](/es/examples#test-markdown) | Pruebas de estrés de la canalización de Markdown (CJK, Devanagari, casos extremos) |
-| [migración de Intlayer](/es/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` mediante `migrate-intlayer` |
-| [python-streamlit](/es/examples#python-streamlit) | Panel de control de Streamlit, `t()` / `_()`, JSON con claves en inglés |
-| [python-flask](/es/examples#python-flask) | Flask + Jinja, `t()` / `_()`, JSON con claves en inglés |
-| [python-fastapi](/es/examples#python-fastapi) | FastAPI, configuración regional con ámbito de solicitud, JSON con claves en inglés |
-| [python-gettext](/es/examples#python-gettext) | GNU gettext existente; `extract` / `translate-ui` actualiza `.po` y `.mo` |
+| Una aplicación JS/TS | [console-app](/es/examples#console-app), [nextjs-app](/es/examples#nextjs-app) |
+| Un README de repositorio junto a una aplicación | [console-app](/es/examples#console-app), [nextjs-app](/es/examples#nextjs-app) |
+| Una aplicación Python | [python-streamlit](/es/examples#python-streamlit), [python-fastapi](/es/examples#python-fastapi), [python-gettext](/es/examples#python-gettext) |
+| Un sitio de documentación | [docusaurus-docs](/es/examples#docusaurus-docs), [vitepress-docs](/es/examples#vitepress-docs), [astro-docs](/es/examples#astro-docs) |
+| Un sitio web o HTML simple | [astro-website](/es/examples#astro-website), [plain-html](/es/examples#plain-html) |
 
-Consulte [Ejemplos](/es/examples) para comandos de copia `npx degit` y una guía de elección.
+Consulta [Ejemplos](/es/examples) para ver la lista completa y los comandos de copia `npx degit`.
 
 <a id="next-steps"></a>
 ## Próximos pasos
 
-1. [Instalación](/es/guide/installation) — instale el paquete npm, o descargue el [ejecutable independiente](/es/guide/installation#standalone-executables) para un proyecto de Python, y configure su clave de API del proveedor.
-2. [Inicio rápido](/es/guide/quick-start) — cree una configuración y ejecute su primera traducción.
-3. [Proveedores y modelos](/es/guide/providers-and-models) — elija un proveedor, una cadena de reserva de modelos y una anulación de `-P`.
+1. [Instalación](/es/guide/installation): instala el paquete npm o descarga el [ejecutable independiente](/es/guide/installation#standalone-executables) para un proyecto de Python y configura la clave de API de tu proveedor.
+2. [Inicio rápido](/es/guide/quick-start): crea una configuración inicial y ejecuta tu primera traducción.
+3. [Proveedores de LLM](/es/guide/providers-and-models): elige un proveedor, una clave de API y una anulación de `-P`.
+4. [Modelos de IA](/es/guide/ai-models): clasifica una lista de preseleccionados con `suggest-models` o la pestaña **Modelos** del panel de control y mantén varios modelos para que una traducción fallida pueda probar con el siguiente.

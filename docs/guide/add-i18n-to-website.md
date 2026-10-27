@@ -1,7 +1,7 @@
 <a id="add-i18n-to-a-website-or-docs-site"></a>
 # Add i18n to a website or docs site
 
-This page is for a documentation site (Markdown or MDX) or a marketing or static site (an Astro website or plain HTML) in one language. The tool translates your page content with your LLM provider and writes one localized copy per language. Your site framework serves those copies and provides the language switcher.
+This page is for a documentation site (Markdown or MDX) or a marketing or static site (an Astro website or plain HTML) in one language. The tool translates your page content with the models on your LLM provider and writes one localized copy per language. Your site framework serves those copies and provides the language switcher.
 
 For an app whose UI strings live in `t()` calls, use [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python) instead.
 
@@ -37,7 +37,7 @@ The same shape works for every framework; the details live in the framework guid
 
 1. Install the CLI and set the API key: [Installation](/guide/installation), [Provider and API key](/guide/quick-start#provider-and-api-key).
 2. Scaffold: `ai-i18n-tools init -t <template> -P <provider>`.
-3. Set `sourceLocale`, `targetLocales`, and `docs[].contentPaths` (your English pages and folders). The framework guide shows the right `docsOutput.style`.
+3. Set `sourceLocale`, `targetLocales`, and `docs[].contentPaths` (the pages and folders written in your source language). `sourceLocale` can be any language. The framework guide shows the right `docsOutput.style`.
 4. Enable your framework's own i18n so it serves and links the localized pages. Each guide has an "Enable i18n in an existing site" section: [VitePress](/guide/integrations/vitepress#enable-i18n-in-an-existing-site), [Docusaurus](/guide/integrations/docusaurus#enable-i18n-in-an-existing-site), [Nextra](/guide/integrations/nextra#enable-i18n-in-an-existing-site), [Fumadocs](/guide/integrations/fumadocs#enable-i18n-in-an-existing-site), [Astro](/guide/integrations/astro#enable-i18n-in-an-existing-site).
 5. Run `ai-i18n-tools sync` (or `translate-docs`), then build the site.
 6. Check a localized route in the browser. The framework's own locale dropdown is the switcher. For a flat markdown file such as a README, add a link row with [languageListBlock](/guide/documents/language-switcher).

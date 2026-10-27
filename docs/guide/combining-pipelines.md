@@ -5,6 +5,8 @@ Read this when one project needs more than one kind of translation: app UI strin
 
 An app plus its repository README is the common hybrid. Scaffold it with `init` (the `ui-markdown` template) or `init -t <template> --with-readme`, then follow [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). The mixed config later on this page is the same idea next to a docs site.
 
+This repository is that kind of project. [`ai-i18n-tools.config.json`](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json) translates the CLI and Translation Dashboard UI strings and this VitePress site in one `sync`. The UI block covers `src/cli`, `src/server`, `src/dashboard-app`, and `src/api`, and writes flat JSON under `src/i18n/locales`. The VitePress block uses `docsOutput.style: "vitepress"` for `docs/` and the theme catalog. The same file also writes `README.md` translations under `translated-docs/`. Site wiring: [VitePress](/guide/integrations/vitepress).
+
 <a id="what-sync-runs"></a>
 ## What sync runs
 

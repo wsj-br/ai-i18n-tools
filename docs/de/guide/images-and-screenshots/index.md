@@ -44,7 +44,7 @@ Verwenden Sie dies für statische Dokumentationsseiten, die übersetzte Seiten i
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Setzen Sie `docs[].docsOutput.docsRoot` auf Ihr englisches Quellverzeichnis (z. B. `"docs"` oder `"src/content/docs"`). Wenn Sie `style: "doc-system"` direkt festlegen, müssen Sie auch `localeSubpath` auf das Pfadsegment setzen, das Ihre Website zwischen `{locale}/` und der übersetzten Datei verwendet. Die Aliase `"docusaurus"`, `"astro-starlight"` und `"vitepress"` sind voreingestellte `doc-system`-Layouts mit Standardwerten für `localeSubpath` (siehe [Ausgabelayouts](/de/guide/documents/output-layouts)).
+Setzen Sie `docs[].docsOutput.docsRoot` auf das Stammverzeichnis der in `sourceLocale` geschriebenen Dateien (zum Beispiel `"docs"` oder `"src/content/docs"`). `sourceLocale` kann eine beliebige Sprache sein. Wenn Sie `style: "doc-system"` direkt festlegen, müssen Sie auch `localeSubpath` auf das Pfadsegment setzen, das Ihre Website zwischen `{locale}/` und der übersetzten Datei verwendet. Die Aliase `"docusaurus"`, `"astro-starlight"` und `"vitepress"` sind voreingestellte `doc-system`-Layouts mit Standardwerten für `localeSubpath` (siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts)).
 
 | Voreingestellter Alias | Standard-`localeSubpath` | Beispiel-Ausgabe |
 |--------------|-------------------------|----------------|
@@ -54,7 +54,7 @@ Setzen Sie `docs[].docsOutput.docsRoot` auf Ihr englisches Quellverzeichnis (z. 
 
 Der flache Link-Umschreiber wird **nicht** für `doc-system` ausgeführt (im Gegensatz zu `"flat"`). `postProcessing.regexAdjustments` erhält die ursprüngliche URL aus dem Quell-Markdown – typischerweise ein absoluter Pfad oder ein Pfad ab Stammverzeichnis der Seite wie `/img/screenshots/en-GB/foo.png`.
 
-Das Layout **Pro Gebietsschema-Ordner** wird angewendet, wenn Screenshots in einem gemeinsamen statischen URL-Baum gespeichert sind: Verwenden Sie von Anfang an einen Gebietsschema-codierten Ordner und eine generische `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`-Regel (siehe [Konfiguration – Dokumentsystem](#config---docsoutputstyle--doc-system)).
+Das **Layout für sprachgebietsspezifische Ordner** wird angewendet, wenn Screenshots in einer gemeinsam genutzten statischen URL-Struktur liegen: Verwenden Sie von Anfang an einen sprachgebietscodierten Ordner und eine generische `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`-Regel (siehe [Konfiguration – Dokumentsystem](/de/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 **Kollokierte Screenshots** werden angewendet, wenn die übersetzten Dokumente jedes Gebietsschemas Assets neben dem Markdown speichern (keine URL-Umschreibung). Ihr Screenshot-Skript muss PNGs in Pfade schreiben, die von `{outputDir}`, `{locale}` und `{localeSubpath}` abgeleitet sind – das unten stehende Docusaurus-Preset ist das Referenzlayout.
 
@@ -65,9 +65,9 @@ Zwei Gewohnheiten beim Projektaufbau vermeiden später alle Regex-Brückenschlä
 
 1. Erstellen Sie einen symbolischen Link `documentation/docs/assets → ../static/assets`, bevor Sie Screenshots hinzufügen. Docusauruses Webpack verfolgt standardmäßig symbolische Links, wodurch Quelldokumente relative Pfade verwenden können, die auch von übersetzten Dokumenten genutzt werden.
 
-2. Legen Sie alle Dokumentations-Assets – PNGs und SVGs – in `static/assets/` ab (ein Verzeichnis). Teilen Sie sie nicht zwischen `static/img/` (SVGs) und `static/assets/` (PNGs) auf. Ein einheitlicher Speicherort bedeutet, dass jede Dokumentationsseite, sowohl englisch als auch übersetzt, denselben relativen Pfad `../assets/name.ext` referenzieren kann.
+2. Legen Sie alle Dokumentations-Assets – PNGs und SVGs – in `static/assets/` (ein Verzeichnis). Teilen Sie sie nicht auf `static/img/` (SVGs) und `static/assets/` (PNGs) auf. Ein einheitlicher Speicherort bedeutet, dass jede Dokumentationsseite, sowohl im Quellsprachgebiet als auch übersetzt, denselben relativen Pfad `../assets/name.ext` referenzieren kann.
 
-Verweisen Sie in den Quell-Markdown-Dateien auf jedes Asset mit dem stabilen relativen Pfad `../assets/name.ext`. Verwenden Sie niemals absolute `/img/`- oder `/assets/`-URLs für Dokumentations-Assets – diese URLs unterscheiden sich zwischen der englischen Quelle (ausgeliefert von `static/`) und den übersetzten Sprachversionen (lokal mit den übersetzten Dokumenten abgelegt), was eine `regexAdjustments`-Regel erfordert, um sie zu verbinden.
+Referenzieren Sie jedes Asset mit dem stabilen relativen Pfad `../assets/name.ext` im Quell-Markdown. Verwenden Sie niemals absolute `/img/`- oder `/assets/`-URLs für Dokumentations-Assets – diese URLs unterscheiden sich zwischen den Seiten des Quellsprachgebiets (bereitgestellt von `static/`) und den übersetzten Sprachgebieten (zusammen mit den übersetzten Dokumenten), was eine `regexAdjustments`-Regel erzwingt, um sie zu überbrücken.
 
 Wenn Sie später i18n hinzufügen, übernimmt das Screenshot-Skript die `getScreenshotDir`-Aufteilung (siehe [Kollokierte Screenshots](/de/guide/images-and-screenshots/colocated-screenshots)) und `translate-svg` verwendet ein `pathTemplate`. Es sind keine Regex-Anpassungen erforderlich.
 

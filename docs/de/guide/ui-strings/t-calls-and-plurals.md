@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## Verwendung von `t()` im Quellcode
 
-Rufen Sie `t()` mit einem **Literal-String** auf, damit das Extraktionsskript ihn finden kann:
+Rufen Sie `t()` mit einem **Literal-String** in `sourceLocale` auf, damit das Extraktionsskript ihn finden kann. Diese Sprache kann jede beliebige Sprache sein. Die folgenden Beispiele verwenden Englisch. Um hartcodierten Quelltext in diese Aufrufe umzuwandeln, siehe [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js).
 
 ```jsx
 import { useTranslation } from 'react-i18next';

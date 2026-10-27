@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-ソース言語のBCP-47コード（例：`"en-GB"`、`"en"`、`"pt-BR"`）。このロケール用の翻訳ファイルは生成されません — キー文字列自体がソーステキストとなります。
+ソース言語の BCP-47 コードです (例: `"en-GB"`、`"pt-BR"`、`"ja"`)。どの言語でも有効です。多くのプロジェクトが英語で始まるため、例では英語が使用されています。このロケール用の翻訳ファイルは生成されません。キー文字列自体がソーステキストになります。
 
 **実行時i18n設定ファイル（`src/i18n.ts` / `src/i18n.js`）からエクスポートされた`SOURCE_LOCALE`と一致している必要があります**。
 
@@ -167,9 +167,9 @@
 
 1つの設定で複数のプロバイダーを構成し、`-P`で切り替える実行可能な例については、[`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)を参照してください（`openai`、`anthropic`、`openrouter`、`deepseek`は同じドキュメント上にあります）。
 
-**複数のモデルを使用する理由：** プロバイダーおよびモデルによってコストが異なり、言語やロケールごとに品質レベルが異なります。`translationModels`を単一のモデルではなく、順序付きフォールバックチェーンとして**設定**することで、リクエストが失敗した場合にCLIが次のモデルを試行できるようにします。
+**複数のモデルを使用する理由:** プロバイダーやモデルが異なれば、コストも異なり、言語やロケールによって品質のレベルも異なります。リクエストが失敗した場合に CLI が次のモデルを試せるように、`translationModels` を順序付けられたフォールバック チェーンとして設定します。そのリストを作成するためのガイドは [AI モデル](/ja/guide/ai-models) です。
 
-以下のリストは、拡張可能な**ベースライン**として扱ってください。特定のロケールの翻訳が不十分または失敗した場合は、その言語またはスクリプトを効果的にサポートするモデルを調査し（オンラインリソースまたはプロバイダーのドキュメントを参照）、それらのモデルIDを代替として追加してください。
+以下のリストを **ベースライン**として扱ってください。[AI モデル](/ja/guide/ai-models) のベンチマーク ランキングから置き換えてください。特定のロケールの翻訳の質が低いままの場合は、その言語またはスクリプトの `localeModels` エントリを追加するか、プロバイダーのカタログからさらに ID を追加してください。
 
 これらのモデルIDは`ai-i18n-tools init -P openrouter`が書き込むものです。他のプリセットは`init -P <provider>`からネイティブモデルIDを取得します — [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)を参照してください。
 
@@ -270,13 +270,13 @@
 - `flatOutputDir`
   このブロックのロケールごとの JSON ファイルが書き込まれるディレクトリ（`de.json` など）。
 - `flatOutput`
-  `true`（デフォルト）の場合、`translate-ui` はロケールごとに1つのフラットな JSON ファイルを書き込みます。gettext 専用ブロックにするには `false` を設定してください。`flatOutput: false` を持つブロックでは `gettext` を設定する必要があります。
+  `true` (デフォルト) の場合、`translate-ui` はロケールごとに 1 つのフラットな JSON ファイルを書き込みます。gettext 専用のブロックには `false` を設定します。`flatOutput: false` を持つブロックは `gettext` を設定する必要があります。
 - `gettext`
-  このブロックのオプションの GNU gettext 出力。`outputDir`（デフォルト `./locales`）は `<locale>/LC_MESSAGES/<domain>.po` を受け取り、`compileMo` が true（デフォルト）の場合、一致する `.mo` を受け取ります。`domain` のデフォルトは `messages` です。`potPath` はテンプレートカタログです。`ingestExistingPo`（デフォルト `true`）は、`extract` 中に空の `strings.json` スロットを非ファジーな `msgstr` 値で埋めますが、空でない翻訳やユーザーが編集した翻訳を置き換えることはありません。`localeFormat` は `posix`（デフォルト、`pt_BR`）または `bcp47`（`pt-BR`）です。コンテキスト行は gettext の `\u0004` セパレーターを使用します。2つのコンテキストで同じ英語ソースがあっても、カタログIDは共有されません。
+  このブロックのオプションの GNU gettext 出力です。`outputDir` (デフォルトは `./locales`) は `<locale>/LC_MESSAGES/<domain>.po` を受け取り、`compileMo` が true (デフォルト) の場合は、一致する `.mo` を受け取ります。`domain` のデフォルトは `messages` です。`potPath` はテンプレートカタログです。`ingestExistingPo` (デフォルトは `true`) は、`extract` 中に、あいまい (fuzzy) でない `msgstr` の値から空の `strings.json` スロットを埋めます。空でない翻訳やユーザーが編集した翻訳は置き換えません。`localeFormat` は `posix` (デフォルト、`pt_BR`) または `bcp47` (`pt-BR`) です。コンテキストを持つ行は gettext の `\u0004` 区切り文字を使用します。2 つのコンテキストで同じソース言語の文字列がカタログ ID を共有することはありません。
 - `targetLocales`
-  このブロックのオプションのロケールリスト。省略または空の場合、ブロックはルートの `targetLocales` を使用します。
+  このブロックのオプションのロケールリストです。省略または空の場合、ブロックはルートの `targetLocales` を使用します。
 - `languagesManifestPath`
-  `extract` および `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパス。省略した場合、ブロック0はルートの `languagesManifestPath`（それ自体がこのブロックの `{flatOutputDir}/ui-languages.json` をデフォルトとします）を使用します。以降のブロックは `{flatOutputDir}/ui-languages.json` をデフォルトとします。
+  `extract` と `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパスです。省略した場合、ブロック 0 はルートの `languagesManifestPath` (それ自体はこのブロックの `{flatOutputDir}/ui-languages.json` がデフォルト) を使用します。それ以降のブロックは `{flatOutputDir}/ui-languages.json` がデフォルトになります。
 - `uiGlossary`
   `true`（デフォルト）の場合、このブロックの `strings.json` は `translate-docs`、`translate-json`、および `translate-svg` の用語集ヒントソースとなります。`translate-ui`、`proofread-ui`、およびソースのリンティングは `glossary.userGlossary` のみを使用します。カタログをこれらのヒントから除外するには `false` を設定してください（例：ドキュメントを誘導すべきではない CLI 文字列カタログなど）。
 - `uiExtractor.funcNames`（またはレガシー `reactExtractor.funcNames`）
@@ -365,7 +365,10 @@ SQLite キャッシュディレクトリ（すべての `docs` ブロックで�
 - `nextraDictionaryOutputTemplate`
 オプション。ロケール辞書モジュールの出力テンプレート（デフォルト: 辞書ディレクトリに対する `{dir}/{locale}.ts`）。
 
-**出力レイアウト**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+このブロックの出力レイアウトです。
 
 - `outputDir`
 このブロックの翻訳済み出力のルートディレクトリ。
@@ -384,21 +387,21 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`の場合、ソースサブディレクトリを保持して、同じベース名のファイルが衝突しないようにします。デフォルトは`false`。
 - `docsOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます（`docsOutput.style = "flat"`で、カスタムの`pathTemplate`がない場合に自動的に有効になります）。
+翻訳後に相対リンクを書き換えます (`docsOutput.style = "flat"` で、かつカスタムの `pathTemplate` がない場合に自動で有効になります)。
 - `docsOutput.linkRewriteDocsRoot`
-フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリルート。翻訳されたドキュメントが別のプロジェクトルートに存在しない限り、通常は`"."`のままにしておきます。
+フラットリンクリライトのプレフィックスを計算する際に使用されるリポジトリのルートです。翻訳されたドキュメントが別のプロジェクトルートに存在する場合を除き、通常は `"."` のままにします。
 - `docsOutput.rewriteVitepressLinks`
-`true`の場合、翻訳後にVitePressリンクノーマライザーを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。`docsRoot`の下でロケールフォルダが英語フォルダと並んで配置されている`doc-system`レイアウトで使用します。READMEスタイルの`docs/guide/…`パスをサイトルート（`/guide/…`）およびロケール相対の`../guide/…`リンクに書き換えます。VitePressツリーの外にあるリポジトリファイル（`LICENSE`、`examples/`）へのリンクには、英語ソースで完全なURLを使用してください。[VitePressの統合 — ドキュメントのホームページとしてのREADME](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage)を参照してください。
+`true` の場合、翻訳後に VitePress のリンクノーマライザーを実行します。`docsOutput.style` が `"vitepress"` の場合、デフォルトで有効になります。`docsRoot` の下で、ロケールフォルダがソースロケールファイルの隣に配置される任意の `doc-system` レイアウトで使用します。ソース言語は `sourceLocale` で、どの言語でもかまいません。README スタイルの `docs/guide/…` パスをサイトルート (`/guide/…`) とロケール相対の `../guide/…` リンクに書き換えます。VitePress ツリー外のリポジトリファイル (`LICENSE`、`examples/`) へのリンクには、ソースロケールファイル内で完全な URL を使用してください。[VitePress 統合 — ドキュメントのホームページとしての README](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage) を参照してください。
 - `docsOutput.rewriteNextraLinks`
-`true`の場合、翻訳後にNextraリンクノーマライザーを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`用に、`content/en/…`および相対`.mdx`パスをロケール非依存のサイトルート（`/guide/…`）に書き換えます。[Nextraの統合 — リンクの規則](/ja/guide/integrations/nextra#link-conventions)を参照してください。
+`true` の場合、翻訳後に Nextra のリンクノーマライザーを実行します。`docsOutput.style` が `"nextra"` の場合、デフォルトで有効になります。Next.js `i18n` のために、`content/en/…` と相対 `.mdx` パスをロケールに依存しないサイトルート (`/guide/…`) に書き換えます。[Nextra 統合 — リンクの規約](/ja/guide/integrations/nextra#link-conventions) を参照してください。
 - `docsOutput.fumadocsParser`
-`"dot"`（デフォルト）または`"dir"`。dotは英語ソースの隣に`stem.{locale}.mdx`を書き込みます。dirはNextraのようにロケールフォルダを書き込みます。[Fumadocsの統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout) を参照してください。
+`"dot"` (デフォルト) または `"dir"`。Dot はソースロケールファイルの隣に `stem.{locale}.mdx` を書き込み、dir は Nextra のようにロケールフォルダを書き込みます。ソース言語は `sourceLocale` で、どの言語でもかまいません。[Fumadocs 統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout) を参照してください。
 - `docsOutput.rewriteFumadocsLinks`
-`true`の場合、翻訳後にFumadocsリンクノーマライザーを実行します。`docsOutput.style`が`"fumadocs"`の場合、デフォルトで有効になります。コンテンツパスと相対`.mdx`リンクを`/docs/…`ルートに書き換えます。
+`true` の場合、翻訳後に Fumadocs のリンクノーマライザーを実行します。`docsOutput.style` が `"fumadocs"` の場合、デフォルトで有効になります。コンテンツパスと相対 `.mdx` リンクを `/docs/…` ルートに書き換えます。
 - `docsOutput.fumadocsUiCatalog`
-オプション。`translate-docs`内のFumadocs UIオーバーライドカタログのブートストラップと翻訳。フィールド: `sourcePath`（例: `lib/layout.shared.ts`）、`catalogPath`（生成された英語のJSON）、オプションの`outputPathTemplate`（デフォルト: `catalogPath`の隣の`ui.{locale}.json`）。
+オプション。`translate-docs` 内で Fumadocs UI の上書きカタログのブートストラップと翻訳を行います。フィールド: `sourcePath` (例: `lib/layout.shared.ts`)、`catalogPath` (生成された英語の JSON)、オプションの `outputPathTemplate` (デフォルト: `catalogPath` の隣の `ui.{locale}.json`)。
 - `docs[].fumadocsMetaGlob`
-`docsOutput.style`が`"fumadocs"`の場合の`meta.json`コレクションのオプションのglob。デフォルト: `docsOutput.docsRoot`の下の再帰的な`meta.json`。
+オプションの glob パターン。`docsOutput.style` が `"fumadocs"` の場合の `meta.json` 収集用です。デフォルト: `docsOutput.docsRoot` 以下の再帰的な `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 Fumadocs の `meta.json` で文字列値を翻訳するプロパティ名です（デフォルト: `title`、`description`）。
 - `docsOutput.localizedAssets`
@@ -515,6 +518,8 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (オプション)
 
 [`suggest-models`](/ja/reference/cli-commands/models#suggest-models) および [ダッシュボードのモデルタブ](/ja/guide/translation-dashboard/models) の重み付けです。このブロックを省略するか、いずれかのプロファイルを省略すると、そのプロファイルは組み込みの重みを維持します。このブロックは `--apply` や **Update config** によって書き換えられることはありません。これらはモデルIDのみを書き込みます。

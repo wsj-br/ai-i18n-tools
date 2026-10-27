@@ -5,7 +5,7 @@
 
 このリポジトリでは、[README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (`translated-docs/` の下のフラット出力) に使用しています。`translate-docs` の後、翻訳された各コピーは更新されたブロックを取得します。たとえば、[translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) は、`translated-docs/` の下の兄弟ロケールファイルと、リポジトリルートの英語ソースにリンクします。
 
-`docsOutput.style = "flat"` (または兄弟ロケールファイルが相対パスでアドレス指定できる別のレイアウト) が必要です。[出力レイアウト](/ja/guide/documents/output-layouts) を参照してください。
+`docsOutput.style = "flat"` (または、兄弟ロケールファイルが相対パスでアドレス指定可能な別のレイアウト) が必要です。「[出力レイアウト](/ja/guide/documents/output-layouts)」を参照してください。リポジトリのREADMEにこれを初めて追加する場合: 「[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)」。
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. ソースマークダウンでブロックをマークする
@@ -46,9 +46,9 @@
 <a id="3-what-happens-at-runtime"></a>
 ## 3. 実行時に何が起こるか
 
-1. **抽出** — 言語リストのスライスはモデルに**送信されません**（`translatable: false`）。
-2. **翻訳ファイルごとの処理** — セグメントの翻訳およびオプションのフラットリンク書き換えの後、`postProcessing` がブロックを再構築します。ロケールごとに1つのMarkdownリンクを作成し、ラベルは `ui-languages.json` が存在する場合はそこから取得（ない場合はバンドルされたマスターカタログ、または `localeDisplayNames` を使用）、パスは書き込み対象ファイルからの相対パスで設定されます。
-3. **ソースの更新** — `translate-docs` / `sync` ドキュメント処理の最後に、同じ標準ブロックが `contentPaths` の**英語ソースファイル** に再書き込みされます。これにより、新しいロケールを追加しても、すべてのリンクを手動で編集せずにリポジトリ内のスイッチャーを更新できます。
+1. **抽出** — 言語リストのスライスはモデルに**送信されません** (`translatable: false`)。
+2. **翻訳ファイルごと** — セグメントの翻訳とオプションのフラットリンク書き換えの後、`postProcessing` はブロックを再構築します。ロケールごとに1つのMarkdownリンク、`ui-languages.json` が存在する場合はそこからラベルを取得 (それ以外の場合はバンドルされたマスターカタログ、さらにそれ以外の場合は `localeDisplayNames`)、書き込まれるファイルに対する相対パスを使用します。
+3. **ソースの更新** — `translate-docs` / `sync` ドキュメントパスの最後に、同じ正規ブロックが `contentPaths` 内の**ソースロケールファイル**に書き戻されます。これにより、ロケールを追加すると、すべてのリンクを手動で編集することなく、リポジトリ内のスイッチャーが更新されます。これらのファイルは `sourceLocale` で記述されており、任意の言語にすることができます。
 
 ファイルに一致するブロックが存在しない場合、CLIは警告をログ出力します（`--verbose` 時）が、本文は変更されません。
 
@@ -72,4 +72,4 @@
 <a id="html-pages"></a>
 ## HTMLページ
 
-通常のHTMLドキュメントでは、`<!-- ai-i18n:lang-list -->`と`<!-- ai-i18n:hreflang -->`という別のコメントペアを使用します。言語リストはリンクまたは`<select>`として設定でき、hreflangの代替リンクは英語のソースファイルだけでなく各ロケールファイルにも記述されます。[HTMLページ](/ja/guide/documents/html-pages#language-list-and-hreflang)を参照してください。
+プレーンなHTMLドキュメントでは、`<!-- ai-i18n:lang-list -->` と `<!-- ai-i18n:hreflang -->` という異なるコメントのペアを使用します。言語リストはリンクまたは `<select>` にすることができ、hreflangの代替は、ソースロケールファイルと各ターゲットロケールファイルの両方に書き込まれます。「[HTMLページ](/ja/guide/documents/html-pages#language-list-and-hreflang)」を参照してください。

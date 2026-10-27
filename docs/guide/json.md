@@ -3,14 +3,14 @@
 
 Who this is for: projects that already keep copy in nested JSON files per locale (for example `src/i18n/en/translation.json`) and want to keep that layout. If your source has plain text and no `t()` yet, start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) instead.
 
-The CLI walks string values in those files, translates them via the active LLM provider, and writes per-locale outputs using `json[].outputPathTemplate`. It uses the same SQLite cache as `translate-docs` and `translate-svg` (`cacheDir`).
+The CLI walks string values in those files, translates them with the models on the active LLM provider, and writes per-locale outputs using `json[].outputPathTemplate`. It uses the same SQLite cache as `translate-docs` and `translate-svg` (`cacheDir`).
 
 This pipeline does **not** run `extract` — there is no `strings.json` catalog. Enable it with `features.translateJson` and one or more entries in top-level `json[]`.
 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
 
-`translate-json` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Use this for nested JSON bundles where certain locales benefit from dedicated models — for example `zh-Hans` / `zh-Hant` theme files. See [Providers and models](/guide/providers-and-models#model-fallback-chain).
+`translate-json` resolves models **per target locale**: `localeModels(locale)` first when configured, then `translationModels`. Use this for nested JSON bundles where certain locales benefit from dedicated models — for example `zh-Hans` / `zh-Hant` theme files. See [AI Models](/guide/ai-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Step 1: Initialise for nested JSON
@@ -116,7 +116,7 @@ Field reference: [`json`](#json) in [Configuration reference](/reference/configu
 <a id="i18next-namespace-files"></a>
 ### i18next namespace files
 
-The JSON pipeline covers typical i18next key/value locale files: nested objects, string arrays, <code v-pre>{{name}}</code> interpolation in values, and independent plural suffix keys (`welcome_one`, `welcome_other`). It does **not** rewrite `t("some.key")` call sites — those stay key-based. To move a project onto ai-i18n-tools' English source-string `t()` schema, change call sites to `t("English text")` (or run `migrate-intlayer` when the source is Intlayer `.content.ts`; to keep Intlayer and only translate its dictionaries, use [`translate-intlayer`](/guide/translating-intlayer) instead).
+The JSON pipeline covers typical i18next key/value locale files: nested objects, string arrays, <code v-pre>{{name}}</code> interpolation in values, and independent plural suffix keys (`welcome_one`, `welcome_other`). It does **not** rewrite `t("some.key")` call sites — those stay key-based. To move a project onto ai-i18n-tools' source-string `t()` schema, change call sites to `t("source text")`. The text is written in `sourceLocale`, which can be any language. When the source is Intlayer `.content.ts`, run `migrate-intlayer`. To keep Intlayer and only translate its dictionaries, use [`translate-intlayer`](/guide/translating-intlayer).
 
 Example (source English namespaces under `public/locales/en/`):
 

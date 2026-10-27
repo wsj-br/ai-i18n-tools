@@ -13,7 +13,7 @@ Most teams use a **hybrid** of two pipelines (they do not clash):
 | Pipeline | Use for | Commands | Output |
 |----------|---------|----------|--------|
 | **Page HTML** | Headings, paragraphs, nav labels, inline arrays in the template body | `translate-docs` | `src/pages/{locale}/index.astro` per locale |
-| **UI strings (`t()`)** | Frontmatter data, screenshot tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (English source as key) |
+| **UI strings (`t()`)** | Frontmatter data, screenshot tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (source-language string as key) |
 
 Keep three lists aligned when you add or remove a language: `targetLocales` in `ai-i18n-tools.config.json`, `i18n.locales` in `astro.config.mjs` (Astro uses **lowercase** route codes such as `pt-br`), and `ui-languages.json` (via `generate-ui-languages`). Flat bundle **filenames** use config casing (`pt-BR.json`); map Astro's `pt-br` route to that file via your manifest `code` field (see `examples/astro-website/src/i18n/locale.ts`).
 
@@ -40,9 +40,9 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-Set `sourceLocale` to match `i18n.defaultLocale` in `astro.config.mjs`. Write flat bundles to a directory Astro can import at build time (the template uses `public/locales/`). Resolve `t('…')` at **build time** by looking up the English source literal as the key (see `examples/astro-website/src/i18n/t.ts`; `strings.json` is the extraction cache, not the runtime bundle). You do **not** need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
+Set `sourceLocale` to match `i18n.defaultLocale` in `astro.config.mjs`. Write flat bundles to a directory Astro can import at build time (the template uses `public/locales/`). Resolve `t('…')` at **build time** by looking up the source-language literal as the key (see `examples/astro-website/src/i18n/t.ts`; `strings.json` is the extraction cache, not the runtime bundle). That language is `sourceLocale` and can be any language. The example uses English. You do **not** need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
 
-Wire every page that calls `t()` (English root page and each `src/pages/{locale}/` copy):
+Wire every page that calls `t()` (the source-locale page and each `src/pages/{locale}/` copy):
 
 ```astro
 import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
@@ -79,7 +79,7 @@ Enable `features.translateDocs` and add a `docs[]` block, for example:
 }
 ```
 
-Run `ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). English source stays at `src/pages/index.astro`; each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
+Run `ai-i18n-tools translate-docs` (or `pnpm i18n:translate` in [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). The source page stays at `src/pages/index.astro` (English in the example; `sourceLocale` can be any language); each target locale gets `src/pages/{locale}/index.astro` with imports adjusted for the extra directory level (for example `../layouts/` → `../../layouts/`).
 
 Inside the **template body**, string literals in `{expression}` blocks (inline arrays, object `title`/`desc` fields) are translated when they are user-facing; quoted values on protected attributes/keys, literals inside `t('…')`, `<script>`, and `<style>` are left unchanged. **Frontmatter TypeScript is not translated** by this path—keep shared frontmatter (including `t()` imports and data arrays) identical on English and locale pages, or re-run `translate-docs` after editing the English page so locale copies pick up frontmatter changes. For frontmatter-only copy, use the [UI-string pipeline](#ui-strings-ssg) instead.
 

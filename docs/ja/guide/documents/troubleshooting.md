@@ -38,6 +38,6 @@ Markdown リンクまたは `![alt](url)` は英語では機能しますが、�
 
 **修正方法**
 
-1. ロケールコードが目的のスクリプトと一致していることを確認します（`hi` と `hi-Latn`、`zh-Hans` と `zh-Hant`、`sr` と `sr-Latn`）。
-2. 誤ったスクリプトのキャッシュ行が拒否されるように翻訳を再実行します: UI 文字列には `translate-ui --force`、または `translate-docs --check-cache` / `sync --check-cache`（ファイルレベルのスキップは、想定スクリプトが設定されたロケールでのみバイパスされます。有効なセグメントキャッシュは引き続き再利用されます）。`--force-update` はすべてのロケールを再処理します。
-3. モデルがスクリプトチェックに繰り返し失敗する場合は、そのロケールの `localeModels` エントリを追加して、より強力なモデルが最初に試されるようにします — [プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) を参照してください。
+1. ロケールコードが目的のスクリプトと一致することを確認してください (`hi` と `hi-Latn`、`zh-Hans` と `zh-Hant`、`sr` と `sr-Latn`)。
+2. スクリプトが誤っているキャッシュ行が拒否されるように、翻訳を再実行します。UI 文字列には `translate-ui --force` を、または `translate-docs --check-cache` / `sync --check-cache` を使用します (ファイルレベルのスキップは、期待されるスクリプトを持つロケールでのみバイパスされ、有効なセグメントキャッシュは引き続き再利用されます)。`--force-update` はすべてのロケールを再処理します。
+3. モデルがスクリプトチェックに失敗し続ける場合は、そのロケールに `localeModels` エントリを追加して、より強力なモデルが最初に試されるようにします。詳細は [AI モデル](/ja/guide/ai-models#model-fallback-chain) を参照してください。

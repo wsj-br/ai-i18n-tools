@@ -18,9 +18,11 @@ There are no third-party packages.
 
 ## Translate with the standalone binary
 
+Install the command (no Node.js install). Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`.
+
 ```bash
-./ai-i18n-tools extract
-./ai-i18n-tools translate-ui
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 `extract` reads the `_()` and `ngettext()` calls and fills empty `strings.json` slots from the existing `.po` files. `translate-ui` writes updated `.po` and `.mo` catalogs. From a Node checkout, use `node ../../bin/ai-i18n-tools.mjs`.

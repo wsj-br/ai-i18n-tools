@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+上述處理常式是在應用程式已顯示後才切換語言。請一併在首次繪製前還原已儲存的語系：[啟動語系](/zh-Hant/guide/ui-strings/i18next-runtime#startup-locale)。
+
 `getUILanguageLabel(lang, t)` — 當翻譯後顯示 `t(englishName)`，或當兩者不同時顯示 `englishName / t(englishName)`。適用於設定畫面。
 
 `getUILanguageLabelNative(lang)` — 顯示 `englishName / label`（每行沒有 `t()` 呼叫）。適用於您希望顯示原生名稱的標頭選單。

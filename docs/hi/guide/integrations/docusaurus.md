@@ -44,9 +44,16 @@ docs-site/docs/guide/quick-start.md
 }
 ```
 
-अपने अंग्रेजी `.md` / `.mdx` फ़ाइलों और निर्देशिकाओं पर `contentPaths` इंगित करें। `docsRoot` को उसी फ़ोल्डर पर सेट करें जिसका उपयोग Docusaurus अपनी सामग्री रूट के रूप में करता है। `outputDir` को `i18n/` के अंतर्गत प्रत्येक स्थानीय फ़ोल्डर के पैरेंट पर सेट करें।
+`sourceLocale` में लिखी गई `.md` / `.mdx` फ़ाइलों और डायरेक्टरी पर `contentPaths` को इंगित करें। वह भाषा कोई भी भाषा हो सकती है। `docsRoot` को उसी फ़ोल्डर पर सेट करें जिसे Docusaurus अपनी सामग्री रूट के रूप में उपयोग करता है। `outputDir` को `i18n/` के अंतर्गत प्रत्येक स्थानीय फ़ोल्डर के मूल (पैरेंट) पर सेट करें।
 
 Docusaurus [अंतर्राष्ट्रीयकरण](https://docusaurus.io/docs/i18n/introduction) को वायर करें: `ai-i18n-tools.config.json` में `targetLocales` को `docusaurus.config.js` में `locales` सरणी के साथ संरेखित रखें। प्रत्येक `localeConfigs[locale].path` को `i18n/` के अंतर्गत फ़ोल्डर नाम से मेल खाना चाहिए (उदाहरण के लिए `i18n/fr/` के लिए `path: "fr"`)।
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### किसी मौजूदा साइट में i18n सक्षम करें
+
+- `docusaurus.config.js` में `i18n` ब्लॉक जोड़ें: `defaultLocale`, `locales`, और `localeConfigs[locale].path` जब URL पाथ स्थानीय कोड से भिन्न होना चाहिए।
+- `docusaurus write-translations` चलाएँ ताकि `i18n/<defaultLocale>/` मौजूद हो, फिर उस फ़ोल्डर पर `docusaurusCatalogDir` को इंगित करें और `sync` चलाएँ।
+- `src/pages` और `src/components` में कस्टम रिएक्ट मार्कडाउन नहीं है। उपयोगकर्ता-सामना करने वाली कॉपी को `@docusaurus/Translate` से `<Translate>` या `translate()` के साथ चिह्नित करें ताकि `write-translations` इसे `code.json` में एकत्र कर सके। संदेश एक स्थिर स्ट्रिंग होना चाहिए। `write-translations` `i18n/<locale>/code.json` लिखता है; `docusaurusCatalogDir` सेट होने पर, `translate-docs` उस JSON को बाकी शेल कैटलॉग के साथ अनुवादित करता है। ai-i18n-tools उन JSX ट्री को `t()` के लिए स्कैन नहीं करता है।
 
 <a id="shell-strings-write-translations"></a>
 ## शेल स्ट्रिंग्स (write-translations)

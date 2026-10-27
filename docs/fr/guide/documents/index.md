@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # Documents
 
-Conçu principalement pour le **markdown, le MDX, `.astro` et le HTML brut** gérés via les blocs de configuration `docs[]`. Le champ `contentPaths` de chaque bloc répertorie les fichiers ou dossiers à traduire. Les pages HTML brutes (un fichier par langue) sont décrites dans [Pages HTML](/fr/guide/documents/html-pages).
+Référence pour `translate-docs`, le pipeline pour les pages Markdown, MDX, `.astro` et HTML simples listées dans les blocs de configuration `docs[]`. Le champ `contentPaths` de chaque bloc liste les fichiers ou dossiers à traduire. Ces fichiers sont écrits en `sourceLocale`, qui peut être n'importe quelle langue. L'anglais dans les exemples n'est qu'un échantillon. Vous ajoutez des langues à un site pour la première fois ? Commencez par [Ajouter l'i18n à un site web ou de documentation](/fr/guide/add-i18n-to-website). Un fichier README de dépôt et d'autres fichiers Markdown, généralement à côté d'une application : [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme). Les pages HTML simples (un fichier par locale) sont décrites dans [Pages HTML](/fr/guide/documents/html-pages).
 
-Sur les sites [Docusaurus](/fr/guide/integrations/docusaurus), définissez également `docusaurusCatalogDir` sur votre dossier de catalogue `write-translations` (par exemple `docs-site/i18n/en`). Ensuite, `translate-docs` inclut également le JSON shell - la barre de navigation, le pied de page et les chaînes de thème.
-
-Sur les sites [VitePress](/fr/guide/integrations/vitepress), les corps de page utilisent le même pipeline `docs[]`. Les étiquettes de navigation, de barre latérale et de pied de page se trouvent dans `docsOutput.vitepressThemeCatalog` - `translate-docs` amorce le catalogue anglais et le traduit en même temps que les pages, sans pipeline séparé.
-
-Sur les sites [Nextra](/fr/guide/integrations/nextra), les corps de page utilisent le même pipeline `docs[]` avec `docsOutput.style: "nextra"`. Les étiquettes de barre latérale `_meta.ts` sont collectées et traduites automatiquement par `translate-docs` ; les chaînes du dictionnaire de thèmes sont traduites via `docs[].nextraDictionaryPath` dans le même pipeline.
-
-Sur les sites [Fumadocs](/fr/guide/integrations/fumadocs), les corps de page utilisent `docsOutput.style: "fumadocs"` avec `fumadocsParser` `"dot"` (par défaut) ou `"dir"`. Les étiquettes de barre latérale `meta.json` sont collectées automatiquement ; les remplacements d'interface utilisateur sont traduits via `docsOutput.fumadocsUiCatalog`.
-
-Sur les sites [Astro Starlight](/fr/guide/integrations/astro#astro-starlight), les corps de page utilisent `docsOutput.style: "astro-starlight"` avec `docsRoot` à la racine de votre contenu Starlight (généralement `src/content/docs/`). `translate-docs` écrit du markdown/MDX localisé sous `src/content/docs/<locale>/` à côté de l'arborescence anglaise. Starlight fournit des chaînes d'interface utilisateur intégrées pour de nombreux paramètres régionaux — pas de pipeline de catalogue de thème séparé ; les remplacements d'interface utilisateur facultatifs peuvent utiliser `jsonPathTemplate` sur un bloc `docs[]` pour `src/content/i18n/en.json`.
+Les chaînes de l'interface du framework (barre de navigation, barre latérale, thème) sont traduites en une seule passe, et non par un pipeline distinct. Les guides des frameworks dans le tableau ci-dessous expliquent comment chacun d'eux procède : `docusaurusCatalogDir` pour Docusaurus, `docsOutput.vitepressThemeCatalog` pour VitePress, `docs[].nextraDictionaryPath` pour Nextra, `docsOutput.fumadocsUiCatalog` pour Fumadocs. Les libellés de la barre latérale de Nextra `_meta.ts` et Fumadocs `meta.json` sont collectés automatiquement. Astro Starlight fournit des chaînes d'interface utilisateur intégrées pour de nombreuses locales, et les surcharges facultatives peuvent utiliser `jsonPathTemplate` sur un bloc `docs[]`.
 
 Pour les images PNG et autres images matricielles intégrées dans le markdown, voir [Images et captures d'écran](/fr/guide/images-and-screenshots/). `translate-docs` ne traduit que le texte alternatif ; il ne copie pas les fichiers matriciels.
 
@@ -26,7 +18,7 @@ Chaque bloc d'interface utilisateur inclut son `strings.json` comme suggestions 
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
 
-`translate-docs` et l'étape de documentation de `sync` résolvent les modèles **par locale cible** : `localeModels(locale)` d'abord si configuré, puis la chaîne `translationModels` globale du fournisseur. Utilisez ceci lorsqu'une langue spécifique a besoin d'un modèle différent de votre liste de secours par défaut - par exemple, préférer Gemini pour la documentation `pt-BR` lorsque la chaîne globale a des difficultés avec le portugais. Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain) et [Configuration - `localeModels`](/fr/reference/configuration#provider-and-providers).
+`translate-docs` et l'étape de documentation de `sync` résolvent les modèles **par locale cible** : d'abord `localeModels(locale)` lorsqu'il est configuré, puis la chaîne globale `translationModels` du fournisseur. Utilisez cette option lorsqu'une langue spécifique nécessite un modèle différent de votre liste de secours par défaut - par exemple, en préférant Gemini pour la documentation `pt-BR` lorsque la chaîne globale a des difficultés avec le portugais. Consultez [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain) et [Configuration - `localeModels`](/fr/reference/configuration#provider-and-providers).
 
 <a id="which-guide-to-read"></a>
 ## Quel guide lire
@@ -39,7 +31,7 @@ Chaque bloc d'interface utilisateur inclut son `strings.json` comme suggestions 
 | Site Fumadocs | `init -t ui-fumadocs` + `fumadocsUiCatalog` pour l'interface utilisateur (la barre latérale `meta.json` est automatique) - [Fumadocs](/fr/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/fr/guide/integrations/astro#astro-starlight) |
 | Pages HTML brutes | `init -t docs-plain-html` - [Pages HTML](/fr/guide/documents/html-pages) |
-| Documents plats (README, journaux de modifications, etc.) | `docsOutput.style = "flat"` - [Dispositions de sortie](/fr/guide/documents/output-layouts), [sélecteur de langue](/fr/guide/documents/language-switcher) facultatif |
+| Documents plats (README, journaux de modifications, etc.) | [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme) — `init -t docs-markdown` ou `--with-readme`. Mise en page : [Mises en page de sortie](/fr/guide/documents/output-layouts), [sélecteur de langue](/fr/guide/documents/language-switcher) |
 | Où les fichiers traduits atterrissent | [Dispositions de sortie](/fr/guide/documents/output-layouts) |
 | Liens `#anchor` entre pages | [Liens d'ancrage](/fr/guide/documents/anchor-links) |
 | Réécriture d'URL de liens et d'actifs (`regexAdjustments`) | [Réécriture de liens](/fr/guide/documents/link-rewriting) |
@@ -90,14 +82,14 @@ Pour une interface utilisateur Astro simple (sans Starlight) :
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-Ce modèle n'active que l'extraction de l'interface utilisateur. Pour la traduction HTML de page, définissez également `features.translateDocs` et ajoutez un bloc `docs[]` (voir [Pages de site Web Astro (analyse et remplacement)](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)). La configuration [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) montre les deux pipelines ensemble.
+Ce modèle permet uniquement l'extraction de l'interface utilisateur. Pour la traduction HTML des pages, définissez également `features.translateDocs` et ajoutez un bloc `docs[]` (voir [Pages de site web Astro (analyse et remplacement)](/fr/guide/ui-strings/astro-website#pages-parse-and-replace)). La configuration [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) montre les deux pipelines ensemble.
 
 Modifiez le fichier `ai-i18n-tools.config.json` généré :
 
-- `provider` et `providers` — des structures `init -P <provider>` préconfigurées ; définissez sa clé API avant `translate-docs` ou `sync` (Ollama ne nécessite pas de clé). Voir [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key) et [Fournisseurs et modèles LLM](/fr/guide/providers-and-models).
+- `provider` et `providers` — `init -P <provider>` structure ce préréglage ; définissez sa clé d'API avant `translate-docs` ou `sync` (Ollama ne nécessite aucune clé). Consultez [Fournisseur et clé d'API](/fr/guide/quick-start#provider-and-api-key), [Fournisseurs de LLM](/fr/guide/providers-and-models) et [Modèles d'IA](/fr/guide/ai-models).
 - `sourceLocale` - langue source (doit correspondre à `defaultLocale` dans `docusaurus.config.js`).
-- `targetLocales` - tableau de codes de locale BCP-47 (par exemple `["de", "fr", "es"]`).
-- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de logs par défaut pour `--write-logs`).
+- `targetLocales` - tableau de codes de locale BCP-47 (p. ex. `["de", "fr", "es"]`).
+- `cacheDir` - répertoire de cache SQLite partagé pour tous les pipelines (et répertoire de journalisation par défaut pour `--write-logs`).
 - `docs` - tableau de blocs de documentation. Chaque bloc a un `description` facultatif, `contentPaths` (chaîne ou tableau ; fichier, répertoire ou glob), `outputDir`, `docusaurusCatalogDir` facultatif, `docsOutput`, `segmentSplitting` facultatif, `translateFrontmatterFields`, `protectAttributes`, `protectKeys`, `targetLocales`, `addFrontmatter`, etc.
 - `docs[].description` - courte note facultative pour les mainteneurs. Lorsqu'elle est définie, elle apparaît dans le titre `translate-docs` et dans les en-têtes de section `status`.
 - `docs[].contentPaths` - sources markdown/MDX/`.astro` (et `docusaurusCatalogDir` facultatif pour le JSON shell de Docusaurus).

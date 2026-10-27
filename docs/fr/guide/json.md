@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-Conçu pour les projets qui conservent le texte de l'interface utilisateur dans des **fichiers JSON imbriqués par paramètres régionaux** (par exemple `src/i18n/en/translation.json`) au lieu de `t("…")` dans le code source. L'interface de ligne de commande parcourt les valeurs de chaîne dans ces fichiers, les traduit via le fournisseur LLM actif et écrit les sorties par paramètres régionaux à l'aide de `json[].outputPathTemplate`. Elle utilise le même cache SQLite que `translate-docs` et `translate-svg` (`cacheDir`).
+À qui s'adresse ceci : les projets qui conservent déjà leur contenu dans des fichiers JSON imbriqués par locale (par exemple `src/i18n/en/translation.json`) et souhaitent conserver cette structure. Si votre source contient du texte brut et n'a pas encore de `t()`, commencez plutôt par [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js).
+
+Le CLI parcourt les valeurs de chaîne dans ces fichiers, les traduit avec les modèles du fournisseur LLM actif et écrit les sorties par paramètres régionaux à l'aide de `json[].outputPathTemplate`. Il utilise le même cache SQLite que `translate-docs` et `translate-svg` (`cacheDir`).
 
 Ce pipeline n'exécute **pas** `extract` — il n'y a pas de catalogue `strings.json`. Activez-le avec `features.translateJson` et une ou plusieurs entrées dans le `json[]` de niveau supérieur.
 
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
 
-`translate-json` résout les modèles **par locale cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Utilisez ceci pour les bundles JSON imbriqués où certaines locales bénéficient de modèles dédiés — par exemple les fichiers de thème `zh-Hans` / `zh-Hant`. Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
+`translate-json` résout les modèles **par locale cible** : d'abord `localeModels(locale)` lorsqu'il est configuré, puis `translationModels`. Utilisez cette option pour les bundles JSON imbriqués où certaines locales bénéficient de modèles dédiés — par exemple les fichiers de thème `zh-Hans` / `zh-Hant`. Consultez la page [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Étape 1 : Initialiser pour JSON imbriqué
@@ -105,7 +107,8 @@ Lorsque `translateJson` est activé, `status` affiche une section `json[]` (✓ 
 | Étiquettes Fumadocs `meta.json` et catalogue de substitutions d'interface | Documents — `translate-docs` (auto `meta.json` lorsque `style: "fumadocs"`, facultatif `fumadocsUiCatalog`); **n'utilisez pas** `json[]` — voir [Intégration Fumadocs](/fr/guide/integrations/fumadocs) |
 | JSON de locale imbriquée autonome (arborescences `translation.json` de style ZenBrowser) | JSON — `json[]` + `translate-json` |
 | Fichiers d'espace de noms i18next (jetons `public/locales/en/common.json`, <code v-pre>{{name}}</code>, suffixes `key_one` / `key_other`) | JSON — `json[]` + `translate-json` (voir [fichiers d'espace de noms i18next](#i18next-namespace-files)) |
-| Dictionnaires Intlayer `*.content.ts` + `useIntlayer` | [Migration depuis Intlayer](/fr/guide/migrating-from-intlayer) — `migrate-intlayer`, puis chaînes d'interface utilisateur |
+| Dictionnaires Intlayer `*.content.ts` + `useIntlayer` (quitter Intlayer) | [Migration depuis Intlayer](/fr/guide/migrating-from-intlayer) — `migrate-intlayer`, puis les chaînes d'interface utilisateur |
+| Dictionnaires Intlayer `*.content.ts` (conserver Intlayer, remplir les traductions) | [Traduire Intlayer sur place](/fr/guide/translating-intlayer) — `translate-intlayer` |
 | Fichiers `.svg` illustrés avec `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/fr/reference/configuration#svg) + `translate-svg` (facultatif ; pas l'un des trois pipelines principaux) |
 
 Référence de champ : [`json`](#json) dans [Référence de configuration](/fr/reference/configuration#json). Les clés de cache pour le nettoyage utilisent `json-block:{blockIndex}:{projectRelPath}` dans `file_tracking`.
@@ -113,7 +116,7 @@ Référence de champ : [`json`](#json) dans [Référence de configuration](/fr/r
 <a id="i18next-namespace-files"></a>
 ### Fichiers d'espace de noms i18next
 
-Le pipeline JSON couvre les fichiers de paramètres régionaux clé/valeur i18next typiques : objets imbriqués, tableaux de chaînes, interpolation <code v-pre>{{name}}</code> dans les valeurs et clés de suffixe pluriel indépendantes (`welcome_one`, `welcome_other`). Il ne réécrit **pas** les sites d'appel `t("some.key")` — ceux-ci restent basés sur des clés. Pour faire passer un projet au schéma `t()` de chaînes sources anglaises de ai-i18n-tools, modifiez les sites d'appel en `t("English text")` (ou exécutez `migrate-intlayer` lorsque la source est Intlayer `.content.ts`).
+Le pipeline JSON couvre les fichiers de locale clé/valeur i18next typiques : objets imbriqués, tableaux de chaînes, interpolation <code v-pre>{{name}}</code> dans les valeurs, et clés de suffixe pluriel indépendantes (`welcome_one`, `welcome_other`). Il ne **réécrit pas** les sites d'appel `t("some.key")` — ceux-ci restent basés sur des clés. Pour faire passer un projet au schéma `t()` de chaînes source de ai-i18n-tools, modifiez les sites d'appel en `t("source text")`. Le texte est écrit en `sourceLocale`, qui peut être n'importe quelle langue. Lorsque la source est Intlayer `.content.ts`, exécutez `migrate-intlayer`. Pour conserver Intlayer et ne traduire que ses dictionnaires, utilisez [`translate-intlayer`](/fr/guide/translating-intlayer).
 
 Exemple (espaces de noms sources anglais sous `public/locales/en/`) :
 

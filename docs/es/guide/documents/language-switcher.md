@@ -5,7 +5,7 @@ Utilice `docsOutput.postProcessing.languageListBlock` cuando los archivos markdo
 
 Este repositorio lo utiliza para [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (salida plana bajo `translated-docs/`). Después de `translate-docs`, cada copia traducida obtiene un bloque actualizado; por ejemplo, [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) enlaza a archivos de configuración regional hermanos bajo `translated-docs/` y de vuelta a la fuente en inglés en la raíz del repositorio.
 
-Requiere `docsOutput.style = "flat"` (u otro diseño donde los archivos de configuración regional hermanos sean direccionables por ruta relativa). Consulte [Diseños de salida](/es/guide/documents/output-layouts).
+Requiere `docsOutput.style = "flat"` (o cualquier otro diseño donde los archivos de idioma hermanos sean direccionables por ruta relativa). Consulte [Diseños de salida](/es/guide/documents/output-layouts). Primera vez que añade esto a un README de repositorio: [Añada i18n a su README y documentos Markdown](/es/guide/add-i18n-to-readme).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Marque el bloque en el markdown de origen
@@ -46,9 +46,9 @@ Configuración raíz ([ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i
 <a id="3-what-happens-at-runtime"></a>
 ## 3. Qué sucede en tiempo de ejecución
 
-1. **Extracción** — el fragmento de lista de idiomas **no** se envía al modelo (`translatable: false`).
-2. **Por archivo traducido** — tras la traducción de segmentos y la reescritura opcional de enlaces planos, `postProcessing` reconstruye el bloque: un enlace markdown por idioma, con etiquetas de `ui-languages.json` cuando están presentes (si no, del catálogo maestro incluido, si no, `localeDisplayNames`), rutas relativas al archivo que se está escribiendo.
-3. **Actualización del origen** — al final de un proceso `translate-docs` / `sync` para documentos, el mismo bloque canónico se vuelve a escribir en los **archivos fuente en inglés** en `contentPaths` para que al añadir un idioma se actualice el selector en el repositorio sin tener que editar manualmente cada enlace.
+1. **Extracción** — el fragmento de la lista de idiomas **no** se envía al modelo (`translatable: false`).
+2. **Por archivo traducido** — después de la traducción del segmento y la reescritura opcional de enlaces planos, `postProcessing` reconstruye el bloque: un enlace markdown por idioma, etiquetas de `ui-languages.json` cuando estén presentes (de lo contrario, catálogo maestro incluido, de lo contrario `localeDisplayNames`), rutas relativas al archivo que se está escribiendo.
+3. **Actualización de origen** — al final de un paso de documentación de `translate-docs` / `sync`, el mismo bloque canónico se vuelve a escribir en los **archivos de idioma de origen** en `contentPaths` para que al añadir un idioma se actualice el selector en el repositorio sin editar manualmente cada enlace. Esos archivos se escriben en `sourceLocale`, que puede ser cualquier idioma.
 
 Si un archivo no tiene un bloque coincidente, la CLI registra una advertencia (cuando `--verbose`) y deja el contenido sin cambios.
 
@@ -72,4 +72,4 @@ La línea inmediatamente antes de `<small id="lang-list">` (por ejemplo, `**Read
 <a id="html-pages"></a>
 ## Páginas HTML
 
-Los documentos HTML simples utilizan un par de comentarios diferente, `<!-- ai-i18n:lang-list -->` y `<!-- ai-i18n:hreflang -->`. La lista de idiomas puede consistir en enlaces o en un `<select>`, y las alternativas hreflang se incluyen tanto en el código fuente en inglés como en cada archivo de configuración regional. Consulte [Páginas HTML](/es/guide/documents/html-pages#language-list-and-hreflang).
+Los documentos HTML simples usan un par diferente de comentarios, `<!-- ai-i18n:lang-list -->` y `<!-- ai-i18n:hreflang -->`. La lista de idiomas puede ser enlaces o un `<select>`, y las alternativas hreflang se escriben tanto en el archivo de idioma de origen como en cada archivo de idioma de destino. Consulte [Páginas HTML](/es/guide/documents/html-pages#language-list-and-hreflang).

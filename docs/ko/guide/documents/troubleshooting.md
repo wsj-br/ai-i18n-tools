@@ -38,6 +38,6 @@
 
 **해결 방법**
 
-1. 로케일 코드가 원하는 스크립트와 일치하는지 확인하세요 (`hi` 대 `hi-Latn`, `zh-Hans` 대 `zh-Hant`, `sr` 대 `sr-Latn`).
-2. 잘못된 스크립트의 캐시 행이 거부되도록 번역을 다시 실행하세요: UI 문자열의 경우 `translate-ui --force`, 또는 `translate-docs --check-cache` / `sync --check-cache` (파일 수준 건너뛰기는 예상 스크립트가 있는 로케일에 대해서만 우회됩니다; 유효한 세그먼트 캐시는 여전히 재사용됩니다). `--force-update`는 모든 로케일을 다시 처리합니다.
-3. 모델이 스크립트 검사를 계속 실패하는 경우, 더 강력한 모델이 먼저 시도되도록 해당 로케일에 `localeModels` 항목을 추가하세요 — [제공자 및 모델](/ko/guide/providers-and-models#model-fallback-chain)을 참조하세요.
+1. 로캘 코드가 원하는 스크립트와 일치하는지 확인합니다(`hi` 대 `hi-Latn`, `zh-Hans` 대 `zh-Hant`, `sr` 대 `sr-Latn`).
+2. 잘못된 스크립트의 캐시 행이 거부되도록 번역을 다시 실행하려면 UI 문자열의 경우 `translate-ui --force`을(를) 사용하거나 `translate-docs --check-cache` / `sync --check-cache`을(를) 사용합니다(파일 수준 건너뛰기는 예상 스크립트가 있는 로캘에 대해서만 우회되며 유효한 세그먼트 캐시는 계속 재사용됩니다). `--force-update`은(는) 모든 로캘을 다시 처리합니다.
+3. 모델이 계속해서 스크립트 확인에 실패하는 경우, 더 강력한 모델이 먼저 시도되도록 해당 로캘에 대한 `localeModels` 항목을 추가합니다. [AI 모델](/ko/guide/ai-models#model-fallback-chain)을(를) 참조하십시오.

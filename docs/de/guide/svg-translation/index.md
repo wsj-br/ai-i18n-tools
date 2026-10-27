@@ -1,14 +1,14 @@
 <a id="svg"></a>
 # SVG
 
-Entwickelt zur Übersetzung von **SVG-Illustrationen und Diagrammen**, die menschenlesbare Beschriftungen enthalten. Der Befehl `translate-svg` liest `.svg`-Quelldateien ein, extrahiert Text aus `<text>`-, `<title>`- und `<desc>`-Elementen, übersetzt diese Zeichenfolgen über den aktiven LLM-Anbieter und schreibt **eine SVG-Ausgabedatei pro Zielsprache**.
+Dient zur Übersetzung von **SVG-Illustrationen und -Diagrammen**, die für Menschen lesbare Beschriftungen enthalten. Der Befehl `translate-svg` liest `.svg`-Quelldateien, extrahiert Text aus `<text>`-, `<title>`- und `<desc>`-Elementen, übersetzt diese Zeichenfolgen mit den Modellen des aktiven LLM-Anbieters und schreibt **eine SVG-Ausgabedatei pro Zielsprache**.
 
 Dies ist die einzige Pipeline, die sprachspezifische **binäre** SVG-Dateien ausgibt. `translate-docs` übersetzt Markdown-Alt-Text und Link-Referenzen, ändert oder kopiert jedoch keine SVG-Assets. Wenn eine Seite ein Diagramm mit übersetzten Beschriftungen benötigt, aktivieren Sie `features.translateSVG` und konfigurieren Sie den übergeordneten `svg`-Block.
 
 <a id="per-locale-model-overrides"></a>
 ## Modellüberschreibungen pro Gebietsschema
 
-`translate-svg` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Jeder SVG-Lauf eines Gebietsschemas verwendet seine eigene Fallback-Kette – nützlich, wenn Diagrammbeschriftungen in CJK-Gebietsschemas ein skriptoptimiertes Modell benötigen (z. B. `ja`). Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
+`translate-svg` ermittelt Modelle **pro Ziel-Locale**: zuerst `localeModels(locale)`, sofern konfiguriert, danach `translationModels`. Der SVG-Lauf jeder Locale verwendet eine eigene Fallback-Kette – was nützlich ist, wenn Diagrammbeschriftungen in CJK-Locales ein auf die Schrift abgestimmtes Modell benötigen (zum Beispiel `ja`). Siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain).
 
 Die SVG-Übersetzung verwendet denselben SQLite-Cache wie `translate-docs` und `translate-json` (`cacheDir`). Bereits übersetzte Textsegmente werden aus dem Cache bereitgestellt; nur neuer oder geänderter Quelltext wird an das LLM gesendet.
 

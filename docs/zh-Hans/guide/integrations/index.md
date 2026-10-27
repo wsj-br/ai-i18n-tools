@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # 集成
 
-针对文档站点、Astro 项目和 Python 应用程序的框架特定指南。文档集成使用 [Documents](/zh-Hans/guide/documents/) 流水线 (`translate-docs` / `sync`) 处理页面内容；shell 字符串（导航、侧边栏、主题）在注明之处由同一流水线处理，而非通过单独的 [JSON](/zh-Hans/guide/json) 流水线。Python 应用程序使用 [UI strings](/zh-Hans/guide/ui-strings/python) 流水线 (`extract` / `translate-ui`)。
+框架集成参考：它们的共同点以及外围字符串有何不同。要向网站添加语言，请从[为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website)开始。对于应用，请从[为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)或[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)开始。对于仓库 README 和其他 Markdown 文件，请从[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)开始。
+
+文档集成使用[文档](/zh-Hans/guide/documents/)流水线 (`translate-docs` / `sync`) 处理页面内容；外围字符串（导航、侧边栏、主题）在注明的情况下，在同一流水线内处理——而不是通过单独的 [JSON](/zh-Hans/guide/json) 流水线。Python 应用程序使用 [UI 字符串](/zh-Hans/guide/ui-strings/python) 流水线 (`extract` / `translate-ui`)。
 
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
 
-| 你的站点 | 初始模板 | 从这里开始 |
-| --- | --- | --- |
-| Astro Starlight 或原生 Astro | `ui-starlight` / 混合 UI 字符串 | [Astro](/zh-Hans/guide/integrations/astro) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/zh-Hans/guide/integrations/docusaurus) |
-| VitePress | `ui-vitepress` | [VitePress](/zh-Hans/guide/integrations/vitepress) |
-| Nextra 4（Next.js App Router）| `ui-nextra` | [Nextra](/zh-Hans/guide/integrations/nextra) |
-| Fumadocs 4（Next.js App Router）| `ui-fumadocs` | [Fumadocs](/zh-Hans/guide/integrations/fumadocs) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, 桌面端) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/zh-Hans/guide/integrations/python) |
+选择器表格（其中包含每个框架的初始化模板和代理提示）位于[为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website#what-do-you-have)中。Python 框架：[Python](/zh-Hans/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共享概念

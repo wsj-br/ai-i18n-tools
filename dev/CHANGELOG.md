@@ -9,6 +9,18 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: scripts — `screenshot-translation-dashboard.sh` captures with the first installed of Google Chrome, Brave, or Firefox (`CHROME_BIN` still overrides). `curl` reports how to install it when missing.
+- **Changed**: scripts — `screenshot-translation-dashboard.sh` opens the Statistics tab and waits for those figures to load before capturing.
+
+- **Fixed**: docs translation — fenced code inside a container stays inside that container. This covers Docusaurus (`:::note`, `:::note[Title]`), VitePress (`::: tip`, `::: warning`, `::: details`, `::: code-group`), Pandoc (`::: {.note}`), MyST (`:::{note} Title`), nested colon admonitions, and indented MkDocs bodies (`!!!`, `???`, `???+`). The extractor no longer emits those fences as separate segments before the container closes, which was writing the samples above an empty group. A container whose body is only fences is copied through unchanged; a title or other prose still goes to the model, with each fence masked as a structural `{{CDF_N}}` token. List splitting ignores markers inside a fence, so a sample cannot be cut into the next list chunk. Fence info strings (tab labels) stay in the source language.
+- **Fixed**: `MarkdownExtractor` — a line that is only a markdown link (or several links joined by separators) is translated. Badge image rows stay unchanged.
+- **Changed**: docs - the combining-pipelines guide points at this repository's UI strings and VitePress config as a worked example.
+- **Changed**: docs - the provider card on the landing page includes the OpenRouter logo.
+- **Changed**: docs - the JavaScript/TypeScript and Python cards on the landing page include a CLI icon.
+- **Added**: install — `install.sh` and `install.ps1` download the standalone executable for Linux, macOS, or Windows, verify `SHA256SUMS.txt`, install the command as `ai-i18n-tools`, and add the install directory to `PATH`. GitHub Releases also attach both scripts.
+- **Changed**: docs — standalone executable install leads with `curl | bash` and `irm | iex`. Manual download steps stay in a collapsed block and rename the file to `ai-i18n-tools`.
+- **Changed**: docs - the landing page "Already have i18n?" section is a card row, with Intlayer translate-in-place and migration links on their own card.
+- **Changed**: docs - landing-page cards now show brand logos and feature icons.
 - **Changed**: docs - redesigned the English landing page (`docs/index.md`) with a brand-aligned hero, feature/step/example card grids, a CTA panel, and refined VitePress theme styling in `custom.css`.
 - **Added**: docs - `@fontsource-variable/bricolage-grotesque` as the landing-page display font (self-hosted, imported in the VitePress theme).
 - **Added**: `init` — `docs-markdown` template for repositories that only translate README and Markdown files.

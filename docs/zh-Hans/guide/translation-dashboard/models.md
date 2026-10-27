@@ -1,7 +1,7 @@
 <a id="models"></a>
 # 模型
 
-**模型** 选项卡会对当前提供商的聊天模型进行排名，以便您可以选择 `translationModels`，而无需手动复制 ID。它使用与 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 相同的排名方式。
+“**模型**”选项卡会对当前提供商的聊天模型进行排名，以便您选择 `translationModels`，而无需手动复制 ID。它使用的排名与 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 中的排名相同。相关演练（包括该列表为何包含多个模型的原因）请参阅 [AI 模型](/zh-Hans/guide/ai-models)。
 
 选择 **质量** 或 **价格**。质量优先考虑 languagebench ChrF 和竞技场评分 (Arena Score)。价格优先考虑较低的美元费率，同时保持一定的质量底线。当配置中有多个提供商时，会出现 **提供商** 菜单；默认值为启动仪表板时所用的提供商（`provider`，或 `dashboard` 命令上的 `-P` / `--provider`）。更改提供商或优先级会重新加载表格。可选权重位于 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion) 中。
 

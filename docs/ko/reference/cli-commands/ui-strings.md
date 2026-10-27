@@ -17,13 +17,32 @@
 
 **개요:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-Intlayer `*.content.ts` 사전을 `strings.json` 및 플랫 로케일 파일로 가져오고, 단순한 `useIntlayer` / `getIntlayer` 호출 지점을 `t('English source')`로 다시 작성합니다. 기본적으로 드라이 런입니다(보고서는 여전히 작성됩니다). `--write`는 카탈로그를 시드하고 안전한 다시 쓰기를 적용합니다. LLM을 호출하지 않습니다.
+Intlayer `*.content.ts` 사전을 `strings.json` 및 플랫 로케일 파일로 가져오고, 간단한 `useIntlayer` / `getIntlayer` 호출 사이트를 `t('source string')`(으)로 재작성합니다. 문자열은 `sourceLocale`에 작성되며, 모든 언어가 가능합니다. 기본적으로 드라이 런입니다(보고서는 계속 작성됨). `--write`는 카탈로그를 시드하고 안전한 재작성을 적용합니다. LLM을 호출하지 않습니다.
 
 보고서는 `--write`에서 남긴 모든 작업에 대한 인수인계 문서이며, 나머지 작업 순서를 정리한 **단계별 TODO**로 마무리됩니다: 각 수동 사이트별 구체적인 `t()` 또는 JSX 호출, `import { t }` 행, 나중에 삭제할 사전 파일 및 `IntlayerProvider` 잔여 파일, `extract` 다음 `translate-ui` 작업이 필요한 소스 문자열, 그리고 앱의 i18n 모듈에 붙여넣을 i18next 런타임 부트스트랩. 로케일 제어는 `loadLocale`뿐만 아니라 `i18n.changeLanguage`도 호출해야 합니다. `extract`은(는) 이 부트스트랩에서 가져오는 `ui-languages.json`을(를) 생성합니다. `strings.json`, 플랫 로케일 파일, `ui-languages.json`은(는) 수동으로 편집하지 마십시오.
 
 **주요 옵션:** `--write`, `--report`, `--content-glob` (기본값 `**/*.content.ts`), `--t-import`
 
 **참고 항목:** [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**개요:** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+Intlayer `*.content.ts` 사전 내에서 누락되거나 오래된 로케일 리프를 제자리에서 번역하고, 사전을 신뢰할 수 있는 단일 출처로 유지합니다. [`migrate-intlayer`](#migrate-intlayer)와 달리, 이 기능은 앱을 Intlayer에서 이전하지 않고 `t({ … })` 리프만 채웁니다. 런타임에 Intlayer를 유지하고 ai-i18n-tools를 번역 엔진으로 사용하려는 경우에 사용하세요.
+
+모든 `t({ … })` 리프를 추출하고, 선택한 UI 블록의 `strings.json`을 소스 텍스트로 시드하고, [`translate-ui`](#translate-ui)와 동일한 엔진(공급자 선택, 용어집, 번역 컨텍스트, 모델 폴백)을 실행한 다음, 새로운 로케일별 문자열을 각 `t({ … })` 객체에 다시 씁니다. 편집은 정교하게 이루어집니다. 누락되거나 오래된 로케일 라인만 변경되므로 서식과 주석이 보존됩니다. Intlayer `{token}` 플레이스홀더는 번역을 위해 <code v-pre>{{token}}</code>(으)로 왕복 변환된 후 다시 돌아옵니다.
+
+리프+로케일은 리프에 로케일이 없거나(누락), 해당 로케일에 대한 마지막 실행 이후 소스 로케일 텍스트가 변경된 경우(오래됨) 번역됩니다. 오래된 상태는 `cacheDir`에서 추적되므로, 해당 소스 문자열을 편집하면 다음 실행 시 해당 리프 하나가 다시 번역됩니다. 소스 언어는 `sourceLocale`이며 모든 언어가 가능합니다. `--dry-run`는 LLM을 호출하거나 아무것도 쓰지 않고 누락/오래된 항목의 수를 보고합니다. `features.translateUIStrings` 및 UI 블록의 `stringsJson`(`translate-ui`와 동일)가 필요합니다.
+
+**주요 옵션:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
+
+`[paths...]`: 스캔할 파일/디렉터리/glob (기본값: 블록의 `sourceRoots`). `-l` / `--locale`: 채울 대상 로케일(쉼표로 구분) (기본값: 블록에 구성된 `targetLocales`). `--ui-block`: 0부터 시작하는 인덱스, 설명 또는 `stringsJson` 경로 (기본값: 블록 0). `-j`는 로케일을 병렬화합니다.
+
+**참고 항목:** [migrate-intlayer](#migrate-intlayer), [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)
 
 ---
 

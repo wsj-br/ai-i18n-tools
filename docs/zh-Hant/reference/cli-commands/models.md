@@ -8,7 +8,7 @@
 
 針對活躍供應商的 `GET /models` 列表（成員資格和 `expiration_date`）驗證每個已配置的模型 ID。需要該供應商的 API 金鑰（對於像 Ollama 這樣的無金鑰供應商則不需要）。當任何已配置的 ID 遺失或過期時，以非零值結束，並遵守已解析的請求逾時（供應商上的 `requestTimeout` 或 `requestTimeoutMs`，否則為頂層值）。當供應商回傳定價時（例如 OpenRouter），也會顯示提示/完成的每百萬個 token 的美元價格。當 `providers.cheaperinference.zeroDataRetention` 為 true 時，檢查會使用 `GET /v1/models?zdr=true` 並使目錄中遺漏的 ID 失敗。
 
-**另請參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)
+**另請參閱：** [人工智慧模型](/zh-Hant/guide/ai-models#check-models)、[大型語言模型供應商](/zh-Hant/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **關鍵選項：** `-P` / `--provider`
 
-**另請參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)
+**另請參閱：** [人工智慧模型](/zh-Hant/guide/ai-models#list-models)、[大型語言模型供應商](/zh-Hant/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ ChrF 是 languagebench `translation_from` 與 `translation_to` 列的平均值�
 
 **主要選項：** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
-**參閱：** [LLM 提供者](/zh-Hant/guide/providers-and-models)、[模型分頁](/zh-Hant/guide/translation-dashboard/models)
+**另請參閱：** [人工智慧模型](/zh-Hant/guide/ai-models)、[「模型」分頁](/zh-Hant/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ ChrF 是 languagebench `translation_from` 與 `translation_to` 列的平均值�
 模型預設為作用中提供者之 `translationModels`、`uiModels` 與 `localeModels` ID 的聯集（使用 `--model` 覆寫）；範例預設為內建的英文 Markdown 區塊（使用 `--text` / `--file` 覆寫）；來源/目標預設為設定 `sourceLocale` 與第一個 `docs[]` 目標語言環境，並備援至頂層 `targetLocales`（使用 `--source` / `--target` 覆寫）。並行執行模型，受設定 `concurrency` 限制（預設為 4）；每個模型仍會單獨計時。需要作用中提供者的 API 金鑰。
 
 **關鍵選項：** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**另請參閱：** [人工智慧模型](/zh-Hant/guide/ai-models#bench-models)
 
 ---
 

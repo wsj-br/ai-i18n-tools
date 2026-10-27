@@ -17,7 +17,7 @@ Update `strings.json` from `t("…")` / `i18n.t("…")` literals, optional `pack
 
 **Synopsis:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-Import Intlayer `*.content.ts` dictionaries into `strings.json` and flat locale files, and rewrite simple `useIntlayer` / `getIntlayer` call sites to `t('English source')`. Dry run by default (the report is still written). `--write` seeds the catalog and applies safe rewrites. Does not call an LLM.
+Import Intlayer `*.content.ts` dictionaries into `strings.json` and flat locale files, and rewrite simple `useIntlayer` / `getIntlayer` call sites to `t('source string')`. The string is written in `sourceLocale`, which can be any language. Dry run by default (the report is still written). `--write` seeds the catalog and applies safe rewrites. Does not call an LLM.
 
 The report is the handoff for everything `--write` leaves behind, and it ends with a **Step-by-step TODO** that orders the rest of the work: a concrete `t()` or JSX call for each manual site, the `import { t }` line, dictionary files and `IntlayerProvider` leftovers to delete afterwards, source strings that need `extract` then `translate-ui`, and an i18next runtime bootstrap to paste over the app's i18n module. The locale control must call `i18n.changeLanguage` as well as `loadLocale`. `extract` writes `ui-languages.json`, which that bootstrap imports. Do not edit `strings.json`, the flat locale files, or `ui-languages.json` by hand.
 
@@ -36,7 +36,7 @@ Translate missing and stale locale leaves inside Intlayer `*.content.ts` diction
 
 It extracts every `t({ … })` leaf, seeds the chosen UI block's `strings.json` with the source text, runs the same engine as [`translate-ui`](#translate-ui) (provider selection, glossary, translation context, and model fallback), then writes the new per-locale strings back into each `t({ … })` object. Edits are surgical: only the missing or stale locale lines change, so your formatting and comments are preserved. Intlayer `{token}` placeholders round-trip to <code v-pre>{{token}}</code> for translation and back.
 
-A leaf+locale is translated when the locale is absent from the leaf (missing), or when the English source text changed since the last run for that locale (stale). Staleness is tracked in `cacheDir`, so editing an English string re-translates that one leaf on the next run. `--dry-run` reports the missing/stale counts without calling an LLM or writing anything. Requires `features.translateUIStrings` and the UI block's `stringsJson` (same as `translate-ui`).
+A leaf+locale is translated when the locale is absent from the leaf (missing), or when the source-locale text changed since the last run for that locale (stale). Staleness is tracked in `cacheDir`, so editing that source string re-translates that one leaf on the next run. The source language is `sourceLocale` and can be any language. `--dry-run` reports the missing/stale counts without calling an LLM or writing anything. Requires `features.translateUIStrings` and the UI block's `stringsJson` (same as `translate-ui`).
 
 **Key options:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 

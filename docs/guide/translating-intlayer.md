@@ -1,17 +1,17 @@
 <a id="translating-intlayer"></a>
 # Translating Intlayer in place
 
-Keeping [Intlayer](https://intlayer.org/) and only need the translations filled in? `translate-intlayer` translates the missing and stale locale leaves inside your `*.content.ts` dictionaries, in place. Your dictionaries stay the source of truth, Intlayer stays at runtime, and ai-i18n-tools acts as the translation engine (provider selection, glossary, translation context, and model fallback).
+[Intlayer](https://intlayer.org/) is a good solution for applications that keep translations in typed content dictionaries, or that use a translation management system and human translation. `translate-intlayer` is for that audience. It fills the missing and stale locale leaves inside your `*.content.ts` dictionaries, in place. The dictionaries stay the source of truth, Intlayer stays at runtime, and ai-i18n-tools acts as the translation engine (provider selection, glossary, translation context, and model fallback).
 
 <a id="which-one"></a>
-## Translate in place, or migrate off?
+## Keep Intlayer, or move to source-string calls?
 
-| Your goal | Command | Guide |
+| Your audience | Command | Guide |
 | --- | --- | --- |
-| Keep Intlayer and fill the missing translations | `translate-intlayer` | this page |
-| Move the app off Intlayer onto ai-i18n-tools' `t('English source')` schema | `migrate-intlayer` | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
+| Typed content dictionaries, a translation management system, or human translation. Intlayer stays at runtime. | `translate-intlayer` | this page |
+| Source-string calls, `t('…')`, with the source-language text kept with the code that uses it. The source language can be any language. | `migrate-intlayer` | [Migrating from Intlayer to source-string calls](/guide/migrating-from-intlayer) |
 
-`translate-intlayer` is an ongoing task you re-run whenever you add source strings or edit existing ones. `migrate-intlayer` is a one-time move: it rewrites call sites and leaves Intlayer behind.
+`translate-intlayer` is an ongoing task you re-run whenever you add source strings or edit existing ones. `migrate-intlayer` is a one-time move for the other audience. Each rewritten call carries the source-language string with the code that uses it, which simplifies maintenance and reduces the complexity of that code. That language is `sourceLocale`, and it can be any language.
 
 <a id="what-translate-intlayer-does"></a>
 ## What `translate-intlayer` does
@@ -28,7 +28,7 @@ Keeping [Intlayer](https://intlayer.org/) and only need the translations filled 
 A leaf + locale is translated when either:
 
 - The locale is absent from the leaf (missing), or
-- The English source text changed since the last run for that locale (stale).
+- The source-locale text changed since the last run for that locale (stale). The source language is `sourceLocale` and can be any language.
 
 Staleness is tracked per leaf in `cacheDir`, so editing one English string re-translates only that leaf on the next run; everything else stays cached. A translation that was already out of date on the very first run is accepted as current — only later edits mark it stale.
 
@@ -91,4 +91,4 @@ Requires `features.translateUIStrings` and the UI block's `ui.stringsJson` (same
 | `--dry-run` | Report missing/stale counts only; no LLM call, no writes |
 | `-j`, `--concurrency <n>` | Max parallel target locales (default: config `concurrency` or 4) |
 
-**See also:** [CLI — UI strings](/reference/cli-commands/ui-strings#translate-intlayer), [Migrating from Intlayer](/guide/migrating-from-intlayer)
+**See also:** [CLI — UI strings](/reference/cli-commands/ui-strings#translate-intlayer), [Migrating from Intlayer to source-string calls](/guide/migrating-from-intlayer)

@@ -30,6 +30,7 @@ import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 import {
   ADMONITION_CLOSING_NOINDENT_RE,
   ADMONITION_OPENER_COLONS_RE,
+  containerHasTranslatableProse,
   MKDOCS_ADMONITION_OPENER_RE,
   mkdocsAdmonitionEndIndex,
 } from "../processors/admonition-syntax.js";
@@ -196,8 +197,24 @@ export class MarkdownExtractor extends BaseExtractor {
     let codeBlockStartLine = 0;
     let admonitionContent: string[] = [];
     let admonitionStartLine = 0;
+    /**
+     * Code fence open inside the current container. Its lines stay in `admonitionContent`.
+     * Emitting them as their own segment would place the sample before the container closes.
+     */
+    let admonitionFence: OpenCodeFence | null = null;
     /** Stack of opener colon counts; nested admonitions push more colons than their parent. */
     const admonitionDepths: number[] = [];
+
+    const pushAdmonition = (content: string, startLine: number) => {
+      segments.push({
+        type: "admonition",
+        content,
+        translatable: containerHasTranslatableProse(content),
+        startLine,
+      });
+      admonitionContent = [];
+      admonitionFence = null;
+    };
 
     const flushCurrentSegment = () => {
       if (currentSegment.length > 0) {
@@ -211,6 +228,14 @@ export class MarkdownExtractor extends BaseExtractor {
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex] ?? "";
+      if (admonitionFence) {
+        admonitionContent.push(line);
+        if (isCodeFenceClose(line, admonitionFence)) {
+          admonitionFence = null;
+        }
+        continue;
+      }
+
       if (openFence) {
         codeBlockContent.push(line);
         if (isCodeFenceClose(line, openFence)) {
@@ -228,6 +253,11 @@ export class MarkdownExtractor extends BaseExtractor {
 
       const fenceOpen = matchCodeFenceOpen(line);
       if (fenceOpen) {
+        if (admonitionDepths.length > 0) {
+          admonitionContent.push(line);
+          admonitionFence = fenceOpen;
+          continue;
+        }
         flushCurrentSegment();
         codeBlockContent.push(line);
         codeBlockStartLine = lineIndex;
@@ -265,13 +295,7 @@ export class MarkdownExtractor extends BaseExtractor {
         admonitionContent.push(line);
         admonitionDepths.pop();
         if (admonitionDepths.length === 0) {
-          segments.push({
-            type: "admonition",
-            content: admonitionContent.join("\n"),
-            translatable: true,
-            startLine: bodyStartLine + admonitionStartLine,
-          });
-          admonitionContent = [];
+          pushAdmonition(admonitionContent.join("\n"), bodyStartLine + admonitionStartLine);
         }
         continue;
       }
@@ -284,10 +308,11 @@ export class MarkdownExtractor extends BaseExtractor {
       if (MKDOCS_ADMONITION_OPENER_RE.test(line)) {
         flushCurrentSegment();
         const endIndex = mkdocsAdmonitionEndIndex(lines, lineIndex);
+        const mkdocsContent = lines.slice(lineIndex, endIndex + 1).join("\n");
         segments.push({
           type: "admonition",
-          content: lines.slice(lineIndex, endIndex + 1).join("\n"),
-          translatable: true,
+          content: mkdocsContent,
+          translatable: containerHasTranslatableProse(mkdocsContent),
           startLine: bodyStartLine + lineIndex,
         });
         lineIndex = endIndex;
@@ -317,12 +342,7 @@ export class MarkdownExtractor extends BaseExtractor {
     }
 
     if (admonitionContent.length > 0) {
-      segments.push({
-        type: "admonition",
-        content: admonitionContent.join("\n"),
-        translatable: true,
-        startLine: bodyStartLine + admonitionStartLine,
-      });
+      pushAdmonition(admonitionContent.join("\n"), bodyStartLine + admonitionStartLine);
     }
 
     return segments;
@@ -354,8 +374,9 @@ export class MarkdownExtractor extends BaseExtractor {
     if (isSingleLine) {
       const textOnly = trimmed
         .replace(/`[^`]*`/g, "")
+        // Drop images (badge rows) but keep link labels so a lone [text](url) line stays translatable.
         .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-        .replace(/\[[^\]]*\]\([^)]*\)/g, "")
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
         .replace(/[*_#>-]/g, "")
         .replace(/[()[\]{}<>]/g, "")
         .replace(/<[^>]+>/g, "")

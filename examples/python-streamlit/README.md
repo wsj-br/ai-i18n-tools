@@ -17,11 +17,23 @@ On Windows, activate `.venv\Scripts\activate` instead of `source`.
 
 ## Translate with the standalone binary
 
-Download `ai-i18n-tools` for your platform from the GitHub Release (no Node.js install). From this directory:
+Install the command (no Node.js install). Linux and macOS:
 
 ```bash
-./ai-i18n-tools extract
-./ai-i18n-tools translate-ui
+curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
+```
+
+From this directory:
+
+```bash
+ai-i18n-tools extract
+ai-i18n-tools translate-ui
 ```
 
 From a Node checkout of this repository, the same commands are `node ../../bin/ai-i18n-tools.mjs extract`.

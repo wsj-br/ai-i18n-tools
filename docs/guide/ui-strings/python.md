@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python applications
 
-`ai-i18n-tools` extracts UI strings from Python and from Jinja, Django, and Qt `.ui` files, then writes flat English-key JSON, GNU gettext catalogs, or both. The runtime helper is a standard-library `i18n.py` (Python 3.10 or newer). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, and FastAPI call that helper. Django uses Django's own gettext.
+`ai-i18n-tools` extracts UI strings from Python and from Jinja, Django, and Qt `.ui` files, then writes flat JSON keyed by the source-language string, GNU gettext catalogs, or both. `sourceLocale` can be any language. The runtime helper is a standard-library `i18n.py` (Python 3.10 or newer). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, and FastAPI call that helper. Django uses Django's own gettext.
 
 Adding locales to an existing single-language app: [Add i18n to a Python app](/guide/add-i18n-to-python), including the [`i18n.py` prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py) and the [Django / gettext prompt](/guide/add-i18n-to-python#agent-prompt-django-gettext). Framework chooser: [Python integrations](/guide/integrations/python). Function list: [Python runtime (`i18n.py`)](/reference/programmatic-api#python-runtime).
 
@@ -68,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## Catalogs
 
-Flat JSON keys are the English source. A context uses `context` + U+0004 + the English source. Plural slots stay `{md5}_one`, `{md5}_other`, and the other CLDR forms `translate-ui` already writes. The helper hashes the trimmed singular with MD5 and reads the first 8 hex characters.
+Flat JSON keys are the source-language string, the text in `sourceLocale`. That language can be any language. A context uses `context` + U+0004 + that source string. Plural slots stay `{md5}_one`, `{md5}_other`, and the other CLDR forms `translate-ui` already writes. The helper hashes the trimmed singular with MD5 and reads the first 8 hex characters.
 
 Gettext files use `msgctxt` for context and `msgid` / `msgid_plural` for plurals. `ui.gettext.compileMo` writes the `.mo` next to the `.po`. `purge-locale` deletes that locale's `.po` and `.mo`. When `flatOutput` is false it leaves the flat JSON files alone because they were not written.
 

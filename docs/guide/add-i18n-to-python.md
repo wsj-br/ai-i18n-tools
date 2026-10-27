@@ -20,7 +20,21 @@ Not sure this is your case? See [Not your case?](#not-your-case) at the end.
 <a id="install"></a>
 ## Install
 
-Use the npm package when the machine already has Node.js `>=22.16.0` ([Installation](/guide/installation)). For a Python project, the usual path is the standalone executable from the GitHub Release — Linux (`x64`, `arm64`), macOS (`arm64`, `x64`), and Windows (`x64`). Check `SHA256SUMS.txt`, run `chmod +x` on Unix, and put the file on `PATH`. The binaries are unsigned. Asset names and checksums: [Standalone executables](/guide/installation#standalone-executables).
+Use the npm package when the machine already has Node.js `>=22.16.0` ([Installation](/guide/installation)). For a Python project, install the standalone executable (no Node.js).
+
+Linux and macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
+```
+
+The installer checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual steps and asset names: [Standalone executables](/guide/installation#standalone-executables).
 
 Set the API key for the provider you pass to `init`. For example, Cheaper Inference:
 
@@ -35,12 +49,12 @@ Ollama needs no key. Other presets: [Built-in providers](/guide/providers-and-mo
 
 | App today | Command | What you get |
 | --- | --- | --- |
-| Hard-coded strings, or new `t()` / `_()` calls | `ai-i18n-tools init -t ui-python -P cheaperinference` | Flat English-key JSON and `i18n.py` |
+| Hard-coded strings, or new `t()` / `_()` calls | `ai-i18n-tools init -t ui-python -P cheaperinference` | Flat JSON keyed by the source-language string, and `i18n.py` |
 | GNU gettext, and you also want flat JSON | `ai-i18n-tools init -t ui-python-gettext -P anthropic` | JSON plus `.po` / `.mo`, and `i18n.py` |
 | Flask or Jinja catalogs under `translations/` | `ai-i18n-tools init -t ui-python-flask -P groq` | Gettext catalogs and `i18n.py` |
 | Django `gettext` / `{% blocktrans %}` | `ai-i18n-tools init -t ui-python-django -P ollama` | `locale/<lang>/LC_MESSAGES/django.po` (no `i18n.py`) |
 
-Edit `sourceLocale` and `targetLocales`. `sourceLocale` is the language of the strings in the source (often `en`). Framework wiring: [Python integrations](/guide/integrations/python). Call shapes and catalog layout: [Python applications](/guide/ui-strings/python).
+Edit `sourceLocale` and `targetLocales`. `sourceLocale` is the language of the strings in the source. Any BCP-47 language is valid; examples often use `en`. Framework wiring: [Python integrations](/guide/integrations/python). Call shapes and catalog layout: [Python applications](/guide/ui-strings/python).
 
 <a id="wrap-strings"></a>
 ## Wrap strings

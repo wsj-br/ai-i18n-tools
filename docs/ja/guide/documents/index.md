@@ -1,17 +1,9 @@
 <a id="documents"></a>
 # ドキュメント
 
-主に**markdown、MDX、`.astro`、およびプレーンHTML**用に設計されており、`docs[]`設定ブロックを通じて管理されます。各ブロックの`contentPaths`フィールドには、翻訳対象のファイルまたはフォルダーがリストされています。プレーンHTMLページ（ロケールごとに1つのファイル）については、[HTMLページ](/ja/guide/documents/html-pages)で説明しています。
+`translate-docs`、Markdown、MDX、`.astro`、および`docs[]`設定ブロックにリストされているプレーンなHTMLページ用のパイプラインのリファレンスです。各ブロックの`contentPaths`フィールドには、翻訳するファイルまたはフォルダーがリストされています。これらのファイルは`sourceLocale`で書かれており、任意の言語を使用できます。例の英語は単なるサンプルです。初めてサイトに言語を追加しますか？[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)から始めてください。リポジトリのREADMEやその他のMarkdownファイル（通常はアプリの隣にあるもの）：[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)。プレーンなHTMLページ（ロケールごとに1ファイル）については、[HTMLページ](/ja/guide/documents/html-pages)で説明されています。
 
-[Docusaurus](/ja/guide/integrations/docusaurus) サイトでは、`docusaurusCatalogDir` を `write-translations` カタログフォルダ（例: `docs-site/i18n/en`）に設定します。これにより、`translate-docs` にはナビバー、フッター、テーマ文字列などのシェル JSON も含まれます。
-
-[VitePress](/ja/guide/integrations/vitepress) サイトでは、ページ本文は同じ `docs[]` パイプラインを使用します。ナビ、サイドバー、フッターのラベルは `docsOutput.vitepressThemeCatalog` に存在し、`translate-docs` は英語カタログをブートストラップしてページと一緒に翻訳するため、別のパイプラインは不要です。
-
-[Nextra](/ja/guide/integrations/nextra) サイトでは、ページ本文は `docsOutput.style: "nextra"` を伴う同じ `docs[]` パイプラインを使用します。`_meta.ts` サイドバーのラベルは `translate-docs` によって自動的に収集および翻訳されます。テーマ辞書の文字列は、同じパイプライン内で `docs[].nextraDictionaryPath` を介して翻訳されます。
-
-[Fumadocs](/ja/guide/integrations/fumadocs) サイトでは、ページ本文は `fumadocsParser` `"dot"` (デフォルト) または `"dir"` を伴う `docsOutput.style: "fumadocs"` を使用します。`meta.json` サイドバーのラベルは自動的に収集されます。UI オーバーライドは `docsOutput.fumadocsUiCatalog` を介して翻訳されます。
-
-[Astro Starlight](/ja/guide/integrations/astro#astro-starlight) サイトでは、ページ本文は Starlight コンテンツルート（通常は `src/content/docs/`）にある `docsRoot` と共に `docsOutput.style: "astro-starlight"` を使用します。`translate-docs` は、英語ツリーの隣にある `src/content/docs/<locale>/` の下にローカライズされた markdown/MDX を書き込みます。Starlight は多くのロケール向けの組み込み UI 文字列を出荷しているため、別のテーマカタログパイプラインは不要です。オプションの UI オーバーライドは、`src/content/i18n/en.json` の `docs[]` ブロックで `jsonPathTemplate` を使用できます。
+フレームワークのシェル文字列（ナビゲーションバー、サイドバー、テーマ）は、別のパイプラインではなく、同じ実行で翻訳されます。以下の表にあるフレームワークガイドは、それぞれがどのように行うかを説明しています：Docusaurusの場合は`docusaurusCatalogDir`、VitePressの場合は`docsOutput.vitepressThemeCatalog`、Nextraの場合は`docs[].nextraDictionaryPath`、Fumadocsの場合は`docsOutput.fumadocsUiCatalog`です。Nextraの`_meta.ts`とFumadocsの`meta.json`のサイドバーラベルは自動的に収集されます。Astro Starlightは多くのロケール向けに組み込みのUI文字列を提供しており、オプションの上書きは`docs[]`ブロックで`jsonPathTemplate`を使用できます。
 
 Markdownに埋め込まれたPNGやその他のラスター画像については、[画像とスクリーンショット](/ja/guide/images-and-screenshots/)を参照してください。`translate-docs`は代替テキストのみを翻訳し、ラスターファイルをコピーしません。
 
@@ -26,7 +18,7 @@ README またはドキュメント内のオプションの **言語スイッチ�
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-`translate-docs` と `sync` のドキュメントステップは、**ターゲットロケールごとに** モデルを解決します。設定されている場合は最初に `localeModels(locale)`、次にプロバイダーのグローバルな `translationModels` チェーンが使用されます。特定の言語がデフォルトのフォールバックリストとは異なるモデルを必要とする場合にこれを使用します。例えば、グローバルチェーンがポルトガル語の処理に苦戦する場合、`pt-BR` ドキュメントには Gemini を優先します。[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain) および [設定 - `localeModels`](/ja/reference/configuration#provider-and-providers) を参照してください。
+`translate-docs` と `sync` の docs ステップは、**ターゲットロケールごとに**モデルを解決します。設定されている場合は `localeModels(locale)` が最初に、次にプロバイダーのグローバルな `translationModels` チェーンが使用されます。この機能は、特定の言語でデフォルトのフォールバックリストとは異なるモデルが必要な場合に使用します。例えば、グローバルチェーンがポルトガル語をうまく処理できない場合に、`pt-BR` ドキュメントには Gemini を優先的に使用するなどです。[AI モデル](/ja/guide/ai-models#model-fallback-chain) および [設定 - `localeModels`](/ja/reference/configuration#provider-and-providers) を参照してください。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
@@ -39,7 +31,7 @@ README またはドキュメント内のオプションの **言語スイッチ�
 | Fumadocs サイト | UI 用に `init -t ui-fumadocs` + `fumadocsUiCatalog` (サイドバー `meta.json` は自動) - [Fumadocs](/ja/guide/integrations/fumadocs) |
 | Astro Starlight | `init -t ui-starlight` - [Astro Starlight](/ja/guide/integrations/astro#astro-starlight) |
 | プレーンHTMLページ | `init -t docs-plain-html` - [HTMLページ](/ja/guide/documents/html-pages) |
-| フラットなドキュメント (README、変更履歴など) | `docsOutput.style = "flat"` - [出力レイアウト](/ja/guide/documents/output-layouts)、オプションの [言語スイッチャー](/ja/guide/documents/language-switcher) |
+| フラットドキュメント（README、変更履歴など） | [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme) — `init -t docs-markdown`または`--with-readme`。レイアウト：[出力レイアウト](/ja/guide/documents/output-layouts)、[言語スイッチャー](/ja/guide/documents/language-switcher) |
 | 翻訳されたファイルの保存場所 | [出力レイアウト](/ja/guide/documents/output-layouts) |
 | ページ間の`#anchor`リンク | [アンカーリンク](/ja/guide/documents/anchor-links) |
 | リンクとアセットの URL 書き換え (`regexAdjustments`) | [リンクの書き換え](/ja/guide/documents/link-rewriting) |
@@ -90,14 +82,14 @@ UI オーバーライドのために `docsOutput.fumadocsUiCatalog` を設定し
 ai-i18n-tools init -t ui-astro-website -P ollama
 ```
 
-このテンプレートはUI抽出のみを有効にします。ページHTMLの翻訳には、`features.translateDocs`も設定し、`docs[]`ブロックを追加します（[Astroウェブサイトページ (解析と置換)](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)設定は、両方のパイプラインを一緒に示しています。
+このテンプレートはUIの抽出のみを有効にします。ページHTMLの翻訳には、`features.translateDocs`も設定し、`docs[]`ブロックを追加してください（[Astroウェブサイトページ（解析と置換）](/ja/guide/ui-strings/astro-website#pages-parse-and-replace)を参照）。[`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)設定には、両方のパイプラインが一緒に示されています。
 
 生成された`ai-i18n-tools.config.json`を編集します。
 
-- `provider`および`providers` — `init -P <provider>`をプリセットするスキャフォールド。`translate-docs`または`sync`の前にAPIキーを設定します（Ollamaにはキーは不要です）。[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)および[LLMプロバイダーとモデル](/ja/guide/providers-and-models)を参照してください。
-- `sourceLocale` - ソース言語（`docusaurus.config.js`内の`defaultLocale`と一致している必要があります）。
-- `targetLocales` - BCP-47ロケールコードの配列（例：`["de", "fr", "es"]`）。
-- `cacheDir` - すべてのパイプライン用の共有SQLiteキャッシュディレクトリ（および`--write-logs`のデフォルトのログディレクトリ）。
+- `provider` と `providers` — `init -P <provider>` がそのプリセットをスキャフォールドします。`translate-docs` または `sync` の前に API キーを設定してください (Ollama にはキーは不要です)。[プロバイダーと API キー](/ja/guide/quick-start#provider-and-api-key)、[LLM プロバイダー](/ja/guide/providers-and-models)、[AI モデル](/ja/guide/ai-models) を参照してください。
+- `sourceLocale` - ソース言語 (`docusaurus.config.js` の `defaultLocale` と一致させる必要があります)。
+- `targetLocales` - BCP-47 ロケールコードの配列 (例: `["de", "fr", "es"]`)。
+- `cacheDir` - すべてのパイプラインで共有される SQLite キャッシュディレクトリ (および `--write-logs` のデフォルトのログディレクトリ)。
 - `docs` - ドキュメントブロックの配列。各ブロックにはオプションの`description`、`contentPaths`（文字列または配列、ファイル、ディレクトリ、またはglob）、`outputDir`、オプションの`docusaurusCatalogDir`、`docsOutput`、オプションの`segmentSplitting`、`translateFrontmatterFields`、`protectAttributes`、`protectKeys`、`targetLocales`、`addFrontmatter`などがあります。
 - `docs[].description` - メンテナ向けのオプションの短いメモ。設定すると、`translate-docs`の見出しと`status`のセクションヘッダーに表示されます。
 - `docs[].contentPaths` - markdown/MDX/`.astro`ソース（およびDocusaurusシェルJSON用のオプションの`docusaurusCatalogDir`）。
@@ -136,7 +128,7 @@ ai-i18n-tools status
 
 `translate-docs`は、翻訳された各セグメントがMarkdownの構造（ドキュメントから解析された強調を含む）を保持し、内部のプレースホルダートークンが正しく復元されるかどうかをチェックします。`` `inline code` ``の周囲に多数の`bold`スパンを重ねたり、太字の中にバッククォートをネストしたり（例えば`` `fetch(\`/locales/${code}.json\`)` ``のようなテンプレートリテラル）、1つの長い文の中に太字とコードを織り交ぜたりする段落は脆弱です。一部のロケールでは異なる語順が必要になるため、翻訳後に`**`と`` ` ``の並びが変わり、`AST mismatch`のようなCLIエラーがトリガーされる可能性があります。
 
-復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および`**`のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
+復元後、`translate-docs`は、HTMLタグのプレースホルダーが再利用または削除されたセグメント（そのため復元されたタグがソースマップと一致しなくなる）、またはモデルがソースに存在しない二重中括弧トークンを捏造したセグメント（例えば、架空の用語集スタイルのトークン）も拒否します。復元前のチェックでは、<code v-pre>{{…}}</code>トークンの同じ多重集合と、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）の同じ順序付けられたサブシーケンスが必要です。<code v-pre>{{ILC_N}}</code>や<code v-pre>{{URL_N}}</code>などのコンテンツトークン、および<code v-pre>**</code>のような強調マーカーは、各ID/タイプの数が一致する限り、自然な語順に合わせて移動できます。これらの失敗は、残存する公式内部トークンと同じモデルフォールバックパスを使用します。
 
 **そのような検証エラーが発生した場合は、ソース言語のテキストを簡略化することをお勧めします** - 段落を分割する、例をコードブロックに移動する、または階層化された太字/コードのペアを減らして同じ概念を説明するなど - すべてのモデルとロケールが密集したインラインマークアップを完全に再現することを期待するのではなく。
 

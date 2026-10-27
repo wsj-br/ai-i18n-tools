@@ -1,59 +1,77 @@
 <a id="what-is-ai-i18n-tools"></a>
 # ai-i18n-tools क्या है?
 
-ai-i18n-tools एक कमांड-लाइन टूल और टूलकिट है जो आपके पसंदीदा LLM प्रदाता का उपयोग करके आपके ऐप और दस्तावेज़ों का अनुवाद करने में आपकी सहायता करता है। आप एक ही कॉन्फ़िग फ़ाइल से सब कुछ नियंत्रित करते हैं, यह चुनते हुए कि कौन सी अनुवाद सुविधाएँ सक्षम करनी हैं। आपको आवश्यक मोड को एक साथ चलाने के लिए "सिंक" कमांड का उपयोग करें।
+आपके पास एक भाषा में कोई ऐप, वेबसाइट, दस्तावेज़ीकरण साइट या रिपॉजिटरी README है और आप और भाषाएँ चाहते हैं। वह भाषा `sourceLocale` है और यह कोई भी भाषा हो सकती है। इन गाइड में अंग्रेज़ी एक आम उदाहरण है। ai-i18n-tools टेक्स्ट को ढूंढता है, आपके चुने हुए LLM प्रोवाइडर पर मॉडल के साथ इसका अनुवाद करता है और उन फ़ाइलों को लिखता है जिन्हें आपका प्रोजेक्ट पहले से लोड करता है। यह हर परिणाम को कैश करता है, इसलिए दोबारा चलाने पर यह मॉडल को केवल नया या बदला हुआ टेक्स्ट भेजता है।
+
+<a id="what-you-do-and-what-the-tool-does"></a>
+## आप क्या करते हैं और टूल क्या करता है
+
+| आप | टूल |
+| --- | --- |
+| भाषाएँ, एक प्रोवाइडर और आज़माने के लिए मॉडल चुनें | टेक्स्ट निकालता है, उसका अनुवाद करता है, परिणाम को मान्य करता है और कैटलॉग या पेज लिखता है |
+| उपयोगकर्ता-सामने वाले टेक्स्ट को टूल के लिए दृश्यमान बनाएं: ऐप कोड में `t()` कॉल, किसी साइट के लिए आपके फ्रेमवर्क का अपना i18n, या README में एक भाषा-सूची मार्कर | अनुवादों को कैश करता है और हर बार दोबारा चलाने पर उनका पुन: उपयोग करता है |
+| परिणाम को ऐप, साइट की रूटिंग, या README की भाषा पंक्ति में जोड़ें | प्रगति दिखाता है और आपको डैशबोर्ड में अनुवादों की समीक्षा करने देता है |
+
+टूल आपके स्रोत को फिर से नहीं लिखता है। रैपिंग चरण के लिए कोडिंग-एजेंट प्रॉम्प्ट प्रदान किए जाते हैं। यह i18next या आपकी साइट फ्रेमवर्क का i18n इंस्टॉल नहीं करता है, और यह आपका भाषा स्विचर नहीं बनाता है, हालांकि उसके लिए रनटाइम हेल्पर प्रदान किए जाते हैं।
+
+<a id="where-do-i-start"></a>
+## मैं कहाँ से शुरू करूँ?
+
+वॉकथ्रू [अपने प्रोजेक्ट में i18n जोड़ें](/hi/guide/add-i18n-to-your-project) में समूहित किए गए हैं, जिसमें साझा सेटअप और प्रत्येक प्रकार के प्रोजेक्ट के लिए एक पेज है। एक पंक्ति चुनें:
+
+| आपके पास है | यहाँ से शुरू करें |
+| --- | --- |
+| स्रोत में सादे टेक्स्ट वाला एक JS/TS ऐप (React, Next.js, Node, CLI) | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) |
+| एक Python ऐप (Streamlit, FastAPI, Flask, Django, gettext, डेस्कटॉप) | [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) |
+| एक वेबसाइट या दस्तावेज़ साइट (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, सादा HTML) | [एक वेबसाइट या दस्तावेज़ साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) |
+| एक रिपॉजिटरी README और अन्य Markdown फ़ाइलें, आमतौर पर एक ऐप के बगल में | [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme) |
+| स्टैंडअलोन नेस्टेड JSON लोकल फ़ाइलें | [JSON](/hi/guide/json) |
+| टेक्स्ट लेबल वाले SVG डायग्राम | [SVG अनुवाद](/hi/guide/svg-translation/) |
+| इंटलेयर डिक्शनरी (इंटलेयर से हटें) | [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) |
+| इंटलेयर डिक्शनरी (इंटलेयर रखें, वहीं अनुवाद करें) | [इंटलेयर का वहीं अनुवाद करना](/hi/guide/translating-intlayer) |
+
+<a id="which-should-i-use"></a>
+
+<a id="how-it-works"></a>
+## यह कैसे काम करता है
+
+1. CLI इंस्टॉल करें और अपने प्रोवाइडर की API कुंजी सेट करें: [इंस्टॉलेशन](/hi/guide/installation)।
+2. `ai-i18n-tools.config.json` लिखने के लिए `init` चलाएँ: [त्वरित शुरुआत](/hi/guide/quick-start)।
+3. प्रोजेक्ट तैयार करें: स्ट्रिंग को `t()` में रैप करें, अपनी साइट फ्रेमवर्क का i18n सक्षम करें, या README में भाषा-सूची मार्कर जोड़ें।
+4. `sync` चलाएँ। यह टेक्स्ट निकालता है, नए टेक्स्ट का अनुवाद करता है, और आउटपुट लिखता है।
+5. आउटपुट को अपने ऐप या साइट में लोड करें, एक भाषा स्विचर जोड़ें, और जब स्रोत बदलता है तो `sync` को फिर से चलाएँ।
 
 <a id="translation-modes"></a>
 ## अनुवाद मोड
 
-- **UI स्ट्रिंग्स** — JS/TS और Python सोर्स (और GNU gettext सहित समान मार्कर्स) से `t("…")` और `_()` कॉल्स को एक्सट्रैक्ट करें और फ्लैट प्रति-लोकेल JSON या `.po` / `.mo` कैटलॉग लिखें। कमांड्स: `extract`, `translate-ui`। गाइड: [UI strings](/hi/guide/ui-strings/)। Python: [Python applications](/hi/guide/ui-strings/python)।
-- **दस्तावेज़** — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX, और `.astro` पेजों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और अन्य स्टेटिक डॉक साइट्स के साथ काम करता है। कमांड: `translate-docs`। गाइड: [Documents](/hi/guide/documents/)।
-- **JSON** — टॉप-लेवल `json[]` में परिभाषित नेस्टेड JSON लोकेल बंडल्स (थीम लेबल्स, i18n ओवरराइड्स, सोर्स में न होने वाली ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। गाइड: [JSON](/hi/guide/json)।
-- **SVG** — SVG इलस्ट्रेशन (`<text>`, `<title>`, `<desc>`) के अंदर दिखाई देने वाले टेक्स्ट का अनुवाद करें और प्रति लोकेल एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग — `translate-docs` SVG एसेट्स को संशोधित नहीं करता है। कमांड: `translate-svg`। गाइड: [SVG translation](/hi/guide/svg-translation/)।
+अंदरूनी तौर पर, टूल चार पाइपलाइन चलाता है। आपकी कॉन्फ़िग आपको आवश्यक पाइपलाइन को सक्षम करती है, और `sync` उन्हें क्रम में चलाता है।
 
-सभी चार मोड सक्रिय [LLM प्रदाता](/hi/guide/providers-and-models) का उपयोग करते हैं, एक ही कॉन्फ़िग फ़ाइल साझा करते हैं, और एक SQLite कैश का पुन: उपयोग करते हैं ताकि पुनरावृत्ति केवल नए या बदले हुए टेक्स्ट को मॉडल पर भेजें।
+- UI स्ट्रिंग — JS/TS और Python स्रोत से `t("…")` और `_()` कॉल (और GNU gettext सहित समान मार्कर) निकालें और प्रति-लोकेल फ्लैट JSON या `.po` / `.mo` कैटलॉग लिखें। कमांड: `extract`, `translate-ui`। गाइड: [UI स्ट्रिंग](/hi/guide/ui-strings/)। Python: [Python एप्लिकेशन](/hi/guide/ui-strings/python)।
+- दस्तावेज़ — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX, और `.astro` पेजों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और अन्य स्टैटिक डॉक साइटों के साथ, और एक रिपॉजिटरी README (`docsOutput.style` का `flat`) के साथ काम करता है। कमांड: `translate-docs`। गाइड: [दस्तावेज़](/hi/guide/documents/) और [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
+- JSON — टॉप-लेवल `json[]` में परिभाषित नेस्टेड JSON लोकल बंडलों (थीम लेबल, i18n ओवरराइड, स्रोत में नहीं ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। गाइड: [JSON](/hi/guide/json)।
+- SVG — SVG चित्रों (`<text>`, `<title>`, `<desc>`) के अंदर दृश्यमान टेक्स्ट का अनुवाद करें और प्रति लोकेल एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग। कमांड: `translate-svg`। गाइड: [SVG अनुवाद](/hi/guide/svg-translation/)।
 
-<a id="which-should-i-use"></a>
-## मुझे किसका उपयोग करना चाहिए?
-
-| आपकी सामग्री | मोड | कमांड |
-| --- | --- | --- |
-| सोर्स कोड `t()`, `_()`, gettext, या HTML `data-i18n` मार्कर्स का उपयोग करता है | UI स्ट्रिंग्स | `extract` / `translate-ui` |
-| स्थानीयकृत पृष्ठ या दस्तावेज़ साइटें | दस्तावेज़ | `translate-docs` |
-| स्टैंडअलोन नेस्टेड JSON स्थानीय फ़ाइलें | JSON | `translate-json` |
-| SVG में लेबल वाले आरेख या चित्र | SVG | `translate-svg` |
-
-कई प्रोजेक्ट मोड को जोड़ते हैं — उदाहरण के लिए VitePress साइट के लिए UI स्ट्रिंग्स और दस्तावेज़, या सचित्र गाइड के लिए दस्तावेज़ और SVG। स्केफोल्ड टेम्प्लेट के लिए [त्वरित प्रारंभ](/hi/guide/quick-start) और पूर्ण कॉन्फ़िग स्कीमा के लिए [कॉन्फ़िगरेशन](/hi/reference/configuration) देखें।
+कई प्रोजेक्ट मोड को जोड़ते हैं। सामान्य जोड़ी UI स्ट्रिंग और रिपॉजिटरी README है। VitePress जैसी डॉक्स साइट दूसरी अक्सर उपयोग की जाने वाली जोड़ी है। [पाइपलाइन को संयोजित करना](/hi/guide/combining-pipelines) और [अपनी README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) देखें।
 
 <a id="examples"></a>
 ## उदाहरण
 
-रिपॉजिटरी `examples/` के तहत चलाने योग्य उदाहरण प्रोजेक्ट भेजता है — प्रत्येक अपनी कॉन्फ़िग, प्रतिबद्ध स्थानीय आउटपुट और README के साथ। आप बिना API कुंजी के अनुवादित फ़ाइलों का पता लगा सकते हैं; अनुवाद को फिर से चलाने के लिए एक प्रदाता कुंजी की आवश्यकता होती है (देखें [प्रदाता और मॉडल](/hi/guide/providers-and-models))।
+रिपॉजिटरी `examples/` के तहत चलाने योग्य उदाहरण प्रोजेक्ट भेजता है, प्रत्येक अपनी कॉन्फ़िग, कमिटेड लोकले आउटपुट और README के साथ। API कुंजी के बिना अनुवादित फ़ाइलों का अन्वेषण करें; अनुवाद को फिर से चलाने के लिए एक प्रदाता कुंजी की आवश्यकता होती है।
 
-| उदाहरण | यह क्या दिखाता है |
+| यदि आपके पास है | उदाहरण |
 | --- | --- |
-| [कंसोल-ऐप](/hi/examples#console-app) | सबसे छोटा एंड-टू-एंड ऐप: `t()` UI स्ट्रिंग्स प्लस README अनुवाद |
-| [नेक्स्टजेएस-ऐप](/hi/examples#nextjs-app) | नेक्स्ट.जेएस UI, बहुवचन, SVG, नेस्टेड डोक्यूसौरस डॉक्स, फ्लैट README, डैशबोर्ड |
-| [डोक्यूसौरस-डॉक्स](/hi/examples#docusaurus-docs) | स्टैंडअलोन डोक्यूसौरस दस्तावेज़ साइट |
-| [एस्ट्रो-वेबसाइट](/hi/examples#astro-website) | एस्ट्रो मार्केटिंग साइट: पूर्ण-पृष्ठ HTML अनुवाद प्लस `t()` स्ट्रिंग्स |
-| [एस्ट्रो-डॉक्स](/hi/examples#astro-docs) | एस्ट्रो स्टारलाइट दस्तावेज़ साइट |
-| [वाइटप्रेस-डॉक्स](/hi/examples#vitepress-docs) | वाइटप्रेस डॉक्स प्लस थीम कैटलॉग |
-| [नेक्स्ट्रा-डॉक्स](/hi/examples#nextra-docs) | नेक्स्ट्रा डॉक्स प्लस `_meta.ts` साइडबार लेबल और थीम डिक्शनरी |
-| [फ्यूमाडॉक्स-डॉक्स](/hi/examples#fumadocs-docs) | फ्यूमाडॉक्स डॉक्स प्लस `meta.json` साइडबार लेबल और यूआई कैटलॉग |
-| [plain-html](/hi/examples#plain-html) | `data-i18n*` मार्कर और लोकेल JSON के साथ स्थैतिक HTML |
-| [मल्टी-प्रोवाइडर](/hi/examples#multi-provider) | एक ही दस्तावेज़ पर एलएलएम प्रोवाइडर की तुलना करें |
-| [टेस्ट-मार्कडाउन](/hi/examples#test-markdown) | मार्कडाउन पाइपलाइन स्ट्रेस टेस्ट (सीजेके, देवनागरी, एज केस) |
-| [intlayer-migration](/hi/examples#intlayer-migration) | Intlayer `.content.ts` → `t()` `migrate-intlayer` के माध्यम से |
-| [python-streamlit](/hi/examples#python-streamlit) | Streamlit डैशबोर्ड, `t()` / `_()`, इंग्लिश-की JSON |
-| [python-flask](/hi/examples#python-flask) | Flask + Jinja, `t()` / `_()`, इंग्लिश-की JSON |
-| [python-fastapi](/hi/examples#python-fastapi) | FastAPI, रिक्वेस्ट-स्कोप लोकेल, इंग्लिश-की JSON |
-| [python-gettext](/hi/examples#python-gettext) | मौजूदा GNU gettext; `extract` / `translate-ui` रिफ्रेश `.po` और `.mo` |
+| एक JS/TS ऐप | [console-app](/hi/examples#console-app), [nextjs-app](/hi/examples#nextjs-app) |
+| एक ऐप के बगल में एक रिपॉजिटरी README | [console-app](/hi/examples#console-app), [nextjs-app](/hi/examples#nextjs-app) |
+| एक Python ऐप | [python-streamlit](/hi/examples#python-streamlit), [python-fastapi](/hi/examples#python-fastapi), [python-gettext](/hi/examples#python-gettext) |
+| एक डॉक्स साइट | [docusaurus-docs](/hi/examples#docusaurus-docs), [vitepress-docs](/hi/examples#vitepress-docs), [astro-docs](/hi/examples#astro-docs) |
+| एक वेबसाइट या सादा HTML | [astro-website](/hi/examples#astro-website), [plain-html](/hi/examples#plain-html) |
 
-`npx degit` कॉपी कमांड और चुनने के लिए गाइड के लिए [उदाहरण](/hi/examples) देखें।
+पूरी सूची और `npx degit` कॉपी कमांड के लिए [उदाहरण](/hi/examples) देखें।
 
 <a id="next-steps"></a>
 ## अगले चरण
 
-1. [Installation](/hi/guide/installation) — npm पैकेज इंस्टॉल करें, या Python प्रोजेक्ट के लिए [standalone executable](/hi/guide/installation#standalone-executables) डाउनलोड करें, और अपनी प्रोवाइडर API की सेट करें।
-2. [Quick start](/hi/guide/quick-start) — कॉन्फ़िगरेशन को स्कैफ़ोल्ड करें और अपना पहला अनुवाद चलाएं।
-3. [Providers and models](/hi/guide/providers-and-models) — एक प्रोवाइडर, मॉडल फ़ॉलबैक चेन, और `-P` ओवरराइड चुनें।
+1. [इंस्टॉलेशन](/hi/guide/installation) — npm पैकेज इंस्टॉल करें, या Python प्रोजेक्ट के लिए [स्टैंडअलोन एक्ज़ीक्यूटेबल](/hi/guide/installation#standalone-executables) डाउनलोड करें, और अपनी प्रोवाइडर API की सेट करें।
+2. [क्विक स्टार्ट](/hi/guide/quick-start) — एक कॉन्फ़िग स्कैफ़ोल्ड करें और अपना पहला ट्रांसलेशन चलाएँ।
+3. [LLM प्रोवाइडर](/hi/guide/providers-and-models) — एक प्रोवाइडर, API की, और `-P` ओवरराइड चुनें।
+4. [AI मॉडल](/hi/guide/ai-models) — `suggest-models` या डैशबोर्ड **मॉडल** टैब के साथ एक शॉर्टलिस्ट को रैंक करें, और कई मॉडल रखें ताकि एक असफल ट्रांसलेशन अगले वाले को आज़मा सके।

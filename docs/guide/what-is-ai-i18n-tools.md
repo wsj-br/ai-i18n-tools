@@ -1,14 +1,14 @@
 <a id="what-is-ai-i18n-tools"></a>
 # What is ai-i18n-tools?
 
-You have an app, a website, a documentation site, or a repository README in one language, and you want more languages. ai-i18n-tools finds the text, translates it with the LLM provider you choose, and writes the files your project already loads. It caches every result, so reruns only send new or changed text to the model.
+You have an app, a website, a documentation site, or a repository README in one language, and you want more languages. That language is `sourceLocale`, and it can be any language. English is a common example in these guides. ai-i18n-tools finds the text, translates it with the models on the LLM provider you choose, and writes the files your project already loads. It caches every result, so reruns only send new or changed text to the model.
 
 <a id="what-you-do-and-what-the-tool-does"></a>
 ## What you do and what the tool does
 
 | You | The tool |
 | --- | --- |
-| Pick the languages and a provider | Extracts text, translates it, validates the result, and writes catalogs or pages |
+| Pick the languages, a provider, and the models to try | Extracts text, translates it, validates the result, and writes catalogs or pages |
 | Make user-facing text visible to the tool: `t()` calls in app code, your framework's own i18n for a site, or a language-list marker in a README | Caches translations and reuses them on every rerun |
 | Wire the result into the app, the site's routing, or the README's language row | Shows progress and lets you review translations in the dashboard |
 
@@ -73,4 +73,5 @@ See [Examples](/examples) for the full list and `npx degit` copy commands.
 
 1. [Installation](/guide/installation) — install the npm package, or download the [standalone executable](/guide/installation#standalone-executables) for a Python project, and set your provider API key.
 2. [Quick start](/guide/quick-start) — scaffold a config and run your first translation.
-3. [Providers and models](/guide/providers-and-models) — choose a provider, model fallback chain, and `-P` override.
+3. [LLM providers](/guide/providers-and-models) — choose a provider, API key, and `-P` override.
+4. [AI Models](/guide/ai-models) — rank a shortlist with `suggest-models` or the dashboard **Models** tab, and keep several models so a failed translation can try the next one.

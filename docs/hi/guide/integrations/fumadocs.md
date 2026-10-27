@@ -47,6 +47,17 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 
 `lib/i18n.ts` में `targetLocales` को `defineI18n().languages` के साथ ठीक से संरेखित करें (उदाहरण में लघु कोड `pt` और `zh` का उपयोग किया गया है)।
 
+<a id="enable-i18n-in-an-existing-site"></a>
+### किसी मौजूदा साइट में i18n सक्षम करें
+
+एक अंग्रेजी-मात्र फुमाडॉक्स ऐप को `translate-docs` के सिबलिंग फ़ाइलें लिखने से पहले एक लोकल रूट और `defineI18n` की आवश्यकता होती है। [एजेंट प्रॉम्प्ट](#agent-prompt) एक मौजूदा साइट के माध्यम से चलता है। चेकलिस्ट:
+
+- `languages`, `defaultLanguage`, और `parser: "dot"` या `"dir"` के साथ `lib/i18n.ts` में `defineI18n`।
+- `proxy.ts` (उदाहरण की फ़ाइल) से `app/[lang]/` रूट और `createI18nMiddleware`।
+- `lib/layout.shared.ts` में `i18n.translations()`, जिसे `i18nProvider` को पास किया गया है।
+- कलेक्शन रूट (डॉट) पर या `content/docs/en/` (डिर) के तहत अंग्रेजी MDX।
+- `targetLocales` डिफ़ॉल्ट भाषा को छोड़कर `languages` के बराबर, फिर `sync`।
+
 <a id="dir-parser-nextra-style"></a>
 ### Dir पार्सर (नेक्स्ट्रा-शैली)
 
@@ -77,7 +88,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 
 फुमाडॉक्स साइडबार संरचना और शीर्षकों के लिए JSON `meta.json` फ़ाइलों का उपयोग करता है। जब `docsOutput.style` `"fumadocs"` होता है, तो **`translate-docs`** `docsRoot` (या `docs[].fumadocsMetaGlob`) के तहत `meta.json` एकत्र करता है, `docs[].fumadocsMetaTranslatableKeys` (डिफ़ॉल्ट: `title`, `description`) में सूचीबद्ध कुंजियों के लिए स्ट्रिंग मानों का अनुवाद करता है, और लोकेल आउटपुट लिखता है:
 
-| पार्सर | अंग्रेजी स्रोत | आउटपुट |
+| पार्सर | स्रोत लोकल | आउटपुट |
 |--------|----------------|--------|
 | **डॉट** | `content/docs/**/meta.json` | `content/docs/**/meta.{locale}.json` |
 | **dir** | `content/docs/en/**/meta.json` | `content/docs/{locale}/**/meta.json` |
@@ -87,7 +98,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="ui-catalog"></a>
 ## UI कैटलॉग
 
-फुमाडॉक्स लेआउट क्रोम (खोज प्लेसहोल्डर, लोकेल डिस्प्ले नाम, और `lib/layout.shared.ts` में अन्य `defineTranslations` / `i18n.translations()` ओवरराइड) को मार्कडाउन से नहीं निकाला जाता है। **`docsOutput.fumadocsUiCatalog`** को कॉन्फ़िगर करें ताकि **`translate-docs`** `sourcePath` से अंग्रेजी कैटलॉग को बूटस्ट्रैप करे और प्रति-लोकेल JSON का अनुवाद करे:
+फुमाडॉक्स लेआउट क्रोम (खोज प्लेसहोल्डर, लोकल डिस्प्ले नाम, और `lib/layout.shared.ts` में अन्य `defineTranslations` / `i18n.translations()` ओवरराइड) मार्कडाउन से निकाला नहीं जाता है। **`docsOutput.fumadocsUiCatalog`** को कॉन्फ़िगर करें ताकि **`translate-docs`** `sourcePath` से स्रोत-लोकल कैटलॉग को बूटस्ट्रैप करे और प्रति-लोकल JSON का अनुवाद करे:
 
 ```json
 {
@@ -112,12 +123,98 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-- **`catalogPath`** — जेनरेटेड अंग्रेजी फ्लैट JSON (बूटस्ट्रैप आउटपुट)। जब `layout.shared.ts` में अंग्रेजी ओवरराइड बदलते हैं तो `sync` को फिर से चलाएँ।
-- **`outputPathTemplate`** (वैकल्पिक) — प्रति-लोकेल आउटपुट; डिफ़ॉल्ट: `catalogPath` के बगल में `ui.{locale}.json`।
+- **`catalogPath`** — अंग्रेजी फ्लैट JSON। बूटस्ट्रैप `sourcePath` में `.add({ … })` के केवल `en` ऑब्जेक्ट को पढ़ता है। उस ऑब्जेक्ट में स्ट्रिंग लिटरल कैटलॉग कुंजी बन जाते हैं (`displayName`, `Search(search trigger)`)। `.add()` केवल उन कुंजियों को स्वीकार करता है जिन्हें फुमाडॉक्स UI प्रीसेट ने पंजीकृत किया है, इसलिए `site.title` जैसा नेविगेशन शीर्षक वहां नहीं रह सकता है। उदाहरण JSON में `site.title` रखता है और `nav.title` के लिए `catalog["site.title"]` पढ़ता है। फ़ाइल में पहले से मौजूद लेकिन `en` ऑब्जेक्ट से अनुपस्थित कुंजियाँ बनी रहती हैं: मर्ज `{ ...existing, ...extracted }` है। जब अंग्रेजी लिटरल बदलते हैं तो `sync` को फिर से चलाएँ।
+- **`outputPathTemplate`** (वैकल्पिक) — प्रति-लोकल आउटपुट; डिफ़ॉल्ट: `catalogPath` के बगल में `ui.{locale}.json`।
 
-`layout.shared.ts` में `loadUiCatalog(locale)` के माध्यम से प्रति-लोकेल JSON लोड करें और अपने रूट लेआउट में `i18nProvider(translations, lang)` के साथ मर्ज करें। [उदाहरण/फुमाडॉक्स-डॉक्स/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts) देखें।
+एक अनुवादित कुंजी तब तक कुछ नहीं करती जब तक ऐप उसे पढ़ नहीं लेता। `i18n.translations().get(lang)` केवल `.extend()` (फुमाडॉक्स UI प्रीसेट) के साथ पंजीकृत कुंजियों को लौटाता है। लोकल कैटलॉग को `.add()` में फैलाएँ ताकि वे कुंजियाँ लागू हों, और मूल `displayName` को स्प्रेड के **बाद** रखें ताकि अंग्रेजी नाम का अनुवाद उसे प्रतिस्थापित न करे:
+
+```ts
+"pt-BR": {
+  ...loadUiCatalog("pt-BR"),
+  displayName: "Português (Brasil)",
+},
+```
+
+`site.title` फुमाडॉक्स UI कुंजी नहीं है। उदाहरण इसे `nav.title` के लिए कैटलॉग से पढ़ता है। एक खोज लेबल जो केवल `ui.pt-BR.json` में मौजूद है, बिल्ट-इन प्रीसेट पर तब तक रहता है जब तक वह स्प्रेड (या कोई अन्य रीड) उसका उपयोग नहीं करता।
+
+[examples/fumadocs-docs/lib/layout.shared.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts) देखें।
 
 मानक लोकेल को LLM लागत के बिना `@fumadocs/language/*` प्रीसेट द्वारा कवर किया जा सकता है; कैटलॉग केवल अंग्रेजी ब्लॉक में **प्रोजेक्ट ओवरराइड** का अनुवाद करता है।
+
+<a id="agent-prompt"></a>
+## एजेंट प्रॉम्प्ट
+
+इसे कॉपी करें जब एक अंग्रेजी-मात्र फुमाडॉक्स साइट को लोकल प्राप्त करने हों। यह रूटिंग और UI कैटलॉग को जोड़ता है। यह स्ट्रिंग का अनुवाद नहीं करता है।
+
+<details class="agent-prompt">
+<summary>UI कैटलॉग प्रॉम्प्ट</summary>
+
+````markdown
+# Enable Fumadocs i18n and the UI catalog
+
+## Context
+
+ai-i18n-tools translates Fumadocs MDX, `meta.json` titles, and the English block
+of `i18n.translations().add({ en: { … } })` via `translate-docs` and
+`docsOutput.fumadocsUiCatalog`. The literal in that `en` object is the source
+string. Locale JSON takes effect only for keys the app reads: either a catalog
+spread into `.add()` for registered UI keys, or a direct read such as
+`catalog["site.title"]` for the nav title. Do not translate any string.
+
+Reference:
+https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs
+
+## Scope
+
+Edit `lib/i18n.ts`, `lib/layout.shared.ts`, `proxy.ts`, `app/[lang]/` routes,
+and `ai-i18n-tools.config.json`. Skip URLs, slugs, and native language names
+(`displayName` on each locale entry).
+
+## Call shape
+
+- `defineI18n({ languages, defaultLanguage, parser })`. Use `"dot"` unless the
+  project already keeps English under a locale folder (`"dir"`).
+- `export default createI18nMiddleware(i18n)` from `proxy.ts`.
+- Move pages under `app/[lang]/…` and pass `lang` into `baseOptions` and
+  `i18nProvider(translations, lang)`.
+- In `lib/layout.shared.ts`, keep English UI overrides as string literals inside
+  `.add({ en: { … } })`. For each other locale, spread `loadUiCatalog(locale)`
+  and then set `displayName` to the native name.
+- Config: `features.translateDocs`, `docsOutput.style: "fumadocs"`,
+  `fumadocsParser` matching `defineI18n`, and `fumadocsUiCatalog.sourcePath`
+  pointing at `lib/layout.shared.ts`. `targetLocales` must equal `languages`
+  except the default language, character for character.
+
+## Order
+
+1. Routing and `defineI18n`.
+2. English literals in the `en` block, and the catalog spread for other locales.
+3. Ask the user to run `sync`. Do not hand-write `ui.<locale>.json` or
+   translated MDX.
+
+## Do not
+
+- Do not translate, rename, or reword the English literals.
+- Do not put native language names only in the `en` block (they would be
+  extracted and translated).
+- Do not hand-edit locale JSON, `meta.<locale>.json`, or locale MDX.
+- Do not use `json[]` for this catalog.
+
+## Verify
+
+- `pnpm build` passes.
+- The default locale still shows the English overrides.
+- After `sync`, one other locale shows the translated search trigger and nav
+  title, and `displayName` in the language menu is still the native name.
+
+## Report back
+
+List files changed, each key you added to the `en` block, each key you left
+unread (and so unused) with a one-line reason, and whether the parser is `dot`
+or `dir`.
+````
+
+</details>
 
 फ्यूमाडॉक्स UI स्ट्रिंग्स के लिए `json[]` का उपयोग **न करें** — वह पाइपलाइन असंबंधित ऐप लोकेल बंडलों के लिए है।
 
@@ -138,7 +235,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 
 जब `style` `"fumadocs"` हो तो `rewriteFumadocsLinks` डिफ़ॉल्ट रूप से सक्षम होता है।
 
-| अंग्रेजी स्रोत में लेखक | नॉर्मलाइज़र के बाद |
+| स्रोत लोकल में लेखक | नॉर्मलाइज़र के बाद |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |

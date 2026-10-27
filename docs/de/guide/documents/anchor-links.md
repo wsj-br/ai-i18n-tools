@@ -12,9 +12,9 @@ Hier ist das Link-Ziel `setup.md` und `#first-run` der Anker: Es sollte zum rich
 <a id="why-anchor-links-need-attention"></a>
 ## Warum Anker-Links besondere Aufmerksamkeit erfordern
 
-- `rewriteRelativeLinks` legt den **Dateinamen** für jede Sprache fest (`setup.md` → `setup.de.md`).
-- Viele Renderer leiten den `#`-Slug aus dem **sichtbaren Überschriftentext** ab. Nach der Übersetzung unterscheiden sich die Überschriften je nach Sprache, sodass sich ein automatisch generierter Slug ändern kann, während der umgeschriebene Link möglicherweise immer noch `#first-run` enthält – oder Ihr englischer `#…`-Anker passt nicht mehr zum Slug, den der Renderer aus der übersetzten Überschrift erstellt.
-- Ergebnis: Leser landen auf der richtigen **Datei**, aber an der **falschen Stelle**, oder der Browser findet keine passende Überschrift.
+- `rewriteRelativeLinks` behebt den **Dateinamen** für jedes Gebietsschema (`setup.md` → `setup.de.md`).
+- Viele Renderer leiten den `#`-Slug aus dem **sichtbaren Überschriftentext** ab. Nach der Übersetzung unterscheiden sich die Überschriften pro Gebietsschema, sodass sich ein automatisch generierter Slug ändern kann, während der umgeschriebene Link immer noch `#first-run` anzeigen könnte — oder der `#…`-Anker des Quell-Gebietsschemas nicht mehr mit dem Slug übereinstimmt, den der Renderer aus der übersetzten Überschrift erstellt. Die Ausgangssprache ist `sourceLocale` und kann jede beliebige Sprache sein.
+- Ergebnis: Leser landen auf der richtigen **Datei**, aber auf der **falschen Zeile**, oder der Browser findet keine passende Überschrift.
 
 <a id="what-to-do"></a>
 ## Was zu tun ist

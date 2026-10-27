@@ -8,10 +8,10 @@ Para um site estático que deve emitir um arquivo HTML traduzido por localidade 
 <a id="quick-start"></a>
 ## Início rápido
 
-1. Crie o scaffolding com `ai-i18n-tools init -t ui-plain-html -P openai`, ou adicione a configuração abaixo.
-2. Marque o HTML de origem (ou deixe `mark-html` fazer isso).
+1. Faça o scaffold com `ai-i18n-tools init -t ui-plain-html -P openai` ou adicione a configuração abaixo. Adicione `--with-readme` quando o README do repositório também precisar ser traduzido ([Adicionar i18n ao seu README e aos seus documentos Markdown](/pt-BR/guide/add-i18n-to-readme)).
+2. Marque o HTML de origem (ou deixe o `mark-html` fazer isso).
 3. Aponte `ui.sourceRoots` e `ui.uiExtractor.extensions` para esses arquivos.
-4. Execute `extract`, depois `translate-ui` (ou execute ambos com `sync-ui`).
+4. Execute `extract` e, em seguida, `translate-ui` (ou execute ambos com `sync-ui`).
 5. Copie `i18n.js` para ao lado da página e carregue-o antes do seu próprio script.
 6. Sirva a pasta via HTTP. `file://` não pode `fetch` o JSON de localidade.
 
@@ -94,7 +94,7 @@ Ajuste os atributos do script conforme suas necessidades:
 <a id="marking-html-for-translation"></a>
 ## Marcando HTML para tradução
 
-Prefira marcadores simples. O texto de origem em inglês permanece no elemento, e esse texto é a chave do catálogo. `extract` o lê; o runtime grava a tradução de volta na mesma propriedade.
+Prefira marcadores simples. O texto no idioma de origem permanece no elemento, e esse texto é a chave do catálogo. Ele é escrito em `sourceLocale`, que pode ser qualquer idioma. O `extract` o lê; o runtime grava a tradução de volta na mesma propriedade.
 
 - `data-i18n` — a chave é `textContent`. O runtime define `textContent`.
 - `data-i18n-title` — a chave é `title`.
@@ -217,6 +217,52 @@ Um marcador com valor nomeia a chave do catálogo. O runtime ainda grava a tradu
 
 `mark-html` insere os marcadores simples acima. É uma execução de teste, a menos que você passe `--write`. Ele ignora subárvores `data-i18n-ignore`, elementos semelhantes a código (`code`, `pre`, `kbd`, `samp`, `var`) e texto vazio ou apenas numérico. Ele relata pais com conteúdo misto e os deixa para você envolver em `<span data-i18n>`. Ele nunca grava um marcador com valor.
 
+<a id="agent-prompt"></a>
+### Prompt do agente
+
+O `mark-html --write` já insere marcadores simples. Cole isto quando o relatório ainda listar sobras: pais de conteúdo misto, texto que o JavaScript insere e identificadores que devem permanecer no idioma de origem.
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 O runtime registra cada chave de origem em um atributo `data-i18n-source` interno na primeira execução, para que uma troca posterior de localidade ainda busque a string em inglês. Esses atributos não são extraídos.
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ Não faça redirecionamento automático por `navigator.language` além disso. O 
 | Novos nós DOM permanecem em inglês | Chame `window.i18n.apply()` após inseri-los. |
 | A imagem permanece `chart.png` em português | O elemento precisa de `data-i18n-locale-src`, e a localidade não deve ser a localidade de origem. |
 
-`normalizeI18nText` no tempo de execução corresponde a `normalizeI18nText` em [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): remova os espaços em branco das extremidades e, em seguida, colapse os espaços em branco. Como o texto de origem em inglês é a chave do catálogo, uma tradução ausente reverte para o inglês.
+O `normalizeI18nText` no runtime corresponde a `normalizeI18nText` em [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): aparar e, em seguida, agrupar espaços em branco. Como o texto no idioma de origem é a chave do catálogo, uma tradução ausente recorre a esse texto de origem.
 
 A demonstração executável é [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` a serve em [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR).
 

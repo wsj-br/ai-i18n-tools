@@ -88,7 +88,7 @@ See `ai-i18n-tools.config.dir.example.json` in [examples/fumadocs-docs](https://
 
 Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `docsOutput.style` is `"fumadocs"`, **`translate-docs`** collects `meta.json` under `docsRoot` (or `docs[].fumadocsMetaGlob`), translates string values for keys listed in `docs[].fumadocsMetaTranslatableKeys` (default: `title`, `description`), and writes locale outputs:
 
-| Parser | English source | Output |
+| Parser | Source locale | Output |
 |--------|----------------|--------|
 | **dot** | `content/docs/**/meta.json` | `content/docs/**/meta.{locale}.json` |
 | **dir** | `content/docs/en/**/meta.json` | `content/docs/{locale}/**/meta.json` |
@@ -98,7 +98,7 @@ Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `doc
 <a id="ui-catalog"></a>
 ## UI catalog
 
-Fumadocs layout chrome (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) is not extracted from markdown. Configure **`docsOutput.fumadocsUiCatalog`** so **`translate-docs`** bootstraps the English catalog from `sourcePath` and translates per-locale JSON:
+Fumadocs layout chrome (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) is not extracted from markdown. Configure **`docsOutput.fumadocsUiCatalog`** so **`translate-docs`** bootstraps the source-locale catalog from `sourcePath` and translates per-locale JSON:
 
 ```json
 {
@@ -235,7 +235,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteFumadocsLinks` defaults to enabled when `style` is `"fumadocs"`.
 
-| Author in English source | After normalizer |
+| Author in the source locale | After normalizer |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |

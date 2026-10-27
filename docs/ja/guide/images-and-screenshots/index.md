@@ -44,7 +44,7 @@ images/screenshots/en-GB/settings.png
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docs[].docsOutput.docsRoot` を英語のソースルート (例: `"docs"` または `"src/content/docs"`) に設定します。`style: "doc-system"` を直接設定する場合は、`localeSubpath` もサイトが `{locale}/` と翻訳されたファイルの間に使用するパスセグメントに設定する必要があります。エイリアス `"docusaurus"`、`"astro-starlight"`、および `"vitepress"` は、デフォルトの `localeSubpath` 値を持つプリセットの `doc-system` レイアウトです ([出力レイアウト](/ja/guide/documents/output-layouts) を参照)。
+`docs[].docsOutput.docsRoot` を `sourceLocale` で記述されたファイルのルート (例: `"docs"` または `"src/content/docs"`) に設定します。`sourceLocale` はどの言語でもかまいません。`style: "doc-system"` を直接設定する場合は、`localeSubpath` も、サイトが `{locale}/` と翻訳済みファイルの間に使用するパスセグメントに設定する必要があります。エイリアス `"docusaurus"`、`"astro-starlight"`、`"vitepress"` は、デフォルトの `localeSubpath` 値を持つ、事前設定された `doc-system` レイアウトです ([出力レイアウト](/ja/guide/documents/output-layouts) を参照)。
 
 | プリセットエイリアス | デフォルト `localeSubpath` | 例の出力 |
 |--------------|-------------------------|----------------|
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 フラットリンクリライターは`doc-system`に対しては**実行されません**（`"flat"`とは異なります）。`postProcessing.regexAdjustments`はソースマークダウンからの元のURLを参照します — 通常は`/img/screenshots/en-GB/foo.png`のような絶対パスまたはサイトルートパスです。
 
-**ロケールごとのフォルダー** レイアウトは、スクリーンショットが共有の静的 URL ツリーに存在する場合に適用されます。最初からロケールコード化されたフォルダーと、汎用的な `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` ルールを 1 つ使用します ([設定 — ドキュメントシステム](#config---docsoutputstyle--doc-system) を参照)。
+**ロケールごとのフォルダ** レイアウトは、スクリーンショットが共有の静的 URL ツリーに存在する場合に適用されます。最初からロケールでコード化されたフォルダと、1 つの汎用的な `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` ルールを使用します ([Config — doc-system](/ja/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) を参照)。
 
 **コロケーションされたスクリーンショット** は、各ロケールの翻訳されたドキュメントがマークダウンの横にアセットを保存する場合 (URL の書き換えなし) に適用されます。スクリーンショットスクリプトは、`{outputDir}`、`{locale}`、および `{localeSubpath}` から派生したパスに PNG を書き込む必要があります。以下の Docusaurus プリセットは参照レイアウトです。
 
@@ -65,9 +65,9 @@ images/screenshots/en-GB/settings.png
 
 1. スクリーンショットを追加する前に、`documentation/docs/assets → ../static/assets` にシンボリックリンクを作成します。Docusaurusのwebpackはデフォルトでシンボリックリンクを追跡するため、これにより、ソースドキュメントと翻訳ドキュメントの両方で同じ相対パスを使用できます。
 
-2. すべてのドキュメントアセット（PNGおよびSVG）を `static/assets/`（単一のディレクトリ）に配置します。`static/img/`（SVG）と `static/assets/`（PNG）のようにアセットを分割しないでください。統一された場所にすることで、英語版および翻訳版のすべてのドキュメントページが同じ相対パス `../assets/name.ext` を参照できるようになります。
+2. すべてのドキュメントアセット (PNG と SVG) を `static/assets/` (1 つのディレクトリ) に配置します。`static/img/` (SVG) と `static/assets/` (PNG) に分割しないでください。場所を統一することで、すべてのドキュメントページ (ソースロケールと翻訳済み) が、同じ相対パス `../assets/name.ext` を参照できるようになります。
 
-ソースのMarkdownでは、すべてのアセットを安定した相対パス `../assets/name.ext` で参照してください。ドキュメントアセットには絶対パスの `/img/` や `/assets/` URL を決して使用しないでください。これらのURLは英語版ソース（`static/` から配信）と翻訳ロケール（翻訳ドキュメントと同じ場所に配置）で異なるため、それらを橋渡しするために `regexAdjustments` ルールを強制的に使用しなければならなくなります。
+ソースの Markdown では、すべてのアセットを安定した相対パス `../assets/name.ext` で参照します。ドキュメントアセットには、絶対 `/img/` または `/assets/` URL を絶対に使用しないでください。これらの URL は、ソースロケールのページ (`static/` から提供) と翻訳済みロケール (翻訳済みドキュメントと同じ場所に配置) とで異なるため、それらを橋渡しするための `regexAdjustments` ルールが必要になります。
 
 後で i18n を追加すると、スクリーンショットスクリプトは `getScreenshotDir` 分割を採用し ([コロケーションされたスクリーンショット](/ja/guide/images-and-screenshots/colocated-screenshots) を参照)、`translate-svg` は `pathTemplate` を使用します。正規表現の調整は必要ありません。
 

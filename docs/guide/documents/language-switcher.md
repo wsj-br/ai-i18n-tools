@@ -48,7 +48,7 @@ Root config ([ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools
 
 1. **Extraction** — the language-list slice is **not** sent to the model (`translatable: false`).
 2. **Per translated file** — after segment translation and optional flat link rewriting, `postProcessing` rebuilds the block: one markdown link per locale, labels from `ui-languages.json` when present (else bundled master catalog, else `localeDisplayNames`), paths relative to the file being written.
-3. **Source refresh** — at the end of a `translate-docs` / `sync` docs pass, the same canonical block is written back into **English source files** in `contentPaths` so adding a locale updates the switcher in the repo without hand-editing every link.
+3. **Source refresh** — at the end of a `translate-docs` / `sync` docs pass, the same canonical block is written back into the **source-locale files** in `contentPaths` so adding a locale updates the switcher in the repo without hand-editing every link. Those files are written in `sourceLocale`, which can be any language.
 
 If a file has no matching block, the CLI logs a warning (when `--verbose`) and leaves the body unchanged.
 
@@ -72,4 +72,4 @@ The line immediately before `<small id="lang-list">` (for example `**Read in oth
 <a id="html-pages"></a>
 ## HTML pages
 
-Plain HTML documents use a different pair of comments, `<!-- ai-i18n:lang-list -->` and `<!-- ai-i18n:hreflang -->`. The language list can be links or a `<select>`, and hreflang alternates are written into the English source as well as each locale file. See [HTML pages](/guide/documents/html-pages#language-list-and-hreflang).
+Plain HTML documents use a different pair of comments, `<!-- ai-i18n:lang-list -->` and `<!-- ai-i18n:hreflang -->`. The language list can be links or a `<select>`, and hreflang alternates are written into the source-locale file as well as each target locale file. See [HTML pages](/guide/documents/html-pages#language-list-and-hreflang).

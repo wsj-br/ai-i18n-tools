@@ -116,6 +116,60 @@ describe("PlaceholderHandler", () => {
     expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
   });
 
+  it.each([
+    [
+      "Docusaurus note",
+      ":::note Save me\n\n```js [Do not translate]\nconst x = 1;\n:::\n```\n\n:::",
+      "Save me",
+    ],
+    ["VitePress warning", "::: warning Save me\n\n~~~md\n:::\n~~~\n\n:::", "Save me"],
+    ["Pandoc div", "::: {.note} Save me\n\n```js\n:::\n```\n:::", "Save me"],
+    ["MyST caution", ":::{caution} Save me\n\n```js\nconst x = 1;\n```\n:::", "Save me"],
+    [
+      "MkDocs note",
+      '!!! note "Save me"\n\n    ```js [Do not translate]\n    const x = 1;\n    ```\n',
+      "Save me",
+    ],
+  ])("masks fences inside a %s without treating the sample as a closer", (_name, src, title) => {
+    const h = new PlaceholderHandler();
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.text).toContain(title);
+    expect(st.text).not.toContain("const x");
+    expect(st.text).not.toContain("Do not translate");
+    expect(st.codeFenceMap).toHaveLength(1);
+    expect(st.codeFenceMap[0]).toContain(src.includes("~~~") ? "~~~" : "```");
+    const code = st.text.indexOf("{{CDF_0}}");
+    expect(code).toBeGreaterThanOrEqual(0);
+    if (src.startsWith("!!!")) {
+      expect(st.endMap).toEqual([]);
+      expect(st.text.indexOf("{{ADM_OPEN_0}}")).toBeLessThan(code);
+    } else {
+      expect(st.endMap).toEqual([":::"]);
+      expect(st.text.indexOf("{{ADM_OPEN_0}}")).toBeLessThan(code);
+      expect(code).toBeLessThan(st.text.indexOf("{{ADM_END_0}}"));
+    }
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
+  it("masks a code fence inside a container before admonition markers", () => {
+    const h = new PlaceholderHandler();
+    const src =
+      "::: tip Note\nRead this.\n\n```md\n## Not a heading {#id}\n:::\nnope\n```\n\n## Real {#real}\n:::";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.codeFenceMap).toEqual(["```md\n## Not a heading {#id}\n:::\nnope\n```"]);
+    expect(st.text).not.toContain("nope");
+    expect(st.text).not.toContain("{#id}");
+    expect(st.headingIdSuffixes).toEqual(["{#real}"]);
+    expect(st.endMap).toEqual([":::"]);
+    const open = st.text.indexOf("{{ADM_OPEN_0}}");
+    const code = st.text.indexOf("{{CDF_0}}");
+    const end = st.text.indexOf("{{ADM_END_0}}");
+    expect(open).toBeGreaterThanOrEqual(0);
+    expect(code).toBeGreaterThan(open);
+    expect(end).toBeGreaterThan(code);
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+  });
+
   it("restores when optional maps are omitted (legacy callers)", () => {
     const h = new PlaceholderHandler();
     expect(

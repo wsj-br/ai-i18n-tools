@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## 빠른 시작
 
-1. `ai-i18n-tools init -t ui-plain-html -P openai`로 스캐폴드를 생성하거나 아래 구성을 추가하세요.
-2. 원본 에이치티엠엘에 표시하세요 (또는 `mark-html`에 맡기세요).
-3. `ui.sourceRoots`와 `ui.uiExtractor.extensions`가 해당 파일을 가리키도록 설정하세요.
-4. `extract`를 실행한 다음 `translate-ui`를 실행하세요 (또는 `sync-ui`로 둘 다 실행하세요).
+1. `ai-i18n-tools init -t ui-plain-html -P openai`으로 스캐폴드하거나 아래 구성을 추가합니다. 리포지토리 README도 번역해야 하는 경우 `--with-readme`을(를) 추가합니다([README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)).
+2. 소스 HTML을 마크업합니다(또는 `mark-html`가 하도록 합니다).
+3. `ui.sourceRoots` 및 `ui.uiExtractor.extensions`가 해당 파일을 가리키도록 합니다.
+4. `extract`를 실행한 다음 `translate-ui`을(를) 실행합니다(또는 `sync-ui`으로 둘 다 실행합니다).
 5. 페이지와 동일한 디렉터리에 `i18n.js`을(를) 복사하고 자체 스크립트보다 먼저 로드합니다.
 6. HTTP를 통해 폴더를 서비스합니다. `file://`은(는) 로캘 JSON을 `fetch`할 수 없습니다.
 
@@ -94,7 +94,7 @@ ai-i18n-tools sync-ui
 <a id="marking-html-for-translation"></a>
 ## 번역을 위한 HTML 마킹
 
-기본 마커 사용을 권장합니다. 영어 원본 텍스트는 요소에 그대로 유지되며, 해당 텍스트가 카탈로그 키가 됩니다. `extract`이(가) 이를 읽고, 런타임이 번역문을 동일한 속성에 다시 기록합니다.
+베어 마커를 사용하는 것이 좋습니다. 소스 언어 텍스트는 요소에 남아 있으며, 해당 텍스트가 카탈로그 키가 됩니다. 이는 모든 언어가 될 수 있는 `sourceLocale`에 작성됩니다. `extract`이(가) 이를 읽고 런타임은 번역을 동일한 속성에 다시 씁니다.
 
 - `data-i18n` — 키는 `textContent`입니다. 런타임이 `textContent`을(를) 설정합니다.
 - `data-i18n-title` — 키는 `title`입니다.
@@ -217,6 +217,52 @@ ai-i18n-tools sync-ui
 
 `mark-html`은 위의 베어 마커를 삽입합니다. `--write`을 전달하지 않는 한 드라이 런으로 실행됩니다. `data-i18n-ignore` 하위 트리, 코드 유사 요소(`code`, `pre`, `kbd`, `samp`, `var`), 그리고 비어 있거나 숫자로만 이루어진 텍스트는 건너뜁니다. 혼합 콘텐츠 부모를 보고하고 사용자가 `<span data-i18n>`(으)로 래핑할 수 있도록 남겨둡니다. 값이 지정된 마커는 절대 작성하지 않습니다.
 
+<a id="agent-prompt"></a>
+### 에이전트 프롬프트
+
+`mark-html --write`은(는) 이미 베어 마커를 삽입합니다. 보고서에 혼합 콘텐츠 상위 요소, JavaScript가 삽입하는 텍스트, 소스 언어로 유지되어야 하는 식별자 등 남은 항목이 여전히 나열되는 경우 다음을 붙여넣으세요.
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 런타임은 처음 실행될 때 각 소스 키를 내부 `data-i18n-source` 속성에 기록하므로, 나중에 로케일을 전환해도 여전히 영어 문자열을 조회합니다. 이러한 속성은 추출되지 않습니다.
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ ai-i18n-tools sync-ui
 | 새 DOM 노드가 영어로 유지됨 | 노드를 삽입한 후 `window.i18n.apply()`을 호출하십시오. |
 | 포르투갈어에서 이미지가 `chart.png`(으)로 유지됨 | 요소에 `data-i18n-locale-src`이(가) 필요하며 로캘은 소스 로캘이 아니어야 합니다. |
 
-런타임의 `normalizeI18nText`이(가) [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts)의 `normalizeI18nText`과(와) 일치합니다: 공백을 트리밍한 다음 연속 공백을 축소합니다. 영어 소스 텍스트가 카탈로그 키로 사용되므로, 번역이 누락된 경우 영어로 폴백됩니다.
+런타임의 `normalizeI18nText`은(는) [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts)의 `normalizeI18nText`과(와) 일치합니다. 즉, 공백을 자르고 축소합니다. 소스 언어 텍스트가 카탈로그 키이므로 번역이 누락된 경우 해당 소스 텍스트로 대체됩니다.
 
 실행 가능한 데모는 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)입니다. `pnpm dev`이(가) [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR)에서 이를 제공합니다.
 

@@ -1,5 +1,4 @@
 <a id="astro-website"></a>
-<a id="astro-website"></a>
 # Site Astro
 
 Para sites de marketing ou aplicativos Astro estáticos (Astro puro, não Starlight), combine [o roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. Consulte também [a integração do Astro](/pt-BR/guide/integrations/astro).
@@ -14,7 +13,7 @@ A maioria das equipes usa um modelo **híbrido** com os dois pipelines (eles nã
 | Pipeline | Uso para | Comandos | Saída |
 |----------|---------|----------|--------|
 | **HTML da página** | Cabeçalhos, parágrafos, rótulos de navegação, arrays embutidos no corpo do template | `translate-docs` | `src/pages/{locale}/index.astro` por localidade |
-| **Strings de IU (`t()`)** | Dados do frontmatter, rótulos de abas de screenshots, arrays compartilhados | `extract` → `translate-ui` | `public/locales/{locale}.json` (fonte em inglês como chave) |
+| **Strings de IU (`t()`)** | Dados de frontmatter, rótulos de abas de capturas de tela, arrays compartilhados | `extract` → `translate-ui` | `public/locales/{locale}.json` (string do idioma de origem como chave) |
 
 Mantenha três listas alinhadas ao adicionar ou remover um idioma: `targetLocales` em `ai-i18n-tools.config.json`, `i18n.locales` em `astro.config.mjs` (Astro usa códigos de rota em **minúsculas**, como `pt-br`) e `ui-languages.json` (via `generate-ui-languages`). Os **nomes de arquivo** do pacote simples usam a capitalização da configuração (`pt-BR.json`); mapeie a rota `pt-br` do Astro para esse arquivo por meio do campo `code` do seu manifesto (veja `examples/astro-website/src/i18n/locale.ts`).
 
@@ -33,7 +32,7 @@ Exemplos de scripts `package.json` (do projeto de referência):
 <a id="ui-strings-ssg"></a>
 ## Strings de UI (SSG)
 
-Estruture a extração da UI com `init -t ui-astro-website -P ollama`, então mescle em um bloco `docs[]` quando você também traduzir o HTML da página (consulte [Analisar e substituir páginas](#astro-website-pages-parse-and-replace)). Envolva o texto em `t('…')` em módulos TypeScript e frontmatter `.astro` (e blocos de modelo `{expression}` quando você preferir strings de UI em vez de páginas de localidade duplicadas):
+Estruture a extração da IU com `init -t ui-astro-website -P ollama` e, depois, mescle em um bloco `docs[]` quando você também traduzir o HTML da página (consulte [Analisar e substituir páginas](#pages-parse-and-replace)). Traduza também o README do repositório: `init -t ui-astro-website -P ollama --with-readme`. Consulte [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme). Encapsule o texto em `t('…')` em módulos TypeScript e no frontmatter `.astro` (e em blocos de template `{expression}` quando preferir usar strings de IU em vez de páginas de localidade duplicadas). O HTML da página não precisa de `t()`: `translate-docs` o copia. O [prompt de JS/TS](/pt-BR/guide/add-i18n-to-js#agent-prompt) se aplica a esses arquivos de frontmatter e de dados, exceto a instalação e o bootstrap do i18next. O Astro resolve `t` em tempo de compilação com `makeT`, não com o i18next.
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama
@@ -41,9 +40,9 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-Defina `sourceLocale` para corresponder a `i18n.defaultLocale` em `astro.config.mjs`. Grave os pacotes planos em um diretório que o Astro possa importar no momento da compilação (o modelo usa `public/locales/`). Resolva `t('…')` no **momento da compilação** buscando o literal em inglês como chave (veja `examples/astro-website/src/i18n/t.ts`; `strings.json` é o cache de extração, não o pacote em tempo de execução). Você **não** precisa de `ai-i18n-tools/runtime` ou i18next para um site estático, a menos que adicione "ilhas" no cliente que alterem o idioma após o carregamento.
+Defina `sourceLocale` para corresponder a `i18n.defaultLocale` em `astro.config.mjs`. Grave os pacotes simples em um diretório que o Astro possa importar em tempo de compilação (o template usa `public/locales/`). Resolva `t('…')` em **tempo de compilação** procurando o literal do idioma de origem como a chave (consulte `examples/astro-website/src/i18n/t.ts`; `strings.json` é o cache de extração, não o pacote de tempo de execução). Esse idioma é `sourceLocale` e pode ser qualquer idioma. O exemplo usa inglês. Você **não** precisa de `ai-i18n-tools/runtime` ou do i18next para um site estático, a menos que você adicione ilhas de cliente que trocam de idioma após o carregamento.
 
-Conecte todas as páginas que chamam `t()` (página raiz em inglês e cada cópia `src/pages/{locale}/`):
+Conecte todas as páginas que chamam `t()` (a página da localidade de origem e cada cópia `src/pages/{locale}/`):
 
 ```astro
 import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
@@ -80,8 +79,8 @@ Habilite `features.translateDocs` e adicione um bloco `docs[]`, por exemplo:
 }
 ```
 
-Execute `ai-i18n-tools translate-docs` (ou `pnpm i18n:translate` em [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). A fonte em inglês permanece em `src/pages/index.astro`; cada localidade de destino recebe `src/pages/{locale}/index.astro` com as importações ajustadas para o nível de diretório extra (por exemplo, `../layouts/` → `../../layouts/`).
+Execute `ai-i18n-tools translate-docs` (ou `pnpm i18n:translate` em [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)). A página de origem permanece em `src/pages/index.astro` (inglês no exemplo; `sourceLocale` pode ser qualquer idioma); cada localidade de destino recebe `src/pages/{locale}/index.astro` com as importações ajustadas para o nível de diretório extra (por exemplo, `../layouts/` → `../../layouts/`).
 
-Dentro do **corpo do modelo**, literais de string em blocos `{expression}` (arrays inline, campos de objeto `title`/`desc`) são traduzidos quando são voltados para o usuário; valores entre aspas em atributos/chaves protegidos, literais dentro de `t('…')`, `<script>` e `<style>` são deixados inalterados. **O TypeScript do frontmatter não é traduzido** por este caminho — mantenha o frontmatter compartilhado (incluindo importações `t()` e arrays de dados) idêntico nas páginas em inglês e nas páginas de localidade, ou execute novamente `translate-docs` após editar a página em inglês para que as cópias de localidade recebam as alterações do frontmatter. Para texto apenas no frontmatter, use o [pipeline de strings de UI](#astro-website-ui-strings-ssg) em vez disso.
+Dentro do **corpo do template**, literais de string em blocos `{expression}` (arrays embutidos, campos de objeto `title`/`desc`) são traduzidos quando são voltados para o usuário; valores entre aspas em atributos/chaves protegidos, literais dentro de `t('…')`, `<script>` e `<style>` são mantidos inalterados. O **TypeScript do frontmatter não é traduzido** por este caminho. Mantenha o frontmatter compartilhado (incluindo importações `t()` e arrays de dados) idêntico nas páginas em inglês e nas de localidade, ou execute novamente `translate-docs` após editar a página em inglês para que as cópias de localidade recebam as alterações do frontmatter. Para textos apenas no frontmatter, use o [pipeline de strings de IU](#ui-strings-ssg).
 
 Veja [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) para a página de destino híbrida completa (HTML via `translate-docs`, rótulos das abas de captura de tela via `t()` + `translate-ui`).

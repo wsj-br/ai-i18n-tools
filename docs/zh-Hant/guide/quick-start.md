@@ -1,101 +1,147 @@
 <a id="quick-start"></a>
 # 快速入門
 
-預設的 `init` 模板 (`ui-markdown`) 僅啟用 **UI** 擷取與翻譯。`ui-docusaurus`、`ui-starlight`、`ui-vitepress`、`ui-nextra` 與 `ui-fumadocs` 模板則啟用 **文件** 翻譯 (`translate-docs`)；`ui-vitepress` 同時會為 VitePress 主題字串建立 `docsOutput.vitepressThemeCatalog` 鷹架，`ui-nextra` 會為 Nextra 主題字典建立 `docs[].nextraDictionaryPath` 鷹架（側邊欄 `_meta.ts` 會自動收集），而 `ui-fumadocs` 則會為 Fumadocs UI 覆寫建立 `docsOutput.fumadocsUiCatalog` 鷹架（側邊欄 `meta.json` 會自動收集）。`ui-astro-website` 模板為純 Astro 應用程式（包含 `.astro` 檔案）建立 **UI** 擷取鷹架；若您同時需要 `.astro` 頁面 HTML 的 `translate-docs`，請加入 `docs[]` 區塊（請參閱 [Astro 網站頁面 (parse-and-replace)](/zh-Hant/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)）。參考資料 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) 使用了 **兩者** 的管線。Python 模板為 `ui-python`、`ui-python-gettext`、`ui-python-flask` 與 `ui-python-django` — 請參閱 [將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。當您希望透過單一指令根據設定檔執行擷取、UI 翻譯、選用的 SVG 檔案翻譯以及文件翻譯時，請使用 `sync`。
+本頁將帶您將一個單一語言的專案，產生其第一批翻譯檔案。適用於 JS/TS 應用程式、Python 應用程式、網站或文件站台，或是儲存庫 README 及其他 Markdown 檔案。本頁假設：
 
-Python 專案可以使用獨立執行檔，無需安裝 Node.js。下載步驟：[安裝 — 獨立執行檔](/zh-Hant/guide/installation#standalone-executables)。
+- 已安裝 Node.js `>=22.16.0`，若是 Python 專案，則需[獨立執行檔](/zh-Hant/guide/installation#standalone-executables)。
+- 擁有 LLM 供應商的 API 金鑰，或是在本機安裝 Ollama。
+- 專案已納入版本控制，以便您檢閱工具寫入的內容。
+
+不同專案之間有兩點差異：工具如何尋找您的文字，以及您的應用程式如何載入結果。下方的[選擇您的路徑](#pick-your-path)會將您導向適合的指南。
 
 <a id="runnable-examples"></a>
-### 可執行的範例
+## 可執行範例
 
-可執行的專案與測試夾具位於 [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/) 下。請參閱 [範例](/zh-Hant/examples) 目錄以取得完整清單、複製指令，以及了解哪些資料夾使用 `pnpm` 與 Python 虛擬環境。
-
-**執行一個 Node.js 範例獨立程式**（無需複製整個 monorepo）：
+偏好先查看已完成的專案嗎？您可以複製一個專案，而無需複製整個儲存庫：
 
 ```bash
 npx degit wsj-br/ai-i18n-tools/examples/console-app console-app
 cd console-app
 pnpm install
-pnpm run i18n:sync    # example scripts call the locally installed CLI
+pnpm run i18n:sync
 ```
 
-將 `console-app` 取代為任何其他 Node.js 範例資料夾名稱。這些範例中的每一個都宣告了與目前套件版本相符的已發佈 `ai-i18n-tools` 插入符號範圍，並從 npm 安裝 CLI。Python 範例沒有 `package.json`。請使用相同的 `degit` 指令複製它們，或使用來自 GitHub Release 的 `ai-i18n-tools-python-examples.zip`，然後依照 [範例 — Python](/zh-Hant/examples#python-examples) 操作。
+將 `console-app` 替換為任何其他 Node.js 範例。Python 範例沒有 `package.json`；請用同樣的方式複製，或從 GitHub Release 下載 `ai-i18n-tools-python-examples.zip`。完整的清單以及各範例的展示內容，請見[範例](/zh-Hant/examples)頁面。
 
-**從完整的 ai-i18n-tools 儲存庫** — 如果您複製了整個儲存庫（而不僅僅是透過 degit 複製單個範例資料夾）：
+<a id="install"></a>
+## 安裝
 
 ```bash
-pnpm install          # repository root
-pnpm run build        # after changing CLI source
-cd examples/console-app
-pnpm run i18n:sync    # preferred — uses the workspace-linked CLI
-# or: ai-i18n-tools sync   # after PATH setup — see Using the CLI
+pnpm add -D ai-i18n-tools
 ```
 
-工作區 [`overrides`](https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml) 項目 (`ai-i18n-tools: workspace:*`) 會自動將工作區範例連結到您的本機簽出。獨立測試夾具 (`multi-provider`, `test-markdown`) 不是工作區套件 — 請從其資料夾中使用 `node ../../bin/ai-i18n-tools.mjs …`。若要從**儲存庫根目錄**（此套件自身的 docs/i18n）執行 CLI，請在 `direnv allow` 之後使用單純的 `ai-i18n-tools`，或使用 `pnpm i18n:sync` / `node bin/ai-i18n-tools.mjs …` — 請參閱[安裝 — 複製的 Monorepo](/zh-Hant/guide/installation#cloned-monorepo) 與[開發指南](https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md#running-the-cli-during-development)。
+`npm install --save-dev ai-i18n-tools` 和 `yarn add --dev ai-i18n-tools` 也可以。Python 專案安裝獨立執行檔，不需要 Node.js。Linux 和 macOS：`curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`。Windows PowerShell：`irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`。其他安裝選項：[安裝](/zh-Hant/guide/installation)。
 
-<a id="provider-and-api-key-required-for-translation"></a>
-### 供應商與 API 金鑰（翻譯所需）
+<a id="provider-and-api-key"></a>
+## 供應商與 API 金鑰
 
-每個呼叫 LLM 的指令 — `translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 與 `sync` — 都需要**兩者**：
+每個呼叫 LLM 的指令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 和 `sync`）都需要以下兩者：
 
-1. **至少一個提供者**在 `ai-i18n-tools.config.json`：一個包含 `translationModels` 的 `providers.<name>` 區塊，且在設定多個提供者時，需有頂層 `provider` 鍵。`init -P <provider>` 會建立該預設；可新增提供者或調整模型列表 — 參閱 [LLM 提供者與模型](/zh-Hant/guide/providers-and-models)。
-2. **相符的 API 金鑰**位於您的環境或專案根目錄的 `.env` 檔案中。每個內建預設會從[預設表格](/zh-Hant/guide/providers-and-models#built-in-providers)讀取指定的環境變數（例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter`，或 `OPENAI_API_KEY` 搭配 `-P openai`）；**Ollama** 是例外 — 它使用本地端點且無需金鑰。參閱[安裝 — 設定您的提供者 API 金鑰](/zh-Hant/guide/installation#using-the-cli)。
+1. 在 `ai-i18n-tools.config.json` 中至少有一個提供者：一個帶有 `translationModels` 的 `providers.<name>` 區塊，以及在設定多個提供者時，一個頂層的 `provider` 金鑰。`init -P <provider>` 會建立該預設設定的骨架。若要新增提供者，請參閱 [LLM 提供者](/zh-Hant/guide/providers-and-models)。若要選擇模型清單，請參閱 [AI 模型](/zh-Hant/guide/ai-models)。
+2. 在您的環境或專案根目錄的 `.env` 檔案中，有相符的 API 金鑰。每個內建的預設設定都會從 [預設設定表格](/zh-Hant/guide/providers-and-models#built-in-providers) 讀取一個具名變數，例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter` 或 `OPENAI_API_KEY` 搭配 `-P openai`。Ollama 使用本機端點，不需要金鑰。
 
-`extract`、`status` 與其他不呼叫 LLM 的指令不需要供應商或 API 金鑰。
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-your-key-here
+```
+
+`extract`、`status` 及其他不呼叫 LLM 的指令則兩者皆不需要。關於環境檔案和 PATH 的更多資訊：[安裝](/zh-Hant/guide/installation#using-the-cli)。
+
+<a id="pick-your-path"></a>
+## 選擇您的路徑
+
+找出您擁有的專案類型，執行其區塊中的指令，然後繼續閱讀連結的指南。
 
 <a id="core-cli-commands"></a>
-### 核心 CLI 指令
 
-在安裝 `ai-i18n-tools` 並[為裸命令設定您的 shell](/zh-Hant/guide/installation#using-the-cli)後，從您的 **專案根目錄**執行。以下範例直接使用 `ai-i18n-tools`。
+<a id="a-jsts-app"></a>
+### JS/TS 應用程式
+
+您的按鈕和訊息在原始碼中仍是純文字，因此工具目前還找不到任何東西。必須先用 `t()` 將它們包裹起來，且應用程式需要一個小型的 i18next 設定檔。
 
 ```bash
-# Set the API key for the provider you pass to init (see preset table; skip for local Ollama)
-export OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# export OPENAI_API_KEY=sk-your-key-here
-# export CHEAPERINFERENCE_API_KEY=your-key-here
-
-# UI strings (ui-markdown template enables extract + translate-ui)
 ai-i18n-tools init -P openrouter
-ai-i18n-tools suggest-models          # optional: ranked shortlist
-ai-i18n-tools suggest-models --apply  # replace translationModels
-ai-i18n-tools extract
-ai-i18n-tools translate-ui
-
-# Documents (Docusaurus-oriented template)
-ai-i18n-tools init -t ui-docusaurus -P openai
-# Astro Starlight docs: ai-i18n-tools init -t ui-starlight -P cheaperinference
-# VitePress docs: ai-i18n-tools init -t ui-vitepress -P anthropic
-# Nextra docs: ai-i18n-tools init -t ui-nextra -P gemini
-# Fumadocs docs: ai-i18n-tools init -t ui-fumadocs -P groq
-# Plain Astro website UI: ai-i18n-tools init -t ui-astro-website -P ollama
-# Plain HTML catalog: ai-i18n-tools init -t ui-plain-html -P openrouter
-# Plain HTML documents: ai-i18n-tools init -t docs-plain-html -P openai
-# Python flat JSON: ai-i18n-tools init -t ui-python -P cheaperinference
-# Python JSON + gettext: ai-i18n-tools init -t ui-python-gettext -P anthropic
-# Django catalogs: ai-i18n-tools init -t ui-python-django -P gemini
-# Flask / Jinja gettext: ai-i18n-tools init -t ui-python-flask -P groq
-ai-i18n-tools translate-docs
-
-# JSON (no t() in source)
-ai-i18n-tools init -t ui-json-bundles -P ollama
-ai-i18n-tools translate-json
-
-# Combined: extract UI strings, then translate UI + SVG + docs + json[] (per config features)
-ai-i18n-tools sync
-
-# Translation status (UI strings per locale; markdown per file × locale in chunked tables)
-ai-i18n-tools status
-# ai-i18n-tools status --max-columns 12   # wider tables, fewer chunks
+ai-i18n-tools suggest-models --apply
 ```
 
-由 `init` 寫入的模型清單僅為起點。`suggest-models` 會對作用中提供者的聊天模型進行排名。`suggest-models --apply` 會取代 `translationModels` 並保持 `uiModels` 與 `localeModels` 不變。相同的排名亦顯示於 [模型](/zh-Hant/guide/translation-dashboard/models) 分頁中。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
+接著請遵循[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 的說明。在執行 `extract` 和 `translate-ui` 之前，該指南會涵蓋包裹步驟，並提供一個代理提示。
+
+<a id="a-python-app"></a>
+### Python 應用程式
+
+```bash
+ai-i18n-tools init -t ui-python -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+對於這些設定，請使用 `ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。接著請遵循[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) 的說明。
+
+<a id="a-website-or-documentation-site"></a>
+### 網站或文件站台
+
+為您的框架挑選範本：
+
+| 您的網站 | 範本 |
+| --- | --- |
+| Astro Starlight | `ui-starlight` |
+| Docusaurus | `ui-docusaurus` |
+| VitePress | `ui-vitepress` |
+| Nextra | `ui-nextra` |
+| Fumadocs | `ui-fumadocs` |
+| 純 Astro 網站 | `ui-astro-website` |
+| 純 HTML 頁面 | `ui-plain-html` 或 `docs-plain-html` |
+
+```bash
+ai-i18n-tools init -t ui-vitepress -P openrouter
+```
+
+您的框架必須先啟用其自身的 i18n 路由功能。然後依照 [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website)。
+
+<a id="a-readme-or-markdown-docs"></a>
+### README 或 Markdown 文件
+
+大多數儲存庫會希望將此與應用程式放在一起：預設的 `ui-markdown` 範本已包含一個扁平的 README 區塊。對於任何其他範本，請新增 `--with-readme`。僅包含 Markdown 的儲存庫則使用 `docs-markdown`。
+
+```bash
+ai-i18n-tools init -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t docs-markdown -P openrouter
+```
+
+然後依照 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。將語言清單標記貼到 `README.md` 中，置於 `sync` 之前。應用程式路徑（若有的話）仍然是 [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 或 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。
+
+<a id="something-else"></a>
+### 其他項目
+
+- 保持原樣的巢狀 i18next JSON：`ai-i18n-tools init -t ui-json-bundles -P openrouter`，然後 [JSON](/zh-Hant/guide/json)。
+- 帶有文字標籤的 SVG 圖表：[SVG 翻譯](/zh-Hant/guide/svg-translation/)。
+- 從 Intlayer 遷移：[從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)。
+- 保留 Intlayer 並僅填入其翻譯：[就地翻譯 Intlayer](/zh-Hant/guide/translating-intlayer)。
+
+完整的範本清單，包含所有 `init` 選項，可在 [CLI 設定參考](/zh-Hant/reference/cli-commands/setup) 中找到。
+
+<a id="run-and-check"></a>
+## 執行與檢查
+
+當您的專案準備就緒時：
+
+```bash
+ai-i18n-tools sync
+ai-i18n-tools status
+```
+
+`sync` 會依序執行您的設定所啟用的每個步驟。`status` 會顯示每個語系的翻譯內容。首次在工具無法看見文字的專案上執行時，會無錯誤地完成，但不會寫入任何有用的內容，因此如果 `status` 未顯示任何字串，請返回您所選路徑的指南。
+
+`suggest-models` 會根據已發佈的基準測試，對作用中提供者的聊天模型進行排名。`suggest-models --apply` 會取代 `translationModels`，並保留 `uiModels` 和 `localeModels` 不變。儀表板的 **模型** 標籤頁上也有相同的排名。關於排名如何運作，以及為何清單中包含多個模型，請參閱：[AI 模型](/zh-Hant/guide/ai-models)。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
+
+<a id="keep-it-translated"></a>
+## 保持翻譯更新
+
+每當來源文字變更時，請重新執行 `sync`。SQLite 快取意味著只有新的或變更的文字會傳送至模型，因此重新執行成本低廉。在 CI 中執行 `sync` 可防止翻譯內容產生偏差。`ai-i18n-tools dashboard` 會開啟 [翻譯儀表板](/zh-Hant/guide/translation-dashboard/) 以檢閱和編輯快取的翻譯。
 
 <a id="recommended-packagejson-scripts"></a>
-### 建議的 `package.json` 指令碼
+### 建議的 package.json 指令碼
 
-在本地安裝套件後，`package.json` 腳本會從 `node_modules/.bin` 解析 `ai-i18n-tools`，而無需額外的 shell 設定。對於互動式 shell，請先設定 PATH — 請參閱 [使用 CLI](/zh-Hant/guide/installation#using-the-cli)。
-
-**建議**使用 `sync` 處理所有過去需要「執行 `translate-ui`，然後 `translate-svg`，然後 `translate-docs`，然後 `translate-json`」的作業：`ai-i18n-tools sync` 會根據您的設定檔執行 **提取**（啟用時）、**翻譯 UI**、選用的 **翻譯 SVG**、**翻譯文件**，然後選用的 **翻譯 JSON** — 依正確順序並使用共用旗標。手動串連這些步驟很容易出錯（順序、提取、地區設定旗標）。僅在您需要單獨執行 **單一**步驟時使用 `i18n:translate:ui`、`i18n:translate:svg`、`i18n:translate:docs` 和 `i18n:translate:json`。
+在本機安裝套件後，指令碼會從 `node_modules/.bin` 解析 `ai-i18n-tools`，無需額外的 shell 設定。若要使用互動式 shell，請先設定 PATH：請參閱 [使用 CLI](/zh-Hant/guide/installation#using-the-cli)。
 
 ```json
 {
@@ -112,130 +158,12 @@ ai-i18n-tools status
 }
 ```
 
-**提示：** 若您希望 CLI 輸出與儀表板顯示為其他語言，請傳入 `-L <code>` 或設定 `AI_I18N_LANG` — 請參閱[工具介面語言](/zh-Hant/guide/tool-ui-language)。
+建議使用 `sync`，而非串連個別的翻譯指令碼。只有在需要單獨執行某個步驟時，才使用單一步驟的指令碼。
+
+若要讓 CLI 輸出和儀表板以另一種語言顯示，請傳遞 `-L <code>` 或設定 `AI_I18N_LANG`：請參閱 [工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
 
 <a id="combined-sync"></a>
-## 組合同步
 
-在單一設定中啟用所有功能，以同時執行 UI 字串和文件：
+要同時翻譯多種類型的內容，例如應用程式字串和文件網站嗎？請參閱 [結合管線](/zh-Hant/guide/combining-pipelines)。
 
-<details>
-<summary>合併的 UI + 文件設定檔範例</summary>
-
-```json
-{
-  "sourceLocale": "en-GB",
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
-  "features": {
-    "translateUIStrings": true,
-    "translateDocs": true,
-    "translateSVG": false
-  },
-  "glossary": {
-    "userGlossary": "glossary-user.csv"
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "src/locales/strings.json",
-    "flatOutputDir": "src/locales/"
-  },
-  "cacheDir": ".translation-cache",
-  "docs": [
-    {
-      "contentPaths": ["docs/"],
-      "outputDir": "i18n/",
-      "docsOutput": { "style": "flat" }
-    }
-  ]
-}
-```
-
-</details>
-
-<br />
-
-UI 區塊預設會將其 `strings.json` 目錄作為文件的術語表提示 (`uiGlossary`)。`glossary.userGlossary` 會新增產品術語的 CSV 覆寫。請參閱[術語表](/zh-Hant/guide/glossary)。
-
-執行 `ai-i18n-tools sync` 以執行一個流水線：當啟用 `features.translateUIStrings` 時，先 **提取** 再 **翻譯 UI** 字串；可選的 **翻譯 SVG**（`features.translateSVG` + `svg` 區塊）；**翻譯文件**（`docs[]` 如已配置）；然後是可選的 **translate-json**（`features.translateJson` + `json[]`）。使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳過部分步驟。文件和 `json[]` 步驟接受 `--dry-run`、`-p` / `--path`、`--force`、`--force-update` 和 `--check-cache`（當 `--no-docs` 時，僅用於文件的旗標會被忽略；當未設定 `--no-json` 時，JSON 使用相同的快取旗標）。
-
-在區塊上使用 `docs[].targetLocales`，將該區塊的檔案翻譯成比 UI **更小的子集**（有效的說明地區設定是區塊間的 **聯集**）：
-
-```json
-{
-  "targetLocales": ["de", "fr", "es", "pt-BR", "ja", "ko", "zh-Hans"],
-  "docs": [
-    {
-      "contentPaths": ["docs/"],
-      "outputDir": "i18n/",
-      "targetLocales": ["de", "fr", "es"]
-    }
-  ]
-}
-```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
-### 混合文件設定 (`docsOutput.style = "docusaurus"` + `"flat"`)
-
-您可以在同一個設定檔中結合多個文件管線，方法是在 `docs` 中新增多個項目。當專案有 Docusaurus 網站（`docsOutput.style = "docusaurus"`）以及根層級的 markdown 檔案（例如，具有 `docsOutput.style = "flat"` 的儲存庫 README）需要使用帶有地區設定後綴的檔名進行翻譯時，這是一種常見的設定。
-
-<details>
-<summary>混合的 Docusaurus + 平面 README 設定檔範例</summary>
-
-```json
-{
-  "sourceLocale": "en-GB",
-  "targetLocales": ["ar", "es", "fr", "de", "pt-BR"],
-  "features": {
-    "translateUIStrings": true,
-    "translateDocs": true
-  },
-  "ui": {
-    "sourceRoots": ["src/"],
-    "stringsJson": "locales/strings.json",
-    "flatOutputDir": "public/locales/"
-  },
-  "cacheDir": ".translation-cache",
-  "docs": [
-    {
-      "description": "Docusaurus site content (markdown)",
-      "contentPaths": ["docs-site/docs/"],
-      "outputDir": "docs-site/i18n",
-      "docusaurusCatalogDir": "docs-site/i18n/en",
-      "addFrontmatter": true,
-      "docsOutput": {
-        "style": "docusaurus",
-        "docsRoot": "docs-site/docs"
-      }
-    },
-    {
-      "description": "Root README with docsOutput.style flat",
-      "contentPaths": ["README.md"],
-      "outputDir": "translated-docs",
-      "addFrontmatter": false,
-      "docsOutput": {
-        "style": "flat",
-        "postProcessing": {
-          "languageListBlock": {
-            "start": "<small id=\"lang-list\">",
-            "end": "</small>",
-            "separator": " · ",
-            "label": "local"
-          }
-        }
-      }
-    }
-  ]
-}
-```
-
-</details>
-
-<br />
-
-使用 `ai-i18n-tools sync` 時的執行方式：
-
-- UI 字串會從 `src/` 提取並翻譯成 `public/locales/`。
-- 第一個文件區塊會將 **markdown** 從 `docs-site/docs/` 翻譯成 `docs-site/i18n/<locale>/docusaurus-plugin-content-docs/current/`（本地化文件頁面）。
-- 當設定了 `docs[].docusaurusCatalogDir` 並啟用 `features.translateDocs` 時，該區塊也會將 `docs-site/i18n/en/` 下的 **Docusaurus shell JSON** 翻譯到每個目標語言的資料夾中 — 包括導覽列、頁腳以及佈景主題/外掛程式目錄，但不包含 MDX 主體內容。
-- 第二個文件區塊會將 `README.md` 翻譯成 `translated-docs/` 下的、帶有語言後綴的檔案（`docsOutput.style = "flat"`）。
-- 所有文件區塊都共用 `cacheDir`，因此未變更的區段會在多次執行時重複使用，以減少 API 呼叫和成本。
+下一步：請參閱 [選擇您的路徑](#pick-your-path) 下適合您路徑的指南。

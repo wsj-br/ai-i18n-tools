@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # Integrationen
 
-Framework-spezifische Anleitungen für Dokumentations-Websites, Astro-Projekte und Python-Anwendungen. Dokumentations-Integrationen verwenden die [Documents](/de/guide/documents/)-Pipeline (`translate-docs` / `sync`) für Seiteninhalte; Shell-Strings (Navigation, Seitenleiste, Theme) werden innerhalb derselben Pipeline verarbeitet, sofern angegeben – nicht über die separate [JSON](/de/guide/json)-Pipeline. Python-Anwendungen verwenden die [UI strings](/de/guide/ui-strings/python)-Pipeline (`extract` / `translate-ui`).
+Referenz für die Framework-Integrationen: was sie gemeinsam haben und wie sich ihre Shell-Strings unterscheiden. Um einer Website Sprachen hinzuzufügen, beginnen Sie bei [i18n zu einer Website oder Dokumentations-Website hinzufügen](/de/guide/add-i18n-to-website). Für eine App beginnen Sie bei [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) oder [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python). Für eine Repository-README-Datei und andere Markdown-Dateien beginnen Sie bei [i18n zu Ihrer README-Datei und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme).
+
+Dokumentations-Integrationen verwenden die [Dokumente](/de/guide/documents/)-Pipeline (`translate-docs` / `sync`) für Seiteninhalte; Shell-Strings (Navigation, Seitenleiste, Theme) werden, wo vermerkt, innerhalb derselben Pipeline behandelt – nicht über die separate [JSON](/de/guide/json)-Pipeline. Python-Anwendungen verwenden die [UI-Strings](/de/guide/ui-strings/python)-Pipeline (`extract` / `translate-ui`).
 
 <a id="which-guide-to-read"></a>
 ## Welchen Leitfaden Sie lesen sollten
 
-| Ihre Website | Init-Vorlage | Hier starten |
-| --- | --- | --- |
-| Astro Starlight oder reines Astro | `ui-starlight` / hybride UI-Strings | [Astro](/de/guide/integrations/astro) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/de/guide/integrations/docusaurus) |
-| VitePress | `ui-vitepress` | [VitePress](/de/guide/integrations/vitepress) |
-| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/de/guide/integrations/nextra) |
-| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/de/guide/integrations/fumadocs) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, Desktop) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/de/guide/integrations/python) |
+Die Auswahltabelle mit Initialisierungs-Templates und Agent-Prompts pro Framework befindet sich in [i18n zu einer Website oder Dokumentations-Website hinzufügen](/de/guide/add-i18n-to-website#what-do-you-have). Python-Frameworks: [Python](/de/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## Gemeinsame Konzepte

@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Aplicaciones Python
 
-`ai-i18n-tools` extrae cadenas de la interfaz de usuario de Python y de archivos `.ui` de Jinja, Django y Qt, y luego escribe JSON con claves en inglés, catálogos GNU gettext o ambos. El asistente de tiempo de ejecución es un `i18n.py` de la biblioteca estándar (Python 3.10 o posterior). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid y FastAPI llaman a ese asistente. Django utiliza el gettext propio de Django.
+`ai-i18n-tools` extrae cadenas de la interfaz de usuario de Python y de archivos `.ui` de Jinja, Django y Qt, luego escribe JSON plano cuyas claves son la cadena del idioma de origen, catálogos GNU gettext, o ambos. `sourceLocale` puede ser cualquier idioma. El asistente en tiempo de ejecución es un `i18n.py` de la biblioteca estándar (Python 3.10 o posterior). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid y FastAPI llaman a ese asistente. Django usa el propio gettext de Django.
 
-Cómo añadir idiomas a una aplicación existente de un solo idioma: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python). Selector de framework: [Integraciones de Python](/es/guide/integrations/python). Lista de funciones: [Runtime de Python (`i18n.py`)](/es/reference/programmatic-api#python-runtime).
+Cómo añadir configuraciones regionales a una aplicación existente de un solo idioma: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python), incluyendo el [prompt de `i18n.py`](/es/guide/add-i18n-to-python#agent-prompt-i18n-py) y el [prompt de Django / gettext](/es/guide/add-i18n-to-python#agent-prompt-django-gettext). Selector de frameworks: [Integraciones de Python](/es/guide/integrations/python). Lista de funciones: [Tiempo de ejecución de Python (`i18n.py`)](/es/reference/programmatic-api#python-runtime).
 
 Las copias ejecutables residen en `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` y `examples/python-gettext`. Son proyectos de Python. Los tres primeros utilizan un virtualenv y `pip install -r requirements.txt`. `python-gettext` utiliza únicamente la biblioteca estándar. No son paquetes npm. El archivo de lanzamiento `ai-i18n-tools-python-examples.zip` contiene los mismos cuatro directorios. El tarball de npm y el ejecutable independiente no los contienen.
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` escribe JSON plano y `i18n.py`. `ui-python-gettext` escribe JSON y `.po` / `.mo`. `ui-python-flask` escribe catálogos gettext en `translations/` y `i18n.py`. `ui-python-django` escribe `locale/<lang>/LC_MESSAGES/django.po` y no escribe `i18n.py`.
+
+Traduzca también el README del repositorio: añada `--with-readme` al comando `init` anterior. Consulte [Añadir i18n a su README y documentos Markdown](/es/guide/add-i18n-to-readme).
 
 Las raíces de escaneo omiten `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` y `.eggs`.
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## Catálogos
 
-Las claves JSON planas son la fuente en inglés. Un contexto utiliza `context` + U+0004 + la fuente en inglés. Las ranuras de plural permanecen como `{md5}_one`, `{md5}_other` y las otras formas CLDR que `translate-ui` ya escribe. El asistente aplica un hash MD5 al singular recortado y lee los primeros 8 caracteres hexadecimales.
+Las claves JSON planas son la cadena del idioma de origen, el texto en `sourceLocale`. Ese idioma puede ser cualquier idioma. Un contexto usa `context` + U+0004 + esa cadena de origen. Las ranuras plurales permanecen como `{md5}_one`, `{md5}_other` y las otras formas CLDR que `translate-ui` ya escribe. El asistente aplica hash al singular recortado con MD5 y lee los primeros 8 caracteres hexadecimales.
 
 Los archivos Gettext utilizan `msgctxt` para el contexto y `msgid` / `msgid_plural` para los plurales. `ui.gettext.compileMo` escribe el `.mo` junto al `.po`. `purge-locale` elimina el `.po` y el `.mo` de esa configuración regional. Cuando `flatOutput` es falso, deja intactos los archivos JSON planos porque no fueron escritos.
 

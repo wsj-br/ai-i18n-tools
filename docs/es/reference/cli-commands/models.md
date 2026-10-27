@@ -8,7 +8,7 @@
 
 Valida cada ID de modelo configurado con la lista `GET /models` del proveedor activo (pertenencia y `expiration_date`). Requiere la clave de API de ese proveedor (ninguna para proveedores sin clave como Ollama). Termina con un código de salida distinto de cero cuando falta o ha caducado algún ID configurado, y respeta el tiempo de espera de la solicitud resuelto (`requestTimeout` o `requestTimeoutMs` en el proveedor; de lo contrario, el valor de nivel superior). Cuando el proveedor devuelve precios (por ejemplo, OpenRouter), también muestra USD por 1M de tokens para prompt/completion. Cuando `providers.cheaperinference.zeroDataRetention` es verdadero, la comprobación usa `GET /v1/models?zdr=true` y falla un ID que el catálogo omite.
 
-**Véase también:** [Proveedores de LLM](/es/guide/providers-and-models)
+**Véase también:** [Modelos de IA](/es/guide/ai-models#check-models), [Proveedores de LLM](/es/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Lista todos los modelos que el proveedor activo anuncia a través de su lista `G
 
 **Opciones clave:** `-P` / `--provider`
 
-**Véase también:** [Proveedores de LLM](/es/guide/providers-and-models)
+**Véase también:** [Modelos de IA](/es/guide/ai-models#list-models), [Proveedores de LLM](/es/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ El pie de página atribuye languagebench (CC BY-SA 4.0), LMArena Arena Score (CC
 
 **Opciones clave:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**Véase también:** [Proveedores de LLM](/es/guide/providers-and-models), [Pestaña Models](/es/guide/translation-dashboard/models)
+**Véase también:** [Modelos de IA](/es/guide/ai-models), [Pestaña Modelos](/es/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ Realiza un benchmark de cada modelo configurado traduciendo una muestra en aisla
 Los modelos predeterminados son la unión de los id `translationModels`, `uiModels` y `localeModels` del proveedor activo (anula con `--model`); la muestra predeterminada es un bloque de markdown en inglés integrado (anula con `--text` / `--file`); la fuente/destino predeterminadas son la configuración `sourceLocale` y la primera `docs[]` configuración de idioma de destino, con un valor predeterminado de `targetLocales` (anula con `--source` / `--target`). Ejecuta los modelos en paralelo, limitado por la configuración `concurrency` (predeterminado 4); cada modelo sigue siendo cronometrado individualmente. Requiere la clave de API del proveedor activo.
 
 **Opciones clave:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**Véase también:** [Modelos de IA](/es/guide/ai-models#bench-models)
 
 ---
 

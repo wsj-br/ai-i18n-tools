@@ -8,7 +8,7 @@
 
 根据活动提供商的 `GET /models` 列表（成员资格和 `expiration_date`）验证每个已配置的模型 ID。需要该提供商的 API 密钥（无需密钥的提供商如 Ollama 则不需要）。当任何已配置的 ID 缺失或过期时，以非零状态退出，并遵守已解析的请求超时时间（提供商上的 `requestTimeout` 或 `requestTimeoutMs`，否则为顶级值）。当提供商返回定价信息时（例如 OpenRouter），还会显示提示/补全每 100 万个令牌的美元价格。当 `providers.cheaperinference.zeroDataRetention` 为 true 时，检查使用 `GET /v1/models?zdr=true` 并将目录中遗漏的 ID 标记为失败。
 
-**另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)
+**另请参阅：**[AI 模型](/zh-Hans/guide/ai-models#check-models)、[LLM 提供商](/zh-Hans/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **主要选项：** `-P` / `--provider`
 
-**另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)
+**另请参阅：**[AI 模型](/zh-Hans/guide/ai-models#list-models)、[LLM 提供商](/zh-Hans/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值�
 
 **主要选项：** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
-**另请参阅：** [LLM 提供商](/zh-Hans/guide/providers-and-models)、[模型选项卡](/zh-Hans/guide/translation-dashboard/models)
+**另请参阅：**[AI 模型](/zh-Hans/guide/ai-models)、[“模型”选项卡](/zh-Hans/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值�
 模型默认为当前提供商的 `translationModels`、`uiModels` 和 `localeModels` ID 的并集（可通过 `--model` 覆盖）；样本默认为内置的英文 markdown 块（可通过 `--text` / `--file` 覆盖）；源语言/目标语言默认为配置的 `sourceLocale` 和第一个 `docs[]` 目标区域设置，回退到顶层 `targetLocales`（可通过 `--source` / `--target` 覆盖）。并行运行模型，受配置 `concurrency` 限制（默认为 4）；每个模型仍单独计时。需要当前提供商的 API 密钥。
 
 **主要选项：** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**另请参阅：**[AI 模型](/zh-Hans/guide/ai-models#bench-models)
 
 ---
 

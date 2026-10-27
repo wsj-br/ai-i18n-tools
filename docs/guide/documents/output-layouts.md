@@ -66,7 +66,7 @@ The flat link rewriter uses the per-file output path when computing depth prefix
 
 Paths outside `docsRoot` fall back to the [nested](#nested-default) layout (`{outputDir}/{locale}/{relPath}`).
 
-Set `docs[].docsOutput.docsRoot` to your English source root (e.g. `"docs"`, `"src/content/docs"`, or `"content/en"`). When `docsOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets). Use `localeSubpath: ""` when translated pages sit directly under `{outputDir}/{locale}/` (Starlight-style).
+Set `docs[].docsOutput.docsRoot` to the root of the files written in `sourceLocale` (for example `"docs"`, `"src/content/docs"`, or `"content/en"` when English is the source). `sourceLocale` can be any language. When `docsOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets). Use `localeSubpath: ""` when translated pages sit directly under `{outputDir}/{locale}/` (Starlight-style).
 
 Docusaurus shell JSON from `docusaurusCatalogDir` and other JSON artifacts under doc-system presets follow the same folder layout as markdown. With `style: "flat"`, JSON label files still use the nested shape unless you set `jsonPathTemplate`.
 
@@ -76,9 +76,9 @@ Docusaurus shell JSON from `docusaurusCatalogDir` and other JSON artifacts under
 **Aliases** (same `doc-system` engine, preset `localeSubpath` and defaults):
 
 - `docsOutput.style = "docusaurus"` — `localeSubpath` defaults to `docusaurus-plugin-content-docs/current` (Docusaurus i18n plugin layout).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""`; `localePathLowercase` defaults to `true`. Translated pages under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when English lives at the content root and `outputDir` equals `docsRoot`. Also used for plain Astro locale pages (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — see [Astro website pages](/guide/ui-strings/astro-website#pages-parse-and-replace).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` defaults to `""`; `localePathLowercase` defaults to `true`. Translated pages under `{outputDir}/{locale}/`, matching [Starlight](https://starlight.astro.build/guides/i18n/) when the source locale lives at the content root and `outputDir` equals `docsRoot`. Also used for plain Astro locale pages (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — see [Astro website pages](/guide/ui-strings/astro-website#pages-parse-and-replace).
 - `docsOutput.style = "vitepress"` — same layout as `doc-system` with empty `localeSubpath`; BCP-47 locale folder names are preserved (`localePathLowercase` defaults to `false`). See [VitePress integration](/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; English source lives under a locale folder (e.g. `content/en/`). See [Nextra integration](/guide/integrations/nextra).
+- `docsOutput.style = "nextra"` — same layout as `doc-system` with empty `localeSubpath`; the source locale lives under a locale folder (for example `content/en/` when English is the source). See [Nextra integration](/guide/integrations/nextra).
 
 Docusaurus preset (primary documentation pages):
 
@@ -121,7 +121,7 @@ Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdow
 
 `docsOutput.style = "fumadocs"` — Fumadocs content layout via `docsOutput.fumadocsParser`:
 
-- **`"dot"` (default)** — locale suffix in the filename beside English sources under `outputDir` (not a locale folder). This is separate from the `doc-system` path shape.
+- **`"dot"` (default)** — locale suffix in the filename beside the source-locale files under `outputDir` (not a locale folder). This is separate from the `doc-system` path shape. The source language is `sourceLocale` and can be any language.
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

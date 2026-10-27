@@ -1,27 +1,27 @@
 <a id="python"></a>
 # Python
 
-Python एप्लिकेशन के लिए चयनकर्ता। निष्कर्षण (Extraction), कैटलॉग और कॉल शेप [Python applications](/hi/guide/ui-strings/python) में मौजूद हैं। मौजूदा सिंगल-लोकेल एप्लिकेशन के लिए चरण-दर-चरण मार्गदर्शिका [Add i18n to a Python app](/hi/guide/add-i18n-to-python) है।
+पायथन एप्लिकेशन के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन एप्लिकेशन](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें एक [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-i18n-py) और एक [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल है।
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView जनरेट किए गए `i18n.py` हेल्पर (Python 3.10 या नया) को कॉल करते हैं। Django, Django के gettext को बनाए रखता है। रिपॉजिटरी में चार रन करने योग्य प्रतियां शामिल हैं: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext`। Pyramid, Django, Tkinter, Qt, और PyWebView के लिए कोई अलग उदाहरण निर्देशिका नहीं है।
 
 <a id="which-template"></a>
 ## कौन सा टेम्प्लेट
 
-| फ्रेमवर्क | इनिट टेम्प्लेट | कैटलॉग | उदाहरण |
+| फ्रेमवर्क | इनिट टेम्पलेट | कैटलॉग | उदाहरण |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | फ्लैट इंग्लिश-की JSON | [python-streamlit](/hi/examples#python-streamlit) |
-| FastAPI | `ui-python` | फ्लैट इंग्लिश-की JSON | [python-fastapi](/hi/examples#python-fastapi) |
-| Flask + Jinja, फ्लैट JSON | `ui-python` | फ्लैट इंग्लिश-की JSON | [python-flask](/hi/examples#python-flask) |
+| स्ट्रीमलेट | `ui-python` | स्रोत स्ट्रिंग द्वारा कुंजीबद्ध फ्लैट JSON | [python-streamlit](/hi/examples#python-streamlit) |
+| फास्टएपीआई | `ui-python` | स्रोत स्ट्रिंग द्वारा कुंजीबद्ध फ्लैट JSON | [python-fastapi](/hi/examples#python-fastapi) |
+| फ्लास्क + जिंजा, फ्लैट JSON | `ui-python` | स्रोत स्ट्रिंग द्वारा कुंजीबद्ध फ्लैट JSON | [python-flask](/hi/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `.po` / `.mo` जो `translations/` के अंतर्गत है | नीचे दिए गए Flask नोट्स का उपयोग करें |
 | Pyramid | `ui-python` या `ui-python-flask` | Flask के समान | Flask के समान वायरिंग |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | कोई उदाहरण निर्देशिका नहीं |
 | मौजूदा GNU gettext | `ui-python-gettext` | फ्लैट JSON और `.po` / `.mo`, या केवल gettext | [python-gettext](/hi/examples#python-gettext) |
-| Tkinter | `ui-python` | फ्लैट इंग्लिश-की JSON | कोई उदाहरण निर्देशिका नहीं |
+| टिकइंटर | `ui-python` | स्रोत स्ट्रिंग द्वारा कुंजीबद्ध फ्लैट JSON | कोई उदाहरण डायरेक्टरी नहीं |
 | PyQt / PySide | `ui-python` या gettext टेम्प्लेट | फ्लैट JSON और/या `.po` | कोई उदाहरण निर्देशिका नहीं |
 | PyWebView / PyWebKit | शेल के लिए एक Python टेम्प्लेट | शेल कैटलॉग, साथ ही HTML मार्कर या प्रति लोकेल एक HTML फ़ाइल | कोई उदाहरण निर्देशिका नहीं |
 
-`ui-python`, `ui-python-gettext`, और `ui-python-flask` जब वह फ़ाइल गायब होती है तो `i18n.py` लिखते हैं। `ui-python-django` ऐसा नहीं करता है।
+`ui-python`, `ui-python-gettext` और `ui-python-flask` `i18n.py` लिखते हैं जब वह फ़ाइल गुम होती है। `ui-python-django` ऐसा नहीं करता है। रिपॉजिटरी README का भी अनुवाद करने के लिए `--with-readme` जोड़ें: [अपनी README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
 
 <a id="framework-notes"></a>
 ## फ्रेमवर्क नोट्स

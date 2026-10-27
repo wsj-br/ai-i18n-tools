@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Aplicações Python
 
-O `ai-i18n-tools` extrai strings de interface de usuário de arquivos Python e de arquivos Jinja, Django e Qt `.ui`, e então grava JSON com chaves em inglês, catálogos GNU gettext ou ambos. O auxiliar de tempo de execução é um `i18n.py` da biblioteca padrão (Python 3.10 ou mais recente). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid e FastAPI chamam esse auxiliar. O Django utiliza o gettext próprio do Django.
+O `ai-i18n-tools` extrai strings de IU de arquivos Python e de arquivos `.ui` do Jinja, Django e Qt e, em seguida, grava em JSON simples com chaves baseadas na string do idioma de origem, em catálogos GNU gettext ou em ambos. O `sourceLocale` pode ser qualquer idioma. O auxiliar de tempo de execução é um `i18n.py` da biblioteca padrão (Python 3.10 ou mais recente). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid e FastAPI chamam esse auxiliar. O Django usa o próprio gettext do Django.
 
-Adicionando localidades a um aplicativo de idioma único existente: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python). Seletor de framework: [Integrações Python](/pt-BR/guide/integrations/python). Lista de funções: [Runtime Python (`i18n.py`)](/pt-BR/reference/programmatic-api#python-runtime).
+Como adicionar localidades a um aplicativo de idioma único existente: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), incluindo o [prompt do `i18n.py`](/pt-BR/guide/add-i18n-to-python#agent-prompt-i18n-py) e o [prompt do Django / gettext](/pt-BR/guide/add-i18n-to-python#agent-prompt-django-gettext). Seletor de framework: [Integrações com Python](/pt-BR/guide/integrations/python). Lista de funções: [Runtime do Python (`i18n.py`)](/pt-BR/reference/programmatic-api#python-runtime).
 
 Cópias executáveis residem em `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` e `examples/python-gettext`. São projetos Python. Os três primeiros utilizam um virtualenv e `pip install -r requirements.txt`. O `python-gettext` utiliza apenas a biblioteca padrão. Eles não são pacotes npm. O arquivo de lançamento `ai-i18n-tools-python-examples.zip` contém os mesmos quatro diretórios. O tarball npm e o executável independente não contêm.
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 O `ui-python` grava JSON simples e `i18n.py`. O `ui-python-gettext` grava JSON e `.po` / `.mo`. O `ui-python-flask` grava catálogos gettext em `translations/` e `i18n.py`. O `ui-python-django` grava `locale/<lang>/LC_MESSAGES/django.po` e não grava `i18n.py`.
+
+Traduza também o README do repositório: adicione `--with-readme` ao comando `init` acima. Consulte [Adicionar i18n ao seu README e aos seus documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
 
 As raízes de verificação ignoram `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` e `.eggs`.
 
@@ -66,7 +68,7 @@ O `migrate-python-i18n` é uma simulação (dry run) até que você passe `--wri
 <a id="catalogs"></a>
 ## Catálogos
 
-As chaves JSON simples são a fonte em inglês. Um contexto usa `context` + U+0004 + a fonte em inglês. Slots de plural permanecem `{md5}_one`, `{md5}_other` e as outras formas CLDR que o `translate-ui` já grava. O auxiliar gera um hash MD5 do singular aparado e lê os primeiros 8 caracteres hexadecimais.
+As chaves do JSON simples são a string do idioma de origem, o texto em `sourceLocale`. Esse idioma pode ser qualquer idioma. Um contexto usa `context` + U+0004 + essa string de origem. Os espaços para plural permanecem `{md5}_one`, `{md5}_other` e as outras formas do CLDR que o `translate-ui` já grava. O auxiliar gera o hash do singular sem espaços em branco com MD5 e lê os 8 primeiros caracteres hexadecimais.
 
 Arquivos Gettext usam `msgctxt` para contexto e `msgid` / `msgid_plural` para plurais. O `ui.gettext.compileMo` grava o `.mo` ao lado do `.po`. O `purge-locale` exclui o `.po` e `.mo` daquele local. Quando `flatOutput` é falso, ele deixa os arquivos JSON simples intactos, pois não foram gravados.
 

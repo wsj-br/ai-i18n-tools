@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-उन प्रोजेक्ट के लिए डिज़ाइन किया गया है जो UI कॉपी को **नेस्टेड JSON फ़ाइलों में प्रति लोकेल** (उदाहरण के लिए `src/i18n/en/translation.json`) में रखते हैं, न कि स्रोत में `t("…")` में। CLI उन फ़ाइलों में स्ट्रिंग मानों को चलता है, उन्हें सक्रिय LLM प्रदाता के माध्यम से अनुवादित करता है, और `json[].outputPathTemplate` का उपयोग करके प्रति-लोकेल आउटपुट लिखता है। यह `translate-docs` और `translate-svg` (`cacheDir`) के समान SQLite कैश का उपयोग करता है।
+यह किसके लिए है: उन प्रोजेक्ट्स के लिए जो पहले से ही प्रति लोकैल नेस्टेड JSON फ़ाइलों में कॉपी रखते हैं (उदाहरण के लिए `src/i18n/en/translation.json`) और उस लेआउट को बनाए रखना चाहते हैं। यदि आपके स्रोत में सादा टेक्स्ट है और अभी तक कोई `t()` नहीं है, तो इसके बजाय [Add i18n to a JS/TS app](/hi/guide/add-i18n-to-js) से शुरू करें।
+
+सीएलआई उन फ़ाइलों में स्ट्रिंग मानों से होकर गुज़रता है, उन्हें सक्रिय LLM प्रोवाइडर पर मौजूद मॉडल से अनुवाद करता है, और `json[].outputPathTemplate` का उपयोग करके हर-लोकेल के आउटपुट लिखता है। यह `translate-docs` और `translate-svg` (`cacheDir`) के समान ही SQLite कैश का उपयोग करता है।
 
 यह पाइपलाइन **नहीं** चलता `extract` — कोई `strings.json` कैटलॉग नहीं है। इसे `features.translateJson` और शीर्ष-स्तरीय `json[]` में एक या अधिक प्रविष्टियों के साथ सक्षम करें।
 
 <a id="per-locale-model-overrides"></a>
 ### प्रति-स्थानीय मॉडल ओवरराइड
 
-`translate-json` मॉडल को **प्रति लक्ष्य लोकेल** हल करता है: कॉन्फ़िगर होने पर पहले `localeModels(locale)`, फिर `translationModels`। इसका उपयोग नेस्टेड JSON बंडलों के लिए करें जहाँ कुछ लोकेल समर्पित मॉडल से लाभान्वित होते हैं — उदाहरण के लिए `zh-Hans` / `zh-Hant` थीम फ़ाइलें। [प्रदाता और मॉडल](/hi/guide/providers-and-models#model-fallback-chain) देखें।
+`translate-json` मॉडल को **हर टारगेट लोकेल के अनुसार** रिज़ॉल्व करता है: कॉन्फ़िगर किए जाने पर पहले `localeModels(locale)`, फिर `translationModels`। इसका इस्तेमाल नेस्टेड JSON बंडल के लिए करें जहाँ कुछ लोकेल को डेडिकेटेड मॉडल से फ़ायदा होता है — उदाहरण के लिए `zh-Hans` / `zh-Hant` थीम फ़ाइलें। [AI मॉडल](/hi/guide/ai-models#model-fallback-chain) देखें।
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### चरण 1: नेस्टेड JSON के लिए प्रारंभ करें
@@ -105,7 +107,8 @@ ai-i18n-tools status
 | Fumadocs `meta.json` लेबल और UI ओवरराइड कैटलॉग | दस्तावेज़ — `translate-docs` (`style: "fumadocs"` होने पर ऑटो `meta.json`, वैकल्पिक `fumadocsUiCatalog`); `json[]` का उपयोग **न करें** — [Fumadocs एकीकरण](/hi/guide/integrations/fumadocs) देखें |
 | स्टैंडअलोन नेस्टेड लोकेल JSON (ZenBrowser-शैली `translation.json` ट्री) | JSON — `json[]` + `translate-json` |
 | i18next नेमस्पेस फ़ाइलें (`public/locales/en/common.json`, <code v-pre>{{name}}</code> टोकन, `key_one` / `key_other` प्रत्यय) | JSON — `json[]` + `translate-json` ([i18next नेमस्पेस फ़ाइलें](#i18next-namespace-files) देखें) |
-| इंटलेयर `*.content.ts` डिक्शनरी + `useIntlayer` | [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) — `migrate-intlayer`, फिर UI स्ट्रिंग |
+| Intlayer `*.content.ts` डिक्शनरी + `useIntlayer` (Intlayer से बाहर निकलें) | [Intlayer से माइग्रेट करना](/hi/guide/migrating-from-intlayer) — `migrate-intlayer`, फिर UI स्ट्रिंग्स |
+| Intlayer `*.content.ts` डिक्शनरी (Intlayer रखें, अनुवाद भरें) | [Intlayer को यथास्थान अनुवादित करना](/hi/guide/translating-intlayer) — `translate-intlayer` |
 | `<text>` / `<title>` / `<desc>` के साथ सचित्र `.svg` फ़ाइलें | `features.translateSVG` + [`svg`](/hi/reference/configuration#svg) + `translate-svg` (वैकल्पिक; तीन मुख्य पाइपलाइनों में से एक नहीं) |
 
 फ़ील्ड संदर्भ: [कॉन्फ़िगरेशन संदर्भ](/hi/reference/configuration#json) में [`json`](#json)। सफाई के लिए कैश कुंजियाँ `file_tracking` में `json-block:{blockIndex}:{projectRelPath}` का उपयोग करती हैं।
@@ -113,7 +116,7 @@ ai-i18n-tools status
 <a id="i18next-namespace-files"></a>
 ### i18next नेमस्पेस फ़ाइलें
 
-जेसन पाइपलाइन में टाइपिकल i18next कुंजी/मान स्थान फ़ाइलें शामिल हैं: नेस्टेड वस्तुएं, स्ट्रिंग सरणियां, <code v-pre>{{name}}</code> मानों में इंटरपोलेशन, और स्वतंत्र बहुवचन प्रत्यय कुंजियां (`welcome_one`, `welcome_other`)। यह **नहीं** `t("some.key")` कॉल साइट्स को पुनः लिखता — वे कुंजी-आधारित रहते हैं। एक परियोजना को ai-i18n-tools के अंग्रेजी स्रोत-स्ट्रिंग `t()` स्कीमा पर ले जाने के लिए, कॉल साइट्स को `t("English text")` (या इंटलेयर `.content.ts` के स्रोत के साथ `migrate-intlayer` चलाएं) में बदलें।
+JSON पाइपलाइन विशिष्ट i18next कुंजी/मान लोकैल फ़ाइलों को कवर करती है: नेस्टेड ऑब्जेक्ट्स, स्ट्रिंग एरेज़, मानों में <code v-pre>{{name}}</code> इंटरपोलेशन, और स्वतंत्र बहुवचन प्रत्यय कुंजियाँ (`welcome_one`, `welcome_other`)। यह `t("some.key")` कॉल साइट्स को **फिर से नहीं लिखता** है — वे कुंजी-आधारित रहती हैं। किसी प्रोजेक्ट को ai-i18n-tools के स्रोत-स्ट्रिंग `t()` स्कीमा पर ले जाने के लिए, कॉल साइट्स को `t("source text")` में बदलें। टेक्स्ट `sourceLocale` में लिखा गया है, जो कोई भी भाषा हो सकती है। जब स्रोत Intlayer `.content.ts` हो, तो `migrate-intlayer` चलाएँ। Intlayer को रखने और केवल उसकी डिक्शनरी का अनुवाद करने के लिए, [`translate-intlayer`](/hi/guide/translating-intlayer) का उपयोग करें।
 
 उदाहरण (`public/locales/en/` के तहत स्रोत अंग्रेजी नेमस्पेस):
 

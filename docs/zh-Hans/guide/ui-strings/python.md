@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Python 应用程序
 
-`ai-i18n-tools` 从 Python 以及 Jinja、Django 和 Qt `.ui` 文件中提取 UI 字符串，然后写入扁平化的英文键 JSON、GNU gettext 目录或两者兼有。运行时辅助程序是一个标准库 `i18n.py`（Python 3.10 或更高版本）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 均调用该辅助程序。Django 使用 Django 自带的 gettext。
+`ai-i18n-tools` 从 Python 以及 Jinja、Django 和 Qt `.ui` 文件中提取 UI 字符串，然后写入以源语言字符串为键的扁平 JSON、GNU gettext 目录或两者。`sourceLocale` 可以是任何语言。运行时帮助程序是一个标准库 `i18n.py`（Python 3.10 或更高版本）。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 调用该帮助程序。Django 使用其自己的 gettext。
 
-将区域设置添加到现有的单语言应用程序：[向 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)。框架选择器：[Python 集成](/zh-Hans/guide/integrations/python)。函数列表：[Python 运行时 (`i18n.py`)](/zh-Hans/reference/programmatic-api#python-runtime)。
+为现有的单语言应用添加区域设置：[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)，包括 [`i18n.py` 提示](/zh-Hans/guide/add-i18n-to-python#agent-prompt-i18n-py) 和 [Django / gettext 提示](/zh-Hans/guide/add-i18n-to-python#agent-prompt-django-gettext)。框架选择器：[Python 集成](/zh-Hans/guide/integrations/python)。函数列表：[Python 运行时 (`i18n.py`)](/zh-Hans/reference/programmatic-api#python-runtime)。
 
 可运行的副本位于 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它们是 Python 项目。前三个项目使用 virtualenv 和 `pip install -r requirements.txt`。`python-gettext` 仅使用标准库。它们不是 npm 包。发布存档 `ai-i18n-tools-python-examples.zip` 包含相同的四个目录。npm tarball 和独立可执行文件则不包含。
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` 写入扁平 JSON 和 `i18n.py`。`ui-python-gettext` 写入 JSON 和 `.po` / `.mo`。`ui-python-flask` 在 `translations/` 和 `i18n.py` 下写入 gettext 目录。`ui-python-django` 写入 `locale/<lang>/LC_MESSAGES/django.po` 且不写入 `i18n.py`。
+
+也可翻译存储库的 README：将 `--with-readme` 添加到上面的 `init` 命令中。请参阅[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
 
 扫描根目录会跳过 `node_modules`、`.git`、`.venv`、`venv`、`env`、`site-packages`、`__pycache__`、`.tox`、`.nox`、`.pytest_cache`、`.mypy_cache`、`.ruff_cache` 和 `.eggs`。
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## 目录
 
-扁平 JSON 键即为英文源文本。上下文使用 `context` + U+0004 + 英文源文本。复数槽位保持为 `{md5}_one`、`{md5}_other` 以及 `translate-ui` 已经写入的其他 CLDR 形式。辅助程序使用 MD5 对修剪后的单数形式进行哈希处理，并读取前 8 个十六进制字符。
+扁平 JSON 键是源语言字符串，即 `sourceLocale` 中的文本。该语言可以是任何语言。上下文使用 `context` + U+0004 + 该源字符串。复数形式槽位保持为 `{md5}_one`、`{md5}_other` 以及 `translate-ui` 已写入的其他 CLDR 形式。帮助程序使用 MD5 对修剪后的单数形式进行哈希处理，并读取前 8 个十六进制字符。
 
 Gettext 文件使用 `msgctxt` 作为上下文，使用 `msgid` / `msgid_plural` 作为复数形式。`ui.gettext.compileMo` 将 `.mo` 写入 `.po` 旁边。`purge-locale` 会删除该区域设置的 `.po` 和 `.mo`。当 `flatOutput` 为 false 时，它不会处理扁平 JSON 文件，因为它们未被写入。
 

@@ -5,7 +5,7 @@ Use `docsOutput.postProcessing.languageListBlock` quando os arquivos Markdown tr
 
 Este repositório o utiliza para [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) (saída simples em `translated-docs/`). Após `translate-docs`, cada cópia traduzida recebe um bloco atualizado; por exemplo, [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md) links para arquivos de localidade irmãos em `translated-docs/` e de volta para a fonte em inglês na raiz do repositório.
 
-Requer `docsOutput.style = "flat"` (ou outro layout onde os arquivos de localidade irmãos são endereçáveis por caminho relativo). Consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts).
+Requer `docsOutput.style = "flat"` (ou outro layout em que os arquivos de localidade irmãos possam ser acessados por caminho relativo). Consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts). Primeira vez adicionando isso a um README de repositório: [Adicionar i18n aos seus documentos README e Markdown](/pt-BR/guide/add-i18n-to-readme).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. Marque o bloco no Markdown de origem
@@ -46,9 +46,9 @@ Configuração raiz ([ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i1
 <a id="3-what-happens-at-runtime"></a>
 ## 3. O que acontece em tempo de execução
 
-1. **Extração** — o trecho da lista de idiomas **não** é enviado ao modelo (`translatable: false`).
-2. **Por arquivo traduzido** — após a tradução dos segmentos e reescrita opcional de links planos, `postProcessing` reconstrói o bloco: um link em markdown por idioma, com rótulos de `ui-languages.json` quando presentes (senão do catálogo mestre embutido, senão `localeDisplayNames`), caminhos relativos ao arquivo sendo escrito.
-3. **Atualização da fonte** — ao final de uma execução `translate-docs` / `sync` para documentos, o mesmo bloco canônico é reescrito nos **arquivos fonte em inglês** em `contentPaths`, de modo que adicionar um idioma atualiza o seletor no repositório sem precisar editar manualmente todos os links.
+1. **Extração** — a fatia da lista de idiomas **não** é enviada para o modelo (`translatable: false`).
+2. **Por arquivo traduzido** — após a tradução de segmentos e a reescrita opcional de links simples, o `postProcessing` recria o bloco: um link Markdown por localidade, rótulos de `ui-languages.json` quando presentes (caso contrário, o catálogo mestre incluído; caso contrário, `localeDisplayNames`), caminhos relativos ao arquivo que está sendo escrito.
+3. **Atualização da origem** — no final de uma passagem de documentos `translate-docs` / `sync`, o mesmo bloco canônico é gravado de volta nos **arquivos da localidade de origem** em `contentPaths` para que a adição de uma localidade atualize o seletor no repositório sem precisar editar manualmente cada link. Esses arquivos são gravados em `sourceLocale`, que pode ser qualquer idioma.
 
 Se um arquivo não tiver um bloco correspondente, a CLI registra um aviso (quando `--verbose`) e mantém o conteúdo inalterado.
 
@@ -72,4 +72,4 @@ A linha imediatamente antes de `<small id="lang-list">` (por exemplo, `**Read in
 <a id="html-pages"></a>
 ## Páginas HTML
 
-Documentos HTML simples usam um par diferente de comentários, `<!-- ai-i18n:lang-list -->` e `<!-- ai-i18n:hreflang -->`. A lista de idiomas pode ser composta por links ou um `<select>`, e as alternativas hreflang são inseridas no código-fonte em inglês, bem como em cada arquivo de localidade. Consulte [Páginas HTML](/pt-BR/guide/documents/html-pages#language-list-and-hreflang).
+Documentos HTML simples usam um par diferente de comentários, `<!-- ai-i18n:lang-list -->` e `<!-- ai-i18n:hreflang -->`. A lista de idiomas pode ser de links ou um `<select>`, e as alternativas hreflang são gravadas no arquivo da localidade de origem, bem como em cada arquivo da localidade de destino. Consulte [Páginas HTML](/pt-BR/guide/documents/html-pages#language-list-and-hreflang).

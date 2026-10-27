@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-Entwickelt für Projekte, die UI-Texte in **verschachtelten JSON-Dateien pro Gebietsschema** (z. B. `src/i18n/en/translation.json`) anstatt in `t("…")` im Quellcode speichern. Die CLI durchläuft Zeichenfolgenwerte in diesen Dateien, übersetzt sie über den aktiven LLM-Anbieter und schreibt Ausgaben pro Gebietsschema unter Verwendung von `json[].outputPathTemplate`. Sie verwendet denselben SQLite-Cache wie `translate-docs` und `translate-svg` (`cacheDir`).
+Zielgruppe: Projekte, die bereits Texte in verschachtelten JSON-Dateien pro Gebietsschema (zum Beispiel `src/i18n/en/translation.json`) verwalten und dieses Layout beibehalten möchten. Wenn Ihre Quelle Klartext enthält und noch keine `t()`, beginnen Sie stattdessen bei [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js).
+
+Die CLI durchläuft die Zeichenfolgenwerte in diesen Dateien, übersetzt sie mit den Modellen des aktiven LLM-Anbieters und schreibt gebietsschemaspezifische Ausgaben mithilfe von `json[].outputPathTemplate`. Sie verwendet denselben SQLite-Cache wie `translate-docs` und `translate-svg` (`cacheDir`).
 
 Diese Pipeline führt **kein** `extract` aus – es gibt keinen `strings.json`-Katalog. Aktivieren Sie sie mit `features.translateJson` und einem oder mehreren Einträgen in der obersten Ebene `json[]`.
 
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
 
-`translate-json` löst Modelle **pro Ziellokale** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Verwenden Sie dies für verschachtelte JSON-Bundles, bei denen bestimmte Lokale von dedizierten Modellen profitieren – zum Beispiel `zh-Hans`- / `zh-Hant`-Themendateien. Siehe [Anbieter und Modelle](/de/guide/providers-and-models#model-fallback-chain).
+`translate-json` löst Modelle **pro Ziel-Gebietsschema** auf: zuerst `localeModels(locale)`, wenn konfiguriert, dann `translationModels`. Verwenden Sie dies für verschachtelte JSON-Bundles, bei denen bestimmte Gebietsschemata von dedizierten Modellen profitieren – zum Beispiel `zh-Hans` / `zh-Hant` Themendateien. Siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain).
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### Schritt 1: Initialisierung für verschachtelte JSON-Dateien
@@ -105,7 +107,8 @@ Wenn `translateJson` aktiviert ist, gibt `status` einen `json[]`-Abschnitt aus (
 | Fumadocs-`meta.json`-Beschriftungen und UI-Überschreibungskatalog | Dokumente — `translate-docs` (automatisch `meta.json` wenn `style: "fumadocs"`, optional `fumadocsUiCatalog`); **verwenden Sie nicht** `json[]` — siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs) |
 | Eigenständige verschachtelte Locale JSON (ZenBrowser-ähnliche `translation.json`-Bäume) | JSON — `json[]` + `translate-json` |
 | i18next-Namespace-Dateien (`public/locales/en/common.json`, <code v-pre>{{name}}</code>-Tokens, `key_one`- / `key_other`-Suffixe) | JSON — `json[]` + `translate-json` (siehe [i18next-Namespace-Dateien](#i18next-namespace-files)) |
-| Intlayer `*.content.ts`-Wörterbücher + `useIntlayer` | [Migration von Intlayer](/de/guide/migrating-from-intlayer) — `migrate-intlayer`, dann UI-Strings |
+| Intlayer `*.content.ts`-Wörterbücher + `useIntlayer` (von Intlayer wegwechseln) | [Migration von Intlayer](/de/guide/migrating-from-intlayer) — `migrate-intlayer`, dann UI-Zeichenfolgen |
+| Intlayer `*.content.ts`-Wörterbücher (Intlayer beibehalten, Übersetzungen ausfüllen) | [Intlayer direkt übersetzen](/de/guide/translating-intlayer) — `translate-intlayer` |
 | Illustrierte `.svg`-Dateien mit `<text>` / `<title>` / `<desc>` | `features.translateSVG` + [`svg`](/de/reference/configuration#svg) + `translate-svg` (optional; keine der drei Haupt-Pipelines) |
 
 Feldreferenz: [`json`](#json) in [Konfigurationsreferenz](/de/reference/configuration#json). Cache-Schlüssel für die Bereinigung verwenden `json-block:{blockIndex}:{projectRelPath}` in `file_tracking`.
@@ -113,7 +116,7 @@ Feldreferenz: [`json`](#json) in [Konfigurationsreferenz](/de/reference/configur
 <a id="i18next-namespace-files"></a>
 ### i18next-Namespace-Dateien
 
-Die JSON-Pipeline deckt typische i18next-Schlüssel/Wert-Gebietsschemadateien ab: verschachtelte Objekte, String-Arrays, <code v-pre>{{name}}</code>-Interpolation in Werten und unabhängige Plural-Suffix-Schlüssel (`welcome_one`, `welcome_other`). Sie schreibt **nicht** `t("some.key")`-Aufrufstellen um – diese bleiben schlüsselbasiert. Um ein Projekt auf das englische Quellstring-`t()`-Schema von ai-i18n-tools umzustellen, ändern Sie die Aufrufstellen in `t("English text")` (oder führen Sie `migrate-intlayer` aus, wenn die Quelle Intlayer `.content.ts` ist).
+Die JSON-Pipeline deckt typische i18next Schlüssel/Wert-Gebietsschemadateien ab: verschachtelte Objekte, Zeichenfolgen-Arrays, <code v-pre>{{name}}</code>-Interpolation in Werten und unabhängige Plural-Suffix-Schlüssel (`welcome_one`, `welcome_other`). Sie schreibt `t("some.key")`-Aufrufstellen **nicht** um – diese bleiben schlüsselbasiert. Um ein Projekt auf das Quellzeichenfolgen-`t()`-Schema von ai-i18n-tools umzustellen, ändern Sie die Aufrufstellen zu `t("source text")`. Der Text ist in `sourceLocale` geschrieben, was jede Sprache sein kann. Wenn die Quelle Intlayer `.content.ts` ist, führen Sie `migrate-intlayer` aus. Um Intlayer beizubehalten und nur dessen Wörterbücher zu übersetzen, verwenden Sie [`translate-intlayer`](/de/guide/translating-intlayer).
 
 Beispiel (englische Quell-Namespaces unter `public/locales/en/`):
 

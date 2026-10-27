@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # Câbler i18next à l'exécution
 
+Cette page configure la résolution à l'exécution. Elle ne découvre pas de chaînes. Si l'application contient encore des littéraux en langue source bruts, encapsulez-les d'abord : [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js). L'application installe `i18next`, et `react-i18next` lorsque les composants utilisent `useTranslation()`. `ai-i18n-tools` n'installe aucun de ces paquets.
+
 Créez votre fichier de configuration i18n à l'aide des assistants exportés par `'ai-i18n-tools/runtime'`. Pour les signatures d'API, consultez [Assistants d'exécution](/fr/guide/runtime-helpers).
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## Maintenir l'alignement de `SOURCE_LOCALE`
 
-**Gardez trois valeurs alignées :** `sourceLocale` dans `ai-i18n-tools.config.json`, `SOURCE_LOCALE` dans ce fichier, et le JSON plat pluriel que `translate-ui` écrit comme `{sourceLocale}.json` dans votre répertoire de sortie plat (souvent `public/locales/`). Utilisez ce même nom de base dans le fichier statique `import` (exemple ci-dessus : `en-GB` → `en-GB.json`). Le champ `lng` dans `sourcePluralFlatBundle` doit être égal à `SOURCE_LOCALE`. Les chemins ES statiques `import` ne peuvent pas utiliser de variables ; si vous modifiez la langue source, mettez à jour `SOURCE_LOCALE` et le chemin d'importation ensemble. Sinon, chargez ce fichier avec un `import(\` dynamique ./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, ou `readFileSync` afin que le chemin soit construit à partir de `SOURCE_LOCALE`.
+`sourceLocale` peut être n'importe quelle langue. L'extrait ci-dessous utilise `en-GB` comme exemple. **Maintenez trois valeurs alignées :** `sourceLocale` dans `ai-i18n-tools.config.json`, `SOURCE_LOCALE` dans ce fichier, et le JSON plat pluriel que `translate-ui` écrit comme `{sourceLocale}.json` sous votre répertoire de sortie plat (souvent `public/locales/`). Utilisez ce même nom de base dans le `import` statique (exemple ci-dessus : `en-GB` → `en-GB.json`). Le champ `lng` dans `sourcePluralFlatBundle` doit être égal à `SOURCE_LOCALE`. Les chemins `import` ES statiques ne peuvent pas utiliser de variables ; si vous modifiez le paramètre régional source, mettez à jour `SOURCE_LOCALE` et le chemin d'importation ensemble. Alternativement, chargez ce fichier avec un `import(\` dynamique./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, ou `readFileSync` afin que le chemin soit construit à partir de `SOURCE_LOCALE`.
 
 L'extrait utilise `./locales/…` et `./public/locales/…` comme si `i18n` se trouvait à côté de ces dossiers. Si votre fichier se trouve sous `src/` (cas typique), utilisez `../locales/…` et `../public/locales/…` afin que les importations se résolvent aux mêmes chemins que `ui.stringsJson`, `languagesManifestPath` et `ui.flatOutputDir`.
 
 Importez `i18n.js` avant que React ne rende le composant (par exemple, en haut de votre point d'entrée). Lorsque l'utilisateur change de langue, appelez `await loadLocale(code)` puis `await i18n.changeLanguage(code)`.
+
+<a id="startup-locale"></a>
+### Paramètre régional de démarrage
+
+Appelez `loadLocale(saved)` puis `i18n.changeLanguage(saved)` avant le premier rendu, pas seulement dans le sélecteur de langue. [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) le fait avant d'afficher. Dans Next.js, la lecture de `localStorage` dans un effet après l'hydratation affiche d'abord le paramètre régional source et peut ne pas correspondre au HTML du serveur. Préférez un cookie que le serveur peut lire, ou chargez le paramètre régional enregistré dans le module client avant le premier rendu client.
 
 `SOURCE_LOCALE` est exporté afin que tout autre fichier qui en a besoin (par exemple, un sélecteur de langue) puisse l'importer directement depuis `'./i18n'`. Si vous migrez une configuration i18next existante, remplacez toutes les chaînes de langue source en dur (par exemple, des vérifications comme `'en-GB'` disséminées dans les composants) par des importations de `SOURCE_LOCALE` depuis votre fichier d'initialisation i18n.
 

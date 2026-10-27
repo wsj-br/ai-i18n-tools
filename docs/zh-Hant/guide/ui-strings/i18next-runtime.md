@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # 在執行階段連接 i18next
 
+此頁面會在執行階段設定查詢。它不會探索字串。如果應用程式仍有未經處理的來源語言字面值，請先將其包裝起來：[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js)。當元件使用 `useTranslation()` 時，應用程式會安裝 `i18next` 和 `react-i18next`。`ai-i18n-tools` 不會安裝任一套件。
+
 使用由 `'ai-i18n-tools/runtime'` 匯出的輔助程式來建立您的 i18n 設定檔。如需 API 簽章，請參閱[執行階段輔助程式](/zh-Hant/guide/runtime-helpers)。
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## 保持 `SOURCE_LOCALE` 對齊
 
-**請保持三個值一致：** `sourceLocale` 在 `ai-i18n-tools.config.json` 中，此檔案中的 `SOURCE_LOCALE`，以及您輸出目錄下的複數型平面 JSON `translate-ui` 會寫成 `{sourceLocale}.json`（通常是 `public/locales/`）。請在靜態 `import` 中使用相同的基本名稱（上方範例：`en-GB` → `en-GB.json`）。`sourcePluralFlatBundle` 中的 `lng` 欄位必須等於 `SOURCE_LOCALE`。靜態 ES `import` 路徑無法使用變數；如果您變更來源地區設定，請同時更新 `SOURCE_LOCALE` 和匯入路徑。或者，使用動態 `import(\` 載入該檔案。/public/locales/${SOURCE_LOCALE}.json\`)`、`fetch` 或 `readFileSync`，以便路徑從 `SOURCE_LOCALE` 建構。
+`sourceLocale` 可以是任何語言。下方的程式碼片段以 `en-GB` 為例。**請保持三個值一致：** `ai-i18n-tools.config.json` 中的 `sourceLocale`、此檔案中的 `SOURCE_LOCALE`，以及 `translate-ui` 在您的扁平輸出目錄（通常是 `public/locales/`）下寫入為 `{sourceLocale}.json` 的複數扁平 JSON。在靜態 `import` 中使用相同的主檔名（上方範例：`en-GB` → `en-GB.json`）。`sourcePluralFlatBundle` 中的 `lng` 欄位必須等於 `SOURCE_LOCALE`。靜態 ES `import` 路徑無法使用變數；如果您變更來源語系，請一併更新 `SOURCE_LOCALE` 和匯入路徑。或者，使用動態的 `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`、`fetch` 或 `readFileSync` 載入該檔案，以便從 `SOURCE_LOCALE` 建立路徑。
 
 該程式碼片段使用 `./locales/…` 和 `./public/locales/…`，就像 `i18n` 位於這些資料夾旁邊一樣。如果您的檔案位於 `src/` 之下（典型情況），請使用 `../locales/…` 和 `../public/locales/…`，以便匯入解析至與 `ui.stringsJson`、`languagesManifestPath` 和 `ui.flatOutputDir` 相同的路徑。
 
 在 React 渲染之前（例如，在您的入口點頂部）匯入 `i18n.js`。當使用者變更語言時，請呼叫 `await loadLocale(code)` 然後呼叫 `await i18n.changeLanguage(code)`。
+
+<a id="startup-locale"></a>
+### 啟動語系
+
+在首次渲染前呼叫 `loadLocale(saved)` 和 `i18n.changeLanguage(saved)`，而不僅僅是在語言切換器中呼叫。[examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) 在列印前會執行此操作。在 Next.js 中，於 hydration 後在 effect 中讀取 `localStorage` 會先繪製來源語系，且可能與伺服器 HTML 不符。建議使用伺服器可讀取的 cookie，或在首次用戶端渲染前，於用戶端模組中載入已儲存的語系。
 
 `SOURCE_LOCALE` 會被匯出，因此任何需要它的其他檔案（例如語言切換器）都可以直接從 `'./i18n'` 匯入。如果您正在遷移現有的 i18next 設定，請將任何硬式編碼的來源地區設定字串（例如，散佈在元件中的 `'en-GB'` 檢查）替換為從您的 i18n 引導檔案匯入 `SOURCE_LOCALE`。
 

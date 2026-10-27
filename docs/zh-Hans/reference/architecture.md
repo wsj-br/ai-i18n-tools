@@ -67,7 +67,7 @@
 
 对于 `.html` / `.htm` 源文件（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件转而路由至 `html-i18n-marks.ts`，由其扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素自身的 `textContent` 或属性中获取源文本；有值标记（`data-i18n="Key"`）则使用该值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 为浏览器运行时保留，永远不会被提取。同一模块还驱动 `mark-html` 命令，该命令会自动插入裸标记（包括 `alt` 和 `aria-label`），且从不插入语言环境 URL 标记。HTML 文件永远不会进入 Babel / i18next-scanner 处理阶段。在文档 `outputDir` 下生成的语言环境 HTML 会被排除在此扫描之外。
 
-纯 Astro SSG 站点可以跳过 i18next：在构建时加载扁平化的 `{locale}.json`，并按源文本键解析 `t('English')`（参见 `examples/astro-website/src/i18n/t.ts` 和 [UI 字符串 — Astro 网站](/zh-Hans/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)）。
+普通 Astro SSG 站点可以跳过 i18next：在构建时加载扁平的 `{locale}.json`，并按源文本键解析 `t('source text')`。源语言为 `sourceLocale`，并且可以是任何语言（请参阅 `examples/astro-website/src/i18n/t.ts` 和 [界面字符串 — Astro 网站](/zh-Hans/guide/ui-strings/astro-website)）。
 
 纯 HTML 应用遵循相同的目录模型，使用标记属性代替 `t()` 调用——请参阅[标记 HTML 以进行翻译](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)。即插即用脚本为 `ai-i18n-tools/html-runtime/i18n.js`。
 
@@ -125,7 +125,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 - 发送一个字符串 JSON 数组，并请求返回一个翻译 JSON 数组。
 - 在可用时包含词汇表提示。
 
-`LlmClient.translateUIBatch` 会按顺序尝试每个模型，在解析、网络或脚本错误时回退（包括针对原生脚本区域设置的罗马化/拉丁字母回退）。CLI 会根据 `localeModels`、可选的 `uiModels` 和 `translationModels` 为每个目标区域设置构建该列表（参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)）。
+`LlmClient.translateUIBatch` 会按顺序尝试每个模型，在遇到解析、网络或脚本错误时回退（包括针对原生脚本区域设置的罗马化/拉丁语回退）。CLI 会根据每个目标区域设置，从 `localeModels`、可选的 `uiModels` 和 `translationModels` 构建该列表（请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain))。
 
 ---
 
@@ -147,10 +147,10 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 所有提取器都扩展 `BaseExtractor` 并实现 `extract(content, filepath): Segment[]`。
 
-- `MarkdownExtractor` - 将 markdown 拆分为带类型的片段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被归类为**不可翻译**（`slug`、`id`和其他路由键保持不变）。顶层 `export ...` 块（例如 React 组件定义）与现有的 `import ...` 处理一起被归类为不可翻译的 `other` 片段。以大写 JSX 标签开头的多行块（例如 `<Tabs>` 块）被归类为可翻译段落。不可翻译的片段（代码块、原始 HTML）将原样保留。
-- `AstroTemplateExtractor` - 针 `.astro` 营销页面的解析并替换（通过 `doc-translate.ts` 中的 `translateAstroFile` 使用 `translate-docs`）。提取面向用户的 HTML 文本节点和可翻译属性（`alt`、`title`、`aria-label`、`placeholder`），以及模板 `{expression}` 块中面向用户时的字符串字面量。跳过 frontmatter TypeScript、`<script>`、`<style>`、受保护的属性/键值，以及 `t('…')` 内部的字面量。当输出路径更深时，重新组装会调整相对导入（例如 `src/pages/de/index.astro`）。参见[Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)。
-- `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus UI 目录，而非 MDX 正文）。
-- `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，而非由 `translate-docs` 使用）。
+- `MarkdownExtractor` - 将 Markdown 拆分为类型化片段：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAML frontmatter 被分类为 **不可翻译**（`slug`、`id` 和其他路由键保持稳定）。顶层 `export ...` 块（例如 React 组件定义）会与现有的 `import ...` 处理一起，被分类为不可翻译的 `other` 片段。以大写 JSX 标签开头的多行块（例如 `<Tabs>` 块）会被分类为可翻译段落。不可翻译片段（代码块、原始 HTML）会逐字保留。
+- `AstroTemplateExtractor` - 对 `.astro` 营销页面进行解析并替换（`doc-translate.ts` 中通过 `translateAstroFile` 的 `translate-docs`）。提取面向用户的 HTML 文本节点和可翻译属性（`alt`、`title`、`aria-label`、`placeholder`），以及模板 `{expression}` 块中面向用户的字符串字面量。跳过 frontmatter TypeScript、`<script>`、`<style>`、受保护的属性/键值，以及 `t('…')` 内的字面量。当输出路径更深时，重新组装会调整相对导入（例如 `src/pages/de/index.astro`）。请参阅 [Astro 网站页面](/zh-Hans/guide/ui-strings/astro-website#pages-parse-and-replace)。
+- `JsonExtractor` - 从 Docusaurus JSON 标签文件中提取字符串值（Docusaurus 界面目录，而不是 MDX 正文）。
+- `SvgExtractor` - 从 SVG 中提取 `<text>`、`<title>` 和 `<desc>` 内容（由 `translate-svg` 用于 `config.svg` 下的文件，而不是由 `translate-docs` 使用）。
 - `html-i18n-marks.ts` - 一个集中的 HTML 标签扫描器，由 `extract` 用于 `.html` / `.htm` 源，并由 `mark-html` 命令使用。`collectHtmlI18nStrings` / `collectHtmlI18nLocations` 读取 `data-i18n*` 标记属性（裸标记 → 元素 `textContent` / `title` / `placeholder`；带值的标记 → 值），并且 `markHtmlContent` 将裸标记插入到叶文本/标题/占位符元素中（幂等的，尊重 `data-i18n-ignore`，跳过类似代码和混合内容元素）。共享的 `normalizeI18nText` 助手使构建时密钥与浏览器运行时保持一致。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -161,7 +161,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 | 层 | 机制 | 输出 |
 | --- | --- | --- |
 | 模板 HTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` 下的每个区域设置 `.astro` |
-| 前端内容 / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 扁平化 `public/locales/{locale}.json`（英文源作为键）|
+| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | 扁平 `public/locales/{locale}.json`（源语言字符串作为键；`sourceLocale` 可以是任何语言） |
 
 `sync` 命令按顺序运行启用的步骤：**提取**，然后是 **翻译 UI**（当 `features.translateUIStrings` 时）→ 可选的 **翻译 SVG** → **翻译文档** → 可选的 **翻译 JSON**（除非通过 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过）。初始化模板 `ui-astro-website` 仅搭建 UI 字符串；添加 `docs[]` 和 `features.translateDocs` 用于页面 HTML。
 
@@ -181,19 +181,20 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 
 在翻译之前，敏感语法会被替换为不透明的令牌，以防止 LLM 损坏，按此顺序应用（恢复顺序相反）：
 
-1. **标题 id 后缀**（经典 `{#id}` / MDX `{/* #id */}` 位于 ATX 标题末尾）——从该行中完全剥离，并且**不**发送给模型。恢复后，它们被重新固定到匹配标题的末尾，以便 Docusaurus 仍能看到有效的 id。标题中间的注释保留在文本中，由后续的 MDX / `{#…}` 层处理。
-2. **HTML 标签和注释**（`<strong>`、`<!-- ... -->` 等）——来自已知允许列表的小写 HTML 标签被替换为 <code v-pre>{{HTM_N}}</code> 标记。大写的 JSX 标签（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 层（第 5 步）单独处理。
-3. **提示框标记**（`:::note`、`:::`）——仅起始行上的指令前缀被替换为 <code v-pre>{{ADM_OPEN_N}}</code>；同一行上的任何标题都留给模型翻译。使用完全相同的原始文本恢复。
-4. **文档锚点**（HTML `<a id="…">`、残留的标题中间 Docusaurus `{#…}`）——原样保留。
-5. **MDX 专有构造**（`src/processors/mdx-placeholders.ts`）：
-   - **MDX 注释**（`{/* … */}`，包括不是行尾后缀的标题中间 `{/* #my-id */}`）替换为 <code v-pre>{{MDX_N}}</code>。
-   - **大写 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）——保留为 <code v-pre>{{MDX_N}}</code>，其中可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内重写为 <code v-pre>{{JXA_N}}</code>，除非属性名出现在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 对象字面量中的 `label:`（可通过 `docs[].protectKeys` 跳过）和 `<TabItem value="…">`（当不存在 `label` 属性时，跳过小写的 slug 类值）也会被提取。作为 `||JXA_N: …||` 行追加到段落中，由 `restoreMdx` 合并回去。
-   - **MDX 花括号表达式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）——深度感知匹配，替换为 <code v-pre>{{MDX_N}}</code>。
-6. **Markdown URL**（`](url)`、`src="…"`）——翻译后从映射中恢复。
-7. **行内代码段**（`` `code` ``）和**加粗包裹的行内代码**（`**`code`**`）——保留。
-8. **Markdown 强调**（可选，对 CJK/RTL 区域设置自动启用）——强调分隔符被屏蔽。
+1. **围栏代码块**（三个或更多反引号或波浪号，包括一个更长的围栏包裹一个更短的围栏）——整个围栏，包括信息字符串，被替换为 <code v-pre>{{CDF_N}}</code> 并与其他结构化标记保持顺序。这会将 `::: code-group` 或 `::: tip` 等容器内的示例固定在原位。围栏信息字符串（VitePress 标签）保留源语言。未闭合的起始标记将保留为文本，以防止后续的容器结束标记被吞噬。
+2. **标题ID后缀**（经典 `{#id}` / MDX `{/* #id */}` 在 ATX 标题末尾）——完全从行中剥离，并且**不**发送到模型。恢复后，它们会被重新固定到匹配标题的末尾，以便 Docusaurus 仍然能看到有效的 ID。标题中间的注释保留在文本中，并由后续的 MDX / `{#…}` 层处理。遮罩围栏内的标题不会被剥离。
+3. **HTML 标签和注释**（`<strong>`、`<!-- ... -->` 等）——来自已知允许列表的小写 HTML 标签被替换为 <code v-pre>{{HTM_N}}</code> 标记。大写的 JSX 标签（`<Highlight>`、`<Tabs>`、`</Tab>`）由 MDX 层（步骤 6）单独处理。
+4. **提示标记**（`:::note`、`:::`）——只有起始行上的指令前缀被替换为 <code v-pre>{{ADM_OPEN_N}}</code>；任何同行的标题都留给模型翻译。恢复时使用精确的原始文本。
+5. **文档锚点**（HTML `<a id="…">`，以及标题中间残留的 Docusaurus `{#…}`）- 按原样保留。
+6. **仅限 MDX 的结构**（`src/processors/mdx-placeholders.ts`）：
+   - **MDX 注释**（`{/* … */}`，包括并非行尾后缀的标题中间的 `{/* #my-id */}`）替换为 <code v-pre>{{MDX_N}}</code>。
+   - **大写的 JSX 标签**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）- 作为 <code v-pre>{{MDX_N}}</code> 保留，其可翻译的字符串属性（`label`、`tooltip`、`aria-label`）在标签内被重写为 <code v-pre>{{JXA_N}}</code>，除非属性名称出现在 `docs[].protectAttributes` 中；`<Tabs values={[ { label: '…' } ]}>` 对象字面量内的 `label:`（可通过 `docs[].protectKeys` 跳过）以及 `<TabItem value="…">`（当不存在 `label` 属性时，跳过小写的 slug 式值）也会被提取。作为 `||JXA_N: …||` 行附加到段落，由 `restoreMdx` 合并回来。
+   - **MDX 花括号表达式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）- 深度感知匹配，替换为 <code v-pre>{{MDX_N}}</code>。
+7. **Markdown URL**（`](url)`、`src="…"`）- 翻译后从映射中恢复。
+8. **内联代码段**（`` `code` ``）和**粗体包裹的内联代码**（`**`code`**`）- 保留。
+9. **Markdown 强调**（可选，为 CJK/RTL 区域设置自动启用）- 强调分隔符被屏蔽。
 
-在模型返回后，`translate-docs` 会恢复映射并验证片段：必须存在相同的双花括号标记多重集，结构标记（<code v-pre>{{HTM_N}}</code>、警告标记）必须保持其有序子序列（诸如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 之类的内容标记可以随语序移动），恢复的 HTML 标签类型必须与未受保护的源相匹配，并且任何剩余的双花括号标识符必须已经存在于源中（因此凭空发明的标记将会失败）。文档提示还要求模型复制每个标记一次，保持结构标记的顺序，并且不要发明新的双花括号包装器；机械检查仍然是权威的。
+模型返回后，`translate-docs` 会恢复映射并验证段落：必须存在相同的双花括号令牌多重集，结构化令牌（<code v-pre>{{HTM_N}}</code>、告诫标记、<code v-pre>{{CDF_N}}</code>）必须保持其有序子序列（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code> 等内容令牌可以随词序移动），恢复的 HTML 标签类型必须与未受保护的源匹配，并且任何剩余的双花括号标识符必须已存在于源中（因此自创的令牌会失败）。文档提示还要求模型将每个令牌复制一次，保持结构化令牌的顺序，并且不要自创新的双花括号包装器；机械检查仍然具有权威性。
 
 Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-attribute-protection.ts` 中实现，并由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按块驱动（参见 [保护属性 / 保护键](/zh-Hans/reference/configuration#protectattributes-protectkeys)）。
 
@@ -262,7 +263,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 - ****OpenRouter 额外功能**（仅在 `openrouter` 处于活动状态时）：通过 `provider` 请求字段以及 `HTTP-Referer` / `X-Title` 标头进行吞吐量路由。每个提供程序都会报告令牌使用情况。OpenRouter 和 Cheaper Inference 还会返回计费的美元金额（`usage.cost`；Cheaper Inference 会回退到 `cheaper_inference.billing.billed_cost_usd`）。当提供程序省略该金额时，美元成本将根据 `providers.<name>.modelPricing`、然后是提供程序范围的 `pricing` 默认值、最后是 models.dev 的输入和输出列表价格进行计算，并存储在 `api_calls` 行中。提供程序报告的成本（包括 `0`）永远不会被替换。未知成本保持未设置状态。对调用进行定价时仅读取 `<cacheDir>/benchmark-scores.json` 的 models.dev 切片；它不会下载 languagebench 或 Arena 文件。
 - ****调试流量日志**：如果设置了 `debugTrafficFilePath`，则将请求和响应 JSON 追加到文件（程序化）。CLI `--debug-failed` 会在 `cacheDir` 下写入 `FAILED-TRANSLATION` 文件，其中包含系统/用户提示词、原始助手回复以及失败的 UI、文档、JSON 和 SVG 翻译检查尝试的验证错误。提供程序 API / 空主体失败会打印在控制台上，而不是转储仅包含提示词的文件。
 
-`suggest-models` 和仪表板的 Models 选项卡不会调用 LLM。它们使用 languagebench ChrF、LMArena Arena Score 和 models.dev 价格对活动提供程序的聊天目录进行排名，然后选择性地替换 `providers.<name>.translationModels`。聚合数据位于 `<cacheDir>/benchmark-scores.json` 中。请参阅 [suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
+`suggest-models` 和仪表板的“模型”选项卡不会调用 LLM。它们使用 languagebench ChrF、LMArena Arena Score 和 models.dev 价格对活动提供商的聊天目录进行排名，然后选择性地替换 `providers.<name>.translationModels`。聚合数据位于 `<cacheDir>/benchmark-scores.json` 中。请参阅 [AI 模型](/zh-Hans/guide/ai-models) 和 [suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
 <a id="config-loading"></a>
 ### 加载配置
@@ -280,7 +281,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 9. `augmentConfigWithUiLanguagesMaster` - 从捆绑的主目录中附加清单显示名称。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 在适用时根据主目录验证区域设置代码。
 
-`init` 从 `initConfigTemplates` 写入启动配置：`ui-markdown`（UI + 可选的应用 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文档 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文档 + `nextraDictionaryPath`）、`ui-astro-website`（纯 Astro UI；为 `.astro` 页面翻译添加 `docs[]`）、`ui-json-bundles`（仅限 JSON `json[]`）、`ui-python`、`ui-python-gettext`、`ui-python-django` 和 `ui-python-flask`。请参阅 [Quick start — Initialise](/zh-Hans/guide/quick-start#step-1-initialise) 和 [Python applications](/zh-Hans/guide/ui-strings/python)。
+`init` 从 `initConfigTemplates` 写入入门配置：`ui-markdown`（UI 字符串和一个扁平的 README 块）、`docs-markdown`（仅 README 和 Markdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePress 文档 + `vitepressThemeCatalog`）、`ui-nextra`（Nextra 文档 + `nextraDictionaryPath`）、`ui-astro-website`（纯 Astro UI；添加 `docs[]` 以进行 `.astro` 页面翻译）、`ui-json-bundles`（仅 JSON `json[]`）、`ui-python`、`ui-python-gettext`、`ui-python-django` 和 `ui-python-flask`。`--with-readme` 会将相同的 README 块附加到任何尚未列出 `README.md` 的模板，并开启 `translateDocs`。请参阅 [UI 字符串 — 初始化](/zh-Hans/guide/ui-strings/#step-1-initialise)、[将 i18n 添加到你的 README 和 Markdown 文档](/zh-Hans/guide/add-i18n-to-readme) 和 [Python 应用程序](/zh-Hans/guide/ui-strings/python)。
 
 <a id="logger"></a>
 ### 日志记录器
@@ -292,10 +293,10 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 该工具会将其自身的 UI（CLI 帮助、高流量日志/摘要/错误消息以及翻译仪表板）与其为您翻译的内容分开进行本地化。
 
-- **区域设置解析**（`resolveUiLocale` 位于 `src/core/ui-locale.ts`）：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统区域设置（`Intl.DateTimeFormat().resolvedOptions().locale`）中选取 UI 区域设置。候选值会被规范化，并与随附的资源包集合进行精确匹配或最接近的变体匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），若均不匹配则回退到源区域设置（`en-GB`）。CLI 在构建帮助信息前解析一次（预解析 argv 扫描），并在加载配置后再次解析，以便应用 `uiLanguage`（标志和环境变量仍具有最高优先级）。
-- **运行时**（`src/i18n/index.ts`）：一个包含 <code v-pre>{{name}}</code> 插值的最小化 `t(source, vars)`，以英文源字符串为键，对照 `src/i18n/locales/<code>.json` 中扁平化的各区域设置资源包（在构建时复制到 `dist/i18n/locales`）进行查找。如果缺少键或资源包，则返回源文本。这与 UI 字符串采用的“键即默认值”模型相同——没有哈希查找。
-- **仪表板**：服务器公开 `GET /api/ui-i18n`，为解析后的 UI 区域设置返回 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir`，并通过 `data-i18n*` 属性对静态标记进行本地化。
-- **内部试用**：资源包由 `pnpm i18n:self`（`sync-ui --ui-block src/i18n/strings.json`）生成，该工具会提取并翻译 `ai-i18n-tools.config.json` 中 CLI 和仪表板的 `ui` 代码块。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用，以及仪表板在 `src/dashboard-app/index.html` 中的 `data-i18n*` 标记。
+- **区域设置解析**（`src/core/ui-locale.ts` 中的 `resolveUiLocale`）：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统区域设置（`Intl.DateTimeFormat().resolvedOptions().locale`）中选择 UI 区域设置。候选区域设置会被规范化，并与附带的捆绑包集进行精确匹配或最接近的变体匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），然后回退到源区域设置（`en-GB`）。CLI 会在帮助构建前解析一次（预解析 argv 扫描），并在配置加载后再次解析，以便应用 `uiLanguage`（标志和环境变量仍然优先）。
+- **运行时**（`src/i18n/index.ts`）：一个带有 <code v-pre>{{name}}</code> 插值的最小化 `t(source, vars)`，以英语源字符串为键，对应 `src/i18n/locales/<code>.json` 中每个区域设置的扁平捆绑包（在构建时复制到 `dist/i18n/locales`）。缺失的键或捆绑包会返回源文本。这与 UI 字符串的“以键为默认值”模型相同——没有哈希查找。
+- **仪表盘**：服务器公开 `GET /api/ui-i18n`，为已解析的 UI 区域设置返回 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性本地化静态标记。
+- **自测**：捆绑包由 `pnpm i18n:self`（`sync-ui --ui-block src/i18n/strings.json`）生成，它会提取并翻译 `ai-i18n-tools.config.json` 中的 CLI 和仪表盘 `ui` 块。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用，以及 `src/dashboard-app/index.html` 中仪表盘的 `data-i18n*` 标记。
 
 ---
 

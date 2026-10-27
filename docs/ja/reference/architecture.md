@@ -67,7 +67,7 @@ JS/TSファイル内の`t("literal")`および`i18n.t("literal")`呼び出しを
 
 `.html` / `.htm` ソース（`ui.uiExtractor.extensions` に記載されている場合）において、`extract` はファイルを `html-i18n-marks.ts` 経由でルーティングし、`data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` のマーカー属性（`ui.uiExtractor.htmlI18nAttributes` で設定可能）をスキャンします。ベアマーカーは、要素自身の `textContent` または属性からソーステキストを取得します。値付きマーカー（`data-i18n="Key"`）は、その値を使用します。`data-i18n-locale-src` および `data-i18n-locale-href` はブラウザーランタイム用に予約されており、抽出されることはありません。この同じモジュールは `mark-html` コマンドの機能も提供しており、ベアマーカー（`alt` および `aria-label` を含む）を自動的に挿入しますが、ロケール URL マーカーは挿入しません。HTML ファイルは、Babel / i18next-scanner の処理パスに到達することはありません。docs `outputDir` 配下に生成されたロケール HTML は、このスキャンの対象外となります。
 
-プレーンなAstro SSGサイトではi18nextをスキップし、ビルド時にフラットな`{locale}.json`を読み込み、ソーステキストキーで`t('English')`を解決できます（`examples/astro-website/src/i18n/t.ts`および[UI strings — Astro website](/ja/guide/ui-strings/astro-website#astro-website-plain-astro-not-starlight)を参照してください）。
+プレーンな Astro SSG サイトでは i18next を省略できます。ビルド時にフラットな `{locale}.json` を読み込み、ソーステキストのキーで `t('source text')` を解決します。ソース言語は `sourceLocale` で、任意の言語を使用できます (`examples/astro-website/src/i18n/t.ts` と [UI 文字列 — Astro ウェブサイト](/ja/guide/ui-strings/astro-website) を参照)。
 
 プレーンな HTML アプリは、`t()` 呼び出しの代わりにマーカー属性を使用する同じカタログモデルに従います。[翻訳用に HTML をマークする](/ja/guide/ui-strings/plain-html#marking-html-for-translation) を参照してください。ドロップインスクリプトは `ai-i18n-tools/html-runtime/i18n.js` です。
 
@@ -125,7 +125,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 - 文字列のJSON配列を送信し、翻訳のJSON配列を返すよう要求します。
 - 利用可能な場合は用語集のヒントを含めます。
 
-`LlmClient.translateUIBatch`は各モデルを順番に試し、解析エラー、ネットワークエラー、またはスクリプトエラー（ネイティブスクリプトのロケールでのローマ字/ラテン文字フォールバックを含む）が発生した場合はフォールバックします。CLIは`localeModels`、オプションの`uiModels`、および`translationModels`からターゲットロケールごとにそのリストを構築します（[プロバイダーとモデル](/ja/guide/providers-and-models#model-fallback-chain)を参照）。
+`LlmClient.translateUIBatch` は、解析、ネットワーク、または不正なスクリプトのエラー（ネイティブスクリプトのロケールに対するローマ字/ラテン文字のフォールバックを含む）でフォールバックしながら、各モデルを順番に試行します。CLI は、`localeModels`、オプションの `uiModels`、および `translationModels` からターゲットロケールごとにそのリストを構築します（[AI モデル](/ja/guide/ai-models#model-fallback-chain) を参照）。
 
 ---
 
@@ -147,10 +147,10 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 
 すべてのエクストラクターは `BaseExtractor` を継承し、`extract(content, filepath): Segment[]` を実装しています。
 
-- `MarkdownExtractor` - Markdownを型付きセグメントに分割します：`frontmatter`、`heading`、`paragraph`、`code`、`admonition`。YAMLフロントマターは**non-translatable**に分類されます（`slug`、`id`、およびその他のルーティングキーは安定します）。トップレベルの`export ...`ブロック（例：Reactコンポーネント定義）は、既存の`import ...`処理とともに、翻訳不可の`other`セグメントとして分類されます。大文字のJSXタグで始まる複数行ブロック（例：`<Tabs>`ブロック）は、翻訳可能な段落として分類されます。翻訳不可のセグメント（コードブロック、生のHTML）はそのまま保持されます。
-- `AstroTemplateExtractor` - `.astro`マーケティングページ用の解析と置換（`doc-translate.ts`内の`translateAstroFile`経由の`translate-docs`）。ユーザー向けのHTMLテキストノードと翻訳可能な属性（`alt`、`title`、`aria-label`、`placeholder`）、およびユーザー向けの場合のテンプレート`{expression}`ブロック内の文字列リテラルを抽出します。フロントマターのTypeScript、`<script>`、`<style>`、保護された属性/キー値、および`t('…')`内のリテラルをスキップします。出力パスが深い場合、再構成時に相対インポートを調整します（例：`src/pages/de/index.astro`）。[Astro website pages](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照してください。
-- `JsonExtractor` - Docusaurus JSONラベルファイルから文字列値を抽出します（MDX本文ではなくDocusaurus UIカタログ）。
-- `SvgExtractor` - SVGから`<text>`、`<title>`、および`<desc>`コンテンツを抽出します（`config.svg`下のファイルに対して`translate-svg`で使用され、`translate-docs`では使用されません）。
+- `MarkdownExtractor` - マークダウンを型付きセグメント（`frontmatter`、`heading`、`paragraph`、`code`、`admonition`）に分割します。YAML フロントマターは**翻訳不可**として分類されます（`slug`、`id`、およびその他のルーティングキーは変更されません）。トップレベルの `export ...` ブロック（React コンポーネント定義など）は、既存の `import ...` 処理と並行して、翻訳不可の `other` セグメントとして分類されます。大文字の JSX タグで始まる複数行ブロック（`<Tabs>` ブロックなど）は、翻訳可能な段落として分類されます。翻訳不可のセグメント（コードブロック、生の HTML）はそのまま保持されます。
+- `AstroTemplateExtractor` - `.astro` マーケティングページの解析と置換（`doc-translate.ts` 内の `translateAstroFile` を介した `translate-docs`）。ユーザー向けの HTML テキストノードと翻訳可能な属性（`alt`、`title`、`aria-label`、`placeholder`）を抽出し、さらにユーザー向けの場合はテンプレート `{expression}` ブロック内の文字列リテラルも抽出します。フロントマターの TypeScript、`<script>`、`<style>`、保護された属性/キーの値、および `t('…')` 内のリテラルはスキップします。再構築時に、出力パスが深くなる場合（`src/pages/de/index.astro` など）は相対インポートを調整します。[Astro ウェブサイトのページ](/ja/guide/ui-strings/astro-website#pages-parse-and-replace) を参照してください。
+- `JsonExtractor` - Docusaurus の JSON ラベルファイルから文字列値を抽出します（MDX 本文ではなく、Docusaurus UI カタログ）。
+- `SvgExtractor` - SVG から `<text>`、`<title>`、および `<desc>` のコンテンツを抽出します（`translate-docs` ではなく、`translate-svg` によって `config.svg` 以下のファイルに使用されます）。
 - `html-i18n-marks.ts` - `extract`が`.html` / `.htm`ソースに使用し、`mark-html`コマンドによって使用される、集中型のHTMLタグスキャナー。`collectHtmlI18nStrings` / `collectHtmlI18nLocations`は`data-i18n*`マーカー属性（ベアマーカー → 要素の`textContent` / `title` / `placeholder`、値を持つマーカー → 値）を読み取り、`markHtmlContent`はベアマーカーをリーフテキスト/タイトル/プレースホルダー要素に挿入します（冪等性があり、`data-i18n-ignore`を尊重し、コードのような要素や混合コンテンツ要素はスキップします）。共有の`normalizeI18nText`ヘルパーは、ビルド時のキーをブラウザランタイムと同じにします。
 
 <a id="astro-hybrid-sites-ui--page-html"></a>
@@ -161,7 +161,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 | レイヤー | メカニズム | 出力 |
 | --- | --- | --- |
 | テンプレート HTML | `AstroTemplateExtractor` + `translate-docs` | `docs[].outputDir` 以下のロケールごとの `.astro` |
-| Frontmatter / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | フラットな`public/locales/{locale}.json`（英語ソースをキーとして使用） |
+| フロントマター / `t('…')` | `ui-string-babel.ts` + `extract` + `translate-ui` | フラットな `public/locales/{locale}.json` (ソース言語の文字列をキーとする。`sourceLocale` は任意の言語で可) |
 
 `sync` コマンドは、有効なステップを順に実行します: **extract**、次に **translate-ui**（`features.translateUIStrings` の場合）→ オプションの **translate-svg** → **translate-docs** → オプションの **translate-json**（`--no-ui`、`--no-svg`、`--no-docs`、または `--no-json` でスキップされない限り）。初期テンプレート `ui-astro-website` は UI 文字列のみを足場として提供します。ページ HTML には `docs[]` と `features.translateDocs` を追加します。
 
@@ -181,19 +181,20 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 
 翻訳前に、LLMによる破損を防ぐために、機微な構文が不透明なトークンに置き換えられます。以下の順序で適用されます（復元は逆順）：
 
-1. **見出しIDのサフィックス**（ATX見出し末尾のクラシックな`{#id}` / MDX `{/* #id */}`）— 行から完全に剥がされ、モデルには**送信されません**。復元後、一致する見出しの末尾に再び固定され、Docusaurusが引き続き有効なIDを認識できるようにします。見出し途中のコメントはテキスト内に残り、後続のMDX / `{#…}`レイヤーで処理されます。
-2. **HTMLタグとコメント**（`<strong>`、`<!-- ... -->`など）- 既知の許可リストからの小文字HTMLタグは<code v-pre>{{HTM_N}}</code>トークンに置換されます。大文字のJSXタグ（`<Highlight>`、`<Tabs>`、`</Tab>`）はMDXレイヤー（ステップ5）で別途処理されます。
-3. **アドモニションマーカー**（`:::note`、`:::`）- 開始行のディレクティブプレフィックスのみが<code v-pre>{{ADM_OPEN_N}}</code>に置換されます。同じ行にあるタイトルはモデルが翻訳するために残されます。元のテキストと完全に一致する形で復元されます。
-4. **ドキュメントアンカー**（HTML `<a id="…">`、見出し途中に残ったDocusaurus `{#…}`）- そのまま保持されます。
-5. **MDX専用の構成要素**（`src/processors/mdx-placeholders.ts`）:
-   - **MDXコメント**（`{/* … */}`、行末サフィックスではない見出し途中の`{/* #my-id */}`を含む）は<code v-pre>{{MDX_N}}</code>に置換されます。
-   - **大文字のJSXタグ**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`）- <code v-pre>{{MDX_N}}</code>として保持され、翻訳可能な文字列属性（`label`、`tooltip`、`aria-label`）は、属性名が`docs[].protectAttributes`に含まれていない限り、タグ内で<code v-pre>{{JXA_N}}</code>に書き換えられます。`<Tabs values={[ { label: '…' } ]}>`オブジェクトリテラル内の`label:`（`docs[].protectKeys`でスキップ可能）および`<TabItem value="…">`（`label`属性が存在せず、小文字のスラッグ風の値をスキップする場合）も抽出されます。セグメントに`||JXA_N: …||`行として追加され、`restoreMdx`によってマージして戻されます。
-   - **MDXブレース式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>）- 深さを考慮したマッチングで、<code v-pre>{{MDX_N}}</code>に置換されます。
-6. **Markdown URL**（`](url)`、`src="…"`）- 翻訳後にマップから復元されます。
-7. **インラインコードスパン**（`` `code` ``）および**太字で囲まれたインラインコード**（`**`code`**`）- 保持されます。
-8. **Markdownの強調**（オプション、CJK/RTLロケールでは自動的に有効）- 強調デリミタがマスクされます。
+1. **フェンスコードブロック**（3つ以上のバッククォートまたはチルダ。長いフェンスが短いフェンスを囲む場合を含む） - フェンス全体（情報文字列を含む）は <code v-pre>{{CDF_N}}</code> に置き換えられ、他の構造トークンと順序が保たれます。これにより、`::: code-group` や `::: tip` などのコンテナ内のサンプルがそのまま保持されます。フェンス情報文字列（VitePressのタブラベル）はソース言語のままです。閉じられていない開始フェンスはテキストとして残され、後続のコンテナクローザーが飲み込まれないようにします。
+2. **見出しIDサフィックス**（ATX見出しの末尾にある従来の `{#id}` / MDX `{/* #id */}`）— 行から完全に取り除かれ、モデルには**送信されません**。復元後、対応する見出しの末尾に再び付加され、Docusaurusが有効なIDを認識できるようにします。見出し途中のコメントはテキストに残り、後のMDX / `{#…}` レイヤーで処理されます。マスクされたフェンス内の見出しは取り除かれません。
+3. **HTMLタグとコメント**（`<strong>`、`<!-- ... -->`など） - 既知の許可リストにある小文字のHTMLタグは <code v-pre>{{HTM_N}}</code> トークンに置き換えられます。大文字のJSXタグ（`<Highlight>`、`<Tabs>`、`</Tab>`）はMDXレイヤー（ステップ6）で個別に処理されます。
+4. **アドモニションマーカー**（`:::note`、`:::`） - 開始行のディレクティブプレフィックスのみが <code v-pre>{{ADM_OPEN_N}}</code> に置き換えられます。同じ行のタイトルはモデルが翻訳するために残されます。元のテキストと完全に同じ形で復元されます。
+5. **ドキュメントアンカー**（HTMLの`<a id="…">`、見出しの途中に残ったDocusaurusの`{#…}`） - そのまま保持されます。
+6. **MDX専用の構文**（`src/processors/mdx-placeholders.ts`）:
+   - **MDXコメント**（行末の接尾辞ではない見出しの途中の`{/* #my-id */}`を含む`{/* … */}`）は<code v-pre>{{MDX_N}}</code>に置き換えられます。
+   - **大文字のJSXタグ**（`<Highlight>`、`<Tabs>`、`<TabItem>`、`<TOCInline />`、`</Highlight>`） - <code v-pre>{{MDX_N}}</code>として保持され、翻訳可能な文字列属性（`label`、`tooltip`、`aria-label`）は、属性名が`docs[].protectAttributes`に含まれていない限り、タグ内で<code v-pre>{{JXA_N}}</code>に書き換えられます。`<Tabs values={[ { label: '…' } ]}>`オブジェクトリテラル内（`docs[].protectKeys`でスキップ可能）の`label:`と`<TabItem value="…">`（`label`属性が存在せず、小文字のスラッグのような値をスキップする場合）も抽出されます。`||JXA_N: …||`行としてセグメントに追加され、`restoreMdx`によってマージされて戻されます。
+   - **MDXの波括弧式**（`{frontMatter.title}`、<code v-pre>style={{…}}</code>） - 深さを考慮したマッチングで、<code v-pre>{{MDX_N}}</code>に置き換えられます。
+7. **MarkdownのURL**（`](url)`、`src="…"`） - 翻訳後にマップから復元されます。
+8. **インラインコードスパン**（`` `code` ``）と**太字で囲まれたインラインコード**（`**`code`**`） - 保持されます。
+9. **Markdownの強調**（オプション、CJK/RTLロケールでは自動的に有効化） - 強調の区切り文字はマスクされます。
 
-モデルが戻った後、`translate-docs`はマップを復元し、セグメントを検証します。二重中括弧トークンの同じ多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、警告マーカー）は順序付けられたサブシーケンスを維持する必要があり（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**`などのコンテンツトークンは語順に合わせて移動できます）、復元されたHTMLタグの種類は保護されていないソースと一致する必要があり、残っている二重中括弧の識別子はソースに既に存在していたものでなければなりません（したがって、でっち上げられたトークンは失敗します）。ドキュメントプロンプトはまた、モデルに対して各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重中括弧ラッパーをでっち上げないように要求します。機械的なチェックが権威を持ちます。
+モデルが応答を返した後、`translate-docs`はマップを復元し、セグメントを検証します。同じ二重波括弧トークンの多重集合が存在する必要があり、構造トークン（<code v-pre>{{HTM_N}}</code>、アドモニションマーカー、<code v-pre>{{CDF_N}}</code>）はその順序付けられた部分シーケンスを維持する必要があります（<code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>**</code>などのコンテンツトークンは語順とともに移動する場合があります）。復元されたHTMLタグの種類は、保護されていないソースと一致する必要があり、また、残った二重波括弧の識別子は、ソースに既に存在していたものでなければなりません（したがって、作成されたトークンは失敗します）。ドキュメントのプロンプトはまた、各トークンを1回コピーし、構造トークンの順序を維持し、新しい二重波括弧のラッパーを作成しないようにモデルに要求します。機械的なチェックが引き続き権威を持ちます。
 
 AstroテンプレートとMDX JSXの共有属性/キー保護は`src/processors/expression-attribute-protection.ts`で実装されており、`docs[].protectAttributes`と`docs[].protectKeys`によってブロックごとに駆動されます（[protectAttributes / protectKeys](/ja/reference/configuration#protectattributes-protectkeys)を参照）。
 
@@ -262,7 +263,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 - **OpenRouterの追加機能** (`openrouter` がアクティブな場合のみ): `provider` リクエストフィールドおよび `HTTP-Referer` / `X-Title` ヘッダーを介したスループットルーティング。トークン使用量はすべてのプロバイダーについて報告されます。OpenRouterおよびCheaper Inferenceは、請求されるUSD金額も返します (`usage.cost`。Cheaper Inferenceは `cheaper_inference.billing.billed_cost_usd` にフォールバックします)。プロバイダーがその金額を省略した場合、USDコストは `providers.<name>.modelPricing` から計算され、次にプロバイダー全体の `pricing` デフォルト値、その次に models.dev の入力および出力リスト価格から計算され、`api_calls` 行に保存されます。プロバイダーが報告したコスト (`0` を含む) が置き換えられることはありません。不明なコストは設定されないままとなります。呼び出しの価格設定では `<cacheDir>/benchmark-scores.json` の models.dev スライスのみが読み取られ、languagebenchやArenaファイルはダウンロードされません。
 - **デバッグトラフィックログ**: `debugTrafficFilePath` が設定されている場合、リクエストとレスポンスのJSONがファイルに追記されます (プログラムによる)。CLI `--debug-failed` は、システム/ユーザープロンプト、生のAI応答、および失敗したUI、ドキュメント、JSON、SVGの翻訳チェック試行に対する検証エラーを含む `FAILED-TRANSLATION` ファイルを `cacheDir` 配下に書き込みます。プロバイダーAPIまたは空のボディによる失敗は、プロンプトのみのファイルをダンプする代わりにコンソールに出力されます。
 
-`suggest-models` およびダッシュボードの「Models」タブはLLMを呼び出しません。これらは、languagebenchのChrF、LMArenaのArena Score、およびmodels.devの価格を使用してアクティブなプロバイダーのチャットカタログをランク付けし、必要に応じて `providers.<name>.translationModels` を置き換えます。集計データは `<cacheDir>/benchmark-scores.json` に存在します。[suggest-models](/ja/reference/cli-commands/models#suggest-models) を参照してください。
+`suggest-models` とダッシュボードの [モデル] タブは LLM を呼び出しません。これらは languagebench ChrF、LMArena Arena Score、models.dev の価格でアクティブなプロバイダーのチャットカタログをランク付けし、オプションで `providers.<name>.translationModels` を置き換えます。集計は `<cacheDir>/benchmark-scores.json` に格納されます。[AI モデル](/ja/guide/ai-models) と [suggest-models](/ja/reference/cli-commands/models#suggest-models) を参照してください。
 
 <a id="config-loading"></a>
 ### 設定の読み込み
@@ -280,7 +281,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 9. `augmentConfigWithUiLanguagesMaster` - バンドルされたマスターカタログからマニフェスト表示名を添付します。
 10. `assertEffectiveLocalesInUiLanguagesMaster` - 該当する場合、マスターカタログに対してロケールコードを検証します。
 
-`init` は `initConfigTemplates` からスターター設定を書き込みます：`ui-markdown`（UI + オプションのアプリMarkdown）、`ui-docusaurus`、`ui-starlight`、`ui-vitepress`（VitePressドキュメント + `vitepressThemeCatalog`）、`ui-nextra`（Nextraドキュメント + `nextraDictionaryPath`）、`ui-astro-website`（プレーンなAstro UI。`.astro` ページの翻訳には `docs[]` を追加）、`ui-json-bundles`（JSON `json[]` のみ）、`ui-python`、`ui-python-gettext`、`ui-python-django`、および `ui-python-flask`。[Quick start — Initialise](/ja/guide/quick-start#step-1-initialise) および [Python applications](/ja/guide/ui-strings/python) を参照してください。
+`init`は`initConfigTemplates`からスターター設定を書き込みます: `ui-markdown` (UI文字列とフラットなREADMEブロック)、`docs-markdown` (READMEとMarkdownのみ)、`ui-docusaurus`、`ui-starlight`、`ui-vitepress` (VitePressドキュメント + `vitepressThemeCatalog`)、`ui-nextra` (Nextraドキュメント + `nextraDictionaryPath`)、`ui-astro-website` (プレーンなAstro UI。`.astro`ページの翻訳には`docs[]`を追加)、`ui-json-bundles` (JSON `json[]`のみ)、`ui-python`、`ui-python-gettext`、`ui-python-django`、`ui-python-flask`。`--with-readme`は、`README.md`をまだリストしていないテンプレートに同じREADMEブロックを追加し、`translateDocs`をオンにします。詳細は[UI文字列 — 初期化](/ja/guide/ui-strings/#step-1-initialise)、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)、[Pythonアプリケーション](/ja/guide/ui-strings/python)を参照してください。
 
 <a id="logger"></a>
 ### ロガー
@@ -292,10 +293,10 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 
 ツールは、コマンドラインインターフェースのヘルプ、高トラフィックログ/サマリー/エラーメッセージ、および翻訳ダッシュボードを含む自身のUIを、翻訳対象のコンテンツとは別にローカライズします。
 
-- **ロケール解決** (`src/core/ui-locale.ts`内の`resolveUiLocale`): UIロケールは、`-L` / `--ui-lang` > `AI_I18N_LANG` > 設定の`uiLanguage` > ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) の優先順位で決定されます。候補は正規化され、同梱されているバンドルセットに対して完全一致または最も近いバリエーションでマッチングされ (例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`)、一致しない場合はソースロケール (`en-GB`) にフォールバックします。CLIは、ヘルプが構築される前 (argvスキャンの事前解析) に1回解決し、設定の読み込み後に `uiLanguage` が適用されるよう再度解決します (フラグと環境変数が引き続き優先されます)。
-- **ランタイム** (`src/i18n/index.ts`): <code v-pre>{{name}}</code> 補間を備えた最小限の `t(source, vars)` であり、`src/i18n/locales/<code>.json` 内のロケールごとのフラットなバンドル (ビルド時に `dist/i18n/locales` にコピーされる) に対して、英語のソース文字列をキーとして使用します。キーまたはバンドルが見つからない場合は、ソーステキストが返されます。これはUI文字列と同じキーをデフォルト値とするモデルであり、ハッシュルックアップは行われません。
-- **ダッシュボード**: サーバーは、解決されたUIロケールに対して `{ locale, dir, bundle }` を返す `GET /api/ui-i18n` を公開し、フロントエンドは `<html lang>` / `dir` を設定し、`data-i18n*` 属性を介して静的マークアップをローカライズします。
-- **ドッグフーディング**: バンドルは `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) によって生成され、`ai-i18n-tools.config.json` 内のCLIおよびダッシュボードの `ui` ブロックを抽出して翻訳します。カタログキーは、`src/cli/` および `src/i18n/` 全体の `t()` 呼び出しと、`src/dashboard-app/index.html` 内のダッシュボードの `data-i18n*` マーカーから取得されます。
+- **ロケール解決** (`src/core/ui-locale.ts`内の`resolveUiLocale`): UIロケールを`-L` / `--ui-lang` > `AI_I18N_LANG` > 設定`uiLanguage` > ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) の順で選択します。候補は正規化され、同梱されているバンドルセットと完全一致または最も近いバリエーション (例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`) で照合され、ソースロケール (`en-GB`) にフォールバックします。CLIは、ヘルプがビルドされる前に1回 (argvのスキャン前)、そして設定が読み込まれた後にもう1回解決を行い、`uiLanguage`が適用されるようにします (フラグと環境変数が常に優先されます)。
+- **ランタイム** (`src/i18n/index.ts`): <code v-pre>{{name}}</code>補間を備えた最小限の`t(source, vars)`で、`src/i18n/locales/<code>.json`内のロケールごとのフラットなバンドルに対して英語のソース文字列をキーとして使用します (ビルド時に`dist/i18n/locales`にコピーされます)。キーまたはバンドルが見つからない場合は、ソーステキストが返されます。これはUI文字列と同じキーをデフォルトとして使用するモデルです — ハッシュルックアップはありません。
+- **ダッシュボード**: サーバーは、解決されたUIロケールに対して`{ locale, dir, bundle }`を返す`GET /api/ui-i18n`を公開します。フロントエンドは`<html lang>` / `dir`を設定し、`data-i18n*`属性を介して静的マークアップをローカライズします。
+- **ドッグフーディング**: バンドルは`pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) によって生成されます。これは`ai-i18n-tools.config.json`内のCLIとダッシュボードの`ui`ブロックを抽出して翻訳します。カタログキーは、`src/cli/`と`src/i18n/`にまたがる`t()`呼び出しと、`src/dashboard-app/index.html`内のダッシュボードの`data-i18n*`マーカーから取得されます。
 
 ---
 

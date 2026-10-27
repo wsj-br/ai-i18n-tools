@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # 런타임에 i18next 연결
 
+이 페이지는 런타임에 조회를 연결합니다. 문자열을 검색하지는 않습니다. 앱에 아직 하드코딩된 소스 언어 리터럴이 있다면 먼저 감싸세요. [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js). 앱은 컴포넌트가 `useTranslation()`를 사용할 때 `i18next` 및 `react-i18next`을 설치합니다. `ai-i18n-tools`는 두 패키지 중 어느 것도 설치하지 않습니다.
+
 `'ai-i18n-tools/runtime'`에서 내보낸 헬퍼를 사용하여 i18n 설정 파일을 만듭니다. API 시그니처는 [런타임 헬퍼](/ko/guide/runtime-helpers)를 참조하십시오.
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## `SOURCE_LOCALE` 정렬 유지
 
-**세 값을 일치시켜 유지하세요:** `ai-i18n-tools.config.json`의 `sourceLocale`, 이 파일의 `SOURCE_LOCALE`, 그리고 평면 출력 디렉터리 아래에 `translate-ui`이 `{sourceLocale}.json`로 작성하는 복수형 평면 JSON (보통 `public/locales/`). 정적 `import`에서 동일한 기본 이름을 사용하세요 (위의 예: `en-GB` → `en-GB.json`). `sourcePluralFlatBundle`의 `lng` 필드는 `SOURCE_LOCALE`과 같아야 합니다. 정적 ES `import` 경로는 변수를 사용할 수 없습니다. 소스 로케일을 변경하는 경우 `SOURCE_LOCALE`과 가져오기 경로를 함께 업데이트하세요. 또는 동적 `import(\`을 사용하여 해당 파일을 로드하세요. ./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, 또는 `readFileSync`처럼 경로가 `SOURCE_LOCALE`에서 생성되도록 합니다.
+`sourceLocale`는 모든 언어가 될 수 있습니다. 아래 스니펫은 `en-GB`을 예로 사용합니다. **세 가지 값을 일치시켜야 합니다.** `ai-i18n-tools.config.json`의 `sourceLocale`, 이 파일의 `SOURCE_LOCALE`, 그리고 `translate-ui`가 플랫 출력 디렉터리(주로 `public/locales/`) 아래에 `{sourceLocale}.json`로 쓰는 복수형 플랫 JSON입니다. 정적 `import`에서도 동일한 기본 이름을 사용하세요(위 예시: `en-GB` → `en-GB.json`). `sourcePluralFlatBundle`의 `lng` 필드는 `SOURCE_LOCALE`와 같아야 합니다. 정적 ES `import` 경로는 변수를 사용할 수 없으므로, 소스 로캘을 변경하는 경우 `SOURCE_LOCALE`와 import 경로를 함께 업데이트해야 합니다. 또는 동적 `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch` 또는 `readFileSync`를 사용하여 해당 파일을 로드하여 `SOURCE_LOCALE`에서 경로를 빌드할 수 있습니다.
 
 이 스니펫은 `i18n`가 해당 폴더 옆에 위치하는 것처럼 `./locales/…` 및 `./public/locales/…`을 사용합니다. 파일이 `src/` 아래에 있는 경우(일반적인 경우), 임포트가 `ui.stringsJson`, `languagesManifestPath`, `ui.flatOutputDir`과 동일한 경로로 해석되도록 `../locales/…` 및 `../public/locales/…`를 사용하세요.
 
 React가 렌더링되기 전에 `i18n.js`을(를) 가져옵니다(예: 진입점 상단). 사용자가 언어를 변경하면 `await loadLocale(code)`을(를) 호출한 다음 `await i18n.changeLanguage(code)`을(를) 호출합니다.
+
+<a id="startup-locale"></a>
+### 시작 로캘
+
+언어 전환기에서뿐만 아니라 첫 렌더링 전에 `loadLocale(saved)`를 호출한 다음 `i18n.changeLanguage(saved)`를 호출하세요. [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js)는 출력하기 전에 이 작업을 수행합니다. Next.js에서 하이드레이션 후 effect에서 `localStorage`를 읽으면 소스 로캘이 먼저 표시되어 서버 HTML과 일치하지 않을 수 있습니다. 서버가 읽을 수 있는 쿠키를 사용하거나, 첫 클라이언트 렌더링 전에 클라이언트 모듈에서 저장된 로캘을 로드하는 것이 좋습니다.
 
 `SOURCE_LOCALE`은 다른 파일(예: 언어 전환기)에서 직접 `'./i18n'`을 통해 가져올 수 있도록 내보내집니다. 기존의 i18next 설정을 마이그레이션하는 경우, 컴포넌트 전반에 흩어진 하드코딩된 소스 로케일 문자열(예: `'en-GB'` 확인 코드)을 i18n 부트스트랩 파일에서 `SOURCE_LOCALE`을 가져오는 방식으로 대체하세요.
 

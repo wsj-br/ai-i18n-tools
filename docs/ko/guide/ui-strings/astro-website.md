@@ -1,5 +1,4 @@
 <a id="astro-website"></a>
-<a id="astro-website"></a>
 # Astro 웹사이트
 
 정적 Astro 마케팅 또는 앱 사이트(Starlight가 아닌 일반 Astro)의 경우, [Astro 기본 제공 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)과 ai-i18n-tools를 결합하세요. [Astro 통합](/ko/guide/integrations/astro)도 참조하세요.
@@ -14,7 +13,7 @@
 | 파이프라인 | 용도 | 명령어 | 출력 |
 |----------|---------|----------|--------|
 | **페이지 HTML** | 템플릿 본문의 제목, 단락, 내비게이션 레이블, 인라인 배열 | `translate-docs` | 로케일별 `src/pages/{locale}/index.astro` |
-| **UI 문자열(`t()`)** | 프론트매터 데이터, 스크린샷 탭 레이블, 공유 배열 | `extract` → `translate-ui` | `public/locales/{locale}.json`(영문 원문을 키로 사용) |
+| **UI 문자열(`t()`)** | 프런트매터 데이터, 스크린샷 탭 레이블, 공유 배열 | `extract` → `translate-ui` | `public/locales/{locale}.json`(소스 언어 문자열을 키로 사용) |
 
 언어를 추가하거나 제거할 때 세 목록을 정렬된 상태로 유지합니다. `ai-i18n-tools.config.json`의 `targetLocales`, `astro.config.mjs`의 `i18n.locales`(Astro는 **소문자** 경로 코드(예: `pt-br`)를 사용함), `ui-languages.json`(`generate-ui-languages`를 통해). 플랫 번들 **파일 이름**은 구성 대소문자(예: `pt-BR.json`)를 사용합니다. Astro의 `pt-br` 경로를 매니페스트 `code` 필드를 통해 해당 파일에 매핑합니다(`examples/astro-website/src/i18n/locale.ts` 참조).
 
@@ -33,7 +32,7 @@
 <a id="ui-strings-ssg"></a>
 ## UI 문자열 (SSG)
 
-`init -t ui-astro-website -P ollama`를 사용하여 UI 추출을 스캐폴드하고, 페이지 HTML도 번역할 때 `docs[]` 블록으로 병합합니다 ([페이지 구문 분석 및 교체](#astro-website-pages-parse-and-replace) 참조). TypeScript 모듈과 `.astro` 프런트매터(중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록에서도)에서 텍스트를 `t('…')`로 래핑합니다:
+`init -t ui-astro-website -P ollama`(으)로 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록을 병합합니다([페이지 파싱 및 교체](#pages-parse-and-replace) 참조). 리포지토리 README도 번역합니다: `init -t ui-astro-website -P ollama --with-readme`. [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 참조하세요. TypeScript 모듈의 `t('…')` 및 `.astro` 프런트매터에서 사본을 래핑합니다(중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록). 페이지 HTML에는 `t()`이(가) 필요하지 않습니다. `translate-docs`이(가) 복사합니다. [JS/TS 프롬프트](/ko/guide/add-i18n-to-js#agent-prompt)는 i18next 설치 및 부트스트랩을 제외한 해당 프런트매터 및 데이터 파일에 적용됩니다. Astro는 i18next가 아닌 `makeT`을(를) 사용하여 빌드 시간에 `t`을(를) 확인합니다.
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama
@@ -41,9 +40,9 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`astro.config.mjs`의 `i18n.defaultLocale`과 일치하도록 `sourceLocale`을 설정하세요. Astro가 빌드 시 가져올 수 있는 디렉터리에 평면 번들을 작성하세요(템플릿은 `public/locales/` 사용). 영문 원문 리터럴을 키로 조회하여 **빌드 시** `t('…')`를 해결하세요(`examples/astro-website/src/i18n/t.ts` 참조; `strings.json`은 런타임 번들이 아닌 추출 캐시임). 로드 후 언어 전환 기능을 클라이언트 아일랜드에 추가하지 않는 한 정적 사이트에서는 `ai-i18n-tools/runtime`이나 i18next가 **필요하지 않습니다**.
+`astro.config.mjs`에서 `sourceLocale`을 `i18n.defaultLocale`과 일치하도록 설정하세요. 플랫 번들을 Astro가 빌드 시 가져올 수 있는 디렉터리에 쓰세요(템플릿은 `public/locales/`을 사용합니다). 소스 언어 리터럴을 키로 조회하여 **빌드 시** `t('…')`을 해석하세요(`examples/astro-website/src/i18n/t.ts` 참조; `strings.json`은 런타임 번들이 아니라 추출 캐시입니다). 해당 언어는 `sourceLocale`이며 어떤 언어든 될 수 있습니다. 예제에서는 영어를 사용합니다. 로드 후 언어를 전환하는 클라이언트 아일랜드를 추가하지 않는 한, 정적 사이트에는 `ai-i18n-tools/runtime` 또는 i18next가 **필요하지** 않습니다.
 
-`t()`을 호출하는 모든 페이지(영문 루트 페이지 및 각 `src/pages/{locale}/` 복사본)에 연결하세요:
+`t()`을(를) 호출하는 모든 페이지(소스 로케일 페이지 및 각 `src/pages/{locale}/` 사본)를 연결합니다.
 
 ```astro
 import { loadFlatBundle, makeT } from '../i18n/t';        // or ../../i18n/t in locale subfolders
@@ -80,8 +79,8 @@ const t = useTranslations(locale, makeT(flat));
 }
 ```
 
-`ai-i18n-tools translate-docs`을(를) 실행합니다 (또는 [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)에서 `pnpm i18n:translate`). 영어 원본은 `src/pages/index.astro`에 유지되며, 각 타겟 로케일은 추가 디렉터리 계층에 맞춰 임포트가 조정된 `src/pages/{locale}/index.astro`를 받습니다 (예: `../layouts/` → `../../layouts/`).
+`ai-i18n-tools translate-docs`을(를) 실행합니다([`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/)의 `pnpm i18n:translate`도 가능). 소스 페이지는 `src/pages/index.astro`에 유지되며(예시에서는 영어, `sourceLocale`은(는) 모든 언어가 될 수 있음), 각 대상 로케일은 추가 디렉터리 수준에 맞게 가져오기가 조정된 `src/pages/{locale}/index.astro`을(를) 얻습니다(예: `../layouts/` → `../../layouts/`).
 
-**템플릿 본문** 내에서 `{expression}` 블록(인라인 배열, 객체 `title`/`desc` 필드)의 문자열 리터럴은 사용자에게 표시될 때 번역됩니다. 보호된 속성/키의 따옴표로 묶인 값, `t('…')`, `<script>`, `<style>` 내의 리터럴은 변경되지 않습니다. **프런트매터 TypeScript는 이 경로로 번역되지 않습니다**. 공유 프런트매터(`t()` 가져오기 및 데이터 배열 포함)를 영어 및 로케일 페이지에서 동일하게 유지하거나, 영어 페이지를 편집한 후 `translate-docs`를 다시 실행하여 로케일 복사본이 프런트매터 변경 사항을 반영하도록 합니다. 프런트매터 전용 복사본의 경우 대신 [UI 문자열 파이프라인](#astro-website-ui-strings-ssg)을 사용합니다.
+**템플릿 본문** 내에서, `{expression}` 블록(인라인 배열, 객체 `title`/`desc` 필드)의 문자열 리터럴은 사용자에게 표시되는 경우 번역됩니다. 보호된 속성/키의 따옴표로 묶인 값, `t('…')`, `<script>`, `<style>` 내부의 리터럴은 변경되지 않은 상태로 유지됩니다. 이 경로에서는 **프런트매터 TypeScript가 번역되지 않습니다**. 영어 페이지와 로케일 페이지에서 공유 프런트매터(`t()` 가져오기 및 데이터 배열 포함)를 동일하게 유지하거나, 영어 페이지를 편집한 후 `translate-docs`을 다시 실행하여 로케일 사본에 프런트매터 변경 사항이 반영되도록 하세요. 프런트매터 전용 복사의 경우 대신 [UI 문자열 파이프라인](#ui-strings-ssg)을 사용하세요.
 
 전체 하이브리드 랜딩 페이지([`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/))는 HTML은 `translate-docs`을 통해, 스크린샷 탭 레이블은 `t()` + `translate-ui`을 통해 확인하세요.

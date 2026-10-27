@@ -8,10 +8,10 @@
 <a id="quick-start"></a>
 ## クイックスタート
 
-1. `ai-i18n-tools init -t ui-plain-html -P openai`でスキャフォールドするか、以下の設定を追加します。
-2. ソースHTMLをマークします（または`mark-html`に任せます）。
-3. `ui.sourceRoots`と`ui.uiExtractor.extensions`をそれらのファイルに指定します。
-4. `extract`を実行し、次に`translate-ui`を実行します（または`sync-ui`で両方を実行します）。
+1. `ai-i18n-tools init -t ui-plain-html -P openai` でスキャフォールドするか、以下の設定を追加します。リポジトリの README も翻訳する必要がある場合は、`--with-readme` を追加します ([README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme))。
+2. ソース HTML をマークします (または `mark-html` に任せます)。
+3. `ui.sourceRoots` と `ui.uiExtractor.extensions` がそれらのファイルを指すように設定します。
+4. `extract` を実行し、次に `translate-ui` を実行します (または `sync-ui` で両方を実行します)。
 5. `i18n.js`をページと同じディレクトリにコピーし、独自のスクリプトより前に読み込みます。
 6. フォルダをHTTP経由で配信します。`file://`はロケールJSONを`fetch`できません。
 
@@ -94,7 +94,7 @@ ai-i18n-tools sync-ui
 <a id="marking-html-for-translation"></a>
 ## 翻訳のためのHTMLのマーク付け
 
-ベアマーカーを優先してください。英語のソーステキストは要素に残り、そのテキストがカタログキーとなります。`extract`がそれを読み取り、ランタイムが同じプロパティに翻訳を書き戻します。
+ベアマーカーを推奨します。ソース言語のテキストは要素上に残り、そのテキストがカタログキーになります。これは `sourceLocale` で記述され、どの言語でもかまいません。`extract` がそれを読み取り、ランタイムは翻訳を同じプロパティに書き戻します。
 
 - `data-i18n` — キーは`textContent`です。ランタイムが`textContent`を設定します。
 - `data-i18n-title` — キーは`title`です。
@@ -217,6 +217,52 @@ ai-i18n-tools sync-ui
 
 `mark-html`は上記のベアマーカーを挿入します。`--write`を渡さない限り、これはドライランです。`data-i18n-ignore`サブツリー、コードのような要素（`code`、`pre`、`kbd`、`samp`、`var`）、および空または数値のみのテキストをスキップします。混合コンテンツの親を報告し、`<span data-i18n>`でラップするために残します。値付きマーカーを書き込むことはありません。
 
+<a id="agent-prompt"></a>
+### エージェントプロンプト
+
+`mark-html --write` はすでにベアマーカーを挿入します。レポートにまだ未処理の項目 (混合コンテンツの親、JavaScript が挿入するテキスト、ソース言語のままにしておくべき識別子) がリストされている場合は、これを貼り付けます。
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 ランタイムは、最初の実行時に各ソースキーを内部の `data-i18n-source` 属性に記録するため、後でロケールを切り替えても英語の文字列が検索されます。これらの属性は抽出されません。
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ ai-i18n-tools sync-ui
 | 新しい DOM ノードが英語のままになる | それらを挿入した後に `window.i18n.apply()` を呼び出します。 |
 | ポルトガル語で画像が`chart.png`のままになる | 要素には`data-i18n-locale-src`が必要であり、ロケールはソースロケールであってはなりません。 |
 
-ランタイムの `normalizeI18nText` は [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) の `normalizeI18nText` と一致します: トリムしてから、連続する空白を1つにまとめます。英語のソーステキストがカタログキーであるため、翻訳が欠落している場合は英語にフォールバックします。
+ランタイムの `normalizeI18nText` は [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) の `normalizeI18nText` と一致します。つまり、前後の空白をトリミングし、連続する空白を1つにまとめます。ソース言語のテキストがカタログキーであるため、翻訳が見つからない場合はそのソーステキストにフォールバックします。
 
 実行可能なデモは [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) です。`pnpm dev` は [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) でこれを配信します。
 

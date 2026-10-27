@@ -5,7 +5,7 @@
 
 이 저장소는 [README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)(`translated-docs/` 아래의 플랫 출력)에 이를 사용합니다. `translate-docs` 후, 각 번역된 사본은 새로 고쳐진 블록을 얻습니다. 예를 들어 [translated-docs/README.de.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md)는 `translated-docs/` 아래의 형제 로케일 파일과 저장소 루트의 영어 소스로 다시 연결됩니다.
 
-`docsOutput.style = "flat"`(또는 형제 로케일 파일을 상대 경로로 주소 지정할 수 있는 다른 레이아웃)가 필요합니다. [출력 레이아웃](/ko/guide/documents/output-layouts)을 참조하십시오.
+``docsOutput.style = "flat"``(또는 형제 로케일 파일을 상대 경로로 지정할 수 있는 다른 레이아웃)이 필요합니다. [출력 레이아웃](/ko/guide/documents/output-layouts)을 참조하세요. 리포지토리 README에 처음으로 추가하는 경우: [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme).
 
 <a id="1-mark-the-block-in-source-markdown"></a>
 ## 1. 소스 마크다운에서 블록 표시
@@ -46,9 +46,9 @@
 <a id="3-what-happens-at-runtime"></a>
 ## 3. 런타임 시 발생하는 일
 
-1. **추출** — 언어 목록 블록은 모델로 **전송되지 않음** (`translatable: false`).
-2. **각 번역 파일별 처리** — 세그먼트 번역 및 선택적 평면 링크 재작성 후, `postProcessing`이 블록을 재구성합니다. 각 로케일마다 하나의 마크다운 링크를 생성하며, 레이블은 `ui-languages.json`에 존재하면 그 값을 사용하고(없으면 기본 마스터 카탈로그, 그 외에는 `localeDisplayNames` 사용), 경로는 현재 작성 중인 파일 기준의 상대 경로로 설정됩니다.
-3. **소스 새로 고침** — `translate-docs` / `sync` 문서 처리가 끝난 후, 동일한 표준 블록이 `contentPaths`의 **영어 소스 파일**에 다시 쓰여지므로, 새로운 로케일 추가 시 모든 링크를 수동으로 편집하지 않고도 저장소 내 전환기가 자동으로 업데이트됩니다.
+1. **추출** — 언어 목록 조각은 모델로 **전송되지** 않습니다(`translatable: false`).
+2. **번역된 파일별** — 세그먼트 번역 및 선택적 플랫 링크 재작성 후, `postProcessing`이 블록을 다시 빌드합니다. 로캘당 마크다운 링크 하나, `ui-languages.json`가 있으면 해당 레이블(없으면 번들된 마스터 카탈로그, 그것도 없으면 `localeDisplayNames`), 작성 중인 파일을 기준으로 한 상대 경로입니다.
+3. **원본 새로 고침** — `translate-docs` / `sync` 문서 처리 단계의 끝에서, 동일한 정식 블록이 `contentPaths`의 **원본 로캘 파일**에 다시 기록되므로 로캘을 추가하면 모든 링크를 직접 편집하지 않아도 저장소의 전환기가 업데이트됩니다. 해당 파일은 `sourceLocale`로 작성되며, 어떤 언어든 될 수 있습니다.
 
 파일에 일치하는 블록이 없으면 CLI는 경고를 기록하고(`--verbose` 시), 본문은 그대로 유지됩니다.
 
@@ -72,4 +72,4 @@
 <a id="html-pages"></a>
 ## HTML 페이지
 
-일반 HTML 문서는 `<!-- ai-i18n:lang-list -->` 및 `<!-- ai-i18n:hreflang -->`이라는 다른 주석 쌍을 사용합니다. 언어 목록은 링크 또는 `<select>`일 수 있으며, hreflang 대체 항목은 영어 소스뿐만 아니라 각 로캘 파일에도 작성됩니다. [HTML 페이지](/ko/guide/documents/html-pages#language-list-and-hreflang)를 참조하세요.
+일반 HTML 문서는 다른 주석 쌍인 `<!-- ai-i18n:lang-list -->` 및 `<!-- ai-i18n:hreflang -->`을 사용합니다. 언어 목록은 링크 또는 `<select>`일 수 있으며, hreflang 대체 항목은 각 대상 로케일 파일뿐만 아니라 소스 로케일 파일에도 작성됩니다. [HTML 페이지](/ko/guide/documents/html-pages#language-list-and-hreflang)를 참조하세요.

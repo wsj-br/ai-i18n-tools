@@ -8,7 +8,7 @@
 
 सक्रिय प्रदाता की `GET /models` सूची (सदस्यता और `expiration_date`) के विरुद्ध प्रत्येक कॉन्फ़िगर किए गए मॉडल आईडी को मान्य करें। उस प्रदाता की API कुंजी की आवश्यकता है (Ollama जैसे कीलेस प्रदाताओं के लिए कोई नहीं)। जब कोई भी कॉन्फ़िगर किया गया आईडी गुम या समाप्त हो जाता है तो गैर-शून्य से बाहर निकलता है, और हल किए गए अनुरोध टाइमआउट (प्रदाता पर `requestTimeout` या `requestTimeoutMs`, अन्यथा शीर्ष-स्तरीय मान) का सम्मान करता है। जब प्रदाता मूल्य निर्धारण (जैसे OpenRouter) लौटाता है, तो प्रॉम्प्ट/पूर्णता के लिए प्रति 1M टोकन USD भी दिखाता है। जब `providers.cheaperinference.zeroDataRetention` सत्य होता है, तो जाँच `GET /v1/models?zdr=true` का उपयोग करती है और उस आईडी को विफल कर देती है जिसे कैटलॉग छोड़ देता है।
 
-**यह भी देखें:** [एलएलएम प्रदाता](/hi/guide/providers-and-models)
+**यह भी देखें:** [AI मॉडल](/hi/guide/ai-models#check-models), [LLM प्रोवाइडर](/hi/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **मुख्य विकल्प:** `-P` / `--provider`
 
-**यह भी देखें:** [एलएलएम प्रदाता](/hi/guide/providers-and-models)
+**यह भी देखें:** [AI मॉडल](/hi/guide/ai-models#list-models), [LLM प्रोवाइडर](/hi/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ ChrF, languagebench `translation_from` और `translation_to` पंक्त�
 
 **मुख्य विकल्प:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**यह भी देखें:** [LLM प्रदाता](/hi/guide/providers-and-models), [Models टैब](/hi/guide/translation-dashboard/models)
+**यह भी देखें:** [AI मॉडल](/hi/guide/ai-models), [मॉडल टैब](/hi/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ ChrF, languagebench `translation_from` और `translation_to` पंक्त�
 मॉडल सक्रिय प्रदाता के `translationModels`, `uiModels`, और `localeModels` आईडी के संघ के लिए डिफ़ॉल्ट होते हैं (`--model` के साथ ओवरराइड करें); नमूना एक अंतर्निहित अंग्रेजी मार्कडाउन ब्लॉक के लिए डिफ़ॉल्ट होता है (`--text` / `--file` के साथ ओवरराइड करें); स्रोत/लक्ष्य कॉन्फ़िग `sourceLocale` और पहले `docs[]` लक्ष्य लोकेल के लिए डिफ़ॉल्ट होते हैं, शीर्ष-स्तरीय `targetLocales` पर वापस आते हैं (`--source` / `--target` के साथ ओवरराइड करें)। मॉडल समानांतर में चलते हैं, कॉन्फ़िग `concurrency` (डिफ़ॉल्ट 4) द्वारा सीमित; प्रत्येक मॉडल का समय अभी भी व्यक्तिगत रूप से निर्धारित किया जाता है। सक्रिय प्रदाता की एपीआई कुंजी की आवश्यकता है।
 
 **मुख्य विकल्प:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**यह भी देखें:** [AI मॉडल](/hi/guide/ai-models#bench-models)
 
 ---
 

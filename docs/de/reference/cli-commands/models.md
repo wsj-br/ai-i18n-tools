@@ -8,7 +8,7 @@
 
 Validiert jede konfigurierte Modell-ID anhand der `GET /models`-Liste des aktiven Anbieters (Mitgliedschaft und `expiration_date`). Erfordert den API-Schlüssel dieses Anbieters (keiner für schlüssellose Anbieter wie Ollama). Beendet sich mit einem Fehlercode ungleich Null, wenn eine konfigurierte ID fehlt oder abgelaufen ist, und berücksichtigt das aufgelöste Anforderungs-Timeout (`requestTimeout` oder `requestTimeoutMs` beim Anbieter, andernfalls den Wert der obersten Ebene). Wenn der Anbieter Preise zurückgibt (z. B. OpenRouter), werden auch USD pro 1 Million Tokens für Prompt/Completion angezeigt. Wenn `providers.cheaperinference.zeroDataRetention` wahr ist, verwendet die Überprüfung `GET /v1/models?zdr=true` und schlägt eine ID fehl, die der Katalog weglässt.
 
-**Siehe auch:** [LLM-Provider](/de/guide/providers-and-models)
+**Siehe auch:** [KI-Modelle](/de/guide/ai-models#check-models), [LLM-Anbieter](/de/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@ Listet jedes Modell auf, das der aktive Anbieter über seine `GET /models`-Liste
 
 **Schlüsseloptionen:** `-P` / `--provider`
 
-**Siehe auch:** [LLM-Provider](/de/guide/providers-and-models)
+**Siehe auch:** [KI-Modelle](/de/guide/ai-models#list-models), [LLM-Anbieter](/de/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ Die Fußzeile nennt languagebench (CC BY-SA 4.0), den LMArena Arena Score (CC BY
 
 **Wichtige Optionen:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**Siehe auch:** [LLM-Anbieter](/de/guide/providers-and-models), [Tab „Models“](/de/guide/translation-dashboard/models)
+**Siehe auch:** [KI-Modelle](/de/guide/ai-models), [Registerkarte „Modelle“](/de/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ Benchmarkt jedes konfigurierte Modell, indem es eine Probe in Isolation überset
 Modelle standardmäßig auf die Vereinigung der `translationModels`-, `uiModels`- und `localeModels`-IDs des aktiven Providers (Überschreiben mit `--model`); die Probe standardmäßig auf einen eingebauten englischen Markdown-Block (Überschreiben mit `--text` / `--file`); Quelle/Ziel standardmäßig auf die Konfiguration `sourceLocale` und die erste `docs[]`-Ziel-Lokale, Fallback auf die oberste Ebene `targetLocales` (Überschreiben mit `--source` / `--target`). Führt Modelle parallel aus, begrenzt durch die Konfiguration `concurrency` (Standard 4); jedes Modell wird dennoch individuell zeitlich bemessen. Erfordert den API-Schlüssel des aktiven Providers.
 
 **Schlüsseloptionen:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**Siehe auch:** [KI-Modelle](/de/guide/ai-models#bench-models)
 
 ---
 

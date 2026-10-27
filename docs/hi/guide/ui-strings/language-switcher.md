@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+ऊपर दिया गया हैंडलर ऐप के पहले से दिखने के बाद भाषा बदलता है। पहले पेंट से पहले भी सहेजी गई लोकैलिटी को पुनर्स्थापित करें: [स्टार्टअप लोकैलिटी](/hi/guide/ui-strings/i18next-runtime#startup-locale)।
+
 `getUILanguageLabel(lang, t)` - अनुवादित होने पर `t(englishName)` दिखाता है, या जब दोनों भिन्न होते हैं तो `englishName / t(englishName)` दिखाता है। सेटिंग्स स्क्रीन के लिए उपयुक्त।
 
 `getUILanguageLabelNative(lang)` - `englishName / label` दिखाता है (प्रत्येक पंक्ति पर कोई `t()` कॉल नहीं)। हेडर मेनू के लिए उपयुक्त है जहाँ आप मूल नाम दृश्यमान रखना चाहते हैं।

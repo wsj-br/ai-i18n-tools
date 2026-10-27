@@ -1,7 +1,7 @@
 <a id="models"></a>
 # モデル
 
-**モデル**タブでは、アクティブなプロバイダーのチャットモデルがランク付けされるため、IDを手動でコピーすることなく`translationModels`を選択できます。これは[`suggest-models`](/ja/reference/cli-commands/models#suggest-models)と同じランキングを使用しています。
+「**モデル**」タブでは、アクティブなプロバイダーのチャットモデルがランク付けされているため、ID を手動でコピーすることなく `translationModels` を選択できます。このタブでは [`suggest-models`](/ja/reference/cli-commands/models#suggest-models) と同じランキングが使用されます。リストに複数のモデルが含まれる理由などの詳細な説明は、[AI モデル](/ja/guide/ai-models) をご覧ください。
 
 **品質**または**価格**を選択します。品質はlanguagebenchのChrFとArena Scoreを優先します。価格は米ドルのレートが低いことを優先しつつ、品質の最低基準を維持します。設定に複数のプロバイダーがある場合、**プロバイダー**メニューが表示されます。デフォルトはダッシュボードの起動時に使用されたプロバイダー（`provider`、または`dashboard`コマンドでの`-P` / `--provider`）です。プロバイダーまたは優先順位を変更すると、テーブルが再読み込みされます。オプションの重み付けについては[`modelSuggestion`](/ja/reference/configuration#modelsuggestion)を参照してください。
 

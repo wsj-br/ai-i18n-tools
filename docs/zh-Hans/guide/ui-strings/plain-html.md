@@ -8,7 +8,7 @@
 <a id="quick-start"></a>
 ## 快速开始
 
-1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 搭建脚手架，或添加以下配置。
+1. 使用 `ai-i18n-tools init -t ui-plain-html -P openai` 搭建基架，或添加以下配置。如果仓库的 README 也需要翻译，请添加 `--with-readme`（[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme))。
 2. 标记源 HTML（或让 `mark-html` 来完成）。
 3. 将 `ui.sourceRoots` 和 `ui.uiExtractor.extensions` 指向这些文件。
 4. 运行 `extract`，然后运行 `translate-ui`（或使用 `sync-ui` 同时运行两者）。
@@ -94,7 +94,7 @@ ai-i18n-tools sync-ui
 <a id="marking-html-for-translation"></a>
 ## 标记 HTML 以进行翻译
 
-建议优先使用裸标记。英文源文本保留在元素上，且该文本即为目录键。`extract` 会读取它；运行时会将翻译写回到同一属性上。
+首选裸标记。源语言文本保留在元素上，并且该文本就是目录键。它以 `sourceLocale` 编写，可以是任何语言。`extract` 会读取它；运行时会将翻译写回到同一属性上。
 
 - `data-i18n` — 键为 `textContent`。运行时设置 `textContent`。
 - `data-i18n-title` — 键为 `title`。
@@ -217,6 +217,52 @@ ai-i18n-tools sync-ui
 
 `mark-html` 会插入上述裸标记。除非传入 `--write`，否则这只是一次试运行。它会跳过 `data-i18n-ignore` 子树、类似代码的元素（`code`、`pre`、`kbd`、`samp`、`var`）以及空文本或纯数字文本。它会报告包含混合内容的父元素，并留给您使用 `<span data-i18n>` 进行包裹。它绝不会写入带值标记。
 
+<a id="agent-prompt"></a>
+### 代理提示
+
+`mark-html --write` 已插入裸标记。当报告仍列出残留项时，请粘贴此内容：混合内容的父级、JavaScript 插入的文本以及应保留源语言的标识符。
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 运行时在首次执行时会将每个源键记录在内部的 `data-i18n-source` 属性上，因此后续切换区域设置时仍会查找英文字符串。这些属性不会被提取。
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ ai-i18n-tools sync-ui
 | 新增 DOM 节点仍显示为英文 | 请在插入这些节点后调用 `window.i18n.apply()`。 |
 | 图片在葡萄牙语中仍为 `chart.png` | 该元素需要 `data-i18n-locale-src`，且区域不能是源区域。 |
 
-运行时中的 `normalizeI18nText` 与 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText` 匹配：去除首尾空格，然后合并空白字符。由于英文源文本是目录键，缺失的翻译将回退为英文。
+运行时的 `normalizeI18nText` 与 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText` 匹配：裁剪，然后折叠空白字符。因为源语言文本就是目录键，所以缺失的翻译会回退到该源文本。
 
 可运行的演示为 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)。`pnpm dev` 在 [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) 上提供此服务。
 

@@ -38,6 +38,6 @@ Alguns modelos traduzem o significado, mas escrevem o resultado em letras latina
 
 **Correção**
 
-1. Confirme se o código de localidade corresponde ao script desejado (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
-2. Execute a tradução novamente para que as linhas de cache de script incorretas sejam rejeitadas: `translate-ui --force` para strings da IU, ou `translate-docs --check-cache` / `sync --check-cache` (a ignorância em nível de arquivo é ignorada apenas para localidades com um script esperado; o cache de segmento válido ainda é reutilizado). `--force-update` reprocessa todas as localidades.
-3. Se um modelo continuar falhando na verificação de script, adicione uma entrada `localeModels` para essa localidade para que um modelo mais forte seja tentado primeiro — consulte [Provedores e modelos](/pt-BR/guide/providers-and-models#model-fallback-chain).
+1. Confirme se o código de localidade corresponde ao script desejado (`hi` vs. `hi-Latn`, `zh-Hans` vs. `zh-Hant`, `sr` vs. `sr-Latn`).
+2. Reexecute a tradução para que as linhas de cache com script incorreto sejam rejeitadas: `translate-ui --force` para strings da IU ou `translate-docs --check-cache` / `sync --check-cache` (a omissão no nível do arquivo é contornada apenas para localidades com um script esperado; o cache de segmento válido ainda é reutilizado). `--force-update` reprocessa todas as localidades.
+3. Se um modelo continuar falhando na verificação de script, adicione uma entrada `localeModels` para essa localidade para que um modelo mais forte seja usado primeiro. Consulte [Modelos de IA](/pt-BR/guide/ai-models#model-fallback-chain).

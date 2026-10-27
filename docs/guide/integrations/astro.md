@@ -8,7 +8,7 @@ See also [UI strings](/guide/ui-strings/astro-website), [Documents](/guide/docum
 <a id="astro-starlight"></a>
 ## Astro Starlight
 
-Use `init -t ui-starlight` and `docsOutput.style: "astro-starlight"` for [Astro Starlight](https://starlight.astro.build/) documentation sites. The preset is an alias for `doc-system` with an empty `localeSubpath` — translated pages land under `src/content/docs/<locale>/` beside the English source tree.
+Use `init -t ui-starlight` and `docsOutput.style: "astro-starlight"` for [Astro Starlight](https://starlight.astro.build/) documentation sites. The preset is an alias for `doc-system` with an empty `localeSubpath` — translated pages land under `src/content/docs/<locale>/` beside the source-locale tree. `sourceLocale` can be any language.
 
 <a id="quick-start"></a>
 ### Quick start
@@ -43,7 +43,7 @@ Configure one `docs[]` block:
 }
 ```
 
-Point `contentPaths` at your English `.md` / `.mdx` files and directories. Set `docsRoot` to the same folder Starlight uses as its content root.
+Point `contentPaths` at the `.md` / `.mdx` files and directories written in `sourceLocale`. That language can be any language. Set `docsRoot` to the same folder Starlight uses as its content root.
 
 Starlight UI overrides can use `src/content/i18n/en.json` with `jsonPathTemplate` in a separate `docs[]` block when needed — see [Documents — initialise for documentation](/guide/documents/#step-1-initialise-for-documentation).
 
@@ -74,7 +74,7 @@ Most teams use a **hybrid** of two pipelines on the same page:
 | Pipeline | Use for | Commands | Output |
 |----------|---------|----------|--------|
 | **Page HTML** | Headings, paragraphs, nav labels, inline arrays in the template body | `translate-docs` | `src/pages/{locale}/index.astro` per locale |
-| **UI strings (`t()`)** | Frontmatter data, tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (English source as key) |
+| **UI strings (`t()`)** | Frontmatter data, tab labels, shared arrays | `extract` → `translate-ui` | `public/locales/{locale}.json` (source-language string as key) |
 
 <a id="quick-start-1"></a>
 ### Quick start
@@ -113,7 +113,7 @@ Scaffold UI extraction with `init -t ui-astro-website -P ollama`, then merge in 
 
 Keep three lists aligned when you add or remove a language: `targetLocales` in `ai-i18n-tools.config.json`, `i18n.locales` in `astro.config.mjs` (Astro uses **lowercase** route codes such as `pt-br`), and `ui-languages.json` (via `generate-ui-languages`). Flat bundle **filenames** use config casing (`pt-BR.json`); map Astro's `pt-br` route to that file via your manifest `code` field.
 
-Resolve `t('…')` at **build time** by looking up the English source literal as the key — see `examples/astro-website/src/i18n/t.ts`. You do not need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
+Resolve `t('…')` at **build time** by looking up the source-language literal as the key — see `examples/astro-website/src/i18n/t.ts`. `sourceLocale` can be any language. The example uses English. You do not need `ai-i18n-tools/runtime` or i18next for a static site unless you add client islands that switch language after load.
 
 <a id="example-project-1"></a>
 ### Example project

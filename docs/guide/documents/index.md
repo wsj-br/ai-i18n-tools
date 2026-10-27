@@ -1,7 +1,7 @@
 <a id="documents"></a>
 # Documents
 
-Reference for `translate-docs`, the pipeline for Markdown, MDX, `.astro`, and plain HTML pages listed in `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Adding languages to a site for the first time? Start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). A repository README and other Markdown files, usually next to an app: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
+Reference for `translate-docs`, the pipeline for Markdown, MDX, `.astro`, and plain HTML pages listed in `docs[]` config blocks. Each block's `contentPaths` field lists the files or folders to translate. Those files are written in `sourceLocale`, which can be any language. English in the examples is only a sample. Adding languages to a site for the first time? Start at [Add i18n to a website or docs site](/guide/add-i18n-to-website). A repository README and other Markdown files, usually next to an app: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Plain HTML pages (one file per locale) are described in [HTML pages](/guide/documents/html-pages).
 
 Framework shell strings (navbar, sidebar, theme) are translated in the same run, not by a separate pipeline. The framework guides in the table below say how each one does it: `docusaurusCatalogDir` for Docusaurus, `docsOutput.vitepressThemeCatalog` for VitePress, `docs[].nextraDictionaryPath` for Nextra, `docsOutput.fumadocsUiCatalog` for Fumadocs. Nextra `_meta.ts` and Fumadocs `meta.json` sidebar labels are collected automatically. Astro Starlight ships built-in UI strings for many locales, and optional overrides can use `jsonPathTemplate` on a `docs[]` block.
 
@@ -18,7 +18,7 @@ Each UI block includes its `strings.json` as glossary hints for documentation by
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
 
-`translate-docs` and the docs step of `sync` resolve models **per target locale**: `localeModels(locale)` first when configured, then the provider's global `translationModels` chain. Use this when a specific language needs a different model than your default fallback list - for example, preferring Gemini for `pt-BR` documentation when the global chain struggles with Portuguese. See [Providers and models](/guide/providers-and-models#model-fallback-chain) and [Configuration - `localeModels`](/reference/configuration#provider-and-providers).
+`translate-docs` and the docs step of `sync` resolve models **per target locale**: `localeModels(locale)` first when configured, then the provider's global `translationModels` chain. Use this when a specific language needs a different model than your default fallback list - for example, preferring Gemini for `pt-BR` documentation when the global chain struggles with Portuguese. See [AI Models](/guide/ai-models#model-fallback-chain) and [Configuration - `localeModels`](/reference/configuration#provider-and-providers).
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
@@ -86,7 +86,7 @@ That template enables UI extraction only. For page HTML translation, also set `f
 
 Edit the generated `ai-i18n-tools.config.json`:
 
-- `provider` and `providers` — `init -P <provider>` scaffolds that preset; set its API key before `translate-docs` or `sync` (Ollama needs no key). See [Provider and API key](/guide/quick-start#provider-and-api-key) and [LLM providers and models](/guide/providers-and-models).
+- `provider` and `providers` — `init -P <provider>` scaffolds that preset; set its API key before `translate-docs` or `sync` (Ollama needs no key). See [Provider and API key](/guide/quick-start#provider-and-api-key), [LLM providers](/guide/providers-and-models), and [AI Models](/guide/ai-models).
 - `sourceLocale` - source language (must match `defaultLocale` in `docusaurus.config.js`).
 - `targetLocales` - array of BCP-47 locale codes (e.g. `["de", "fr", "es"]`).
 - `cacheDir` - shared SQLite cache directory for all pipelines (and default log directory for `--write-logs`).

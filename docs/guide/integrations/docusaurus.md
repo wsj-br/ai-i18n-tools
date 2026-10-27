@@ -44,7 +44,7 @@ Configure one `docs[]` block:
 }
 ```
 
-Point `contentPaths` at your English `.md` / `.mdx` files and directories. Set `docsRoot` to the same folder Docusaurus uses as its content root. Set `outputDir` to the parent of each locale folder under `i18n/`.
+Point `contentPaths` at the `.md` / `.mdx` files and directories written in `sourceLocale`. That language can be any language. Set `docsRoot` to the same folder Docusaurus uses as its content root. Set `outputDir` to the parent of each locale folder under `i18n/`.
 
 Wire Docusaurus [internationalization](https://docusaurus.io/docs/i18n/introduction): keep `targetLocales` in `ai-i18n-tools.config.json` aligned with the `locales` array in `docusaurus.config.js`. Each `localeConfigs[locale].path` must match the folder name under `i18n/` (for example `path: "fr"` for `i18n/fr/`).
 

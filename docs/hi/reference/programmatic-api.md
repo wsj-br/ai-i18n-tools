@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Node.js से कॉन्फ़िग तैयार करें। चौथा आर्ग्यूमेंट बिल्ट-इन प्रीसेट है (`cwd` तीसरा है):
+Node.js से एक कॉन्फ़िग तैयार करें। चौथा आर्ग्यूमेंट बिल्ट-इन प्रीसेट है (`cwd` तीसरा है)। एक वैकल्पिक पाँचवाँ आर्ग्यूमेंट `{ withReadme: true }` फ़्लैट README डॉक्स ब्लॉक जोड़ता है जब टेम्पलेट में पहले से `README.md` सूचीबद्ध न हो, और यह बताता है कि क्या वह ब्लॉक जोड़ा गया था:
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 मुख्य निर्यात (आमतौर पर उपयोग किए जाते हैं — पूर्ण सार्वजनिक सतह के लिए `src/index.ts` देखें):
@@ -53,7 +56,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `Glossary` / `GlossaryMatcher` | वैकल्पिक शब्द `Context` नोट्स सहित अनुवाद शब्दावलियों को लोड और लागू करें। |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | कैश अमान्यकरण के लिए `glossary.contextFiles` और फ़िंगरप्रिंट मार्गदर्शन लोड करें। |
 | `runTranslateUI` | प्रोग्रामेटिक translate-UI एंट्री पॉइंट। |
-| `writeInitConfigFile` | एक स्टार्टर कॉन्फ़िग JSON लिखें (`template`, `cwd`, और एक आवश्यक `providerKey`)। |
+| `writeInitConfigFile` | एक स्टार्टर कॉन्फ़िग JSON लिखें (`template`, `cwd`, एक आवश्यक `providerKey`, और वैकल्पिक `{ withReadme }`)। `{ readmeBlockAdded, hasReadmeBlock }` लौटाता है। |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` द्वारा उपयोग किए जाने वाले प्रति अंतर्निहित प्रीसेट के लिए स्टार्टर `translationModels`। |
 | `PROVIDER_PRESETS` | अंतर्निहित प्रदाता प्रीसेट मैप (`baseUrl`, `apiKeyEnv`)। |
 
@@ -75,5 +78,5 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'c
 | `_(message)` | एक लिटरल देखें, फिर कैटलॉग स्ट्रिंग या स्वयं संदेश लौटाएं। |
 | `t(template, *, plurals=False, count=None, **values)` | लिटरल देखें, फिर इंटरपोलेट करें। `translate` वही फ़ंक्शन है। Python 3.14 पर, `translate(t"Hello, {name}!")` टेम्प्लेट और उसके मानों को बनाए रखता है। कीवर्ड आर्ग्युमेंट्स टेम्प्लेट स्ट्रिंग से लिए गए मानों को ओवरराइड करते हैं। |
 | `ngettext(singular, plural, n, **values)` | प्लुरल लुकअप, फिर इंटरपोलेट करें। `count` फ़ॉर्मेट स्ट्रिंग के लिए उपलब्ध है। |
-| `pgettext(context, message, **values)` | कॉन्टेक्स्ट लुकअप (`msgctxt`, या `context` + U+0004 + फ्लैट JSON में अंग्रेज़ी स्रोत), फिर इंटरपोलेट करें। |
+| `pgettext(context, message, **values)` | कॉन्टेक्स्ट लुकअप (`msgctxt`, या `context` + U+0004 + फ़्लैट JSON में स्रोत-भाषा स्ट्रिंग), फिर इंटरपोलेट करें। |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit सिलेक्ट बॉक्स। `st.session_state.locale` और `st.query_params["lang"]` लिखता है, `set_locale` को कॉल करता है, और चुना गया कोड लौटाता है। |

@@ -64,9 +64,9 @@ Le réécriveur de liens plats utilise le chemin de sortie par fichier lors du c
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Les chemins en dehors de `docsRoot` reviennent à la mise en page [imbriquée](#nested) (`{outputDir}/{locale}/{relPath}`).
+Les chemins en dehors de `docsRoot` utilisent par défaut la mise en page [imbriquée](#nested-default) (`{outputDir}/{locale}/{relPath}`).
 
-Définissez `docs[].docsOutput.docsRoot` sur la racine de votre source anglaise (par exemple, `"docs"`, `"src/content/docs"` ou `"content/en"`). Lorsque `docsOutput.style = "doc-system"`, vous devez définir `localeSubpath` explicitement (utilisez un alias ci-dessous pour les préréglages). Utilisez `localeSubpath: ""` lorsque les pages traduites se trouvent directement sous `{outputDir}/{locale}/` (style Starlight).
+Définissez `docs[].docsOutput.docsRoot` sur la racine des fichiers écrits en `sourceLocale` (par exemple `"docs"`, `"src/content/docs"` ou `"content/en"` lorsque l'anglais est la source). `sourceLocale` peut être n'importe quelle langue. Lorsque `docsOutput.style = "doc-system"`, vous devez définir `localeSubpath` explicitement (utilisez un alias ci-dessous pour les préréglages). Utilisez `localeSubpath: ""` lorsque les pages traduites se trouvent directement sous `{outputDir}/{locale}/` (style Starlight).
 
 Le JSON de l'interpréteur de commandes Docusaurus de `docusaurusCatalogDir` et d'autres artefacts JSON sous les préréglages du système de documentation suivent la même disposition de dossiers que le markdown. Avec `style: "flat"`, les fichiers d'étiquettes JSON utilisent toujours la forme imbriquée, sauf si vous définissez `jsonPathTemplate`.
 
@@ -75,10 +75,10 @@ Le JSON de l'interpréteur de commandes Docusaurus de `docusaurusCatalogDir` et 
 
 **Alias** (même moteur `doc-system`, préréglage `localeSubpath` et valeurs par défaut) :
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath` a pour valeur par défaut `docusaurus-plugin-content-docs/current` (structure du plugin i18n de Docusaurus).
-- `docsOutput.style = "astro-starlight"` — `localeSubpath` a pour valeur par défaut `""` ; `localePathLowercase` a pour valeur par défaut `true`. Pages traduites sous `{outputDir}/{locale}/`, correspondant à [Starlight](https://starlight.astro.build/guides/i18n/) lorsque l'anglais se trouve à la racine du contenu et que `outputDir` est égal à `docsRoot`. Également utilisé pour les pages de localisation Astro simples (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — voir [pages du site Astro](/fr/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace).
-- `docsOutput.style = "vitepress"` — même structure que `doc-system` avec `localeSubpath` vide ; les noms des dossiers de localisation BCP-47 sont préservés (`localePathLowercase` a pour valeur par défaut `false`). Voir [intégration VitePress](/fr/guide/integrations/vitepress).
-- `docsOutput.style = "nextra"` — même structure que `doc-system` avec `localeSubpath` vide ; la source en anglais se trouve dans un dossier de localisation (par exemple `content/en/`). Voir [intégration Nextra](/fr/guide/integrations/nextra).
+- `docsOutput.style = "docusaurus"` — `localeSubpath` utilise par défaut `docusaurus-plugin-content-docs/current` (mise en page du plugin i18n de Docusaurus).
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` utilise par défaut `""` ; `localePathLowercase` utilise par défaut `true`. Pages traduites sous `{outputDir}/{locale}/`, correspondant à [Starlight](https://starlight.astro.build/guides/i18n/) lorsque la locale source se trouve à la racine du contenu et `outputDir` est égal à `docsRoot`. Également utilisé pour les pages de locale Astro simples (`src/pages/index.astro` → `src/pages/{locale}/index.astro`) — voir [pages de site web Astro](/fr/guide/ui-strings/astro-website#pages-parse-and-replace).
+- `docsOutput.style = "vitepress"` — même mise en page que `doc-system` avec `localeSubpath` vide ; les noms de dossiers de locale BCP-47 sont conservés (`localePathLowercase` utilise par défaut `false`). Voir [intégration VitePress](/fr/guide/integrations/vitepress).
+- `docsOutput.style = "nextra"` — même mise en page que `doc-system` avec `localeSubpath` vide ; la locale source se trouve sous un dossier de locale (par exemple `content/en/` lorsque l'anglais est la source). Voir [intégration Nextra](/fr/guide/integrations/nextra).
 
 Préréglage Docusaurus (pages principales de documentation) :
 
@@ -121,7 +121,7 @@ Le dictionnaire de thème Nextra (`.ts`) et les étiquettes de barre latérale `
 
 `docsOutput.style = "fumadocs"` — disposition du contenu Fumadocs via `docsOutput.fumadocsParser` :
 
-- **`"dot"` (par défaut)** — suffixe de locale dans le nom de fichier à côté des sources anglaises sous `outputDir` (pas un dossier de locale). Ceci est distinct de la forme de chemin `doc-system`.
+- **`"dot"` (par défaut)** — suffixe de locale dans le nom de fichier à côté des fichiers de la locale source sous `outputDir` (pas un dossier de locale). Ceci est distinct de la forme de chemin `doc-system`. La langue source est `sourceLocale` et peut être n'importe quelle langue.
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

@@ -34,6 +34,7 @@
 | [`extract`](ui-strings#extract) | 소스 리터럴과 HTML 마커에서 `strings.json`을 업데이트합니다. |
 | [`mark-html`](ui-strings#mark-html) | HTML 파일에 `data-i18n*` 마커를 삽입합니다. |
 | [`migrate-intlayer`](ui-strings#migrate-intlayer) | Intlayer `.content.ts` 사전을 가져오고 간단한 `useIntlayer` / `getIntlayer` 사이트를 `t()`로 재작성합니다. |
+| [`translate-intlayer`](ui-strings#translate-intlayer) | Intlayer `.content.ts` 사전에서 누락되거나 오래된 로케일 리프를 제자리에서 번역합니다. |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | 구성 로케일에서 `ui-languages.json`을 작성합니다. |
 | [`translate-ui`](ui-strings#translate-ui) | UI 문자열을 번역합니다 (`strings.json` → 로케일 JSON). |
 | [`sync-ui`](ui-strings#sync-ui) | 추출한 다음 UI 문자열을 번역합니다. |
@@ -89,7 +90,7 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
@@ -100,6 +101,7 @@ ai-i18n-tools list-languages [search]
 ai-i18n-tools extract
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …

@@ -1,21 +1,25 @@
 <a id="ui-strings"></a>
 # UI 字符串
 
-专为使用 i18next 的 JS/TS 项目（React、Next.js（客户端和服务器组件）、Node.js 服务、纯 HTML、Astro 网站和 CLI 工具）以及 Python 应用程序而设计。Python 通过生成的 `i18n.py` 调用 `t()` 或 gettext（Django 保留其自身的 gettext）。
+`extract` 和 `translate-ui` 的参考文档，这是一个将 `t()` 调用转换为各区域设置目录的流水线。首次向应用添加 i18n？请从[向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)或[向 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)开始。它们涵盖了包装步骤，然后将引导你回到此处完成第 2 步到第 4 步。
+
+此流水线支持 JS/TS 项目（React、Next.js 客户端和服务器组件、Node.js 服务、纯 HTML、Astro 网站和 CLI 工具）和 Python 应用程序。在源调用 `t()` 后，JS/TS 使用 i18next 查找字符串。Python 通过生成的 `i18n.py` 调用 `t()` 或 gettext（Django 保留 Django 的 gettext）。
 
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
 
-| 您的应用 | 下一步阅读 |
+| 你的应用 | 下一步阅读 |
 | --- | --- |
-| React / Next.js / Node + i18next | [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)（步骤 4） |
+| 带有硬编码源字符串且尚无 `t()` 的 JS/TS | [向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) |
+| React / Next.js / Node，源中已有 `t()` | [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 应用程序](/zh-Hans/guide/ui-strings/python)。初始化：`ui-python`, `ui-python-gettext`, `ui-python-flask` 或 `ui-python-django`。辅助工具：`i18n.py`。若要为现有应用程序添加语言环境，请参阅 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)。 |
 | 纯 HTML（标记中没有 `t()`） | [纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html) |
 | Astro 营销网站（混合） | [Astro 网站](/zh-Hans/guide/ui-strings/astro-website) |
 | `t()` 规则、插值、复数 | [t() 调用和复数](/zh-Hans/guide/ui-strings/t-calls-and-plurals) |
 | 语言选择器 / RTL | [语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher) |
 | 运行时 API 签名 | [运行时助手](/zh-Hans/guide/runtime-helpers) |
-| Intlayer `.content.ts` 字典 | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) |
+| Intlayer `.content.ts` 字典，从 Intlayer 迁移 | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) |
+| Intlayer `.content.ts` 字典，保留 Intlayer | [就地翻译 Intlayer](/zh-Hans/guide/translating-intlayer) |
 
 <a id="step-1-initialise"></a>
 ## 步骤 1：初始化
@@ -24,26 +28,35 @@
 ai-i18n-tools init -P openrouter
 ```
 
-这会使用 `ui-markdown` 模板写入 `ai-i18n-tools.config.json`（包括该预设的 `provider` / `providers` 块）。在运行 `translate-ui` 或 `sync` 之前，请在环境变量或 `.env` 中设置该提供商的 API 密钥 — Ollama 除外；详见[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。编辑配置以设置：
+这会使用 `ui-markdown` 模板写入 `ai-i18n-tools.config.json`（包括该预设的 `provider` / `providers` 块）。该模板还会为 `README.md` 开启文档翻译，并以平面文件形式写入 `translated-docs/` 下。仅含 README 的仓库则改用 `init -t docs-markdown`。请参阅[向 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。在运行 `translate-ui` 或 `sync` 之前，请在环境或 `.env` 中为该提供商设置 API 密钥 — Ollama 除外；请参阅[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key)。有四个键对 UI 字符串很重要：
 
-- `provider` 和 `providers` — 至少一个提供者具有 `translationModels`。`-P <provider>` 在 `init` 上选择预设及其起始模型列表。请参阅 [LLM 提供者和模型](/zh-Hans/guide/providers-and-models)。
-- `sourceLocale` - 您的源语言 BCP-47 代码（例如 `"en-GB"`）。**必须匹配** 从运行时国际化设置文件（`src/i18n.ts` / `src/i18n.js`）导出的 `SOURCE_LOCALE`。
-- `targetLocales` - 目标语言的 BCP-47 代码数组（例如 `["de", "fr", "pt-BR"]`）。运行 `generate-ui-languages` 从此列表创建 `ui-languages.json` 清单。
-- `ui.sourceRoots` - 要扫描 `t("…")` 调用的目录或 glob 模式（例如 `["src/"]`、`["src/**/*.ts"]`）。
-- `ui.stringsJson` —— 主目录的写入位置（例如 `"src/locales/strings.json"`）。
-- `ui.flatOutputDir` —— `de.json`、`pt-BR.json` 等的写入位置（例如 `"src/locales/"`）。
-- `providers.<active>.uiModels`（可选）—— 用于 `translate-ui`、复数生成和 `proofread-ui` 的有序 UI 专用模型列表（位于任何匹配的 `localeModels` 条目之后、`translationModels` 之前）。参见[提供商与模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)。
+- `sourceLocale`：你的源文本所用语言的 BCP-47 代码。任何语言都有效；`"en-GB"` 只是一个示例。它必须与从你的运行时 i18n 配置文件（`src/i18n.ts` / `src/i18n.js`）导出的 `SOURCE_LOCALE` 相匹配。`t()` 内的字符串就是该源语言，平面区域设置文件将其用作键。
+- `targetLocales`：你的目标语言的 BCP-47 代码（例如 `["de", "fr", "pt-BR"]`）。运行 `generate-ui-languages` 以从此列表创建 `ui-languages.json` 清单。
+- `ui.sourceRoots`：要扫描 `t("…")` 调用的目录或 glob 模式（例如 `["src/"]`）。
+- `ui.stringsJson` 和 `ui.flatOutputDir`：主目录和各区域设置文件（`de.json`、`pt-BR.json`）的写入位置。
+
+所有其他键（包括 `providers.<active>.uiModels`）都在[配置](/zh-Hans/reference/configuration)中。
 
 <a id="step-2-extract-strings"></a>
 ## 步骤 2：提取字符串
+
+在 `t()` / `i18n.t()` 调用存在之前，`extract` 不起任何作用。请先包装硬编码的副本：[向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)。
 
 ```bash
 ai-i18n-tools extract
 ```
 
-扫描 `ui.sourceRoots` 下的所有 JS/TS 文件中的 `t("literal")` 和 `i18n.t("literal")` 调用。写入（或合并到）`ui.stringsJson`。
+扫描 `ui.sourceRoots` 下的文件以查找 `t("literal")` 和 `i18n.t("literal")` 调用。写入（或合并到）`ui.stringsJson`。
 
 扫描器是可配置的：通过 `ui.uiExtractor.funcNames`（或旧版 `ui.reactExtractor.funcNames`）添加自定义函数名称。对于 Astro 页面和组件，将 `.astro` 添加到 `ui.uiExtractor.extensions`。对于纯 HTML，请参阅[纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html)。
+
+<a id="what-extract-scans"></a>
+### extract 扫描的内容
+
+- 默认扩展名仅为 `.js`、`.jsx`、`.ts` 和 `.tsx`。只有将 `.mjs`、`.cjs`、`.mts` 和 `.cts` 添加到 `ui.uiExtractor.extensions` 时，它们才会被包含。
+- 像 `t(variable)` 这样的非字面量键或模板字面量会被跳过，且不发出警告。
+- `package.json` `description` 默认包含（`ui.uiExtractor.includePackageDescription`）。
+- 不支持 Vue 和 Svelte 单文件组件。将 `.vue` 或 `.svelte` 添加到 `extensions` 不会提取模板文本。没有 SFC 解析器。
 
 <a id="step-3-translate-ui-strings"></a>
 ## 步骤 3：翻译 UI 字符串
@@ -52,12 +65,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-读取 `strings.json`，将批次发送到每个目标区域设置的当前 LLM 提供商，并将扁平 JSON 文件（`de.json`、`fr.json` 等）写入 `ui.flatOutputDir`。模型选择使用 UI 链：`localeModels(locale)` → `uiModels` → `translationModels`（参见[提供商和模型](/zh-Hans/guide/providers-and-models#model-fallback-chain)）。在单个区域设置内，最多同时运行 `uiBatchConcurrency` 个批次（默认为 **2**；参见[配置 — uiBatchConcurrency](/zh-Hans/reference/configuration#uibatchconcurrency-optional)）。`-j` 仍然仅对目标区域设置进行并行处理。
-
-<a id="per-locale-model-overrides"></a>
-### 每个区域模型覆盖
-
-根据目标语言的不同，某些翻译模型的表现可能明显优于其他模型——例如，与许多西方语言模型相比，qwen 和 z-ai 模型在处理亚洲语言时往往能产生更高质量的翻译。为了利用这一点，你可以使用可选的 `providers.<active>.localeModels` 条目为每个 BCP-47 区域设置指定一个按优先级排列的模型列表。对于特定区域设置，这些模型列表会在更通用的 `uiModels` 和 `translationModels` **之前** 进行尝试。这使你能够定制模型选择，并实现每种语言更好的翻译质量。区域设置标签的匹配不区分大小写（因此 `zh-cn` 和 `ZH-CN` 是等效的）。如果没有自定义条目匹配某个区域设置，该工具将回退到默认的 `uiModels` 和 `translationModels` 顺序进行 UI 翻译。相同的 `localeModels` 机制也适用于文档、JSON 和 SVG 翻译。
+读取 `strings.json`，为每个目标语言区域将批次发送到活跃 LLM 提供商上的模型，并将扁平化 JSON 文件（`de.json`、`fr.json` 等）写入 `ui.flatOutputDir`。模型选择使用 UI 链：`localeModels(locale)` → `uiModels` → `translationModels`（请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain))。在单个语言区域内，最多可同时运行 `uiBatchConcurrency` 个批次（默认值为 **2**；请参阅 [配置 — uiBatchConcurrency](/zh-Hans/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然仅对目标语言区域进行并行处理。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻译数据库 (`strings.json`)
@@ -66,10 +74,26 @@ ai-i18n-tools translate-ui
 
 > **注意：** 对 UI 字符串的控制台编辑保存在 `strings.json` 中，而不是 SQLite 文档缓存中。运行普通的 `sync` 或 `translate-ui`（无特殊标志）以从目录重写扁平区域设置文件 —— `--force-update` **不会** 转发到 UI 步骤。在手动编辑后，避免在 UI 命令上使用 `--force`：它会重新翻译每个条目，并可能覆盖您的 `user-edited` 行。存储的翻译未通过区域设置书写系统检查的目录行（例如 `hi` 的罗马拼音印地语）将被视为缺失，并在不使用 `--force` 的情况下重新翻译。
 
-然后在运行时连接 i18next — [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)。
+<a id="step-4-use-the-output-in-your-app"></a>
+## 第 4 步：在你的应用中使用输出
 
-<a id="exporting-to-xliff-20-optional"></a>
-## 导出到 XLIFF 2.0（可选）
+`translate-ui` 只写入文件。应用必须加载它们。
+
+- JS/TS：使用运行时帮助程序连接 i18next，加载用户选择的区域设置文件，并添加语言切换器。请参阅[连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)和[语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher)。
+- Python：使用生成的 `i18n.py` 或你的 gettext 目录。请参阅[Python 应用程序](/zh-Hans/guide/ui-strings/python)。
+- 纯 HTML：在页面旁边加载运行时脚本。请参阅[纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html)。
+- Astro：请参阅 [Astro 网站](/zh-Hans/guide/ui-strings/astro-website)。
+
+<a id="optional"></a>
+## 可选
+
+<a id="per-locale-model-overrides"></a>
+### 每个区域模型覆盖
+
+有些模型在翻译某些语言时表现更佳。例如，qwen 和 z-ai 模型在处理亚洲语言方面往往表现出色。添加 `providers.<active>.localeModels` 条目，为每个 BCP-47 语言区域提供一个优先模型列表。对于该语言区域，这些列表会在 `uiModels` 和 `translationModels` 之前尝试。语言区域标记不区分大小写匹配（`zh-cn` 和 `ZH-CN` 是等效的）。如果没有匹配的条目，该工具将使用默认的 `uiModels` 和 `translationModels` 顺序。同样的 `localeModels` 机制也适用于文档、JSON 和 SVG 翻译。
+
+<a id="exporting-to-xliff-20"></a>
+### 导出到 XLIFF 2.0
 
 要将 UI 字符串移交给翻译供应商、TMS 或 CAT 工具，请将目录导出为 **XLIFF 2.0**（每个目标语言环境一个文件）。此命令是 **只读** 的：它不会修改 `strings.json` 或调用任何 API。
 

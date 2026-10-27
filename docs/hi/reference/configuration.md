@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-स्रोत भाषा के लिए BCP-47 कोड (जैसे `"en-GB"`, `"en"`, `"pt-BR"`)। इस लोकेल के लिए कोई अनुवाद फ़ाइल जनरेट नहीं की जाती है — कुंजी स्ट्रिंग ही स्रोत टेक्स्ट है।
+स्रोत भाषा के लिए BCP-47 कोड (उदाहरण के लिए `"en-GB"`, `"pt-BR"`, या `"ja"`)। कोई भी भाषा मान्य है। उदाहरणों में अंग्रेज़ी दिखाई देती है क्योंकि कई प्रोजेक्ट वहीं से शुरू होते हैं। इस लोकेल के लिए कोई अनुवाद फ़ाइल जनरेट नहीं की जाती — कुंजी स्ट्रिंग स्वयं स्रोत पाठ है।
 
 आपके रनटाइम i18n सेटअप फ़ाइल (`src/i18n.ts` / `src/i18n.js`) से निर्यात किए गए `SOURCE_LOCALE` से **मेल खाना चाहिए**।
 
@@ -167,9 +167,9 @@
 
 एक चलाने योग्य उदाहरण के लिए जो एक कॉन्फ़िग में कई प्रदाताओं को कॉन्फ़िगर करता है और `-P` के साथ उनके बीच स्विच करता है, [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (एक ही दस्तावेज़ पर `openai`, `anthropic`, `openrouter`, और `deepseek`) देखें।
 
-**कई मॉडल का उपयोग क्यों करें:** विभिन्न प्रदाताओं और मॉडलों की लागत अलग-अलग होती है और भाषाओं और स्थानों में गुणवत्ता के विभिन्न स्तर प्रदान करते हैं। `translationModels` को **एक क्रमबद्ध फ़ॉलबैक श्रृंखला के रूप में** (एकल मॉडल के बजाय) कॉन्फ़िगर करें ताकि यदि कोई अनुरोध विफल हो जाए तो CLI अगले मॉडल का प्रयास कर सके।
+**एक से ज़्यादा मॉडल का इस्तेमाल क्यों करें:** अलग-अलग प्रोवाइडर और मॉडल की लागत अलग-अलग होती है और वे भाषाओं और लोकेल में अलग-अलग स्तर की क्वालिटी देते हैं. `translationModels` को एक क्रमित फ़ॉलबैक चेन के रूप में कॉन्फ़िगर करें ताकि अनुरोध विफल होने पर CLI अगले मॉडल को आज़मा सके. उस सूची को बनाने के लिए गाइड [AI मॉडल](/hi/guide/ai-models) है.
 
-नीचे दी गई सूची को एक **आधार रेखा** के रूप में मानें जिसे आप विस्तारित कर सकते हैं: यदि किसी विशिष्ट स्थान-विशेष के लिए अनुवाद खराब या असफल है, तो शोध करें कि कौन से मॉडल उस भाषा या स्क्रिप्ट को प्रभावी ढंग से समर्थन करते हैं (ऑनलाइन संसाधनों या अपने प्रदाता के दस्तावेज़ों का संदर्भ लें), और उन मॉडल ID को आगे के विकल्पों के रूप में जोड़ें।
+नीचे दी गई सूची को **बेसलाइन** मानें. [AI मॉडल](/hi/guide/ai-models) पर दी गई बेंचमार्क रैंकिंग से इसे बदलें. अगर किसी खास लोकेल के लिए अनुवाद खराब रहता है, तो उस भाषा या स्क्रिप्ट के लिए एक `localeModels` एंट्री जोड़ें, या प्रोवाइडर की कैटलॉग से और आईडी जोड़ें.
 
 ये मॉडल आईडी वही हैं जो `ai-i18n-tools init -P openrouter` लिखता है। अन्य प्रीसेट `init -P <provider>` से नेटिव मॉडल आईडी प्राप्त करते हैं — [बिल्ट-इन प्रोवाइडर](/hi/guide/providers-and-models#built-in-providers) देखें।
 
@@ -270,13 +270,13 @@
 - `flatOutputDir`
   वह निर्देशिका जहाँ इस ब्लॉक की प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
 - `flatOutput`
-  जब `true` (डिफ़ॉल्ट) होता है, तो `translate-ui` प्रति लोकेल एक फ्लैट JSON फ़ाइल लिखता है। gettext-ओनली ब्लॉक के लिए `false` सेट करें। `flatOutput: false` वाले ब्लॉक में `gettext` सेट होना चाहिए।
+  जब `true` (डिफ़ॉल्ट) हो, तो `translate-ui` हर लोकेल के लिए एक सपाट जेएसओएन फ़ाइल लिखता है। केवल गेटटेक्स्ट ब्लॉक के लिए `false` सेट करें। `flatOutput: false` वाले ब्लॉक में `gettext` सेट होना चाहिए।
 - `gettext`
-  इस ब्लॉक के लिए वैकल्पिक GNU gettext आउटपुट। `outputDir` (डिफ़ॉल्ट `./locales`) को `<locale>/LC_MESSAGES/<domain>.po` प्राप्त होता है और, जब `compileMo` सत्य (डिफ़ॉल्ट) होता है, तो मिलान वाली `.mo` प्राप्त होती है। `domain` डिफ़ॉल्ट रूप से `messages` होता है। `potPath` टेम्प्लेट कैटलॉग है। `ingestExistingPo` (डिफ़ॉल्ट `true`) `extract` के दौरान गैर-फ़ज़ी `msgstr` मानों से खाली `strings.json` स्लॉट भरता है और गैर-खाली या उपयोगकर्ता-संपादित अनुवाद को प्रतिस्थापित नहीं करता है। `localeFormat` `posix` (डिफ़ॉल्ट, `pt_BR`) या `bcp47` (`pt-BR`) है। प्रासंगिक पंक्तियाँ gettext `\u0004` विभाजक का उपयोग करती हैं। दो संदर्भों में एक ही अंग्रेजी स्रोत एक कैटलॉग आईडी साझा नहीं करते हैं।
+  इस ब्लॉक के लिए वैकल्पिक जीएनयू गेटटेक्स्ट आउटपुट। `outputDir` (डिफ़ॉल्ट `./locales`) को `<locale>/LC_MESSAGES/<domain>.po` मिलता है और, जब `compileMo` सत्य हो (डिफ़ॉल्ट), तो संबंधित `.mo` भी मिलता है। `domain` डिफ़ॉल्ट रूप से `messages` होता है। `potPath` टेम्पलेट कैटलॉग है। `ingestExistingPo` (डिफ़ॉल्ट `true`) `extract` के दौरान गैर-फ़ज़ी `msgstr` मानों से खाली `strings.json` स्लॉट भरता है और गैर-रिक्त या उपयोगकर्ता-संपादित अनुवाद को प्रतिस्थापित नहीं करता। `localeFormat` `posix` (डिफ़ॉल्ट, `pt_BR`) या `bcp47` (`pt-BR`) है। प्रसंगात्मक पंक्तियाँ गेटटेक्स्ट `\u0004` विभाजक का उपयोग करती हैं। दो प्रसंगों में समान स्रोत-भाषा स्ट्रिंग कैटलॉग आईडी साझा नहीं करती।
 - `targetLocales`
-  इस ब्लॉक के लिए वैकल्पिक लोकेल सूची। जब छोड़ा जाता है या खाली होता है, तो ब्लॉक रूट `targetLocales` का उपयोग करता है।
+  इस ब्लॉक के लिए वैकल्पिक लोकेल सूची। छोड़े जाने या खाली होने पर, ब्लॉक रूट `targetLocales` का उपयोग करता है।
 - `languagesManifestPath`
-  वैकल्पिक पथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। जब छोड़ा जाता है, तो ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं डिफ़ॉल्ट रूप से इस ब्लॉक के `{flatOutputDir}/ui-languages.json` पर सेट होता है)। बाद के ब्लॉक डिफ़ॉल्ट रूप से `{flatOutputDir}/ui-languages.json` पर सेट होते हैं।
+  वैकल्पिक पथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। छोड़े जाने पर, ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं डिफ़ॉल्ट रूप से इस ब्लॉक का `{flatOutputDir}/ui-languages.json` होता है)। बाद के ब्लॉक डिफ़ॉल्ट रूप से `{flatOutputDir}/ui-languages.json` होते हैं।
 - `uiGlossary`
   जब `true` (डिफ़ॉल्ट) होता है, तो इस ब्लॉक का `strings.json` `translate-docs`, `translate-json`, और `translate-svg` के लिए एक शब्दावली संकेत स्रोत है। `translate-ui`, `proofread-ui`, और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। किसी कैटलॉग को उन संकेतों से बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जिसे दस्तावेज़ीकरण का मार्गदर्शन नहीं करना चाहिए)।
 - `uiExtractor.funcNames` (या लीगेसी `reactExtractor.funcNames`)
@@ -365,7 +365,10 @@ SQLite कैश निर्देशिका (सभी `docs` ब्लॉ�
 - `nextraDictionaryOutputTemplate`
 लोकेल डिक्शनरी मॉड्यूल के लिए वैकल्पिक आउटपुट टेम्प्लेट (डिफ़ॉल्ट: डिक्शनरी डायरेक्टरी के सापेक्ष `{dir}/{locale}.ts`)।
 
-**आउटपुट लेआउट**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+इस ब्लॉक के लिए आउटपुट लेआउट।
 
 - `outputDir`
 इस ब्लॉक के लिए अनुवादित आउटपुट के लिए रूट डायरेक्टरी।
@@ -384,21 +387,21 @@ Docusaurus लेआउट के लिए स्रोत डॉक्स र�
 - `docsOutput.flatPreserveRelativeDir`
 जब `docsOutput.style = "flat"`, स्रोत उपनिर्देशिकाओं को रखें ताकि समान बेसनाम वाली फ़ाइलें टकरा न जाएं। डिफ़ॉल्ट `false`।
 - `docsOutput.rewriteRelativeLinks`
-अनुवाद के बाद सापेक्ष लिंक को पुनः लिखें (जब `docsOutput.style = "flat"` हो और कोई कस्टम `pathTemplate` न हो, तो स्वतः सक्षम हो जाता है)।
+अनुवाद के बाद सापेक्ष लिंक फिर से लिखें (जब `docsOutput.style = "flat"` हो और कोई कस्टम `pathTemplate` न हो, तो स्वतः सक्षम)।
 - `docsOutput.linkRewriteDocsRoot`
-रेपो रूट का उपयोग फ्लैट-लिंक रिराइट प्रीफिक्स की गणना करते समय किया जाता है। आमतौर पर इसे `"."` के रूप में ही छोड़ दें, जब तक कि आपके अनुवादित डॉक्स किसी अन्य प्रोजेक्ट रूट के अंतर्गत न हों।
+सपाट-लिंक पुनर्लेखन प्रीफ़िक्स की गणना करते समय उपयोग किया जाने वाला रिपॉज़िटरी रूट। आमतौर पर इसे `"."` ही रहने दें, जब तक कि आपके अनूदित दस्तावेज़ किसी अलग प्रोजेक्ट रूट के अंतर्गत न हों।
 - `docsOutput.rewriteVitepressLinks`
-जब `true` हो, तो अनुवाद के बाद VitePress लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style`, `"vitepress"` हो तो यह डिफ़ॉल्ट रूप से सक्षम होता है। किसी भी `doc-system` लेआउट के साथ उपयोग करें जहाँ लोकेल फ़ोल्डर `docsRoot` के अंतर्गत अंग्रेज़ी के साथ रखे गए हों। README-शैली के `docs/guide/…` पथों को साइट रूट (`/guide/…`) और लोकेल-सापेक्ष `../guide/…` लिंक में पुनः लिखता है। VitePress ट्री के बाहर रेपो फ़ाइलों के लिंक (`LICENSE`, `examples/`) के लिए, अंग्रेज़ी स्रोत में पूर्ण URL का उपयोग करें — [VitePress एकीकरण — डॉक्स होमपेज के रूप में README](/hi/guide/integrations/vitepress#readme-and-the-docs-homepage) देखें।
+जब `true` हो, तो अनुवाद के बाद VitePress लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style`, `"vitepress"` हो, तो यह डिफ़ॉल्ट रूप से सक्षम होता है। किसी भी `doc-system` लेआउट के साथ उपयोग करें, जहाँ लोकेल फ़ोल्डर `docsRoot` के अंतर्गत स्रोत-लोकेल फ़ाइलों के पास होते हैं। स्रोत भाषा `sourceLocale` है और कोई भी भाषा हो सकती है। README-शैली के `docs/guide/…` पथों को साइट रूटों (`/guide/…`) और लोकेल-सापेक्ष `../guide/…` लिंक में फिर से लिखता है। VitePress ट्री के बाहर रिपॉज़िटरी फ़ाइलों (`LICENSE`, `examples/`) के लिंक के लिए, स्रोत-लोकेल फ़ाइलों में पूर्ण यूआरएल का उपयोग करें — [VitePress एकीकरण — दस्तावेज़ होमपेज के रूप में README](/hi/guide/integrations/vitepress#readme-and-the-docs-homepage) देखें।
 - `docsOutput.rewriteNextraLinks`
-जब `true` हो, तो अनुवाद के बाद Nextra लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style`, `"nextra"` हो तो यह डिफ़ॉल्ट रूप से सक्षम होता है। Next.js `i18n` के लिए `content/en/…` और सापेक्ष `.mdx` पथों को लोकेल-तटस्थ साइट रूट (`/guide/…`) में पुनः लिखता है। [Nextra एकीकरण — लिंक कन्वेंशन](/hi/guide/integrations/nextra#link-conventions) देखें।
+जब `true` हो, तो अनुवाद के बाद Nextra लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style`, `"nextra"` हो, तो यह डिफ़ॉल्ट रूप से सक्षम होता है। Next.js `i18n` के लिए `content/en/…` और सापेक्ष `.mdx` पथों को लोकेल-निरपेक्ष साइट रूटों (`/guide/…`) में फिर से लिखता है। [Nextra एकीकरण — लिंक परंपराएँ](/hi/guide/integrations/nextra#link-conventions) देखें।
 - `docsOutput.fumadocsParser`
-`"dot"` (डिफ़ॉल्ट) या `"dir"`। डॉट अंग्रेजी स्रोतों के बगल में `stem.{locale}.mdx` लिखता है; dir नेक्स्ट्रा जैसे लोकेल फ़ोल्डर लिखता है। [फ्यूमाडॉक्स एकीकरण — पेज लेआउट](/hi/guide/integrations/fumadocs#page-layout) देखें।
+`"dot"` (डिफ़ॉल्ट) या `"dir"`। डॉट स्रोत-लोकेल फ़ाइलों के पास `stem.{locale}.mdx` लिखता है; डिर Nextra की तरह लोकेल फ़ोल्डर लिखता है। स्रोत भाषा `sourceLocale` है और कोई भी भाषा हो सकती है। [Fumadocs एकीकरण — पेज लेआउट](/hi/guide/integrations/fumadocs#page-layout) देखें।
 - `docsOutput.rewriteFumadocsLinks`
-जब `true` हो, तो अनुवाद के बाद फ्यूमाडॉक्स लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style` `"fumadocs"` हो तो डिफ़ॉल्ट रूप से सक्षम होता है। सामग्री पथों और सापेक्ष `.mdx` लिंक को `/docs/…` मार्गों पर फिर से लिखता है।
+जब `true` हो, तो अनुवाद के बाद Fumadocs लिंक नॉर्मलाइज़र चलाएँ। जब `docsOutput.style`, `"fumadocs"` हो, तो यह डिफ़ॉल्ट रूप से सक्षम होता है। सामग्री पथों और सापेक्ष `.mdx` लिंक को `/docs/…` रूटों में फिर से लिखता है।
 - `docsOutput.fumadocsUiCatalog`
-वैकल्पिक। फ्यूमाडॉक्स UI ओवरराइड कैटलॉग बूटस्ट्रैप + `translate-docs` के अंदर अनुवाद। फ़ील्ड: `sourcePath` (जैसे `lib/layout.shared.ts`), `catalogPath` (जनरेटेड अंग्रेजी JSON), वैकल्पिक `outputPathTemplate` (डिफ़ॉल्ट: `ui.{locale}.json` `catalogPath` के बगल में)।
+वैकल्पिक। `translate-docs` के अंदर Fumadocs यूआई ओवरराइड कैटलॉग बूटस्ट्रैप + अनुवाद। फ़ील्ड: `sourcePath` (उदा. `lib/layout.shared.ts`), `catalogPath` (जनरेट किया गया अंग्रेज़ी जेएसओएन), वैकल्पिक `outputPathTemplate` (डिफ़ॉल्ट: `catalogPath` के पास `ui.{locale}.json`)।
 - `docs[].fumadocsMetaGlob`
-जब `docsOutput.style` `"fumadocs"` हो तो `meta.json` संग्रह के लिए वैकल्पिक ग्लोब। डिफ़ॉल्ट: `docsOutput.docsRoot` के तहत पुनरावर्ती `meta.json`।
+जब `docsOutput.style`, `"fumadocs"` हो, तो `meta.json` संग्रह के लिए वैकल्पिक ग्लोब। डिफ़ॉल्ट: `docsOutput.docsRoot` के अंतर्गत पुनरावर्ती `meta.json`।
 - `docs[].fumadocsMetaTranslatableKeys`
 प्रॉपर्टी नाम जिनके स्ट्रिंग मानों का Fumadocs `meta.json` में अनुवाद किया जाता है (डिफ़ॉल्ट: `title`, `description`)।
 - `docsOutput.localizedAssets`
@@ -515,6 +518,8 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (वैकल्पिक)
 
 [`suggest-models`](/hi/reference/cli-commands/models#suggest-models) और [डैशबोर्ड मॉडल्स टैब](/hi/guide/translation-dashboard/models) के लिए वेट। इस ब्लॉक को छोड़ दें, या किसी एक प्रोफ़ाइल को छोड़ दें, तो वह प्रोफ़ाइल इन-बिल्ट वेट को बनाए रखेगी। यह ब्लॉक `--apply` या **Update config** द्वारा फिर से नहीं लिखा जाता है; वे केवल मॉडल आईडी लिखते हैं।

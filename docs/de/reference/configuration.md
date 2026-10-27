@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-BCP-47-Code für die Ausgangssprache (z. B. `"en-GB"`, `"en"`, `"pt-BR"`). Für diese Sprache wird keine Übersetzungsdatei generiert – der Schlüsseltext selbst ist der Ausgangstext.
+BCP-47-Code für die Ausgangssprache (z. B. `"en-GB"`, `"pt-BR"` oder `"ja"`). Jede Sprache ist gültig. Englisch erscheint in den Beispielen, da viele Projekte dort beginnen. Für dieses Gebietsschema wird keine Übersetzungsdatei generiert – der Schlüsselstring selbst ist der Quelltext.
 
 **Muss** `SOURCE_LOCALE` entsprechen, der aus Ihrer Laufzeit-i18n-Konfigurationsdatei exportiert wird (`src/i18n.ts` / `src/i18n.js`).
 
@@ -167,9 +167,9 @@ Ein veralteter übergeordneter `openrouter`-Block (mit `baseUrl`, `translationMo
 
 Ein ausführbares Beispiel, das mehrere Anbieter in einer Konfiguration konfiguriert und mit `-P` zwischen ihnen wechselt, finden Sie unter [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/) (`openai`, `anthropic`, `openrouter` und `deepseek` im selben Dokument).
 
-**Warum mehrere Modelle verwenden:** Verschiedene Provider und Modelle haben unterschiedliche Kosten und bieten unterschiedliche Qualitätsstufen über Sprachen und Gebiete hinweg. Konfigurieren Sie `translationModels` **als eine geordnete Fallback-Kette** (anstatt eines einzelnen Modells), damit die CLI das nächste Modell versuchen kann, wenn eine Anfrage fehlschlägt.
+**Warum mehrere Modelle verwenden:** Verschiedene Anbieter und Modelle haben unterschiedliche Kosten und bieten unterschiedliche Qualitätsstufen für verschiedene Sprachen und Gebietsschemata. Konfigurieren Sie `translationModels` als eine geordnete Fallback-Kette, damit die CLI das nächste Modell versuchen kann, wenn eine Anfrage fehlschlägt. Die Anleitung zum Erstellen dieser Liste finden Sie unter [KI-Modelle](/de/guide/ai-models).
 
-Betrachten Sie die folgende Liste als **Grundlage**, die Sie erweitern können: Wenn die Übersetzung für ein bestimmtes Gebietsschema schlecht oder erfolglos ist, recherchieren Sie, welche Modelle diese Sprache oder Schrift effektiv unterstützen (siehe Online-Ressourcen oder die Dokumentation Ihres Anbieters), und fügen Sie diese Modell-IDs als weitere Alternativen hinzu.
+Betrachten Sie die folgende Liste als **Grundlage**. Ersetzen Sie sie durch die Benchmark-Rangliste unter [KI-Modelle](/de/guide/ai-models). Wenn die Übersetzungsqualität für ein bestimmtes Gebietsschema weiterhin schlecht ist, fügen Sie einen `localeModels`-Eintrag für diese Sprache oder Schrift hinzu oder fügen Sie weitere IDs aus dem Katalog des Anbieters hinzu.
 
 Diese Modell-IDs sind das, was `ai-i18n-tools init -P openrouter` schreibt. Andere Voreinstellungen erhalten native Modell-IDs von `init -P <provider>` — siehe [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
 
@@ -270,13 +270,13 @@ Aufgelöste `stringsJson`-, `flatOutputDir`- und Manifest-Pfade müssen blocküb
 - `flatOutputDir`
   Verzeichnis, in das die gebietsschemaspezifischen JSON-Dateien dieses Blocks geschrieben werden (`de.json` usw.).
 - `flatOutput`
-  Bei `true` (Standard) schreibt `translate-ui` eine flache JSON-Datei pro Gebietsschema. Setzen Sie `false` für einen reinen gettext-Block. Ein Block mit `flatOutput: false` muss `gettext` festlegen.
+  Wenn `true` (Standard), schreibt `translate-ui` eine flache JSON-Datei pro Gebietsschema. Setzen Sie `false` für einen reinen gettext-Block. Ein Block mit `flatOutput: false` muss `gettext` setzen.
 - `gettext`
-  Optionale GNU gettext-Ausgabe für diesen Block. `outputDir` (Standard `./locales`) empfängt `<locale>/LC_MESSAGES/<domain>.po` und, wenn `compileMo` wahr ist (Standard), das übereinstimmende `.mo`. `domain` ist standardmäßig `messages`. `potPath` ist der Vorlagenkatalog. `ingestExistingPo` (Standard `true`) füllt leere `strings.json`-Slots aus nicht-fuzzy `msgstr`-Werten während `extract` und ersetzt keine nicht leere oder vom Benutzer bearbeitete Übersetzung. `localeFormat` ist `posix` (Standard, `pt_BR`) oder `bcp47` (`pt-BR`). Kontextbezogene Zeilen verwenden das gettext `\u0004`-Trennzeichen. Dieselbe englische Quelle in zwei Kontexten teilt sich keine Katalog-ID.
+  Optionale GNU gettext-Ausgabe für diesen Block. `outputDir` (Standard `./locales`) empfängt `<locale>/LC_MESSAGES/<domain>.po` und, wenn `compileMo` wahr ist (Standard), das passende `.mo`. `domain` ist standardmäßig `messages`. `potPath` ist der Vorlagenkatalog. `ingestExistingPo` (Standard `true`) füllt leere `strings.json`-Slots mit nicht-unscharfen `msgstr`-Werten während `extract` und ersetzt keine nicht-leere oder vom Benutzer bearbeitete Übersetzung. `localeFormat` ist `posix` (Standard, `pt_BR`) oder `bcp47` (`pt-BR`). Kontextbezogene Zeilen verwenden den gettext `\u0004`-Trenner. Derselbe Ausgangssprachen-String in zwei Kontexten teilt sich keine Katalog-ID.
 - `targetLocales`
-  Optionale Liste der Gebietsschemas für diesen Block. Wenn weggelassen oder leer, verwendet der Block das Stammverzeichnis `targetLocales`.
+  Optionale Gebietsschemaliste für diesen Block. Wenn weggelassen oder leer, verwendet der Block das Stamm-`targetLocales`.
 - `languagesManifestPath`
-  Optionaler Pfad, in den `extract` und `generate-ui-languages` das `ui-languages.json` dieses Blocks schreiben. Wenn weggelassen, verwendet Block 0 das Stammverzeichnis `languagesManifestPath` (das standardmäßig auf `{flatOutputDir}/ui-languages.json` dieses Blocks eingestellt ist). Spätere Blöcke verwenden standardmäßig `{flatOutputDir}/ui-languages.json`.
+  Optionaler Pfad, unter dem `extract` und `generate-ui-languages` die `ui-languages.json` dieses Blocks schreiben. Wenn weggelassen, verwendet Block 0 das Stamm-`languagesManifestPath` (das selbst standardmäßig die `{flatOutputDir}/ui-languages.json` dieses Blocks verwendet). Spätere Blöcke verwenden standardmäßig `{flatOutputDir}/ui-languages.json`.
 - `uiGlossary`
   Bei `true` (Standard) ist das `strings.json` dieses Blocks eine Glossar-Hinweisquelle für `translate-docs`, `translate-json` und `translate-svg`. `translate-ui`, `proofread-ui` und Quell-Linting verwenden nur `glossary.userGlossary`. Setzen Sie `false`, um einen Katalog aus diesen Hinweisen herauszuhalten (zum Beispiel einen CLI-String-Katalog, der die Dokumentation nicht steuern sollte).
 - `uiExtractor.funcNames` (oder veraltet `reactExtractor.funcNames`)
@@ -365,7 +365,10 @@ Optionales englisches Nextra-Theme-Wörterbuchmodul (z. B. `"app/_dictionaries/e
 - `nextraDictionaryOutputTemplate`
 Optionale Ausgabevorlage für lokale Wörterbuchmodule (Standard: `{dir}/{locale}.ts` relativ zum Wörterbuchverzeichnis).
 
-**Ausgabe-Layout**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+Ausgabelayout für diesen Block.
 
 - `outputDir`
 Stammverzeichnis für die übersetzte Ausgabe dieses Blocks.
@@ -386,19 +389,19 @@ Wenn `docsOutput.style = "flat"`, Quellunterverzeichnisse beibehalten, damit Dat
 - `docsOutput.rewriteRelativeLinks`
 Relative Links nach der Übersetzung umschreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
 - `docsOutput.linkRewriteDocsRoot`
-Repo-Root, das beim Berechnen der Präfixe für das Umschreiben von Flat-Links verwendet wird. Belassen Sie dies üblicherweise auf `"."`, außer Ihre übersetzte Dokumentation befindet sich in einem anderen Projekt-Root.
+Repo-Root, der beim Berechnen von Präfixen für die Umschreibung von Flat-Links verwendet wird. Lassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Root.
 - `docsOutput.rewriteVitepressLinks`
-Wenn `true`, führen Sie den VitePress-Link-Normalizer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"vitepress"` gesetzt ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich die Locale-Ordner neben dem englischen Ordner unter `docsRoot` befinden. Schreibt `docs/guide/…`-Pfade im README-Stil in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repository-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in der englischen Quelle — siehe [VitePress-Integration — README als Dokumentations-Startseite](/de/guide/integrations/vitepress#readme-and-the-docs-homepage).
+Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"vitepress"` ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich Gebietsschema-Ordner neben den Ausgangssprache-Dateien unter `docsRoot` befinden. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und gebietsschema-relative `../guide/…`-Links um. Für Links zu Repo-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in den Ausgangssprache-Dateien – siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Wenn `true`, führen Sie den Nextra-Link-Normalizer nach der Übersetzung aus. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"nextra"` gesetzt ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in locale-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration — Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
+Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"nextra"` ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben englische Quellen; dir schreibt Gebietsschema-Ordner wie Nextra. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
+`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben die Ausgangssprache-Dateien; dir schreibt Gebietsschema-Ordner wie Nextra. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
-Wenn `true`, den Fumadocs-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` auf `"fumadocs"` gesetzt ist. Schreibt Inhaltspfade und relative `.mdx`-Links in `/docs/…`-Routen um.
+Wenn `true`, den Fumadocs-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"fumadocs"` ist. Schreibt Inhaltspfade und relative `.mdx`-Links in `/docs/…`-Routen um.
 - `docsOutput.fumadocsUiCatalog`
-Optional. Fumadocs UI-Überschreibungskatalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `sourcePath` (z. B. `lib/layout.shared.ts`), `catalogPath` (generiertes englisches JSON), optional `outputPathTemplate` (Standard: `ui.{locale}.json` neben `catalogPath`).
+Optional. Fumadocs UI-Überschreibung Katalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `sourcePath` (z. B. `lib/layout.shared.ts`), `catalogPath` (generiertes englisches JSON), optional `outputPathTemplate` (Standard: `ui.{locale}.json` neben `catalogPath`).
 - `docs[].fumadocsMetaGlob`
-Optionale Globs für die `meta.json`-Sammlung, wenn `docsOutput.style` auf `"fumadocs"` gesetzt ist. Standard: rekursives `meta.json` unter `docsOutput.docsRoot`.
+Optionale Glob(s) für die `meta.json`-Sammlung, wenn `docsOutput.style` `"fumadocs"` ist. Standard: rekursives `meta.json` unter `docsOutput.docsRoot`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Eigenschaftsnamen, deren String-Werte in Fumadocs-`meta.json` übersetzt werden (Standard: `title`, `description`).
 - `docsOutput.localizedAssets`
@@ -515,6 +518,8 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 
 Gewichtungen für [`suggest-models`](/de/reference/cli-commands/models#suggest-models) und den [Dashboard-Tab „Models“](/de/guide/translation-dashboard/models). Lassen Sie den Block oder ein Profil weg, dann behält dieses Profil die integrierten Gewichtungen bei. Der Block wird nicht durch `--apply` oder **Update config** überschrieben; diese schreiben nur Modell-IDs.

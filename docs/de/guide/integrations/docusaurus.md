@@ -44,9 +44,16 @@ Konfigurieren Sie einen `docs[]`-Block:
 }
 ```
 
-Verweisen Sie `contentPaths` auf Ihre englischen `.md` / `.mdx`-Dateien und -Verzeichnisse. Setzen Sie `docsRoot` auf denselben Ordner, den Docusaurus als Inhaltsstamm verwendet. Setzen Sie `outputDir` auf das übergeordnete Verzeichnis jedes Sprachordners unter `i18n/`.
+Richten Sie `contentPaths` auf die in `sourceLocale` geschriebenen `.md` / `.mdx` Dateien und Verzeichnisse aus. Diese Sprache kann eine beliebige Sprache sein. Legen Sie `docsRoot` auf dasselbe Verzeichnis fest, das Docusaurus als sein Content-Root-Verzeichnis verwendet. Legen Sie `outputDir` auf das Elternverzeichnis jedes Locale-Ordners unter `i18n/` fest.
 
 Verbinden Sie die [Internationalisierung](https://docusaurus.io/docs/i18n/introduction) von Docusaurus: Halten Sie `targetLocales` in `ai-i18n-tools.config.json` mit dem `locales`-Array in `docusaurus.config.js` synchron. Jedes `localeConfigs[locale].path` muss mit dem Ordnernamen unter `i18n/` übereinstimmen (zum Beispiel `path: "fr"` für `i18n/fr/`).
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### i18n auf einer bestehenden Site aktivieren
+
+- Fügen Sie den `i18n`-Block in `docusaurus.config.js` hinzu: `defaultLocale`, `locales` und `localeConfigs[locale].path`, wenn der URL-Pfad vom Gebietsschema-Code abweichen soll.
+- Führen Sie `docusaurus write-translations` aus, damit `i18n/<defaultLocale>/` existiert, richten Sie dann `docusaurusCatalogDir` auf diesen Ordner aus und führen Sie `sync` aus.
+- Benutzerdefiniertes React in `src/pages` und `src/components` ist kein Markdown. Markieren Sie benutzerorientierten Text mit `<Translate>` oder `translate()` aus `@docusaurus/Translate`, damit `write-translations` ihn in `code.json` sammeln kann. Die Nachricht muss eine statische Zeichenfolge sein. `write-translations` schreibt `i18n/<locale>/code.json`; wenn `docusaurusCatalogDir` gesetzt ist, übersetzt `translate-docs` dieses JSON zusammen mit dem Rest des Shell-Katalogs. ai-i18n-tools scannt diese JSX-Bäume nicht nach `t()`.
 
 <a id="shell-strings-write-translations"></a>
 ## Shell-Strings (write-translations)

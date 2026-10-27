@@ -64,9 +64,9 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-`docsRoot` の外にあるパスは、[ネストされた](#nested)レイアウト (`{outputDir}/{locale}/{relPath}`) にフォールバックします。
+`docsRoot` の外のパスは、[ネストされた](#nested-default) レイアウト（`{outputDir}/{locale}/{relPath}`）にフォールバックします。
 
-`docs[].docsOutput.docsRoot` を英語のソースルート（例: `"docs"`, `"src/content/docs"`, または `"content/en"`）に設定します。`docsOutput.style = "doc-system"` の場合、`localeSubpath` を明示的に設定する必要があります（プリセットには以下のエイリアスを使用してください）。翻訳されたページが `{outputDir}/{locale}/` の直下にある場合（Starlightスタイル）は、`localeSubpath: ""` を使用します。
+`docs[].docsOutput.docsRoot` を `sourceLocale` で書かれたファイルのルートに設定します（例えば、英語がソースの場合、`"docs"`、`"src/content/docs"`、または `"content/en"`）。`sourceLocale` は任意の言語にできます。`docsOutput.style = "doc-system"` の場合、`localeSubpath` を明示的に設定する必要があります（プリセットには以下のエイリアスを使用してください）。翻訳されたページが `{outputDir}/{locale}/` の直下にある場合（Starlightスタイル）は、`localeSubpath: ""` を使用します。
 
 `docusaurusCatalogDir` からのDocusaurusシェルJSONおよびdoc-systemプリセット下のその他のJSONアーティファクトは、Markdownと同じフォルダレイアウトに従います。`style: "flat"` の場合、`jsonPathTemplate` を設定しない限り、JSONラベルファイルはネストされた形状を引き続き使用します。
 
@@ -75,10 +75,10 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 **エイリアス** (同じ `doc-system` エンジン、プリセット `localeSubpath` およびデフォルト):
 
-- `docsOutput.style = "docusaurus"` — `localeSubpath`のデフォルトは`docusaurus-plugin-content-docs/current`です（Docusaurus i18nプラグインのレイアウト）。
-- `docsOutput.style = "astro-starlight"` — `localeSubpath`のデフォルトは`""`、`localePathLowercase`のデフォルトは`true`です。翻訳済みページは`{outputDir}/{locale}/`配下に配置され、英語コンテンツがコンテンツルートにあり、`outputDir`が`docsRoot`と等しい場合の[Starlight](https://starlight.astro.build/guides/i18n/)と一致します。通常のAstroロケールページ（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）にも使用されます。詳細は[Astroウェブサイトのページ](/ja/guide/ui-strings/astro-website#astro-website-pages-parse-and-replace)を参照してください。
-- `docsOutput.style = "vitepress"` — `localeSubpath`が空の`doc-system`と同じレイアウトです。BCP-47ロケールフォルダ名は保持されます（`localePathLowercase`のデフォルトは`false`）。[VitePressの統合](/ja/guide/integrations/vitepress)を参照してください。
-- `docsOutput.style = "nextra"` — `localeSubpath`が空の`doc-system`と同じレイアウトです。英語のソースはロケールフォルダ配下に配置されます（例：`content/en/`）。[Nextraの統合](/ja/guide/integrations/nextra)を参照してください。
+- `docsOutput.style = "docusaurus"` — `localeSubpath` はデフォルトで `docusaurus-plugin-content-docs/current` になります（Docusaurus i18n プラグインのレイアウト）。
+- `docsOutput.style = "astro-starlight"` — `localeSubpath` はデフォルトで `""` になります。`localePathLowercase` はデフォルトで `true` になります。ソースロケールがコンテンツルートにあり、`outputDir` が `docsRoot` と等しい場合、[Starlight](https://starlight.astro.build/guides/i18n/) に一致する `{outputDir}/{locale}/` の下の翻訳されたページ。また、通常のAstroロケールページ（`src/pages/index.astro` → `src/pages/{locale}/index.astro`）にも使用されます — [Astroウェブサイトページ](/ja/guide/ui-strings/astro-website#pages-parse-and-replace) を参照してください。
+- `docsOutput.style = "vitepress"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。BCP-47 ロケールフォルダー名は保持されます（`localePathLowercase` はデフォルトで `false` になります）。[VitePressインテグレーション](/ja/guide/integrations/vitepress) を参照してください。
+- `docsOutput.style = "nextra"` — `doc-system` と同じレイアウトで、`localeSubpath` は空です。ソースロケールはロケールフォルダーの下にあります（例えば、英語がソースの場合、`content/en/`）。[Nextraインテグレーション](/ja/guide/integrations/nextra) を参照してください。
 
 Docusaurus プリセット（主なドキュメントページ）：
 
@@ -121,7 +121,7 @@ Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマ�
 
 `docsOutput.style = "fumadocs"` — `docsOutput.fumadocsParser` を介したFumadocsコンテンツレイアウト:
 
-- **`"dot"` (デフォルト)** — `outputDir` の下にある英語ソースの横にあるファイル名のロケールサフィックス (ロケールフォルダではありません)。これは `doc-system` パスの形状とは別のものです。
+- **`"dot"`（デフォルト）** — `outputDir` の下のソースロケールファイルの横にあるファイル名のロケールサフィックス（ロケールフォルダーではありません）。これは `doc-system` のパス形状とは別です。ソース言語は `sourceLocale` で、任意の言語にできます。
 
 ```text
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx

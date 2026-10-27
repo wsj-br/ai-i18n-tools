@@ -17,11 +17,11 @@ Routing for a user who asks to add languages: a JS/TS app with plain text goes t
 
 Optional: set top-level `requestTimeout` (seconds) or `requestTimeoutMs` for every provider, or the same keys under `providers.<name>` to override one provider, if the default **45** seconds per request is wrong for your network. Set only one of the two at each level.
 
-Optional cost rates under `providers.<name>`: `pricing` (provider-wide USD per 1,000,000 input and output tokens, `inputPerMTokens` / `outputPerMTokens`) and `modelPricing` (per-model overrides). Applied when the provider omits `usage.cost`. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset there. A provider-reported cost is kept as returned. The amount is stored with the call and shown by `usage` and the dashboard Usage & costs view. See [Providers and models](/guide/providers-and-models#multiple-providers).
+Optional cost rates under `providers.<name>`: `pricing` (provider-wide USD per 1,000,000 input and output tokens, `inputPerMTokens` / `outputPerMTokens`) and `modelPricing` (per-model overrides). Applied when the provider omits `usage.cost`. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset there. A provider-reported cost is kept as returned. The amount is stored with the call and shown by `usage` and the dashboard Usage & costs view. See [LLM providers](/guide/providers-and-models#multiple-providers).
 
 Optional `providers.cheaperinference.zeroDataRetention` (default off). When `true`, chat requests send `"zdr": true` and model lists, checks, and suggestions use `GET /v1/models?zdr=true`. The flag does not make a model without a zero-data-retention route usable. If the Cheaper Inference account [Data Protection](https://platform.cheaperinference.com/dashboard/data-protection) setting is on, a model with no such route fails even while this flag is off; the error tells the user to turn the flag on and pick a catalog model, or to turn the account setting off. See [Zero data retention](/guide/providers-and-models#cheaperinference-zero-data-retention).
 
-Optional model tiers under `providers.<active>`: `uiModels` (UI-only fallback after per-locale overrides) and `localeModels` (per-locale overrides for all pipelines). Resolution order — UI: `localeModels` → `uiModels` → `translationModels`; docs/JSON/SVG: `localeModels` → `translationModels`. See [Providers and models — Model fallback chain](/guide/providers-and-models#model-fallback-chain).
+Optional model tiers under `providers.<active>`: `uiModels` (UI-only fallback after per-locale overrides) and `localeModels` (per-locale overrides for all pipelines). Resolution order — UI: `localeModels` → `uiModels` → `translationModels`; docs/JSON/SVG: `localeModels` → `translationModels`. See [AI Models — Model fallback chain](/guide/ai-models#model-fallback-chain).
 
 The CLI auto-loads a `.env` file from the working directory (does not override variables already set in the shell).
 
@@ -44,7 +44,7 @@ The CLI auto-loads a `.env` file from the working directory (does not override v
 
 ## Invariant: `sourceLocale` === `SOURCE_LOCALE`
 
-`sourceLocale` in config must **exactly match** the `SOURCE_LOCALE` constant your app exports from its i18n bootstrap. If they differ, extract and translation targets are wrong.
+`sourceLocale` in config must **exactly match** the `SOURCE_LOCALE` constant your app exports from its i18n bootstrap. If they differ, extract and translation targets are wrong. `sourceLocale` can be any BCP-47 language. English is a common example in this guide, and the string inside `t()` is whatever language you set here.
 
 ---
 
@@ -133,7 +133,7 @@ ai-i18n-tools uses **two different on-disk shapes**. Do not use `strings.json` k
 | Artifact | Path (typical) | Key shape | Role |
 |----------|----------------|-----------|------|
 | **Catalog** | `ui.stringsJson` (e.g. `src/i18n/strings.json`) | **MD5-8** of trimmed source (`deccbe4e`, …) | **Tooling cache:** `source`, `translated`, `models`, `locations`. Updated by `extract` / `translate-ui`. **Not** imported by most apps at runtime. |
-| **Flat locale bundle** | `ui.flatOutputDir` (e.g. `public/locales/de.json`) | **English source text** | **Runtime / SSG lookup:** `"Save": "Speichern"`. Written by `translate-ui` (`buildFlatJsonForLocale` uses `flat[entry.source] = translation`). |
+| **Flat locale bundle** | `ui.flatOutputDir` (e.g. `public/locales/de.json`) | **Source-language text** | **Runtime / SSG lookup:** `"Save": "Speichern"` when the source string is English. Written by `translate-ui` (`buildFlatJsonForLocale` uses `flat[entry.source] = translation`). |
 | **Plural flat (source only)** | `{flatOutputDir}/{sourceLocale}.json` | `groupId_original`, `groupId_one`, … | Only when plurals exist; loaded with `sourcePluralFlatBundle` for i18next. |
 
 ### Lookup rule for custom `t()` (Astro, scripts, non-i18next)
@@ -148,7 +148,7 @@ t("Translate")  →  flat["Translate"]  →  "Traduzir" | fallback "Translate"
 t("Translate")  →  flat[md5("Translate").slice(0, 8)]   // flat files are not keyed this way
 ```
 
-- Pass the **exact** English source string to `t()` that `extract` recorded (same spelling, spacing, and punctuation).
+- Pass the **exact** source-language string to `t()` that `extract` recorded (same spelling, spacing, and punctuation). That string is written in `sourceLocale`, which can be any language.
 - If a locale file is missing, fall back to the source string (identity for `sourceLocale`).
 - `strings.json` is for the CLI pipeline only unless you use `ai-i18n-tools/runtime` (`setupKeyAsDefaultT`), which reads the catalog internally.
 
@@ -167,7 +167,7 @@ Reference: [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tr
 | What | Pipeline | Notes |
 |------|----------|-------|
 | Template HTML (headings, nav, feature lists in the body) | `translate-docs` | Writes `src/pages/{locale}/index.astro`; adjusts relative imports |
-| Frontmatter / `t('…')` data (tab labels, shared arrays) | `extract` → `translate-ui` | Flat JSON under `ui.flatOutputDir`; lookup by English source key |
+| Frontmatter / `t('…')` data (tab labels, shared arrays) | `extract` → `translate-ui` | Flat JSON under `ui.flatOutputDir`; lookup by the source-language key |
 | Locale labels / RTL | `generate-ui-languages` | Manifest at `languagesManifestPath` (required; e.g. `src/i18n/ui-languages.json`) |
 
 - **Page HTML:** static text nodes and translatable attributes (`alt`, `title`, `aria-label`, `placeholder`). User-facing string literals inside template `{expression}` blocks (inline arrays, object fields) are translated. Protected: attribute/key values (`class`, `id`, `style`, `data-*`, …), configurable `docs[].protectAttributes` / `protectKeys`, `<script>`, `<style>`, and **literals inside `t('…')`** (frontmatter or template).
@@ -259,7 +259,7 @@ i18next plural suffix keys (`key_one`, `key_other`, `key_zero`, …) are transla
 
 **Commands:** `ai-i18n-tools translate-json`, or `sync` / `sync --no-json`. Init template: `init -t ui-json-bundles`.
 
-To migrate Intlayer `.content.ts` dictionaries (and simple `useIntlayer` / `getIntlayer` call sites) into the UI-strings `t("English")` schema instead, see `migrate-intlayer` and [Migrating from Intlayer](/guide/migrating-from-intlayer). To keep Intlayer at runtime and only translate its `.content.ts` dictionaries in place, see `translate-intlayer` and [Translating Intlayer in place](/guide/translating-intlayer).
+To migrate Intlayer `.content.ts` dictionaries (and simple `useIntlayer` / `getIntlayer` call sites) into the UI-strings source-string `t()` schema instead, see `migrate-intlayer` and [Migrating from Intlayer](/guide/migrating-from-intlayer). To keep Intlayer at runtime and only translate its `.content.ts` dictionaries in place, see `translate-intlayer` and [Translating Intlayer in place](/guide/translating-intlayer).
 
 **vs Documents:** Docusaurus shell files (`{ "key": { "message": "…", "description": "…" } }`) belong under `docs[].docusaurusCatalogDir` and are translated by `translate-docs`, not `translate-json`. The same rule applies to VitePress theme catalogs, Nextra dictionaries, and Fumadocs UI catalogs — all via `docs[]`, not `json[]`.
 
@@ -297,7 +297,7 @@ The source locale JSON file is purely for plural handling — it is never requir
 Paths depend on your config; common artifacts:
 
 - `strings.json` — **catalog / cache** (MD5-8 id → `source`, `translated`, optional `models`). Used by CLI and `ai-i18n-tools/runtime`, not by typical flat-json `makeT` helpers.
-- Per-locale flat JSON — for example `de.json`, `pt-BR.json` under `ui.flatOutputDir` (**source sentence → translation**, English text as key).
+- Per-locale flat JSON — for example `de.json`, `pt-BR.json` under `ui.flatOutputDir` (**source sentence → translation**, source-language text as key).
 - **Source locale JSON** — only if plurals exist (e.g., `en-GB.json` with plural suffix keys).
 - `ui-languages.json` — manifest rows (`code`, `label`, `englishName`, `direction`).
 - `cacheDir` — SQLite cache for `translate-docs`, `translate-json`, and `translate-svg` (shared segment store).
@@ -352,9 +352,9 @@ The `ai-i18n-tools dashboard` UI includes a **Markdown issues** tab (same `markd
 <a id="python-applications"></a>
 ## Python applications
 
-Python projects can run the CLI from the standalone executable on each GitHub Release (Linux x64/arm64, macOS arm64/x64, Windows x64) with no Node.js install. Asset names and checksums: [Installation — Standalone executables](/guide/installation#standalone-executables). The npm package works too when Node.js `>=22.16.0` is already installed.
+Python projects can run the CLI from the standalone executable on each GitHub Release (Linux x64/arm64, macOS arm64/x64, Windows x64) with no Node.js install. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. The installer verifies `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. Asset names and manual steps: [Installation — Standalone executables](/guide/installation#standalone-executables). The npm package works too when Node.js `>=22.16.0` is already installed.
 
-Scaffold with `ai-i18n-tools init -t ui-python -P cheaperinference` (flat English-key JSON and `i18n.py`), `ui-python-gettext` (JSON and `.po` / `.mo`), `ui-python-flask` (gettext under `translations/`), or `ui-python-django` (Django `locale/` and the `django` domain, no `i18n.py`). `-P` is required on every `init`. `ui-python`, `ui-python-gettext`, and `ui-python-flask` write `i18n.py` when that file is missing. It is a standard-library helper (Python 3.10 or newer): `t`, `_`, `set_locale`, `reset_locale`, and the other functions in [Programmatic API — Python runtime](/reference/programmatic-api#python-runtime).
+Scaffold with `ai-i18n-tools init -t ui-python -P cheaperinference` (flat JSON keyed by the source-language string, and `i18n.py`), `ui-python-gettext` (JSON and `.po` / `.mo`), `ui-python-flask` (gettext under `translations/`), or `ui-python-django` (Django `locale/` and the `django` domain, no `i18n.py`). `-P` is required on every `init`. `ui-python`, `ui-python-gettext`, and `ui-python-flask` write `i18n.py` when that file is missing. It is a standard-library helper (Python 3.10 or newer): `t`, `_`, `set_locale`, `reset_locale`, and the other functions in [Programmatic API — Python runtime](/reference/programmatic-api#python-runtime).
 
 Look up the catalog first, then interpolate: `t("Hello, {name}!", name=name)` and `_("Hello, %s!") % name`. `migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`). Dry run by default. `--write` edits files and the report is `migrate-python-i18n-report.md`. Generated `i18n.py` is skipped.
 
@@ -416,8 +416,8 @@ General rules for all doc frameworks:
 - `generate-ui-languages` fails — set `languagesManifestPath` (manifest output) in config.
 - **Section anchor links broken in translated docs** — run `write-heading-ids` on source markdown to insert or refresh `<a id="…"></a>` lines, then re-run `translate-docs`; see [Documents — Troubleshooting](/guide/documents/troubleshooting).
 - **Hindi/Arabic/CJK/Cyrillic output is romanized (Latin letters)** — wrong-script cache rows are rejected on the next `translate-ui` / `translate-docs` / `sync`; see [Documents — Troubleshooting](/guide/documents/troubleshooting#hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters). Use `hi-Latn` only when you want romanized Hindi.
-- **Broken links on VitePress (404 in dev or GitHub Pages)** — English sources should use site routes (`/guide/…`), not `docs/guide/…` or `../guide/…`. Enable `rewriteVitepressLinks` (default for `style: "vitepress"`) and re-run `translate-docs` / `sync`. Do not patch locale trees by hand.
-- **Nextra / Fumadocs sidebar labels not translated** — confirm `style` is `"nextra"` or `"fumadocs"`, English sources live under the configured `docsRoot`, and `features.translateDocs` is on; re-run `sync`.
+- **Broken links on VitePress (404 in dev or GitHub Pages)** — source-locale files should use site routes (`/guide/…`), not `docs/guide/…` or `../guide/…`. The source language is `sourceLocale` and can be any language. Enable `rewriteVitepressLinks` (default for `style: "vitepress"`) and re-run `translate-docs` / `sync`. Do not patch locale trees by hand.
+- **Nextra / Fumadocs sidebar labels not translated** — confirm `style` is `"nextra"` or `"fumadocs"`, the source-locale files live under the configured `docsRoot`, and `features.translateDocs` is on; re-run `sync`.
 - **Fumadocs wrong output paths** — check `fumadocsParser`: `"dot"` writes `page.{locale}.mdx` beside English; `"dir"` writes locale folders like Nextra.
 
 ---
@@ -426,6 +426,7 @@ General rules for all doc frameworks:
 
 - `README.md` — install, quick start, runtime helper overview.
 - [Integrations](/guide/integrations/) — framework-specific setup (VitePress, Nextra, Fumadocs, Docusaurus, Astro).
-- [Providers and models](/guide/providers-and-models/) — provider presets, `uiModels`, `localeModels`, fallback chains.
+- [LLM providers](/guide/providers-and-models) — provider presets, API keys, and `-P`.
+- [AI Models](/guide/ai-models) — ranked shortlist, `uiModels`, `localeModels`, and fallback chains.
 - `docs/guide/images-and-screenshots/` — screenshots and SVG assets in translated documentation.
 - `docs/reference/architecture.md` — how extract and translation pipelines fit together.

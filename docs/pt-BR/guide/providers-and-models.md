@@ -1,9 +1,9 @@
 <a id="llm-providers-and-models"></a>
-# Provedores e modelos de LLM
+# Provedores de LLM
 
 Cada pipeline de tradução — `translate-ui`, `translate-docs`, `translate-json` e `translate-svg` — envia texto para um LLM através do mesmo cliente agnóstico de provedor. Antes que qualquer um desses comandos possa ser executado, configure **pelo menos um provedor** em `ai-i18n-tools.config.json` e defina a **chave de API** correspondente em seu ambiente ou `.env` (predefinições integradas, exceto **Ollama**). `init` escreve um bloco inicial `provider` / `providers`; você ainda deve fornecer credenciais para a predefinição ativa.
 
-Você configura **qual endpoint de API chamar** e **quais modelos tentar** uma vez na configuração; todos os comandos de tradução compartilham essa configuração e o mesmo cache SQLite.
+Você configura **qual endpoint de API chamar** uma vez na configuração; todos os comandos de tradução compartilham essa configuração e o mesmo cache SQLite. Quais modelos esse provedor tenta usar é uma etapa separada: [Modelos de IA](/pt-BR/guide/ai-models).
 
 A CLI resolve o provedor ativo a partir da chave `provider` de nível superior (ou da única entrada em `providers` quando apenas um está configurado). Cada bloco de provedor lista uma cadeia de fallback `translationModels` ordenada; predefinições incorporadas herdam `baseUrl` e a variável de ambiente da chave de API automaticamente (substitua-as por provedor quando necessário).
 
@@ -54,101 +54,10 @@ Com a flag ativada, cada solicitação de chat inclui `"zdr": true`, e `list-mod
 Deixe a flag desativada quando a conta Cheaper Inference não exigir retenção zero de dados. Se a [Proteção de Dados](https://platform.cheaperinference.com/dashboard/data-protection) já estiver ativada para a conta, Cheaper Inference ainda recusa um modelo sem uma rota de retenção zero de dados. O erro nomeia esse modelo. Para manter a política da conta, defina `zeroDataRetention` como `true` e mude para um modelo do catálogo de retenção zero de dados. Para manter o modelo recusado, desative a retenção zero de dados naquela página. A cadeia de fallback então tenta o próximo modelo configurado.
 
 <a id="model-fallback-chain"></a>
-### Cadeia de fallback de modelo
-
-`translationModels` é uma **lista ordenada**, não uma escolha única. A CLI tenta o primeiro modelo; se houver falha na solicitação, análise ou script incorreto, ela passa para a próxima entrada. Configure vários modelos para que uma interrupção transitória ou um modelo que tenha dificuldades com um local (por exemplo, hindi romanizado em vez de devanágari) não bloqueie toda a execução. A saída romanizada é rejeitada para locais de script nativo; um local que deve permanecer romanizado deve ser configurado com uma subtag `-Latn` explícita (por exemplo, `hi-Latn`).
-
-**Camadas de resolução** (deduplicadas, ordem preservada):
-
-| Pipeline | Ordem |
-| --- | --- |
-| UI (`translate-ui`, plurais, `proofread-ui`) | `localeModels(locale)` → `uiModels` → `translationModels` |
-| Documentos, JSON, SVG | `localeModels(locale)` → `translationModels` |
-
-O `providers.<active>.uiModels` opcional é uma lista exclusiva da UI tentada após qualquer substituição por localidade e antes da cadeia global `translationModels`. O `providers.<active>.localeModels` opcional mapeia uma localidade BCP-47 para modelos tentados **primeiro** para essa localidade em cada pipeline (`pt-br` corresponde a `pt-BR`). Quando nenhuma entrada de `localeModels` corresponde, apenas as camadas específicas do pipeline se aplicam.
-
-Diferentes provedores e modelos variam em custo, velocidade e qualidade entre idiomas. Considere a lista de modelos de `npx ai-i18n-tools init -P <provider>` como um ponto de partida — expanda-a quando um local consistentemente produzir resultados ruins, ou adicione uma entrada `localeModels` para esse local. Listas predefinidas e justificativa: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
-
-**Strings de UI:** o `uiModels` opcional permite rotear `translate-ui`, geração plural e `proofread-ui` por meio de modelos premium antes da cadeia global de `translationModels` — útil porque o texto da UI é curto, mas voltado para o usuário.
-
-**Localidades asiáticas:** entradas opcionais de `localeModels` para `ja`, `ko`, `zh-Hans` e `zh-Hant` são testadas primeiro em cada pipeline; modelos como `z-ai/glm-5.3` e `minimax/minimax-m2.7` geralmente apresentam melhor desempenho em scripts CJK do que os fallbacks de uso geral.
-
-Configuração de exemplo (OpenRouter). `translationModels` e `uiModels` são as listas que este repositório usa em `ai-i18n-tools.config.json`. `localeModels` é um complemento opcional recomendado para localidades CJK; este repositório não o define.
-
-```json
-{
-  "provider": "openrouter",
-  "providers": {
-    "openrouter": {
-      "translationModels": [
-        "qwen/qwen3.7-max",
-        "~anthropic/claude-sonnet-latest",
-        "openai/gpt-5.4",
-        "google/gemini-3.5-flash",
-        "tencent/hy-mt2-30b-a3b",
-        "mistralai/mistral-large",
-        "openai/gpt-4o-mini",
-        "cohere/command-r-plus-08-2024",
-        "qwen/qwen-2.5-72b-instruct"  
-      ],
-      "uiModels": [
-        "~anthropic/claude-sonnet-latest",
-        "openai/gpt-5.4"
-      ],
-      "localeModels": [
-        { "locale": "ja",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "ko",      "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hans", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] },
-        { "locale": "zh-Hant", "models": [ "z-ai/glm-5.3", "minimax/minimax-m2.7" ] }
-      ]
-    }
-  }
-}
-```
-
 <a id="validate-and-compare-models"></a>
-### Validar e comparar modelos
+### Modelos
 
-Antes de alterar `translationModels`, confirme se cada ID ainda está disponível no provedor ativo:
-
-```bash
-npx ai-i18n-tools check-models
-```
-
-`check-models` chama o endpoint `GET /models` do provedor, valida cada ID de `translationModels`, `uiModels` e `localeModels`, relata IDs ausentes ou que excedem `expiration_date`, e sai com um código diferente de zero quando qualquer ID configurado é inválido. Quando o provedor retorna preços (OpenRouter e Inferência Mais Barata o fazem), ele também mostra USD por 1M de tokens. Com [`zeroDataRetention`](/pt-BR/guide/providers-and-models#cheaperinference-zero-data-retention) ativado, `check-models` e `list-models` usam `GET /models?zdr=true`.
-
-Navegue pelo catálogo completo anunciado por um provedor:
-
-```bash
-npx ai-i18n-tools list-models
-```
-
-Compare modelos configurados em uma amostra de tradução real — cada ID exclusivo de `translationModels`, `uiModels` e `localeModels` é executado isoladamente para que você possa comparar o tempo real, o uso de tokens e o custo:
-
-```bash
-npx ai-i18n-tools bench-models
-```
-
-Solicite uma lista restrita classificada (qualidade por padrão, ou `--price`) e, opcionalmente, grave os ids principais em `translationModels`. A [aba Modelos](/pt-BR/guide/translation-dashboard/models) mostra a mesma classificação, filtros e atualização de configuração.
-
-```bash
-npx ai-i18n-tools suggest-models
-npx ai-i18n-tools suggest-models --list
-npx ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
-npx ai-i18n-tools suggest-models --price --top 8 --json
-npx ai-i18n-tools suggest-models --apply
-npx ai-i18n-tools suggest-models --refresh
-```
-
-As colunas da tabela são classificação, ID do modelo, índice, ChrF medido, Pontuação Arena medida e USD de entrada/saída por 1M de tokens. Uma medição ausente é `—`. `--list` imprime essas colunas para os modelos já em `translationModels`. `--max-output-price` mantém modelos com USD de saída por 1M de tokens igual ou inferior a esse valor e exclui um modelo sem preço de saída. `--min-delta` mantém um modelo apenas se seu índice for no mínimo essa quantidade de pontos menor que o modelo mantido anteriormente. `--top` (padrão 8) limita a tabela, `--json` e `--apply` após esses filtros. `--apply` substitui apenas `translationModels`. `--refresh` baixa novamente o cache de benchmark de 7 dias. Pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion). Veja [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
-
-Substitua o texto de exemplo, os locais ou a lista de modelos:
-
-```bash
-npx ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-4o-mini,anthropic/claude-3-haiku
-```
-
-Detalhes do comando: [referência da CLI](/pt-BR/reference/cli-commands/).
+A escolha de modelos, a lista de fallback e `suggest-models`, `check-models`, `list-models` e `bench-models` estão em [Modelos de IA](/pt-BR/guide/ai-models).
 
 <a id="multiple-providers"></a>
 ### Vários provedores
@@ -169,6 +78,7 @@ Exemplo executável com quatro provedores no mesmo documento, incluindo taxas de
 <a id="further-reference"></a>
 ### Referência adicional
 
-- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela de predefinições, endpoints personalizados, tempos limite de solicitação, taxas de custo, retenção zero de dados do Cheaper Inference, comportamento específico do OpenRouter.
-- [Arquitetura — cliente LLM](/pt-BR/reference/architecture) — como o fallback do modelo, o processamento em lote e o relatório de custos funcionam internamente.
+- [Modelos de IA](/pt-BR/guide/ai-models) — lista de prioridades, lista de fallback e os comandos de modelo.
+- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — tabela de predefinições, endpoints personalizados, tempos limite de solicitação, taxas de custo, retenção zero de dados da Inferência Mais Barata, comportamento específico do OpenRouter.
+- [Arquitetura — cliente LLM](/pt-BR/reference/architecture) — como o fallback de modelo, o envio em lote e os relatórios de custo funcionam internamente.
 - [Variáveis de ambiente](/pt-BR/reference/environment-variables) — variáveis de ambiente de chave de API e substituições de URL base.

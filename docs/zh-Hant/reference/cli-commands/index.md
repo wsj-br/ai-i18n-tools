@@ -34,6 +34,7 @@
 | [`extract`](ui-strings#extract) | 從來源字面值與 HTML 標記更新 `strings.json`。 |
 | [`mark-html`](ui-strings#mark-html) | 將 `data-i18n*` 標記插入 HTML 檔案中。 |
 | [`migrate-intlayer`](ui-strings#migrate-intlayer) | 匯入 Intlayer `.content.ts` 字典，並將簡單的 `useIntlayer` / `getIntlayer` 網站重寫為 `t()`。 |
+| [`translate-intlayer`](ui-strings#translate-intlayer) | 就地翻譯 Intlayer `.content.ts` 字典中遺失/過時的語系葉節點。 |
 | [`generate-ui-languages`](ui-strings#generate-ui-languages) | 根據設定的語系寫入 `ui-languages.json`。 |
 | [`translate-ui`](ui-strings#translate-ui) | 翻譯 UI 字串 (`strings.json` → 語系 JSON)。 |
 | [`sync-ui`](ui-strings#sync-ui) | 擷取並翻譯 UI 字串。 |
@@ -89,7 +90,7 @@
 
 ```bash
 ai-i18n-tools version
-ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-translate-ignore]
+ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
@@ -100,6 +101,7 @@ ai-i18n-tools list-languages [search]
 ai-i18n-tools extract
 ai-i18n-tools mark-html [paths...] [--write]
 ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]
+ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]
 ai-i18n-tools generate-ui-languages [--master path] [--dry-run]
 ai-i18n-tools translate-ui …
 ai-i18n-tools sync-ui …

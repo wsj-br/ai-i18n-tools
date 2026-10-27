@@ -1,27 +1,27 @@
 <a id="python"></a>
 # Python
 
-Python アプリケーション用のセレクターです。抽出、カタログ、および呼び出しの形式については [Python applications](/ja/guide/ui-strings/python) を参照してください。既存の単一ロケールアプリに国際化を導入する手順は [Add i18n to a Python app](/ja/guide/add-i18n-to-python) に記載されています。
+Pythonアプリケーションの選択ガイドです。抽出、カタログ、呼び出し形式については[Pythonアプリケーション](/ja/guide/ui-strings/python)で説明しています。既存の単一ロケールアプリへの導入手順は[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)にあり、[`i18n.py`プロンプト](/ja/guide/add-i18n-to-python#agent-prompt-i18n-py)と[Django / gettextプロンプト](/ja/guide/add-i18n-to-python#agent-prompt-django-gettext)が含まれています。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWebView は、生成された `i18n.py` ヘルパー（Python 3.10 以降）を呼び出します。Django は Django 標準の gettext を使用します。リポジトリには、`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` の 4 つの実行可能なコピーが同梱されています。Pyramid、Django、Tkinter、Qt、および PyWebView には個別のサンプルディレクトリはありません。
 
 <a id="which-template"></a>
 ## テンプレートの選択
 
-| フレームワーク | 初期化テンプレート | カタログ | サンプル |
+| フレームワーク | 初期化テンプレート | カタログ | 例 |
 | --- | --- | --- | --- |
-| Streamlit | `ui-python` | フラットな英語キーの JSON | [python-streamlit](/ja/examples#python-streamlit) |
-| FastAPI | `ui-python` | フラットな英語キーの JSON | [python-fastapi](/ja/examples#python-fastapi) |
-| Flask + Jinja, フラット JSON | `ui-python` | フラットな英語キーの JSON | [python-flask](/ja/examples#python-flask) |
+| Streamlit | `ui-python` | ソース文字列をキーとするフラットなJSON | [python-streamlit](/ja/examples#python-streamlit) |
+| FastAPI | `ui-python` | ソース文字列をキーとするフラットなJSON | [python-fastapi](/ja/examples#python-fastapi) |
+| Flask + Jinja, flat JSON | `ui-python` | ソース文字列をキーとするフラットなJSON | [python-flask](/ja/examples#python-flask) |
 | Flask / Jinja gettext | `ui-python-flask` | `translations/` 配下の `.po` / `.mo` | 以下の Flask に関する注記を参照 |
 | Pyramid | `ui-python` または `ui-python-flask` | Flask と同じ | Flask と同じ配線 |
 | Django | `ui-python-django` | `locale/<lang>/LC_MESSAGES/django.po` | サンプルディレクトリなし |
 | 既存の GNU gettext | `ui-python-gettext` | フラットな JSON および `.po` / `.mo`、または gettext のみ | [python-gettext](/ja/examples#python-gettext) |
-| Tkinter | `ui-python` | フラットな英語キーの JSON | サンプルディレクトリなし |
+| Tkinter | `ui-python` | ソース文字列をキーとするフラットなJSON | サンプルディレクトリなし |
 | PyQt / PySide | `ui-python` または gettext テンプレート | フラットな JSON および/または `.po` | サンプルディレクトリなし |
 | PyWebView / PyWebKit | シェル用 Python テンプレート | シェルカタログ、および HTML マーカーまたはロケールごとに 1 つの HTML ファイル | サンプルディレクトリなし |
 
-`ui-python`、`ui-python-gettext`、および `ui-python-flask` は、`i18n.py` ファイルが存在しない場合にそのファイルを作成します。`ui-python-django` は作成しません。
+`ui-python`、`ui-python-gettext`、および`ui-python-flask`は、`i18n.py`ファイルが存在しない場合にそのファイルを作成します。`ui-python-django`は作成しません。`--with-readme`を追加すると、リポジトリのREADMEも翻訳できます。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)
 
 <a id="framework-notes"></a>
 ## フレームワークに関する注記

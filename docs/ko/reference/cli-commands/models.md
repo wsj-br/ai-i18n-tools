@@ -8,7 +8,7 @@
 
 활성 공급자의 `GET /models` 목록(멤버십 및 `expiration_date`)에 대해 구성된 각 모델 ID의 유효성을 검사합니다. 해당 공급자의 API 키가 필요합니다(Ollama와 같은 키 없는 공급자의 경우 필요 없음). 구성된 ID가 누락되었거나 만료된 경우 0이 아닌 값으로 종료되며, 확인된 요청 시간 초과(공급자의 `requestTimeout` 또는 `requestTimeoutMs`, 그렇지 않으면 최상위 값)를 따릅니다. 공급자가 가격 정보를 반환하는 경우(예: OpenRouter), 프롬프트/완성에 대해 100만 토큰당 USD도 표시합니다. `providers.cheaperinference.zeroDataRetention`가 true인 경우, 검사는 `GET /v1/models?zdr=true`를 사용하고 카탈로그에서 제외된 ID는 실패 처리합니다.
 
-**참고:** [LLM 프로바이더](/ko/guide/providers-and-models)
+**참고:** [AI 모델](/ko/guide/ai-models#check-models), [LLM 제공업체](/ko/guide/providers-and-models)
 
 ---
 
@@ -21,7 +21,7 @@
 
 **주요 옵션:** `-P` / `--provider`
 
-**참고:** [LLM 프로바이더](/ko/guide/providers-and-models)
+**참고:** [AI 모델](/ko/guide/ai-models#list-models), [LLM 제공업체](/ko/guide/providers-and-models)
 
 ---
 
@@ -60,7 +60,7 @@ ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation
 
 **주요 옵션:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
-**참고 항목:** [LLM 공급자](/ko/guide/providers-and-models), [Models 탭](/ko/guide/translation-dashboard/models)
+**참고:** [AI 모델](/ko/guide/ai-models), [모델 탭](/ko/guide/translation-dashboard/models)
 
 ---
 
@@ -74,6 +74,8 @@ ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation
 모델은 기본적으로 활성 프로바이더의 `translationModels`, `uiModels`, `localeModels` ID의 합집합입니다(`--model`로 재정의 가능); 샘플은 기본적으로 내장 영어 마크다운 블록입니다(`--text` / `--file`로 재정의 가능); 소스/타겟은 기본적으로 구성 `sourceLocale` 및 첫 번째 `docs[]` 타겟 로케일이며, 최상위 `targetLocales`로 폴백합니다(`--source` / `--target`로 재정의 가능). 모델을 병렬로 실행하며, 구성 `concurrency`(기본값 4)에 의해 제한됩니다; 각 모델은 여전히 개별적으로 시간이 측정됩니다. 활성 프로바이더의 API 키가 필요합니다.
 
 **주요 옵션:** `--model`, `--text`, `--file`, `--source`, `--target`
+
+**참고:** [AI 모델](/ko/guide/ai-models#bench-models)
 
 ---
 

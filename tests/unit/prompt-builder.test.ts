@@ -9,6 +9,7 @@ import {
   buildUIPromptMessages,
   collectDocumentPlaceholderKinds,
   buildDocumentCoreRules,
+  buildMarkdownPreservation,
   parseProofreadUIBatchResponse,
   parsePluralFormsJsonResponse,
   parseBatchJsonArrayResponse,
@@ -224,6 +225,7 @@ describe("PROMPTS config shape", () => {
     expect(PROMPTS.document.coreRules).toContain("glossary target words are plain text");
     expect(PROMPTS.document.coreRules).toContain("{{JXA_N}}");
     expect(PROMPTS.document.coreRules).toContain("{{ADM_TCLOSE_N}}");
+    expect(PROMPTS.document.coreRules).toContain("{{CDF_N}}");
   });
 });
 
@@ -254,6 +256,13 @@ describe("collectDocumentPlaceholderKinds / buildDocumentCoreRules", () => {
     expect(ilc).toContain("exactly once");
     expect(ilc).not.toContain("{{SE}}");
     expect(ilc).not.toContain("{{GLS_N}}");
+
+    const fenced = buildDocumentCoreRules(new Set(["CDF", "ILC"]));
+    expect(fenced).toContain("Keep structural tokens ({{CDF_N}})");
+    expect(fenced).not.toMatch(/Content tokens \(\{\{CDF_N\}\}/);
+    expect(buildMarkdownPreservation(new Set(["CDF"]))).toContain(
+      "Fenced code blocks are sent as {{CDF_N}}"
+    );
   });
 });
 

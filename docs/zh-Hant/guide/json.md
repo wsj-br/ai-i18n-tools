@@ -1,14 +1,16 @@
 <a id="json"></a>
 # JSON
 
-專為將 UI 內容儲存在每個地區設定的**巢狀 JSON 檔案**（例如 `src/i18n/en/translation.json`）中，而非原始碼中的 `t("…")` 的專案所設計。CLI 會遍歷這些檔案中的字串值，透過作用中的 LLM 提供者翻譯它們，並使用 `json[].outputPathTemplate` 寫入每個地區設定的輸出。它使用與 `translate-docs` 和 `translate-svg` 相同的 SQLite 快取 (`cacheDir`)。
+適用對象：已經按語系將文案儲存在巢狀 JSON 檔案中（例如 `src/i18n/en/translation.json`），且想要保留該結構的專案。如果您的來源是純文字且尚未使用 `t()`，請改為從 [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 開始。
+
+CLI 會遍歷那些檔案中的字串值，使用作用中 LLM 供應商上的模型來翻譯它們，並使用 `json[].outputPathTemplate` 寫入每個語系的輸出。它使用的 SQLite 快取與 `translate-docs` 和 `translate-svg` (`cacheDir`) 相同。
 
 這個管道不**運行** — 沒有`extract` — 因為沒有 `strings.json` 目錄。使用 `features.translateJson` 並在頂級 `json[]` 中加入一個或多個項目來啟用它。
 
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
 
-`translate-json` 解析模型 **按目標地區**：`localeModels(locale)` 在配置時優先，然後是 `translationModels`。在嵌套的 JSON 包中使用此功能，某些地區可以從專用模型中受益——例如 `zh-Hans` / `zh-Hant` 主題文件。請參閱 [提供者和模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
+`translate-json` 會**按目標語系**解析模型：若有設定，會優先使用 `localeModels(locale)`，然後是 `translationModels`。此功能可用於巢狀 JSON 套件，讓特定語系能受益於專用模型 — 例如 `zh-Hans` / `zh-Hant` 主題檔案。請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain)。
 
 <a id="step-1-initialise-for-nested-json"></a>
 ### 步驟 1：初始化巢狀 JSON
@@ -105,7 +107,8 @@ ai-i18n-tools status
 | Fumadocs `meta.json` 標籤與 UI 覆寫目錄 | 文件 — `translate-docs`（當 `style: "fumadocs"` 時自動 `meta.json`，可選 `fumadocsUiCatalog`）；**請勿**使用 `json[]` — 請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs) |
 | 獨立的巢狀地區設定 JSON (ZenBrowser 樣式 `translation.json` 樹) | JSON — `json[]` + `translate-json` |
 | i18next 命名空間檔案（`public/locales/en/common.json`、<code v-pre>{{name}}</code> 權杖、`key_one` / `key_other` 後綴） | JSON — `json[]` + `translate-json`（參見 [i18next 命名空間檔案](#i18next-namespace-files)） |
-| Intlayer `*.content.ts` 字典 + `useIntlayer` | [從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer) — `migrate-intlayer`，然後是 UI 字串 |
+| Intlayer `*.content.ts` 字典 + `useIntlayer` (從 Intlayer 移出) | [從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer) — `migrate-intlayer`，然後是 UI 字串 |
+| Intlayer `*.content.ts` 字典 (保留 Intlayer，填入翻譯) | [就地翻譯 Intlayer](/zh-Hant/guide/translating-intlayer) — `translate-intlayer` |
 | 附有 `<text>` / `<title>` / `<desc>` 的圖解 `.svg` 檔案 | `features.translateSVG` + [`svg`](/zh-Hant/reference/configuration#svg) + `translate-svg` (選用；非三個主要管道之一) |
 
 欄位參考：[設定參考](/zh-Hant/reference/configuration#json) 中的 [`json`](#json)。用於清理的快取鍵在 `file_tracking` 中使用 `json-block:{blockIndex}:{projectRelPath}`。
@@ -113,7 +116,7 @@ ai-i18n-tools status
 <a id="i18next-namespace-files"></a>
 ### i18next 命名空間檔案
 
-JSON 管線涵蓋典型的 i18next 鍵值地區設定檔案：巢狀物件、字串陣列、值中的 <code v-pre>{{name}}</code> 插值，以及獨立的複數後綴鍵（`welcome_one`、`welcome_other`）。它**不會**改寫 `t("some.key")` 呼叫位置——這些仍以鍵為基礎。若要將專案移轉至 ai-i18n-tools 的英文來源字串 `t()` 結構描述，請將呼叫位置改為 `t("English text")`（或當來源為 Intlayer `.content.ts` 時執行 `migrate-intlayer`）。
+JSON 管線涵蓋典型的 i18next 鍵／值語系檔案：巢狀物件、字串陣列、值中的 <code v-pre>{{name}}</code> 插值，以及獨立的複數後綴鍵（`welcome_one`、`welcome_other`）。它**不會**重寫 `t("some.key")` 呼叫位置，這些仍維持以鍵為基礎。若要將專案移至 ai-i18n-tools 的來源字串 `t()` 架構，請將呼叫位置變更為 `t("source text")`。文字以 `sourceLocale` 撰寫，可為任何語言。當來源是 Intlayer `.content.ts` 時，請執行 `migrate-intlayer`。若要保留 Intlayer 並僅翻譯其字典，請使用 [`translate-intlayer`](/zh-Hant/guide/translating-intlayer)。
 
 範例（`public/locales/en/` 下的來源英文命名空間）：
 

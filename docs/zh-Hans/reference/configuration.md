@@ -4,7 +4,7 @@
 <a id="sourcelocale"></a>
 ### `sourceLocale`
 
-源语言的 BCP-47 代码（例如 `"en-GB"`、`"en"`、`"pt-BR"`）。不会为此区域设置生成翻译文件 — 键字符串本身就是源文本。
+源语言的 BCP-47 代码（例如 `"en-GB"`、`"pt-BR"` 或 `"ja"`）。任何语言都有效。示例中出现英语是因为许多项目都从英语开始。不会为此区域设置生成翻译文件——键字符串本身就是源文本。
 
 **必须匹配**从您的运行时 i18n 设置文件（`SOURCE_LOCALE` / `src/i18n.ts`）导出的 `src/i18n.js`。
 
@@ -167,9 +167,9 @@
 
 有关在一个配置中配置多个提供商并通过 `-P` 在它们之间切换的可运行示例，请参见 [`examples/multi-provider`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/)（`openai`、`anthropic`、`openrouter` 和 `deepseek` 位于同一文档）。
 
-**为什么使用多个模型：** 不同的提供商和模型在成本和质量方面各不相同，在不同语言和区域设置上的表现也不同。将 `translationModels` 配置为**有序的备用链**（而不是单个模型），这样 CLI 可以在请求失败时尝试下一个模型。
+**为什么要使用多个模型：** 不同的提供商和模型成本各异，并且针对不同语言和区域设置所提供的质量水平也不同。将 `translationModels` 配置为一个有序的回退链，以便在请求失败时，CLI 可以尝试下一个模型。构建该列表的指南是 [AI 模型](/zh-Hans/guide/ai-models)。
 
-将以下列表视为您可以扩展的**基线**：如果特定语言环境的翻译质量差或不成功，请研究哪些模型能有效支持该语言或脚本（参考在线资源或您的提供商文档），并将这些模型 ID 添加为进一步的替代方案。
+将下方的列表视为**基准**。请从 [AI 模型](/zh-Hans/guide/ai-models) 的基准排名中进行替换。如果特定语言区域的翻译质量仍然不佳，请为该语言或脚本添加一个 `localeModels` 条目，或从提供商的目录中添加更多 ID。
 
 这些模型 ID 是由 `ai-i18n-tools init -P openrouter` 生成的。其他预设从 `init -P <provider>` 获取原生模型 ID — 请参阅[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
 
@@ -270,13 +270,13 @@
 - `flatOutputDir`
   写入此区块的各语言区域 JSON 文件的目录（`de.json` 等）。
 - `flatOutput`
-  当 `true`（默认值）时，`translate-ui` 为每个区域设置写入一个扁平的 JSON 文件。将 `false` 设置为仅限 gettext 的块。具有 `flatOutput: false` 的块必须设置 `gettext`。
+  当为 `true`（默认值）时，`translate-ui` 会为每个区域设置写入一个扁平化的 JSON 文件。对于仅使用 gettext 的块，请设置为 `false`。带有 `flatOutput: false` 的块必须设置 `gettext`。
 - `gettext`
-  此块的可选 GNU gettext 输出。`outputDir`（默认 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，并且当 `compileMo` 为 true（默认值）时，接收匹配的 `.mo`。`domain` 默认为 `messages`。`potPath` 是模板目录。`ingestExistingPo`（默认 `true`）在 `extract` 期间用非模糊的 `msgstr` 值填充空的 `strings.json` 插槽，并且不替换非空或用户编辑的翻译。`localeFormat` 是 `posix`（默认值，`pt_BR`）或 `bcp47` (`pt-BR`)。上下文行使用 gettext `\u0004` 分隔符。两个上下文中相同的英文源不共享目录 ID。
+  此块的可选 GNU gettext 输出。`outputDir`（默认为 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，并且当 `compileMo` 为 true（默认值）时，接收匹配的 `.mo`。`domain` 默认为 `messages`。`potPath` 是模板目录。`ingestExistingPo`（默认为 `true`）在 `extract` 期间使用非模糊的 `msgstr` 值填充空的 `strings.json` 槽位，并且不会替换非空或用户编辑过的翻译。`localeFormat` 为 `posix`（默认值，`pt_BR`）或 `bcp47`（`pt-BR`）。上下文行使用 gettext `\u0004` 分隔符。在两个上下文中的相同源语言字符串不共享目录 ID。
 - `targetLocales`
-  此块的可选区域设置列表。省略或为空时，此块使用根 `targetLocales`。
+  此块的可选区域设置列表。如果省略或为空，该块将使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 写入此块的 `ui-languages.json` 的可选路径。省略时，块 0 使用根 `languagesManifestPath`（其本身默认为此块的 `{flatOutputDir}/ui-languages.json`）。后续块默认为 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 写入此块的 `ui-languages.json` 的可选路径。如果省略，块 0 将使用根 `languagesManifestPath`（其本身默认为此块的 `{flatOutputDir}/ui-languages.json`）。后续块默认为 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
   当 `true`（默认值）时，此块的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的词汇表提示源。`translate-ui`、`proofread-ui` 和源 linting 仅使用 `glossary.userGlossary`。设置 `false` 以将目录排除在这些提示之外（例如，不应引导文档的 CLI 字符串目录）。
 - `uiExtractor.funcNames`（或旧版 `reactExtractor.funcNames`）
@@ -365,7 +365,10 @@ SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`�
 - `nextraDictionaryOutputTemplate`
 区域设置字典模块的可选输出模板（默认：相对于字典目录的 `{dir}/{locale}.ts`）。
 
-**输出布局**
+<a id="docsoutput"></a>
+#### `docsOutput`
+
+此块的输出布局。
 
 - `outputDir`
 此块翻译输出的根目录。
@@ -384,21 +387,21 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 - `docsOutput.flatPreserveRelativeDir`
 当 `docsOutput.style = "flat"` 时，保留源子目录，以便具有相同基本名称的文件不会冲突。默认 `false`。
 - `docsOutput.rewriteRelativeLinks`
-在翻译后重写相对链接（当 `docsOutput.style = "flat"` 且没有自定义 `pathTemplate` 时自动启用）。
+翻译后重写相对链接（当 `docsOutput.style = "flat"` 且没有自定义 `pathTemplate` 时自动启用）。
 - `docsOutput.linkRewriteDocsRoot`
 计算扁平链接重写前缀时使用的仓库根目录。通常将其保留为 `"."`，除非您的翻译文档位于不同的项目根目录下。
 - `docsOutput.rewriteVitepressLinks`
-当 `true` 时，在翻译后运行 VitePress 链接规范化程序。当 `docsOutput.style` 为 `"vitepress"` 时默认启用。适用于任何 `doc-system` 布局，其中语言文件夹与英语文件夹并列位于 `docsRoot` 下。将 README 样式的 `docs/guide/…` 路径重写为站点路由（`/guide/…`）和语言相对 `../guide/…` 链接。对于指向 VitePress 目录树外部的仓库文件的链接（`LICENSE`、`examples/`），请在英文源文件中使用完整 URL — 请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
+当为 `true` 时，在翻译后运行 VitePress 链接规范化程序。当 `docsOutput.style` 为 `"vitepress"` 时，默认为启用。与任何 `doc-system` 布局一起使用，其中区域设置文件夹位于 `docsRoot` 下的源区域设置文件旁边。源语言为 `sourceLocale`，可以是任何语言。将 README 风格的 `docs/guide/…` 路径重写为站点路由 (`/guide/…`) 和区域设置相关的 `../guide/…` 链接。对于指向 VitePress 树之外的仓库文件（`LICENSE`、`examples/`）的链接，请在源区域设置文件中使用完整 URL——请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 - `docsOutput.rewriteNextraLinks`
-当 `true` 时，在翻译后运行 Nextra 链接规范化程序。当 `docsOutput.style` 为 `"nextra"` 时默认启用。将 `content/en/…` 和相对 `.mdx` 路径重写为适用于 Next.js `i18n` 的语言无关站点路由（`/guide/…`）。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
+当为 `true` 时，在翻译后运行 Nextra 链接规范化程序。当 `docsOutput.style` 为 `"nextra"` 时，默认为启用。将 `content/en/…` 和相对 `.mdx` 路径重写为适用于 Next.js `i18n` 的区域设置中立的站点路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"`（默认）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入英语源文件旁边；dir 写入类似 Nextra 的语言文件夹。参见 [Fumadocs 集成 —— 页面布局](/zh-Hans/guide/integrations/fumadocs#page-layout)。
+`"dot"`（默认值）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入源区域设置文件旁边；dir 则像 Nextra 一样写入区域设置文件夹。源语言为 `sourceLocale`，可以是任何语言。请参阅 [Fumadocs 集成 — 页面布局](/zh-Hans/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
-当 `true` 时，在翻译后运行 Fumadocs 链接规范化器。当 `docsOutput.style` 为 `"fumadocs"` 时默认启用。将内容路径和相对 `.mdx` 链接重写为 `/docs/…` 路由。
+当为 `true` 时，在翻译后运行 Fumadocs 链接规范化程序。当 `docsOutput.style` 为 `"fumadocs"` 时，默认为启用。将内容路径和相对 `.mdx` 链接重写为 `/docs/…` 路由。
 - `docsOutput.fumadocsUiCatalog`
-可选。Fumadocs UI 覆盖目录引导 + 在 `translate-docs` 内翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英语 JSON）、可选的 `outputPathTemplate`（默认值：`ui.{locale}.json`，位于 `catalogPath` 旁边）。
+可选。在 `translate-docs` 内进行 Fumadocs UI 覆盖目录引导 + 翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英语 JSON）、可选的 `outputPathTemplate`（默认值：`catalogPath` 旁边的 `ui.{locale}.json`）。
 - `docs[].fumadocsMetaGlob`
-当 `docsOutput.style` 为 `"fumadocs"` 时，用于 `meta.json` 集合的可选 glob。默认值：`docsOutput.docsRoot` 下的递归 `meta.json`。
+当 `docsOutput.style` 为 `"fumadocs"` 时，用于 `meta.json` 集合的可选 glob 模式。默认值：`docsOutput.docsRoot` 下的递归 `meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 在 Fumadocs `meta.json` 中翻译其字符串值的属性名称（默认值：`title`、`description`）。
 - `docsOutput.localizedAssets`
@@ -515,6 +518,8 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 ---
 
 <a id="modelsuggestion"></a>
+
+<a id="modelsuggestion-optional"></a>
 ### `modelSuggestion`（可选）
 
 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 和 [仪表板模型选项卡](/zh-Hans/guide/translation-dashboard/models) 的权重。省略该代码块或省略其中一个配置文件，该配置文件将保留内置权重。该代码块不会被 `--apply` 或 **更新配置** 重写；它们仅写入模型 ID。

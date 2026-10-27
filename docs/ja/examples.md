@@ -8,8 +8,8 @@ GitHub の [`examples/`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examp
 
 リポジトリ全体をクローンせずに、例を1つコピーします。
 
-<a id="node-examples"></a>
-### Node.jsの例
+<a id="nodejs-examples"></a>
+### Node.js の例
 
 各Node.jsの例では、現在のパッケージバージョンと一致する`ai-i18n-tools`の公開キャレット範囲が宣言されており、npmからCLIをインストールします：
 
@@ -38,6 +38,15 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)リポジトリを**全体**クローンした場合は、リポジトリのルートで`pnpm install`と`pnpm run build`を実行してから、`cd examples/<name>`を実行してください。ワークスペース（Node.js）の例では、`pnpm run i18n:*`スクリプトを介してローカルCLIを使用するか、[PATH設定](/ja/guide/installation#using-the-cli)の後に直接`ai-i18n-tools …`を使用します。このチェックアウト内のPythonの例は、ビルド後に`node ../../bin/ai-i18n-tools.mjs`を使用して翻訳します。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)を参照してください。
 
+<a id="which-example-matches-my-project"></a>
+## どの例がプロジェクトに合致しますか？
+
+- JS/TS アプリケーションの場合：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md)（最小）または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。ガイド：[JS/TS アプリケーションに i18n を追加する](/ja/guide/add-i18n-to-js)。
+- Python アプリケーションの場合：python-streamlit、python-flask、python-fastapi、または python-gettext。ガイド：[Python アプリケーションに i18n を追加する](/ja/guide/add-i18n-to-python)。
+- ウェブサイトまたはドキュメントサイトの場合：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html、または plain-html-docs。ガイド：[ウェブサイトまたはドキュメントサイトに i18n を追加する](/ja/guide/add-i18n-to-website)。
+- アプリケーションの隣にあるリポジトリの README の場合：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)（nextjs の例にはドキュメントサイトも含まれます）。ガイド：[README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme)。
+- その他：multi-provider、test-markdown、および intlayer-migration。
+
 <a id="list-of-examples"></a>
 ## 例のリスト
 
@@ -53,6 +62,7 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 <a id="docusaurus-docs"></a>
 <a id="multi-provider"></a>
 <a id="intlayer-migration"></a>
+<a id="intlayer-translate"></a>
 <a id="test-markdown"></a>
 <a id="python-streamlit"></a>
 <a id="python-flask"></a>
@@ -67,16 +77,17 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 | [**astro-website**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) | Astro ランディングページ: フルページ HTML + `t()` ハイブリッド | `npx degit wsj-br/ai-i18n-tools/examples/astro-website astro-website` | `pnpm dev` |
 | [**astro-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md) | Astro Starlight ドキュメントサイト | `npx degit wsj-br/ai-i18n-tools/examples/astro-docs astro-docs` | `pnpm dev` (`:3050`) |
 | [**vitepress-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md) | VitePress ドキュメントサイト + テーマ JSON (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/vitepress-docs vitepress-docs` | `pnpm run docs:dev` (`:3060`) |
-| [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 辞書 `.ts` シェル (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
+| [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 辞書 `.ts` シェル、さらに1つの`t()`サーバーコンポーネント（`pt-BR`、`zh-Hans`） | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI カタログ (`pt`, `zh`, ドットパーサー) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | プレーン HTML + `data-i18n*` マーカー; 静的ロケール JSON (ダッシュボード形式の UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
 | [**プレーンHTMLドキュメント**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | ドキュメントとしてのプレーンHTML: ロケールごとに1ページ、ローカライズされた画像、hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, リセット + AIエージェントレポート) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |
-| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit ダッシュボード、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
-| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
-| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI、ContextVar ロケール、`t()` / `_()`、英語キーの JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
+| [**intlayer-translate**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate/README.md) | Intlayer を維持し、不足しているロケールをその場で埋める（`translate-intlayer`；`en` + `pt-BR` は出荷済み、`es` + `zh-Hans` は不足） | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-translate intlayer-translate` | `pnpm reset && pnpm translate` (`pnpm dev` `:3093`) |
+| [**python-streamlit**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md) | Streamlit ダッシュボード、`t()` / `_()`、ソース文字列 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-streamlit python-streamlit` | `python3 -m venv .venv && pip install -r requirements.txt && streamlit run app.py` |
+| [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja、`t()` / `_()`、ソース文字列 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
+| [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI、ContextVar ロケール、`t()` / `_()`、ソース文字列 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 既存の GNU gettext CLI。`extract` / `translate-ui` は `.po` と `.mo` を更新します | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。

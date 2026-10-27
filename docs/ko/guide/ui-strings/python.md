@@ -1,9 +1,9 @@
 <a id="python"></a>
 # Python 애플리케이션
 
-`ai-i18n-tools`은(는) Python 및 Jinja, Django, Qt `.ui` 파일에서 UI 문자열을 추출한 다음, 평면 영어 키 JSON, GNU gettext 카탈로그 또는 둘 다를 작성합니다. 런타임 헬퍼는 표준 라이브러리 `i18n.py`(Python 3.10 이상)입니다. Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid 및 FastAPI는 해당 헬퍼를 호출합니다. Django는 Django 자체의 gettext를 사용합니다.
+`ai-i18n-tools`는 Python과 Jinja, Django, Qt `.ui` 파일에서 UI 문자열을 추출한 다음, 소스 언어 문자열을 키로 사용하는 플랫 JSON, GNU gettext 카탈로그 또는 둘 다를 작성합니다. `sourceLocale`는 모든 언어가 될 수 있습니다. 런타임 헬퍼는 표준 라이브러리 `i18n.py`(Python 3.10 이상)입니다. Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, FastAPI는 해당 헬퍼를 호출합니다. Django는 Django 자체의 gettext를 사용합니다.
 
-기존 단일 언어 앱에 로캘 추가하기: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python). 프레임워크 선택기: [Python 통합](/ko/guide/integrations/python). 함수 목록: [Python 런타임 (`i18n.py`)](/ko/reference/programmatic-api#python-runtime).
+기존 단일 언어 앱에 로캘 추가하기: [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python), [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-i18n-py) 및 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext) 포함. 프레임워크 선택기: [Python 통합](/ko/guide/integrations/python). 함수 목록: [Python 런타임(`i18n.py`)](/ko/reference/programmatic-api#python-runtime).
 
 실행 가능한 복사본은 `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` 및 `examples/python-gettext`에 있습니다. 이들은 Python 프로젝트입니다. 처음 세 개는 virtualenv와 `pip install -r requirements.txt`를 사용합니다. `python-gettext`은(는) 표준 라이브러리만 사용합니다. 이들은 npm 패키지가 아닙니다. 릴리스 아카이브 `ai-i18n-tools-python-examples.zip`에는 동일한 네 개의 디렉터리가 포함되어 있습니다. npm tarball 및 독립 실행형 실행 파일에는 포함되어 있지 않습니다.
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python`은(는) 평면 JSON 및 `i18n.py`을(를) 작성합니다. `ui-python-gettext`은(는) JSON 및 `.po` / `.mo`을(를) 작성합니다. `ui-python-flask`은(는) `translations/` 및 `i18n.py` 아래에 gettext 카탈로그를 작성합니다. `ui-python-django`은(는) `locale/<lang>/LC_MESSAGES/django.po`을(를) 작성하며 `i18n.py`은(는) 작성하지 않습니다.
+
+리포지토리 README도 번역하세요. 위의 `init` 명령어에 `--with-readme`를 추가하세요. [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme)를 참조하세요.
 
 스캔 루트는 `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache` 및 `.eggs`을(를) 건너뜁니다.
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## 카탈로그
 
-평면 JSON 키는 영어 소스입니다. 컨텍스트는 `context` + U+0004 + 영어 소스를 사용합니다. 복수형 슬롯은 `{md5}_one`, `{md5}_other` 및 `translate-ui`이(가) 이미 작성하는 다른 CLDR 형식으로 유지됩니다. 헬퍼는 잘라낸 단수형을 MD5로 해시하고 처음 8개의 16진수 문자를 읽습니다.
+플랫 JSON 키는 소스 언어 문자열, 즉 `sourceLocale`의 텍스트입니다. 해당 언어는 모든 언어가 될 수 있습니다. 컨텍스트는 `context` + U+0004 + 해당 소스 문자열을 사용합니다. 복수형 슬롯은 `translate-ui`가 이미 작성하는 `{md5}_one`, `{md5}_other` 및 기타 CLDR 형식으로 유지됩니다. 헬퍼는 공백이 제거된 단수형을 MD5로 해시하고 처음 8개의 16진수 문자를 읽습니다.
 
 Gettext 파일은 컨텍스트에 `msgctxt`을(를) 사용하고 복수형에 `msgid` / `msgid_plural`을(를) 사용합니다. `ui.gettext.compileMo`은(는) `.po` 옆에 `.mo`을(를) 작성합니다. `purge-locale`은(는) 해당 로캘의 `.po` 및 `.mo`을(를) 삭제합니다. `flatOutput`이(가) false이면 평면 JSON 파일은 작성되지 않았으므로 그대로 둡니다.
 

@@ -12,9 +12,9 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 <a id="why-anchor-links-need-attention"></a>
 ## 為何錨點連結需要注意
 
-- `rewriteRelativeLinks` 會修正每個地區設定檔的 **檔名**（`setup.md` → `setup.de.md`）。
-- 許多渲染器會從 **顯示的標題文字**衍生出 `#` 縮寫。翻譯後，標題在不同地區設定檔中會有所不同，因此自動產生的縮寫可能會變更，但重寫的連結可能仍會顯示 `#first-run` — 或者您英文的 `#…` 錨點不再符合渲染器根據翻譯後標題建立的縮寫。
-- 結果：讀者會連到正確的 **檔案**，但卻是 **錯誤的行**，或者瀏覽器找不到符合的標題。
+- `rewriteRelativeLinks` 會為每個語系固定 **檔案名稱** (`setup.md` → `setup.de.md`)。
+- 許多渲染器會從 **可見的標題文字** 衍生出 `#` slug。翻譯後，各語系的標題會有所不同，因此自動產生的 slug 也可能隨之變更，但重寫後的連結可能仍標示為 `#first-run` — 或是來源語系的 `#…` 錨點不再符合渲染器根據翻譯後標題所建立的 slug。來源語言為 `sourceLocale`，且可以是任何語言。
+- 結果：讀者到達了正確的 **檔案**，但卻在錯誤的 **那一行**，或是瀏覽器找不到相符的標題。
 
 <a id="what-to-do"></a>
 ## 該怎麼做

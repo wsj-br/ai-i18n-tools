@@ -1,14 +1,14 @@
 <a id="svg"></a>
 # SVG
 
-Conçu pour traduire les **illustrations et diagrammes SVG** contenant des libellés lisibles par l'homme. La commande `translate-svg` lit les fichiers `.svg` sources, extrait le texte des éléments `<text>`, `<title>` et `<desc>`, traduit ces chaînes via le fournisseur LLM actif, et écrit **un SVG de sortie par langue cible**.
+Conçu pour traduire les **illustrations et diagrammes SVG** qui contiennent des libellés lisibles par l'homme. La commande `translate-svg` lit les fichiers `.svg` source, extrait le texte des éléments `<text>`, `<title>` et `<desc>`, traduit ces chaînes avec les modèles du fournisseur LLM actif et écrit **un SVG de sortie par locale cible**.
 
 C'est le seul pipeline qui émet des fichiers SVG **binaires** spécifiques à la locale. `translate-docs` traduit le texte alternatif markdown et les références de liens, mais il ne modifie ni ne copie les ressources SVG. Lorsqu'une page a besoin d'un diagramme avec des étiquettes traduites, activez `features.translateSVG` et configurez le bloc `svg` de niveau supérieur.
 
 <a id="per-locale-model-overrides"></a>
 ## Surcharges de modèle par locale
 
-`translate-svg` résout les modèles **par paramètre régional cible** : `localeModels(locale)` en premier lorsqu'il est configuré, puis `translationModels`. Chaque exécution SVG de paramètre régional utilise sa propre chaîne de secours — utile lorsque les étiquettes de diagramme dans les paramètres régionaux CJK nécessitent un modèle adapté au script (par exemple `ja`). Voir [Fournisseurs et modèles](/fr/guide/providers-and-models#model-fallback-chain).
+`translate-svg` résout les modèles **par locale cible** : d'abord `localeModels(locale)` s'il est configuré, puis `translationModels`. L'exécution SVG de chaque locale utilise sa propre chaîne de secours — ce qui est utile lorsque les libellés de diagrammes dans les locales CJK nécessitent un modèle adapté à l'écriture (par exemple `ja`). Consultez la section [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain).
 
 La traduction SVG utilise le même cache SQLite que `translate-docs` et `translate-json` (`cacheDir`). Les segments de texte déjà traduits sont servis à partir du cache ; seul le texte source nouveau ou modifié est envoyé au LLM.
 

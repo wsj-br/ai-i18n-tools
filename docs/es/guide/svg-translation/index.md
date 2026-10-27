@@ -1,14 +1,14 @@
 <a id="svg"></a>
 # SVG
 
-Diseñado para traducir **ilustraciones y diagramas SVG** que contienen etiquetas legibles por humanos. El comando `translate-svg` lee los archivos de origen `.svg`, extrae el texto de los elementos `<text>`, `<title>` y `<desc>`, traduce esas cadenas mediante el proveedor de LLM activo y escribe **un SVG de salida por cada configuración regional de destino**.
+Diseñado para traducir **ilustraciones y diagramas SVG** que contienen etiquetas legibles por humanos. El comando `translate-svg` lee los archivos `.svg` de origen, extrae el texto de los elementos `<text>`, `<title>` y `<desc>`, traduce esas cadenas con los modelos del proveedor de LLM activo y escribe **un SVG de salida por cada configuración regional de destino**.
 
 Esta es la única canalización que emite archivos SVG **binarios** específicos de la configuración regional. `translate-docs` traduce el texto alternativo de markdown y las referencias de enlaces, pero no modifica ni copia los activos SVG. Cuando una página necesita un diagrama con etiquetas traducidas, habilite `features.translateSVG` y configure el bloque `svg` de nivel superior.
 
 <a id="per-locale-model-overrides"></a>
 ## Invalidaciones de modelo por configuración regional
 
-`translate-svg` resuelve los modelos **por configuración regional de destino**: primero `localeModels(locale)` cuando está configurado, luego `translationModels`. Cada ejecución SVG de una configuración regional utiliza su propia cadena de reserva, lo que es útil cuando las etiquetas de los diagramas en las configuraciones regionales CJK necesitan un modelo ajustado a un script (por ejemplo, `ja`). Consulte [Proveedores y modelos](/es/guide/providers-and-models#model-fallback-chain).
+`translate-svg` resuelve los modelos **por cada configuración regional de destino**: primero `localeModels(locale)` cuando está configurado y, a continuación, `translationModels`. La ejecución de SVG de cada configuración regional usa su propia cadena de respaldo, lo que resulta útil cuando las etiquetas de los diagramas en las configuraciones regionales CJK necesitan un modelo ajustado a la escritura (por ejemplo, `ja`). Consulta [Modelos de IA](/es/guide/ai-models#model-fallback-chain).
 
 La traducción de SVG utiliza la misma caché de SQLite que `translate-docs` y `translate-json` (`cacheDir`). Los segmentos de texto ya traducidos se sirven desde la caché; solo el texto fuente nuevo o modificado se envía al LLM.
 

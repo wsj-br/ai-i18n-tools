@@ -369,6 +369,212 @@ Next para.`;
     expect(segs.some((s) => s.translatable)).toBe(false);
   });
 
+  it("treats a line that is only a markdown link as a translatable paragraph", () => {
+    const md = "[See the dashboard](/guide/translation-dashboard/)";
+    const segs = ex.extract(md, "index.md");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]).toMatchObject({
+      type: "paragraph",
+      content: md,
+      translatable: true,
+    });
+  });
+
+  it("treats a line of markdown links separated by middots as translatable", () => {
+    const md = "[Integrations](/guide/integrations/) · [Configuration](/reference/configuration)";
+    const segs = ex.extract(md, "index.md");
+    expect(segs).toHaveLength(1);
+    expect(segs[0]).toMatchObject({
+      type: "paragraph",
+      content: md,
+      translatable: true,
+    });
+  });
+
+  it("keeps a link whose label is only inline code non-translatable", () => {
+    const md = "[`pnpm test`](https://example.com/docs)";
+    const segs = ex.extract(md, "index.md");
+    expect(segs.some((s) => s.translatable)).toBe(false);
+  });
+
+  it("keeps fenced samples inside a VitePress code-group and copies the group through", () => {
+    const block = [
+      "::: code-group",
+      "",
+      "```js [Prepared source]",
+      't("Save changes");',
+      "```",
+      "",
+      "```json [Generated de.json]",
+      "{",
+      '  "Save changes": "Änderungen speichern"',
+      "}",
+      "```",
+      "",
+      ":::",
+    ].join("\n");
+    const md = ["Intro.", "", block, "", "Outro."].join("\n");
+    const segs = ex.extract(md, "index.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]).toMatchObject({ content: block, translatable: false });
+    expect(segs.some((s) => s.type === "code")).toBe(false);
+
+    const out = ex.reassemble(segs, new Map());
+    expect(out).toBe(`Intro.\n\n${block}\n\nOutro.\n`);
+  });
+
+  it.each([
+    [
+      "Docusaurus note",
+      [":::note", "See this.", "", "```js", "const x = 1;", "```", "", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "Docusaurus bracket title whose body is only code",
+      [":::caution[Watch out]", "", "```js", "const x = 1;", "```", "", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "VitePress warning",
+      ["::: warning", "```ts", "const x = 1;", "```", "Still read this.", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "VitePress important with a tilde fence that contains a colon closer",
+      [":::important Title", "", "~~~", ":::", "~~~", "", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "VitePress details",
+      ["::: details Expand", "", "```js", "const x = 1;", "```", "", "Visible.", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "Pandoc fenced div",
+      ["::: {.note}", "Body.", "", "```js", "const x = 1;", "```", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "MyST title whose body is only code",
+      [":::{note} Title", "", "```js", "const x = 1;", "```", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "bare tip whose body is only a fence",
+      ["::: tip", "", "```js", "const x = 1;", "```", "", ":::"].join("\n"),
+      false,
+    ],
+    [
+      "indented fence inside a note",
+      [":::note", "", "    ```js", "    const x = 1;", "    ```", "", "After.", ":::"].join("\n"),
+      true,
+    ],
+    [
+      "nested admonitions with a fence in the parent and the child",
+      [
+        ":::::info Parent",
+        "",
+        "```js",
+        "parent();",
+        "```",
+        "",
+        "::::danger",
+        "",
+        "```js",
+        "child();",
+        ":::",
+        "```",
+        "",
+        "::::",
+        "",
+        ":::::",
+      ].join("\n"),
+      true,
+    ],
+    [
+      "four-backtick sample inside a note",
+      [":::note", "````md", "```js", "const x = 1;", ":::", "```", "````", "Done.", ":::"].join(
+        "\n"
+      ),
+      true,
+    ],
+    [
+      "MkDocs note with an indented fence and prose",
+      [
+        '!!! note "Title"',
+        "",
+        "    Read this.",
+        "",
+        "    ```js",
+        "    const x = 1;",
+        "    ```",
+        "",
+        "    Done.",
+      ].join("\n"),
+      true,
+    ],
+    [
+      "MkDocs collapsible whose body is only a fence",
+      ["???+ warning", "", "    ```text", "    literal", "    ```"].join("\n"),
+      false,
+    ],
+  ])("keeps fenced code inside %s", (_name, block, translatable) => {
+    const segs = ex.extract(`${block}\n\nAfter.`, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]).toMatchObject({ content: block, translatable });
+    expect(segs.some((s) => s.type === "code")).toBe(false);
+    expect(segs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
+    const out = ex.reassemble(segs, new Map());
+    expect(out.indexOf(block)).toBeGreaterThanOrEqual(0);
+    expect(out.indexOf("After.")).toBeGreaterThan(out.indexOf(block));
+  });
+
+  it("keeps a top-level sample between two admonitions", () => {
+    const md = [
+      "::: note",
+      "Text.",
+      ":::",
+      "",
+      "```js",
+      "const x = 1;",
+      "```",
+      "",
+      "::: warning",
+      "More.",
+      ":::",
+    ].join("\n");
+    const segs = ex.extract(md, "doc.md");
+    const types = segs.map((s) => s.type);
+    expect(types).toEqual(["admonition", "code", "admonition"]);
+    const out = ex.reassemble(segs, new Map());
+    expect(out.indexOf("::: note")).toBeLessThan(out.indexOf("```js"));
+    expect(out.indexOf("```js")).toBeLessThan(out.indexOf("::: warning"));
+  });
+
+  it("keeps a code fence inside a tip, including a colon fence in the sample", () => {
+    const block = [
+      "::: tip Disclaimer",
+      "See this.",
+      "",
+      "```md",
+      "::: note",
+      "Inner",
+      ":::",
+      "```",
+      "",
+      "Done.",
+      ":::",
+    ].join("\n");
+    const segs = ex.extract(`${block}\n\nAfter.`, "doc.md");
+    const adm = segs.filter((s) => s.type === "admonition");
+    expect(adm).toHaveLength(1);
+    expect(adm[0]).toMatchObject({ content: block, translatable: true });
+    expect(segs.some((s) => s.type === "code")).toBe(false);
+    expect(segs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
+  });
+
   it("keeps inline images inside paragraphs as paragraph segments", () => {
     const md = "See ![Diagram alt](https://example.com/d.png) for details.";
     const segs = ex.extract(md, "doc.md");

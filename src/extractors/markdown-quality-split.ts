@@ -1,6 +1,11 @@
 import type { SegmentType } from "../core/types.js";
 import { segmentSplittingSchema, type SegmentSplittingConfig } from "../core/types.js";
 import {
+  isCodeFenceClose,
+  matchCodeFenceOpen,
+  type OpenCodeFence,
+} from "../processors/code-fence.js";
+import {
   isMarkdownListBlock,
   splitIntoTopLevelListItems,
   splitMarkdownSegmentPiece,
@@ -88,6 +93,42 @@ function buildSplitOptsForDepth(content: string, depth: number): SegmentSplittin
   });
 }
 
+/**
+ * Move a line split that lands inside a fenced code block to a fence boundary.
+ * The sample stays in one part so a quality retry cannot tear it open.
+ */
+function snapLineSplitOutOfCodeFence(lines: readonly string[], splitAt: number): number {
+  let open: OpenCodeFence | null = null;
+  let start = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
+    if (open) {
+      if (isCodeFenceClose(line, open)) {
+        if (splitAt > start && splitAt <= i) {
+          const after = i + 1;
+          if (after < lines.length && lines.slice(after).some((l) => l.trim())) {
+            return after;
+          }
+          if (start > 0) {
+            return start;
+          }
+        }
+        open = null;
+      }
+      continue;
+    }
+    const fence = matchCodeFenceOpen(line);
+    if (fence) {
+      open = fence;
+      start = i;
+    }
+  }
+  if (open && splitAt > start && start > 0) {
+    return start;
+  }
+  return splitAt;
+}
+
 function splitAtLineMidpoint(content: string): string[] | null {
   const lines = content.split("\n");
   const nonEmptyIndices: number[] = [];
@@ -100,13 +141,44 @@ function splitAtLineMidpoint(content: string): string[] | null {
     return null;
   }
   const midIdx = Math.floor(nonEmptyIndices.length / 2);
-  const splitAt = nonEmptyIndices[midIdx]!;
+  const splitAt = snapLineSplitOutOfCodeFence(lines, nonEmptyIndices[midIdx]!);
   const first = lines.slice(0, splitAt).join("\n").trimEnd();
   const second = lines.slice(splitAt).join("\n").trimStart();
   if (!first || !second) {
     return null;
   }
   return [first, second];
+}
+
+/** Move a character split that lands inside a closed fence to the nearer fence boundary. */
+function snapCharSplitOutOfCodeFence(content: string, splitAt: number): number {
+  const lines = content.split("\n");
+  let offset = 0;
+  let open: OpenCodeFence | null = null;
+  let fenceStart = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? "";
+    const lineEnd = offset + line.length;
+    if (open) {
+      if (isCodeFenceClose(line, open)) {
+        if (splitAt > fenceStart && splitAt < lineEnd) {
+          const after = i + 1 < lines.length ? lineEnd + 1 : lineEnd;
+          const candidates = [fenceStart, after].filter((c) => c > 0 && c < content.length);
+          candidates.sort((a, b) => Math.abs(a - splitAt) - Math.abs(b - splitAt));
+          return candidates[0] ?? splitAt;
+        }
+        open = null;
+      }
+    } else {
+      const fence = matchCodeFenceOpen(line);
+      if (fence) {
+        open = fence;
+        fenceStart = offset;
+      }
+    }
+    offset = lineEnd + 1;
+  }
+  return splitAt;
 }
 
 function splitAtCharMidpoint(content: string): string[] | null {
@@ -133,6 +205,7 @@ function splitAtCharMidpoint(content: string): string[] | null {
       }
     }
   }
+  splitAt = snapCharSplitOutOfCodeFence(content, splitAt);
   const first = content.slice(0, splitAt).trimEnd();
   const second = content.slice(splitAt).trimStart();
   if (!first || !second) {

@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## 在源代码中使用 `t()`
 
-使用 **字面量字符串** 调用 `t()`，以便提取脚本能找到它：
+在 `sourceLocale` 中使用 **字面量字符串** 调用 `t()`，以便提取脚本能够找到它。该语言可以是任何语言。下面的示例使用英语。要将硬编码的源文本转换为这些调用，请参阅 [向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)。
 
 ```jsx
 import { useTranslation } from 'react-i18next';

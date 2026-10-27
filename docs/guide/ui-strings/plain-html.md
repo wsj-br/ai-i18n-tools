@@ -93,7 +93,7 @@ Adjust the script attributes to your needs:
 <a id="marking-html-for-translation"></a>
 ## Marking HTML for translation
 
-Prefer bare markers. The English source text stays on the element, and that text is the catalog key. `extract` reads it; the runtime writes the translation back onto the same property.
+Prefer bare markers. The source-language text stays on the element, and that text is the catalog key. It is written in `sourceLocale`, which can be any language. `extract` reads it; the runtime writes the translation back onto the same property.
 
 - `data-i18n` — key is `textContent`. The runtime sets `textContent`.
 - `data-i18n-title` — key is `title`.
@@ -235,7 +235,7 @@ Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n
 ## Call shape
 
 - Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
-- Text that JavaScript inserts: call `window.i18n.t("English sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
 - Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
 
 ## Order
@@ -362,7 +362,7 @@ Do not auto-redirect by `navigator.language` on top of this. The runtime already
 | New DOM nodes stay English | Call `window.i18n.apply()` after inserting them. |
 | Image stays `chart.png` in Portuguese | The element needs `data-i18n-locale-src`, and the locale must not be the source locale. |
 
-`normalizeI18nText` in the runtime matches `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): trim, then collapse whitespace. Because the English source text is the catalog key, a missing translation falls back to English.
+`normalizeI18nText` in the runtime matches `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): trim, then collapse whitespace. Because the source-language text is the catalog key, a missing translation falls back to that source text.
 
 The runnable demo is [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` serves it at [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR).
 

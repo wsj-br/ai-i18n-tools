@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+Der obige Handler wechselt die Sprache, nachdem die App bereits angezeigt wird. Stellen Sie ein gespeichertes Gebietsschema auch vor dem ersten Rendern wieder her: [Start-Gebietsschema](/de/guide/ui-strings/i18next-runtime#startup-locale).
+
 `getUILanguageLabel(lang, t)` – zeigt `t(englishName)` an, wenn übersetzt, andernfalls `englishName / t(englishName)`, wenn beide unterschiedlich sind. Geeignet für Einstellungsseiten.
 
 `getUILanguageLabelNative(lang)` – zeigt `englishName / label` an (kein `t()`-Aufruf pro Zeile). Geeignet für Kopfzeilenmenüs, wenn der native Name sichtbar sein soll.

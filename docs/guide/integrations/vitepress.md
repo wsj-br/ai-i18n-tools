@@ -41,9 +41,9 @@ Configure one `docs[]` block:
 }
 ```
 
-Point `contentPaths` at your English `.md` files and directories. Set `docsRoot` to the same folder VitePress uses as its content root.
+Point `contentPaths` at the `.md` files and directories written in `sourceLocale`. That language can be any language. Set `docsRoot` to the same folder VitePress uses as its content root.
 
-Wire VitePress [internationalization](https://vitepress.dev/guide/i18n): English at `root`, each target locale under `locales[code].link` (for example `/pt-BR/`). Keep `targetLocales` in `ai-i18n-tools.config.json` aligned with the `locales` keys in `.vitepress/config.mts`.
+Wire VitePress [internationalization](https://vitepress.dev/guide/i18n): the source locale at `root`, each target locale under `locales[code].link` (for example `/pt-BR/`). Keep `targetLocales` in `ai-i18n-tools.config.json` aligned with the `locales` keys in `.vitepress/config.mts`.
 
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
@@ -58,7 +58,7 @@ An English-only VitePress config needs these pieces before translated pages show
 <a id="theme-strings"></a>
 ## Theme strings
 
-VitePress nav, sidebar, footer, search placeholder, and other `themeConfig` labels are not extracted from markdown. Configure **`docsOutput.vitepressThemeCatalog`** so **`translate-docs`** bootstraps the English catalog from `.vitepress/config.mts` (when strings are inline) and translates locale theme JSON files:
+VitePress nav, sidebar, footer, search placeholder, and other `themeConfig` labels are not extracted from markdown. Configure **`docsOutput.vitepressThemeCatalog`** so **`translate-docs`** bootstraps the source-locale catalog from `.vitepress/config.mts` (when strings are inline) and translates locale theme JSON files:
 
 ```json
 {
@@ -254,7 +254,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteVitepressLinks` defaults to enabled when `style` is `"vitepress"`.
 
-| Author in English source | After normalizer (English root output) | After normalizer (translated `docs/<locale>/` output) |
+| Author in the source locale | After normalizer (source-locale root output) | After normalizer (translated `docs/<locale>/` output) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
 | `[JSON](docs/guide/json.md)` | `[JSON](/guide/json)` | `[JSON](/pt-BR/guide/json)` (locale prefix matches folder) |
 | `[Quick start](/guide/quick-start)` in body or `hero.actions[].link` | unchanged (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
@@ -262,7 +262,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 | `hero.image.src: /ai-i18n-tools_logo.svg` | unchanged | unchanged (shared `docs/public/` asset) |
 | `[Demo](https://github.com/org/repo/tree/main/examples/console-app/)` | unchanged (full URL) | unchanged (full URL) |
 
-English root sources under `docs/` keep **locale-neutral** site routes (`/guide/…`). Files written to `docs/<locale>/…` get the locale prefix on internal content routes automatically — including **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Shared public assets such as `/ai-i18n-tools_logo.svg` and `/translation-dashboard.png` stay unprefixed on every locale.
+Source-locale files under `docs/` keep **locale-neutral** site routes (`/guide/…`). This example uses English as `sourceLocale`. Any language is valid. Files written to `docs/<locale>/…` get the locale prefix on internal content routes automatically — including **home layout frontmatter** (`hero.actions[].link`, `features[].link`, `prev`/`next`). Shared public assets such as `/ai-i18n-tools_logo.svg` and `/translation-dashboard.png` stay unprefixed on every locale.
 
 <a id="theme-navsidebar-links"></a>
 ### Theme nav/sidebar links

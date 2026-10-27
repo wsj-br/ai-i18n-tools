@@ -38,6 +38,6 @@ Markdown 連結或 `![alt](url)` 在英文版中有效，但在翻譯版本中�
 
 **修正**
 
-1. 確認地區代碼與您想要的書寫系統相符（`hi` 對 `hi-Latn`，`zh-Hans` 對 `zh-Hant`，`sr` 對 `sr-Latn`）。
-2. 重新執行翻譯，以便拒絕書寫系統錯誤的快取列：UI 字串使用 `translate-ui --force`，或 `translate-docs --check-cache` / `sync --check-cache`（檔案層級的跳過僅對具有預期書寫系統的地區被繞過；有效的區段快取仍會被重用）。`--force-update` 會重新處理每個地區。
-3. 如果模型持續未通過書寫系統檢查，請為該地區新增 `localeModels` 項目，以便優先嘗試更強大的模型 — 請參閱[供應商與模型](/zh-Hant/guide/providers-and-models#model-fallback-chain)。
+1. 確認地區設定代碼符合您想要的指令碼 (`hi` vs `hi-Latn`、`zh-Hans` vs `zh-Hant`、`sr` vs `sr-Latn`)。
+2. 重新執行翻譯，以便拒絕指令碼錯誤的快取資料列：`translate-ui --force` 用於 UI 字串，或 `translate-docs --check-cache` / `sync --check-cache` (僅針對具有預期指令碼的地區設定，才會繞過檔案層級的略過設定；有效的區段快取仍會重複使用)。`--force-update` 會重新處理每個地區設定。
+3. 如果模型持續無法通過指令碼檢查，請為該地區設定新增一個 `localeModels` 項目，以便優先嘗試更強大的模型 — 請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain)。

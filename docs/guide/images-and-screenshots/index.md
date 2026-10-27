@@ -44,7 +44,7 @@ Use for static documentation sites that store translated pages under a locale-pr
 {outputDir}/{locale}/[localeSubpath/]{relativeToDocsRoot}
 ```
 
-Set `docs[].docsOutput.docsRoot` to your English source root (e.g. `"docs"` or `"src/content/docs"`). When you set `style: "doc-system"` directly, you must also set `localeSubpath` to the path segment your site uses between `{locale}/` and the translated file. The aliases `"docusaurus"`, `"astro-starlight"`, and `"vitepress"` are preset `doc-system` layouts with default `localeSubpath` values (see [Output layouts](/guide/documents/output-layouts)).
+Set `docs[].docsOutput.docsRoot` to the root of the files written in `sourceLocale` (for example `"docs"` or `"src/content/docs"`). `sourceLocale` can be any language. When you set `style: "doc-system"` directly, you must also set `localeSubpath` to the path segment your site uses between `{locale}/` and the translated file. The aliases `"docusaurus"`, `"astro-starlight"`, and `"vitepress"` are preset `doc-system` layouts with default `localeSubpath` values (see [Output layouts](/guide/documents/output-layouts)).
 
 | Preset alias | Default `localeSubpath` | Example output |
 |--------------|-------------------------|----------------|
@@ -65,9 +65,9 @@ Two habits at project setup eliminate all regex bridging later:
 
 1. Create a symlink `documentation/docs/assets → ../static/assets` before adding any screenshots. Docusaurus's webpack follows symlinks by default, and this lets source docs use relative paths that translated docs will also use.
 
-2. Put all documentation assets — PNGs and SVGs — in `static/assets/` (one directory). Do not split them between `static/img/` (SVGs) and `static/assets/` (PNGs). A unified location means every doc page, English and translated, can reference the same relative path `../assets/name.ext`.
+2. Put all documentation assets — PNGs and SVGs — in `static/assets/` (one directory). Do not split them between `static/img/` (SVGs) and `static/assets/` (PNGs). A unified location means every doc page, source locale and translated, can reference the same relative path `../assets/name.ext`.
 
-Reference every asset with the stable relative path `../assets/name.ext` in source markdown. Never use absolute `/img/` or `/assets/` URLs for documentation assets — those URLs differ between the English source (served from `static/`) and translated locales (colocated with the translated docs), which forces a `regexAdjustments` rule to bridge them.
+Reference every asset with the stable relative path `../assets/name.ext` in source markdown. Never use absolute `/img/` or `/assets/` URLs for documentation assets — those URLs differ between the source-locale pages (served from `static/`) and translated locales (colocated with the translated docs), which forces a `regexAdjustments` rule to bridge them.
 
 When you add i18n later, the screenshot script adopts the `getScreenshotDir` split (see [Colocated screenshots](/guide/images-and-screenshots/colocated-screenshots)) and `translate-svg` uses a `pathTemplate`. No regex adjustments are needed.
 

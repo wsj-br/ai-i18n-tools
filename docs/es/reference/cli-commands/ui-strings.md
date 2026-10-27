@@ -17,13 +17,32 @@ Actualiza `strings.json` a partir de los literales `t("…")` / `i18n.t("…")`,
 
 **Sinopsis:** `ai-i18n-tools migrate-intlayer [paths...] [--write] [--report <path>] [--content-glob <glob>] [--t-import <specifier>]`
 
-Importa diccionarios de Intlayer `*.content.ts` en archivos de configuración regional planos y de `strings.json`, y reescribe los sitios de llamada simples de `useIntlayer` / `getIntlayer` a `t('English source')`. Ejecución en seco por defecto (el informe se sigue escribiendo). `--write` inicializa el catálogo y aplica reescrituras seguras. No llama a un LLM.
+Importar diccionarios `*.content.ts` de Intlayer en `strings.json` y archivos de localización planos, y reescribir sitios de llamada simples de `useIntlayer` / `getIntlayer` a `t('source string')`. La cadena está escrita en `sourceLocale`, que puede ser cualquier idioma. Ejecución en seco por defecto (el informe se sigue escribiendo). `--write` inicializa el catálogo y aplica reescrituras seguras. No llama a un LLM.
 
 El informe es la entrega de todo lo que `--write` deja atrás, y termina con un **TODO paso a paso** que ordena el resto del trabajo: una llamada concreta de `t()` o JSX para cada sitio manual, la línea `import { t }`, los archivos de diccionario y los restos de `IntlayerProvider` para eliminar después, las cadenas de origen que necesitan `extract` y luego `translate-ui`, y un bootstrap en tiempo de ejecución de i18next para pegar sobre el módulo i18n de la aplicación. El control de configuración regional debe llamar a `i18n.changeLanguage` así como a `loadLocale`. `extract` escribe `ui-languages.json`, que importa dicho bootstrap. No edite `strings.json`, los archivos de configuración regional planos, ni `ui-languages.json` a mano.
 
 **Opciones clave:** `--write`, `--report`, `--content-glob` (predeterminado `**/*.content.ts`), `--t-import`
 
 **Véase también:** [Migración desde Intlayer](/es/guide/migrating-from-intlayer)
+
+---
+
+<a id="translate-intlayer"></a>
+### `translate-intlayer`
+
+**Sinopsis:** `ai-i18n-tools translate-intlayer [paths...] [-l <codes>] [--ui-block <selector>] [--dry-run] [-j <n>]`
+
+Traduce las hojas de localización faltantes y obsoletas dentro de los diccionarios `*.content.ts` de Intlayer in situ, manteniendo los diccionarios como la fuente de verdad. A diferencia de [`migrate-intlayer`](#migrate-intlayer), esto no saca la aplicación de Intlayer; solo rellena las hojas `t({ … })`. Úsalo cuando quieras mantener Intlayer en tiempo de ejecución y usar ai-i18n-tools como motor de traducción.
+
+Extrae cada hoja `t({ … })`, inicializa el `strings.json` del bloque de UI elegido con el texto fuente, ejecuta el mismo motor que [`translate-ui`](#translate-ui) (selección de proveedor, glosario, contexto de traducción y reserva de modelo), luego escribe las nuevas cadenas por localización de vuelta en cada objeto `t({ … })`. Las ediciones son quirúrgicas: solo cambian las líneas de localización faltantes u obsoletas, por lo que se conservan tu formato y comentarios. Los marcadores de posición `{token}` de Intlayer hacen un viaje de ida y vuelta a <code v-pre>{{token}}</code> para su traducción y regreso.
+
+Una hoja+localización se traduce cuando la localización está ausente de la hoja (faltante), o cuando el texto de la localización de origen cambió desde la última ejecución para esa localización (obsoleta). La obsolescencia se rastrea en `cacheDir`, por lo que editar esa cadena de origen vuelve a traducir esa hoja en la siguiente ejecución. El idioma de origen es `sourceLocale` y puede ser cualquier idioma. `--dry-run` informa los recuentos de faltantes/obsoletas sin llamar a un LLM ni escribir nada. Requiere `features.translateUIStrings` y el `stringsJson` del bloque de UI (igual que `translate-ui`).
+
+**Opciones clave:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
+
+`[paths...]`: archivos/directorios/globs a escanear (predeterminado: el `sourceRoots` del bloque). `-l` / `--locale`: localizaciones de destino separadas por comas para rellenar (predeterminado: el `targetLocales` configurado del bloque). `--ui-block`: índice de base cero, descripción o ruta `stringsJson` (predeterminado: bloque 0). `-j` paraleliza las localizaciones.
+
+**Véase también:** [migrate-intlayer](#migrate-intlayer), [Migración desde Intlayer](/es/guide/migrating-from-intlayer)
 
 ---
 

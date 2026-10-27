@@ -1,0 +1,29 @@
+Brand marks in brands/ are SVG paths from Simple Icons (https://simpleicons.org),
+dedicated to the public domain under CC0 1.0:
+https://github.com/simple-icons/simple-icons
+
+OpenAI is taken from simple-icons 15.0.0 and filled with that release's brand
+color (#412991). Later Simple Icons releases dropped the OpenAI mark. The other
+brand SVGs use the current Simple Icons brand color.
+
+UI icons in ui/ are from Lucide 0.544.0 (https://lucide.dev), ISC License.
+Stroke color is set to #7c3aed for this site.
+
+ISC License
+
+Copyright (c) Lucide Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Product names and logos are trademarks of their respective owners. This
+project is not affiliated with or endorsed by those brands.

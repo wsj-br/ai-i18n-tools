@@ -44,9 +44,16 @@ docs-site/docs/guide/quick-start.md
 }
 ```
 
-將 `contentPaths` 指向您的英文 `.md` / `.mdx` 檔案和目錄。將 `docsRoot` 設定為 Docusaurus 用作其內容根目錄的相同資料夾。將 `outputDir` 設定為 `i18n/` 下每個地區設定資料夾的父級。
+將 `contentPaths` 指向以 `sourceLocale` 編寫的 `.md` / `.mdx` 檔案與目錄。該語言可以是任何語言。將 `docsRoot` 設定為 Docusaurus 用作其內容根目錄的相同資料夾。將 `outputDir` 設定為 `i18n/` 下各語系資料夾的父層。
 
 連接 Docusaurus [國際化](https://docusaurus.io/docs/i18n/introduction)：讓 `targetLocales` 在 `ai-i18n-tools.config.json` 中與 `docusaurus.config.js` 中的 `locales` 陣列保持一致。每個 `localeConfigs[locale].path` 必須與 `i18n/` 下的資料夾名稱相符（例如 `path: "fr"` 對於 `i18n/fr/`）。
+
+<a id="enable-i18n-in-an-existing-site"></a>
+### 在現有網站中啟用 i18n
+
+- 當 URL 路徑應與語系代碼不同時，在 `docusaurus.config.js` 中新增 `i18n` 區塊：`defaultLocale`、`locales` 及 `localeConfigs[locale].path`。
+- 執行 `docusaurus write-translations` 以確保 `i18n/<defaultLocale>/` 存在，然後將 `docusaurusCatalogDir` 指向該資料夾並執行 `sync`。
+- `src/pages` 與 `src/components` 中的自訂 React 不是 markdown。請使用來自 `@docusaurus/Translate` 的 `<Translate>` 或 `translate()` 標記使用者可見的文案，以便 `write-translations` 能將其收集到 `code.json` 中。訊息必須是靜態字串。`write-translations` 會寫入 `i18n/<locale>/code.json`；設定 `docusaurusCatalogDir` 後，`translate-docs` 會將該 JSON 與其餘的 shell 訊息目錄一併翻譯。ai-i18n-tools 不會掃描那些 JSX 樹狀結構來尋找 `t()`。
 
 <a id="shell-strings-write-translations"></a>
 ## Shell 字串 (write-translations)

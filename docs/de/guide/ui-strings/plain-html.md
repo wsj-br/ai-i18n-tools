@@ -8,10 +8,10 @@ Für eine statische Website, die pro Locale eine übersetzte HTML-Datei ausgeben
 <a id="quick-start"></a>
 ## Schnellstart
 
-1. Erstellen Sie ein Gerüst mit `ai-i18n-tools init -t ui-plain-html -P openai`, oder fügen Sie die folgende Konfiguration hinzu.
-2. Markieren Sie das Quell-HTML (oder lassen Sie es `mark-html` erledigen).
-3. Verweisen Sie `ui.sourceRoots` und `ui.uiExtractor.extensions` auf diese Dateien.
-4. Führen Sie `extract` aus, dann `translate-ui` (oder führen Sie beide mit `sync-ui` aus).
+1. Mit `ai-i18n-tools init -t ui-plain-html -P openai` ein Gerüst erstellen oder die folgende Konfiguration hinzufügen. Fügen Sie `--with-readme` hinzu, wenn die README-Datei des Repositorys ebenfalls übersetzt werden soll ([i18n zu Ihrer README- und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme)).
+2. Das Quell-HTML markieren (oder lassen Sie es `mark-html` tun).
+3. `ui.sourceRoots` und `ui.uiExtractor.extensions` auf diese Dateien verweisen.
+4. `extract` ausführen, dann `translate-ui` (oder beide mit `sync-ui` ausführen).
 5. `i18n.js` neben die Seite kopieren und vor dem eigenen Skript laden.
 6. Den Ordner über HTTP bereitstellen. `file://` kann die Locale-JSON nicht `fetch`.
 
@@ -94,7 +94,7 @@ Passen Sie die Skriptattribute an Ihre Anforderungen an:
 <a id="marking-html-for-translation"></a>
 ## HTML zur Übersetzung markieren
 
-Bevorzugen Sie einfache Marker. Der englische Quelltext verbleibt auf dem Element und dient als Katalogschlüssel. `extract` liest ihn; die Runtime schreibt die Übersetzung zurück in dieselbe Eigenschaft.
+Bare Marker bevorzugen. Der Quellsprachentext bleibt auf dem Element, und dieser Text ist der Katalogschlüssel. Er ist in `sourceLocale` geschrieben, was jede beliebige Sprache sein kann. `extract` liest ihn; die Laufzeitumgebung schreibt die Übersetzung zurück auf dieselbe Eigenschaft.
 
 - `data-i18n` — Schlüssel ist `textContent`. Die Laufzeitumgebung setzt `textContent`.
 - `data-i18n-title` — Schlüssel ist `title`.
@@ -217,6 +217,52 @@ Ein Marker mit Wert benennt den Katalogschlüssel. Die Laufzeitumgebung schreibt
 
 `mark-html` fügt die obigen Marker ohne Wert ein. Es ist ein Probelauf, sofern Sie nicht `--write` übergeben. Es überspringt `data-i18n-ignore`-Teilbäume, codeähnliche Elemente (`code`, `pre`, `kbd`, `samp`, `var`) sowie leeren oder rein numerischen Text. Es meldet übergeordnete Elemente mit gemischtem Inhalt und überlässt es Ihnen, diese in `<span data-i18n>` einzuschließen. Es schreibt niemals einen Marker mit Wert.
 
+<a id="agent-prompt"></a>
+### Agenten-Prompt
+
+`mark-html --write` fügt bereits Bare Marker ein. Fügen Sie dies ein, wenn der Bericht noch Überbleibsel auflistet: Mixed-Content-Eltern, Text, den JavaScript einfügt, und Bezeichner, die in der Quellsprache bleiben sollen.
+
+````markdown
+# Finish plain-HTML markers after mark-html
+
+## Context
+
+ai-i18n-tools extracts the source-language text of elements that carry `data-i18n`, `data-i18n-title`, `data-i18n-placeholder`, `data-i18n-alt`, or `data-i18n-aria-label`. The visible text is the catalog key. Run `ai-i18n-tools mark-html <file> --write` first. This task only fixes what that command reports. Do not translate any string.
+
+## Scope
+
+Edit the HTML files under `ui.sourceRoots`. Skip text already marked, `data-i18n-ignore` subtrees, and code-like elements (`code`, `pre`, `kbd`, `samp`, `var`).
+
+## Call shape
+
+- Mixed-content parents: wrap each text run in `<span data-i18n>`. Do not put `data-i18n` on an element that also has child elements. The runtime assigns `textContent` and would remove those children.
+- Text that JavaScript inserts: call `window.i18n.t("Source sentence")` and then `window.i18n.apply()` after the nodes exist. Await `window.i18n.ready` before reading the locale.
+- Identifiers, code samples, and brand names: add `data-i18n-ignore` on the element (it covers descendants).
+
+## Order
+
+1. `ai-i18n-tools mark-html <file> --write`
+2. Fix the leftovers above.
+3. `ai-i18n-tools extract`
+
+## Do not
+
+- Do not translate, rename, or reword the source text.
+- Do not write valued markers (`data-i18n="someKey"`) unless the visible text must differ from the catalog key.
+- Do not hand-edit `strings.json`, locale JSON, or `ui-languages.json`.
+- Do not change layout, ids, or behaviour.
+
+## Verify
+
+- `extract` lists the marked sentences.
+- The page still shows the original copy in the source locale.
+- A target locale changes those sentences after `translate-ui`, and mixed-content markup (links, `code`) is still in the DOM.
+
+## Report back
+
+List files changed, each string left unmarked and why, and any JavaScript-inserted sentence you were not sure was user-facing.
+````
+
 Die Laufzeitumgebung zeichnet bei der ersten Ausführung jeden Quellschlüssel in einem internen `data-i18n-source`-Attribut auf, sodass bei einem späteren Wechsel der Locale weiterhin die englische Zeichenfolge nachgeschlagen wird. Diese Attribute werden nicht extrahiert.
 
 <a id="locale-specific-images-and-links"></a>
@@ -317,7 +363,7 @@ Richten Sie darüber hinaus keine automatische Weiterleitung per `navigator.lang
 | Neue DOM-Knoten bleiben englisch | Rufen Sie `window.i18n.apply()` auf, nachdem Sie sie eingefügt haben. |
 | Bild bleibt auf Portugiesisch `chart.png` | Das Element benötigt `data-i18n-locale-src`, und die Locale darf nicht die Quell-Locale sein. |
 
-`normalizeI18nText` in der Laufzeit entspricht `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): trimmen, dann Leerzeichen zusammenfassen. Da der englische Quelltext der Katalogschlüssel ist, erfolgt bei fehlender Übersetzung ein Fallback auf Englisch.
+`normalizeI18nText` in der Laufzeitumgebung entspricht `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): Leerraum trimmen, dann zusammenführen. Da der Quellsprachentext der Katalogschlüssel ist, fällt eine fehlende Übersetzung auf diesen Quelltext zurück.
 
 Die ausführbare Demo ist [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` stellt sie unter [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) bereit.
 

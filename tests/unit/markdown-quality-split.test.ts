@@ -88,6 +88,28 @@ describe("splitSegmentForQualityRetry", () => {
     expect(parts!.join(" ")).toBe(body);
   });
 
+  it("does not tear a fenced sample when splitting an admonition", () => {
+    const body = [
+      "::: tip",
+      "Intro sentence that is long enough to pass the split gate and then some more words here.",
+      "",
+      "```js",
+      "const value = 1;",
+      "const other = 2;",
+      "```",
+      "",
+      "Closing sentence that is also long enough to sit on the other side of a midpoint split.",
+      ":::",
+    ].join("\n");
+    const parts = splitSegmentForQualityRetry(body, "admonition", 0, 3);
+    expect(parts).not.toBeNull();
+    const owner = parts!.filter((part) => part.includes("const value"));
+    expect(owner).toHaveLength(1);
+    expect(owner[0]).toContain("```js");
+    expect(owner[0]).toContain("const other = 2;");
+    expect(owner[0]).toMatch(/```(?:\n|$)/);
+  });
+
   it("returns null for a single line over the split gate but under the char-split floor", () => {
     // One line, length in (MIN_SPLITTABLE_CHARS, MIN_SPLITTABLE_CHARS*2]: passes the
     // "can split" gate but is too short for the char-midpoint fallback (<= 160 chars).

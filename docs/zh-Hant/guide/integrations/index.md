@@ -1,19 +1,14 @@
 <a id="integrations"></a>
 # 整合
 
-針對文件網站、Astro 專案與 Python 應用程式的框架專屬指南。文件整合使用 [Documents](/zh-Hant/guide/documents/) 管線 (`translate-docs` / `sync`) 來處理頁面內容；Shell 字串（導覽、側邊欄、主題）在註明處亦由同一管線處理，而非透過獨立的 [JSON](/zh-Hant/guide/json) 管線。Python 應用程式則使用 [UI strings](/zh-Hant/guide/ui-strings/python) 管線 (`extract` / `translate-ui`)。
+框架整合參考：它們的共通點以及其外殼字串的差異。若要將語言新增至網站，請從 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website) 開始。若為應用程式，請從 [將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js) 或 [將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python) 開始。若為儲存庫 README 和其他 Markdown 檔案，請從 [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme) 開始。
+
+文件整合使用 [文件](/zh-Hant/guide/documents/) 管線 (`translate-docs` / `sync`) 來處理頁面內容；在註明之處，外殼字串 (導覽、側邊欄、主題) 會於同一個管線內處理 — 而非透過獨立的 [JSON](/zh-Hant/guide/json) 管線。Python 應用程式使用 [UI 字串](/zh-Hant/guide/ui-strings/python) 管線 (`extract` / `translate-ui`)。
 
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
 
-| 你的網站 | 初始化範本 | 從這裡開始 |
-| --- | --- | --- |
-| Astro Starlight 或純 Astro | `ui-starlight` / 混合 UI 字串 | [Astro](/zh-Hant/guide/integrations/astro) |
-| Docusaurus | `ui-docusaurus` | [Docusaurus](/zh-Hant/guide/integrations/docusaurus) |
-| VitePress | `ui-vitepress` | [VitePress](/zh-Hant/guide/integrations/vitepress) |
-| Nextra 4 (Next.js App Router) | `ui-nextra` | [Nextra](/zh-Hant/guide/integrations/nextra) |
-| Fumadocs 4 (Next.js App Router) | `ui-fumadocs` | [Fumadocs](/zh-Hant/guide/integrations/fumadocs) |
-| Python (Streamlit, FastAPI, Flask, Django, gettext, 桌面應用) | `ui-python` / `ui-python-gettext` / `ui-python-flask` / `ui-python-django` | [Python](/zh-Hant/guide/integrations/python) |
+選擇表格 (包含每個框架的 init 範本和代理程式提示) 位於 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#what-do-you-have)。Python 框架：[Python](/zh-Hant/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共用概念

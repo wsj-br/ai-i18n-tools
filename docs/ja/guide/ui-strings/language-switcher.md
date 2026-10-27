@@ -70,6 +70,8 @@ function LanguageSelect({
 
 <br />
 
+上記のハンドラーは、アプリが表示された後に言語を切り替えます。最初の描画前に保存済みのロケールも復元してください。[起動時のロケール](/ja/guide/ui-strings/i18next-runtime#startup-locale)。
+
 `getUILanguageLabel(lang, t)` - 翻訳されている場合は`t(englishName)`を表示し、両方が異なる場合は`englishName / t(englishName)`を表示します。設定画面に適しています。
 
 `getUILanguageLabelNative(lang)` - `englishName / label`を表示します（各行で`t()`呼び出しはありません）。ネイティブ名を表示したいヘッダーメニューに適しています。

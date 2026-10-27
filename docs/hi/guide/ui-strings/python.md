@@ -1,9 +1,9 @@
 <a id="python"></a>
 # पायथन (Python) एप्लिकेशन
 
-`ai-i18n-tools` पायथन और जिंजा (Jinja), जैंगो (Django), तथा Qt `.ui` फ़ाइलों से UI स्ट्रिंग्स निकालता है, और फिर फ्लैट इंग्लिश-की JSON, GNU gettext कैटलॉग, या दोनों लिखता है। रनटाइम हेल्पर एक स्टैंडर्ड-लाइब्रेरी `i18n.py` (पायथन 3.10 या नया) है। स्ट्रीमलिट (Streamlit), Tkinter, PyQt, PySide, PyWebView, फ्लास्क (Flask), पिरामिड (Pyramid), और FastAPI उस हेल्पर को कॉल करते हैं। जैंगो (Django) अपने स्वयं के gettext का उपयोग करता है।
+`ai-i18n-tools` Python से और Jinja, Django, और Qt `.ui` फ़ाइलों से UI स्ट्रिंग निकालता है, फिर स्रोत-भाषा स्ट्रिंग, GNU gettext कैटलॉग, या दोनों द्वारा कुंजीबद्ध फ़्लैट JSON लिखता है। `sourceLocale` कोई भी भाषा हो सकती है। रनटाइम हेल्पर एक मानक-पुस्तकालय `i18n.py` है (Python 3.10 या नया)। Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, और FastAPI उस हेल्पर को कॉल करते हैं। Django अपने स्वयं के gettext का उपयोग करता है।
 
-मौजूदा एकल-भाषा ऐप में लोकेल जोड़ना: [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)। फ्रेमवर्क चयनकर्ता: [Python एकीकरण](/hi/guide/integrations/python)। फ़ंक्शन सूची: [Python रनटाइम (`i18n.py`)](/hi/reference/programmatic-api#python-runtime)।
+किसी मौजूदा एकल-भाषा ऐप में लोकेल जोड़ना: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-i18n-py) और [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल हैं। फ़्रेमवर्क चयनकर्ता: [Python एकीकरण](/hi/guide/integrations/python)। फ़ंक्शन सूची: [Python रनटाइम (`i18n.py`)](/hi/reference/programmatic-api#python-runtime)।
 
 रन करने योग्य प्रतियां `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext` में रहती हैं। ये पायथन प्रोजेक्ट्स हैं। पहले तीन virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। ये npm पैकेज नहीं हैं। रिलीज़ आर्काइव `ai-i18n-tools-python-examples.zip` में वही चार डायरेक्टरीज़ शामिल हैं। npm टारबॉल और स्टैंडअलोन निष्पादन योग्य फ़ाइल में ये नहीं हैं।
 
@@ -18,6 +18,8 @@ ai-i18n-tools init -t ui-python-django -P ollama
 ```
 
 `ui-python` फ्लैट JSON और `i18n.py` लिखता है। `ui-python-gettext` JSON और `.po` / `.mo` लिखता है। `ui-python-flask` `translations/` और `i18n.py` के अंतर्गत gettext कैटलॉग लिखता है। `ui-python-django` `locale/<lang>/LC_MESSAGES/django.po` लिखता है और `i18n.py` नहीं लिखता है।
+
+रिपॉजिटरी README का भी अनुवाद करें: ऊपर दिए गए `init` कमांड में `--with-readme` जोड़ें। [अपनी README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) देखें।
 
 स्कैन रूट्स `node_modules`, `.git`, `.venv`, `venv`, `env`, `site-packages`, `__pycache__`, `.tox`, `.nox`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`, और `.eggs` को छोड़ देते हैं।
 
@@ -66,7 +68,7 @@ _("Hello, {name}!".format(name=name))
 <a id="catalogs"></a>
 ## कैटलॉग
 
-फ्लैट JSON कीज़ इंग्लिश सोर्स हैं। एक संदर्भ `context` + U+0004 + इंग्लिश सोर्स का उपयोग करता है। प्लुरल स्लॉट `{md5}_one`, `{md5}_other`, और अन्य CLDR फॉर्म `translate-ui` के रूप में बने रहते हैं जिन्हें यह पहले से लिखता है। हेल्पर ट्रिम किए गए सिंगुलर को MD5 के साथ हैश करता है और पहले 8 हेक्स कैरेक्टर पढ़ता है।
+फ़्लैट JSON कुंजियाँ स्रोत-भाषा स्ट्रिंग होती हैं, जो `sourceLocale` में टेक्स्ट है। वह भाषा कोई भी भाषा हो सकती है। एक संदर्भ `context` + U+0004 + उस स्रोत स्ट्रिंग का उपयोग करता है। बहुवचन स्लॉट `{md5}_one`, `{md5}_other`, और अन्य CLDR फ़ॉर्म रहते हैं जिन्हें `translate-ui` पहले से लिखता है। हेल्पर MD5 के साथ ट्रिम किए गए एकवचन को हैश करता है और पहले 8 हेक्स वर्णों को पढ़ता है।
 
 Gettext फ़ाइलें संदर्भ के लिए `msgctxt` और प्लुरल के लिए `msgid` / `msgid_plural` का उपयोग करती हैं। `ui.gettext.compileMo` `.mo` को `.po` के बगल में लिखता है। `purge-locale` उस लोकेल की `.po` और `.mo` को हटा देता है। जब `flatOutput` गलत (false) होता है, तो यह फ्लैट JSON फ़ाइलों को वैसे ही छोड़ देता है क्योंकि वे नहीं लिखी गई थीं।
 

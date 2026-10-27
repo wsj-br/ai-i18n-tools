@@ -47,6 +47,7 @@ function guideSidebar(t: ThemeCatalog) {
         { text: t.sidebar.installation, link: "/guide/installation" },
         { text: t.sidebar.quickStart, link: "/guide/quick-start" },
         { text: t.sidebar.providers, link: "/guide/providers-and-models" },
+        { text: t.sidebar.aiModels ?? "AI Models", link: "/guide/ai-models" },
       ],
     },
     {

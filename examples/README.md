@@ -85,7 +85,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-To re-run extraction without Node.js, use the standalone `ai-i18n-tools` binary from the GitHub Release. The same four directories are attached as `ai-i18n-tools-python-examples.zip`. They are not inside the npm tarball or the executable. From this repository, `node ../../bin/ai-i18n-tools.mjs` works after `pnpm build`. `pnpm update-all` does not run `cleanup` / `sync` inside these directories, so it will not call the translation API on the committed catalogs.
+To re-run extraction without Node.js, install the standalone command. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Then run `ai-i18n-tools` from the example directory. The same four directories are attached as `ai-i18n-tools-python-examples.zip`. They are not inside the npm tarball or the executable. From this repository, `node ../../bin/ai-i18n-tools.mjs` works after `pnpm build`. `pnpm update-all` does not run `cleanup` / `sync` inside these directories, so it will not call the translation API on the committed catalogs.
 
 ---
 

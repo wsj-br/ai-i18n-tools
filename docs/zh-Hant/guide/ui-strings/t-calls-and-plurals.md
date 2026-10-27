@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## 在原始碼中使用 `t()`
 
-使用 **字串字面值** 呼叫 `t()`，以便提取指令碼能夠找到它：
+在 `sourceLocale` 中使用**字串常值**呼叫 `t()`，以便擷取指令碼可以找到它。該語言可以是任何語言。下方的範例使用英文。若要將硬式編碼的來源文字轉換為這些呼叫，請參閱 [將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js)。
 
 ```jsx
 import { useTranslation } from 'react-i18next';

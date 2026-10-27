@@ -40,4 +40,4 @@ Some models translate the meaning but write the result in Latin/Roman letters (f
 
 1. Confirm the locale code matches the script you want (`hi` vs `hi-Latn`, `zh-Hans` vs `zh-Hant`, `sr` vs `sr-Latn`).
 2. Re-run translation so wrong-script cache rows are rejected: `translate-ui --force` for UI strings, or `translate-docs --check-cache` / `sync --check-cache` (file-level skip is bypassed only for locales with an expected script; valid segment cache is still reused). `--force-update` reprocesses every locale.
-3. If a model keeps failing the script check, add a `localeModels` entry for that locale so a stronger model is tried first — see [Providers and models](/guide/providers-and-models#model-fallback-chain).
+3. If a model keeps failing the script check, add a `localeModels` entry for that locale so a stronger model is tried first — see [AI Models](/guide/ai-models#model-fallback-chain).

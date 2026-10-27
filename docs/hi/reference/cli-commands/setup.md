@@ -13,19 +13,19 @@
 <a id="init"></a>
 ### `init`
 
-**सारांश:** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-translate-ignore]`
+**सारांश:** `ai-i18n-tools init -P <provider> [-t <template>] [-o <path>] [--with-readme] [--with-translate-ignore]`
 
 एक स्टार्टर कॉन्फ़िग फ़ाइल लिखें (इसमें `provider` / `providers`, `concurrency`, `uiBatchConcurrency`, `batchConcurrency`, `batchSize`, `maxBatchChars`, और `docs[].addFrontmatter` शामिल हैं)। LLM को कॉल करने वाले अनुवाद कमांड के लिए सक्रिय प्रदाता की API कुंजी वातावरण में या `.env` (ओलामा को छोड़कर) में होनी चाहिए — [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key) देखें।
 
-**मुख्य विकल्प:** `-P` / `--provider` (अनिवार्य), `-t` / `--template`, `-o` / `--output`, `--with-translate-ignore`
+**मुख्य विकल्प:** `-P` / `--provider` (आवश्यक), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
 `-P` / `--provider` अनिवार्य है। यह चुनता है कि कौन सा **बिल्ट-इन प्रीसेट** स्केफ़ोल्ड करना है। इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`।
 
 **टेम्पलेट (`-t`):**
 
-| मान | स्केफोल्ड्स |
+| मान | स्काफोल्ड्स |
 |-------|-----------|
-| `ui-markdown` | मार्कडाउन यूआई स्ट्रिंग्स वर्कफ़्लो |
+| `ui-markdown` | यूआई स्ट्रिंग्स और रीडमी (फ्लैट आउटपुट, भाषा सूची) |
 | `ui-docusaurus` | डॉक्यूसॉरस यूआई + डॉक्स |
 | `ui-starlight` | स्टारलाइट डॉक्स |
 | `ui-vitepress` | वाइटप्रेस डॉक्स (`docsOutput.style: "vitepress"`) प्लस थीम स्ट्रिंग्स के लिए `vitepressThemeCatalog` |
@@ -34,11 +34,19 @@
 | `ui-astro-website` | एस्ट्रो वेबसाइट यूआई स्ट्रिंग्स |
 | `ui-plain-html` | सादा HTML कैटलॉग (`data-i18n*` मार्कर, फ्लैट लोकेल JSON) |
 | `docs-plain-html` | सादे HTML दस्तावेज़ (प्रति लोकेल एक फ़ाइल, भाषा सूची, hreflang) |
+| `docs-markdown` | मार्कडाउन डॉक्स: रीडमी और `.md` फ़ाइलें, फ्लैट आउटपुट, भाषा सूची |
 | `ui-json-bundles` | JSON (केवल `json[]`) |
-| `ui-python` | Python UI स्ट्रिंग्स, फ़्लैट English-key JSON, और `i18n.py` |
+| `ui-python` | पायथन यूआई स्ट्रिंग्स, स्रोत-भाषा स्ट्रिंग द्वारा कुंजीबद्ध फ्लैट JSON, और `i18n.py` |
 | `ui-python-gettext` | फ़्लैट JSON और GNU `.po` / `.mo` के साथ Python UI स्ट्रिंग्स, साथ ही `i18n.py` |
 | `ui-python-django` | Django `gettext` / `{% blocktrans %}` कैटलॉग (`flatOutput: false`, डोमेन `django`, कोई `i18n.py` नहीं) |
 | `ui-python-flask` | `translations/` (`flatOutput: false`) के अंतर्गत Flask / Jinja कैटलॉग, साथ ही `i18n.py` |
+
+`--with-readme` एक `README.md` डॉक्स ब्लॉक जोड़ता है (`outputDir` `translated-docs`, `docsOutput.style` `"flat"`, एक `languageListBlock`) और `features.translateDocs` को true पर सेट करता है। यह कुछ नहीं करता है जब एक डॉक्स ब्लॉक में पहले से ही `README.md` सूचीबद्ध होता है, जो `ui-markdown` और `docs-markdown` के लिए मामला है। यह केवल कॉन्फ़िग लिखता है। यह `README.md` में पेस्ट करने के लिए मार्कर लाइन प्रिंट करता है और जब वह फ़ाइल गुम होती है तो चेतावनी देता है। गाइड: [अपने रीडमी और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
+
+```bash
+ai-i18n-tools init -t docs-markdown -P openrouter
+ai-i18n-tools init -t ui-python -P openrouter --with-readme
+```
 
 `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है (जिसमें Python virtualenv और कैश डायरेक्टरी शामिल हैं)।
 

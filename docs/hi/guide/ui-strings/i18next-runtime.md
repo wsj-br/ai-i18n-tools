@@ -1,6 +1,8 @@
 <a id="wire-i18next-at-runtime"></a>
 # रनटाइम पर वायर i18next
 
+यह पृष्ठ रनटाइम पर लुकअप को वायर करता है। यह स्ट्रिंग का पता नहीं लगाता है। यदि ऐप में अभी भी मूल-भाषा के शाब्दिक (लिटरल) हैं, तो उन्हें पहले रैप करें: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js)। ऐप `i18next` इंस्टॉल करता है, और `react-i18next` जब कंपोनेंट `useTranslation()` का उपयोग करते हैं। `ai-i18n-tools` इनमें से कोई भी पैकेज इंस्टॉल नहीं करता है।
+
 सहायक कार्यों का उपयोग करके अपनी i18n सेटअप फ़ाइल बनाएं जो `'ai-i18n-tools/runtime'` द्वारा निर्यात की जाती है। एपीआई हस्ताक्षर के लिए, [रनटाइम सहायक](/hi/guide/runtime-helpers) देखें।
 
 <details>
@@ -52,11 +54,16 @@ export default i18n;
 <a id="keeping-source_locale-aligned"></a>
 ## `SOURCE_LOCALE` को संरेखित रखना
 
-**तीन मानों को संरेखित रखें:** `sourceLocale` में `ai-i18n-tools.config.json`, इस फ़ाइल में `SOURCE_LOCALE`, और बहुवचन फ्लैट जेसन `translate-ui` जो `{sourceLocale}.json` के रूप में आपके फ्लैट आउटपुट निर्देशिका (आमतौर पर `public/locales/`) में लिखता है। स्थिर `import` (उदाहरण ऊपर: `en-GB` → `en-GB.json`) में उसी बेसनाम का उपयोग करें। `sourcePluralFlatBundle` में `lng` क्षेत्र `SOURCE_LOCALE` के बराबर होना चाहिए। स्थिर ईएस `import` पथ परिवर्तनीय का उपयोग नहीं कर सकते; यदि आप स्रोत स्थान को बदलते हैं, तो `SOURCE_LOCALE` और आयात पथ को एक साथ अपडेट करें। वैकल्पिक रूप से, डायनामिक `import(\` के साथ उस फ़ाइल को लोड करें ./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, या `readFileSync` ताकि पथ `SOURCE_LOCALE` से निर्मित हो।
+`sourceLocale` कोई भी भाषा हो सकती है। नीचे दिया गया स्निपेट `en-GB` को एक उदाहरण के रूप में उपयोग करता है। **तीन मानों को संरेखित रखें:** `ai-i18n-tools.config.json` में `sourceLocale`, इस फ़ाइल में `SOURCE_LOCALE`, और प्लुरल फ़्लैट JSON `translate-ui` जिसे `{sourceLocale}.json` के रूप में आपकी फ़्लैट आउटपुट डायरेक्टरी (अक्सर `public/locales/`) के तहत लिखता है। उस ही बेसनेम का उपयोग स्टैटिक `import` में करें (ऊपर दिया गया उदाहरण: `en-GB` → `en-GB.json`)। `sourcePluralFlatBundle` में `lng` फ़ील्ड `SOURCE_LOCALE` के बराबर होना चाहिए। स्टैटिक ES `import` पाथ वैरिएबल का उपयोग नहीं कर सकते; यदि आप स्रोत लोकले बदलते हैं, तो `SOURCE_LOCALE` और इंपोर्ट पाथ को एक साथ अपडेट करें। वैकल्पिक रूप से, उस फ़ाइल को डायनामिक `import(\`./public/locales/${SOURCE_LOCALE}.json\`)`, `fetch`, या `readFileSync` के साथ लोड करें ताकि पाथ `SOURCE_LOCALE` से बनाया जा सके।
 
 स्निपेट `./locales/…` और `./public/locales/…` का उपयोग करता है जैसे कि `i18n` उन फ़ोल्डरों के बगल में बैठता है। यदि आपकी फ़ाइल `src/` (आम) के तहत है, तो `../locales/…` और `../public/locales/…` का उपयोग करें ताकि आयात `ui.stringsJson`, `languagesManifestPath`, और `ui.flatOutputDir` के समान पथ को हल करें।
 
 प्रतिक्रिया रेंडरिंग से पहले `i18n.js` आयात करें (उदाहरण के लिए, अपने प्रवेश बिंदु के शीर्ष पर)। जब उपयोगकर्ता भाषा बदलता है, तो `await loadLocale(code)` और फिर `await i18n.changeLanguage(code)` को कॉल करें।
+
+<a id="startup-locale"></a>
+### स्टार्टअप लोकले
+
+पहले रेंडर से पहले `loadLocale(saved)` और फिर `i18n.changeLanguage(saved)` को कॉल करें, न कि केवल भाषा स्विचर में। [examples/console-app/src/main.js](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js) प्रिंट करने से पहले ऐसा करता है। Next.js में, हाइड्रेशन के बाद एक इफ़ेक्ट में `localStorage` को पढ़ने से पहले स्रोत लोकले पेंट होता है और सर्वर HTML से मेल नहीं खा सकता है। एक ऐसी कुकी को प्राथमिकता दें जिसे सर्वर पढ़ सके, या पहले क्लाइंट रेंडर से पहले क्लाइंट मॉड्यूल में सहेजे गए लोकले को लोड करें।
 
 `SOURCE_LOCALE` निर्यात किया जाता है ताकि कोई अन्य फ़ाइल जिसे इसकी आवश्यकता हो (उदाहरण के लिए, एक भाषा स्विचर) इसे सीधे `'./i18n'` से आयात कर सके। यदि आप एक मौजूदा i18next सेटअप को माइग्रेट कर रहे हैं, तो किसी भी हार्डकोडेड स्रोत स्थान स्ट्रिंग (उदाहरण के लिए, `'en-GB'` जांचें जो घटकों में बिखरी हुई हैं) को अपनी i18n बूटस्ट्रैप फ़ाइल से `SOURCE_LOCALE` के आयात से बदलें।
 

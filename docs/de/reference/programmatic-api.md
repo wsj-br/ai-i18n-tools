@@ -21,13 +21,16 @@ console.log(
 );
 ```
 
-Eine Konfiguration aus Node.js gerüstet. Das vierte Argument ist das integrierte Preset (`cwd` ist das dritte):
+Eine Konfiguration aus Node.js generieren. Das vierte Argument ist das integrierte Preset (`cwd` ist das dritte). Ein optionales fünftes Argument `{ withReadme: true }` fügt den flachen README-Dokumentationsblock an, wenn die Vorlage `README.md` noch nicht auflistet, und gibt zurück, ob dieser Block hinzugefügt wurde:
 
 ```ts
 import { writeInitConfigFile } from 'ai-i18n-tools';
 
 writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'anthropic');
-writeInitConfigFile('ai-i18n-tools.config.json', 'uiMarkdown', process.cwd(), 'cheaperinference');
+writeInitConfigFile('ai-i18n-tools.config.json', 'docsMarkdown', process.cwd(), 'openrouter');
+writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'openrouter', {
+  withReadme: true,
+});
 ```
 
 Schlüsselexporte (häufig verwendet – siehe `src/index.ts` für die vollständige öffentliche Oberfläche):
@@ -53,7 +56,7 @@ Schlüsselexporte (häufig verwendet – siehe `src/index.ts` für die vollstän
 | `Glossary` / `GlossaryMatcher` | Laden und Anwenden von Übersetzungsglossaren, einschließlich optionaler `Context`-Hinweise. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Laden von `glossary.contextFiles` und Fingerabdruck-Anleitung zur Cache-Invalidierung. |
 | `runTranslateUI` | Programmatischer Einstiegspunkt für die Übersetzungs-UI. |
-| `writeInitConfigFile` | Schreibt eine Starter-Konfigurations-JSON (`template`, `cwd` und ein erforderliches `providerKey`). |
+| `writeInitConfigFile` | Schreibt eine Starter-Konfigurations-JSON (`template`, `cwd`, ein erforderliches `providerKey` und ein optionales `{ withReadme }`). Gibt `{ readmeBlockAdded, hasReadmeBlock }` zurück. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter-`translationModels` pro integriertem Preset, das von `init -P` verwendet wird. |
 | `PROVIDER_PRESETS` | Vordefinierte Anbieter-Voreinstellungskarte (`baseUrl`, `apiKeyEnv`). |
 
@@ -75,5 +78,5 @@ Aufrufformen, unsichere f-Strings und frameworkspezifische Locale-Anbindung: [Py
 | `_(message)` | Sucht ein Literal nach und gibt dann den Katalog-String oder die Nachricht selbst zurück. |
 | `t(template, *, plurals=False, count=None, **values)` | Sucht das Literal nach und interpoliert dann. `translate` ist dieselbe Funktion. Unter Python 3.14 behält `translate(t"Hello, {name}!")` die Vorlage und ihre Werte bei. Schlüsselwortargumente überschreiben Werte, die aus einem Vorlagen-String stammen. |
 | `ngettext(singular, plural, n, **values)` | Plural-Suche, dann Interpolation. `count` steht für den Format-String zur Verfügung. |
-| `pgettext(context, message, **values)` | Kontext-Suche (`msgctxt` oder `context` + U+0004 + die englische Quelle in flachem JSON), dann Interpolation. |
+| `pgettext(context, message, **values)` | Kontextsuche (`msgctxt` oder `context` + U+0004 + den Quellsprachen-String in flachem JSON), dann interpolieren. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit-Auswahlfeld. Schreibt `st.session_state.locale` und `st.query_params["lang"]`, ruft `set_locale` auf und gibt den gewählten Code zurück. |

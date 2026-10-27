@@ -24,6 +24,7 @@ const NUMBERED_INTERNAL_PREFIXES = [
   "ADM_OPEN",
   "ADM_END",
   "ADM_TCLOSE",
+  "CDF",
   "HTM",
   "GLS",
   "MDX",
@@ -93,7 +94,7 @@ function countByToken(tokens: string[]): Map<string, number> {
  * Content placeholders (`{{ILC_N}}`, `{{URL_N}}`, `{{BLD_N}}`, …) restore by id and may
  * move with natural word order as long as each id appears exactly once.
  */
-const ORDER_SENSITIVE_PREFIXES = ["HTM", "ADM_OPEN", "ADM_END", "ADM_TCLOSE"] as const;
+const ORDER_SENSITIVE_PREFIXES = ["HTM", "ADM_OPEN", "ADM_END", "ADM_TCLOSE", "CDF"] as const;
 
 function isOrderSensitiveToken(normalizedToken: string): boolean {
   const m = /^\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}$/.exec(normalizedToken);

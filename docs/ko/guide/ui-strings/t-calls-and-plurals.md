@@ -4,7 +4,7 @@
 <a id="using-t-in-source-code"></a>
 ## 소스 코드에서 `t()` 사용
 
-추출 스크립트가 찾을 수 있도록 **리터럴 문자열**과 함께 `t()`를 호출하세요:
+추출 스크립트가 찾을 수 있도록 `sourceLocale`에서 **리터럴 문자열**로 `t()`을(를) 호출합니다. 해당 언어는 어떤 언어든 될 수 있습니다. 아래 예시에서는 영어를 사용합니다. 하드코딩된 소스 텍스트를 이러한 호출로 변환하려면 [JS/TS 앱에 i18n 추가하기](/ko/guide/add-i18n-to-js)를 참조하세요.
 
 ```jsx
 import { useTranslation } from 'react-i18next';
