@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: ci — Release binaries uploads with `actions/upload-artifact@v7` and downloads with `actions/download-artifact@v8`, which run on Node.js 24.
+- **Changed**: ci — Python example jobs use `actions/setup-python@v7`.
 - **Fixed**: scripts — `ensure-built` treats macOS Mach-O `pnpm-native` as a native binary, so `pnpm install` no longer runs it with `node`.
 - **Fixed**: scripts — the standalone-binary smoke test passes `-P openrouter` to `init`, which requires a provider.
 - **Changed**: ci — a manual Release binaries run can leave the tag empty. The binaries stay as Actions artifacts and nothing is uploaded.

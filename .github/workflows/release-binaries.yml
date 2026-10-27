@@ -68,7 +68,7 @@ jobs:
             shasum -a 256 "$base" > "SHA256-${{ matrix.name }}.txt"
           fi
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: binary-${{ matrix.name }}
           path: |
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: binary-*
           path: dist-sea/release
