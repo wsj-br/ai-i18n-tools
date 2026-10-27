@@ -13,7 +13,7 @@ Create a new release notes file `release-notes/RELEASE_NOTES_<version>.md` for t
      - `---`
      - A short pointer to `dev/CHANGELOG.md` for the full per-change list (see example below). Do **not** paste changelog bullets, a `## Detailed Changes` section, `### Full Changelog`, or the `[Unreleased]` section into the release notes.
      - `---`
-     - `## Documentation` — Add links to major docs: Getting Started, Locale assets guide, Package Overview, Agent Context, as in previous release notes.
+     - `## Documentation` — Copy the Documentation section from the example below. It has two links only: the documentation site (`https://wsj-br.github.io/ai-i18n-tools/`) and AI Agent Context. `docs/ai-i18n-tools-context.md` is excluded from the docs site, so that link stays on GitHub. Do not copy Documentation links from older `release-notes/RELEASE_NOTES_*.md` files.
      - `---`
      - `## License` — Use the same license section as prior notes.
 5. **Update `dev/CHANGELOG.md`**:
@@ -42,10 +42,8 @@ For the full list of changes, see [`dev/CHANGELOG.md`](https://github.com/wsj-br
 
 ## Documentation
 
-- [Getting Started](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/GETTING_STARTED.md) — setup, CLI flags, and config reference.  
-- [Locale assets guide](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/LOCALE-ASSETS-GUIDE.md) — screenshots and illustrated SVGs in translated docs.  
-- [Package Overview](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/PACKAGE_OVERVIEW.md) — architecture and extension points.  
-- [AI Agent Context (consumers)](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — concise context for apps **using** the npm package.
+- [Documentation](https://wsj-br.github.io/ai-i18n-tools/) — guides, integrations, and reference
+- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — integration guide for assistants in consumer repositories
 
 ---
 
@@ -56,4 +54,4 @@ MIT © [Waldemar Scudeller Jr.](https://github.com/wsj-br/ai-i18n-tools)
 ```
 
 **Summary:**  
-Ensure the new release notes file follows the format of previous notes, highlights user-facing changes from the changelog without duplicating its bullets, points to `dev/CHANGELOG.md` for details, and leaves the changelog ready for the next iteration. Write clearly and concisely for GitHub/Git users.
+Ensure the new release notes file follows the format in the example above, highlights user-facing changes from the changelog without duplicating its bullets, points to `dev/CHANGELOG.md` for details, and leaves the changelog ready for the next iteration. Copy the two Documentation links from that example. Do not copy Documentation links from older release notes. Write clearly and concisely for GitHub/Git users.

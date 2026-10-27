@@ -34,7 +34,7 @@ The installer detects the system, downloads the matching executable, checks `SHA
 
 The binaries are not notarized or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning. The macOS installer clears the quarantine flag after the checksum matches.
 
-Each release also attaches `SHA256SUMS.txt`, `install.sh`, `install.ps1`, and `ai-i18n-tools-python-examples.zip` (the four Python examples). The npm tarball and the executable do not contain those examples. They stay in the repository as well.
+Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). `install.sh` and `install.ps1` stay in the repository root, and the commands above download them from there. The npm tarball and the executable do not contain the Python examples. Those examples stay in the repository as well.
 
 <details>
 <summary>Manual instructions to install <code>ai-i18n-tools</code> executable</summary>

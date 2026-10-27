@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: release binaries — the publish job uploads `ai-i18n-tools-*` once, which covers the platform binaries and `ai-i18n-tools-python-examples.zip`, plus `SHA256SUMS.txt`. `install.sh` and `install.ps1` stay in the repository and are not release assets. The installation guide matches that.
+
 ## [1.11.0] - 2026-10-27
 
 - **Fixed**: docs translation — source-literal emphasis tokens (`{{SE}}`, `{{SU}}`, `{{IT}}`, `{{IU}}`, `{{ST}}`) are quarantined before CJK/RTL emphasis masking, so a documented `<code v-pre>{{SE}}</code>` survives restore. Cache replay and the Vue brace escape then both keep that spelling.
@@ -29,7 +31,7 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 - **Changed**: docs - the combining-pipelines guide points at this repository's UI strings and VitePress config as a worked example.
 - **Changed**: docs - the provider card on the landing page includes the OpenRouter logo.
 - **Changed**: docs - the JavaScript/TypeScript and Python cards on the landing page include a CLI icon.
-- **Added**: install — `install.sh` and `install.ps1` download the standalone executable for Linux, macOS, or Windows, verify `SHA256SUMS.txt`, install the command as `ai-i18n-tools`, and add the install directory to `PATH`. GitHub Releases also attach both scripts.
+- **Added**: install — `install.sh` and `install.ps1` download the standalone executable for Linux, macOS, or Windows, verify `SHA256SUMS.txt`, install the command as `ai-i18n-tools`, and add the install directory to `PATH`.
 - **Changed**: docs — standalone executable install leads with `curl | bash` and `irm | iex`. Manual download steps stay in a collapsed block and rename the file to `ai-i18n-tools`.
 - **Changed**: docs - the landing page "Already have i18n?" section is a card row, with Intlayer translate-in-place and migration links on their own card.
 - **Changed**: docs - landing-page cards now show brand logos and feature icons.
