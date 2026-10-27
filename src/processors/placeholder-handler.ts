@@ -21,11 +21,37 @@ import type { ExpressionProtectionOptions } from "./expression-attribute-protect
 import { protectMarkdownUrls, restoreMarkdownUrls } from "./url-placeholders.js";
 
 /**
+ * Emphasis spellings that already exist in the source (for example a documented
+ * `<code v-pre>{{SE}}</code>`). HTML masking leaves the token in the segment, and
+ * {@link restoreMarkdownEmphasis} would turn it into `**` on CJK/RTL. Quarantine
+ * them before emphasis masking and put them back immediately after that restore.
+ */
+const LITERAL_EMPHASIS_KINDS = ["SE", "SU", "IT", "IU", "ST"] as const;
+
+function quarantineLiteralEmphasisTokens(text: string): string {
+  let out = text;
+  for (const kind of LITERAL_EMPHASIS_KINDS) {
+    out = out.split(`{{${kind}}}`).join(`{{LIT_${kind}}}`);
+  }
+  return out;
+}
+
+function restoreLiteralEmphasisTokens(text: string): string {
+  let out = text;
+  for (const kind of LITERAL_EMPHASIS_KINDS) {
+    out = out.split(`{{LIT_${kind}}}`).join(`{{${kind}}}`);
+  }
+  return out;
+}
+
+/**
  * Chains placeholder protection for document translation:
  * fenced code blocks → heading-id suffixes (peeled, not sent) → html tags/comments →
  * admonitions → doc anchors → MDX (comments/JSX/expressions) → markdown URLs →
- * **`inline`** (whole span) → remaining `` `code` `` → emphasis (optional). Restore is the
- * inverse order; fenced code is restored last so a sample cannot absorb a heading-id suffix.
+ * **`inline`** (whole span) → remaining `` `code` `` → quarantine source-literal
+ * emphasis tokens → emphasis (optional). Restore is the inverse order; fenced code
+ * is restored last so a sample cannot absorb a heading-id suffix. Literal emphasis
+ * tokens are mapped back right after emphasis restore, before HTML tags return.
  */
 export class PlaceholderHandler {
   protectForTranslation(
@@ -61,7 +87,10 @@ export class PlaceholderHandler {
     const urls = protectMarkdownUrls(mdx.protected);
     const boldCode = protectBoldWrappedInlineCode(urls.protected);
     const ilc = protectInlineCodeSpans(boldCode.protected);
-    const body = emphasisOn ? protectMarkdownEmphasis(ilc.protected).protected : ilc.protected;
+    const emphasisInput = emphasisOn
+      ? quarantineLiteralEmphasisTokens(ilc.protected)
+      : ilc.protected;
+    const body = emphasisOn ? protectMarkdownEmphasis(emphasisInput).protected : emphasisInput;
     return {
       text: body,
       htmlTagMap: htmlTags.htmlTagMap,
@@ -113,7 +142,7 @@ export class PlaceholderHandler {
     let s =
       state.emphasisProtected === false
         ? applyEmphasisCloserSpacing(text)
-        : restoreMarkdownEmphasis(text);
+        : restoreLiteralEmphasisTokens(restoreMarkdownEmphasis(text));
     s = restoreInlineCodeSpans(s, state.ilcMap);
     s = restoreBoldWrappedInlineCode(s, state.boldCodeMap);
     s = restoreMarkdownUrls(s, state.urlMap);

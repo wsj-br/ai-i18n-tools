@@ -194,7 +194,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 8. **行內程式碼範圍** (`` `code` ``) 和**粗體包覆的行內程式碼** (`**`code`**`) - 保留。
 9. **Markdown 強調** (選用，為 CJK/RTL 語系自動啟用) - 強調分隔符會被遮罩。
 
-模型傳回後，`translate-docs` 會還原對應表並驗證區段：必須存在相同的雙大括號權杖多重集，結構性權杖 (<code v-pre>{{HTM_N}}</code>、告誡標記、<code v-pre>{{CDF_N}}</code>) 必須保持其有序的子序列 (內容權杖例如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / `**` 可隨字序移動)，還原的 HTML 標籤種類必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼都必須已存在於來源中 (因此自創的權杖會失敗)。文件提示也會要求模型將每個權杖複製一次、保持結構性權杖的順序，且不要自創新的雙大括號包裝器；機械式檢查仍具權威性。
+模型傳回後，`translate-docs` 會還原對應表並驗證區段：必須存在相同的雙大括號權杖多重集，結構性權杖 (<code v-pre>{{HTM_N}}</code>、告誡標記、<code v-pre>{{CDF_N}}</code>) 必須保持其有序的子序列 (內容權杖例如 <code v-pre>{{ILC_N}}</code> / <code v-pre>{{URL_N}}</code> / <code v-pre>{{SE}}</code> 可隨字序移動)，還原的 HTML 標籤種類必須與未受保護的來源相符，且任何剩餘的雙大括號識別碼都必須已存在於來源中 (因此自創的權杖會失敗)。文件提示也會要求模型將每個權杖複製一次、保持結構性權杖的順序，且不要自創新的雙大括號包裝器；機械式檢查仍具權威性。
 
 Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-attribute-protection.ts` 中實現，並由 `docs[].protectAttributes` 和 `docs[].protectKeys` 按區塊驅動（請參閱 [protectAttributes / protectKeys](/zh-Hant/reference/configuration#protectattributes-protectkeys)）。
 

@@ -1,6 +1,18 @@
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 import { PlaceholderHandler } from "../../src/processors/placeholder-handler.js";
 import { protectDocAnchors, restoreDocAnchors } from "../../src/processors/anchor-placeholders.js";
+import {
+  collectPostRestorePlaceholderErrors,
+  collectPreRestorePlaceholderErrors,
+} from "../../src/processors/placeholder-integrity.js";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const vueBracesUrl = pathToFileURL(
+  path.join(repoRoot, "scripts", "vue-braces-for-markdown.mjs")
+).href;
+const { escapeVueBracesInMarkdown } = await import(vueBracesUrl);
 
 describe("PlaceholderHandler", () => {
   it("skips emphasis masking when emphasis is false", () => {
@@ -184,6 +196,41 @@ describe("PlaceholderHandler", () => {
         ilcMap: [],
       })
     ).toBe("Hello");
+  });
+
+  it("keeps a documented {{SE}} token when emphasis masking is on", () => {
+    const h = new PlaceholderHandler();
+    const src = "Use **bold** and markers like <code v-pre>{{SE}}</code> here.";
+    const st = h.protectForTranslation(src, { emphasis: true });
+    expect(st.emphasisProtected).toBe(true);
+    expect(st.text).toContain("{{LIT_SE}}");
+    expect(st.text).toContain("{{SE}}bold{{SE}}");
+    expect(st.text).not.toContain(">{{SE}}<");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
+
+    const literal = st.text.match(/\{\{HTM_\d+\}\}\{\{LIT_SE\}\}\{\{HTM_\d+\}\}/)?.[0];
+    expect(literal).toBeDefined();
+    const swapped = `Markers ${literal} and use {{SE}}bold{{SE}}.`;
+    expect(collectPreRestorePlaceholderErrors(st, swapped)).toEqual([]);
+
+    const restored = h.restoreAfterTranslation(swapped, st);
+    expect(restored).toBe("Markers <code v-pre>{{SE}}</code> and use **bold**.");
+    expect(restored).not.toContain("{{LIT_SE}}");
+    expect(collectPostRestorePlaceholderErrors(src, restored)).toEqual([]);
+
+    const once = escapeVueBracesInMarkdown(restored);
+    expect(once).toContain("<code v-pre>{{SE}}</code>");
+    expect(once).not.toContain("<code v-pre>**</code>");
+    expect(escapeVueBracesInMarkdown(once)).toBe(once);
+  });
+
+  it("does not quarantine a documented {{SE}} when emphasis masking is off", () => {
+    const h = new PlaceholderHandler();
+    const src = "Markers like <code v-pre>{{SE}}</code> stay literal.";
+    const st = h.protectForTranslation(src, { emphasis: false });
+    expect(st.text).toContain("{{SE}}");
+    expect(st.text).not.toContain("{{LIT_SE}}");
+    expect(h.restoreAfterTranslation(st.text, st)).toBe(src);
   });
 
   it("keeps legacy `{#id}` heading id as `{{HDG_N}}` even when MDX brace protection runs after it", () => {
