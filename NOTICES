@@ -54,7 +54,7 @@ THE SOFTWARE.
 
 ---
 
-@ai-sdk/gateway 4.0.121
+@ai-sdk/gateway 4.0.126
 Apache-2.0
 Copyright 2023 Vercel, Inc.
 
@@ -72,7 +72,7 @@ limitations under the License.
 
 ---
 
-@ai-sdk/openai-compatible 3.0.75
+@ai-sdk/openai-compatible 3.0.78
 Apache-2.0
 Copyright 2023 Vercel, Inc.
 
@@ -90,7 +90,7 @@ limitations under the License.
 
 ---
 
-@ai-sdk/provider-utils 5.0.65
+@ai-sdk/provider-utils 5.0.68
 Apache-2.0
 Apache License
 Version 2.0, January 2004
@@ -168,7 +168,7 @@ limitations under the License.
 
 ---
 
-@ai-sdk/provider 4.0.31
+@ai-sdk/provider 4.0.34
 Apache-2.0
 Copyright 2023 Vercel, Inc.
 
@@ -186,7 +186,7 @@ limitations under the License.
 
 ---
 
-@algolia/abtesting 1.25.0
+@algolia/abtesting 1.26.0
 MIT
 MIT License
 
@@ -368,7 +368,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-abtesting 5.59.0
+@algolia/client-abtesting 5.60.0
 MIT
 MIT License
 
@@ -394,7 +394,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-analytics 5.59.0
+@algolia/client-analytics 5.60.0
 MIT
 MIT License
 
@@ -420,7 +420,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-common 5.59.0
+@algolia/client-common 5.60.0
 MIT
 MIT License
 
@@ -446,7 +446,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-insights 5.59.0
+@algolia/client-insights 5.60.0
 MIT
 MIT License
 
@@ -472,7 +472,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-personalization 5.59.0
+@algolia/client-personalization 5.60.0
 MIT
 MIT License
 
@@ -498,7 +498,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-query-suggestions 5.59.0
+@algolia/client-query-suggestions 5.60.0
 MIT
 MIT License
 
@@ -524,7 +524,7 @@ SOFTWARE.
 
 ---
 
-@algolia/client-search 5.59.0
+@algolia/client-search 5.60.0
 MIT
 MIT License
 
@@ -577,7 +577,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@algolia/ingestion 1.59.0
+@algolia/ingestion 1.60.0
 MIT
 MIT License
 
@@ -603,7 +603,7 @@ SOFTWARE.
 
 ---
 
-@algolia/monitoring 1.59.0
+@algolia/monitoring 1.60.0
 MIT
 MIT License
 
@@ -629,7 +629,7 @@ SOFTWARE.
 
 ---
 
-@algolia/recommend 5.59.0
+@algolia/recommend 5.60.0
 MIT
 MIT License
 
@@ -655,7 +655,7 @@ SOFTWARE.
 
 ---
 
-@algolia/requester-browser-xhr 5.59.0
+@algolia/requester-browser-xhr 5.60.0
 MIT
 MIT License
 
@@ -681,7 +681,7 @@ SOFTWARE.
 
 ---
 
-@algolia/requester-fetch 5.59.0
+@algolia/requester-fetch 5.60.0
 MIT
 MIT License
 
@@ -707,7 +707,7 @@ SOFTWARE.
 
 ---
 
-@algolia/requester-node-http 5.59.0
+@algolia/requester-node-http 5.60.0
 MIT
 MIT License
 
@@ -733,7 +733,7 @@ SOFTWARE.
 
 ---
 
-@astrojs/compiler-binding-linux-x64-gnu 0.5.1
+@astrojs/compiler-binding-linux-x64-gnu 0.5.2
 MIT
 MIT License
 
@@ -759,7 +759,7 @@ SOFTWARE.
 
 ---
 
-@astrojs/compiler-binding 0.5.1
+@astrojs/compiler-binding 0.5.2
 MIT
 MIT License
 
@@ -785,7 +785,7 @@ SOFTWARE.
 
 ---
 
-@astrojs/compiler-rs 0.5.1
+@astrojs/compiler-rs 0.5.2
 MIT
 MIT License
 
@@ -808,138 +808,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-@astrojs/internal-helpers 0.11.0
-MIT
-MIT License
-
-Copyright (c) 2021 Fred K. Schott
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/sveltejs/kit repository:
-
-Copyright (c) 2020 [these people](https://github.com/sveltejs/kit/graphs/contributors)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/vitejs/vite repository:
-
-MIT License
-
-Copyright (c) 2019-present, Yuxi (Evan) You and Vite contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
 
 ---
 
 @astrojs/internal-helpers 0.13.0
-MIT
-MIT License
-
-Copyright (c) 2021 Fred K. Schott
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/sveltejs/kit repository:
-
-Copyright (c) 2020 [these people](https://github.com/sveltejs/kit/graphs/contributors)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/vitejs/vite repository:
-
-MIT License
-
-Copyright (c) 2019-present, Yuxi (Evan) You and Vite contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
----
-
-@astrojs/markdown-satteri 0.4.2
 MIT
 MIT License
 
@@ -1067,71 +939,7 @@ SOFTWARE.
 
 ---
 
-@astrojs/mdx 8.0.2
-MIT
-MIT License
-
-Copyright (c) 2021 Fred K. Schott
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/sveltejs/kit repository:
-
-Copyright (c) 2020 [these people](https://github.com/sveltejs/kit/graphs/contributors)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-"""
-
-"""
-This license applies to parts of the `packages/create-astro` and `packages/astro` subdirectories originating from the https://github.com/vitejs/vite repository:
-
-MIT License
-
-Copyright (c) 2019-present, Yuxi (Evan) You and Vite contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
----
-
-@astrojs/prism 4.0.2
+@astrojs/mdx 8.1.1
 MIT
 MIT License
 
@@ -1323,7 +1131,7 @@ SOFTWARE.
 
 ---
 
-@astrojs/starlight 0.42.6
+@astrojs/starlight 0.42.7
 MIT
 MIT License
 
@@ -1602,7 +1410,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/helper-create-regexp-features-plugin 7.29.7
+@babel/helper-create-regexp-features-plugin 7.29.10
 MIT
 MIT License
 
@@ -1899,7 +1707,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/helper-string-parser 7.29.7
+@babel/helper-string-parser 7.29.11
 MIT
 MIT License
 
@@ -1926,7 +1734,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/helper-string-parser 8.0.6
+@babel/helper-string-parser 8.0.8
 MIT
 MIT License
 
@@ -2061,7 +1869,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/helpers 7.29.7
+@babel/helpers 7.29.10
 MIT
 MIT License
 
@@ -2089,7 +1897,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/parser 7.29.9
+@babel/parser 7.29.11
 MIT
 Copyright (C) 2012-2014 by various contributors (see AUTHORS)
 
@@ -2113,7 +1921,7 @@ THE SOFTWARE.
 
 ---
 
-@babel/parser 8.0.7
+@babel/parser 8.0.8
 MIT
 Copyright (C) 2012-2014 by various contributors (see AUTHORS)
 
@@ -2596,7 +2404,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/plugin-transform-block-scoping 7.29.7
+@babel/plugin-transform-block-scoping 7.29.11
 MIT
 MIT License
 
@@ -2677,7 +2485,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/plugin-transform-classes 7.29.7
+@babel/plugin-transform-classes 7.29.11
 MIT
 MIT License
 
@@ -3812,7 +3620,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/plugin-transform-spread 7.29.8
+@babel/plugin-transform-spread 7.29.11
 MIT
 MIT License
 
@@ -4162,7 +3970,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/runtime 7.29.7
+@babel/runtime 7.29.10
 MIT
 MIT License
 
@@ -4216,7 +4024,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/traverse 7.29.8
+@babel/traverse 7.29.10
 MIT
 MIT License
 
@@ -4243,7 +4051,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/types 7.29.8
+@babel/types 7.29.11
 MIT
 MIT License
 
@@ -4270,7 +4078,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-@babel/types 8.0.6
+@babel/types 8.0.8
 MIT
 MIT License
 
@@ -5609,7 +5417,7 @@ SOFTWARE.
 
 ---
 
-@docsearch/core 4.7.0
+@docsearch/core 4.7.1
 MIT
 MIT License
 
@@ -5635,7 +5443,7 @@ SOFTWARE.
 
 ---
 
-@docsearch/css 4.7.0
+@docsearch/css 4.7.1
 MIT
 MIT License
 
@@ -5661,7 +5469,7 @@ SOFTWARE.
 
 ---
 
-@docsearch/react 4.7.0
+@docsearch/react 4.7.1
 MIT
 MIT License
 
@@ -6387,7 +6195,7 @@ SOFTWARE.
 
 ---
 
-@expressive-code/core 0.44.2
+@expressive-code/core 0.44.3
 MIT
 MIT License
 
@@ -6413,7 +6221,7 @@ SOFTWARE.
 
 ---
 
-@expressive-code/plugin-frames 0.44.2
+@expressive-code/plugin-frames 0.44.3
 MIT
 MIT License
 
@@ -6439,7 +6247,7 @@ SOFTWARE.
 
 ---
 
-@expressive-code/plugin-shiki 0.44.2
+@expressive-code/plugin-shiki 0.44.3
 MIT
 MIT License
 
@@ -6465,7 +6273,7 @@ SOFTWARE.
 
 ---
 
-@expressive-code/plugin-text-markers 0.44.2
+@expressive-code/plugin-text-markers 0.44.3
 MIT
 MIT License
 
@@ -11407,7 +11215,7 @@ THE SOFTWARE.
 
 ---
 
-@next/env 16.4.2
+@next/env 16.4.3
 MIT
 MIT License
 
@@ -11433,7 +11241,7 @@ SOFTWARE.
 
 ---
 
-@next/swc-linux-x64-gnu 16.4.2
+@next/swc-linux-x64-gnu 16.4.3
 MIT
 MIT License
 
@@ -11587,7 +11395,7 @@ SOFTWARE.
 
 ---
 
-@oxc-project/types 0.154.0
+@oxc-project/types 0.155.0
 MIT
 MIT License
 
@@ -11666,7 +11474,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-cms 2.10.0
+@peculiar/asn1-cms 2.11.0
 MIT
 MIT License
 
@@ -11692,7 +11500,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-csr 2.10.0
+@peculiar/asn1-csr 2.11.0
 MIT
 MIT License
 
@@ -11718,7 +11526,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-ecc 2.10.0
+@peculiar/asn1-ecc 2.11.0
 MIT
 MIT License
 
@@ -11744,7 +11552,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-pfx 2.10.0
+@peculiar/asn1-pfx 2.11.0
 MIT
 MIT License
 
@@ -11770,7 +11578,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-pkcs8 2.10.0
+@peculiar/asn1-pkcs8 2.11.0
 MIT
 MIT License
 
@@ -11796,7 +11604,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-pkcs9 2.10.0
+@peculiar/asn1-pkcs9 2.11.0
 MIT
 MIT License
 
@@ -11822,7 +11630,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-rsa 2.10.0
+@peculiar/asn1-rsa 2.11.0
 MIT
 MIT License
 
@@ -11848,7 +11656,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-schema 2.10.0
+@peculiar/asn1-schema 2.11.0
 MIT
 MIT License
 
@@ -11874,7 +11682,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-x509-attr 2.10.0
+@peculiar/asn1-x509-attr 2.11.0
 MIT
 MIT License
 
@@ -11900,7 +11708,7 @@ SOFTWARE.
 
 ---
 
-@peculiar/asn1-x509 2.10.0
+@peculiar/asn1-x509 2.11.0
 MIT
 MIT License
 
@@ -12066,7 +11874,7 @@ SOFTWARE.
 
 ---
 
-@rolldown/binding-linux-x64-gnu 1.2.14
+@rolldown/binding-linux-x64-gnu 1.2.15
 MIT
 MIT License
 
@@ -12305,7 +12113,7 @@ SOFTWARE.
 
 ---
 
-@shikijs/vscode-textmate 10.0.2
+@shikijs/vscode-textmate 10.1.0
 MIT
 The MIT License (MIT)
 
@@ -13804,7 +13612,7 @@ MIT
 
 ---
 
-@types/node 24.19.1
+@types/node 24.19.2
 MIT
     MIT License
 
@@ -15640,7 +15448,7 @@ THE SOFTWARE.
 
 ---
 
-acorn 8.18.0
+acorn 8.19.0
 MIT
 MIT License
 
@@ -15707,7 +15515,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-ai 7.0.148
+ai 7.0.153
 Apache-2.0
 Copyright 2023 Vercel, Inc.
 
@@ -15881,7 +15689,7 @@ SOFTWARE.
 
 ---
 
-algoliasearch 5.59.0
+algoliasearch 5.60.0
 MIT
 MIT License
 
@@ -16538,6 +16346,58 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ---
 
+argparse 3.0.4
+PSF-2.0
+PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+
+1. This LICENSE AGREEMENT is between the Python Software Foundation
+("PSF"), and the Individual or Organization ("Licensee") accessing and
+otherwise using this software ("Python") in source or binary form and
+its associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, PSF hereby
+grants Licensee a nonexclusive, royalty-free, world-wide license to reproduce,
+analyze, test, perform and/or display publicly, prepare derivative works,
+distribute, and otherwise use Python alone or in any derivative version,
+provided, however, that PSF's License Agreement and PSF's notice of copyright,
+i.e., "Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Python Software Foundation;
+All Rights Reserved" are retained in Python alone or in any derivative version
+prepared by Licensee.
+
+3. In the event Licensee prepares a derivative work that is based on
+or incorporates Python or any part thereof, and wants to make
+the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to Python.
+
+4. PSF is making Python available to Licensee on an "AS IS"
+basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, PSF MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF PYTHON WILL NOT
+INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. PSF SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF PYTHON
+FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS
+A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON,
+OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. Nothing in this License Agreement shall be deemed to create any
+relationship of agency, partnership, or joint venture between PSF and
+Licensee.  This License Agreement does not grant permission to use PSF
+trademarks or trade name in a trademark sense to endorse or promote
+products or services of Licensee, or any third party.
+
+8. By copying, installing or otherwise using Python, Licensee
+agrees to be bound by the terms and conditions of this License
+Agreement.
+
+---
+
 aria-query 5.3.2
 Apache-2.0
 Apache License
@@ -16758,7 +16618,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-asn1js 3.0.10
+asn1js 3.1.0
 BSD-3-Clause
 Copyright (c) 2014, GMO GlobalSign
 Copyright (c) 2015-2022, Peculiar Ventures
@@ -16817,7 +16677,7 @@ THE SOFTWARE.
 
 ---
 
-astro-expressive-code 0.44.2
+astro-expressive-code 0.44.3
 MIT
 MIT License
 
@@ -17818,7 +17678,7 @@ THE SOFTWARE.
 
 ---
 
-baseline-browser-mapping 2.11.30
+baseline-browser-mapping 2.11.33
 Apache-2.0
                                  Apache License
                            Version 2.0, January 2004
@@ -18078,7 +17938,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-bcp-47 2.1.1
+bcp-47 2.1.2
 MIT
 (The MIT License)
 
@@ -18165,7 +18025,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-body-parser 2.3.0
+body-parser 2.4.0
 MIT
 (The MIT License)
 
@@ -18349,7 +18209,7 @@ THE SOFTWARE.
 
 ---
 
-browserslist 4.29.3
+browserslist 4.29.4
 MIT
 The MIT License (MIT)
 
@@ -18754,7 +18614,7 @@ SOFTWARE.
 
 ---
 
-caniuse-lite 1.0.30001818
+caniuse-lite 1.0.30001819
 CC-BY-4.0
 Attribution 4.0 International
 
@@ -20388,38 +20248,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-content-disposition 1.1.0
+content-disposition 2.0.1
 MIT
 (The MIT License)
 
 Copyright (c) 2014-2017 Douglas Christopher Wilson
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-content-type 1.0.5
-MIT
-(The MIT License)
-
-Copyright (c) 2015 Douglas Christopher Wilson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -20652,7 +20485,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-core-js-compat 3.50.0
+core-js-compat 3.51.0
 MIT
 Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru)
 Copyright (c) 2025–2026 CoreJS Company (core-js.io)
@@ -20677,7 +20510,7 @@ THE SOFTWARE.
 
 ---
 
-core-js 3.50.0
+core-js 3.51.0
 MIT
 Copyright (c) 2013–2025 Denis Pushkarev (zloirock.ru)
 Copyright (c) 2025–2026 CoreJS Company (core-js.io)
@@ -22551,7 +22384,7 @@ THE SOFTWARE.
 
 ---
 
-electron-to-chromium 1.5.443
+electron-to-chromium 1.5.464
 ISC
 Copyright 2018 Kilian Valkhof
 
@@ -23761,7 +23594,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-express 5.2.1
+express 5.3.0
 MIT
 (The MIT License)
 
@@ -23790,7 +23623,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-expressive-code 0.44.2
+expressive-code 0.44.3
 MIT
 MIT License
 
@@ -24025,7 +23858,7 @@ DEALINGS IN THE SOFTWARE.
 
 ---
 
-fast-uri 3.1.8
+fast-uri 3.1.9
 BSD-3-Clause
 Copyright (c) 2011-2021, Gary Court until https://github.com/garycourt/uri-js/commit/a1acf730b4bba3f1097c9f52e7d9d3aba8cdcaae
 Copyright (c) 2021-present The Fastify team <https://github.com/fastify/fastify#team>
@@ -24893,7 +24726,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ---
 
-glob-stream 8.0.3
+glob-stream 8.0.4
 MIT
 The MIT License (MIT)
 
@@ -26415,7 +26248,7 @@ of nodejs/io.js:
 
 ---
 
-http-proxy-middleware 3.0.7
+http-proxy-middleware 3.0.10
 MIT
 The MIT License (MIT)
 
@@ -26765,7 +26598,7 @@ SOFTWARE.
 
 ---
 
-i18next 26.5.5
+i18next 26.5.11
 MIT
 The MIT License (MIT)
 
@@ -26894,7 +26727,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-ignore 7.0.13
+ignore 7.0.14
 MIT
 Copyright (c) 2013 Kael Zhang <i@kael.me>, contributors
 http://kael.me/
@@ -28238,7 +28071,7 @@ THE SOFTWARE.
 
 ---
 
-js-yaml 5.4.2
+js-yaml 5.5.0
 MIT
 (The MIT License)
 
@@ -29600,7 +29433,7 @@ defined by the Mozilla Public License, v. 2.0.
 
 ---
 
-lilconfig 3.1.3
+lilconfig 3.1.4
 MIT
 MIT License
 
@@ -30177,7 +30010,7 @@ SOFTWARE.
 
 ---
 
-mdast-util-directive 3.1.0
+mdast-util-directive 3.1.1
 MIT
 (The MIT License)
 
@@ -30204,34 +30037,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-mdast-util-find-and-replace 3.0.2
-MIT
-(The MIT License)
-
-Copyright (c) Titus Wormer <tituswormer@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-mdast-util-from-markdown 2.0.3
+mdast-util-find-and-replace 3.0.4
 MIT
 (The MIT License)
 
@@ -30637,7 +30443,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-mdast-util-to-markdown 2.1.3
+mdast-util-to-markdown 2.2.0
 MIT
 (The MIT License)
 
@@ -32893,7 +32699,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-minimizer-webpack-plugin 5.12.0
+minimizer-webpack-plugin 5.13.1
 MIT
 Copyright JS Foundation and other contributors
 
@@ -33019,31 +32825,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
----
-
-nanoid 3.3.19
-MIT
-The MIT License (MIT)
-
-Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
@@ -33185,7 +32966,7 @@ SOFTWARE.
 
 ---
 
-next 16.4.2
+next 16.4.3
 MIT
 The MIT License (MIT)
 
@@ -33436,7 +33217,7 @@ SOFTWARE.
 
 ---
 
-node-releases 2.0.57
+node-releases 2.0.60
 MIT
 The MIT License
 
@@ -33790,7 +33571,7 @@ SOFTWARE.
 
 ---
 
-on-finished 2.4.1
+on-finished 2.4.2
 MIT
 (The MIT License)
 
@@ -34771,7 +34552,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-pkijs 3.4.1
+pkijs 3.4.3
 BSD-3-Clause
 Copyright (c) 2014, GlobalSign
 Copyright (c) 2015-2019, Peculiar Ventures
@@ -35698,7 +35479,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ---
 
-postcss-nested 6.2.0
+postcss-nested 7.0.2
 MIT
 The MIT License (MIT)
 
@@ -36276,7 +36057,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-postcss-selector-parser 7.1.6
+postcss-selector-parser 7.1.7
 MIT
 Copyright (c) Ben Briggs <beneb.info@gmail.com> (http://beneb.info)
 
@@ -36437,31 +36218,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 ---
 
 postcss 8.5.23
-MIT
-The MIT License (MIT)
-
-Copyright 2013 Andrey Sitnik <andrey@sitnik.es>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-postcss 8.5.28
 MIT
 The MIT License (MIT)
 
@@ -36884,7 +36640,7 @@ SOFTWARE.
 
 ---
 
-qs 6.16.0
+qs 6.16.1
 BSD-3-Clause
 BSD 3-Clause License
 
@@ -37139,7 +36895,7 @@ SOFTWARE.
 
 ---
 
-react-i18next 17.1.1
+react-i18next 17.1.9
 MIT
 The MIT License (MIT)
 
@@ -37694,7 +37450,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-regenerate 1.4.2
+regenerate 1.5.0
 MIT
 Copyright Mathias Bynens <https://mathiasbynens.be/>
 
@@ -37797,7 +37553,7 @@ SOFTWARE.
 
 ---
 
-regexpu-core 6.5.2
+regexpu-core 6.5.3
 MIT
 Copyright Mathias Bynens <https://mathiasbynens.be/>
 
@@ -37889,7 +37645,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-regjsparser 0.13.3
+regjsparser 0.13.4
 BSD-2-Clause
 Copyright (c) Julian Viereck and Contributors, All Rights Reserved.
 
@@ -37915,7 +37671,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
-rehype-expressive-code 0.44.2
+rehype-expressive-code 0.44.3
 MIT
 MIT License
 
@@ -38537,7 +38293,7 @@ SOFTWARE.
 
 ---
 
-resolve 1.22.12
+resolve 1.22.13
 MIT
 MIT License
 
@@ -38657,7 +38413,7 @@ SOFTWARE.
 
 ---
 
-rolldown 1.2.14
+rolldown 1.2.15
 MIT
 MIT License
 
@@ -39202,7 +38958,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-schema-utils 4.5.0
+schema-utils 4.8.1
 MIT
 Copyright JS Foundation and other contributors
 
@@ -39413,7 +39169,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-serialize-javascript 7.1.2
+serialize-javascript 7.1.4
 BSD-3-Clause
 Copyright 2014 Yahoo! Inc.
 All rights reserved.
@@ -39851,7 +39607,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ---
 
-shell-quote 1.11.0
+shell-quote 1.12.0
 MIT
 The MIT License
 
@@ -40177,35 +39933,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
----
-
-smol-toml 1.9.0
-BSD-3-Clause
-Copyright (c) Squirrel Chat et al., All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. Neither the name of the copyright holder nor the names of its contributors
-   may be used to endorse or promote products derived from this software without
-   specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---
 
@@ -42585,7 +42312,7 @@ SOFTWARE.
 
 ---
 
-undici 7.30.0
+undici 7.30.1
 MIT
 MIT License
 
@@ -42963,11 +42690,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-unist-util-visit-parents 6.0.2
+unist-util-visit-parents 6.1.0
 MIT
 (The MIT License)
 
-Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com>
+Copyright (c) Titus Wormer <tituswormer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -42990,11 +42717,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-unist-util-visit 5.1.0
+unist-util-visit 5.2.0
 MIT
 (The MIT License)
 
-Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
+Copyright (c) Titus Wormer <tituswormer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -43069,7 +42796,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-unstorage 1.17.5
+unstorage 1.17.6
 MIT
 MIT License
 
@@ -43095,7 +42822,7 @@ SOFTWARE.
 
 ---
 
-update-browserslist-db 1.3.3
+update-browserslist-db 1.3.4
 MIT
 The MIT License (MIT)
 
@@ -43295,7 +43022,7 @@ SOFTWARE.
 
 ---
 
-uuid 14.0.2
+uuid 14.0.3
 MIT
 The MIT License (MIT)
 
@@ -45713,7 +45440,7 @@ SOFTWARE.
 
 ---
 
-watchpack 2.5.2
+watchpack 2.6.3
 MIT
 Copyright JS Foundation and other contributors
 
@@ -45841,7 +45568,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-webpack-dev-server 5.2.6
+webpack-dev-server 5.2.7
 MIT
 Copyright JS Foundation and other contributors
 
@@ -45942,7 +45669,7 @@ SOFTWARE.
 
 ---
 
-webpack 5.111.1
+webpack 5.112.2
 MIT
 Copyright JS Foundation and other contributors
 

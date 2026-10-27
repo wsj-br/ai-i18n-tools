@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-10-27
+
 - **Fixed**: docs translation — source-literal emphasis tokens (`{{SE}}`, `{{SU}}`, `{{IT}}`, `{{IU}}`, `{{ST}}`) are quarantined before CJK/RTL emphasis masking, so a documented `<code v-pre>{{SE}}</code>` survives restore. Cache replay and the Vue brace escape then both keep that spelling.
 - **Changed**: docs — VitePress `chunkSizeWarningLimit` is 1000 so the Japanese and Korean local-search indexes (about 870 kB and 705 kB) no longer warn during `pnpm docs:build`.
 - **Fixed**: examples — `@tailwindcss/node` uses lightningcss 1.33 so Fumadocs `::highlight(fd-search)` rules no longer warn during `next build`. Tailwind 4.3 still pins 1.32, which does not recognize that pseudo-element.
