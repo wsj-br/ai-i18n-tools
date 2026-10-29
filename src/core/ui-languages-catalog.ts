@@ -80,7 +80,10 @@ export function loadUiLanguagesMaster(absPath: string): Map<string, UiLanguageRo
  * script-ambiguous and have no sensible default variant. Callers surface the available variants via
  * {@link bareSubtagVariantCodes}.
  */
-function isLocaleInUiLanguagesMaster(locale: string, master: Map<string, UiLanguageRow>): boolean {
+export function isLocaleInUiLanguagesMaster(
+  locale: string,
+  master: Map<string, UiLanguageRow>
+): boolean {
   return master.has(normalizeManifestLocaleKey(locale));
 }
 

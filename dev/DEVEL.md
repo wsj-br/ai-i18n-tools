@@ -513,7 +513,7 @@ If the repository is renamed or you move to a custom domain, update `base`, `hea
 | Theme/nav strings from `docs/.vitepress/i18n/theme.*.json` | `translated-docs/` flat README translations (linked from the site, stored in the Git repo only) |
 
 
-Consumer integration docs shipped on npm remain only `[docs/ai-i18n-tools-context.md](../docs/ai-i18n-tools-context.md)` — see [What gets published](#what-gets-published) under npm publishing below.
+Consumer integration guidance shipped on npm includes `docs/ai-i18n-tools-context.md` and the complete `skills/ai-i18n-tools/` directory — see [What gets published](#what-gets-published) under npm publishing below.
 
 ---
 
@@ -637,7 +637,7 @@ Inspect what will be included in the tarball:
 pnpm publish --dry-run
 ```
 
-Verify that the output includes `bin/`, `dist/`, `data/`, `docs/ai-i18n-tools-context.md`, `README.md`, and `LICENSE` — and does **not** include `translated-docs/`, the full `docs/` tree, `src/`, `tests/`, or `examples/`.
+Verify that the output includes `bin/`, `dist/`, `data/`, `docs/ai-i18n-tools-context.md`, `skills/ai-i18n-tools/` (including all five references), `README.md`, and `LICENSE` — and does **not** include `translated-docs/`, the full `docs/` tree, `src/`, `tests/`, or `examples/`.
 
 ### What gets published
 

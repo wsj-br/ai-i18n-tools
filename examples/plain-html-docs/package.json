@@ -11,7 +11,7 @@
     "i18n:clean": "rm -rf .translation-cache site/pt-BR"
   },
   "devDependencies": {
-    "ai-i18n-tools": "^1.11.0"
+    "ai-i18n-tools": "^1.12.0"
   },
   "engines": {
     "node": ">=22.16.0"

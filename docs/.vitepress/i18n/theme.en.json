@@ -22,6 +22,7 @@
     "translatingIntlayer": "Translating Intlayer in place",
     "addI18nToJs": "Add i18n to a JS/TS app",
     "addI18nToPython": "Add i18n to a Python app",
+    "addI18nToDjango": "Add i18n to a Django / Python gettext app",
     "glossary": "Glossary",
     "quickStart": "Quick start",
     "toolUiLanguage": "Tool UI language",

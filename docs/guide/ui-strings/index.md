@@ -12,7 +12,7 @@ This pipeline serves JS/TS projects (React, Next.js client and server components
 | --- | --- |
 | JS/TS with hardcoded source strings, no `t()` yet | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` already in the source | [Wire i18next](/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python applications](/guide/ui-strings/python). Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, or `ui-python-django`. Helper: `i18n.py`. To add locales to an existing app, see [Add i18n to a Python app](/guide/add-i18n-to-python). |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python applications](/guide/ui-strings/python). Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, or `ui-python-django`. Helper: `i18n.py`. To add locales to an existing app, see [Add i18n to a Python app](/guide/add-i18n-to-python), or [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) when the app uses gettext. |
 | Plain HTML (no `t()` in markup) | [Plain HTML apps](/guide/ui-strings/plain-html) |
 | Astro marketing site (hybrid) | [Astro website](/guide/ui-strings/astro-website) |
 | `t()` rules, interpolation, plurals | [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals) |

@@ -124,6 +124,7 @@ import { BUILD_TIMESTAMP_ISO, PACKAGE_VERSION } from "../build-info.generated.js
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
+import { runDoctor } from "./doctor.js";
 import { runListModels } from "./list-models.js";
 import { runSuggestModels } from "./suggest-models.js";
 import { runBenchModels } from "./bench-models.js";
@@ -567,6 +568,43 @@ program
   .action(() => {
     console.log(formatVersionOutput());
   });
+
+program
+  .command("doctor")
+  .description(
+    t("Check that configuration, paths, providers, and the environment are ready to translate")
+  )
+  .option("--local", t("Skip the provider catalog and the GitHub release check"), false)
+  .option("--strict", t("Exit with an error when any check warns"), false)
+  .option("--json", t("Print the report as JSON"), false)
+  .action(async (opts: { local?: boolean; strict?: boolean; json?: boolean }, cmd: Command) => {
+    const { configFlag, cwd, providerOverride } = withConfig(cmd);
+    try {
+      const { exitCode } = await runDoctor({
+        configFlag,
+        cwd,
+        providerOverride,
+        local: opts.local === true,
+        strict: opts.strict === true,
+        json: opts.json === true,
+        sea: isRunningInSea(),
+        execPath: process.execPath,
+        argv1: process.argv[1] ?? process.execPath,
+      });
+      process.exitCode = exitCode;
+    } catch (e) {
+      console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+      process.exitCode = 1;
+    }
+  })
+  .addHelpText(
+    "after",
+    `\n${t(`Examples:
+  ai-i18n-tools doctor
+  ai-i18n-tools doctor --local
+  ai-i18n-tools doctor --strict
+  ai-i18n-tools doctor --json`)}\n`
+  );
 
 program
   .command("check-models")

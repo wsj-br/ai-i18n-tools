@@ -14,7 +14,7 @@
     "translate": "ai-i18n-tools translate-intlayer src"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.11.0",
+    "ai-i18n-tools": "^1.12.0",
     "intlayer": "9.7.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

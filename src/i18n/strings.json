@@ -61,7 +61,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3901
+        "line": 3939
       }
     ]
   },
@@ -125,7 +125,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2986
+        "line": 3024
       }
     ]
   },
@@ -158,7 +158,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 765
+        "line": 803
       }
     ]
   },
@@ -387,7 +387,38 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3443
+        "line": 3481
+      }
+    ]
+  },
+  "61778578": {
+    "source": "benchmark-scores.json could not be read",
+    "translated": {
+      "de": "benchmark-scores.json konnte nicht gelesen werden",
+      "fr": "Impossible de lire benchmark-scores.json",
+      "es": "No se ha podido leer benchmark-scores.json",
+      "hi": "benchmark-scores.json पढ़ा नहीं जा सका",
+      "ko": "benchmark-scores.json을(를) 읽을 수 없습니다",
+      "zh-Hans": "无法读取 benchmark-scores.json",
+      "pt-BR": "Não foi possível ler benchmark-scores.json",
+      "ja": "benchmark-scores.json を読み込めませんでした",
+      "zh-Hant": "無法讀取 benchmark-scores.json"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 973
       }
     ]
   },
@@ -451,7 +482,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1003
+        "line": 1041
       }
     ]
   },
@@ -549,8 +580,12 @@
     },
     "locations": [
       {
+        "file": "src/cli/doctor.ts",
+        "line": 499
+      },
+      {
         "file": "src/cli/index.ts",
-        "line": 2848
+        "line": 2886
       }
     ]
   },
@@ -649,7 +684,7 @@
       },
       {
         "file": "src/cli/check-models.ts",
-        "line": 52
+        "line": 88
       },
       {
         "file": "src/cli/list-models.ts",
@@ -694,7 +729,7 @@
       },
       {
         "file": "src/cli/check-models.ts",
-        "line": 38
+        "line": 71
       }
     ]
   },
@@ -962,19 +997,19 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3206
+        "line": 3244
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3269
+        "line": 3307
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3330
+        "line": 3368
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3391
+        "line": 3429
       },
       {
         "file": "src/cli/usage.ts",
@@ -1385,7 +1420,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 103
+        "line": 163
       }
     ]
   },
@@ -1416,7 +1451,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 115
+        "line": 175
       }
     ]
   },
@@ -1449,7 +1484,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 116
+        "line": 176
       }
     ]
   },
@@ -1482,7 +1517,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 125
+        "line": 185
       }
     ]
   },
@@ -1515,7 +1550,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 134
+        "line": 194
       }
     ]
   },
@@ -1548,7 +1583,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 147
+        "line": 207
       }
     ]
   },
@@ -1581,7 +1616,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 148
+        "line": 208
       }
     ]
   },
@@ -1614,7 +1649,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 171
+        "line": 231
       },
       {
         "file": "src/cli/list-models.ts",
@@ -1649,7 +1684,7 @@
     "locations": [
       {
         "file": "src/cli/check-models.ts",
-        "line": 175
+        "line": 235
       },
       {
         "file": "src/cli/list-models.ts",
@@ -3604,6 +3639,2812 @@
       }
     ]
   },
+  "0185155d": {
+    "source": "standalone executable {{path}}",
+    "translated": {
+      "de": "Eigenständige ausführbare Datei {{path}}",
+      "fr": "exécutable autonome {{path}}",
+      "es": "ejecutable independiente {{path}}",
+      "hi": "स्टैंडअलोन एक्ज़ीक्यूटेबल {{path}}",
+      "ko": "독립 실행형 실행 파일 {{path}}",
+      "zh-Hans": "独立可执行文件 {{path}}",
+      "pt-BR": "executável autônomo {{path}}",
+      "ja": "スタンドアロン実行可能ファイル {{path}}",
+      "zh-Hant": "獨立可執行檔 {{path}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 109
+      }
+    ]
+  },
+  "0bcb7385": {
+    "source": "Node.js package {{entry}} (node {{execPath}})",
+    "translated": {
+      "de": "Node.js-Paket {{entry}} (node {{execPath}})",
+      "fr": "paquet Node.js {{entry}} (node {{execPath}})",
+      "es": "paquete de Node.js {{entry}} (node {{execPath}})",
+      "hi": "Node.js पैकेज {{entry}} (node {{execPath}})",
+      "ko": "Node.js 패키지 {{entry}} (node {{execPath}})",
+      "zh-Hans": "Node.js 包 {{entry}} (node {{execPath}})",
+      "pt-BR": "pacote Node.js {{entry}} (node {{execPath}})",
+      "ja": "Node.js パッケージ {{entry}} (node {{execPath}})",
+      "zh-Hant": "Node.js 套件 {{entry}} (node {{execPath}})"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 111
+      }
+    ]
+  },
+  "4d2d2cb6": {
+    "source": "version {{version}}",
+    "translated": {
+      "de": "Version {{version}}",
+      "fr": "version {{version}}",
+      "es": "versión {{version}}",
+      "hi": "संस्करण {{version}}",
+      "ko": "버전 {{version}}",
+      "zh-Hans": "版本 {{version}}",
+      "pt-BR": "versão {{version}}",
+      "ja": "バージョン {{version}}",
+      "zh-Hant": "版本 {{version}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 120
+      }
+    ]
+  },
+  "fa535ffb": {
+    "source": "Config",
+    "translated": {
+      "de": "Konfiguration",
+      "fr": "Configuration",
+      "es": "Configuración",
+      "hi": "कॉन्फ़िग",
+      "ko": "구성",
+      "zh-Hans": "配置",
+      "pt-BR": "Configuração",
+      "ja": "構成",
+      "zh-Hant": "設定"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 281
+      }
+    ]
+  },
+  "52ec7aab": {
+    "source": "Locales",
+    "translated": {
+      "de": "Gebietsschemata",
+      "fr": "Locales",
+      "es": "Idiomas",
+      "hi": "लोकेल",
+      "ko": "로캘",
+      "zh-Hans": "区域设置",
+      "pt-BR": "Localidades",
+      "ja": "ロケール",
+      "zh-Hant": "地區設定"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 282
+      }
+    ]
+  },
+  "414a8ddf": {
+    "source": "Pipelines",
+    "translated": {
+      "de": "Pipelines",
+      "fr": "Pipelines",
+      "es": "Canalizaciones",
+      "hi": "पाइपलाइन",
+      "ko": "파이프라인",
+      "zh-Hans": "管道",
+      "pt-BR": "Pipelines",
+      "ja": "パイプライン",
+      "zh-Hant": "管線"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 283
+      }
+    ]
+  },
+  "ab0cf104": {
+    "source": "Cache",
+    "translated": {
+      "de": "Cache",
+      "fr": "Cache",
+      "es": "Caché",
+      "hi": "कैश",
+      "ko": "캐시",
+      "zh-Hans": "缓存",
+      "pt-BR": "Cache",
+      "ja": "キャッシュ",
+      "zh-Hant": "快取"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 284
+      }
+    ]
+  },
+  "27703c8f": {
+    "source": "Provider",
+    "translated": {
+      "ja": "プロバイダー",
+      "hi": "प्रदाता",
+      "de": "Provider",
+      "es": "Proveedor",
+      "fr": "Fournisseur",
+      "zh-Hans": "提供商",
+      "ko": "제공자",
+      "zh-Hant": "供應商",
+      "pt-BR": "Provedor"
+    },
+    "models": {
+      "ja": "z-ai/glm-5.2",
+      "hi": "qwen/qwen3.7-max",
+      "de": "qwen/qwen3.7-max",
+      "es": "qwen/qwen3.7-max",
+      "fr": "qwen/qwen3.7-max",
+      "zh-Hans": "z-ai/glm-5.2",
+      "ko": "z-ai/glm-5.2",
+      "zh-Hant": "z-ai/glm-5.2",
+      "pt-BR": "qwen/qwen3.7-max"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 285
+      },
+      {
+        "file": "src/cli/usage.ts",
+        "line": 184
+      },
+      {
+        "file": "src/cli/usage.ts",
+        "line": 194
+      },
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 2971
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 769
+      }
+    ]
+  },
+  "0ba29c6a": {
+    "source": "Environment",
+    "translated": {
+      "de": "Umgebung",
+      "fr": "Environnement",
+      "es": "Entorno",
+      "hi": "एनवायरनमेंट",
+      "ko": "환경",
+      "zh-Hans": "环境",
+      "pt-BR": "Ambiente",
+      "ja": "環境",
+      "zh-Hant": "環境"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 286
+      }
+    ]
+  },
+  "38b58ddd": {
+    "source": "Summary: {{passed}} passed, {{warnings}} warnings, {{errors}} errors",
+    "translated": {
+      "de": "Zusammenfassung: {{passed}} bestanden, {{warnings}} Warnungen, {{errors}} Fehler",
+      "fr": "Résumé : {{passed}} réussis, {{warnings}} avertissements, {{errors}} erreurs",
+      "es": "Resumen: {{passed}} correctos, {{warnings}} advertencias, {{errors}} errores",
+      "hi": "सारांश: {{passed}} पास हुए, {{warnings}} चेतावनियाँ, {{errors}} त्रुटियाँ",
+      "ko": "요약: 통과 {{passed}}개, 경고 {{warnings}}개, 오류 {{errors}}개",
+      "zh-Hans": "摘要：{{passed}} 个通过，{{warnings}} 个警告，{{errors}} 个错误",
+      "pt-BR": "Resumo: {{passed}} aprovados, {{warnings}} avisos, {{errors}} erros",
+      "ja": "概要: 合格 {{passed}} 件、警告 {{warnings}} 件、エラー {{errors}} 件",
+      "zh-Hant": "摘要：{{passed}} 個通過、{{warnings}} 個警告、{{errors}} 個錯誤"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 304
+      }
+    ]
+  },
+  "71d0d10d": {
+    "source": "Invalid JSON: {{message}}",
+    "translated": {
+      "de": "Ungültiges JSON: {{message}}",
+      "fr": "JSON non valide : {{message}}",
+      "es": "JSON no válido: {{message}}",
+      "hi": "अमान्य JSON: {{message}}",
+      "ko": "잘못된 JSON: {{message}}",
+      "zh-Hans": "JSON 无效：{{message}}",
+      "pt-BR": "JSON inválido: {{message}}",
+      "ja": "無効な JSON: {{message}}",
+      "zh-Hant": "無效的 JSON：{{message}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 338
+      }
+    ]
+  },
+  "58d740c2": {
+    "source": "JSON syntax",
+    "translated": {
+      "de": "JSON-Syntax",
+      "fr": "Syntaxe JSON",
+      "es": "sintaxis JSON",
+      "hi": "JSON सिंटैक्स",
+      "ko": "JSON 구문",
+      "zh-Hans": "JSON 语法",
+      "pt-BR": "sintaxe JSON",
+      "ja": "JSON 構文",
+      "zh-Hant": "JSON 語法"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 341
+      }
+    ]
+  },
+  "c9550d5f": {
+    "source": "schema",
+    "translated": {
+      "de": "Schema",
+      "fr": "schéma",
+      "es": "esquema",
+      "hi": "स्कीमा",
+      "ko": "스키마",
+      "zh-Hans": "架构",
+      "pt-BR": "esquema",
+      "ja": "スキーマ",
+      "zh-Hant": "結構描述"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 371
+      }
+    ]
+  },
+  "68eacb22": {
+    "source": "business rules",
+    "translated": {
+      "de": "Geschäftsregeln",
+      "fr": "règles métier",
+      "es": "reglas de negocio",
+      "hi": "व्यावसायिक नियम",
+      "ko": "비즈니스 규칙",
+      "zh-Hans": "业务规则",
+      "pt-BR": "regras de negócio",
+      "ja": "ビジネスルール",
+      "zh-Hant": "業務規則"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 383
+      }
+    ]
+  },
+  "d0c2c519": {
+    "source": "GitHub release was not checked",
+    "translated": {
+      "de": "GitHub-Release wurde nicht geprüft",
+      "fr": "La version GitHub n'a pas été vérifiée",
+      "es": "No se ha comprobado la versión de GitHub",
+      "hi": "GitHub रिलीज़ की जाँच नहीं की गई",
+      "ko": "GitHub 릴리스를 확인하지 않았습니다",
+      "zh-Hans": "未检查 GitHub 版本",
+      "pt-BR": "A versão do GitHub não foi verificada",
+      "ja": "GitHub リリースは確認されませんでした",
+      "zh-Hant": "未檢查 GitHub 版本"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 426
+      }
+    ]
+  },
+  "d9b60b11": {
+    "source": "Could not read the latest GitHub release (HTTP {{status}})",
+    "translated": {
+      "de": "Neuestes GitHub-Release konnte nicht gelesen werden (HTTP {{status}})",
+      "fr": "Impossible de lire la dernière version GitHub (HTTP {{status}})",
+      "es": "No se ha podido leer la última versión de GitHub (HTTP {{status}})",
+      "hi": "नवीनतम GitHub रिलीज़ को पढ़ा नहीं जा सका (HTTP {{status}})",
+      "ko": "최신 GitHub 릴리스를 읽을 수 없습니다(HTTP {{status}})",
+      "zh-Hans": "无法读取最新的 GitHub 版本 (HTTP {{status}})",
+      "pt-BR": "Não foi possível ler a última versão do GitHub (HTTP {{status}})",
+      "ja": "最新の GitHub リリースを読み取れませんでした (HTTP {{status}})",
+      "zh-Hant": "無法讀取最新的 GitHub 版本 (HTTP {{status}})"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 442
+      }
+    ]
+  },
+  "54d32503": {
+    "source": "GitHub releases response did not include a tag",
+    "translated": {
+      "de": "Antwort der GitHub-Releases enthielt kein Tag",
+      "fr": "La réponse des versions GitHub n'incluait pas de balise",
+      "es": "La respuesta de las versiones de GitHub no incluía una etiqueta",
+      "hi": "GitHub रिलीज़ प्रतिक्रिया में कोई टैग शामिल नहीं था",
+      "ko": "GitHub 릴리스 응답에 태그가 포함되지 않았습니다",
+      "zh-Hans": "GitHub 版本响应不包含标签",
+      "pt-BR": "A resposta das versões do GitHub não incluiu uma tag",
+      "ja": "GitHub リリースのレスポンスにタグが含まれていませんでした",
+      "zh-Hant": "GitHub 版本回應未包含標籤"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 448
+      }
+    ]
+  },
+  "19d8eca8": {
+    "source": "Could not compare installed version {{installed}} with {{tag}}",
+    "translated": {
+      "de": "Installierte Version {{installed}} konnte nicht mit {{tag}} verglichen werden",
+      "fr": "Impossible de comparer la version installée {{installed}} avec {{tag}}",
+      "es": "No se ha podido comparar la versión instalada {{installed}} con {{tag}}",
+      "hi": "इंस्टॉल किए गए संस्करण {{installed}} की {{tag}} से तुलना नहीं की जा सकी",
+      "ko": "설치된 버전 {{installed}}을(를) {{tag}}와(과) 비교할 수 없습니다",
+      "zh-Hans": "无法将已安装版本 {{installed}} 与 {{tag}} 进行比较",
+      "pt-BR": "Não foi possível comparar a versão instalada {{installed}} com {{tag}}",
+      "ja": "インストール済みのバージョン {{installed}} と {{tag}} を比較できませんでした",
+      "zh-Hant": "無法比較已安裝版本 {{installed}} 與 {{tag}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 457
+      }
+    ]
+  },
+  "03b3ed5d": {
+    "source": "version {{version}} (latest release)",
+    "translated": {
+      "de": "Version {{version}} (neuestes Release)",
+      "fr": "version {{version}} (dernière version)",
+      "es": "versión {{version}} (última versión)",
+      "hi": "संस्करण {{version}} (नवीनतम रिलीज़)",
+      "ko": "버전 {{version}} (최신 릴리스)",
+      "zh-Hans": "版本 {{version}} (最新版本)",
+      "pt-BR": "versão {{version}} (última versão)",
+      "ja": "バージョン {{version}} (最新リリース)",
+      "zh-Hant": "版本 {{version}} (最新版本)"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 462
+      }
+    ]
+  },
+  "30c0abd1": {
+    "source": "installed {{installed}} is newer than the latest release {{tag}}",
+    "translated": {
+      "de": "Installierte Version {{installed}} ist neuer als das neueste Release {{tag}}",
+      "fr": "la version installée {{installed}} est plus récente que la dernière version {{tag}}",
+      "es": "la versión instalada {{installed}} es más reciente que la última versión {{tag}}",
+      "hi": "इंस्टॉल किया गया {{installed}} नवीनतम रिलीज़ {{tag}} से नया है",
+      "ko": "설치된 {{installed}}이(가) 최신 릴리스 {{tag}}보다 최신 버전입니다",
+      "zh-Hans": "已安装版本 {{installed}} 比最新版本 {{tag}} 更新",
+      "pt-BR": "a versão instalada {{installed}} é mais recente que a última versão {{tag}}",
+      "ja": "インストール済みの {{installed}} は最新リリース {{tag}} より新しいです",
+      "zh-Hant": "已安裝的 {{installed}} 比最新版本 {{tag}} 還要新"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 468
+      }
+    ]
+  },
+  "14c5a556": {
+    "source": "upgrade available: {{remote}} (installed {{installed}}) {{url}}",
+    "translated": {
+      "de": "Upgrade verfügbar: {{remote}} (installiert {{installed}}) {{url}}",
+      "fr": "mise à jour disponible : {{remote}} (version installée {{installed}}) {{url}}",
+      "es": "actualización disponible: {{remote}} (instalada: {{installed}}) {{url}}",
+      "hi": "अपग्रेड उपलब्ध है: {{remote}} (इंस्टॉल किया गया {{installed}}) {{url}}",
+      "ko": "사용 가능한 업그레이드: {{remote}} (설치됨 {{installed}}) {{url}}",
+      "zh-Hans": "有可用升级：{{remote}} (已安装 {{installed}}) {{url}}",
+      "pt-BR": "atualização disponível: {{remote}} (instalada {{installed}}) {{url}}",
+      "ja": "アップグレードが利用可能です: {{remote}} (インストール済み {{installed}}) {{url}}",
+      "zh-Hant": "有可用的升級：{{remote}} (已安裝 {{installed}}) {{url}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 476
+      }
+    ]
+  },
+  "b57063c8": {
+    "source": "Could not read the latest GitHub release: {{message}}",
+    "translated": {
+      "de": "Neuestes GitHub-Release konnte nicht gelesen werden: {{message}}",
+      "fr": "Impossible de lire la dernière version GitHub : {{message}}",
+      "es": "No se ha podido leer la última versión de GitHub: {{message}}",
+      "hi": "नवीनतम GitHub रिलीज़ को पढ़ा नहीं जा सका: {{message}}",
+      "ko": "최신 GitHub 릴리스를 읽을 수 없습니다: {{message}}",
+      "zh-Hans": "无法读取最新的 GitHub 版本：{{message}}",
+      "pt-BR": "Não foi possível ler a última versão do GitHub: {{message}}",
+      "ja": "最新の GitHub リリースを読み取れませんでした: {{message}}",
+      "zh-Hant": "無法讀取最新的 GitHub 版本：{{message}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 485
+      }
+    ]
+  },
+  "fa5b2a6a": {
+    "source": "sourceLocale {{locale}}",
+    "translated": {
+      "de": "Quell-Gebietsschema {{locale}}",
+      "fr": "locale source {{locale}}",
+      "es": "idioma de origen {{locale}}",
+      "hi": "स्रोत लोकेल {{locale}}",
+      "ko": "sourceLocale {{locale}}",
+      "zh-Hans": "源区域设置 {{locale}}",
+      "pt-BR": "sourceLocale {{locale}}",
+      "ja": "ソースロケール {{locale}}",
+      "zh-Hant": "來源地區設定 {{locale}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 497
+      }
+    ]
+  },
+  "6331c920": {
+    "source": "targetLocales {{locales}}",
+    "translated": {
+      "de": "Ziel-Gebietsschemata {{locales}}",
+      "fr": "locales cibles {{locales}}",
+      "es": "idiomas de destino {{locales}}",
+      "hi": "लक्ष्य लोकेल {{locales}}",
+      "ko": "targetLocales {{locales}}",
+      "zh-Hans": "目标区域设置 {{locales}}",
+      "pt-BR": "targetLocales {{locales}}",
+      "ja": "ターゲットロケール {{locales}}",
+      "zh-Hant": "目標地區設定 {{locales}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 499
+      }
+    ]
+  },
+  "4829af74": {
+    "source": "Bundled UI language catalog is not available",
+    "translated": {
+      "de": "Integrierter UI-Sprachkatalog ist nicht verfügbar",
+      "fr": "Le catalogue de langues de l'interface utilisateur intégré n'est pas disponible",
+      "es": "El catálogo de idiomas de la IU incluido no está disponible",
+      "hi": "बंडल किया गया UI भाषा कैटलॉग उपलब्ध नहीं है",
+      "ko": "번들 UI 언어 카탈로그를 사용할 수 없습니다",
+      "zh-Hans": "捆绑的 UI 语言目录不可用",
+      "pt-BR": "O catálogo de idiomas da UI integrado não está disponível",
+      "ja": "バンドルされた UI 言語カタログは利用できません",
+      "zh-Hant": "無可用的配套 UI 語言目錄"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 520
+      }
+    ]
+  },
+  "43b1cde2": {
+    "source": "{{locale}} is not in the bundled UI language catalog",
+    "translated": {
+      "de": "{{locale}} ist nicht im integrierten UI-Sprachkatalog enthalten",
+      "fr": "{{locale}} ne se trouve pas dans le catalogue de langues de l'interface utilisateur intégré",
+      "es": "{{locale}} no está en el catálogo de idiomas de la IU incluido",
+      "hi": "{{locale}} बंडल किए गए UI भाषा कैटलॉग में नहीं है",
+      "ko": "{{locale}}이(가) 번들 UI 언어 카탈로그에 없습니다",
+      "zh-Hans": "{{locale}} 不在捆绑的 UI 语言目录中",
+      "pt-BR": "{{locale}} não está no catálogo de idiomas da UI integrado",
+      "ja": "{{locale}} はバンドルされた UI 言語カタログに含まれていません",
+      "zh-Hant": "{{locale}} 不在配套 UI 語言目錄中"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 526
+      }
+    ]
+  },
+  "f07dc73c": {
+    "source": "ui[{{index}}] has no target locales after excluding sourceLocale. Set targetLocales or ui[{{index}}].targetLocales.",
+    "translated": {
+      "de": "ui[{{index}}] hat nach Ausschluss von sourceLocale keine Ziel-Gebietsschemata. Legen Sie targetLocales oder ui[{{index}}].targetLocales fest.",
+      "fr": "ui[{{index}}] n'a pas de locales cibles après exclusion de la locale source. Définissez targetLocales ou ui[{{index}}].targetLocales.",
+      "es": "ui[{{index}}] no tiene idiomas de destino después de excluir el idioma de origen. Establezca targetLocales o ui[{{index}}].targetLocales.",
+      "hi": "ui[{{index}}] में sourceLocale को छोड़कर कोई लक्ष्य लोकेल नहीं है. targetLocales या ui[{{index}}].targetLocales सेट करें.",
+      "ko": "ui[{{index}}]에 sourceLocale을(를) 제외한 후 대상 로캘이 없습니다. targetLocales 또는 ui[{{index}}].targetLocales을(를) 설정하세요.",
+      "zh-Hans": "排除 sourceLocale 后，ui[{{index}}] 没有目标区域设置。请设置 targetLocales 或 ui[{{index}}].targetLocales。",
+      "pt-BR": "ui[{{index}}] não tem localidades de destino após excluir sourceLocale. Defina targetLocales ou ui[{{index}}].targetLocales.",
+      "ja": "ui[{{index}}] には sourceLocale を除外した後のターゲットロケールがありません。targetLocales または ui[{{index}}].targetLocales を設定してください。",
+      "zh-Hant": "排除 sourceLocale 後，ui[{{index}}] 沒有目標地區設定。請設定 targetLocales 或 ui[{{index}}].targetLocales。"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 543
+      }
+    ]
+  },
+  "1b3adb40": {
+    "source": "ui[{{index}}] sourceRoots {{path}} does not exist",
+    "translated": {
+      "de": "ui[{{index}}] sourceRoots {{path}} existiert nicht",
+      "fr": "ui[{{index}}] sourceRoots {{path}} n'existe pas",
+      "es": "ui[{{index}}] sourceRoots {{path}} no existe",
+      "hi": "ui[{{index}}] sourceRoots {{path}} मौजूद नहीं है",
+      "ko": "ui[{{index}}] sourceRoots {{path}}이(가) 존재하지 않습니다",
+      "zh-Hans": "ui[{{index}}] sourceRoots {{path}} 不存在",
+      "pt-BR": "ui[{{index}}] sourceRoots {{path}} não existe",
+      "ja": "ui[{{index}}] sourceRoots {{path}} が存在しません",
+      "zh-Hant": "ui[{{index}}] sourceRoots {{path}} 不存在"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 575
+      }
+    ]
+  },
+  "c29cf064": {
+    "source": "ui[{{index}}] sourceRoots {{path}} has no scannable files",
+    "translated": {
+      "de": "ui[{{index}}] sourceRoots {{path}} hat keine scannbaren Dateien",
+      "fr": "ui[{{index}}] sourceRoots {{path}} ne contient aucun fichier analysable",
+      "es": "ui[{{index}}] sourceRoots {{path}} no tiene archivos analizables",
+      "hi": "ui[{{index}}] sourceRoots {{path}} में कोई स्कैन करने योग्य फ़ाइलें नहीं हैं",
+      "ko": "ui[{{index}}] sourceRoots {{path}}에 스캔 가능한 파일이 없습니다",
+      "zh-Hans": "ui[{{index}}] sourceRoots {{path}} 没有可扫描的文件",
+      "pt-BR": "ui[{{index}}] sourceRoots {{path}} não tem arquivos verificáveis",
+      "ja": "ui[{{index}}] sourceRoots {{path}} にはスキャン可能なファイルがありません",
+      "zh-Hant": "ui[{{index}}] sourceRoots {{path}} 沒有可掃描的檔案"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 582
+      }
+    ]
+  },
+  "91dc7ca8": {
+    "source": "ui[{{index}}] sourceRoots {{path}}",
+    "translated": {
+      "de": "ui[{{index}}] sourceRoots {{path}}",
+      "fr": "ui[{{index}}] sourceRoots {{path}}",
+      "es": "ui[{{index}}] sourceRoots {{path}}",
+      "hi": "ui[{{index}}] sourceRoots {{path}}",
+      "ko": "ui[{{index}}] sourceRoots {{path}}",
+      "zh-Hans": "ui[{{index}}] sourceRoots {{path}}",
+      "pt-BR": "ui[{{index}}] sourceRoots {{path}}",
+      "ja": "ui[{{index}}] sourceRoots {{path}}",
+      "zh-Hant": "ui[{{index}}] sourceRoots {{path}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 586
+      }
+    ]
+  },
+  "845259a3": {
+    "source": "ui[{{index}}] strings.json",
+    "translated": {
+      "de": "ui[{{index}}] strings.json",
+      "fr": "ui[{{index}}] strings.json",
+      "es": "ui[{{index}}] strings.json",
+      "hi": "ui[{{index}}] strings.json",
+      "ko": "ui[{{index}}] strings.json",
+      "zh-Hans": "ui[{{index}}] strings.json",
+      "pt-BR": "ui[{{index}}] strings.json",
+      "ja": "ui[{{index}}] strings.json",
+      "zh-Hant": "ui[{{index}}] strings.json"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 592
+      }
+    ]
+  },
+  "e1adfdf5": {
+    "source": "ui[{{index}}] ui-languages.json",
+    "translated": {
+      "de": "ui[{{index}}] ui-languages.json",
+      "fr": "ui[{{index}}] ui-languages.json",
+      "es": "ui[{{index}}] ui-languages.json",
+      "hi": "ui[{{index}}] ui-languages.json",
+      "ko": "ui[{{index}}] ui-languages.json",
+      "zh-Hans": "ui[{{index}}] ui-languages.json",
+      "pt-BR": "ui[{{index}}] ui-languages.json",
+      "ja": "ui[{{index}}] ui-languages.json",
+      "zh-Hant": "ui[{{index}}] ui-languages.json"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 600
+      }
+    ]
+  },
+  "f3662667": {
+    "source": "ui[{{index}}] flatOutputDir",
+    "translated": {
+      "de": "ui[{{index}}] flatOutputDir",
+      "fr": "ui[{{index}}] flatOutputDir",
+      "es": "ui[{{index}}] flatOutputDir",
+      "hi": "ui[{{index}}] flatOutputDir",
+      "ko": "ui[{{index}}] flatOutputDir",
+      "zh-Hans": "ui[{{index}}] flatOutputDir",
+      "pt-BR": "ui[{{index}}] flatOutputDir",
+      "ja": "ui[{{index}}] flatOutputDir",
+      "zh-Hant": "ui[{{index}}] flatOutputDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 610
+      }
+    ]
+  },
+  "52e52160": {
+    "source": "ui[{{index}}] gettext outputDir",
+    "translated": {
+      "de": "ui[{{index}}] gettext outputDir",
+      "fr": "ui[{{index}}] gettext outputDir",
+      "es": "ui[{{index}}] gettext outputDir",
+      "hi": "ui[{{index}}] gettext outputDir",
+      "ko": "ui[{{index}}] gettext outputDir",
+      "zh-Hans": "ui[{{index}}] gettext outputDir",
+      "pt-BR": "ui[{{index}}] gettext outputDir",
+      "ja": "ui[{{index}}] gettext outputDir",
+      "zh-Hant": "ui[{{index}}] gettext outputDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 620
+      }
+    ]
+  },
+  "fe98a983": {
+    "source": "ui[{{index}}] packageJsonPath",
+    "translated": {
+      "de": "ui[{{index}}] packageJsonPath",
+      "fr": "ui[{{index}}] packageJsonPath",
+      "es": "ui[{{index}}] packageJsonPath",
+      "hi": "ui[{{index}}] packageJsonPath",
+      "ko": "ui[{{index}}] packageJsonPath",
+      "zh-Hans": "ui[{{index}}] packageJsonPath",
+      "pt-BR": "ui[{{index}}] packageJsonPath",
+      "ja": "ui[{{index}}] packageJsonPath",
+      "zh-Hant": "ui[{{index}}] packageJsonPath"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 632
+      }
+    ]
+  },
+  "468bed4d": {
+    "source": "ui[{{index}}] pyprojectTomlPath",
+    "translated": {
+      "de": "ui[{{index}}] pyprojectTomlPath",
+      "fr": "ui[{{index}}] pyprojectTomlPath",
+      "es": "ui[{{index}}] pyprojectTomlPath",
+      "hi": "ui[{{index}}] pyprojectTomlPath",
+      "ko": "ui[{{index}}] pyprojectTomlPath",
+      "zh-Hans": "ui[{{index}}] pyprojectTomlPath",
+      "pt-BR": "ui[{{index}}] pyprojectTomlPath",
+      "ja": "ui[{{index}}] pyprojectTomlPath",
+      "zh-Hant": "ui[{{index}}] pyprojectTomlPath"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 644
+      }
+    ]
+  },
+  "3ff7931d": {
+    "source": "docs[{{index}}] contentPaths",
+    "translated": {
+      "de": "docs[{{index}}] contentPaths",
+      "fr": "docs[{{index}}] contentPaths",
+      "es": "docs[{{index}}] contentPaths",
+      "hi": "docs[{{index}}] contentPaths",
+      "ko": "docs[{{index}}] contentPaths",
+      "zh-Hans": "docs[{{index}}] contentPaths",
+      "pt-BR": "docs[{{index}}] contentPaths",
+      "ja": "docs[{{index}}] contentPaths",
+      "zh-Hant": "docs[{{index}}] contentPaths"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 663
+      }
+    ]
+  },
+  "e78b1eee": {
+    "source": "docs[{{index}}] outputDir",
+    "translated": {
+      "de": "docs[{{index}}] outputDir",
+      "fr": "docs[{{index}}] outputDir",
+      "es": "docs[{{index}}] outputDir",
+      "hi": "docs[{{index}}] outputDir",
+      "ko": "docs[{{index}}] outputDir",
+      "zh-Hans": "docs[{{index}}] outputDir",
+      "pt-BR": "docs[{{index}}] outputDir",
+      "ja": "docs[{{index}}] outputDir",
+      "zh-Hant": "docs[{{index}}] outputDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 672
+      }
+    ]
+  },
+  "824e0f6f": {
+    "source": "docs[{{index}}] docusaurusCatalogDir",
+    "translated": {
+      "de": "docs[{{index}}] docusaurusCatalogDir",
+      "fr": "docs[{{index}}] docusaurusCatalogDir",
+      "es": "docs[{{index}}] docusaurusCatalogDir",
+      "hi": "docs[{{index}}] docusaurusCatalogDir",
+      "ko": "docs[{{index}}] docusaurusCatalogDir",
+      "zh-Hans": "docs[{{index}}] docusaurusCatalogDir",
+      "pt-BR": "docs[{{index}}] docusaurusCatalogDir",
+      "ja": "docs[{{index}}] docusaurusCatalogDir",
+      "zh-Hant": "docs[{{index}}] docusaurusCatalogDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 681
+      }
+    ]
+  },
+  "c25da688": {
+    "source": "docs[{{index}}] nextraDictionaryPath",
+    "translated": {
+      "de": "docs[{{index}}] nextraDictionaryPath",
+      "fr": "docs[{{index}}] nextraDictionaryPath",
+      "es": "docs[{{index}}] nextraDictionaryPath",
+      "hi": "docs[{{index}}] nextraDictionaryPath",
+      "ko": "docs[{{index}}] nextraDictionaryPath",
+      "zh-Hans": "docs[{{index}}] nextraDictionaryPath",
+      "pt-BR": "docs[{{index}}] nextraDictionaryPath",
+      "ja": "docs[{{index}}] nextraDictionaryPath",
+      "zh-Hant": "docs[{{index}}] nextraDictionaryPath"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 691
+      }
+    ]
+  },
+  "ace562ea": {
+    "source": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+    "translated": {
+      "de": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "fr": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "es": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "hi": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "ko": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "zh-Hans": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "pt-BR": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "ja": "docs[{{index}}] fumadocsUiCatalog.sourcePath",
+      "zh-Hant": "docs[{{index}}] fumadocsUiCatalog.sourcePath"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 702
+      }
+    ]
+  },
+  "d6dd4cfe": {
+    "source": "docs[{{index}}] vitepressThemeCatalog.configPath",
+    "translated": {
+      "de": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "fr": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "es": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "hi": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "ko": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "zh-Hans": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "pt-BR": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "ja": "docs[{{index}}] vitepressThemeCatalog.configPath",
+      "zh-Hant": "docs[{{index}}] vitepressThemeCatalog.configPath"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 713
+      }
+    ]
+  },
+  "cf7dee35": {
+    "source": "json[{{index}}] contentPaths",
+    "translated": {
+      "de": "json[{{index}}] contentPaths",
+      "fr": "json[{{index}}] contentPaths",
+      "es": "json[{{index}}] contentPaths",
+      "hi": "json[{{index}}] contentPaths",
+      "ko": "json[{{index}}] contentPaths",
+      "zh-Hans": "json[{{index}}] contentPaths",
+      "pt-BR": "json[{{index}}] contentPaths",
+      "ja": "json[{{index}}] contentPaths",
+      "zh-Hant": "json[{{index}}] contentPaths"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 729
+      }
+    ]
+  },
+  "1787849d": {
+    "source": "json[{{index}}] outputPathTemplate",
+    "translated": {
+      "de": "json[{{index}}] outputPathTemplate",
+      "fr": "json[{{index}}] outputPathTemplate",
+      "es": "json[{{index}}] outputPathTemplate",
+      "hi": "json[{{index}}] outputPathTemplate",
+      "ko": "json[{{index}}] outputPathTemplate",
+      "zh-Hans": "json[{{index}}] outputPathTemplate",
+      "pt-BR": "json[{{index}}] outputPathTemplate",
+      "ja": "json[{{index}}] outputPathTemplate",
+      "zh-Hant": "json[{{index}}] outputPathTemplate"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 740
+      }
+    ]
+  },
+  "5375d471": {
+    "source": "svg sourcePath {{path}}",
+    "translated": {
+      "de": "svg sourcePath {{path}}",
+      "fr": "svg sourcePath {{path}}",
+      "es": "svg sourcePath {{path}}",
+      "hi": "svg sourcePath {{path}}",
+      "ko": "svg sourcePath {{path}}",
+      "zh-Hans": "svg sourcePath {{path}}",
+      "pt-BR": "svg sourcePath {{path}}",
+      "ja": "svg sourcePath {{path}}",
+      "zh-Hant": "svg sourcePath {{path}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 754
+      }
+    ]
+  },
+  "e3936fa6": {
+    "source": "svg outputDir",
+    "translated": {
+      "de": "svg outputDir",
+      "fr": "svg outputDir",
+      "es": "svg outputDir",
+      "hi": "svg outputDir",
+      "ko": "svg outputDir",
+      "zh-Hans": "svg outputDir",
+      "pt-BR": "svg outputDir",
+      "ja": "svg outputDir",
+      "zh-Hant": "svg outputDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 760
+      }
+    ]
+  },
+  "bf88483e": {
+    "source": "cacheDir",
+    "translated": {
+      "de": "cacheDir",
+      "fr": "cacheDir",
+      "es": "cacheDir",
+      "hi": "cacheDir",
+      "ko": "cacheDir",
+      "zh-Hans": "cacheDir",
+      "pt-BR": "cacheDir",
+      "ja": "cacheDir",
+      "zh-Hant": "cacheDir"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 763
+      }
+    ]
+  },
+  "2426b022": {
+    "source": "glossary.contextFiles {{path}}",
+    "translated": {
+      "de": "glossary.contextFiles {{path}}",
+      "fr": "glossary.contextFiles {{path}}",
+      "es": "glossary.contextFiles {{path}}",
+      "hi": "glossary.contextFiles {{path}}",
+      "ko": "glossary.contextFiles {{path}}",
+      "zh-Hans": "glossary.contextFiles {{path}}",
+      "pt-BR": "glossary.contextFiles {{path}}",
+      "ja": "glossary.contextFiles {{path}}",
+      "zh-Hant": "glossary.contextFiles {{path}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 773
+      }
+    ]
+  },
+  "3ccc6b9c": {
+    "source": "glossary.userGlossary {{path}}",
+    "translated": {
+      "de": "glossary.userGlossary {{path}}",
+      "fr": "glossary.userGlossary {{path}}",
+      "es": "glossary.userGlossary {{path}}",
+      "hi": "glossary.userGlossary {{path}}",
+      "ko": "glossary.userGlossary {{path}}",
+      "zh-Hans": "glossary.userGlossary {{path}}",
+      "pt-BR": "glossary.userGlossary {{path}}",
+      "ja": "glossary.userGlossary {{path}}",
+      "zh-Hant": "glossary.userGlossary {{path}}"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 782
+      }
+    ]
+  },
+  "f8dd43b1": {
+    "source": "glossary.userGlossary {{path}} is missing; glossary hints are skipped",
+    "translated": {
+      "de": "glossary.userGlossary {{path}} fehlt; Glossarhinweise werden übersprungen",
+      "fr": "glossary.userGlossary {{path}} est manquant ; les suggestions du glossaire sont ignorées",
+      "es": "Falta glossary.userGlossary {{path}}; se omiten las sugerencias del glosario",
+      "hi": "glossary.userGlossary {{path}} मौजूद नहीं है; शब्दावली संकेतों को छोड़ दिया गया है",
+      "ko": "glossary.userGlossary {{path}}이(가) 없습니다. 용어집 힌트를 건너뜁니다.",
+      "zh-Hans": "glossary.userGlossary {{path}} 缺失；已跳过术语提示",
+      "pt-BR": "glossary.userGlossary {{path}} não encontrado; as dicas do glossário foram ignoradas",
+      "ja": "glossary.userGlossary {{path}} が見つかりません。用語集のヒントはスキップされます。",
+      "zh-Hant": "glossary.userGlossary {{path}} 遺失；已略過詞彙提示"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 786
+      }
+    ]
+  },
+  "2ef962a7": {
+    "source": "{{label}} ({{count}} files)",
+    "translated": {
+      "es": "{{label}} ({{count}} archivos)",
+      "hi": "{{label}} ({{count}} फ़ाइलें)",
+      "de": "{{label}} ({{count}} Dateien)",
+      "fr": "{{label}} ({{count}} fichiers)",
+      "zh-Hans": "{{label}}（{{count}} 个文件）",
+      "pt-BR": "{{label}} ({{count}} arquivos)",
+      "ja": "{{label}} ({{count}} ファイル)",
+      "ko": "{{label}} ({{count}}개 파일)",
+      "zh-Hant": "{{label}} ({{count}} 個檔案)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 814
+      }
+    ]
+  },
+  "a0b6762e": {
+    "source": "{{label}} {{path}}",
+    "translated": {
+      "es": "{{label}} {{path}}",
+      "hi": "{{label}} {{path}}",
+      "de": "{{label}} {{path}}",
+      "fr": "{{label}} {{path}}",
+      "zh-Hans": "{{label}} {{path}}",
+      "pt-BR": "{{label}} {{path}}",
+      "ja": "{{label}} {{path}}",
+      "ko": "{{label}} {{path}}",
+      "zh-Hant": "{{label}} {{path}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 828
+      }
+    ]
+  },
+  "24fef2cc": {
+    "source": "{{label}} {{path}} does not exist",
+    "translated": {
+      "es": "{{label}} {{path}} no existe",
+      "hi": "{{label}} {{path}} मौजूद नहीं है",
+      "de": "{{label}} {{path}} existiert nicht",
+      "fr": "{{label}} {{path}} n'existe pas",
+      "zh-Hans": "{{label}} {{path}} 不存在",
+      "pt-BR": "{{label}} {{path}} não existe",
+      "ja": "{{label}} {{path}} が存在しません",
+      "ko": "{{label}} {{path}}가 존재하지 않습니다",
+      "zh-Hant": "{{label}} {{path}} 不存在"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 831
+      }
+    ]
+  },
+  "fcd37fbf": {
+    "source": "{{label}} {{path}} (created on first run)",
+    "translated": {
+      "es": "{{label}} {{path}} (creado en la primera ejecución)",
+      "hi": "{{label}} {{path}} (पहली बार चलाने पर बनाया गया)",
+      "de": "{{label}} {{path}} (wird bei der ersten Ausführung erstellt)",
+      "fr": "{{label}} {{path}} (créé à la première exécution)",
+      "zh-Hans": "{{label}} {{path}}（首次运行时创建）",
+      "pt-BR": "{{label}} {{path}} (criado na primeira execução)",
+      "ja": "{{label}} {{path}} (初回実行時に作成)",
+      "ko": "{{label}} {{path}} (첫 실행 시 생성됨)",
+      "zh-Hant": "{{label}} {{path}} (首次執行時建立)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 844
+      }
+    ]
+  },
+  "0aea61f2": {
+    "source": "{{label}} {{path}} could not be read: {{message}}",
+    "translated": {
+      "es": "No se pudo leer {{label}} {{path}}: {{message}}",
+      "hi": "{{label}} {{path}} पढ़ा नहीं जा सका: {{message}}",
+      "de": "{{label}} {{path}} konnte nicht gelesen werden: {{message}}",
+      "fr": "Impossible de lire {{label}} {{path}} : {{message}}",
+      "zh-Hans": "{{label}} {{path}} 无法读取：{{message}}",
+      "pt-BR": "{{label}} {{path}} não pôde ser lido: {{message}}",
+      "ja": "{{label}} {{path}} を読み込めませんでした: {{message}}",
+      "ko": "{{label}} {{path}}를 읽을 수 없습니다: {{message}}",
+      "zh-Hant": "{{label}} {{path}} 無法讀取：{{message}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 853
+      }
+    ]
+  },
+  "ccb42119": {
+    "source": "{{label}} {{path}} is not a directory",
+    "translated": {
+      "es": "{{label}} {{path}} no es un directorio",
+      "hi": "{{label}} {{path}} एक डायरेक्टरी नहीं है",
+      "de": "{{label}} {{path}} ist kein Verzeichnis",
+      "fr": "{{label}} {{path}} n'est pas un répertoire",
+      "zh-Hans": "{{label}} {{path}} 不是目录",
+      "pt-BR": "{{label}} {{path}} não é um diretório",
+      "ja": "{{label}} {{path}} はディレクトリではありません",
+      "ko": "{{label}} {{path}}는 디렉터리가 아닙니다",
+      "zh-Hant": "{{label}} {{path}} 不是目錄"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 862
+      }
+    ]
+  },
+  "1050dea0": {
+    "source": "{{label}} {{path}} is not writable",
+    "translated": {
+      "es": "{{label}} {{path}} no tiene permisos de escritura",
+      "hi": "{{label}} {{path}} लिखने योग्य नहीं है",
+      "de": "{{label}} {{path}} ist nicht beschreibbar",
+      "fr": "{{label}} {{path}} n'est pas accessible en écriture",
+      "zh-Hans": "{{label}} {{path}} 不可写",
+      "pt-BR": "{{label}} {{path}} não é gravável",
+      "ja": "{{label}} {{path}} は書き込み可能ではありません",
+      "ko": "{{label}} {{path}}에 쓸 수 없습니다",
+      "zh-Hant": "{{label}} {{path}} 不可寫入"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 868
+      }
+    ]
+  },
+  "5692b100": {
+    "source": "{{label}} {{path}} exists",
+    "translated": {
+      "es": "{{label}} {{path}} ya existe",
+      "hi": "{{label}} {{path}} मौजूद है",
+      "de": "{{label}} {{path}} existiert",
+      "fr": "{{label}} {{path}} existe",
+      "zh-Hans": "{{label}} {{path}} 已存在",
+      "pt-BR": "{{label}} {{path}} existe",
+      "ja": "{{label}} {{path}} は存在します",
+      "ko": "{{label}} {{path}}가 존재합니다",
+      "zh-Hant": "{{label}} {{path}} 已存在"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 871
+      }
+    ]
+  },
+  "a2c982b5": {
+    "source": "{{label}} is missing; {{createdBy}} creates it",
+    "translated": {
+      "es": "Falta {{label}}; {{createdBy}} lo crea",
+      "hi": "{{label}} गायब है; {{createdBy}} इसे बनाता है",
+      "de": "{{label}} fehlt; {{createdBy}} erstellt es",
+      "fr": "{{label}} est manquant ; {{createdBy}} le crée",
+      "zh-Hans": "{{label}} 缺失；由 {{createdBy}} 创建",
+      "pt-BR": "{{label}} está ausente; {{createdBy}} o cria",
+      "ja": "{{label}} がありません; {{createdBy}} が作成します",
+      "ko": "{{label}}가 누락되었습니다. {{createdBy}}가 생성합니다",
+      "zh-Hant": "{{label}} 遺失；{{createdBy}} 會建立它"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 884
+      }
+    ]
+  },
+  "8f7ece6c": {
+    "source": "{{label}} is not a JSON object or array",
+    "translated": {
+      "es": "{{label}} no es un objeto o array JSON",
+      "hi": "{{label}} एक JSON ऑब्जेक्ट या ऐरे नहीं है",
+      "de": "{{label}} ist kein JSON-Objekt oder -Array",
+      "fr": "{{label}} n'est pas un objet ou un tableau JSON",
+      "zh-Hans": "{{label}} 不是 JSON 对象或数组",
+      "pt-BR": "{{label}} não é um objeto ou array JSON",
+      "ja": "{{label}} は JSON オブジェクトまたは配列ではありません",
+      "ko": "{{label}}는 JSON 객체 또는 배열이 아닙니다",
+      "zh-Hant": "{{label}} 不是 JSON 物件或陣列"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 895
+      }
+    ]
+  },
+  "8322f883": {
+    "source": "{{label}} ({{count}} keys)",
+    "translated": {
+      "es": "{{label}} ({{count}} claves)",
+      "hi": "{{label}} ({{count}} कुंजियाँ)",
+      "de": "{{label}} ({{count}} Schlüssel)",
+      "fr": "{{label}} ({{count}} clés)",
+      "zh-Hans": "{{label}}（{{count}} 个键）",
+      "pt-BR": "{{label}} ({{count}} chaves)",
+      "ja": "{{label}} ({{count}} キー)",
+      "ko": "{{label}} ({{count}}개 키)",
+      "zh-Hant": "{{label}} ({{count}} 個鍵)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 901
+      }
+    ]
+  },
+  "61cd12d3": {
+    "source": "{{label}} ({{count}} entries)",
+    "translated": {
+      "es": "{{label}} ({{count}} entradas)",
+      "hi": "{{label}} ({{count}} प्रविष्टियाँ)",
+      "de": "{{label}} ({{count}} Einträge)",
+      "fr": "{{label}} ({{count}} entrées)",
+      "zh-Hans": "{{label}}（{{count}} 个条目）",
+      "pt-BR": "{{label}} ({{count}} entradas)",
+      "ja": "{{label}} ({{count}} エントリ)",
+      "ko": "{{label}} ({{count}}개 항목)",
+      "zh-Hant": "{{label}} ({{count}} 個項目)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 902
+      }
+    ]
+  },
+  "7321127b": {
+    "source": "{{label}} could not be read: {{message}}",
+    "translated": {
+      "es": "No se pudo leer {{label}}: {{message}}",
+      "hi": "{{label}} पढ़ा नहीं जा सका: {{message}}",
+      "de": "{{label}} konnte nicht gelesen werden: {{message}}",
+      "fr": "Impossible de lire {{label}} : {{message}}",
+      "zh-Hans": "{{label}} 无法读取：{{message}}",
+      "pt-BR": "{{label}} não pôde ser lido: {{message}}",
+      "ja": "{{label}} を読み込めませんでした: {{message}}",
+      "ko": "{{label}}를 읽을 수 없습니다: {{message}}",
+      "zh-Hant": "{{label}} 無法讀取：{{message}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 907
+      }
+    ]
+  },
+  "04858356": {
+    "source": "no cache database yet",
+    "translated": {
+      "es": "aún no hay base de datos de caché",
+      "hi": "अभी तक कोई कैश डेटाबेस नहीं है",
+      "de": "noch keine Cache-Datenbank",
+      "fr": "pas encore de base de données de cache",
+      "zh-Hans": "尚无缓存数据库",
+      "pt-BR": "nenhum banco de dados de cache ainda",
+      "ja": "キャッシュデータベースはまだありません",
+      "ko": "아직 캐시 데이터베이스 없음",
+      "zh-Hant": "尚無快取資料庫"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 922
+      }
+    ]
+  },
+  "d7b47b58": {
+    "source": "cache database is empty",
+    "translated": {
+      "es": "la base de datos de caché está vacía",
+      "hi": "कैश डेटाबेस खाली है",
+      "de": "Cache-Datenbank ist leer",
+      "fr": "la base de données de cache est vide",
+      "zh-Hans": "缓存数据库为空",
+      "pt-BR": "o banco de dados de cache está vazio",
+      "ja": "キャッシュデータベースは空です",
+      "ko": "캐시 데이터베이스가 비어 있습니다",
+      "zh-Hant": "快取資料庫為空"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 934
+      }
+    ]
+  },
+  "8528f810": {
+    "source": "last API call {{when}}",
+    "translated": {
+      "es": "última llamada a la API {{when}}",
+      "hi": "अंतिम API कॉल {{when}}",
+      "de": "letzter API-Aufruf {{when}}",
+      "fr": "dernier appel API {{when}}",
+      "zh-Hans": "上次 API 调用于 {{when}}",
+      "pt-BR": "última chamada de API {{when}}",
+      "ja": "最終 API 呼び出し {{when}}",
+      "ko": "마지막 API 호출 {{when}}",
+      "zh-Hant": "上次 API 呼叫於 {{when}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 938
+      }
+    ]
+  },
+  "c4c9eee8": {
+    "source": "tracked files {{files}} ({{rows}} file×locale rows)",
+    "translated": {
+      "es": "archivos rastreados {{files}} ({{rows}} filas de archivo×idioma)",
+      "hi": "ट्रैक की गई फ़ाइलें {{files}} ({{rows}} फ़ाइल×लोकेल पंक्तियाँ)",
+      "de": "Verfolgte Dateien {{files}} ({{rows}} Datei×Gebietsschema-Zeilen)",
+      "fr": "fichiers suivis {{files}} ({{rows}} lignes fichier×locale)",
+      "zh-Hans": "已跟踪文件 {{files}}（{{rows}} 个文件×区域设置行）",
+      "pt-BR": "arquivos rastreados {{files}} ({{rows}} linhas de arquivo×localidade)",
+      "ja": "追跡対象ファイル {{files}} ({{rows}} ファイル×ロケールの行)",
+      "ko": "추적된 파일 {{files}} ({{rows}}개 파일×로캘 행)",
+      "zh-Hant": "已追蹤檔案 {{files}} ({{rows}} 個檔案×語系資料列)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 942
+      }
+    ]
+  },
+  "21b25a85": {
+    "source": "translation segments {{count}}",
+    "translated": {
+      "es": "segmentos de traducción {{count}}",
+      "hi": "अनुवाद खंड {{count}}",
+      "de": "Übersetzungssegmente {{count}}",
+      "fr": "segments de traduction {{count}}",
+      "zh-Hans": "翻译片段 {{count}}",
+      "pt-BR": "segmentos de tradução {{count}}",
+      "ja": "翻訳セグメント {{count}}",
+      "ko": "번역 세그먼트 {{count}}개",
+      "zh-Hant": "翻譯區段 {{count}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 948
+      }
+    ]
+  },
+  "ea260044": {
+    "source": "API calls {{count}}",
+    "translated": {
+      "es": "llamadas a la API {{count}}",
+      "hi": "API कॉल {{count}}",
+      "de": "API-Aufrufe {{count}}",
+      "fr": "appels API {{count}}",
+      "zh-Hans": "API 调用 {{count}}",
+      "pt-BR": "chamadas de API {{count}}",
+      "ja": "API 呼び出し {{count}}",
+      "ko": "API 호출 {{count}}회",
+      "zh-Hant": "API 呼叫 {{count}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 949
+      }
+    ]
+  },
+  "aa0990fa": {
+    "source": "Could not read the cache database: {{message}}",
+    "translated": {
+      "es": "No se pudo leer la base de datos de caché: {{message}}",
+      "hi": "कैश डेटाबेस पढ़ा नहीं जा सका: {{message}}",
+      "de": "Die Cache-Datenbank konnte nicht gelesen werden: {{message}}",
+      "fr": "Impossible de lire la base de données de cache : {{message}}",
+      "zh-Hans": "无法读取缓存数据库：{{message}}",
+      "pt-BR": "Não foi possível ler o banco de dados de cache: {{message}}",
+      "ja": "キャッシュデータベースを読み込めませんでした: {{message}}",
+      "ko": "캐시 데이터베이스를 읽을 수 없습니다: {{message}}",
+      "zh-Hant": "無法讀取快取資料庫：{{message}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 954
+      }
+    ]
+  },
+  "c096df49": {
+    "source": "Reading the cache changed its schema version",
+    "translated": {
+      "es": "La lectura de la caché cambió su versión de esquema",
+      "hi": "कैश पढ़ने से इसका स्कीमा संस्करण बदल गया",
+      "de": "Das Lesen des Caches hat die Schemaversion geändert",
+      "fr": "La lecture du cache a modifié sa version de schéma",
+      "zh-Hans": "读取缓存时更改了其架构版本",
+      "pt-BR": "A leitura do cache alterou sua versão de esquema",
+      "ja": "キャッシュの読み込みによりスキーマバージョンが変更されました",
+      "ko": "캐시를 읽는 동안 스키마 버전이 변경되었습니다",
+      "zh-Hant": "讀取快取時變更了其結構描述版本"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 961
+      }
+    ]
+  },
+  "dc1b84aa": {
+    "source": "benchmark-scores.json is absent (suggest-models downloads it)",
+    "translated": {
+      "es": "benchmark-scores.json no existe (suggest-models lo descarga)",
+      "hi": "benchmark-scores.json अनुपस्थित है (suggest-models इसे डाउनलोड करता है)",
+      "de": "benchmark-scores.json fehlt (suggest-models lädt sie herunter)",
+      "fr": "benchmark-scores.json est absent (suggest-models le télécharge)",
+      "zh-Hans": "benchmark-scores.json 不存在（由 suggest-models 下载）",
+      "pt-BR": "benchmark-scores.json está ausente (suggest-models faz o download)",
+      "ja": "benchmark-scores.json がありません (suggest-models がダウンロードします)",
+      "ko": "benchmark-scores.json이 없습니다 (suggest-models가 다운로드함)",
+      "zh-Hant": "benchmark-scores.json 不存在 (suggest-models 會下載它)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 967
+      }
+    ]
+  },
+  "1811c9ae": {
+    "source": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+    "translated": {
+      "es": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "hi": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "de": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "fr": "benchmark-scores.json : languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "zh-Hans": "benchmark-scores.json: languagebench {{languagebench}}，arena {{arena}}，models.dev {{modelsDev}}{{fetched}}",
+      "pt-BR": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "ja": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "ko": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}",
+      "zh-Hant": "benchmark-scores.json: languagebench {{languagebench}}, arena {{arena}}, models.dev {{modelsDev}}{{fetched}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 985
+      }
+    ]
+  },
+  "cdb28db0": {
+    "source": "(fetched {{when}})",
+    "translated": {
+      "es": "(obtenido {{when}})",
+      "hi": "(प्राप्त किया गया {{when}})",
+      "de": "(abgerufen {{when}})",
+      "fr": "(récupéré {{when}})",
+      "zh-Hans": "（于 {{when}} 获取）",
+      "pt-BR": "(buscado em {{when}})",
+      "ja": "(取得日時 {{when}})",
+      "ko": "({{when}}에 가져옴)",
+      "zh-Hant": "(於 {{when}} 擷取)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 991
+      }
+    ]
+  },
+  "c76a5e84": {
+    "source": "active",
+    "translated": {
+      "es": "activo",
+      "de": "aktiv",
+      "fr": "Actif",
+      "hi": "सक्रिय",
+      "pt-BR": "ativo",
+      "zh-Hans": "活动",
+      "ja": "アクティブ",
+      "ko": "활성",
+      "zh-Hant": "作用中"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1036
+      }
+    ]
+  },
+  "375a18e8": {
+    "source": "API key is not required",
+    "translated": {
+      "es": "No se requiere clave de API",
+      "hi": "API कुंजी की आवश्यकता नहीं है",
+      "de": "API-Schlüssel ist nicht erforderlich",
+      "fr": "Clé API non requise",
+      "zh-Hans": "不需要 API 密钥",
+      "pt-BR": "A chave de API não é necessária",
+      "ja": "API キーは不要です",
+      "ko": "API 키가 필요하지 않습니다",
+      "zh-Hant": "不需要 API 金鑰"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1039
+      }
+    ]
+  },
+  "6a0f9f12": {
+    "source": "{{key}} is set",
+    "translated": {
+      "es": "{{key}} está configurada",
+      "hi": "{{key}} सेट है",
+      "de": "{{key}} ist festgelegt",
+      "fr": "{{key}} est définie",
+      "zh-Hans": "{{key}} 已设置",
+      "pt-BR": "{{key}} está definido",
+      "ja": "{{key}} が設定されています",
+      "ko": "{{key}}가 설정되었습니다",
+      "zh-Hant": "{{key}} 已設定"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1041
+      }
+    ]
+  },
+  "8c817487": {
+    "source": "{{key}} is not set (.env is present but the variable is unset)",
+    "translated": {
+      "es": "{{key}} no está configurada (.env existe pero la variable no está definida)",
+      "hi": "{{key}} सेट नहीं है (.env मौजूद है लेकिन वेरिएबल अनसेट है)",
+      "de": "{{key}} ist nicht festgelegt (.env ist vorhanden, aber die Variable ist nicht gesetzt)",
+      "fr": "{{key}} n'est pas définie (.env est présent mais la variable n'est pas définie)",
+      "zh-Hans": "{{key}} 未设置（.env 文件存在但变量未设置）",
+      "pt-BR": "{{key}} não está definido (.env está presente, mas a variável não está definida)",
+      "ja": "{{key}} が設定されていません (.env は存在しますが、変数が設定されていません)",
+      "ko": "{{key}}가 설정되지 않았습니다 (.env 파일은 있지만 변수가 설정되지 않음)",
+      "zh-Hant": "{{key}} 未設定 (.env 存在但變數未設定)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1047
+      }
+    ]
+  },
+  "4c587c0f": {
+    "source": "{{key}} is not set",
+    "translated": {
+      "es": "{{key}} no está configurada",
+      "hi": "{{key}} सेट नहीं है",
+      "de": "{{key}} ist nicht festgelegt",
+      "fr": "{{key}} n'est pas définie",
+      "zh-Hans": "{{key}} 未设置",
+      "pt-BR": "{{key}} não está definido",
+      "ja": "{{key}} が設定されていません",
+      "ko": "{{key}}가 설정되지 않았습니다",
+      "zh-Hant": "{{key}} 未設定"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1048
+      }
+    ]
+  },
+  "f45d7540": {
+    "source": "baseUrl {{url}}",
+    "translated": {
+      "es": "URL base {{url}}",
+      "de": "Basis-URL {{url}}",
+      "fr": "URL de base {{url}}",
+      "hi": "baseUrl {{url}}",
+      "pt-BR": "URL base {{url}}",
+      "zh-Hans": "基础 URL {{url}}",
+      "ja": "ベース URL {{url}}",
+      "ko": "기본 URL {{url}}",
+      "zh-Hant": "基礎 URL {{url}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1052
+      }
+    ]
+  },
+  "1b9a1c37": {
+    "source": "{{name}} ({{details}})",
+    "translated": {
+      "es": "{{name}} ({{details}})",
+      "de": "{{name}} ({{details}})",
+      "fr": "{{name}} ({{details}})",
+      "hi": "{{name}} ({{details}})",
+      "pt-BR": "{{name}} ({{details}})",
+      "zh-Hans": "{{name}} ({{details}})",
+      "ja": "{{name}}（{{details}}）",
+      "ko": "{{name}} ({{details}})",
+      "zh-Hant": "{{name}} ({{details}})"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1054
+      }
+    ]
+  },
+  "ae584620": {
+    "source": "providers.{{provider}}.translationModels is empty",
+    "translated": {
+      "es": "providers.{{provider}}.translationModels está vacío",
+      "hi": "providers.{{provider}}.translationModels खाली है",
+      "de": "providers.{{provider}}.translationModels ist leer",
+      "fr": "providers.{{provider}}.translationModels est vide",
+      "zh-Hans": "providers.{{provider}}.translationModels 为空",
+      "pt-BR": "providers.{{provider}}.translationModels está vazio",
+      "ja": "providers.{{provider}}.translationModels は空です",
+      "ko": "providers.{{provider}}.translationModels가 비어 있습니다",
+      "zh-Hant": "providers.{{provider}}.translationModels 為空"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1068
+      }
+    ]
+  },
+  "aebbab5d": {
+    "source": "translationModels ({{count}})",
+    "translated": {
+      "es": "translationModels ({{count}})",
+      "hi": "translationModels ({{count}})",
+      "de": "translationModels ({{count}})",
+      "fr": "translationModels ({{count}})",
+      "zh-Hans": "translationModels（{{count}}）",
+      "pt-BR": "translationModels ({{count}})",
+      "ja": "translationModels ({{count}})",
+      "ko": "translationModels ({{count}})",
+      "zh-Hant": "translationModels ({{count}})"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1070
+      }
+    ]
+  },
+  "a685bbb2": {
+    "source": "provider catalog was not checked",
+    "translated": {
+      "es": "no se ha comprobado el catálogo de proveedores",
+      "hi": "प्रदाता कैटलॉग की जाँच नहीं की गई",
+      "de": "Anbieterkatalog wurde nicht geprüft",
+      "fr": "le catalogue des fournisseurs n'a pas été vérifié",
+      "zh-Hans": "未检查提供程序目录",
+      "pt-BR": "o catálogo de provedores não foi verificado",
+      "ja": "プロバイダーカタログはチェックされませんでした",
+      "ko": "공급자 카탈로그를 확인하지 않았습니다",
+      "zh-Hant": "未檢查提供者目錄"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1078
+      }
+    ]
+  },
+  "49535fa2": {
+    "source": "missing {{ids}}",
+    "translated": {
+      "es": "faltan {{ids}}",
+      "hi": "गायब {{ids}}",
+      "de": "fehlend {{ids}}",
+      "fr": "manquants {{ids}}",
+      "zh-Hans": "缺失 {{ids}}",
+      "pt-BR": "ausentes {{ids}}",
+      "ja": "不足: {{ids}}",
+      "ko": "누락된 {{ids}}",
+      "zh-Hant": "遺失 {{ids}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1095
+      }
+    ]
+  },
+  "37f62386": {
+    "source": "expired {{ids}}",
+    "translated": {
+      "es": "caducados {{ids}}",
+      "hi": "समय-सीमा समाप्त {{ids}}",
+      "de": "abgelaufen {{ids}}",
+      "fr": "expirés {{ids}}",
+      "zh-Hans": "已过期 {{ids}}",
+      "pt-BR": "expirados {{ids}}",
+      "ja": "期限切れ: {{ids}}",
+      "ko": "만료된 {{ids}}",
+      "zh-Hant": "已過期 {{ids}}"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1098
+      }
+    ]
+  },
+  "3818730e": {
+    "source": "models in {{provider}}'s catalog: {{detail}}",
+    "translated": {
+      "es": "modelos en el catálogo de {{provider}}: {{detail}}",
+      "hi": "{{provider}} के कैटलॉग में मॉडल: {{detail}}",
+      "de": "Modelle im Katalog von {{provider}}: {{detail}}",
+      "fr": "modèles dans le catalogue de {{provider}} : {{detail}}",
+      "ja": "{{provider}} のカタログのモデル: {{detail}}",
+      "zh-Hans": "{{provider}} 目录中的模型：{{detail}}",
+      "pt-BR": "modelos no catálogo de {{provider}}: {{detail}}",
+      "ko": "{{provider}} 카탈로그의 모델: {{detail}}",
+      "zh-Hant": "{{provider}} 目錄中的模型：{{detail}}"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1103
+      }
+    ],
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    }
+  },
+  "ee370440": {
+    "source": "models in {{provider}}'s catalog ({{count}} ok)",
+    "translated": {
+      "es": "modelos en el catálogo de {{provider}} ({{count}} correctos)",
+      "hi": "{{provider}} के कैटलॉग में मॉडल ({{count}} ठीक)",
+      "de": "Modelle im Katalog von {{provider}} ({{count}} OK)",
+      "fr": "modèles dans le catalogue de {{provider}} ({{count}} ok)",
+      "ja": "{{provider}} のカタログのモデル ({{count}} 件 OK)",
+      "zh-Hans": "{{provider}} 目录中的模型 ({{count}} 个可用)",
+      "pt-BR": "modelos no catálogo de {{provider}} ({{count}} ok)",
+      "ko": "{{provider}} 카탈로그의 모델({{count}}개 정상)",
+      "zh-Hant": "{{provider}} 目錄中的模型 ({{count}} 個正常)"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1112
+      }
+    ],
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    }
+  },
+  "4cb866fd": {
+    "source": "{{name}} (set)",
+    "translated": {
+      "es": "{{name}} (configurado)",
+      "hi": "{{name}} (सेट)",
+      "de": "{{name}} (festgelegt)",
+      "fr": "{{name}} (défini)",
+      "zh-Hans": "{{name}}（已设置）",
+      "pt-BR": "{{name}} (definido)",
+      "ja": "{{name}} (設定済み)",
+      "ko": "{{name}} (설정됨)",
+      "zh-Hant": "{{name}} (已設定)"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1132
+      }
+    ]
+  },
+  "fd2962ea": {
+    "source": "No supported environment variables are set",
+    "translated": {
+      "es": "No hay variables de entorno compatibles configuradas",
+      "hi": "कोई भी समर्थित एनवायरनमेंट वेरिएबल सेट नहीं हैं",
+      "de": "Keine unterstützten Umgebungsvariablen sind festgelegt",
+      "fr": "Aucune variable d'environnement prise en charge n'est définie",
+      "zh-Hans": "未设置任何支持的环境变量",
+      "pt-BR": "Nenhuma variável de ambiente compatível está definida",
+      "ja": "サポートされている環境変数が設定されていません",
+      "ko": "지원되는 환경 변수가 설정되지 않았습니다",
+      "zh-Hant": "未設定任何支援的環境變數"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1138
+      }
+    ]
+  },
   "04607f82": {
     "source": "[export-ui-xliff] strings.json not found: {{path}}",
     "translated": {
@@ -3915,7 +6756,7 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 303
+        "line": 304
       }
     ]
   },
@@ -4670,7 +7511,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 138
+        "line": 139
       }
     ]
   },
@@ -4703,7 +7544,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 181
+        "line": 182
       }
     ]
   },
@@ -4736,7 +7577,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 357
+        "line": 358
       }
     ]
   },
@@ -4769,7 +7610,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 387
+        "line": 388
       }
     ]
   },
@@ -4802,7 +7643,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 414
+        "line": 415
       }
     ]
   },
@@ -4835,7 +7676,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 434
+        "line": 435
       }
     ]
   },
@@ -4868,7 +7709,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 445
+        "line": 446
       }
     ]
   },
@@ -4901,7 +7742,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 453
+        "line": 454
       }
     ]
   },
@@ -4934,7 +7775,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 454
+        "line": 455
       }
     ]
   },
@@ -4965,7 +7806,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 494
+        "line": 495
       }
     ]
   },
@@ -4998,7 +7839,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 522
+        "line": 523
       }
     ]
   },
@@ -5031,7 +7872,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 529
+        "line": 530
       }
     ]
   },
@@ -5064,7 +7905,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 530
+        "line": 531
       }
     ]
   },
@@ -5097,7 +7938,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 531
+        "line": 532
       }
     ]
   },
@@ -5130,7 +7971,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 534
+        "line": 535
       }
     ]
   },
@@ -5163,7 +8004,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 540
+        "line": 541
       }
     ]
   },
@@ -5194,7 +8035,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 544
+        "line": 545
       }
     ]
   },
@@ -5227,7 +8068,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 551
+        "line": 552
       }
     ]
   },
@@ -5260,7 +8101,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 557
+        "line": 558
       }
     ]
   },
@@ -5293,7 +8134,162 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 566
+        "line": 567
+      }
+    ]
+  },
+  "4f2e977e": {
+    "source": "Check that configuration, paths, providers, and the environment are ready to translate",
+    "translated": {
+      "es": "Comprueba que la configuración, las rutas, los proveedores y el entorno están listos para traducir",
+      "hi": "जाँचें कि कॉन्फ़िगरेशन, पाथ, प्रदाता और एनवायरनमेंट अनुवाद के लिए तैयार हैं",
+      "de": "Prüfen, ob Konfiguration, Pfade, Anbieter und die Umgebung für die Übersetzung bereit sind",
+      "fr": "Vérifier que la configuration, les chemins, les fournisseurs et l'environnement sont prêts pour la traduction",
+      "zh-Hans": "检查配置、路径、提供程序和环境是否已准备好进行翻译",
+      "pt-BR": "Verifique se a configuração, os caminhos, os provedores e o ambiente estão prontos para traduzir",
+      "ja": "設定、パス、プロバイダー、環境が翻訳可能な状態かを確認します",
+      "ko": "구성, 경로, 공급자 및 환경이 번역 준비되었는지 확인합니다",
+      "zh-Hant": "檢查設定、路徑、提供者和環境是否已準備好進行翻譯"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 575
+      }
+    ]
+  },
+  "77141ae0": {
+    "source": "Skip the provider catalog and the GitHub release check",
+    "translated": {
+      "es": "Omitir el catálogo de proveedores y la comprobación de versiones de GitHub",
+      "hi": "प्रदाता कैटलॉग और GitHub रिलीज़ जाँच को छोड़ें",
+      "de": "Anbieterkatalog und GitHub-Release-Prüfung überspringen",
+      "fr": "Ignorer le catalogue des fournisseurs et la vérification de version GitHub",
+      "zh-Hans": "跳过提供程序目录和 GitHub 版本检查",
+      "pt-BR": "Ignorar o catálogo de provedores e a verificação de lançamento do GitHub",
+      "ja": "プロバイダーカタログと GitHub リリースチェックをスキップします",
+      "ko": "공급자 카탈로그 및 GitHub 릴리스 확인을 건너뜁니다",
+      "zh-Hant": "略過提供者目錄和 GitHub 版本檢查"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 577
+      }
+    ]
+  },
+  "c2d6de8b": {
+    "source": "Exit with an error when any check warns",
+    "translated": {
+      "es": "Salir con un error si alguna comprobación advierte",
+      "hi": "जब कोई जाँच चेतावनी दे तो एक त्रुटि के साथ बाहर निकलें",
+      "de": "Bei Warnungen mit einem Fehler beenden",
+      "fr": "Quitter avec une erreur si une vérification émet un avertissement",
+      "zh-Hans": "当任何检查出现警告时，以错误退出",
+      "pt-BR": "Sair com um erro quando qualquer verificação emitir um aviso",
+      "ja": "いずれかのチェックで警告が出た場合にエラーで終了します",
+      "ko": "확인 시 경고가 발생하면 오류와 함께 종료합니다",
+      "zh-Hant": "當任何檢查出現警告時，以錯誤結束"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 578
+      }
+    ]
+  },
+  "12a83851": {
+    "source": "Print the report as JSON",
+    "translated": {
+      "es": "Imprimir el informe como JSON",
+      "hi": "रिपोर्ट को JSON के रूप में प्रिंट करें",
+      "de": "Bericht als JSON ausgeben",
+      "fr": "Afficher le rapport au format JSON",
+      "zh-Hans": "以 JSON 格式打印报告",
+      "pt-BR": "Imprimir o relatório como JSON",
+      "ja": "レポートを JSON 形式で出力します",
+      "ko": "보고서를 JSON으로 출력합니다",
+      "zh-Hant": "以 JSON 格式列印報告"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 579
+      }
+    ]
+  },
+  "b69e2b6d": {
+    "source": "Examples:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+    "translated": {
+      "es": "Ejemplos:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "hi": "उदाहरण:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "de": "Beispiele:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "fr": "Exemples :\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "zh-Hans": "示例：\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "pt-BR": "Exemplos:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "ja": "例:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "ko": "예:\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json",
+      "zh-Hant": "範例：\n  ai-i18n-tools doctor\n  ai-i18n-tools doctor --local\n  ai-i18n-tools doctor --strict\n  ai-i18n-tools doctor --json"
+    },
+    "models": {
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 602
       }
     ]
   },
@@ -5326,7 +8322,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 574
+        "line": 612
       }
     ]
   },
@@ -5359,7 +8355,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 592
+        "line": 630
       }
     ]
   },
@@ -5392,7 +8388,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 608
+        "line": 646
       }
     ]
   },
@@ -5423,7 +8419,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 616
+        "line": 654
       }
     ]
   },
@@ -5454,7 +8450,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 620
+        "line": 658
       }
     ]
   },
@@ -5485,7 +8481,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 621
+        "line": 659
       }
     ]
   },
@@ -5516,7 +8512,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 622
+        "line": 660
       }
     ]
   },
@@ -5547,7 +8543,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 625
+        "line": 663
       }
     ]
   },
@@ -5578,7 +8574,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 628
+        "line": 666
       }
     ]
   },
@@ -5609,7 +8605,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 631
+        "line": 669
       }
     ]
   },
@@ -5640,7 +8636,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 636
+        "line": 674
       }
     ]
   },
@@ -5671,7 +8667,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 640
+        "line": 678
       }
     ]
   },
@@ -5702,7 +8698,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 644
+        "line": 682
       }
     ]
   },
@@ -5733,7 +8729,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 697
+        "line": 735
       }
     ]
   },
@@ -5766,7 +8762,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 709
+        "line": 747
       }
     ]
   },
@@ -5799,7 +8795,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 715
+        "line": 753
       }
     ]
   },
@@ -5832,7 +8828,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 719
+        "line": 757
       }
     ]
   },
@@ -5865,7 +8861,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 720
+        "line": 758
       }
     ]
   },
@@ -5898,7 +8894,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 721
+        "line": 759
       }
     ]
   },
@@ -5931,7 +8927,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 724
+        "line": 762
       }
     ]
   },
@@ -5964,7 +8960,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 751
+        "line": 789
       }
     ]
   },
@@ -5997,7 +8993,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 761
+        "line": 799
       }
     ]
   },
@@ -6030,7 +9026,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 772
+        "line": 810
       }
     ]
   },
@@ -6063,7 +9059,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 781
+        "line": 819
       }
     ]
   },
@@ -6096,7 +9092,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 783
+        "line": 821
       }
     ]
   },
@@ -6127,7 +9123,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 786
+        "line": 824
       }
     ]
   },
@@ -6160,7 +9156,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 791
+        "line": 829
       }
     ]
   },
@@ -6191,7 +9187,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 794
+        "line": 832
       }
     ]
   },
@@ -6222,7 +9218,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 799
+        "line": 837
       }
     ]
   },
@@ -6253,7 +9249,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 827
+        "line": 865
       }
     ]
   },
@@ -6284,7 +9280,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 863
+        "line": 901
       }
     ]
   },
@@ -6317,7 +9313,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 874
+        "line": 912
       }
     ]
   },
@@ -6348,7 +9344,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 881
+        "line": 919
       }
     ]
   },
@@ -6379,7 +9375,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 884
+        "line": 922
       }
     ]
   },
@@ -6410,7 +9406,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 888
+        "line": 926
       }
     ]
   },
@@ -6441,7 +9437,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 905
+        "line": 943
       }
     ]
   },
@@ -6474,7 +9470,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 931
+        "line": 969
       }
     ]
   },
@@ -6505,7 +9501,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 940
+        "line": 978
       }
     ]
   },
@@ -6538,7 +9534,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 946
+        "line": 984
       }
     ]
   },
@@ -6571,27 +9567,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 948
+        "line": 986
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1771
+        "line": 1809
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2053
+        "line": 2091
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2125
+        "line": 2163
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2466
+        "line": 2504
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2580
+        "line": 2618
       }
     ]
   },
@@ -6624,7 +9620,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 954
+        "line": 992
       }
     ]
   },
@@ -6657,7 +9653,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 955
+        "line": 993
       }
     ]
   },
@@ -6690,7 +9686,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 956
+        "line": 994
       }
     ]
   },
@@ -6723,7 +9719,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 957
+        "line": 995
       }
     ]
   },
@@ -6754,7 +9750,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 960
+        "line": 998
       }
     ]
   },
@@ -6787,7 +9783,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 963
+        "line": 1001
       }
     ]
   },
@@ -6820,31 +9816,31 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 987
+        "line": 1025
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1031
+        "line": 1069
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1729
+        "line": 1767
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1901
+        "line": 1939
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2089
+        "line": 2127
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2183
+        "line": 2221
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2680
+        "line": 2718
       }
     ]
   },
@@ -6875,7 +9871,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1002
+        "line": 1040
       }
     ]
   },
@@ -6908,7 +9904,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1012
+        "line": 1050
       }
     ]
   },
@@ -6941,7 +9937,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1037
+        "line": 1075
       }
     ]
   },
@@ -6974,7 +9970,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1062
+        "line": 1100
       }
     ]
   },
@@ -7005,7 +10001,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1071
+        "line": 1109
       }
     ]
   },
@@ -7038,7 +10034,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1081
+        "line": 1119
       }
     ]
   },
@@ -7071,7 +10067,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1095
+        "line": 1133
       }
     ]
   },
@@ -7102,27 +10098,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1101
+        "line": 1139
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2230
+        "line": 2268
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2309
+        "line": 2347
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2409
+        "line": 2447
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2522
+        "line": 2560
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3905
+        "line": 3943
       }
     ]
   },
@@ -7155,15 +10151,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1113
+        "line": 1151
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1587
+        "line": 1625
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2340
+        "line": 2378
       }
     ]
   },
@@ -7196,7 +10192,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1124
+        "line": 1162
       }
     ]
   },
@@ -7229,7 +10225,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1134
+        "line": 1172
       }
     ]
   },
@@ -7262,7 +10258,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1138
+        "line": 1176
       }
     ]
   },
@@ -7295,7 +10291,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1139
+        "line": 1177
       }
     ]
   },
@@ -7328,7 +10324,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1153
+        "line": 1191
       }
     ]
   },
@@ -7361,7 +10357,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1158
+        "line": 1196
       }
     ]
   },
@@ -7394,7 +10390,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1166
+        "line": 1204
       }
     ]
   },
@@ -7425,7 +10421,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1176
+        "line": 1214
       }
     ]
   },
@@ -7456,11 +10452,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1180
+        "line": 1218
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1268
+        "line": 1306
       }
     ]
   },
@@ -7491,7 +10487,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1181
+        "line": 1219
       }
     ]
   },
@@ -7522,7 +10518,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1184
+        "line": 1222
       }
     ]
   },
@@ -7553,7 +10549,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1188
+        "line": 1226
       }
     ]
   },
@@ -7584,7 +10580,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1193
+        "line": 1231
       }
     ]
   },
@@ -7615,7 +10611,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1197
+        "line": 1235
       }
     ]
   },
@@ -7646,7 +10642,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1227
+        "line": 1265
       }
     ]
   },
@@ -7677,7 +10673,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1237
+        "line": 1275
       }
     ]
   },
@@ -7708,7 +10704,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1251
+        "line": 1289
       }
     ]
   },
@@ -7739,7 +10735,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1264
+        "line": 1302
       }
     ]
   },
@@ -7770,7 +10766,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1271
+        "line": 1309
       }
     ]
   },
@@ -7801,7 +10797,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1275
+        "line": 1313
       }
     ]
   },
@@ -7832,7 +10828,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1277
+        "line": 1315
       }
     ]
   },
@@ -7863,7 +10859,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1280
+        "line": 1318
       }
     ]
   },
@@ -7894,7 +10890,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1316
+        "line": 1354
       }
     ]
   },
@@ -7925,7 +10921,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1326
+        "line": 1364
       }
     ]
   },
@@ -7956,7 +10952,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1339
+        "line": 1377
       }
     ]
   },
@@ -7987,7 +10983,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1350
+        "line": 1388
       }
     ]
   },
@@ -8018,7 +11014,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1359
+        "line": 1397
       }
     ]
   },
@@ -8049,7 +11045,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1363
+        "line": 1401
       }
     ]
   },
@@ -8080,7 +11076,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1366
+        "line": 1404
       }
     ]
   },
@@ -8111,7 +11107,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1370
+        "line": 1408
       }
     ]
   },
@@ -8142,7 +11138,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1388
+        "line": 1426
       }
     ]
   },
@@ -8173,7 +11169,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1398
+        "line": 1436
       }
     ]
   },
@@ -8204,7 +11200,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1413
+        "line": 1451
       }
     ]
   },
@@ -8237,7 +11233,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1426
+        "line": 1464
       }
     ]
   },
@@ -8270,7 +11266,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1513
+        "line": 1551
       }
     ]
   },
@@ -8303,7 +11299,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1598
+        "line": 1636
       }
     ]
   },
@@ -8336,7 +11332,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1625
+        "line": 1663
       }
     ]
   },
@@ -8369,7 +11365,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1644
+        "line": 1682
       }
     ]
   },
@@ -8402,7 +11398,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1743
+        "line": 1781
       }
     ]
   },
@@ -8435,7 +11431,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1757
+        "line": 1795
       }
     ]
   },
@@ -8468,7 +11464,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1763
+        "line": 1801
       }
     ]
   },
@@ -8501,11 +11497,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1769
+        "line": 1807
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2123
+        "line": 2161
       }
     ]
   },
@@ -8538,19 +11534,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1772
+        "line": 1810
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2054
+        "line": 2092
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2126
+        "line": 2164
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2225
+        "line": 2263
       }
     ]
   },
@@ -8583,11 +11579,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1775
+        "line": 1813
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2129
+        "line": 2167
       }
     ]
   },
@@ -8620,11 +11616,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1782
+        "line": 1820
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2136
+        "line": 2174
       }
     ]
   },
@@ -8655,19 +11651,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1789
+        "line": 1827
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2063
+        "line": 2101
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2143
+        "line": 2181
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2594
+        "line": 2632
       }
     ]
   },
@@ -8700,7 +11696,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1794
+        "line": 1832
       }
     ]
   },
@@ -8733,7 +11729,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1795
+        "line": 1833
       }
     ]
   },
@@ -8764,7 +11760,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1796
+        "line": 1834
       }
     ]
   },
@@ -8797,7 +11793,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1797
+        "line": 1835
       }
     ]
   },
@@ -8830,7 +11826,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1798
+        "line": 1836
       }
     ]
   },
@@ -8863,11 +11859,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1799
+        "line": 1837
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2149
+        "line": 2187
       }
     ]
   },
@@ -8900,15 +11896,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1802
+        "line": 1840
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2071
+        "line": 2109
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2152
+        "line": 2190
       }
     ]
   },
@@ -8941,7 +11937,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1806
+        "line": 1844
       }
     ]
   },
@@ -8974,7 +11970,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1811
+        "line": 1849
       }
     ]
   },
@@ -9007,7 +12003,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1818
+        "line": 1856
       }
     ]
   },
@@ -9040,15 +12036,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1838
+        "line": 1876
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2164
+        "line": 2202
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2656
+        "line": 2694
       }
     ]
   },
@@ -9081,11 +12077,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1840
+        "line": 1878
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2166
+        "line": 2204
       }
     ]
   },
@@ -9118,11 +12114,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1842
+        "line": 1880
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2168
+        "line": 2206
       }
     ]
   },
@@ -9155,7 +12151,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1854
+        "line": 1892
       }
     ]
   },
@@ -9188,7 +12184,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1855
+        "line": 1893
       }
     ]
   },
@@ -9221,7 +12217,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1856
+        "line": 1894
       }
     ]
   },
@@ -9254,7 +12250,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1857
+        "line": 1895
       }
     ]
   },
@@ -9287,7 +12283,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1876
+        "line": 1914
       }
     ]
   },
@@ -9320,7 +12316,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1878
+        "line": 1916
       }
     ]
   },
@@ -9353,7 +12349,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1889
+        "line": 1927
       }
     ]
   },
@@ -9386,7 +12382,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1889
+        "line": 1927
       }
     ]
   },
@@ -9417,7 +12413,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1981
+        "line": 2019
       }
     ]
   },
@@ -9450,7 +12446,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2008
+        "line": 2046
       }
     ]
   },
@@ -9483,7 +12479,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2020
+        "line": 2058
       }
     ]
   },
@@ -9516,7 +12512,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2028
+        "line": 2066
       }
     ]
   },
@@ -9549,7 +12545,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2037
+        "line": 2075
       }
     ]
   },
@@ -9582,7 +12578,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2043
+        "line": 2081
       }
     ]
   },
@@ -9615,7 +12611,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2049
+        "line": 2087
       }
     ]
   },
@@ -9648,7 +12644,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2055
+        "line": 2093
       }
     ]
   },
@@ -9681,7 +12677,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2058
+        "line": 2096
       }
     ]
   },
@@ -9714,7 +12710,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2068
+        "line": 2106
       }
     ]
   },
@@ -9747,7 +12743,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2075
+        "line": 2113
       }
     ]
   },
@@ -9780,7 +12776,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2101
+        "line": 2139
       }
     ]
   },
@@ -9813,7 +12809,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2111
+        "line": 2149
       }
     ]
   },
@@ -9846,7 +12842,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2117
+        "line": 2155
       }
     ]
   },
@@ -9879,7 +12875,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2148
+        "line": 2186
       }
     ]
   },
@@ -9912,7 +12908,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2190
+        "line": 2228
       }
     ]
   },
@@ -9945,7 +12941,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2201
+        "line": 2239
       }
     ]
   },
@@ -9978,7 +12974,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2209
+        "line": 2247
       }
     ]
   },
@@ -10011,7 +13007,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2217
+        "line": 2255
       }
     ]
   },
@@ -10044,15 +13040,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2223
+        "line": 2261
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2302
+        "line": 2340
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2508
+        "line": 2546
       }
     ]
   },
@@ -10085,7 +13081,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2226
+        "line": 2264
       }
     ]
   },
@@ -10118,7 +13114,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2227
+        "line": 2265
       }
     ]
   },
@@ -10151,7 +13147,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2252
+        "line": 2290
       }
     ]
   },
@@ -10184,7 +13180,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2280
+        "line": 2318
       }
     ]
   },
@@ -10217,7 +13213,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2288
+        "line": 2326
       }
     ]
   },
@@ -10250,7 +13246,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2296
+        "line": 2334
       }
     ]
   },
@@ -10283,11 +13279,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2304
+        "line": 2342
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2581
+        "line": 2619
       }
     ]
   },
@@ -10320,7 +13316,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2305
+        "line": 2343
       }
     ]
   },
@@ -10353,7 +13349,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2306
+        "line": 2344
       }
     ]
   },
@@ -10386,7 +13382,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2332
+        "line": 2370
       }
     ]
   },
@@ -10419,7 +13415,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2351
+        "line": 2389
       }
     ]
   },
@@ -10452,7 +13448,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2382
+        "line": 2420
       }
     ]
   },
@@ -10485,7 +13481,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2390
+        "line": 2428
       }
     ]
   },
@@ -10518,7 +13514,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2398
+        "line": 2436
       }
     ]
   },
@@ -10551,7 +13547,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2402
+        "line": 2440
       }
     ]
   },
@@ -10584,7 +13580,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2403
+        "line": 2441
       }
     ]
   },
@@ -10617,7 +13613,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2404
+        "line": 2442
       }
     ]
   },
@@ -10650,7 +13646,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2405
+        "line": 2443
       }
     ]
   },
@@ -10683,7 +13679,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2406
+        "line": 2444
       }
     ]
   },
@@ -10716,11 +13712,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2440
+        "line": 2478
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2446
+        "line": 2484
       }
     ]
   },
@@ -10753,7 +13749,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2456
+        "line": 2494
       }
     ]
   },
@@ -10786,7 +13782,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2462
+        "line": 2500
       }
     ]
   },
@@ -10819,7 +13815,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2467
+        "line": 2505
       }
     ]
   },
@@ -10852,7 +13848,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2468
+        "line": 2506
       }
     ]
   },
@@ -10885,7 +13881,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2492
+        "line": 2530
       }
     ]
   },
@@ -10918,7 +13914,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2502
+        "line": 2540
       }
     ]
   },
@@ -10951,7 +13947,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2512
+        "line": 2550
       }
     ]
   },
@@ -10984,7 +13980,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2516
+        "line": 2554
       }
     ]
   },
@@ -11017,7 +14013,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2519
+        "line": 2557
       }
     ]
   },
@@ -11050,7 +14046,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2548
+        "line": 2586
       }
     ]
   },
@@ -11083,7 +14079,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2558
+        "line": 2596
       }
     ]
   },
@@ -11116,7 +14112,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2566
+        "line": 2604
       }
     ]
   },
@@ -11149,7 +14145,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2572
+        "line": 2610
       }
     ]
   },
@@ -11182,7 +14178,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2578
+        "line": 2616
       }
     ]
   },
@@ -11215,7 +14211,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2584
+        "line": 2622
       }
     ]
   },
@@ -11248,7 +14244,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2589
+        "line": 2627
       }
     ]
   },
@@ -11281,7 +14277,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2599
+        "line": 2637
       }
     ]
   },
@@ -11312,7 +14308,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2602
+        "line": 2640
       }
     ]
   },
@@ -11345,7 +14341,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2608
+        "line": 2646
       }
     ]
   },
@@ -11378,7 +14374,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2613
+        "line": 2651
       }
     ]
   },
@@ -11411,7 +14407,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2616
+        "line": 2654
       }
     ]
   },
@@ -11444,7 +14440,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2619
+        "line": 2657
       }
     ]
   },
@@ -11477,7 +14473,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2623
+        "line": 2661
       }
     ]
   },
@@ -11510,7 +14506,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2627
+        "line": 2665
       }
     ]
   },
@@ -11543,7 +14539,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2634
+        "line": 2672
       }
     ]
   },
@@ -11576,7 +14572,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2658
+        "line": 2696
       }
     ]
   },
@@ -11609,7 +14605,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2660
+        "line": 2698
       }
     ]
   },
@@ -11642,7 +14638,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2709
+        "line": 2747
       }
     ]
   },
@@ -11675,7 +14671,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2722
+        "line": 2760
       }
     ]
   },
@@ -11708,7 +14704,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2725
+        "line": 2763
       }
     ]
   },
@@ -11741,11 +14737,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2729
+        "line": 2767
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3089
+        "line": 3127
       }
     ]
   },
@@ -11778,7 +14774,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2748
+        "line": 2786
       }
     ]
   },
@@ -11811,15 +14807,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2797
+        "line": 2835
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3059
+        "line": 3097
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3134
+        "line": 3172
       }
     ]
   },
@@ -11852,7 +14848,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2838
+        "line": 2876
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -11921,7 +14917,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2839
+        "line": 2877
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -11962,7 +14958,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2840
+        "line": 2878
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -11999,15 +14995,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2841
+        "line": 2879
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3253
+        "line": 3291
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3377
+        "line": 3415
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12048,7 +15044,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2910
+        "line": 2948
       }
     ]
   },
@@ -12081,7 +15077,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2913
+        "line": 2951
       }
     ]
   },
@@ -12114,7 +15110,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2914
+        "line": 2952
       }
     ]
   },
@@ -12147,7 +15143,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2918
+        "line": 2956
       }
     ]
   },
@@ -12180,11 +15176,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2920
+        "line": 2958
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2988
+        "line": 3026
       }
     ]
   },
@@ -12217,11 +15213,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2922
+        "line": 2960
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2990
+        "line": 3028
       }
     ]
   },
@@ -12254,11 +15250,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2924
+        "line": 2962
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2992
+        "line": 3030
       }
     ]
   },
@@ -12291,11 +15287,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2926
+        "line": 2964
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2994
+        "line": 3032
       }
     ]
   },
@@ -12328,11 +15324,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2928
+        "line": 2966
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2996
+        "line": 3034
       }
     ]
   },
@@ -12365,7 +15361,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3079
+        "line": 3117
       }
     ]
   },
@@ -12398,7 +15394,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3085
+        "line": 3123
       }
     ]
   },
@@ -12431,7 +15427,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3177
+        "line": 3215
       }
     ]
   },
@@ -12464,7 +15460,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3183
+        "line": 3221
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12501,7 +15497,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3187
+        "line": 3225
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12538,7 +15534,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3196
+        "line": 3234
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12575,7 +15571,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3197
+        "line": 3235
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12612,7 +15608,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3207
+        "line": 3245
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12649,11 +15645,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3208
+        "line": 3246
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3332
+        "line": 3370
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12694,11 +15690,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3231
+        "line": 3269
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3355
+        "line": 3393
       },
       {
         "file": "src/cli/usage.ts",
@@ -12747,19 +15743,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3302
+        "line": 3340
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3305
+        "line": 3343
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3424
+        "line": 3462
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3427
+        "line": 3465
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12796,11 +15792,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3303
+        "line": 3341
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3425
+        "line": 3463
       }
     ]
   },
@@ -12833,7 +15829,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3311
+        "line": 3349
       }
     ]
   },
@@ -12866,7 +15862,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3316
+        "line": 3354
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12903,7 +15899,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3317
+        "line": 3355
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12948,7 +15944,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3318
+        "line": 3356
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -12993,7 +15989,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3319
+        "line": 3357
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -13030,7 +16026,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3320
+        "line": 3358
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -13067,7 +16063,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3321
+        "line": 3359
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -13104,7 +16100,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3322
+        "line": 3360
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -13141,7 +16137,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3331
+        "line": 3369
       },
       {
         "file": "src/dashboard-app/app.js",
@@ -13180,7 +16176,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3437
+        "line": 3475
       }
     ]
   },
@@ -13211,7 +16207,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3447
+        "line": 3485
       }
     ]
   },
@@ -13242,7 +16238,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3448
+        "line": 3486
       }
     ]
   },
@@ -13273,7 +16269,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3449
+        "line": 3487
       }
     ]
   },
@@ -13306,7 +16302,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3450
+        "line": 3488
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -13341,7 +16337,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3451
+        "line": 3489
       }
     ]
   },
@@ -13372,7 +16368,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3452
+        "line": 3490
       }
     ]
   },
@@ -13403,7 +16399,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3455
+        "line": 3493
       }
     ]
   },
@@ -13434,7 +16430,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3457
+        "line": 3495
       }
     ]
   },
@@ -13465,7 +16461,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3477
+        "line": 3515
       }
     ]
   },
@@ -13496,7 +16492,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3481
+        "line": 3519
       }
     ]
   },
@@ -13527,7 +16523,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3501
+        "line": 3539
       }
     ]
   },
@@ -13560,7 +16556,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3505
+        "line": 3543
       }
     ]
   },
@@ -13593,7 +16589,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3508
+        "line": 3546
       }
     ]
   },
@@ -13626,7 +16622,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3514
+        "line": 3552
       },
       {
         "file": "src/cli/purge-locale.ts",
@@ -13667,7 +16663,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3540
+        "line": 3578
       }
     ]
   },
@@ -13700,7 +16696,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3550
+        "line": 3588
       }
     ]
   },
@@ -13733,7 +16729,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3576
+        "line": 3614
       }
     ]
   },
@@ -13766,7 +16762,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3580
+        "line": 3618
       }
     ]
   },
@@ -13799,7 +16795,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3595
+        "line": 3633
       }
     ]
   },
@@ -13832,7 +16828,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3612
+        "line": 3650
       }
     ]
   },
@@ -13865,7 +16861,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3622
+        "line": 3660
       }
     ]
   },
@@ -13896,7 +16892,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3628
+        "line": 3666
       }
     ]
   },
@@ -13929,7 +16925,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3650
+        "line": 3688
       }
     ]
   },
@@ -13962,7 +16958,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3654
+        "line": 3692
       }
     ]
   },
@@ -13995,7 +16991,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3655
+        "line": 3693
       }
     ]
   },
@@ -14028,7 +17024,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3656
+        "line": 3694
       }
     ]
   },
@@ -14061,7 +17057,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3669
+        "line": 3707
       }
     ]
   },
@@ -14094,7 +17090,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3675
+        "line": 3713
       }
     ]
   },
@@ -14127,7 +17123,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3679
+        "line": 3717
       }
     ]
   },
@@ -14160,7 +17156,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3680
+        "line": 3718
       }
     ]
   },
@@ -14193,7 +17189,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3681
+        "line": 3719
       }
     ]
   },
@@ -14226,7 +17222,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3684
+        "line": 3722
       }
     ]
   },
@@ -14257,7 +17253,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3689
+        "line": 3727
       }
     ]
   },
@@ -14290,7 +17286,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3695
+        "line": 3733
       }
     ]
   },
@@ -14323,7 +17319,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3716
+        "line": 3754
       }
     ]
   },
@@ -14354,7 +17350,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3768
+        "line": 3806
       }
     ]
   },
@@ -14387,7 +17383,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3803
+        "line": 3841
       }
     ]
   },
@@ -14420,7 +17416,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3828
+        "line": 3866
       }
     ]
   },
@@ -14453,7 +17449,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3846
+        "line": 3884
       }
     ]
   },
@@ -14486,7 +17482,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3850
+        "line": 3888
       }
     ]
   },
@@ -14519,7 +17515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3862
+        "line": 3900
       }
     ]
   },
@@ -14552,7 +17548,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3864
+        "line": 3902
       }
     ]
   },
@@ -14583,7 +17579,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3876
+        "line": 3914
       }
     ]
   },
@@ -14616,11 +17612,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3880
+        "line": 3918
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3887
+        "line": 3925
       }
     ]
   },
@@ -14653,11 +17649,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3881
+        "line": 3919
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3888
+        "line": 3926
       }
     ]
   },
@@ -14690,7 +17686,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3886
+        "line": 3924
       }
     ]
   },
@@ -14723,7 +17719,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3891
+        "line": 3929
       }
     ]
   },
@@ -14756,7 +17752,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3899
+        "line": 3937
       }
     ]
   },
@@ -14789,7 +17785,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3902
+        "line": 3940
       }
     ]
   },
@@ -14822,7 +17818,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3916
+        "line": 3954
       }
     ]
   },
@@ -14853,7 +17849,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3923
+        "line": 3961
       }
     ]
   },
@@ -14886,7 +17882,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3948
+        "line": 3986
       }
     ]
   },
@@ -14919,7 +17915,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3952
+        "line": 3990
       }
     ]
   },
@@ -14952,7 +17948,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3963
+        "line": 4001
       }
     ]
   },
@@ -14985,7 +17981,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3974
+        "line": 4012
       }
     ]
   },
@@ -15018,7 +18014,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3977
+        "line": 4015
       }
     ]
   },
@@ -15051,7 +18047,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3987
+        "line": 4025
       }
     ]
   },
@@ -15084,7 +18080,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3991
+        "line": 4029
       },
       {
         "file": "src/cli/write-heading-ids.ts",
@@ -20160,49 +23156,6 @@
       {
         "file": "src/dashboard-app/app.js",
         "line": 2885
-      }
-    ]
-  },
-  "27703c8f": {
-    "source": "Provider",
-    "translated": {
-      "ja": "プロバイダー",
-      "hi": "प्रदाता",
-      "de": "Provider",
-      "es": "Proveedor",
-      "fr": "Fournisseur",
-      "zh-Hans": "提供商",
-      "ko": "제공자",
-      "zh-Hant": "供應商",
-      "pt-BR": "Provedor"
-    },
-    "models": {
-      "ja": "z-ai/glm-5.2",
-      "hi": "qwen/qwen3.7-max",
-      "de": "qwen/qwen3.7-max",
-      "es": "qwen/qwen3.7-max",
-      "fr": "qwen/qwen3.7-max",
-      "zh-Hans": "z-ai/glm-5.2",
-      "ko": "z-ai/glm-5.2",
-      "zh-Hant": "z-ai/glm-5.2",
-      "pt-BR": "qwen/qwen3.7-max"
-    },
-    "locations": [
-      {
-        "file": "src/cli/usage.ts",
-        "line": 184
-      },
-      {
-        "file": "src/cli/usage.ts",
-        "line": 194
-      },
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 2971
-      },
-      {
-        "file": "src/dashboard-app/index.html",
-        "line": 769
       }
     ]
   },

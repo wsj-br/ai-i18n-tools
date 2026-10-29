@@ -136,17 +136,36 @@ function ensureCacheExitHook(): void {
 export class TranslationCache {
   private db: Sqlite.DatabaseSync;
   private readonly dbFilePath: string | null;
+  private readonly readOnly: boolean;
   private closed = false;
   /** True when this instance inserted at least one `api_calls` row (triggers end-of-run rollup). */
   private recordedApiCallsThisSession = false;
 
-  constructor(cachePath: string) {
+  /**
+   * @param options.readOnly Open an existing `cache.db` without creating the directory,
+   * migrating, or writing a WAL checkpoint. Throws {@link CacheError} when the file is absent.
+   */
+  constructor(cachePath: string, options?: { readOnly?: boolean }) {
     const { DatabaseSync } = loadSqlite();
+    this.readOnly = options?.readOnly === true;
 
     if (cachePath === ":memory:") {
+      if (this.readOnly) {
+        throw new CacheError("A read-only cache cannot use :memory:");
+      }
       this.dbFilePath = null;
       this.db = new DatabaseSync(":memory:");
       this.applyMigrations();
+      return;
+    }
+
+    if (this.readOnly) {
+      const dbFile = path.join(cachePath, "cache.db");
+      if (!fs.existsSync(dbFile)) {
+        throw new CacheError(`cache database not found: ${dbFile}`);
+      }
+      this.dbFilePath = dbFile;
+      this.db = new DatabaseSync(dbFile, { readOnly: true });
       return;
     }
 
@@ -2323,7 +2342,7 @@ export class TranslationCache {
     }
     this.closed = true;
     openCaches.delete(this);
-    if (this.dbFilePath !== null) {
+    if (this.dbFilePath !== null && !this.readOnly) {
       try {
         // Flush the WAL back into the main db before closing. When this is the last connection to
         // the database, `db.close()` then unlinks the `-wal` / `-shm` sidecar files automatically.

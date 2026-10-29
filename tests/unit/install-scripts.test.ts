@@ -113,7 +113,7 @@ function withTempDirs(run: (home: string, release: string) => void): void {
 }
 
 describe("install scripts", () => {
-  it("install.sh is a POSIX script the release workflow uploads", () => {
+  it("install.sh is a POSIX script and stays in the repository", () => {
     const source = fs.readFileSync(installSh, "utf8");
     const syntax = spawnSync("sh", ["-n", installSh], { encoding: "utf8" });
     expect(syntax.status, syntax.stderr).toBe(0);
@@ -127,8 +127,11 @@ describe("install scripts", () => {
       path.join(repoRoot, ".github/workflows/release-binaries.yml"),
       "utf8"
     );
-    expect(workflow).toContain('"$GITHUB_WORKSPACE/install.sh"');
-    expect(workflow).toContain('"$GITHUB_WORKSPACE/install.ps1"');
+    expect(workflow).toContain("install.sh and install.ps1 stay in the repository");
+    expect(workflow).toContain("ai-i18n-tools-*");
+    expect(workflow).toContain("SHA256SUMS.txt");
+    expect(workflow).not.toContain('"$GITHUB_WORKSPACE/install.sh"');
+    expect(workflow).not.toContain('"$GITHUB_WORKSPACE/install.ps1"');
   });
 
   it("install.ps1 verifies the checksum and installs ai-i18n-tools.exe", () => {

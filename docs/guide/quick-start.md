@@ -73,7 +73,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-Use `ui-python-gettext`, `ui-python-flask`, or `ui-python-django` for those setups. Then follow [Add i18n to a Python app](/guide/add-i18n-to-python).
+Then follow [Add i18n to a Python app](/guide/add-i18n-to-python).
+
+A Django app, Flask with Flask-Babel catalogs, or an app that already calls `gettext` keeps those calls. Scaffold with `ui-python-django`, `ui-python-flask`, or `ui-python-gettext` instead, then follow [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext).
 
 <a id="a-website-or-documentation-site"></a>
 ### A website or documentation site
@@ -125,11 +127,12 @@ The full template list, with every `init` option, is in the [CLI setup reference
 When your project is ready:
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync` runs every step your config enables, in order. `status` shows what is translated per locale. A first run on a project the tool cannot see text in finishes without error and writes nothing useful, so if `status` shows no strings, go back to the guide for your path.
+`doctor` checks that the config, paths, providers, and environment are ready. It also verifies model ids with the provider unless you pass `--local`. `sync` runs every step your config enables, in order. `status` shows what is translated per locale. A first run on a project the tool cannot see text in finishes without error and writes nothing useful, so if `status` shows no strings, go back to the guide for your path.
 
 `suggest-models` ranks the active provider's chat models from published benchmarks. `suggest-models --apply` replaces `translationModels` and leaves `uiModels` and `localeModels` alone. The same ranking is on the dashboard **Models** tab. How the ranking works, and why the list holds more than one model: [AI Models](/guide/ai-models). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 

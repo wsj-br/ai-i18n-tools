@@ -3,7 +3,7 @@
 
 This page installs the CLI and gets the bare `ai-i18n-tools` command working. Already installed? Go to [Quick start](/guide/quick-start).
 
-The published package is ESM-only. Use `import` or `import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported. The npm tarball includes English files under `docs/` only; locale-specific copies under `translated-docs/` are in the [GitHub repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
+The published package is ESM-only. Use `import` or `import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported. The npm tarball includes the consumer context at `docs/ai-i18n-tools-context.md` and the complete `skills/ai-i18n-tools/` directory, not the full documentation site; locale-specific copies under `translated-docs/` are in the [GitHub repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
 
 ```bash
 npm install ai-i18n-tools
@@ -88,9 +88,10 @@ Set the API key for the active provider the same way as an npm install (see belo
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
 ai-i18n-tools suggest-models --apply
-ai-i18n-tools extract
-ai-i18n-tools translate-ui
+ai-i18n-tools sync
 ```
+
+Use `init` only for a new configuration: it overwrites the selected config file. For existing projects, edit the config instead. `sync` handles all configured/enabled translation pipelines, including UI extraction.
 
 Walkthrough: [Add i18n to a Python app](/guide/add-i18n-to-python). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
@@ -117,7 +118,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="using-the-cli"></a>
 ### Using the CLI
 
-Install `ai-i18n-tools` as a dependency or devDependency in your project (see the top of this page). The package declares a `bin` entry that your package manager links to `node_modules/.bin/ai-i18n-tools`. That shim (`bin/ai-i18n-tools.mjs` inside the installed package) loads the compiled CLI.
+Install `ai-i18n-tools` as a dependency or devDependency in your project (see the top of this page). If app code imports `ai-i18n-tools/runtime`, keep it available in the production runtime/build environment; a global CLI or standalone binary cannot satisfy that import. The package declares a `bin` entry that your package manager links to `node_modules/.bin/ai-i18n-tools`. That shim (`bin/ai-i18n-tools.mjs` inside the installed package) loads the compiled CLI.
 
 To type the bare `ai-i18n-tools` command in an interactive shell, configure one of the options below. Without setup, the shell cannot find the binary even after a local install.
 
@@ -166,6 +167,37 @@ package.json scripts — when npm or pnpm runs a script, it prepends `node_modul
 Then run e.g. `pnpm run i18n:sync`. See [Recommended package.json scripts](/guide/quick-start#recommended-packagejson-scripts) for the full recommended set.
 
 Alternatives — if you prefer not to adjust `PATH`: `npx ai-i18n-tools …` (npm) or `pnpm exec ai-i18n-tools …` (pnpm). For a zero-install one-off with no `package.json` entry: `npx ai-i18n-tools <cmd>` or `pnpm dlx ai-i18n-tools <cmd>`.
+
+<a id="coding-agent-skill"></a>
+### Coding-agent skill
+
+The [portable consumer skill](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools) teaches installation and maintenance with `ai-i18n-tools sync`. It loads only the relevant JS/TS, Python, documentation, assets/links/SVG, or JSON references. Installing the npm package or standalone executable does not automatically register it with an agent.
+
+1. Obtain the whole `skills/ai-i18n-tools/` directory. With npm installation, it is at `node_modules/ai-i18n-tools/skills/ai-i18n-tools/`. Without Node.js, download or clone the [repository at the release tag](https://github.com/wsj-br/ai-i18n-tools/tags) matching `ai-i18n-tools --version`; the standalone executable does not bundle skill files.
+2. Copy that directory, including `references/`, into one supported project location below. The final path must end in `ai-i18n-tools/SKILL.md`. Inspect an existing destination before replacing it; do not install duplicate copies into several discovery directories for the same agent.
+3. Reload skills or start a new agent session as required by that agent. Ask it to use the `ai-i18n-tools` skill, and verify it can read a bundled reference. Discovery does not guarantee automatic invocation.
+
+Supported project locations (see each agent's documentation for personal/global locations and version differences):
+
+- [Cursor](https://cursor.com/docs/skills): `.cursor/skills/` or `.agents/skills/`.
+- [Claude Code](https://code.claude.com/docs/en/skills): `.claude/skills/`.
+- [GitHub Copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/create-skills): `.github/skills/`; available in supported agent surfaces, not every Copilot chat interface.
+- [Antigravity](https://antigravity.google/docs/skills/): `.agents/skills/` in current documentation; check the installed product surface/version for legacy `.agent/skills/` support and global paths.
+- [OpenCode](https://opencode.ai/docs/skills/): `.opencode/skills/` or `.agents/skills/`.
+- [Cline](https://docs.cline.bot/customization/skills): `.cline/skills/`.
+
+These are documented discovery paths, not a claim of execution testing in all six agents. The portable skill uses standard `name`/`description` metadata and relative bundled references, without agent-specific permissions or executable scripts. Keep copied skills aligned with the CLI version; a package upgrade does not update separately installed copies.
+
+For prompt-only use or an agent without skills, reference the [consumer context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) from project instructions such as `AGENTS.md`:
+
+```markdown
+Before installing or maintaining ai-i18n-tools, read
+https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md
+and follow only the linked reference that matches this project.
+Use ai-i18n-tools sync for the configured workflow.
+```
+
+That context file uses documentation-site and repository URLs, so it can be copied without the rest of this repository. For an older release, use the same path on the matching tag. Do not use upstream maintainer `AGENTS.md` as consumer instructions.
 
 <a id="cloned-monorepo"></a>
 ### Cloned monorepo

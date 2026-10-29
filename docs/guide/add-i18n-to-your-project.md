@@ -31,7 +31,8 @@ Every walkthrough follows the same order. The page you pick fills in the details
 | You have | Page | What that page covers |
 | --- | --- | --- |
 | A JS/TS app (React, Next.js, Node, CLI) whose buttons and messages are still plain text | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) | Install i18next, add the bootstrap, wrap literals in `t()`, then `extract` and `translate-ui` |
-| A Python app (Streamlit, FastAPI, Flask, Django, gettext) | [Add i18n to a Python app](/guide/add-i18n-to-python) | Wrap `t()` or `_()`, or keep GNU gettext. The CLI can run from a standalone executable with no Node.js install |
+| A Python app (Streamlit, FastAPI, Flask, desktop, scripts) | [Add i18n to a Python app](/guide/add-i18n-to-python) | Place the `i18n.py` helper, wrap `t()` or `_()`, add a language switch. The CLI can run from a standalone executable with no Node.js install |
+| A Django app, Flask with Flask-Babel catalogs, or any app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) | Keep `gettext`, `{% blocktranslate %}`, and your `.po` files. The tool fills and compiles the catalogs |
 | A documentation or marketing site (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) | Enable the framework's own language routes, then translate pages and theme labels |
 | A repository README and other Markdown files, usually next to an app | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) | One file per language (`translated-docs/README.de.md`) and a language row in the README. `init --with-readme` adds that block to any template |
 | More than one of the above in one repository | [Combining pipelines](/guide/combining-pipelines) | One config and one `sync`. The usual pair is app UI strings plus the README |

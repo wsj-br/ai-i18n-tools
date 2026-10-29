@@ -22,41 +22,75 @@ export interface RunCheckModelsResult {
   exitCode: number;
 }
 
-export async function runCheckModels(config: I18nConfig): Promise<RunCheckModelsResult> {
+export interface ModelCatalogStatus {
+  activeProvider: string;
+  configured: string[];
+  ok: { id: string; entry: ProviderModelEntry }[];
+  missing: { id: string }[];
+  expired: { id: string; expirationDate: string }[];
+  /** Set when the catalog request did not run or failed. */
+  error?: string;
+  catalogUrl?: string;
+  zeroDataRetention?: boolean;
+}
+
+/**
+ * Fetch the active provider catalog and classify configured model ids.
+ * Does not print. `check-models` and `doctor` share this.
+ */
+export async function loadConfiguredModelCatalogStatus(
+  config: I18nConfig,
+  opts?: { xTitle?: string; fetchImpl?: typeof fetch }
+): Promise<ModelCatalogStatus> {
   let activeProvider: string;
   try {
     activeProvider = resolveActiveProvider(config);
   } catch (e) {
-    console.error(chalk.red(e instanceof Error ? e.message : String(e)));
-    return { exitCode: 1 };
-  }
-
-  const translationModels = resolveTranslationModels(config);
-  if (translationModels.length === 0) {
-    console.error(
-      chalk.red(
-        t("No models configured (set {{configKey}}).", {
-          configKey: `providers.${activeProvider}.translationModels`,
-        })
-      )
-    );
-    return { exitCode: 1 };
+    return {
+      activeProvider: "",
+      configured: [],
+      ok: [],
+      missing: [],
+      expired: [],
+      error: e instanceof Error ? e.message : String(e),
+    };
   }
 
   const configured = resolveAllConfiguredModelIds(config);
+  const empty = {
+    activeProvider,
+    configured,
+    ok: [] as { id: string; entry: ProviderModelEntry }[],
+    missing: [] as { id: string }[],
+    expired: [] as { id: string; expirationDate: string }[],
+  };
 
-  const settings = resolveProviderSettings(activeProvider, config);
-  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
-  if (!apiKey && settings.requiresApiKey) {
-    console.error(
-      chalk.red(t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }))
-    );
-    return { exitCode: 1 };
+  if (resolveTranslationModels(config).length === 0) {
+    return {
+      ...empty,
+      error: t("No models configured (set {{configKey}}).", {
+        configKey: `providers.${activeProvider}.translationModels`,
+      }),
+    };
   }
 
-  const isOpenRouter = activeProvider === OPENROUTER_PROVIDER_KEY;
+  let settings;
+  try {
+    settings = resolveProviderSettings(activeProvider, config);
+  } catch (e) {
+    return { ...empty, error: e instanceof Error ? e.message : String(e) };
+  }
+
+  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  if (!apiKey && settings.requiresApiKey) {
+    return {
+      ...empty,
+      error: t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }),
+    };
+  }
+
   const auth = resolveModelsListRequestAuth(activeProvider, apiKey, {
-    xTitle: "ai-i18n-tools check-models",
+    xTitle: opts?.xTitle ?? "ai-i18n-tools check-models",
   });
   const catalogQuery = providerModelsCatalogQuery(settings);
   const catalogUrl = providerModelsCatalogUrl(settings.baseUrl, catalogQuery);
@@ -70,17 +104,20 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
       requestTimeoutMs: settings.requestTimeoutMs,
       extraHeaders: auth.extraHeaders,
       query: catalogQuery,
+      ...(opts?.fetchImpl ? { fetchImpl: opts.fetchImpl } : {}),
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error(chalk.red(msg));
-    return { exitCode: 1 };
+    return {
+      ...empty,
+      catalogUrl,
+      zeroDataRetention: settings.zeroDataRetention,
+      error: e instanceof Error ? e.message : String(e),
+    };
   }
 
   const missing: { id: string }[] = [];
   const expired: { id: string; expirationDate: string }[] = [];
   const ok: { id: string; entry: ProviderModelEntry }[] = [];
-
   for (const id of configured) {
     const entry = catalog.get(id);
     if (!entry) {
@@ -94,6 +131,29 @@ export async function runCheckModels(config: I18nConfig): Promise<RunCheckModels
     }
     ok.push({ id, entry });
   }
+
+  return {
+    activeProvider,
+    configured,
+    ok,
+    missing,
+    expired,
+    catalogUrl,
+    zeroDataRetention: settings.zeroDataRetention,
+  };
+}
+
+export async function runCheckModels(config: I18nConfig): Promise<RunCheckModelsResult> {
+  const status = await loadConfiguredModelCatalogStatus(config);
+  if (status.error) {
+    console.error(chalk.red(status.error));
+    return { exitCode: 1 };
+  }
+
+  const { activeProvider, missing, expired, ok, configured } = status;
+  const settings = resolveProviderSettings(activeProvider, config);
+  const isOpenRouter = activeProvider === OPENROUTER_PROVIDER_KEY;
+  const catalogUrl = status.catalogUrl ?? "";
 
   const problemCount = missing.length + expired.length;
   const total = configured.length;

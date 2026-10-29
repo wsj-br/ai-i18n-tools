@@ -58,6 +58,10 @@ function guideSidebar(t: ThemeCatalog) {
         { text: t.sidebar.overview, link: "/guide/add-i18n-to-your-project" },
         { text: t.sidebar.addI18nToJs, link: "/guide/add-i18n-to-js" },
         { text: t.sidebar.addI18nToPython, link: "/guide/add-i18n-to-python" },
+        {
+          text: t.sidebar.addI18nToDjango ?? "Add i18n to a Django / Python gettext app",
+          link: "/guide/add-i18n-to-django-gettext",
+        },
         { text: t.sidebar.addI18nToWebsite, link: "/guide/add-i18n-to-website" },
         { text: t.sidebar.addI18nToReadme, link: "/guide/add-i18n-to-readme" },
         { text: t.sidebar.combiningPipelines, link: "/guide/combining-pipelines" },

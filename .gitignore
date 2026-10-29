@@ -75,4 +75,7 @@ examples/**/.vitepress/.temp/
 
 # References to other repositories
 references/
+# Consumer skill references are distributable source, not external checkouts.
+!skills/ai-i18n-tools/references/
+!skills/ai-i18n-tools/references/*.md
 

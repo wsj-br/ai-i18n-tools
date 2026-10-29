@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` extracts UI strings from Python and from Jinja, Django, and Qt `.ui` files, then writes flat JSON keyed by the source-language string, GNU gettext catalogs, or both. `sourceLocale` can be any language. The runtime helper is a standard-library `i18n.py` (Python 3.10 or newer). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, and FastAPI call that helper. Django uses Django's own gettext.
 
-Adding locales to an existing single-language app: [Add i18n to a Python app](/guide/add-i18n-to-python), including the [`i18n.py` prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py) and the [Django / gettext prompt](/guide/add-i18n-to-python#agent-prompt-django-gettext). Framework chooser: [Python integrations](/guide/integrations/python). Function list: [Python runtime (`i18n.py`)](/reference/programmatic-api#python-runtime).
+Adding locales to an existing single-language app: [Add i18n to a Python app](/guide/add-i18n-to-python), with its [agent prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py). For Django, Flask-Babel catalogs, or an app that already uses gettext: [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext), with its [agent prompt](/guide/add-i18n-to-django-gettext#agent-prompt-django-gettext). Framework chooser: [Python integrations](/guide/integrations/python). Function list: [Python runtime (`i18n.py`)](/reference/programmatic-api#python-runtime).
 
 Runnable copies live in `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, and `examples/python-gettext`. They are Python projects. The first three use a virtualenv and `pip install -r requirements.txt`. `python-gettext` uses only the standard library. They are not npm packages. The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories. The npm tarball and the standalone executable do not.
 
@@ -61,7 +61,7 @@ _("Hello, %s!" % name)
 _("Hello, {name}!".format(name=name))
 ```
 
-`migrate-python-i18n` is a dry run until you pass `--write`. It writes `migrate-python-i18n-report.md`. Debug fields such as `{value=}` and nested format specs are reported and left in place.
+`migrate-python-i18n` is a dry run until you pass `--write`. It writes `migrate-python-i18n-report.md`. Debug fields such as `{value=}` and nested format specs are reported and left in place. `--write` turns f-strings and `.format()` calls into `t(...)`, a function that exists only in the generated `i18n.py`. In a gettext or Django app, use the dry run to find unsafe calls and fix them by hand with `%(name)s`.
 
 `{% trans %}` and `{% blocktrans %}` become gettext `%(name)s` placeholders. Jinja strips and collapses whitespace. Django keeps internal whitespace unless the tag says `trimmed`.
 
@@ -74,12 +74,22 @@ Gettext files use `msgctxt` for context and `msgid` / `msgid_plural` for plurals
 
 `t(..., plurals=True)` with an English source locale and an explicit plural source skips the model and stores `one` / `other` from the source strings.
 
+<a id="things-to-know"></a>
+## Things to know
+
+- `t()` looks up the source-language sentence. The id in `strings.json` is not the lookup key. A missing locale file or a missing key returns that sentence.
+- The helper keeps each loaded JSON file in memory for the life of the process, including an empty map when the file was missing on the first lookup. Restart the app after `translate-ui`.
+- Call `set_locale` before the first `t()` of that run. `?lang=` does nothing until the app reads it and calls `set_locale`.
+- `t()` at import time runs once and keeps the source language until that module is imported again. Call `t()` when the widget is built.
+- Placeholders are `{name}`, `{name:.2%}`, `{name:,.2f}`, and `{name!r}`. A dotted field such as `{row.rate}` is rejected. Pass `rate=row.rate`.
+- A literal percent immediately followed by a printf type letter (`%d`, `%a`, `%s`, and the rest) is treated as old-style formatting. With keyword arguments, a failed `%` formatting returns the template and skips `{name}` substitution. Keep a literal percent away from those letters, as in source text like `% do CDI` or `% a.a.`.
+
 <a id="locale-in-each-framework"></a>
 ## Locale in each framework
 
 `set_locale` returns a `ContextVar` token. Reset it in `finally`, including FastAPI and Flask middleware, so concurrent requests do not leak a locale.
 
-- <a id="streamlit"></a>**Streamlit.** `streamlit_language_selector(sidebar=True, key="lang_selector")` writes `st.session_state.locale` and `st.query_params["lang"]`. Give every widget a fixed `key`. See `examples/python-streamlit`.
+- <a id="streamlit"></a>**Streamlit.** Call `set_locale` before the first `t()` of the run, including `st.set_page_config(page_title=…)`. `streamlit_language_selector(sidebar=True, key="lang_selector")` writes `st.session_state.locale` and `st.query_params["lang"]`, and it calls `set_locale` when the widget is drawn, so a translated title above it stays on the previous language for that run. Its label is fixed English. A page that needs a translated title should follow [Add a language switch](/guide/add-i18n-to-python#switch-locale). Give every widget a fixed `key`. See `examples/python-streamlit`.
 - <a id="fastapi"></a>**FastAPI.** Read `?lang=` or `Accept-Language` in middleware, call `set_locale`, and `reset_locale` in `finally`. Routes call `t()` and `_()`. See `examples/python-fastapi`.
 - <a id="flask"></a>**Flask and Pyramid.** Set the locale from the request and inject `_`, `t`, `current_locale`, `ui_languages`, and `direction` into the template context. See `examples/python-flask`.
 - <a id="gettext"></a>**Existing gettext.** Leave `_()`, `gettext()`, and `ngettext()` in place. Point `ui.gettext` at the current `locales/` tree and run `extract` then `translate-ui`. See `examples/python-gettext`.

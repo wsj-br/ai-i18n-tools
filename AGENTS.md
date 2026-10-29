@@ -2,7 +2,7 @@
 
 Canonical maintainer and AI agent guide for working inside this repository. Use this file with any agent or automation tool (Cursor, Claude Code, Copilot, custom scripts, etc.) — not a Cursor-specific rules file.
 
-For integrating the published npm package into another project, read `docs/ai-i18n-tools-context.md` instead. For pipeline internals, config/CLI reference, and local dev, see [Deep reference](#deep-reference) below.
+For integrating the published package or standalone CLI into another project, read `docs/ai-i18n-tools-context.md` instead. The distributable consumer skill is `skills/ai-i18n-tools/SKILL.md`; keep its references consumer-focused and ship the whole directory. Do not apply this repository's maintainer-only translation policy to consumer projects. For pipeline internals, config/CLI reference, and local dev, see [Deep reference](#deep-reference) below.
 
 ---
 

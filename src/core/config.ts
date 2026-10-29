@@ -467,15 +467,33 @@ function explicitOrAll(config: I18nConfig, explicit?: ExplicitFeatureFlags): Exp
   );
 }
 
-function assertUniqueUiPaths(config: I18nConfig): void {
+export interface I18nBusinessRuleIssue {
+  path: string;
+  message: string;
+}
+
+function pushThrown(issues: I18nBusinessRuleIssue[], issuePath: string, fn: () => void): void {
+  try {
+    fn();
+  } catch (e) {
+    issues.push({
+      path: issuePath,
+      message: e instanceof Error ? e.message : String(e),
+    });
+  }
+}
+
+function assertUniqueUiPaths(config: I18nConfig, issues: I18nBusinessRuleIssue[]): void {
   const seen = new Map<string, string>();
   const claim = (abs: string, label: string): void => {
     const key = abs.split("\\").join("/");
     const prev = seen.get(key);
     if (prev) {
-      throw new ConfigValidationError(
-        `UI blocks must use distinct paths. ${label} and ${prev} both resolve to ${key}.`
-      );
+      issues.push({
+        path: label,
+        message: `UI blocks must use distinct paths. ${label} and ${prev} both resolve to ${key}.`,
+      });
+      return;
     }
     seen.set(key, label);
   };
@@ -497,21 +515,24 @@ function assertUniqueUiPaths(config: I18nConfig): void {
       const label = `ui[${index}].gettext`;
       const prev = gettextKeys.get(key);
       if (prev) {
-        throw new ConfigValidationError(
-          `UI blocks must use distinct Gettext output. ${label} and ${prev} both use domain ${JSON.stringify(block.gettext.domain)} in ${dir}.`
-        );
+        issues.push({
+          path: label,
+          message: `UI blocks must use distinct Gettext output. ${label} and ${prev} both use domain ${JSON.stringify(block.gettext.domain)} in ${dir}.`,
+        });
+      } else {
+        gettextKeys.set(key, label);
       }
-      gettextKeys.set(key, label);
     }
     if (block.flatOutput === false && !block.gettext) {
-      throw new ConfigValidationError(
-        `ui[${index}] must enable flat JSON output or configure gettext.`
-      );
+      issues.push({
+        path: `ui[${index}]`,
+        message: `ui[${index}] must enable flat JSON output or configure gettext.`,
+      });
     }
   });
 }
 
-function assertUniqueUiDescriptions(config: I18nConfig): void {
+function assertUniqueUiDescriptions(config: I18nConfig, issues: I18nBusinessRuleIssue[]): void {
   const seen = new Map<string, number>();
   config.ui.forEach((block, index) => {
     const description = block.description?.trim();
@@ -520,18 +541,25 @@ function assertUniqueUiDescriptions(config: I18nConfig): void {
     }
     const prev = seen.get(description);
     if (prev !== undefined) {
-      throw new ConfigValidationError(
-        `ui[${prev}].description and ui[${index}].description are both ${JSON.stringify(description)}. Descriptions must be unique because --ui-block can select a block by description.`
-      );
+      issues.push({
+        path: `ui[${index}].description`,
+        message: `ui[${prev}].description and ui[${index}].description are both ${JSON.stringify(description)}. Descriptions must be unique because --ui-block can select a block by description.`,
+      });
+      return;
     }
     seen.set(description, index);
   });
 }
 
-export function validateI18nBusinessRules(
+/**
+ * Every business-rule problem on `config`. `doctor` prints the full list.
+ * {@link validateI18nBusinessRules} still throws only the first message.
+ */
+export function collectI18nBusinessRuleIssues(
   config: I18nConfig,
   explicitFeatures?: ExplicitFeatureFlags
-): void {
+): I18nBusinessRuleIssue[] {
+  const issues: I18nBusinessRuleIssue[] = [];
   const explicit = explicitOrAll(config, explicitFeatures);
   const uiOn = config.features.translateUIStrings;
   const docsOn = config.features.translateDocs;
@@ -550,44 +578,66 @@ export function validateI18nBusinessRules(
     getDocumentationTargetLocaleCodes(config).some((l) => normalizeLocale(l) !== src);
 
   if (svgOn && explicit.translateSVG && !hasSvg) {
-    throw new ConfigValidationError(
-      "translateSVG is enabled but no svg block is configured (sourcePath, outputDir, style)"
-    );
+    issues.push({
+      path: "svg",
+      message:
+        "translateSVG is enabled but no svg block is configured (sourcePath, outputDir, style)",
+    });
   }
 
   if (needsDocTranslation || needsUITranslation || needsSvgApi) {
-    const activeProvider = resolveActiveProvider(config);
-    const models = translationModelsForProvider(config, activeProvider);
-    if (models.length === 0) {
-      throw new ConfigValidationError(
-        `providers.${activeProvider}.translationModels (non-empty array) is required when translateUIStrings, translateSVG (with non-source locales), or doc translate features are enabled`
-      );
+    let activeProvider: string | undefined;
+    try {
+      activeProvider = resolveActiveProvider(config);
+    } catch (e) {
+      issues.push({
+        path: "provider",
+        message: e instanceof Error ? e.message : String(e),
+      });
+    }
+    if (activeProvider) {
+      const models = translationModelsForProvider(config, activeProvider);
+      if (models.length === 0) {
+        issues.push({
+          path: `providers.${activeProvider}.translationModels`,
+          message: `providers.${activeProvider}.translationModels (non-empty array) is required when translateUIStrings, translateSVG (with non-source locales), or doc translate features are enabled`,
+        });
+      }
     }
   }
 
-  assertTargetLocalesAreLocaleCodes(config.targetLocales, "targetLocales");
+  pushThrown(issues, "targetLocales", () => {
+    assertTargetLocalesAreLocaleCodes(config.targetLocales, "targetLocales");
+  });
   for (const d of config.docs) {
     if (d.targetLocales?.length) {
-      assertTargetLocalesAreLocaleCodes(d.targetLocales, "docs[].targetLocales");
+      pushThrown(issues, "docs[].targetLocales", () => {
+        assertTargetLocalesAreLocaleCodes(d.targetLocales!, "docs[].targetLocales");
+      });
     }
   }
   config.ui.forEach((block, index) => {
     if (block.targetLocales?.length) {
-      assertTargetLocalesAreLocaleCodes(block.targetLocales, `ui[${index}].targetLocales`);
+      pushThrown(issues, `ui[${index}].targetLocales`, () => {
+        assertTargetLocalesAreLocaleCodes(block.targetLocales!, `ui[${index}].targetLocales`);
+      });
     }
   });
 
   if (needsDocTranslation && getDocumentationTargetLocaleCodes(config).length === 0) {
-    throw new ConfigValidationError(
-      "When translateDocs is enabled or docs[].docusaurusCatalogDir is set, set non-empty targetLocales " +
-        "and/or docs[].targetLocales (documentation-only locale list)."
-    );
+    issues.push({
+      path: "targetLocales",
+      message:
+        "When translateDocs is enabled or docs[].docusaurusCatalogDir is set, set non-empty targetLocales " +
+        "and/or docs[].targetLocales (documentation-only locale list).",
+    });
   }
 
   if (jsonOn && explicit.translateJson && !hasJson) {
-    throw new ConfigValidationError(
-      "translateJson is enabled but json[] has no contentPaths entries"
-    );
+    issues.push({
+      path: "json",
+      message: "translateJson is enabled but json[] has no contentPaths entries",
+    });
   }
 
   if (needsUITranslation) {
@@ -596,27 +646,42 @@ export function validateI18nBusinessRules(
         return;
       }
       if (effectiveUiTargetLocales(config, block).length === 0) {
-        throw new ConfigValidationError(
-          `ui[${index}] has sourceRoots but no target locales. Set targetLocales or ui[${index}].targetLocales (BCP-47 codes; ui-languages.json is generated by extract, not used as config input).`
-        );
+        issues.push({
+          path: `ui[${index}].targetLocales`,
+          message: `ui[${index}] has sourceRoots but no target locales. Set targetLocales or ui[${index}].targetLocales (BCP-47 codes; ui-languages.json is generated by extract, not used as config input).`,
+        });
       }
     });
   }
 
   if (uiOn && explicit.translateUIStrings && !hasUi) {
-    throw new ConfigValidationError(
-      "ui.sourceRoots must be non-empty when translateUIStrings is enabled"
-    );
+    issues.push({
+      path: "ui.sourceRoots",
+      message: "ui.sourceRoots must be non-empty when translateUIStrings is enabled",
+    });
   }
 
   if (docsOn && explicit.translateDocs && !hasDocs) {
-    throw new ConfigValidationError(
-      "docs[].contentPaths must be non-empty in at least one block when translateDocs is enabled, unless a block only sets docusaurusCatalogDir for catalog JSON"
-    );
+    issues.push({
+      path: "docs[].contentPaths",
+      message:
+        "docs[].contentPaths must be non-empty in at least one block when translateDocs is enabled, unless a block only sets docusaurusCatalogDir for catalog JSON",
+    });
   }
 
-  assertUniqueUiDescriptions(config);
-  assertUniqueUiPaths(config);
+  assertUniqueUiDescriptions(config, issues);
+  assertUniqueUiPaths(config, issues);
+  return issues;
+}
+
+export function validateI18nBusinessRules(
+  config: I18nConfig,
+  explicitFeatures?: ExplicitFeatureFlags
+): void {
+  const first = collectI18nBusinessRuleIssues(config, explicitFeatures)[0];
+  if (first) {
+    throw new ConfigValidationError(first.message);
+  }
 }
 
 /** Validate config for the `translate-svg` command (call after normal load). */

@@ -37,7 +37,8 @@ Works with [VitePress](https://vitepress.dev/), [Starlight](https://starlight.as
 | You have | Start here |
 | --- | --- |
 | A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) |
-| A Python app (Streamlit, FastAPI, Flask, Django, gettext) | [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) |
+| A Python app (Streamlit, FastAPI, Flask, desktop, scripts) | [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) |
+| A Django app, Flask-Babel catalogs, or an app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-django-gettext) |
 | A website or docs site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) |
 | A repository README and other Markdown files (with or without an app) | [Add i18n to your README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) |
 | Code that already calls `t()` or `_()` | [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) |
@@ -94,6 +95,7 @@ Scaffold the config for what you have, then follow the guide for your path:
 | --- | --- | --- |
 | A JS/TS app | `ai-i18n-tools init -P openrouter` | [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) |
 | A Python app | `ai-i18n-tools init -t ui-python -P openrouter` | [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) |
+| A Django or GNU gettext app | `ai-i18n-tools init -t ui-python-django -P openrouter` (or `ui-python-gettext`, `ui-python-flask`) | [Add i18n to a Django / Python gettext app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-django-gettext) |
 | A website or docs site | `ai-i18n-tools init -t ui-vitepress -P openrouter` (swap the template for your framework) | [Add i18n to a website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) |
 | A README, with or without an app | `ai-i18n-tools init -P openrouter` (JS/TS app + README) or `init -t docs-markdown` | [Add i18n to your README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) |
 
@@ -101,7 +103,7 @@ When the project is ready, run `ai-i18n-tools sync`, then `ai-i18n-tools status`
 
 A JS/TS app must wrap its text in `t()` first. Run on plain text, `sync` finishes without error and writes nothing useful. Your site framework must also have its own i18n routing enabled before `sync`.
 
-Templates for websites: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, and `ui-plain-html` or `docs-plain-html`. README and Markdown only: `docs-markdown`. Add `--with-readme` to any other template to include the README block. Other Python templates: `ui-python-gettext`, `ui-python-flask`, `ui-python-django`. Nested i18next JSON: `ui-json-bundles`. Full list: [CLI setup reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/setup).
+Templates for websites: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, and `ui-plain-html` or `docs-plain-html`. README and Markdown only: `docs-markdown`. Add `--with-readme` to any other template to include the README block. Python gettext apps: `ui-python-django`, `ui-python-flask`, `ui-python-gettext`. Nested i18next JSON: `ui-json-bundles`. Full list: [CLI setup reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/setup).
 
 `suggest-models` ranks the active provider's chat models from published benchmarks, and `suggest-models --apply` replaces `translationModels`. The same ranking is on the [Models](https://wsj-br.github.io/ai-i18n-tools/guide/translation-dashboard/models) tab. Guide: [AI Models](https://wsj-br.github.io/ai-i18n-tools/guide/ai-models). Command reference: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/models#suggest-models).
 
@@ -115,10 +117,11 @@ Prefer `sync` over chaining individual translate commands. Full walkthrough: [Qu
 - [UI strings](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/) · [Plain HTML](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/guide/ui-strings/python) · [Documents](https://wsj-br.github.io/ai-i18n-tools/guide/documents/) · [HTML pages](https://wsj-br.github.io/ai-i18n-tools/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/guide/svg-translation/)
 - [Intlayer](https://intlayer.org/) — [translate dictionaries in place](https://wsj-br.github.io/ai-i18n-tools/guide/translating-intlayer) · [move to source-string calls](https://wsj-br.github.io/ai-i18n-tools/guide/migrating-from-intlayer)
 - [Integrations](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, and [Python](https://wsj-br.github.io/ai-i18n-tools/guide/integrations/python)
-- [Add i18n to your project](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-your-project) — [JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) · [Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) · [website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) · [README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) · [Combining pipelines](https://wsj-br.github.io/ai-i18n-tools/guide/combining-pipelines)
+- [Add i18n to your project](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-your-project) — [JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) · [Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) · [Django / gettext app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-django-gettext) · [website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) · [README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) · [Combining pipelines](https://wsj-br.github.io/ai-i18n-tools/guide/combining-pipelines)
 - [CLI reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuration](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Runtime helpers](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
 - [Examples](https://wsj-br.github.io/ai-i18n-tools/examples) — runnable demos (`npx degit …`)
-- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — integration guide for assistants in consumer repos
+- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — concise prompt / `AGENTS.md` entrypoint for consumer projects
+- [Portable Agent Skill](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools) — installable workflow with JS/TS, Python, documentation, assets/links/SVG, and JSON references; [installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation#coding-agent-skill)
 
 <a id="contributing"></a>
 ## Contributing

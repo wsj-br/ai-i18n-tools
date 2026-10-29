@@ -64,11 +64,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Python app
 
-Wrap user-facing text and load translated messages with a generated helper, or keep native gettext. Run the translation CLI from a standalone executable with no separate Node.js installation.
+Wrap user-facing text and load translated messages with a generated helper. Already on Django or GNU gettext? Keep your gettext calls and let the tool fill the `.po` files. Run the translation CLI from a standalone executable with no separate Node.js installation.
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[Add i18n to a Python app](/guide/add-i18n-to-python)
+[Add i18n to a Python app](/guide/add-i18n-to-python) · [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">

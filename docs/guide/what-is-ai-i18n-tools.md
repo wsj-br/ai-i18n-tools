@@ -22,7 +22,8 @@ The walkthroughs are grouped in [Add i18n to your project](/guide/add-i18n-to-yo
 | You have | Start here |
 | --- | --- |
 | A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
-| A Python app (Streamlit, FastAPI, Flask, Django, gettext, desktop) | [Add i18n to a Python app](/guide/add-i18n-to-python) |
+| A Python app (Streamlit, FastAPI, Flask, desktop, scripts) | [Add i18n to a Python app](/guide/add-i18n-to-python) |
+| A Django app, Flask-Babel catalogs, or an app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) |
 | A website or documentation site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
 | A repository README and other Markdown files, usually next to an app | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) |
 | Standalone nested JSON locale files | [JSON](/guide/json) |

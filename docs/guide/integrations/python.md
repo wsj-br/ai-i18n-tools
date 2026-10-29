@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Chooser for Python applications. Extraction, catalogs, and call shapes live in [Python applications](/guide/ui-strings/python). The step-by-step for an existing single-locale app is [Add i18n to a Python app](/guide/add-i18n-to-python), with an [`i18n.py` prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py) and a [Django / gettext prompt](/guide/add-i18n-to-python#agent-prompt-django-gettext).
+Chooser for Python applications. Extraction, catalogs, and call shapes live in [Python applications](/guide/ui-strings/python). The step-by-step for an existing single-locale app is [Add i18n to a Python app](/guide/add-i18n-to-python), with an [agent prompt](/guide/add-i18n-to-python#agent-prompt-i18n-py). Django, Flask-Babel catalogs, and apps that already use gettext have their own walkthrough and prompt: [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call the generated `i18n.py` helper (Python 3.10 or newer). Django keeps Django's gettext. Four runnable copies ship in the repository: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, and `examples/python-gettext`. Pyramid, Django, Tkinter, Qt, and PyWebView have no separate example directory.
 
@@ -29,7 +29,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, and PyWebView call th
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` writes the locale into session state and the query string. Give every widget a fixed `key`. Details: [Locale — Streamlit](/guide/ui-strings/python#streamlit).
+Call `set_locale` before `st.set_page_config` and any other `t()`. Draw the menu in the app so the label can be translated. `streamlit_language_selector()` writes the locale into session state and the query string when the widget is drawn, which is too late for a translated page title, and its label stays English. Recipe: [Add a language switch](/guide/add-i18n-to-python#switch-locale). Give every widget a fixed `key`. Details: [Locale — Streamlit](/guide/ui-strings/python#streamlit).
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ The [python-flask](/examples#python-flask) example uses flat JSON. `init -t ui-p
 <a id="django"></a>
 ### Django
 
-Keep `gettext`, `ngettext`, and `{% blocktrans %}`. `init -t ui-python-django` matches Django's `locale/` directory and the `django` domain, and leaves Django's runtime in place. Details: [Locale — Django](/guide/ui-strings/python#django).
+Keep `gettext`, `ngettext`, and `{% blocktrans %}`. `init -t ui-python-django` matches Django's `locale/` directory and the `django` domain, and leaves Django's runtime in place. Walkthrough: [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext). Details: [Locale — Django](/guide/ui-strings/python#django).
 
 <a id="existing-gettext"></a>
 ### Existing gettext
 
-Leave `_()`, `gettext()`, and `ngettext()` in place. Point `ui.gettext` at the current catalog tree and run `extract`, then `translate-ui`. The [python-gettext](/examples#python-gettext) example is gettext-only (`flatOutput: false`). `init -t ui-python-gettext` also writes flat JSON. Details: [Locale — Existing gettext](/guide/ui-strings/python#gettext).
+Leave `_()`, `gettext()`, and `ngettext()` in place. Point `ui.gettext` at the current catalog tree and run `extract`, then `translate-ui`. The [python-gettext](/examples#python-gettext) example is gettext-only (`flatOutput: false`). `init -t ui-python-gettext` also writes flat JSON. Walkthrough: [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext). Details: [Locale — Existing gettext](/guide/ui-strings/python#gettext).
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt, and PyWebView

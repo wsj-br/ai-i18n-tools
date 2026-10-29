@@ -162,6 +162,8 @@ export interface FetchProviderModelsCatalogOpts {
   providerLabel?: string;
   /** Per-request timeout; defaults to 30s when omitted. */
   requestTimeoutMs?: number;
+  /** Test override. Defaults to global `fetch`. */
+  fetchImpl?: typeof fetch;
 }
 
 /** Absolute `GET /models` URL, including an optional query string. */
@@ -192,7 +194,8 @@ export async function fetchProviderModelsCatalog(
     headers.Authorization = `Bearer ${opts.apiKey}`;
   }
 
-  const response = await fetch(url, {
+  const fetchImpl = opts.fetchImpl ?? fetch;
+  const response = await fetchImpl(url, {
     method: "GET",
     headers,
     signal: AbortSignal.timeout(requestTimeoutMs),
