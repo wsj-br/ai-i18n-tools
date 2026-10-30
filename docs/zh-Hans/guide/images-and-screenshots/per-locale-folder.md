@@ -119,7 +119,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-在每个目标区域设置的相同路径下提供匹配的 PNG 文件（例如 `static/img/screenshots/de/screenshot.png`）。优先使用 `screenshots/[^/]+/` 而不是硬编码 `screenshots/en-GB/`，以便规则在 `sourceLocale` 更改时得以保留。
+在相同的路径下为每个目标语言环境提供匹配的 PNG 文件（例如 `static/img/screenshots/de/screenshot.png`）。优先使用 `screenshots/[^/]+/` 而不是硬编码 `screenshots/en-GB/`，这样规则在 `sourceLocale` 更改后仍然有效。
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### 预设 - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-在 `docs-site/static/img/screenshots/<locale>/screenshot.png` 处提供匹配的 PNG 文件。对于与源区域设置无关的配置，请优先使用 `screenshots/[^/]+/` 而不是 `screenshots/en-GB/`。
+在 `docs-site/static/img/screenshots/<locale>/screenshot.png` 提供匹配的 PNG 文件。对于与源语言环境无关的配置，优先使用 `screenshots/[^/]+/` 而不是 `screenshots/en-GB/`。
 
 实现示例：[examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 配合 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json)。
 
@@ -179,6 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-在 `public/img/screenshots/<locale>/screenshot.png` 处提供 PNG。`${translatedLocale}` 占位符使用您的配置语言环境字符串（例如 `pt-BR`）。`astro-starlight` 预设默认将语言环境 **输出路径** 小写（`pt-br/`），但 `public/img/screenshots/` 下的静态资产文件夹应与写入 markdown URL 的语言环境段匹配——保持截图目录与 `${translatedLocale}` 对齐，而不一定与 Astro 路由大小写对齐。
+在 `public/img/screenshots/<locale>/screenshot.png` 提供 PNG 文件。`${translatedLocale}` 占位符使用您的配置语言环境字符串（例如 `pt-BR`）。`astro-starlight` 预设默认将语言环境 **输出路径** 小写（`pt-br/`），但 `public/img/screenshots/` 下的静态资产文件夹应与写入 Markdown URL 的语言环境段匹配 — 保持屏幕截图目录与 `${translatedLocale}` 对齐，而不必与 Astro 路由大小写对齐。
 
 实施示例：[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) 和 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`)。

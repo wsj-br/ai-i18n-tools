@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-Aktivieren Sie `features.translateDocs` und setzen Sie `docs[].docusaurusCatalogDir`, wenn Sie sowohl Dokumentationsseiten als auch die Site-Oberfläche (Navigationsleiste, Fußzeile, Theme-Strings) übersetzen. Führen Sie `docusaurus write-translations` in Ihrem Docusaurus-Projekt aus, wenn Sie `@docusaurus/*` aktualisieren oder Navigationsleisten-/Fußzeilen-/Theme-Beschriftungen ändern – und führen Sie dann `translate-docs` oder `sync` erneut aus, damit Shell-JSON in jeden Sprachordner übersetzt wird.
+Aktivieren Sie `features.translateDocs` und legen Sie `docs[].docusaurusCatalogDir` fest, wenn Sie sowohl Dokumentationsseiten als auch Website-Shell-Strings (Navigationsleiste, Fußzeile, Theme-Strings) übersetzen. Führen Sie `docusaurus write-translations` in Ihrem Docusaurus-Projekt aus, wenn Sie `@docusaurus/*` aktualisieren oder Navigationsleisten-/Fußzeilen-/Theme-Bezeichnungen ändern – führen Sie dann `translate-docs` oder `sync` erneut aus, damit die Shell-JSON in jeden Locale-Ordner übersetzt wird.
 
 <a id="page-layout"></a>
 ## Seitenlayout

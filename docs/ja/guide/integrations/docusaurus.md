@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-`features.translateDocs`を有効にし、`docs[].docusaurusCatalogDir`を設定して、ドキュメントページとサイトのクローム（ナビバー、フッター、テーマ文字列）を翻訳する場合は、Docusaurusプロジェクトで`docusaurus write-translations`を実行します。`@docusaurus/*`をアップグレードしたり、ナビバー/フッター/テーマのラベルを変更した場合は、`translate-docs`または`sync`を再実行して、シェルのJSONを各ロケールフォルダーに翻訳します。
+ドキュメントページとサイトシェル文字列（ナビゲーションバー、フッター、テーマ文字列）の両方を翻訳する場合は、`features.translateDocs`を有効にして`docs[].docusaurusCatalogDir`を設定します。`@docusaurus/*`をアップグレードしたり、ナビゲーションバー/フッター/テーマのラベルを変更したりする場合は、Docusaurusプロジェクトで`docusaurus write-translations`を実行し、その後`translate-docs`または`sync`を再実行して、シェルJSONが各ロケールフォルダーに翻訳されるようにします。
 
 <a id="page-layout"></a>
 ## ページレイアウト

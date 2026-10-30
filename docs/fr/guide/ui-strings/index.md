@@ -79,9 +79,9 @@ Pour chaque entrée, `translate-ui` stocke l'**ID du modèle du fournisseur acti
 
 `translate-ui` écrit uniquement des fichiers. L'application doit les charger.
 
-- JS/TS : connecter i18next avec les assistants d'exécution, charger le fichier de locale choisi par l'utilisateur et ajouter un sélecteur de langue. Voir [Connecter i18next](/fr/guide/ui-strings/i18next-runtime) et [Sélecteur de langue et RTL](/fr/guide/ui-strings/language-switcher).
-- Python : utiliser le `i18n.py` généré ou vos catalogues gettext. Voir [Applications Python](/fr/guide/ui-strings/python).
-- HTML simple : charger le script d'exécution à côté de la page. Voir [Applications HTML simples](/fr/guide/ui-strings/plain-html).
+- JS/TS : configurez i18next avec les assistants d'exécution, chargez le fichier de locale choisi par l'utilisateur et ajoutez un sélecteur de langue. Voir [Intégrer i18next](/fr/guide/ui-strings/i18next-runtime) et [Sélecteur de langue et RTL](/fr/guide/ui-strings/language-switcher).
+- Python : utilisez le `i18n.py` généré ou vos catalogues gettext. Voir [Applications Python](/fr/guide/ui-strings/python).
+- HTML simple : chargez le script d'exécution à côté de la page. Voir [Applications HTML simples](/fr/guide/ui-strings/plain-html).
 - Astro : voir [Site web Astro](/fr/guide/ui-strings/astro-website).
 
 <a id="optional"></a>

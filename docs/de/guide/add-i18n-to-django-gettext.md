@@ -79,7 +79,7 @@ Bearbeiten Sie dann `sourceLocale` und `targetLocales` in `ai-i18n-tools.config.
 <a id="run-the-agent-prompt"></a>
 ## Agent-Prompt ausführen
 
-Öffnen Sie das Projekt in Ihrem Coding-Agenten (Cursor, Claude Code, Copilot oder Ähnliches), starten Sie einen neuen Chat und fügen Sie den untenstehenden Prompt ein. Das Projekt muss bereits initialisiert sein. Es gibt nichts zu bearbeiten. Wenn Sie etwas weglassen möchten, zum Beispiel keinen Sprachumschalter, teilen Sie dies in derselben Nachricht mit.
+Öffnen Sie das Projekt in Ihrem Coding-Agenten (Cursor, Claude Code, Copilot oder ähnlich), starten Sie einen neuen Chat und fügen Sie den unten stehenden Prompt ein. Das Projekt muss bereits initialisiert sein. Es gibt nichts zu bearbeiten. Wenn Sie etwas weglassen möchten, zum Beispiel keinen Sprachumschalter, geben Sie dies in derselben Nachricht an.
 
 Der Agent prüft zuerst, ob die CLI und die Konfiguration existieren, und hält mit Anweisungen an, falls eine davon fehlt. Dann arbeitet er in vier Teilen:
 

@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## `translate-intlayer`의 기능
 
-1. `*.content.ts` 기본 내보내기를 파싱하고 모든 `t({ locale: '…' })` 리프를 수집합니다. 로캘 값은 일반 문자열 또는 Intlayer `insert('…')` 삽입 노드일 수 있습니다.
-2. UI 블록의 `ui.stringsJson`에 소스 텍스트를 시드한 다음, 누락되거나 오래된 로캘에 대해 [`translate-ui`](/ko/reference/cli-commands/ui-strings#translate-ui)와 동일한 엔진을 실행합니다.
-3. 로캘별 새 문자열을 각 `t({ … })` 객체에 다시 씁니다. 편집은 정밀하게 이루어집니다. 즉, 누락되거나 오래된 로캘 라인만 변경되므로 서식, 키 순서, 주석이 보존됩니다. 기존 번역은 작성된 그대로 유지됩니다. 리프가 `insert('…')`를 사용하는 경우, 새 로캘 값도 `insert(…)`로 래핑되어 런타임에 리프를 계속 호출할 수 있습니다.
-4. 플레이스홀더를 보존합니다. Intlayer의 삽입 구문 <code v-pre>{{token}}</code>는 변경 없이 그대로 전달됩니다. 단일 중괄호 `{token}` 플레이스홀더도 지원됩니다. 이 플레이스홀더는 번역을 위해 <code v-pre>{{token}}</code>가 되고 쓰기 시 `{token}`로 돌아갑니다.
+1. `*.content.ts` 기본 내보내기를 구문 분석하고 모든 `t({ locale: '…' })` 리프를 수집합니다. 로케일 값은 일반 문자열이거나 Intlayer `insert('…')` 삽입 노드일 수 있습니다.
+2. UI 블록의 `ui.stringsJson`에 소스 텍스트를 시드한 다음, 누락되거나 오래된 로케일에 대해 [`translate-ui`](/ko/reference/cli-commands/ui-strings#translate-ui)와 동일한 엔진을 실행합니다.
+3. 새 로케일별 문자열을 각 `t({ … })` 객체에 다시 씁니다. 편집은 정확합니다. 누락되거나 오래된 로케일 라인만 변경되므로 서식, 키 순서 및 주석이 보존됩니다. 기존 번역은 작성된 대로 유지됩니다. 리프가 `insert('…')`을(를) 사용하는 경우, 새 로케일 값도 `insert(…)`으로(으로) 래핑되어 리프가 런타임에 호출 가능하게 유지됩니다.
+4. 플레이스홀더를 보존합니다. Intlayer의 삽입 구문 <code v-pre>{{token}}</code>은(는) 변경되지 않고 전달됩니다. 단일 중괄호 `{token}` 플레이스홀더도 지원됩니다. 이는 번역을 위해 <code v-pre>{{token}}</code>이(가) 되며, 쓰기 시 `{token}`(으)로 돌아갑니다.
 5. `--dry-run`로 드라이 런(dry run) 실행: LLM을 호출하거나 아무것도 쓰지 않고 누락/오래된 항목의 수를 보고합니다.
 
 <a id="missing-vs-stale"></a>

@@ -47,7 +47,7 @@ hero:
 <a id="javascript-or-typescript-app"></a>
 ### Aplicación de JavaScript o TypeScript
 
-Convierte botones, etiquetas y mensajes de texto sin formato en una interfaz de usuario multilingüe. Configura tu entorno de ejecución, marca el texto a traducir y conecta el cambio de idioma. Incluye indicaciones del agente de codificación para el paso de preparación.
+Convierta los botones, etiquetas y mensajes de texto sin formato en una interfaz de usuario multilingüe. Configure su entorno de ejecución, marque el texto a traducir y conecte el cambio de idioma. Incluye indicaciones del agente de codificación para el paso de preparación.
 
 React · Next.js · Node.js · CLI
 
@@ -119,9 +119,9 @@ GitHub · GitLab · Bitbucket
 
 <div class="home-steps">
 
-1. **Prepare su proyecto.** Elija sus idiomas, un proveedor de traducción y los modelos a probar. Para las aplicaciones, marque el texto visible para el usuario y configure el entorno de ejecución de la traducción. Para los sitios, habilite el enrutamiento de idioma de su framework. Las guías incluyen indicaciones del agente de codificación donde se necesitan cambios en el código fuente.
+1. **Prepare su proyecto.** Elija sus idiomas, un proveedor de traducción y los modelos a probar. Para aplicaciones, marque el texto visible para el usuario y configure el entorno de ejecución de traducción. Para sitios web, habilite el enrutamiento de idiomas de su framework. Las guías incluyen indicaciones del agente de codificación donde se necesitan cambios en el código fuente.
 2. **Traduzca a archivos que pueda usar.** Una vez que la configuración esté lista, ejecute `sync`. Extrae las cadenas de aplicación compatibles, traduce el contenido que habilitó y escribe archivos de configuración regional o páginas localizadas.
-3. **Cargue, compruebe y continúe.** Conecte la salida a su aplicación o sitio, configure el cambio de idioma y compruebe un idioma de destino. Vuelva a ejecutar después de los cambios en el código fuente para traducir texto nuevo o modificado.
+3. **Cargue, compruebe y continúe.** Conecte la salida a su aplicación o sitio web, conecte el cambio de idioma y compruebe un idioma de destino. Vuelva a ejecutar después de los cambios en el código fuente para traducir texto nuevo o modificado.
 
 </div>
 

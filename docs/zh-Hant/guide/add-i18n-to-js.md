@@ -405,7 +405,7 @@ console.log(t("Hello {{name}}", { name }));
 再次執行 `ai-i18n-tools extract`。目錄現在應該會列出您包裝的句子。
 
 <a id="step-4-add-a-language-switch"></a>
-## 步驟 4：新增語言切換器
+## 步驟 4：新增語言切換功能
 
 在首次渲染之前還原已儲存的地區設定，如 [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime#startup-locale) 中所述。然後新增一個控制項，依序呼叫 `await loadLocale(code)` 和 `await i18n.changeLanguage(code)`。從 `ui-languages.json` 建立選項。小工具、標籤和從右到左的佈局：[語言切換器和 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
 

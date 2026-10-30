@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## `translate-intlayer` 的功能
 
-1. 剖析 `*.content.ts` 的預設匯出，並收集每個 `t({ locale: '…' })` 葉節點。語系值可以是純字串或 Intlayer `insert('…')` 插入節點。
-2. 用來源文字為 UI 區塊的 `ui.stringsJson` 提供初始資料，然後執行與 [`translate-ui`](/zh-Hant/reference/cli-commands/ui-strings#translate-ui) 相同的引擎來處理遺失和過時的語系。
-3. 將新的各語系字串寫回每個 `t({ … })` 物件中。編輯是精準的：只有遺失或過時的語系行會變更，因此您的格式、鍵順序和註解都會保留。現有翻譯會維持原樣。當葉節點使用 `insert('…')` 時，新的語系值也會被 `insert(…)` 包裹，這樣葉節點在執行階段就能保持可呼叫。
-4. 保留預留位置。Intlayer 的插入語法 <code v-pre>{{token}}</code> 會原封不動地傳遞。也支援單大括號 `{token}` 預留位置：它們在翻譯時會變成 <code v-pre>{{token}}</code>，並在寫入時還原為 `{token}`。
+1. 解析 `*.content.ts` 預設匯出，並收集每個 `t({ locale: '…' })` 葉節點。語系值可以是純字串或 Intlayer `insert('…')` 插入節點。
+2. 使用原始文字填充 UI 區塊的 `ui.stringsJson`，然後針對遺失和過時的語系執行與 [`translate-ui`](/zh-Hant/reference/cli-commands/ui-strings#translate-ui) 相同的引擎。
+3. 將新的每個語系字串寫回每個 `t({ … })` 物件。編輯是精確的：只有遺失或過時的語系行會變更，因此您的格式、鍵順序和註解都會保留。現有翻譯會保持原樣。當葉節點使用 `insert('…')` 時，新的語系值也會被 `insert(…)` 包裹，以便葉節點在執行時仍可呼叫。
+4. 保留預留位置。Intlayer 的插入語法 <code v-pre>{{token}}</code> 會原樣傳遞。也支援單大括號 `{token}` 預留位置：它們在翻譯時會變成 <code v-pre>{{token}}</code>，並在寫入時返回 `{token}`。
 5. 使用 `--dry-run` 進行模擬執行：它會回報遺失/過時的數量，而不會呼叫 LLM 或寫入任何內容。
 
 <a id="missing-vs-stale"></a>

@@ -60,7 +60,7 @@ Nextra [국제화](https://nextra.site/docs/guide/i18n)를 연결합니다. `nex
 <a id="theme-strings"></a>
 ## 테마 문자열
 
-Nextra 테마 크롬(`editLink`, 검색 플레이스홀더, 바닥글 등)은 마크다운에서 추출되지 않습니다. TypeScript 사전 모듈(예: `app/_dictionaries/en.ts`)에 영어 문자열을 작성하고 `translate-docs` 내에서 번역하세요:
+Nextra 테마 문자열(`editLink`, 검색 플레이스홀더, 푸터 등)은 마크다운에서 추출되지 않습니다. 영어 문자열을 TypeScript 사전 모듈(예: `app/_dictionaries/en.ts`)에 작성하고 `translate-docs` 내에서 번역합니다.
 
 ```json
 {
@@ -104,7 +104,7 @@ JSON 사이드카(`i18n/meta.en.json`) 또는 번역된 JSON을 가져오는 얇
 <a id="example-project"></a>
 ## 예시 프로젝트
 
-[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/`의 영어 소스, 커밋된 `pt-BR` 및 `zh-Hans` 페이지 트리, 인라인 `_meta.ts` 파일, `app/_dictionaries/{locale}.ts`. 하나의 서버 컴포넌트(`app/_components/feedback-links.tsx`)는 플랫 번들 조회를 통해 `t()`을 사용하여 사용자 지정 크롬이 사전 옆에 위치할 수 있도록 합니다. 3070 포트에서 `pnpm run dev`을 실행하세요.
+[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/`에 있는 영어 소스, 커밋된 `pt-BR` 및 `zh-Hans` 페이지 트리, 인라인 `_meta.ts` 파일, 그리고 `app/_dictionaries/{locale}.ts`. 하나의 서버 컴포넌트(`app/_components/feedback-links.tsx`)는 플랫 번들 조회를 통해 `t()`을 사용하므로 사용자 지정 셸 문자열이 사전 옆에 있을 수 있습니다. 포트 3070에서 `pnpm run dev`을 실행합니다.
 
 <a id="agent-prompt-dictionary-and-routes"></a>
 ## 에이전트 프롬프트: 사전 및 경로
@@ -138,7 +138,7 @@ sidebar labels into the dictionary or into `t()`.
 - `next.config`: `i18n.locales` and `defaultLocale`.
 - English MDX and `_meta.ts` live under `content/en/`. `getPageMap('/${lang}')`
   loads the matching tree.
-- `app/_dictionaries/en.ts` exports the English chrome (`siteTitle`, `footer`,
+- `app/_dictionaries/en.ts` exports the English shell strings (`siteTitle`, `footer`,
   `editLink`, search placeholder, table-of-contents title, last-updated label).
   `get-dictionary.ts` dynamically imports `./${locale}`.
 - Pass those fields into `<Layout>`, `<Navbar>`, and `<Footer>`. Set
@@ -166,7 +166,7 @@ sidebar labels into the dictionary or into `t()`.
 
 - `pnpm build` passes.
 - `/` shows the English dictionary strings. After `sync`, one non-English route
-  shows translated chrome and page titles.
+  shows translated shell strings and page titles.
 - Sidebar labels come from `content/en/**/_meta.ts`, not from the dictionary.
 
 ## Report back
@@ -181,7 +181,7 @@ native language names), and any MDX you were not sure belonged under
 <a id="optional-t-for-app-react-hybrid"></a>
 ## 선택 사항: `app/` React(하이브리드)용 `t()`
 
-**기본값:** `_meta.ts` 객체 리터럴과 `app/_dictionaries/en.ts`은 `translate-docs`에 의해 번역됩니다. 해당 크롬에는 `t()`이 필요하지 않습니다.
+**기본값:** `_meta.ts` 객체 리터럴과 `app/_dictionaries/en.ts`은 `translate-docs`에 의해 번역됩니다. 해당 셸 문자열에는 `t()`이 필요하지 않습니다.
 
 **선택적 하이브리드:** 사용자 지정 서버 컴포넌트는 `t("source sentence")` 및 `translate-ui`을 호출할 수 있습니다. 문장은 `sourceLocale`로 작성되며, 이는 모든 언어가 될 수 있습니다. 해당 호출에 사전 문자열이나 `_meta.ts` 제목을 복사하지 마세요. `extract`는 `t()` 내부의 리터럴만 보므로, `ui.sourceRoots`에는 `app/_dictionaries`이 아닌 해당 호출을 포함하는 폴더만 나열해야 합니다(예제에서는 `app/_components` 사용).
 

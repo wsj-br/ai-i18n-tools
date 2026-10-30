@@ -9,19 +9,19 @@ Eine Website oder Dokumentationsseite verwendet [i18n zu einer Website oder Doku
 
 Der Ablauf:
 
-1. [Die CLI installieren und einen Anbieter auswählen](#install-and-choose-a-provider).
-2. [Das Projekt initialisieren](#initialise-the-project) mit `init`.
-3. [Den Agenten-Prompt ausführen](#run-the-agent-prompt).
-4. [Das Ergebnis überprüfen](#review-the-result).
-5. [Modelle auswählen und übersetzen](#choose-models-and-translate), dann eine Sprache überprüfen.
+1. [CLI installieren und einen Anbieter auswählen](#install-and-choose-a-provider).
+2. [Projekt initialisieren](#initialise-the-project) mit `init`.
+3. [Agent-Prompt ausführen](#run-the-agent-prompt).
+4. [Ergebnis überprüfen](#review-the-result).
+5. [Modelle auswählen und übersetzen](#choose-models-and-translate), dann eine Sprache prüfen.
 6. [Übersetzt halten](#keep-it-translated).
 
-Sie möchten die Änderungen lieber selbst vornehmen oder möchten wissen, was der Prompt tut? [Manuell vorgehen](#do-it-by-hand) führt die gleichen Schritte einzeln durch.
+Möchten Sie die Änderungen lieber selbst vornehmen oder wissen, was der Prompt tut? [Manuell vorgehen](#do-it-by-hand) führt die gleichen Schritte einzeln durch.
 
 <a id="install-and-choose-a-provider"></a>
-## Installieren und einen Anbieter auswählen
+## Anbieter installieren und auswählen
 
-Diesen Teil erledigen Sie, nicht der Agent. Der Installer ändert Ihre Maschine, und der API-Schlüssel ist ein Geheimnis, das in Ihre Shell gehört, nicht in einen Prompt.
+Diesen Teil erledigen Sie, nicht der Agent. Der Installer nimmt Änderungen an Ihrem System vor, und der API-Schlüssel ist ein Geheimnis, das in Ihre Shell gehört, nicht in einen Prompt.
 
 Installieren Sie das Paket als Entwicklungsabhängigkeit. Der Bootstrap importiert `ai-i18n-tools/runtime`, und eine globale CLI oder eine eigenständige ausführbare Datei kann diesen Import nicht erfüllen. Weitere Installationsoptionen: [Installation](/de/guide/installation).
 
@@ -43,7 +43,7 @@ Wählen Sie dann einen Anbieter und legen Sie dessen API-Schlüssel in der Shell
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Ollama benötigt keinen Schlüssel. Andere Voreinstellungen: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers). Merken Sie sich den Anbieternamen, da Sie ihn im nächsten Schritt an `init` übergeben. Der Agent benötigt den Schlüssel nie: er führt nur Befehle aus, die keine Modellaufrufe tätigen. Sie verwenden den Schlüssel später, wenn Sie [übersetzen](#choose-models-and-translate).
+Ollama benötigt keinen Schlüssel. Andere Voreinstellungen: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers). Merken Sie sich den Anbieternamen, da Sie ihn im nächsten Schritt an `init` übergeben. Der Agent benötigt den Schlüssel nie: Er führt nur Befehle aus, die keine Modellaufrufe tätigen. Sie verwenden den Schlüssel später, wenn Sie [übersetzen](#choose-models-and-translate).
 
 <a id="initialise-the-project"></a>
 ## Projekt initialisieren
@@ -267,7 +267,7 @@ Vom Agenten übersehene Zeichenketten erscheinen später als Text, der in der Au
 <a id="choose-models-and-translate"></a>
 ## Modelle auswählen und übersetzen
 
-Diesen Teil führen Sie aus. Er verwendet Ihren API-Schlüssel und verbraucht Guthaben auf Ihrem Konto.
+Sie führen diesen Teil aus. Er verwendet Ihren API-Schlüssel und verursacht Kosten auf Ihrem Konto.
 
 Die Modellliste von `init` ist ein Ausgangspunkt. Bewerten Sie die Chat-Modelle des aktiven Anbieters und schreiben Sie die Auswahl in `translationModels`, sobald die engere Auswahl korrekt aussieht:
 
@@ -291,7 +291,7 @@ ai-i18n-tools status
 `t()` sucht den Quellsatz im Locale-JSON. Die ID in `strings.json` ist nicht der Suchschlüssel. Eine fehlende Datei oder ein fehlender Schlüssel gibt den Quellsatz zurück.
 
 <a id="check-one-language"></a>
-### Eine Sprache prüfen
+### Eine Sprache überprüfen
 
 Laden Sie die App neu, wechseln Sie zu einer Zielsprache und öffnen Sie einen Bildschirm mit einigen umbrochenen Zeichenketten. Verwenden Sie den vom Agenten hinzugefügten Sprachumschalter oder rufen Sie `loadLocale` und `changeLanguage` selbst auf. Text, der sich noch in der Ausgangssprache befindet, wurde nicht umbrochen, wird zur Importzeit ausgeführt oder hat keinen Eintrag im Locale-JSON. Überprüfen Sie das JSON auf den Satz, bevor Sie den Code verdächtigen.
 
@@ -305,7 +305,7 @@ Führen Sie `ai-i18n-tools sync` (oder `extract` und dann `translate-ui`) erneut
 Die Standardvorlage `init` listet auch `README.md` auf. Fügen Sie den Sprachlisten-Marker ein, bevor `sync` ihn übersetzt. Siehe [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Manuell vorgehen
+## Machen Sie es manuell
 
 Arbeiten Sie diese Schritte durch, wenn Sie die Änderungen lieber selbst vornehmen möchten oder wissen wollen, was die Eingabeaufforderung bewirkt. Die Schritte entsprechen den Teilen der Eingabeaufforderung. Sie [installieren die CLI](#install-and-choose-a-provider), [initialisieren das Projekt](#initialise-the-project) und [übersetzen](#choose-models-and-translate) am Ende trotzdem.
 
@@ -405,7 +405,7 @@ Lassen Sie diese unverändert: `className`, `href` und andere URLs, Importpfade,
 Führen Sie `ai-i18n-tools extract` erneut aus. Der Katalog sollte nun die von Ihnen umwickelten Sätze auflisten.
 
 <a id="step-4-add-a-language-switch"></a>
-## Schritt 4: Einen Sprachumschalter hinzufügen
+## Schritt 4: Sprachumschalter hinzufügen
 
 Stellen Sie ein gespeichertes Locale vor dem ersten Rendern wieder her, wie unter [i18next verdrahten](/de/guide/ui-strings/i18next-runtime#startup-locale) beschrieben. Fügen Sie dann ein Steuerelement hinzu, das `await loadLocale(code)` gefolgt von `await i18n.changeLanguage(code)` aufruft. Erstellen Sie die Optionen aus `ui-languages.json`. Das Widget, Beschriftungen und das Rechts-nach-links-Layout: [Sprachumschalter und RTL](/de/guide/ui-strings/language-switcher).
 

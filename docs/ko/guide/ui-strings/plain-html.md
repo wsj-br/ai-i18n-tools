@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-소스 로케일은 원본 URL을 유지합니다. bare `data-i18n-locale-src`의 경우, 절대 URL, 프로토콜 상대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지되며, 쿼리 문자열과 프래그먼트는 제자리에 있습니다. 값 있는 마커는 모든 비소스 로케일에 대해 해당 템플릿을 사용하고 `{locale}`만 대체합니다. 지역화된 이미지가 404 오류를 반환하면, 런타임은 원본 `src`를 한 번 복원합니다. `chart_pt-BR.png`는 직접 배포해야 하며, 스크립트는 이를 생성하지 않습니다.
+원본 로케일은 원본 URL을 유지합니다. `data-i18n-locale-src`의 경우, 절대 URL, 프로토콜 상대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지되며, 쿼리 문자열과 프래그먼트도 제자리에 유지됩니다. 값 있는 마커는 모든 비원본 로케일에 대해 해당 템플릿을 사용하며 `{locale}`만 대체합니다. 지역화된 이미지가 404 오류를 반환하면, 런타임은 원본 `src`를 한 번 복원합니다. `chart_pt-BR.png`는 직접 제공해야 하며, 스크립트는 이를 생성하지 않습니다.
 
 `data-i18n-locale-href`은 이 카탈로그 모델용입니다. `about.pt-BR.html`에 대한 링크는 [HTML 페이지](/ko/guide/documents/html-pages) 파이프라인에 속합니다.
 

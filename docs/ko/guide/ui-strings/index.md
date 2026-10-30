@@ -79,7 +79,7 @@ ai-i18n-tools translate-ui
 
 `translate-ui`는 파일만 작성합니다. 앱이 파일을 로드해야 합니다.
 
-- JS/TS: 런타임 헬퍼로 i18next를 연결하고, 사용자가 선택한 로캘 파일을 로드하고, 언어 전환기를 추가합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime) 및 [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher)을 참조하세요.
+- JS/TS: 런타임 헬퍼를 사용하여 i18next를 설정하고, 사용자가 선택한 로케일 파일을 로드한 다음, 언어 전환기를 추가합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime) 및 [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher)을 참조하세요.
 - Python: 생성된 `i18n.py` 또는 gettext 카탈로그를 사용합니다. [Python 애플리케이션](/ko/guide/ui-strings/python)을 참조하세요.
 - 일반 HTML: 페이지 옆에 런타임 스크립트를 로드합니다. [일반 HTML 앱](/ko/guide/ui-strings/plain-html)을 참조하세요.
 - Astro: [Astro 웹사이트](/ko/guide/ui-strings/astro-website)를 참조하세요.

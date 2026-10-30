@@ -98,7 +98,7 @@ Fumadocs साइडबार संरचना और शीर्षको�
 <a id="ui-catalog"></a>
 ## UI कैटलॉग
 
-Fumadocs लेआउट क्रोम (खोज प्लेसहोल्डर, स्थानीय प्रदर्शन नाम, और `lib/layout.shared.ts` में अन्य `defineTranslations` / `i18n.translations()` ओवरराइड) मार्कडाउन से नहीं निकाला जाता है। `docsOutput.fumadocsUiCatalog` को कॉन्फ़िगर करें ताकि `translate-docs`, `sourcePath` से स्रोत-स्थानीय कैटलॉग को बूटस्ट्रैप करे और प्रति-स्थानीय JSON का अनुवाद करे:
+Fumadocs लेआउट शेल स्ट्रिंग (खोज प्लेसहोल्डर, लोकल डिस्प्ले नाम, और `defineTranslations` / `i18n.translations()` में अन्य ओवरराइड `lib/layout.shared.ts`) मार्कडाउन से नहीं निकाले जाते हैं। `docsOutput.fumadocsUiCatalog` को कॉन्फ़िगर करें ताकि `translate-docs`, `sourcePath` से स्रोत-लोकल कैटलॉग को बूटस्ट्रैप करे और प्रति-लोकल JSON का अनुवाद करे:
 
 ```json
 {
@@ -223,7 +223,7 @@ or `dir`.
 
 फ्यूमाडॉक्स Next.js मिडलवेयर (`/docs/getting-started`, `/pt/docs/getting-started`) के माध्यम से लोकेल-प्रीफिक्स्ड रूट प्रदान करता है। **इन-पेज लिंक लोकेल-न्यूट्रल रहने चाहिए** (`/docs/getting-started`) ताकि सक्रिय लोकेल प्रीफिक्स स्वचालित रूप से लागू हो।
 
-अंतर्निहित नॉर्मलाइज़र सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक कर दे:
+बिल्ट-इन नॉर्मलाइज़र सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक करे:
 
 ```json
 "docsOutput": {

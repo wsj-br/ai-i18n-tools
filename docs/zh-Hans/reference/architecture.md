@@ -69,7 +69,7 @@
 
 普通 Astro SSG 站点可以跳过 i18next：在构建时加载扁平的 `{locale}.json`，并按源文本键解析 `t('source text')`。源语言为 `sourceLocale`，并且可以是任何语言（请参阅 `examples/astro-website/src/i18n/t.ts` 和 [界面字符串 — Astro 网站](/zh-Hans/guide/ui-strings/astro-website)）。
 
-纯 HTML 应用遵循相同的目录模型，使用标记属性代替 `t()` 调用——请参阅[标记 HTML 以进行翻译](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)。即插即用脚本为 `ai-i18n-tools/html-runtime/i18n.js`。
+普通 HTML 应用遵循相同的目录模型，使用标记属性而不是 `t()` 调用 — 参见 [标记 HTML 以进行翻译](/zh-Hans/guide/ui-strings/plain-html#marking-html-for-translation)。现成的脚本是 `ai-i18n-tools/html-runtime/i18n.js`。
 
 应转换为每个语言环境一个文件的静态 HTML 属于文档管道（`translate-docs` 内的 `HtmlTemplateExtractor`），而非此目录。请参阅 [HTML 页面](/zh-Hans/guide/documents/html-pages)。
 

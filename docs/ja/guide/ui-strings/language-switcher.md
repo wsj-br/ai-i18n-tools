@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` は `document.documentElement.dir` を設定します（ブラウザの場合）。または、何もしません（Node.jsの場合）。特定の要素をターゲットにするには、オプションの `element` 引数を渡します。i18nブートストラップでこれを接続します — [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime)。
+`applyDirection` は、ブラウザでは `document.documentElement.dir` を設定し、Node.js では何もしない操作となります。特定の要素を対象とするには、オプションの `element` 引数を渡します。i18n のブートストラップで接続してください — [i18next を接続する](/ja/guide/ui-strings/i18next-runtime)。
 
 `→`矢印を含む可能性のある文字列については、RTLレイアウト用に反転します。
 

@@ -75,7 +75,7 @@ Ollamaはキーを必要としません。その他のプリセット: [組み�
 | その他のテンプレートとREADME | その`init`コマンドに`--with-readme`を追加 | READMEブロックにはこのページ |
 | READMEとMarkdownのみ | `ai-i18n-tools init -t docs-markdown -P openrouter` | このページ |
 
-`--with-readme`は`ui-markdown`と`docs-markdown`では何もしません。これらのテンプレートにはすでにREADMEブロックが含まれているためです。
+`--with-readme` は `ui-markdown` および `docs-markdown` には効果がありません。それらのテンプレートにはすでに README ブロックが含まれているためです。
 
 JS/TSアプリとREADME（1つのコマンド。`ui-markdown`がデフォルトテンプレートです）:
 

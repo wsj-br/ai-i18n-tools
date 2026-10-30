@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # 快速入門
 
-本頁將帶您將一個單一語言的專案，產生其第一批翻譯檔案。適用於 JS/TS 應用程式、Python 應用程式、網站或文件站台，或是儲存庫 README 及其他 Markdown 檔案。本頁假設：
+本頁將引導單一語言專案，以產生其第一個翻譯檔案。它適用於 JS/TS 應用程式、Python 應用程式、網站或文件網站，或儲存庫的 README 檔案及其他 Markdown 檔案。本頁假設：
 
 - 已安裝 Node.js `>=22.16.0`，若是 Python 專案，則需[獨立執行檔](/zh-Hant/guide/installation#standalone-executables)。
 - 擁有 LLM 供應商的 API 金鑰，或是在本機安裝 Ollama。

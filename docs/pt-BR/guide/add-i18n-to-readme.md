@@ -13,14 +13,14 @@ Um site VitePress, Docusaurus, Starlight, Nextra, Fumadocs ou Astro usa [Adicion
 
 O fluxo:
 
-1. [Instalar a CLI e escolher um provedor](#install-and-choose-a-provider).
-2. [Inicializar o projeto](#initialise-the-project) com `init`.
-3. [Executar o prompt do agente](#run-the-agent-prompt).
-4. [Revisar o resultado](#review-the-result).
+1. [Instale o CLI e escolha um provedor](#install-and-choose-a-provider).
+2. [Inicialize o projeto](#initialise-the-project) com `init`.
+3. [Execute o prompt do agente](#run-the-agent-prompt).
+4. [Revise o resultado](#review-the-result).
 5. [Escolha modelos e traduza](#choose-models-and-translate), depois verifique um idioma.
 6. [Mantenha-o traduzido](#keep-it-translated).
 
-Prefere fazer as alterações você mesmo, ou quer saber o que o prompt faz? [Faça manualmente](#do-it-by-hand) percorre os mesmos passos um de cada vez.
+Prefere fazer as alterações você mesmo, ou quer saber o que o prompt faz? [Faça manualmente](#do-it-by-hand) percorre os mesmos passos um por um.
 
 <a id="install-and-choose-a-provider"></a>
 ## Instalar e escolher um provedor
@@ -49,7 +49,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 O instalador verifica `SHA256SUMS.txt`, instala o comando como `ai-i18n-tools` e o adiciona a `PATH`. Os binários não são autenticados ou assinados com Authenticode. Etapas manuais e nomes de ativos: [Executáveis autônomos](/pt-BR/guide/installation#standalone-executables). `npx ai-i18n-tools` também funciona quando o Node.js está instalado e você não quer uma dependência de projeto.
 
-Verificar a instalação:
+Verifique a instalação:
 
 ```bash
 ai-i18n-tools --version
@@ -75,7 +75,7 @@ Você executa isso uma vez, antes do prompt. Ele escreve a configuração e usa 
 | Qualquer outro template, mais um README | adicione `--with-readme` a esse comando `init` | Esta página para o bloco do README |
 | Somente README e Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | Esta página |
 
-`--with-readme` não tem efeito em `ui-markdown` e `docs-markdown`, porque esses templates já incluem o bloco do README.
+`--with-readme` não tem efeito sobre `ui-markdown` e `docs-markdown`, porque esses modelos já incluem o bloco README.
 
 Aplicativo JS/TS e README (um comando; `ui-markdown` é o template padrão):
 
@@ -208,7 +208,7 @@ them: `ai-i18n-tools suggest-models` (optional), `ai-i18n-tools sync`.
 ````
 
 <a id="review-the-result"></a>
-## Revise o resultado
+## Revisar o resultado
 
 O agente termina com um relatório. Verifique-o antes de traduzir:
 
@@ -293,7 +293,7 @@ Use a variável de ambiente para o provedor que você configurou. Ollama não se
 As traduções de IA podem estar incorretas. Uma nota curta no final do README, como a que está no [README deste repositório](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), informa aos leitores que os outros idiomas foram traduzidos por máquina e devem ser verificados antes de você confiar neles.
 
 <a id="do-it-by-hand"></a>
-## Faça manualmente
+## Faça isso manualmente
 
 Siga estas etapas se preferir fazer as alterações você mesmo ou se quiser saber o que o prompt faz. As duas primeiras correspondem às partes do prompt. As duas últimas são para arquivos extras e para links que apontam para um site publicado. Você ainda [instala a CLI](#install-and-choose-a-provider), [inicializa o projeto](#initialise-the-project) e [traduz](#choose-models-and-translate) no final.
 

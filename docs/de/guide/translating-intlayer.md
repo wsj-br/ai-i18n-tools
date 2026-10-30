@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## Was `translate-intlayer` leistet
 
-1. Analysiert `*.content.ts` Standard-Exporte und sammelt jedes `t({ locale: '…' })`-Blatt. Locale-Werte können einfache Strings oder Intlayer `insert('…')` Einfüge-Knoten sein.
-2. Initialisiert den `ui.stringsJson` des UI-Blocks mit dem Quelltext und führt dann dieselbe Engine wie [`translate-ui`](/de/reference/cli-commands/ui-strings#translate-ui) für die fehlenden und veralteten Locales aus.
-3. Schreibt die neuen pro-Locale-Strings zurück in jedes `t({ … })`-Objekt. Bearbeitungen sind punktuell: Nur die fehlenden oder veralteten Locale-Zeilen ändern sich, sodass Ihre Formatierung, Schlüsselreihenfolge und Kommentare erhalten bleiben. Bestehende Übersetzungen bleiben unverändert. Wenn ein Blatt `insert('…')` verwendet, werden neue Locale-Werte ebenfalls in `insert(…)` eingeschlossen, damit das Blatt zur Laufzeit aufrufbar bleibt.
-4. Platzhalter werden beibehalten. Die Intlayer-Einfügesyntax <code v-pre>{{token}}</code> wird unverändert durchgereicht. Platzhalter mit einfacher Klammer `{token}` werden ebenfalls unterstützt: Sie werden zu <code v-pre>{{token}}</code> für die Übersetzung und kehren beim Schreiben zu `{token}` zurück.
+1. Analysiert `*.content.ts` Standard-Exporte und sammelt jedes `t({ locale: '…' })` Blatt. Gebietsschemawerte können einfache Zeichenfolgen oder Intlayer `insert('…')` Einfügeknoten sein.
+2. Initialisiert das `ui.stringsJson` des UI-Blocks mit dem Quelltext und führt dann dieselbe Engine wie [`translate-ui`](/de/reference/cli-commands/ui-strings#translate-ui) für die fehlenden und veralteten Gebietsschemata aus.
+3. Schreibt die neuen pro-Gebietsschema-Zeichenfolgen zurück in jedes `t({ … })` Objekt. Bearbeitungen sind präzise: Nur die fehlenden oder veralteten Gebietsschema-Zeilen ändern sich, sodass Ihre Formatierung, Schlüsselreihenfolge und Kommentare erhalten bleiben. Bestehende Übersetzungen bleiben unverändert. Wenn ein Blatt `insert('…')` verwendet, werden neue Gebietsschemawerte ebenfalls in `insert(…)` eingeschlossen, sodass das Blatt zur Laufzeit aufrufbar bleibt.
+4. Platzhalter werden beibehalten. Die Einfügesyntax von Intlayer <code v-pre>{{token}}</code> wird unverändert durchgereicht. Platzhalter mit einfacher Klammer `{token}` werden ebenfalls unterstützt: Sie werden zu <code v-pre>{{token}}</code> für die Übersetzung und kehren beim Schreiben zu `{token}` zurück.
 5. Trockenlauf mit `--dry-run`: Es meldet die Anzahl der fehlenden/veralteten Einträge, ohne ein LLM aufzurufen oder etwas zu schreiben.
 
 <a id="missing-vs-stale"></a>

@@ -34,13 +34,13 @@
 
 候選項目來自供應商的 `GET /models` 列表。當 `providers.cheaperinference.zeroDataRetention` 為 true 時，該請求為 `GET /v1/models?zdr=true`。已過期的行和非聊天行（嵌入、語音、圖像、視訊、內容審核、重新排名器）將被排除。如果該目錄請求失敗，該命令將以 1 結束。
 
-`--quality` 是預設值。它將 ChrF 和 Arena 分數的權重置於價格之上。`--price` 將價格的權重置於這些分數之上，同時仍保持品質下限，因此未經測量的廉價模型不會躍居列表前列。同時傳遞這兩個旗標會導致錯誤。兩者皆不傳遞則表示品質。設定中的可選 `modelSuggestion` 權重會取代任一設定檔。請參閱 [設定](/zh-Hant/reference/configuration#modelsuggestion-optional)。相同的權重也用於 [儀表板的模型分頁](/zh-Hant/guide/translation-dashboard/models)。
+`--quality` 是預設值。它將 ChrF 和 Arena 分數的權重置於價格之上。`--price` 將價格的權重置於這些分數之上，同時仍保持品質下限，以避免未經測量的廉價模型排名高於應有水準。同時傳遞這兩個旗標會導致錯誤。兩者皆不傳遞則表示品質。配置中的可選 `modelSuggestion` 權重會取代任一設定檔。請參閱 [配置](/zh-Hant/reference/configuration#modelsuggestion-optional)。[儀表板的「模型」分頁](/zh-Hant/guide/translation-dashboard/models) 也使用相同的權重。
 
 ChrF 是 languagebench `translation_from` 和 `translation_to` 列的平均值，其指標為 `chrf`，僅限於此專案的 `sourceLocale` 和 `targetLocales`。語系會對應至 languagebench 語言代碼 (主要子標籤，帶有一些別名，例如 `pt-BR` 對應至 `pt`，`zh-Hant` 對應至 `zh`，以及 `yue`)。空集合使用 `en`。Arena 是 LMArena 的整體 Arena 分數，而非 Elo。
 
 排名價格為每百萬個權杖 `(3 × input + output) / 4` 美元。其來源依此順序解析：非零的目錄費率，然後是 models.dev 的輸入和輸出費率，最後是 languagebench 的單一成本數字。目錄價格為 `0` 表示未定價，而非免費。未知價格在品質設定檔中保持中立，在價格設定檔中則表現最差。
 
-遺失的 ChrF 會排序在品質下限之下。用於遺失 ChrF 或 Arena 的 `0.35` 和 `0.45` 替代值僅影響索引；表格則會改為印出 `—`。
+遺失的 ChrF 會排序在品質下限之下。當 ChrF 或 Arena 遺失時所使用的預留位置值 `0.35` 和 `0.45` 僅影響索引；表格會改為列印 `—`。
 
 達到門檻的列優先顯示，接著是較高的指數，然後是較低的混合價格。`--top`（預設為 `8`，一個至少為 1 的整數）在下方篩選器之後，共同限制表格、`--json` 片段和 `--apply`。
 

@@ -10,7 +10,7 @@ Tienes una aplicación, un sitio web, un sitio de documentación o un archivo RE
 | --- | --- |
 | Elige los idiomas, un proveedor y los modelos que probar | Extrae el texto, lo traduce, valida el resultado y escribe los catálogos o las páginas |
 | Haz que el texto visible para el usuario sea visible para la herramienta: llamadas a `t()` en el código de la aplicación, la propia i18n de tu framework para un sitio, o un marcador de lista de idiomas en un README | Almacena en caché las traducciones y las reutiliza en cada nueva ejecución |
-| Integra el resultado en la aplicación, el enrutamiento del sitio o la fila de idiomas del README | Muestra el progreso y te permite revisar las traducciones en el panel de control |
+| Conecta el resultado a la aplicación, el enrutamiento del sitio o la fila de idioma del archivo README | Muestra el progreso y permite revisar las traducciones en el panel |
 
 La herramienta no reescribe tu código fuente. Se proporcionan indicaciones del agente de codificación para el paso de encapsulado. No instala i18next ni la i18n de tu framework de sitio, y no construye tu selector de idioma, aunque se proporcionan ayudantes en tiempo de ejecución para ello.
 

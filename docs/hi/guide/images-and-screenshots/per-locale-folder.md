@@ -119,7 +119,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-हर लक्ष्य स्थानीय के लिए उसी पथ पर मिलान करने वाली PNG फ़ाइलें भेजें (जैसे `static/img/screenshots/de/screenshot.png`)। `screenshots/en-GB/` को हार्डकोडिंग करने के बजाय `screenshots/[^/]+/` को प्राथमिकता दें ताकि नियम `sourceLocale` परिवर्तन से बच सके।
+हर लक्ष्य लोकले के लिए उसी पाथ पर मिलान करने वाली PNG फ़ाइलें प्रदान करें (उदाहरण के लिए `static/img/screenshots/de/screenshot.png`)। `screenshots/en-GB/` को हार्डकोड करने के बजाय `screenshots/[^/]+/` को प्राथमिकता दें ताकि नियम `sourceLocale` परिवर्तन के बाद भी बना रहे।
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### प्रीसेट - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`docs-site/static/img/screenshots/<locale>/screenshot.png` पर PNG फ़ाइलें शिप करें। स्रोत-लोकेल-अज्ञेय कॉन्फ़िग के लिए, `screenshots/en-GB/` के बजाय `screenshots/[^/]+/` को प्राथमिकता दें।
+`docs-site/static/img/screenshots/<locale>/screenshot.png` पर मिलान करने वाली PNG फ़ाइलें प्रदान करें। स्रोत-लोकले-अज्ञेय कॉन्फ़िग के लिए, `screenshots/en-GB/` के बजाय `screenshots/[^/]+/` को प्राथमिकता दें।
 
 कार्यान्वयन उदाहरण: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json) के साथ।
 
@@ -179,6 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`public/img/screenshots/<locale>/screenshot.png` पर PNG शिप करें। `${translatedLocale}` प्लेसहोल्डर आपकी कॉन्फ़िग लोकेल स्ट्रिंग का उपयोग करता है (जैसे `pt-BR`)। `astro-starlight` प्रीसेट डिफ़ॉल्ट रूप से लोकेल **आउटपुट पथों** को लोअरकेस करता है (`pt-br/`), लेकिन `public/img/screenshots/` के अंतर्गत स्थिर एसेट फ़ोल्डर मार्कडाउन URL में लिखी गई लोकेल सेगमेंट से मेल खाना चाहिए — स्क्रीनशॉट निर्देशिकाओं को `${translatedLocale}` के साथ संरेखित रखें, न कि आवश्यक रूप से एस्ट्रो रूट केसिंग के साथ।
+`public/img/screenshots/<locale>/screenshot.png` पर PNG प्रदान करें। `${translatedLocale}` प्लेसहोल्डर आपकी कॉन्फ़िग लोकले स्ट्रिंग का उपयोग करता है (उदाहरण के लिए `pt-BR`)। `astro-starlight` प्रीसेट डिफ़ॉल्ट रूप से लोकले **आउटपुट पाथ** को लोअरकेस करता है (`pt-br/`), लेकिन `public/img/screenshots/` के तहत स्थिर एसेट फ़ोल्डर को मार्कडाउन URL में लिखे गए लोकले सेगमेंट से मेल खाना चाहिए — स्क्रीनशॉट डायरेक्टरी को `${translatedLocale}` के साथ संरेखित रखें, न कि आवश्यक रूप से Astro रूट केसिंग के साथ।
 
 कार्यान्वयन उदाहरण: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) और [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`)।

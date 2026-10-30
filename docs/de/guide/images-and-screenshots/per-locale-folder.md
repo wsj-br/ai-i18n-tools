@@ -119,7 +119,7 @@ Legen Sie `localeSubpath` so fest, dass es zur Verzeichnisstruktur Ihres Generat
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-Stellen Sie passende PNG-Dateien im selben Pfad für jede Ziellokalisierung bereit (z. B. `static/img/screenshots/de/screenshot.png`). Bevorzugen Sie `screenshots/[^/]+/` gegenüber der direkten Einbindung von `screenshots/en-GB/`, damit die Regel auch nach einer Änderung von `sourceLocale` weiterhin funktioniert.
+Stellen Sie passende PNG-Dateien unter demselben Pfad für jedes Ziellandesschema bereit (z. B. `static/img/screenshots/de/screenshot.png`). Bevorzugen Sie `screenshots/[^/]+/` gegenüber dem Hardcodieren von `screenshots/en-GB/`, damit die Regel eine `sourceLocale`-Änderung übersteht.
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### Voreinstellung – `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ Wie `"doc-system"`, jedoch mit Standardwert `localeSubpath = "docusaurus-plugin-
 
 </details>
 
-Stellen Sie passende PNG-Dateien unter `docs-site/static/img/screenshots/<locale>/screenshot.png` bereit. Für konfigurationsunabhängige Quelllokalisierungen bevorzugen Sie `screenshots/[^/]+/` gegenüber `screenshots/en-GB/`.
+Stellen Sie passende PNG-Dateien unter `docs-site/static/img/screenshots/<locale>/screenshot.png` bereit. Für Konfigurationen, die unabhängig vom Quelllandesschema sind, bevorzugen Sie `screenshots/[^/]+/` gegenüber `screenshots/en-GB/`.
 
 Implementierungsbeispiel: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) mit [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
@@ -179,6 +179,6 @@ Gleich wie `"doc-system"` mit `localeSubpath: ""` – übersetzte Seiten befinde
 
 </details>
 
-Liefern Sie PNGs unter `public/img/screenshots/<locale>/screenshot.png`. Der Platzhalter `${translatedLocale}` verwendet Ihre Konfigurations-Gebietsschema-Zeichenfolge (z. B. `pt-BR`). Die Voreinstellung `astro-starlight` wandelt Gebietsschema-**Ausgabepfade** standardmäßig in Kleinbuchstaben um (`pt-br/`), aber statische Asset-Ordner unter `public/img/screenshots/` sollten dem Gebietsschema-Segment entsprechen, das in Markdown-URLs geschrieben wird – halten Sie Screenshot-Verzeichnisse mit `${translatedLocale}` ausgerichtet, nicht unbedingt mit der Astro-Routen-Groß-/Kleinschreibung.
+Stellen Sie PNGs unter `public/img/screenshots/<locale>/screenshot.png` bereit. Der Platzhalter `${translatedLocale}` verwendet den Landesschema-String Ihrer Konfiguration (z. B. `pt-BR`). Die Voreinstellung `astro-starlight` wandelt Landesschema-**Ausgabepfade** standardmäßig in Kleinbuchstaben um (`pt-br/`), aber statische Asset-Ordner unter `public/img/screenshots/` sollten dem Landesschema-Segment entsprechen, das in Markdown-URLs geschrieben wird – halten Sie Screenshot-Verzeichnisse auf `${translatedLocale}` abgestimmt, nicht unbedingt auf die Astro-Routen-Groß-/Kleinschreibung.
 
 Implementierungsbeispiel: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) – [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) und [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).

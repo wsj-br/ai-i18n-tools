@@ -75,7 +75,7 @@ Ollama는 키가 필요 없습니다. 다른 사전 설정: [내장 공급자](/
 | 다른 템플릿과 README | 해당 `init` 명령에 `--with-readme` 추가 | README 블록의 경우 이 페이지 |
 | README 및 마크다운만 | `ai-i18n-tools init -t docs-markdown -P openrouter` | 이 페이지 |
 
-`--with-readme`은 `ui-markdown` 및 `docs-markdown`에서 아무 작업도 수행하지 않습니다. 해당 템플릿에는 이미 README 블록이 포함되어 있기 때문입니다.
+해당 템플릿에는 이미 README 블록이 포함되어 있기 때문에, `--with-readme`는 `ui-markdown` 및 `docs-markdown`에 영향을 미치지 않습니다.
 
 JS/TS 앱 및 README (하나의 명령; `ui-markdown`은 기본 템플릿입니다):
 

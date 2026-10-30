@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### 翻譯內容
 
-頁面主體會經過 [文件](/zh-Hant/guide/documents/) 管線。框架介面元素（導覽、側邊欄、主題標籤）會在框架支援的相同執行中處理。這不是獨立的 [JSON](/zh-Hant/guide/json) 管線。在瀏覽器中切換語言的純 HTML 頁面是個例外：`mark-html` 和 `translate-ui` 會寫入扁平的 JSON，然後瀏覽器指令碼會套用它。每個語系一個 HTML 檔案會留在文件管線中。
+頁面主體會透過 [文件](/zh-Hant/guide/documents/) 管線處理。框架殼層字串 (導覽、側邊欄、主題標籤) 會在框架支援的情況下，於同一次執行中處理。這不屬於獨立的 [JSON](/zh-Hant/guide/json) 管線。一個可以在瀏覽器中切換語言的純 HTML 頁面是例外：`mark-html` 和 `translate-ui` 會寫入平面 JSON，並由瀏覽器指令碼套用。每個語系一個 HTML 檔案仍會透過文件管線處理。
 
 | 框架 | Shell 和佈景主題字串 | 方法 |
 | --- | --- | --- |

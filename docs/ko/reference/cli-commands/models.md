@@ -34,13 +34,13 @@
 
 후보는 공급자의 `GET /models` 목록에서 가져옵니다. `providers.cheaperinference.zeroDataRetention`이 true인 경우, 해당 요청은 `GET /v1/models?zdr=true`입니다. 만료된 행과 비채팅 행(임베딩, 음성, 이미지, 비디오, 중재, 리랭커)은 제외됩니다. 해당 카탈로그 요청이 실패하면 명령은 1로 종료됩니다.
 
-`--quality`이(가) 기본값입니다. 이는 ChrF 및 Arena 점수에 가격보다 더 높은 가중치를 부여합니다. `--price`은(는) 해당 점수보다 가격에 더 높은 가중치를 부여하면서도 품질 하한선을 유지하므로, 측정되지 않은 저렴한 모델이 목록 상단으로 올라가지 않습니다. 두 플래그를 모두 전달하면 오류가 발생합니다. 둘 다 전달하지 않으면 품질을 의미합니다. 구성의 선택적 `modelSuggestion` 가중치는 두 프로필 중 하나를 대체합니다. [구성](/ko/reference/configuration#modelsuggestion-optional)을 참조하십시오. 동일한 가중치는 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에서도 사용됩니다.
+`--quality`는 기본값입니다. 이는 ChrF 및 Arena 점수를 가격보다 우선시합니다. `--price`는 가격을 해당 점수들보다 우선시하며, 측정되지 않은 저렴한 모델이 실제보다 높은 순위를 차지하지 않도록 품질 하한선을 유지합니다. 두 플래그를 모두 전달하는 것은 오류입니다. 둘 다 전달하지 않으면 품질을 의미합니다. 구성의 선택적 `modelSuggestion` 가중치가 두 프로필 중 하나를 대체합니다. [구성](/ko/reference/configuration#modelsuggestion-optional)을 참조하십시오. 동일한 가중치는 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에서도 사용됩니다.
 
 ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation_to` 행의 평균이며, 이 프로젝트의 `sourceLocale` 및 `targetLocales`로 제한됩니다. 로케일은 languagebench 언어 코드(기본 하위 태그이며, `pt-BR`를 `pt`으로, `zh-Hant`을 `zh`으로, 그리고 `yue`와 같은 몇 가지 별칭이 있습니다)로 매핑됩니다. 빈 세트는 `en`을 사용합니다. Arena는 LMArena 전체 Arena 점수이며, Elo가 아닙니다.
 
 순위 가격은 100만 토큰당 `(3 × input + output) / 4` USD입니다. 해당 출처는 다음 순서로 결정됩니다: 0이 아닌 카탈로그 요율, 그 다음 models.dev 입력 및 출력 요율, 그 다음 languagebench의 단일 비용 수치. `0`의 카탈로그 가격은 가격이 책정되지 않은 것이며, 무료가 아닙니다. 알 수 없는 가격은 품질 프로필에서는 중립적이며, 가격 프로필에서는 최악입니다.
 
-ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. 누락된 ChrF 또는 Arena에 사용되는 `0.35` 및 `0.45` 대체 값은 인덱스에만 영향을 미치며, 테이블에는 대신 `—`가 출력됩니다.
+ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. ChrF 또는 Arena가 누락되었을 때 사용되는 플레이스홀더 값 `0.35` 및 `0.45`는 인덱스에만 영향을 미치며, 테이블은 대신 `—`를 출력합니다.
 
 기준치를 통과한 행이 먼저 표시되고, 그 다음 높은 인덱스, 그 다음 저렴한 혼합 가격 순입니다. `--top` (기본값 `8`, 1 이상의 정수)는 아래 필터 적용 후 테이블, `--json` 조각, 그리고 `--apply`를 함께 제한합니다.
 

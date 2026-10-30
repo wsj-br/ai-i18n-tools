@@ -69,7 +69,7 @@ JS/TSファイル内の`t("literal")`および`i18n.t("literal")`呼び出しを
 
 プレーンな Astro SSG サイトでは i18next を省略できます。ビルド時にフラットな `{locale}.json` を読み込み、ソーステキストのキーで `t('source text')` を解決します。ソース言語は `sourceLocale` で、任意の言語を使用できます (`examples/astro-website/src/i18n/t.ts` と [UI 文字列 — Astro ウェブサイト](/ja/guide/ui-strings/astro-website) を参照)。
 
-プレーンな HTML アプリは、`t()` 呼び出しの代わりにマーカー属性を使用する同じカタログモデルに従います。[翻訳用に HTML をマークする](/ja/guide/ui-strings/plain-html#marking-html-for-translation) を参照してください。ドロップインスクリプトは `ai-i18n-tools/html-runtime/i18n.js` です。
+通常のHTMLアプリは、`t()`の呼び出しの代わりにマーカー属性を使用して、同じカタログモデルに従います — [HTMLを翻訳用にマークする](/ja/guide/ui-strings/plain-html#marking-html-for-translation)を参照してください。すぐに使えるスクリプトは`ai-i18n-tools/html-runtime/i18n.js`です。
 
 ロケールごとに 1 つのファイルとなる静的 HTML は、このカタログではなくドキュメントパイプライン（`translate-docs` 内の `HtmlTemplateExtractor`）です。[HTML ページ](/ja/guide/documents/html-pages) を参照してください。
 

@@ -7,21 +7,21 @@ Le moyen le plus rapide est de donner une invite à un agent de codage sur cette
 
 Vous développez une application Streamlit, FastAPI, Flask, de bureau ou un script qui n'utilise pas gettext aujourd'hui ? Utilisez plutôt [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python). Il ajoute un petit assistant `i18n.py` et écrit des catalogues JSON. Vous ne savez pas ce qui s'applique ? Voir [Pas votre cas ?](#not-your-case) à la fin.
 
-Le processus :
+Le flux :
 
-1. [Installer l'interface de ligne de commande (CLI) et choisir un fournisseur](#install-and-choose-a-provider).
+1. [Installer la CLI et choisir un fournisseur](#install-and-choose-a-provider).
 2. [Initialiser le projet](#initialise-the-project) avec `init`.
 3. [Exécuter l'invite de l'agent](#run-the-agent-prompt).
 4. [Examiner le résultat](#review-the-result).
 5. [Choisir les modèles et traduire](#translate), puis vérifier une langue.
 6. [Maintenir la traduction](#keep-it-translated).
 
-Vous préférez effectuer les modifications vous-même, ou vous voulez savoir ce que fait l'invite ? [Faire manuellement](#do-it-by-hand) décrit les mêmes étapes une par une.
+Vous préférez effectuer les modifications vous-même, ou vous voulez savoir ce que fait l'invite ? [Faites-le manuellement](#do-it-by-hand) parcourt les mêmes étapes une par une.
 
 <a id="install-and-choose-a-provider"></a>
 ## Installer et choisir un fournisseur
 
-Vous effectuez cette partie, pas l'agent. L'installateur modifie votre machine, et la clé API est un secret qui doit rester dans votre shell, pas dans une invite.
+Vous faites cette partie, pas l'agent. L'installateur modifie votre machine, et la clé API est un secret qui doit rester dans votre shell, pas dans une invite.
 
 Utilisez le package npm lorsque la machine dispose déjà de Node.js `>=22.16.0` ([Installation](/fr/guide/installation)). Pour un projet Python, installez l'exécutable autonome (sans Node.js).
 
@@ -79,7 +79,7 @@ Modifiez ensuite `sourceLocale` et `targetLocales` dans `ai-i18n-tools.config.js
 <a id="run-the-agent-prompt"></a>
 ## Exécuter l'invite de l'agent
 
-Ouvrez le projet dans votre agent de codage (Cursor, Claude Code, Copilot ou similaire), démarrez une nouvelle conversation et collez l'invite ci-dessous. Le projet doit déjà être initialisé. Il n'y a rien à modifier. Si vous souhaitez omettre quelque chose, par exemple pas de changement de langue, indiquez-le dans le même message.
+Ouvrez le projet dans votre agent de codage (Cursor, Claude Code, Copilot ou similaire), démarrez une nouvelle conversation et collez l'invite ci-dessous. Le projet doit déjà être initialisé. Il n'y a rien à modifier. Si vous voulez omettre quelque chose, par exemple pas de sélecteur de langue, précisez-le dans le même message.
 
 L'agent vérifie d'abord que la CLI et la configuration existent, et s'arrête avec des instructions si l'une d'elles est manquante. Ensuite, il fonctionne en quatre parties :
 
@@ -225,9 +225,9 @@ rewrites the `.po` files.
 </details>
 
 <a id="review-the-result"></a>
-## Examiner le résultat
+## Réviser le résultat
 
-L'agent termine par un rapport. Vérifiez-le avant de traduire :
+L'agent termine avec un rapport. Vérifiez-le avant de traduire :
 
 - Le diff. Seuls les appels enveloppés, les balises de modèle, la configuration et le sélecteur de langue devraient avoir changé. Vos fichiers `.po` et `.mo` devraient être intacts jusqu'à ce que vous traduisiez.
 - `ai-i18n-tools.config.json` : `gettext.outputDir` et `domain` pointent vers les catalogues que votre application charge, et `sourceRoots` couvre le code de l'application.
@@ -275,7 +275,7 @@ Réexécutez `ai-i18n-tools sync` (ou `extract` puis `translate-ui`) après avoi
 Pour traduire `README.md` dans la même exécution, générez avec `--with-readme` (ou ajoutez le bloc à une configuration existante). Consultez [Ajouter l'i18n à vos documents README et Markdown](/fr/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Faites-le manuellement
+## Faire manuellement
 
 Suivez ces étapes si vous préférez apporter les modifications vous-même, ou si vous voulez savoir ce que fait l'invite. Chaque étape correspond à une partie de l'invite. Vous devez toujours [installer l'interface de ligne de commande (CLI)](#install-and-choose-a-provider), [initialiser le projet](#initialise-the-project) et [traduire](#translate) à la fin.
 

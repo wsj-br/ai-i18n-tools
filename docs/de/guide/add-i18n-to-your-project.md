@@ -1,7 +1,7 @@
 <a id="add-i18n-to-your-project"></a>
 # i18n zu Ihrem Projekt hinzufügen
 
-Dieser Abschnitt enthält die Anleitungen für ein Projekt, das derzeit nur eine Sprache spricht. Beginnen Sie hier. Jede der folgenden Seiten führt Sie für eine bestimmte Projektart von der Einrichtung bis zu den ersten übersetzten Dateien. [Erste Schritte](/de/guide/what-is-ai-i18n-tools) behandelt, was das Tool ist, die Installationsoptionen sowie Anbieter und Modelle. Sie können direkt mit einer Anleitung beginnen, ohne diese Seiten vorher zu lesen.
+Dieser Abschnitt enthält die Anleitungen für ein Projekt, das derzeit nur eine Sprache hat. Beginnen Sie hier. Jede der folgenden Seiten behandelt eine Art von Projekt von der Einrichtung bis zu den ersten übersetzten Dateien. [Erste Schritte](/de/guide/what-is-ai-i18n-tools) behandelt, was das Tool ist, Installationsoptionen sowie Anbieter und Modelle. Sie können eine Anleitung öffnen, ohne diese Seiten zuerst zu lesen.
 
 <a id="what-you-do-and-what-the-tool-does"></a>
 ## Was Sie tun und was das Tool tut

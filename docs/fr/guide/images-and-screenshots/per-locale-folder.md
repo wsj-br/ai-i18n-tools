@@ -119,7 +119,7 @@ Définissez `localeSubpath` pour qu'il corresponde à la structure de votre gén
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-Fournissez des fichiers PNG correspondants au même chemin pour chaque locale cible (par exemple `static/img/screenshots/de/screenshot.png`). Préférez `screenshots/[^/]+/` plutôt que de coder en dur `screenshots/en-GB/` afin que la règle reste valide en cas de changement de `sourceLocale`.
+Fournir des fichiers PNG correspondants au même chemin pour chaque locale cible (par exemple `static/img/screenshots/de/screenshot.png`). Préférer `screenshots/[^/]+/` à un codage en dur de `screenshots/en-GB/` afin que la règle survive à un changement de `sourceLocale`.
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### Préréglage - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ Identique à `"doc-system"` avec `localeSubpath = "docusaurus-plugin-content-doc
 
 </details>
 
-Fournissez les fichiers PNG correspondants dans `docs-site/static/img/screenshots/<locale>/screenshot.png`. Pour les configurations indépendantes de la locale source, préférez `screenshots/[^/]+/` à `screenshots/en-GB/`.
+Fournir des fichiers PNG correspondants à `docs-site/static/img/screenshots/<locale>/screenshot.png`. Pour les configurations indépendantes de la locale source, préférer `screenshots/[^/]+/` à `screenshots/en-GB/`.
 
 Exemple d'implémentation : [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) avec [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
@@ -179,6 +179,6 @@ Identique à `"doc-system"` avec `localeSubpath: ""` — les pages traduites se 
 
 </details>
 
-Expédiez les PNG à `public/img/screenshots/<locale>/screenshot.png`. L'espace réservé `${translatedLocale}` utilise votre chaîne de locale de configuration (par exemple `pt-BR`). Le préréglage `astro-starlight` met par défaut les **chemins de sortie** de la locale en minuscules (`pt-br/`), mais les dossiers d'actifs statiques sous `public/img/screenshots/` doivent correspondre au segment de locale écrit dans les URL Markdown — maintenez les répertoires de captures d'écran alignés avec `${translatedLocale}`, pas nécessairement avec la casse des routes Astro.
+Fournir les fichiers PNG à `public/img/screenshots/<locale>/screenshot.png`. Le placeholder `${translatedLocale}` utilise votre chaîne de locale de configuration (par exemple `pt-BR`). Le préréglage `astro-starlight` met par défaut les **chemins de sortie** de la locale en minuscules (`pt-br/`), mais les dossiers d'actifs statiques sous `public/img/screenshots/` doivent correspondre au segment de locale écrit dans les URL Markdown — maintenez les répertoires de captures d'écran alignés avec `${translatedLocale}`, pas nécessairement avec la casse des routes Astro.
 
 Exemple d'implémentation : [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) et [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).

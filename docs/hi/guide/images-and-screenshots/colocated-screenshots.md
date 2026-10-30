@@ -3,7 +3,7 @@
 
 इसका उपयोग तब करें जब कोई `doc-system` साइट स्थानीय-विशिष्ट संपत्तियों को अनुवादित मार्कडाउन के साथ सह-स्थित करती है — किसी URL पुनर्लेखन की आवश्यकता नहीं है। Docusaurus प्रीसेट (`docsOutput.style = "docusaurus"`) संदर्भ कार्यान्वयन है; एक कस्टम `localeSubpath` के साथ `"doc-system"` का उपयोग करने वाले अन्य जनरेटर उसी विचार का पालन करते हैं: अंग्रेजी संपत्तियां एक स्रोत-स्थानीय पथ पर रहती हैं, अनुवादित संपत्तियां `{outputDir}/{locale}/[localeSubpath/]assets/` के तहत रहती हैं।
 
-> **इन-रेपो उदाहरण क्यों नहीं:** इस रिपॉजिटरी के Docusaurus डेमो ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) इसके बजाय [प्रति-स्थानीय फ़ोल्डर](/hi/guide/images-and-screenshots/per-locale-folder) लेआउट का उपयोग करते हैं — [निर्णय मार्गदर्शिका](/hi/guide/images-and-screenshots/#decision-guide) देखें। सह-स्थित `../assets/` अनुशंसित ग्रीनफ़ील्ड पैटर्न है; [duplistatus](https://github.com/wsj-br/duplistatus) पूर्ण उत्पादन संदर्भ है।
+> **रेपो में कोई उदाहरण क्यों नहीं:** इस रिपॉजिटरी के Docusaurus डेमो ([`examples/docusaurus-docs`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/), [`examples/nextjs-app`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/)) इसके बजाय [प्रति-स्थानिक फ़ोल्डर](/hi/guide/images-and-screenshots/per-locale-folder) लेआउट का उपयोग करते हैं — [निर्णय मार्गदर्शिका](/hi/guide/images-and-screenshots/#decision-guide) देखें। सह-स्थित `../assets/` एक नए प्रोजेक्ट के लिए अनुशंसित पैटर्न है; [duplistatus](https://github.com/wsj-br/duplistatus) पूर्ण उत्पादन संदर्भ है।
 
 <a id="directory-layout"></a>
 ### निर्देशिका लेआउट

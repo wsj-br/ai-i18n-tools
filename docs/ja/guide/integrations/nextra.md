@@ -60,7 +60,7 @@ Nextra の [国際化](https://nextra.site/docs/guide/i18n) を設定します�
 <a id="theme-strings"></a>
 ## テーマ文字列
 
-Nextraテーマのクローム (`editLink`、検索プレースホルダー、フッターなど) はMarkdownから抽出されません。英語の文字列をTypeScript辞書モジュール (例: `app/_dictionaries/en.ts`) で作成し、`translate-docs`内で翻訳します：
+Nextraテーマの文字列（`editLink`、検索プレースホルダー、フッターなど）はMarkdownから抽出されません。英語の文字列をTypeScript辞書モジュール（例: `app/_dictionaries/en.ts`）で作成し、`translate-docs`内で翻訳します。
 
 ```json
 {
@@ -104,7 +104,7 @@ JSON サイドカー (`i18n/meta.en.json`) や、翻訳された JSON をイン�
 <a id="example-project"></a>
 ## サンプルプロジェクト
 
-[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/` にある英語のソース、コミット済みの `pt-BR` と `zh-Hans` のページツリー、インラインの `_meta.ts` ファイル、および `app/_dictionaries/{locale}.ts`。1つのサーバーコンポーネント (`app/_components/feedback-links.tsx`) がフラットバンドルルックアップを介して `t()` を使用するため、カスタムUI (chrome) を辞書の横に配置できます。ポート3070で `pnpm run dev` を実行してください。
+[Nextraドキュメントの例](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — 英語のソースは`content/en/`にあり、コミットされた`pt-BR`と`zh-Hans`のページツリー、インラインの`_meta.ts`ファイル、および`app/_dictionaries/{locale}.ts`があります。1つのサーバーコンポーネント（`app/_components/feedback-links.tsx`）は、フラットバンドルルックアップを介して`t()`を使用し、これによりカスタムシェル文字列を辞書と並べて配置できます。ポート3070で`pnpm run dev`を実行します。
 
 <a id="agent-prompt-dictionary-and-routes"></a>
 ## エージェント プロンプト: 辞書とルート
@@ -138,7 +138,7 @@ sidebar labels into the dictionary or into `t()`.
 - `next.config`: `i18n.locales` and `defaultLocale`.
 - English MDX and `_meta.ts` live under `content/en/`. `getPageMap('/${lang}')`
   loads the matching tree.
-- `app/_dictionaries/en.ts` exports the English chrome (`siteTitle`, `footer`,
+- `app/_dictionaries/en.ts` exports the English shell strings (`siteTitle`, `footer`,
   `editLink`, search placeholder, table-of-contents title, last-updated label).
   `get-dictionary.ts` dynamically imports `./${locale}`.
 - Pass those fields into `<Layout>`, `<Navbar>`, and `<Footer>`. Set
@@ -166,7 +166,7 @@ sidebar labels into the dictionary or into `t()`.
 
 - `pnpm build` passes.
 - `/` shows the English dictionary strings. After `sync`, one non-English route
-  shows translated chrome and page titles.
+  shows translated shell strings and page titles.
 - Sidebar labels come from `content/en/**/_meta.ts`, not from the dictionary.
 
 ## Report back
@@ -181,7 +181,7 @@ native language names), and any MDX you were not sure belonged under
 <a id="optional-t-for-app-react-hybrid"></a>
 ## オプション: `app/` React (ハイブリッド) 向けの `t()`
 
-**デフォルト:** `_meta.ts` オブジェクトリテラルと `app/_dictionaries/en.ts` は `translate-docs` によって翻訳されます。そのUI (chrome) には `t()` は必要ありません。
+**デフォルト:** `_meta.ts`オブジェクトリテラルと`app/_dictionaries/en.ts`は`translate-docs`によって翻訳されます。これらのシェル文字列には`t()`は不要です。
 
 **オプションのハイブリッド:** カスタムサーバーコンポーネントは `t("source sentence")` と `translate-ui` を呼び出すことができます。文章は `sourceLocale` で書かれており、これは任意の言語にすることができます。それらの呼び出しに辞書文字列や `_meta.ts` のタイトルをコピーしないでください。`extract` は `t()` 内のリテラルしか認識しないため、`ui.sourceRoots` にはそれらの呼び出しを含むフォルダーのみをリストアップする必要があります (例では `app/_components` を使用)。`app/_dictionaries` は含めません。
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-started`) を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールに依存しないようにするべきです** (`/guide/getting-started`)。そうすることで、Next.js がアクティブなロケールを自動的にプレフィックスできます。
 
-組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳済みファイル内のリンクを自動的に修正します：
+組み込みのノーマライザーを有効にして、`translate-docs`がすべての翻訳済みファイル内のリンクを自動的に修正するようにします：
 
 ```json
 "docsOutput": {

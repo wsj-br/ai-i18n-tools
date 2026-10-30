@@ -69,7 +69,7 @@ Para las fuentes `.html` / `.htm` (cuando se enumeran en `ui.uiExtractor.extensi
 
 Los sitios SSG de Astro simples pueden omitir i18next: cargar `{locale}.json` plano en tiempo de compilación y resolver `t('source text')` por clave de texto fuente. El idioma de origen es `sourceLocale` y puede ser cualquier idioma (consulte `examples/astro-website/src/i18n/t.ts` y [Cadenas de interfaz de usuario — sitio web de Astro](/es/guide/ui-strings/astro-website)).
 
-Las aplicaciones HTML simples siguen el mismo modelo de catálogo con atributos de marcador en lugar de llamadas a `t()` — consulte [Marcar HTML para traducción](/es/guide/ui-strings/plain-html#marking-html-for-translation). El script integrable es `ai-i18n-tools/html-runtime/i18n.js`.
+Las aplicaciones HTML puras siguen el mismo modelo de catálogo con atributos de marcador en lugar de llamadas a `t()` — consulta [Marcado de HTML para traducción](/es/guide/ui-strings/plain-html#marking-html-for-translation). El script listo para usar es `ai-i18n-tools/html-runtime/i18n.js`.
 
 El HTML estático que debe convertirse en un archivo por configuración regional es un pipeline de documentos (`HtmlTemplateExtractor` dentro de `translate-docs`), no este catálogo. Consulte [Páginas HTML](/es/guide/documents/html-pages).
 

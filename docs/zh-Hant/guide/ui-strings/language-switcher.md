@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` 設定 `document.documentElement.dir` (瀏覽器) 或不執行任何操作 (Node.js)。傳遞選用的 `element` 引數以指定特定元素。在您的 i18n 啟動中連接它 — [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime)。
+`applyDirection` 會設定 `document.documentElement.dir` (瀏覽器)，或在 Node.js 中為無操作。傳遞一個可選的 `element` 引數以指定特定元素。在您的 i18n 啟動程序中連接它 — [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime)。
 
 對於可能包含 `→` 箭頭的字串，請為從右至左的版面配置翻轉它們：
 

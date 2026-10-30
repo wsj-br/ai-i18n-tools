@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Internationalisation pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [Applications Python](/fr/guide/ui-strings/python). Le guide pas à pas pour une application existante à locale unique est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), avec une [invite d'agent](/fr/guide/add-i18n-to-python#run-the-agent-prompt). Les catalogues Django, Flask-Babel et les applications qui utilisent déjà gettext ont leur propre guide et leur propre invite : [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext).
+Comment choisir la bonne configuration pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [les applications Python](/fr/guide/ui-strings/python). La procédure pas à pas pour une application existante à locale unique est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), avec une [invite d'agent](/fr/guide/add-i18n-to-python#run-the-agent-prompt). Les catalogues Django, Flask-Babel et les applications qui utilisent déjà gettext ont leur propre guide détaillé et invite : [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent l'assistant `i18n.py` généré (Python 3.10 ou version ultérieure). Django conserve le gettext de Django. Quatre copies exécutables sont fournies dans le dépôt : `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Pyramid, Django, Tkinter, Qt et PyWebView ne possèdent pas de répertoire d'exemples distinct.
 

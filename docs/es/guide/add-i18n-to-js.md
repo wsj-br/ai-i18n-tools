@@ -70,9 +70,9 @@ La misma plantilla enumera `README.md` para la traducción de documentos. El mar
 Todas las demás claves están en [Configuración](/es/reference/configuration). Formas de llamada: [Llamadas t() y plurales](/es/guide/ui-strings/t-calls-and-plurals). La referencia de arranque: [Conectar i18next](/es/guide/ui-strings/i18next-runtime).
 
 <a id="run-the-agent-prompt"></a>
-## Ejecutar el prompt del agente
+## Ejecutar la instrucción del agente
 
-Abre el proyecto en tu agente de codificación (Cursor, Claude Code, Copilot o similar), inicia un nuevo chat y pega el prompt a continuación. El proyecto ya debe estar inicializado. No hay nada que editar. Si quieres omitir algo, por ejemplo, que no haya cambio de idioma, indícalo en el mismo mensaje.
+Abre el proyecto en tu agente de codificación (Cursor, Claude Code, Copilot o similar), inicia un nuevo chat y pega la instrucción a continuación. El proyecto ya debe estar inicializado. No hay nada que editar. Si quieres omitir algo, por ejemplo, no cambiar de idioma, indícalo en el mismo mensaje.
 
 El agente primero comprueba que la CLI y la configuración existen, y se detiene con instrucciones si falta alguna. Luego trabaja en tres partes:
 
@@ -305,7 +305,7 @@ Vuelva a ejecutar `ai-i18n-tools sync` (o `extract` y luego `translate-ui`) desp
 La plantilla predeterminada de `init` también lista `README.md`. Pegue el marcador de lista de idiomas antes de que `sync` lo traduzca. Consulte [Agregar i18n a su README y documentos Markdown](/es/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Hágalo manualmente
+## Hazlo manualmente
 
 Siga estos pasos si prefiere hacer los cambios usted mismo, o si quiere saber qué hace la instrucción. Los pasos coinciden con las partes de la instrucción. Al final, seguirá [instalando la CLI](#install-and-choose-a-provider), [inicializando el proyecto](#initialise-the-project) y [traduciendo](#choose-models-and-translate).
 

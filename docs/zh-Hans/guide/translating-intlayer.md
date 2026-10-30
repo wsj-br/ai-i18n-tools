@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## `translate-intlayer` 的作用
 
-1. 解析 `*.content.ts` 的默认导出，并收集每个 `t({ locale: '…' })` 叶节点。区域设置值可以是纯字符串或 Intlayer `insert('…')` 插入节点。
-2. 用源文本填充 UI 块的 `ui.stringsJson`，然后为缺失和过时的区域设置运行与 [`translate-ui`](/zh-Hans/reference/cli-commands/ui-strings#translate-ui) 相同的引擎。
-3. 将每个区域设置的新字符串写回到各个 `t({ … })` 对象中。编辑是精准的：只更改缺失或过时的区域设置行，因此您的格式、键顺序和注释都会被保留。现有翻译将保持原样。当叶节点使用 `insert('…')` 时，新的区域设置值也会被包裹在 `insert(…)` 中，这样叶节点在运行时就保持可调用状态。
-4. 保留占位符。Intlayer 的插入语法 <code v-pre>{{token}}</code> 会原封不动地传递。也支持单大括号占位符 `{token}`：它们在翻译时会变成 <code v-pre>{{token}}</code>，在写回时恢复为 `{token}`。
+1. 解析 `*.content.ts` 默认导出并收集每个 `t({ locale: '…' })` 叶子。区域设置值可以是纯字符串或 Intlayer `insert('…')` 插入节点。
+2. 为 UI 块的 `ui.stringsJson` 填充源文本，然后针对缺失和过时的区域设置运行与 [`translate-ui`](/zh-Hans/reference/cli-commands/ui-strings#translate-ui) 相同的引擎。
+3. 将新的每个区域设置字符串写回每个 `t({ … })` 对象。编辑是精确的：只有缺失或过时的区域设置行会更改，因此您的格式、键顺序和注释都将保留。现有翻译保持不变。当叶子使用 `insert('…')` 时，新的区域设置值也会被包裹在 `insert(…)` 中，以便叶子在运行时保持可调用。
+4. 保留占位符。Intlayer 的插入语法 <code v-pre>{{token}}</code> 未经更改地传递。单大括号 `{token}` 占位符也受支持：它们在翻译时变为 <code v-pre>{{token}}</code>，并在写入时恢复为 `{token}`。
 5. 使用 `--dry-run` 进行空运行：它会报告缺失/过时的数量，而不会调用 LLM 或写入任何内容。
 
 <a id="missing-vs-stale"></a>

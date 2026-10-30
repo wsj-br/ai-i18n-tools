@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### क्या अनुवादित होता है
 
-पेज बॉडीज़ [डॉक्यूमेंट्स](/hi/guide/documents/) पाइपलाइन से होकर गुजरती हैं। फ़्रेमवर्क क्रोम (नेविगेशन, साइडबार, थीम लेबल) को उसी रन में संभाला जाता है जहाँ फ़्रेमवर्क इसका समर्थन करता है। यह अलग [JSON](/hi/guide/json) पाइपलाइन नहीं है। एक सादा HTML पेज जो ब्राउज़र में भाषा बदलता है, वह अपवाद है: `mark-html` और `translate-ui` फ़्लैट JSON लिखते हैं, और ब्राउज़र स्क्रिप्ट इसे लागू करती है। प्रति लोकेल एक HTML फ़ाइल डॉक्यूमेंट्स पाइपलाइन पर रहती है।
+पृष्ठ की मुख्य सामग्री [दस्तावेज़](/hi/guide/documents/) पाइपलाइन से संसाधित होती है। फ़्रेमवर्क शेल स्ट्रिंग (नेविगेशन, साइडबार, थीम लेबल) को उसी रन में संभाला जाता है जहाँ फ़्रेमवर्क इसका समर्थन करता है। यह अलग [JSON](/hi/guide/json) पाइपलाइन नहीं है। एक साधारण HTML पृष्ठ जो ब्राउज़र में भाषा बदलता है, वह इसका अपवाद है: `mark-html` और `translate-ui` फ्लैट JSON लिखते हैं, और ब्राउज़र स्क्रिप्ट इसे लागू करती है। प्रत्येक लोकले के लिए एक HTML फ़ाइल दस्तावेज़ पाइपलाइन पर बनी रहती है।
 
 | फ्रेमवर्क | शेल और थीम स्ट्रिंग | कैसे |
 | --- | --- | --- |

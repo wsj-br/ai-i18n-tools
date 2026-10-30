@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Auswahlhilfe für Python-Anwendungen. Extraktion, Kataloge und Aufrufstrukturen befinden sich in [Python-Anwendungen](/de/guide/ui-strings/python). Die Schritt-für-Schritt-Anleitung für eine bestehende Single-Locale-App ist [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python), mit einer [Agenten-Eingabeaufforderung](/de/guide/add-i18n-to-python#run-the-agent-prompt). Django, Flask-Babel-Kataloge und Anwendungen, die bereits gettext verwenden, haben ihre eigene Anleitung und Eingabeaufforderung: [i18n zu einer Django / Python gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext).
+So wählen Sie die richtige Einrichtung für Python-Anwendungen. Extraktion, Kataloge und Aufrufstrukturen befinden sich in [Python-Anwendungen](/de/guide/ui-strings/python). Die Schritt-für-Schritt-Anleitung für eine bestehende Single-Locale-App ist [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python), mit einer [Agentenaufforderung](/de/guide/add-i18n-to-python#run-the-agent-prompt). Django, Flask-Babel-Kataloge und Apps, die bereits gettext verwenden, haben ihre eigene Anleitung und Aufforderung: [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide und PyWebView rufen den generierten `i18n.py`-Helfer auf (Python 3.10 oder neuer). Django verwendet das gettext von Django. Vier ausführbare Kopien sind im Repository enthalten: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` und `examples/python-gettext`. Pyramid, Django, Tkinter, Qt und PyWebView verfügen über kein separates Beispielverzeichnis.
 

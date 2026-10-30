@@ -10,18 +10,18 @@ Django, Flask-Babel 카탈로그 또는 GNU gettext를 사용하고 있으며 �
 흐름:
 
 1. [CLI 설치 및 공급자 선택](#install-and-choose-a-provider).
-2. `init`로 [프로젝트 초기화](#initialise-the-project).
+2. `init`를 사용하여 [프로젝트 초기화](#initialise-the-project).
 3. [에이전트 프롬프트 실행](#run-the-agent-prompt).
 4. [결과 검토](#review-the-result).
 5. [모델 선택 및 번역](#choose-models-and-translate) 후 한 언어를 확인합니다.
 6. [번역 유지](#keep-it-translated).
 
-변경 사항을 직접 적용하고 싶거나 프롬프트가 무엇을 하는지 알고 싶으십니까? [수동으로 수행](#do-it-by-hand)은 동일한 단계를 하나씩 안내합니다.
+변경 사항을 직접 적용하고 싶거나 프롬프트가 무엇을 하는지 알고 싶으신가요? [수동으로 진행하기](#do-it-by-hand)에서 동일한 단계를 하나씩 안내합니다.
 
 <a id="install-and-choose-a-provider"></a>
 ## 설치 및 공급자 선택
 
-이 부분은 에이전트가 아닌 사용자가 수행합니다. 설치 프로그램은 사용자의 시스템을 변경하며, API 키는 프롬프트가 아닌 셸에 속하는 비밀 정보입니다.
+이 부분은 에이전트가 아닌 사용자가 직접 수행합니다. 설치 프로그램은 사용자 시스템을 변경하며, API 키는 프롬프트가 아닌 셸에 속하는 비밀 정보입니다.
 
 머신에 이미 Node.js `>=22.16.0`가 있는 경우 npm 패키지를 사용하십시오([설치](/ko/guide/installation)). Python 프로젝트의 경우 독립 실행형 실행 파일(Node.js 없음)을 설치하십시오.
 
@@ -51,7 +51,7 @@ ai-i18n-tools --version
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollama는 키가 필요 없습니다. 다른 사전 설정: [내장 공급자](/ko/guide/providers-and-models#built-in-providers). 다음 단계에서 `init`에 전달해야 하므로 공급자 이름을 기록해 두세요. 에이전트는 모델 호출을 하지 않는 명령만 실행하므로 키가 필요 없습니다. 키는 나중에 [번역](#choose-models-and-translate)할 때 사용합니다.
+Ollama는 키가 필요 없습니다. 다른 사전 설정: [내장 공급자](/ko/guide/providers-and-models#built-in-providers). 다음 단계에서 `init`에 전달해야 하므로 공급자 이름을 기록해 두세요. 에이전트는 키가 필요 없습니다. 모델 호출을 하지 않는 명령만 실행합니다. 키는 나중에 [번역](#choose-models-and-translate)할 때 사용합니다.
 
 <a id="initialise-the-project"></a>
 ## 프로젝트 초기화
@@ -249,7 +249,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="review-the-result"></a>
 ## 결과 검토
 
-에이전트는 보고서로 끝납니다. 번역하기 전에 확인하세요.
+에이전트는 보고서로 끝냅니다. 번역하기 전에 확인하세요.
 
 - 차이점. 래핑된 텍스트는 관련 없는 재포맷 없이 이전과 동일하게 읽혀야 합니다. `git diff --stat`은(는) 변경된 양을 보여줍니다.
 - 보고서에서 건너뛴 문자열 및 모호한 경우: 단일 문자열로 남겨진 복수형, 저장된 값과 캡션으로 사용된 단일 단어, 번역된 조각으로 구성된 문장. 이들은 수동으로 결정하십시오.
@@ -262,7 +262,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="choose-models-and-translate"></a>
 ## 모델 선택 및 번역
 
-이 부분은 사용자가 실행합니다. 이 부분은 사용자의 API 키를 사용하며 계정에서 비용이 발생합니다.
+이 부분은 사용자가 실행합니다. 사용자 API 키를 사용하며 사용자 계정에서 비용이 발생합니다.
 
 `init`의 모델 목록은 시작점입니다. 활성 공급자의 채팅 모델 순위를 지정하고, 최종 후보 목록이 적절해 보이면 `translationModels`에 작성하세요:
 
@@ -897,7 +897,7 @@ class App(tk.Tk):
 
 새 스레드는 창의 언어가 아닌 소스 언어로 시작됩니다. 메인 스레드에서 번역하거나, 스레드 함수 시작 시 `set_locale`를 호출하십시오. 다른 툴킷도 동일한 구성 요소가 필요합니다: 모든 보이는 텍스트를 설정하는 함수와 `set_locale`를 호출한 다음 해당 함수를 호출하는 메뉴 핸들러. PyQt 및 PySide는 자체 재번역 훅을 가집니다; [각 프레임워크의 로케일](/ko/guide/ui-strings/python#locale-in-each-framework)을 참조하십시오.
 
-이것이 마지막 수동 단계입니다. [모델 선택 및 번역](#choose-models-and-translate)에서 계속하십시오.
+이것이 마지막 수동 단계입니다. [모델 선택 및 번역](#choose-models-and-translate)에서 계속하세요.
 
 <a id="not-your-case"></a>
 ## 해당하지 않으시나요?

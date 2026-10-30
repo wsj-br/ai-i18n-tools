@@ -75,7 +75,7 @@ Vous exécutez ceci une fois, avant l’invite. Il écrit la configuration et ut
 | Tout autre modèle, plus un README | ajoutez `--with-readme` à cette commande `init` | Cette page pour le bloc README |
 | README et Markdown uniquement | `ai-i18n-tools init -t docs-markdown -P openrouter` | Cette page |
 
-`--with-readme` est sans effet sur `ui-markdown` et `docs-markdown`, car ces modèles incluent déjà le bloc README.
+`--with-readme` n'a aucun effet sur `ui-markdown` et `docs-markdown`, car ces modèles incluent déjà le bloc README.
 
 Application JS/TS et README (une seule commande ; `ui-markdown` est le modèle par défaut) :
 

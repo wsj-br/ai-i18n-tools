@@ -45,7 +45,7 @@ Comprueba la instalación:
 ai-i18n-tools --version
 ```
 
-Luego elige un proveedor y establece su clave API en el shell que ejecutará la traducción. Por ejemplo, Cheaper Inference:
+Luego, elige un proveedor y configura su clave API en el shell que ejecutará la traducción. Por ejemplo, Cheaper Inference:
 
 ```bash
 export CHEAPERINFERENCE_API_KEY=your-key-here
@@ -322,7 +322,7 @@ Cuando cada aplicación de Django mantiene su propia carpeta `locale/`, usa un b
 `compileMo` escribe el `.mo` por ti, por lo que no necesitas `compilemessages` en este flujo de trabajo. Elige una herramienta para escribir los catálogos: ejecutar `makemessages` después de `translate-ui` reescribe los mismos archivos `.po`.
 
 <a id="step-2-wrap-strings"></a>
-## Paso 2: Encapsula las cadenas
+## Paso 2: Envolver cadenas
 
 `extract` registra una cadena solo cuando es un literal pasado a uno de los nombres de función en `ui.uiExtractor.funcNames`, o una etiqueta de plantilla. Mantén las llamadas que tienes. Añade lo que falta.
 

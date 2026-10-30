@@ -79,9 +79,9 @@ ai-i18n-tools translate-ui
 
 `translate-ui` 只写入文件。应用必须加载它们。
 
-- JS/TS：使用运行时帮助程序连接 i18next，加载用户选择的区域设置文件，并添加语言切换器。请参阅[连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)和[语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher)。
-- Python：使用生成的 `i18n.py` 或你的 gettext 目录。请参阅[Python 应用程序](/zh-Hans/guide/ui-strings/python)。
-- 纯 HTML：在页面旁边加载运行时脚本。请参阅[纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html)。
+- JS/TS：使用运行时辅助函数设置 i18next，加载用户选择的语言环境文件，并添加语言切换器。请参阅 [集成 i18next](/zh-Hans/guide/ui-strings/i18next-runtime) 和 [语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher)。
+- Python：使用生成的 `i18n.py` 或您的 gettext 目录。请参阅 [Python 应用程序](/zh-Hans/guide/ui-strings/python)。
+- 纯 HTML：在页面旁边加载运行时脚本。请参阅 [纯 HTML 应用程序](/zh-Hans/guide/ui-strings/plain-html)。
 - Astro：请参阅 [Astro 网站](/zh-Hans/guide/ui-strings/astro-website)。
 
 <a id="optional"></a>

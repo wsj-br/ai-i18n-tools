@@ -69,7 +69,7 @@
 
 सामान्य Astro SSG साइटें i18next को छोड़ सकती हैं: बिल्ड समय पर फ्लैट `{locale}.json` लोड करें और स्रोत-पाठ कुंजी द्वारा `t('source text')` को हल करें। स्रोत भाषा `sourceLocale` है और कोई भी भाषा हो सकती है (`examples/astro-website/src/i18n/t.ts` और [UI स्ट्रिंग्स — Astro वेबसाइट](/hi/guide/ui-strings/astro-website) देखें)।
 
-सादे HTML ऐप्स `t()` कॉल के बजाय मार्कर विशेषताओं के साथ समान कैटलॉग मॉडल का अनुसरण करते हैं — [अनुवाद के लिए HTML को मार्क करना](/hi/guide/ui-strings/plain-html#marking-html-for-translation) देखें। ड्रॉप-इन स्क्रिप्ट `ai-i18n-tools/html-runtime/i18n.js` है।
+साधारण HTML ऐप्स `t()` कॉल्स के बजाय मार्कर एट्रिब्यूट्स के साथ उसी कैटलॉग मॉडल का पालन करते हैं — [अनुवाद के लिए HTML को चिह्नित करना](/hi/guide/ui-strings/plain-html#marking-html-for-translation) देखें। उपयोग के लिए तैयार स्क्रिप्ट `ai-i18n-tools/html-runtime/i18n.js` है।
 
 स्टैटिक HTML जो प्रति लोकेल एक फ़ाइल बननी चाहिए, एक डॉक्यूमेंट्स पाइपलाइन (`translate-docs` के अंदर `HtmlTemplateExtractor`) है, न कि यह कैटलॉग। [HTML पेज](/hi/guide/documents/html-pages) देखें।
 

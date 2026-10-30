@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` setzt `document.documentElement.dir` (Browser) oder ist ein No-Op (Node.js). Übergeben Sie ein optionales `element`-Argument, um ein bestimmtes Element anzusprechen. Binden Sie es in Ihr i18n-Bootstrap ein – [i18next einbinden](/de/guide/ui-strings/i18next-runtime).
+`applyDirection` setzt `document.documentElement.dir` (Browser) oder ist ein No-Op (Node.js). Übergeben Sie ein optionales `element`-Argument, um ein bestimmtes Element anzusprechen. Binden Sie es in Ihrem i18n-Bootstrap ein — [i18next einbinden](/de/guide/ui-strings/i18next-runtime).
 
 Für Zeichenketten, die `→`-Pfeile enthalten können, drehen Sie diese in RTL-Layouts um:
 

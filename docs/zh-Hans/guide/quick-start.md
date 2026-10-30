@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # 快速入门
 
-本页面将引导您为一个单语言项目生成其第一批翻译文件。它适用于 JS/TS 应用、Python 应用、网站或文档站点，或仓库中的 README 及其他 Markdown 文件。它假设：
+本页指导单语言项目生成其首批翻译文件。它适用于 JS/TS 应用、Python 应用、网站或文档站点，或仓库的 README 文件及其他 Markdown 文件。本指南假定：
 
 - 已安装 Node.js `>=22.16.0`，或者对于 Python 项目，已安装[独立可执行文件](/zh-Hans/guide/installation#standalone-executables)。
 - 拥有一个 LLM 提供商的 API 密钥，或在本地安装了 Ollama。

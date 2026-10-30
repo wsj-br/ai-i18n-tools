@@ -34,7 +34,7 @@
 
 就地翻译 Intlayer `*.content.ts` 词典内缺失和过时的区域设置叶节点，并保持词典作为信源。与 [`migrate-intlayer`](#migrate-intlayer) 不同，此命令不会将应用从 Intlayer 迁移出去；它只填充 `t({ … })` 叶节点。当您希望在运行时保留 Intlayer 并使用 ai-i18n-tools 作为翻译引擎时，请使用此命令。
 
-它会提取每个 `t({ … })` 叶节点，用源文本为所选 UI 块的 `strings.json` 植入种子数据，运行与 [`translate-ui`](#translate-ui) 相同的引擎（提供商选择、术语表、翻译上下文和模型回退），然后将每个区域设置的新字符串写回到每个 `t({ … })` 对象中。编辑是“外科手术式”的：只有缺失或过时的区域设置行会发生更改，因此您的格式和注释都会被保留。Intlayer `{token}` 占位符会往返转换为 <code v-pre>{{token}}</code> 以进行翻译，然后再转换回来。
+它提取每个 `t({ … })` 叶节点，使用源文本填充所选 UI 块的 `strings.json`，运行与 [`translate-ui`](#translate-ui) 相同的引擎（提供商选择、术语表、翻译上下文和模型回退），然后将新的每个区域设置字符串写回每个 `t({ … })` 对象中。编辑是精确的：只有缺失或过时的区域设置行会更改，因此您的格式和注释得以保留。Intlayer `{token}` 占位符会往返于 <code v-pre>{{token}}</code> 进行翻译。
 
 当叶节点中缺少某个区域设置（缺失）时，或者当源区域设置的文本自上次针对该区域设置运行以来已发生更改（过时）时，会翻译“叶节点+区域设置”。过时状态在 `cacheDir` 中进行跟踪，因此编辑该源字符串会在下次运行时重新翻译该叶节点。源语言是 `sourceLocale`，并且可以是任何语言。`--dry-run` 会报告缺失/过时的计数，而不会调用 LLM 或写入任何内容。需要 `features.translateUIStrings` 和 UI 块的 `stringsJson`（与 `translate-ui` 相同）。
 

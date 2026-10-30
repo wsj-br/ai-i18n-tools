@@ -98,7 +98,7 @@ Fumadocs verwendet JSON-`meta.json`-Dateien für die Seitenleistenstruktur und T
 <a id="ui-catalog"></a>
 ## UI-Katalog
 
-Fumadocs-Layout-Chrome (Suchplatzhalter, Anzeigenamen der Locale und andere `defineTranslations` / `i18n.translations()`-Überschreibungen in `lib/layout.shared.ts`) wird nicht aus Markdown extrahiert. Konfigurieren Sie `docsOutput.fumadocsUiCatalog`, sodass `translate-docs` den Quell-Locale-Katalog aus `sourcePath` bootet und JSON pro Locale übersetzt:
+Fumadocs-Layout-Oberflächentexte (Suchplatzhalter, Anzeigenamen für Gebietsschemata und andere `defineTranslations` / `i18n.translations()`-Überschreibungen in `lib/layout.shared.ts`) werden nicht aus Markdown extrahiert. Konfigurieren Sie `docsOutput.fumadocsUiCatalog`, sodass `translate-docs` den Quell-Gebietsschema-Katalog aus `sourcePath` initialisiert und pro-Gebietsschema-JSON übersetzt:
 
 ```json
 {

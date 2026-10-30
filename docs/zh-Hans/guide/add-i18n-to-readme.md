@@ -75,7 +75,7 @@ Ollama 不需要密钥。其他预设：[内置提供商](/zh-Hans/guide/provide
 | 任何其他模板，外加一个 README | 将 `--with-readme` 添加到该 `init` 命令中 | 本页面用于 README 块 |
 | 仅 README 和 Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | 本页面 |
 
-`--with-readme` 在 `ui-markdown` 和 `docs-markdown` 上是空操作，因为这些模板已包含 README 块。
+`--with-readme` 对 `ui-markdown` 和 `docs-markdown` 没有影响，因为这些模板已包含 README 块。
 
 JS/TS 应用和 README（一个命令；`ui-markdown` 是默认模板）：
 

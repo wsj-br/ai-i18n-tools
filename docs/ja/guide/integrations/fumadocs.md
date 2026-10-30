@@ -98,7 +98,7 @@ Fumadocsは、サイドバーの構造とタイトルにJSON `meta.json`ファ�
 <a id="ui-catalog"></a>
 ## UIカタログ
 
-Fumadocsのレイアウトクローム（検索プレースホルダー、ロケール表示名、および`lib/layout.shared.ts`内のその他の`defineTranslations` / `i18n.translations()`オーバーライド）はMarkdownからは抽出されません。`docsOutput.fumadocsUiCatalog`を構成して、`translate-docs`が`sourcePath`からソースロケールカタログをブートストラップし、ロケールごとのJSONを翻訳するようにします：
+Fumadocsのレイアウトシェル文字列（検索プレースホルダー、ロケール表示名、および`lib/layout.shared.ts`内のその他の`defineTranslations` / `i18n.translations()`オーバーライド）は、Markdownから抽出されません。`docsOutput.fumadocsUiCatalog` を設定して、`translate-docs` が `sourcePath` からソースロケールカタログをブートストラップし、ロケールごとのJSONを翻訳するようにします。
 
 ```json
 {

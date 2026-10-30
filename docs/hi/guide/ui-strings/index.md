@@ -79,10 +79,10 @@ ai-i18n-tools translate-ui
 
 `translate-ui` केवल फ़ाइलें लिखता है। ऐप को उन्हें लोड करना होगा।
 
-- JS/TS: रनटाइम हेल्पर के साथ i18next को वायर करें, उपयोगकर्ता द्वारा चुनी गई लोकल फ़ाइल को लोड करें, और एक भाषा स्विचर जोड़ें। [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime) और [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher) देखें।
-- Python: जेनरेट किए गए `i18n.py` या अपने gettext कैटलॉग का उपयोग करें। [Python एप्लीकेशन्स](/hi/guide/ui-strings/python) देखें।
-- सादा HTML: पेज के बगल में रनटाइम स्क्रिप्ट लोड करें। [सादा HTML ऐप्स](/hi/guide/ui-strings/plain-html) देखें।
-- Astro: [Astro वेबसाइट](/hi/guide/ui-strings/astro-website) देखें।
+- JS/TS: i18next को रनटाइम हेल्पर के साथ सेट अप करें, उपयोगकर्ता द्वारा चुनी गई लोकल फ़ाइल लोड करें, और एक भाषा स्विचर जोड़ें। देखें [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime) और [भाषा स्विचर और आरटीएल](/hi/guide/ui-strings/language-switcher)।
+- Python: जनरेट किए गए `i18n.py` या अपने गेटटेक्स्ट कैटलॉग का उपयोग करें। देखें [पायथन एप्लिकेशन](/hi/guide/ui-strings/python)।
+- Plain HTML: पेज के बगल में रनटाइम स्क्रिप्ट लोड करें। देखें [प्लेन एचटीएमएल ऐप्स](/hi/guide/ui-strings/plain-html)।
+- Astro: देखें [एस्ट्रो वेबसाइट](/hi/guide/ui-strings/astro-website)।
 
 <a id="optional"></a>
 ## वैकल्पिक

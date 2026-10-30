@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### 何が翻訳されるか
 
-ページ本文は[ドキュメント](/ja/guide/documents/)パイプラインを通過します。フレームワークのクローム（ナビゲーション、サイドバー、テーマラベル）は、フレームワークがサポートしている場合、同じ実行で処理されます。これは個別の[JSON](/ja/guide/json)パイプラインではありません。ブラウザで言語を切り替えるプレーンなHTMLページは例外です。`mark-html`と`translate-ui`はフラットなJSONを書き込み、ブラウザスクリプトがそれを適用します。ロケールごとに1つのHTMLファイルはドキュメントパイプラインに残ります。
+ページの本文は、[ドキュメント](/ja/guide/documents/)パイプラインを通過します。フレームワークのシェル文字列（ナビゲーション、サイドバー、テーマラベル）は、フレームワークがサポートしている場合、同じ実行で処理されます。これは、個別の[JSON](/ja/guide/json)パイプラインとは異なります。ブラウザで言語を切り替えるプレーンなHTMLページは例外です。`mark-html`と`translate-ui`はフラットなJSONを書き込み、ブラウザスクリプトがそれを適用します。ロケールごとに1つのHTMLファイルは、ドキュメントパイプラインに残ります。
 
 | フレームワーク | シェルとテーマの文字列 | 方法 |
 | --- | --- | --- |

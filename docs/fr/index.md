@@ -48,7 +48,7 @@ Un seul langage aujourd'hui ? Commencez ici. Ce langage peut être n'importe que
 <a id="javascript-or-typescript-app"></a>
 ### Application JavaScript ou TypeScript
 
-Transformez les boutons, étiquettes et messages en texte brut en une interface utilisateur multilingue. Configurez votre environnement d'exécution, marquez le texte à traduire et activez le changement de langue. Inclut des invites d'agent de codage pour l'étape de préparation.
+Transformez les boutons, étiquettes et messages en texte brut en une interface utilisateur multilingue. Configurez votre environnement d'exécution, marquez le texte à traduire et configurez le basculement de langue. Inclut des invites d'agent de codage pour l'étape de préparation.
 
 React · Next.js · Node.js · CLI
 
@@ -120,9 +120,9 @@ Vous ne savez pas quel chemin choisir ? [Ajouter l'i18n à votre projet](/fr/gui
 
 <div class="home-steps">
 
-1. **Préparez votre projet.** Choisissez vos langues, un fournisseur de traduction et les modèles à essayer. Pour les applications, marquez le texte destiné à l'utilisateur et configurez l'environnement d'exécution de la traduction. Pour les sites, activez le routage linguistique de votre framework. Les guides incluent des invites d'agent de codage là où des modifications du code source sont nécessaires.
-2. **Traduisez dans des fichiers que vous pouvez utiliser.** Une fois la configuration prête, exécutez `sync`. Il extrait les chaînes d'application prises en charge, traduit le contenu que vous avez activé et écrit des fichiers de paramètres régionaux ou des pages localisées.
-3. **Chargez, vérifiez et continuez.** Connectez la sortie à votre application ou site, configurez le changement de langue et vérifiez une langue cible. Réexécutez après des modifications du code source pour traduire le texte nouveau ou modifié.
+1. **Préparez votre projet.** Choisissez vos langues, un fournisseur de traduction et les modèles à essayer. Pour les applications, marquez le texte visible par l'utilisateur et configurez l'environnement d'exécution de la traduction. Pour les sites, activez le routage linguistique de votre framework. Les guides incluent des invites d'agent de codage là où des modifications du code source sont nécessaires.
+2. **Traduisez dans des fichiers que vous pouvez utiliser.** Une fois la configuration prête, exécutez `sync`. Il extrait les chaînes d'application prises en charge, traduit le contenu que vous avez activé et écrit des fichiers de localisation ou des pages localisées.
+3. **Chargez, vérifiez et continuez.** Connectez la sortie à votre application ou site, configurez le basculement de langue et vérifiez une langue cible. Réexécutez après les modifications du code source pour traduire le texte nouveau ou modifié.
 
 </div>
 

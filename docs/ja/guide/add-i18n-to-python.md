@@ -7,21 +7,21 @@
 
 Django、Flask-Babelカタログ、またはGNU gettextを使用しており、それらの呼び出しを維持したいですか？代わりに[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)を使用してください。これは`gettext`を保持し、ヘルパーなしで`.po`および`.mo`ファイルを書き込みます。どちらが適用されるかわからない場合は、最後に[あなたのケースではありませんか？](#not-your-case)を参照してください。
 
-フロー：
+流れ:
 
-1. [CLI をインストールし、プロバイダーを選択する](#install-and-choose-a-provider)。
-2. `init` を使用して[プロジェクトを初期化する](#initialise-the-project)。
+1. [CLIをインストールしてプロバイダーを選択する](#install-and-choose-a-provider)。
+2. `init`で[プロジェクトを初期化する](#initialise-the-project)。
 3. [エージェントプロンプトを実行する](#run-the-agent-prompt)。
 4. [結果を確認する](#review-the-result)。
-5. [モデルを選択して翻訳する](#choose-models-and-translate)で、1つの言語を確認します。
+5. [モデルを選択して翻訳する](#choose-models-and-translate)後、1つの言語を確認します。
 6. [翻訳を維持する](#keep-it-translated)。
 
-ご自身で変更を行いたい場合、またはプロンプトが何をするのか知りたい場合は、[手動で行う](#do-it-by-hand) で同じ手順を1つずつ説明します。
+変更をご自身で行いたい場合、またはプロンプトが何をするのか知りたいですか？[手動で行う](#do-it-by-hand)では、同じ手順を一つずつ説明します。
 
 <a id="install-and-choose-a-provider"></a>
-## インストールとプロバイダーの選択
+## プロバイダーのインストールと選択
 
-この部分はエージェントではなく、ご自身で行います。インストーラーはマシンを変更し、API キーはプロンプトではなくシェルに属する秘密情報です。
+この部分はエージェントではなく、ご自身で行います。インストーラーはマシンを変更し、APIキーはプロンプトではなくシェルに属する秘密情報です。
 
 マシンにすでにNode.js `>=22.16.0`がある場合は、npmパッケージを使用します（[インストール](/ja/guide/installation)）。Pythonプロジェクトの場合は、スタンドアロン実行可能ファイル（Node.jsなし）をインストールします。
 
@@ -39,7 +39,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 インストーラーは `SHA256SUMS.txt` をチェックし、コマンドを `ai-i18n-tools` としてインストールし、`PATH` に追加します。バイナリは公証されておらず、Authenticode 署名もされていません。手動の手順とアセット名：[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
 
-インストールを確認する：
+インストールを確認します:
 
 ```bash
 ai-i18n-tools --version
@@ -51,7 +51,7 @@ ai-i18n-tools --version
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollamaはキーを必要としません。その他のプリセット：[組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)。次のステップで`init`に渡すため、プロバイダー名を控えておいてください。エージェントはキーを必要としません。モデル呼び出しを行わないコマンドのみを実行します。キーは後で[翻訳する](#choose-models-and-translate)ときに使用します。
+Ollamaはキーを必要としません。その他のプリセット: [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)。プロバイダー名をメモしておいてください。次のステップで`init`に渡すためです。エージェントはキーを必要としません。モデル呼び出しを行わないコマンドのみを実行するためです。キーは後で[翻訳する](#choose-models-and-translate)ときに使用します。
 
 <a id="initialise-the-project"></a>
 ## プロジェクトの初期化
@@ -247,7 +247,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 ````
 
 <a id="review-the-result"></a>
-## 結果を確認する
+## 結果をレビューする
 
 エージェントはレポートで終了します。翻訳する前に確認してください。
 
@@ -262,7 +262,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="choose-models-and-translate"></a>
 ## モデルを選択して翻訳する
 
-このパートはユーザーが実行します。ユーザーのAPIキーを使用し、アカウントから費用が発生します。
+この部分はユーザーが実行します。これはユーザーのAPIキーを使用し、アカウントに費用が発生します。
 
 `init` からのモデルリストは出発点です。アクティブなプロバイダーのチャットモデルをランク付けし、ショートリストが適切に見えたら、それを `translationModels` に書き込んでください：
 
@@ -297,7 +297,7 @@ ai-i18n-tools translate-ui
 同じ実行で`README.md`を翻訳するには、`--with-readme`でスキャフォールドします（または既存の設定にブロックを追加します）。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)を参照してください。
 
 <a id="do-it-by-hand"></a>
-## 手動で行う
+## 手動で実行する
 
 変更を自分で加えたい場合、またはプロンプトが何をするのか知りたい場合は、これらの手順を実行してください。各ステップはプロンプトの一部に対応しています。最終的には、[CLIをインストール](#install-and-choose-a-provider)し、[プロジェクトを初期化](#initialise-the-project)し、[翻訳](#choose-models-and-translate)します。
 
@@ -897,7 +897,7 @@ class App(tk.Tk):
 
 新しいスレッドは、ウィンドウの言語ではなく、ソース言語で開始されます。メインスレッドで翻訳するか、スレッド関数の開始時に `set_locale` を呼び出してください。他のツールキットも同じ要素を必要とします。すべての表示テキストを設定する関数と、`set_locale` を呼び出し、その後その関数を呼び出すメニューハンドラーです。PyQtとPySideには独自の再翻訳フックがあります。 [Locale in each framework](/ja/guide/ui-strings/python#locale-in-each-framework) を参照してください。
 
-これが最後の手動ステップです。[Choose models and translate](#choose-models-and-translate) で続行してください。
+これが最後の手動ステップです。[モデルを選択して翻訳する](#choose-models-and-translate)に進んでください。
 
 <a id="not-your-case"></a>
 ## 当てはまりませんか？

@@ -79,10 +79,10 @@ Para cada entrada, `translate-ui` almacena el **ID de modelo del proveedor activ
 
 `translate-ui` solo escribe archivos. La aplicación tiene que cargarlos.
 
-- JS/TS: configure i18next con los ayudantes en tiempo de ejecución, cargue el archivo de configuración regional que elija el usuario y añada un selector de idioma. Consulte [Configurar i18next](/es/guide/ui-strings/i18next-runtime) y [Selector de idioma y RTL](/es/guide/ui-strings/language-switcher).
-- Python: use el `i18n.py` generado o sus catálogos gettext. Consulte [Aplicaciones Python](/es/guide/ui-strings/python).
-- HTML plano: cargue el script en tiempo de ejecución junto a la página. Consulte [Aplicaciones HTML plano](/es/guide/ui-strings/plain-html).
-- Astro: consulte [Sitio web de Astro](/es/guide/ui-strings/astro-website).
+- JS/TS: configura i18next con las utilidades de tiempo de ejecución, carga el archivo de idioma que el usuario elija y añade un selector de idioma. Consulta [Conectar i18next](/es/guide/ui-strings/i18next-runtime) y [Selector de idioma y RTL](/es/guide/ui-strings/language-switcher).
+- Python: usa el `i18n.py` generado o tus catálogos gettext. Consulta [Aplicaciones Python](/es/guide/ui-strings/python).
+- HTML plano: carga el script de tiempo de ejecución junto a la página. Consulta [Aplicaciones HTML plano](/es/guide/ui-strings/plain-html).
+- Astro: consulta [Sitio web de Astro](/es/guide/ui-strings/astro-website).
 
 <a id="optional"></a>
 ## Opcional

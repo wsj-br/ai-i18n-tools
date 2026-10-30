@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
 ```
 
-ページコンテンツと VitePress の UI 文字列を1回の `sync` 実行で翻訳する場合、`features.translateDocs` を有効にしてください。
+ページコンテンツとVitePressテーマの文字列を1回の`sync`実行で翻訳する場合に、`features.translateDocs`を有効にします。
 
 <a id="page-layout"></a>
 ## ページレイアウト
@@ -89,7 +89,7 @@ VitePressのナビゲーション、サイドバー、フッター、検索プ�
 
 `.vitepress/config.mts` で `loadTheme()` 経由のロケールごとのファイルを読み込み、翻訳された JSON から `locales[code].themeConfig` をビルドします。[examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts) を参照してください。
 
-**言語メニューの文字列：** `locales[code].label`は、ドロップダウンに表示される各言語の名前です（例：`Português (Brasil)`）。`themeConfig.langMenuLabel`は、言語切り替えボタンの**aria-label**です。オプションが省略された場合、VitePressは`Change language`を使用します。サンプルカタログでは、代わりに`Language`を保存し、`theme.en.json`と`config.hardcoded.example.mts`の両方で同じ文を使用します。`langMenuLabel`をテーマカタログに配置し、`themeConfigFor()`内で`langMenuLabel: t.langMenuLabel`を設定します。ロケールごとの`label`文字列と混同しないでください。
+**言語メニューの文字列:** `locales[code].label`はドロップダウン内の各言語の表示名です（例: `Português (Brasil)`）。`themeConfig.langMenuLabel`は言語切り替えボタンの**aria-label**です。オプションが省略された場合、VitePressは`Change language`を使用します。代わりに、例のカタログには`Language`が格納されており、`theme.en.json`と`config.hardcoded.example.mts`の両方が同じ文を使用しています。`langMenuLabel`をテーマカタログに配置し、`themeConfigFor()`内に`langMenuLabel: t.langMenuLabel`を設定してください。これはロケールごとの`label`文字列と混同しないでください。
 
 `sync` / `translate-docs` の実行中、`theme.en.json` のカタログキーが `config.mts` から参照されていない場合（例：`themeConfigFor()` に `t.langMenuLabel` がない場合）、ai-i18n-tools は警告を出します。
 
@@ -117,7 +117,7 @@ VitePress のテーマ文字列に `json[]` を使用**しない**でくださ�
 
 ## Context
 
-ai-i18n-tools translates VitePress chrome through
+ai-i18n-tools translates VitePress theme strings through
 `docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes
 positional keys while English is still inline in `config.mts`
 (`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`,
@@ -177,7 +177,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Order
 
 1. Confirm the catalog file exists.
-2. Reshape keys, wire `loadTheme` and `themeConfigFor`, prefix links.
+2. Reshape keys, connect `loadTheme` and `themeConfigFor`, prefix links.
 3. Ask the user to run `sync` so locale theme files are regenerated from the new
    key names. Do not hand-translate them.
 
@@ -193,7 +193,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Verify
 
 - `pnpm docs:dev`: English and one target locale show translated nav, sidebar,
-  footer, and search chrome.
+  footer, and search strings.
 - A locale page's nav `link` and `activeMatch` include the locale prefix
   (`/pt-BR/guide/`, not `/guide/`).
 - `pnpm docs:build` passes.
@@ -297,7 +297,7 @@ themeConfig: themeConfigFor(theme, code)
 
 `activeMatch`を`link`と並行してプレフィックスとして追加し、ロケールルート（`/guide/`ではなく`/pt-BR/guide/`）でナビゲーションのハイライトが機能するようにします。外部URLと共有パブリックアセットは変更されません。
 
-VitePressプロジェクトの**devDependency**として`ai-i18n-tools`を追加し（`examples/vitepress-docs/package.json`を参照）、`config.mts`が`prefixVitepressThemeConfigLinks`をインポートできるようにします。メインのai-i18n-toolsドキュメントサイトは、モノレポのチェックアウトをドッグフーディングしているため、`src/processors/…`から直接インポートします。スタンドアロンのコピー（degit）ではnpmパッケージを使用する必要があります。
+VitePressプロジェクトに`ai-i18n-tools`を**devDependency**として追加します（`examples/vitepress-docs/package.json`を参照）。これにより、`config.mts`が`prefixVitepressThemeConfigLinks`をインポートできるようになります。メインのai-i18n-toolsドキュメントサイトは、リポジトリ内のソースを直接使用しているため、`src/processors/…`から直接インポートします。スタンドアロンコピー（degit）はnpmパッケージを使用する必要があります。
 
 **執筆ルール**
 

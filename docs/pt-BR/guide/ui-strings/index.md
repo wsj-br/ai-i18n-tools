@@ -79,9 +79,9 @@ Para cada entrada, `translate-ui` armazena o **ID do modelo do provedor ativo** 
 
 `translate-ui` apenas grava arquivos. O app precisa carregá-los.
 
-- JS/TS: conecte o i18next com os auxiliares de runtime, carregue o arquivo de localidade escolhido pelo usuário e adicione um seletor de idioma. Consulte [Conectar o i18next](/pt-BR/guide/ui-strings/i18next-runtime) e [Seletor de idioma e RTL](/pt-BR/guide/ui-strings/language-switcher).
-- Python: use o `i18n.py` gerado ou seus catálogos gettext. Consulte [Aplicações Python](/pt-BR/guide/ui-strings/python).
-- HTML puro: carregue o script de runtime junto à página. Consulte [Apps em HTML puro](/pt-BR/guide/ui-strings/plain-html).
+- JS/TS: configure o i18next com os auxiliares de tempo de execução, carregue o arquivo de localidade que o usuário escolher e adicione um seletor de idioma. Consulte [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime) e [Seletor de idioma e RTL](/pt-BR/guide/ui-strings/language-switcher).
+- Python: use o `i18n.py` gerado ou seus catálogos gettext. Consulte [Aplicativos Python](/pt-BR/guide/ui-strings/python).
+- HTML Simples: carregue o script de tempo de execução ao lado da página. Consulte [Aplicativos HTML Simples](/pt-BR/guide/ui-strings/plain-html).
 - Astro: consulte [Site Astro](/pt-BR/guide/ui-strings/astro-website).
 
 <a id="optional"></a>

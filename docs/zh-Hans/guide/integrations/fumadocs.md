@@ -98,7 +98,7 @@ Fumadocs 使用 JSON `meta.json` 文件来定义侧边栏结构和标题。当 `
 <a id="ui-catalog"></a>
 ## UI 目录
 
-Fumadocs 布局界面元素（搜索占位符、区域设置显示名称以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆盖）不会从 Markdown 中提取。配置 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 从 `sourcePath` 引导源区域设置目录并翻译每个区域设置的 JSON：
+Fumadocs 布局外壳字符串（搜索占位符、区域设置显示名称以及在 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆盖）不会从 Markdown 中提取。请配置 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 从 `sourcePath` 引导源区域设置目录并翻译每个区域设置的 JSON：
 
 ```json
 {

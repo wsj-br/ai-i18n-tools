@@ -79,10 +79,10 @@ ai-i18n-tools translate-ui
 
 `translate-ui` はファイルを書き込むだけです。アプリがそれらを読み込む必要があります。
 
-- JS/TS: ランタイムヘルパーで i18next を接続し、ユーザーが選択したロケールファイルを読み込み、言語スイッチャーを追加します。[i18next を接続する](/ja/guide/ui-strings/i18next-runtime) と [言語スイッチャーと RTL](/ja/guide/ui-strings/language-switcher) を参照してください。
-- Python: 生成された `i18n.py` または gettext カタログを使用します。[Python アプリケーション](/ja/guide/ui-strings/python) を参照してください。
-- プレーン HTML: ページの横にランタイムスクリプトを読み込みます。[プレーン HTML アプリ](/ja/guide/ui-strings/plain-html) を参照してください。
-- Astro: [Astro ウェブサイト](/ja/guide/ui-strings/astro-website) を参照してください。
+- JS/TS: i18nextをランタイムヘルパーでセットアップし、ユーザーが選択したロケールファイルを読み込み、言語スイッチャーを追加します。[i18nextの配線](/ja/guide/ui-strings/i18next-runtime)および[言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)を参照してください。
+- Python: 生成された`i18n.py`またはgettextカタログを使用します。[Pythonアプリケーション](/ja/guide/ui-strings/python)を参照してください。
+- Plain HTML: ページに隣接してランタイムスクリプトを読み込みます。[プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)を参照してください。
+- Astro: [Astroウェブサイト](/ja/guide/ui-strings/astro-website)を参照してください。
 
 <a id="optional"></a>
 ## オプション

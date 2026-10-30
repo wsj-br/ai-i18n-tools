@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-源语言环境保留原始 URL。对于裸 `data-i18n-locale-src`、绝对 URL、协议相对 URL、`data:` URL 和 `#` 片段，它们保持不变；查询字符串和片段保持不变。有值的标记会将其模板应用于每个非源语言环境，并且仅替换 `{locale}`。如果本地化图像返回 404 错误，运行时会恢复原始 `src` 一次。您自行交付 `chart_pt-BR.png`；脚本不会创建它。
+源语言区域保留原始 URL。对于裸 `data-i18n-locale-src`，绝对 URL、协议相对 URL、`data:` URL 和 `#` 片段保持不变；查询字符串和片段保持原样。一个有值的标记会为每个非源语言区域使用其模板，并且仅替换 `{locale}`。如果本地化图像返回 404 错误，运行时会恢复原始 `src` 一次。您自行提供 `chart_pt-BR.png`；脚本不会创建它。
 
 `data-i18n-locale-href` 适用于此目录模型。指向 `about.pt-BR.html` 的链接属于 [HTML 页面](/zh-Hans/guide/documents/html-pages) 流水线。
 

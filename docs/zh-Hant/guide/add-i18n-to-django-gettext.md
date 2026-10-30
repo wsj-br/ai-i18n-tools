@@ -10,8 +10,8 @@
 流程：
 
 1. [安裝 CLI 並選擇提供者](#install-and-choose-a-provider)。
-2. 使用 `init` [初始化專案](#initialise-the-project)。
-3. [執行代理提示](#run-the-agent-prompt)。
+2. 使用 `init`[初始化專案](#initialise-the-project)。
+3. [執行代理程式提示](#run-the-agent-prompt)。
 4. [檢閱結果](#review-the-result)。
 5. [選擇模型並翻譯](#translate)，然後檢查一種語言。
 6. [保持翻譯狀態](#keep-it-translated)。
@@ -21,7 +21,7 @@
 <a id="install-and-choose-a-provider"></a>
 ## 安裝並選擇提供者
 
-這部分由您執行，而非代理。安裝程式會變更您的機器，而 API 金鑰是屬於您 shell 的機密，不應出現在提示中。
+這部分由您執行，而不是代理程式。安裝程式會變更您的機器，而 API 金鑰是屬於您 shell 的機密，不應出現在提示中。
 
 當機器上已有 Node.js `>=22.16.0` 時，請使用 npm 套件 ([安裝](/zh-Hant/guide/installation))。若是 Python 專案，請安裝獨立可執行檔 (無需 Node.js)。
 
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-python-django -P cheaperinference
 <a id="run-the-agent-prompt"></a>
 ## 執行代理程式提示
 
-在您的編碼代理程式（Cursor、Claude Code、Copilot 或類似工具）中開啟專案，開始新的聊天，然後貼上以下提示。專案必須已初始化。無需編輯。如果您希望省略某些內容，例如不進行語言切換，請在同一訊息中說明。
+在您的編碼代理程式（Cursor、Claude Code、Copilot 或類似工具）中開啟專案，開始新的聊天，然後貼上以下提示。專案必須已經初始化。無需編輯。如果您想省略某些內容，例如不使用語言切換，請在同一訊息中說明。
 
 代理程式首先檢查 CLI 和配置是否存在，如果其中一個遺失，則會停止並提供指示。然後它分為四個部分運作：
 
@@ -227,7 +227,7 @@ rewrites the `.po` files.
 <a id="review-the-result"></a>
 ## 審查結果
 
-代理程式會產生一份報告。在翻譯之前檢查它：
+代理程式結束時會產生一份報告。在翻譯之前檢查它：
 
 - 差異。只有包裝的呼叫、範本標籤、配置和語言切換應該已變更。在您翻譯之前，您的 `.po` 和 `.mo` 檔案不應觸動。
 - `ai-i18n-tools.config.json`：`gettext.outputDir` 和 `domain` 指向您的應用程式載入的目錄，而 `sourceRoots` 涵蓋應用程式程式碼。

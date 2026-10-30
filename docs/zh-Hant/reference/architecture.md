@@ -69,7 +69,7 @@
 
 純 Astro SSG 網站可以略過 i18next：在建置時載入扁平的 `{locale}.json`，並透過來源文字索引鍵來解析 `t('source text')`。來源語言是 `sourceLocale`，且可以是任何語言 (請參閱 `examples/astro-website/src/i18n/t.ts` 和 [UI 字串 — Astro 網站](/zh-Hant/guide/ui-strings/astro-website))。
 
-純 HTML 應用程式遵循相同的目錄模型，使用標記屬性而非 `t()` 呼叫——請參閱[標記 HTML 以進行翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)。隨插即用指令碼為 `ai-i18n-tools/html-runtime/i18n.js`。
+純 HTML 應用程式遵循相同的目錄模型，帶有標記屬性而非 `t()` 呼叫 — 請參閱[標記 HTML 以供翻譯](/zh-Hant/guide/ui-strings/plain-html#marking-html-for-translation)。現成的指令碼為 `ai-i18n-tools/html-runtime/i18n.js`。
 
 應成為每個地區設定一個檔案的靜態 HTML 屬於文件管線（`translate-docs` 內的 `HtmlTemplateExtractor`），而非此目錄。請參閱 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。
 

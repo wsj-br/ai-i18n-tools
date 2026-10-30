@@ -119,7 +119,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-すべてのターゲットロケールに対して同じパスに一致するPNGファイルを配置する（例: `static/img/screenshots/de/screenshot.png`）。デフォルトの`sourceLocale`が変更された場合でもルールが有効であるように、`screenshots/en-GB/` をハードコードするより `screenshots/[^/]+/` を使用することを推奨する。
+すべてのターゲットロケールに対して、同じパスに一致するPNGファイルを提供してください（例: `static/img/screenshots/de/screenshot.png`）。`sourceLocale`の変更に耐えられるように、`screenshots/en-GB/`をハードコーディングするよりも`screenshots/[^/]+/`を優先してください。
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### プリセット - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`docs-site/static/img/screenshots/<locale>/screenshot.png` に一致するPNGファイルを配置する。ソースロケールに依存しない設定の場合は、`screenshots/en-GB/` よりも `screenshots/[^/]+/` を使用することを推奨する。
+`docs-site/static/img/screenshots/<locale>/screenshot.png`に一致するPNGファイルを提供してください。ソースロケールに依存しない設定の場合、`screenshots/en-GB/`よりも`screenshots/[^/]+/`を優先してください。
 
 実装例: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) および [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json)
 
@@ -179,6 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`public/img/screenshots/<locale>/screenshot.png` で PNG を公開します。`${translatedLocale}` プレースホルダーは、設定のロケール文字列（例: `pt-BR`）を使用します。`astro-starlight` プリセットはデフォルトでロケールの **出力パス** を小文字にします（`pt-br/`）が、`public/img/screenshots/` 配下の静的アセットフォルダーはマークダウン URL に書き込まれたロケールセグメントと一致する必要があります — スクリーンショットディレクトリは、必ずしも Astro ルートの大文字小文字ではなく、`${translatedLocale}` に合わせて保持してください。
+`public/img/screenshots/<locale>/screenshot.png` に PNG を配置してください。`${translatedLocale}` プレースホルダーは、設定のロケール文字列を使用します（例：`pt-BR`）。`astro-starlight` プリセットは、デフォルトでロケールの**出力パス**を小文字化します（`pt-br/`）。ただし、`public/img/screenshots/` 配下の静的アセットフォルダーは、Markdown URL に書き込まれたロケールセグメントと一致させる必要があります。スクリーンショットディレクトリは `${translatedLocale}` に合わせ、必ずしも Astro のルートの大文字小文字に合わせる必要はありません。
 
 実装例：[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) および [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`)。

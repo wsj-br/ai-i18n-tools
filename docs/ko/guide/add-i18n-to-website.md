@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### 번역되는 내용
 
-페이지 본문은 [문서](/ko/guide/documents/) 파이프라인을 거칩니다. 프레임워크 크롬(탐색, 사이드바, 테마 레이블)은 프레임워크가 지원하는 동일한 실행에서 처리됩니다. 이는 별도의 [JSON](/ko/guide/json) 파이프라인이 아닙니다. 브라우저에서 언어를 전환하는 일반 HTML 페이지는 예외입니다. `mark-html` 및 `translate-ui`은 플랫 JSON을 작성하고 브라우저 스크립트가 이를 적용합니다. 로케일당 하나의 HTML 파일은 문서 파이프라인에 남아 있습니다.
+페이지 본문은 [문서](/ko/guide/documents/) 파이프라인을 거칩니다. 프레임워크 셸 문자열(탐색, 사이드바, 테마 레이블)은 프레임워크가 지원하는 경우 동일한 실행에서 처리됩니다. 이는 별도의 [JSON](/ko/guide/json) 파이프라인이 아닙니다. 브라우저에서 언어를 전환하는 일반 HTML 페이지는 예외입니다. `mark-html` 및 `translate-ui`은 플랫 JSON을 작성하고, 브라우저 스크립트가 이를 적용합니다. 로케일당 하나의 HTML 파일은 문서 파이프라인에 유지됩니다.
 
 | 프레임워크 | 셸 및 테마 문자열 | 방법 |
 | --- | --- | --- |

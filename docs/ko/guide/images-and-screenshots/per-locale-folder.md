@@ -119,7 +119,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-모든 대상 로케일에 대해 동일한 경로에 일치하는 PNG 파일을 제공합니다(예: `static/img/screenshots/de/screenshot.png`). `sourceLocale` 변경 시에도 규칙이 유지되도록 하기 위해 `screenshots/en-GB/`를 하드코딩하는 것보다 `screenshots/[^/]+/` 사용을 권장합니다.
+모든 대상 로케일에 대해 동일한 경로에 일치하는 PNG 파일을 제공합니다(예: `static/img/screenshots/de/screenshot.png`). 규칙이 `sourceLocale` 변경에도 유지되도록 `screenshots/en-GB/`를 하드코딩하는 것보다 `screenshots/[^/]+/`을 선호합니다.
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### 사전 설정 - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`docs-site/static/img/screenshots/<locale>/screenshot.png`에 일치하는 PNG 파일을 제공합니다. 소스 로케일에 무관한 설정의 경우 `screenshots/en-GB/`보다 `screenshots/[^/]+/` 사용을 권장합니다.
+`docs-site/static/img/screenshots/<locale>/screenshot.png`에 일치하는 PNG 파일을 제공합니다. 소스 로케일과 무관한 구성의 경우 `screenshots/en-GB/`보다 `screenshots/[^/]+/`을 선호합니다.
 
 구현 예시: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) 및 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
@@ -179,6 +179,6 @@ images/screenshots/en-GB/translate.png  →  ../images/screenshots/en-GB/transla
 
 </details>
 
-`public/img/screenshots/<locale>/screenshot.png`에서 PNG를 제공하세요. `${translatedLocale}` 플레이스홀더는 구성 로케일 문자열(예: `pt-BR`)을 사용합니다. `astro-starlight` 프리셋은 기본적으로 로케일 **출력 경로**를 소문자로 변환하지만(`pt-br/`), `public/img/screenshots/` 아래의 정적 자산 폴더는 마크다운 URL에 작성된 로케일 세그먼트와 일치해야 합니다. 스크린샷 디렉터리는 Astro 라우트 대소문자가 아닌 `${translatedLocale}`에 맞춰 정렬하세요.
+`public/img/screenshots/<locale>/screenshot.png`에 PNG를 제공합니다. `${translatedLocale}` 플레이스홀더는 구성 로케일 문자열을 사용합니다(예: `pt-BR`). `astro-starlight` 사전 설정은 기본적으로 로케일 **출력 경로**를 소문자로 변환하지만 (`pt-br/`), `public/img/screenshots/` 아래의 정적 자산 폴더는 마크다운 URL에 작성된 로케일 세그먼트와 일치해야 합니다. 스크린샷 디렉터리는 반드시 Astro 경로 대소문자와 일치할 필요 없이 `${translatedLocale}`과 일치하도록 유지합니다.
 
 구현 예시: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) 및 [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).

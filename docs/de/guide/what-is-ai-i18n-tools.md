@@ -10,7 +10,7 @@ Sie haben eine App, eine Website, eine Dokumentationsseite oder eine Repository-
 | --- | --- |
 | Wählen Sie die Sprachen, einen Anbieter und die auszuprobierenden Modelle aus | Extrahiert Text, übersetzt ihn, validiert das Ergebnis und schreibt Kataloge oder Seiten |
 | Machen Sie benutzerorientierten Text für das Tool sichtbar: `t()`-Aufrufe im App-Code, die eigene i18n Ihres Frameworks für eine Website oder eine Sprachlisten-Markierung in einer README | Speichert Übersetzungen im Cache und verwendet sie bei jeder erneuten Ausführung wieder |
-| Binden Sie das Ergebnis in die App, das Routing der Website oder die Sprachzeile der README ein | Zeigt den Fortschritt an und ermöglicht Ihnen die Überprüfung von Übersetzungen im Dashboard |
+| Verbinden Sie das Ergebnis mit der App, dem Routing der Website oder der Sprachzeile der README-Datei | Zeigt den Fortschritt an und ermöglicht Ihnen die Überprüfung von Übersetzungen im Dashboard |
 
 Das Tool schreibt Ihren Quellcode nicht um. Für den Wrapping-Schritt werden Coding-Agent-Prompts bereitgestellt. Es installiert weder i18next noch die i18n Ihres Site-Frameworks und erstellt auch keinen Sprachumschalter, obwohl dafür Laufzeit-Helfer bereitgestellt werden.
 

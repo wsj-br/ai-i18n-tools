@@ -98,7 +98,7 @@ Fumadocs는 사이드바 구조와 제목을 위해 JSON `meta.json` 파일을 �
 <a id="ui-catalog"></a>
 ## UI 카탈로그
 
-Fumadocs 레이아웃 크롬(검색 플레이스홀더, 로케일 표시 이름 및 `lib/layout.shared.ts`의 기타 `defineTranslations` / `i18n.translations()` 재정의)은 마크다운에서 추출되지 않습니다. `docsOutput.fumadocsUiCatalog`를 구성하여 `translate-docs`가 `sourcePath`에서 소스 로케일 카탈로그를 부트스트랩하고 로케일별 JSON을 번역하도록 하세요:
+Fumadocs 레이아웃 셸 문자열(검색 플레이스홀더, 로케일 표시 이름 및 `lib/layout.shared.ts`의 기타 `defineTranslations` / `i18n.translations()` 재정의)은 마크다운에서 추출되지 않습니다. `docsOutput.fumadocsUiCatalog`을(를) 구성하여 `translate-docs`가 `sourcePath`에서 소스 로케일 카탈로그를 부트스트랩하고 로케일별 JSON을 번역하도록 합니다.
 
 ```json
 {

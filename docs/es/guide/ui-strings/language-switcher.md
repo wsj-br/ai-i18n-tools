@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` establece `document.documentElement.dir` (navegador) o es una operación nula (Node.js). Pase un argumento opcional `element` para apuntar a un elemento específico. Conéctelo en su arranque de i18n — [Conectar i18next](/es/guide/ui-strings/i18next-runtime).
+`applyDirection` establece `document.documentElement.dir` (navegador) o es una no-op (Node.js). Pasa un argumento opcional `element` para apuntar a un elemento específico. Conéctalo en tu inicialización de i18n — [Configurar i18next](/es/guide/ui-strings/i18next-runtime).
 
 Para cadenas que puedan contener flechas `→`, inviértalas en diseños RTL:
 

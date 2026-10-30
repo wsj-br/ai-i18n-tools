@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## Ce que fait `translate-intlayer`
 
-1. Analyse les exportations par défaut de `*.content.ts` et collecte chaque feuille `t({ locale: '…' })`. Les valeurs de paramètres régionaux peuvent être des chaînes simples ou des nœuds d’insertion `insert('…')` Intlayer.
-2. Initialise le `ui.stringsJson` du bloc d’interface utilisateur avec le texte source, puis exécute le même moteur que [`translate-ui`](/fr/reference/cli-commands/ui-strings#translate-ui) pour les paramètres régionaux manquants et obsolètes.
-3. Réécrit les nouvelles chaînes par paramètres régionaux dans chaque objet `t({ … })`. Les modifications sont chirurgicales : seules les lignes de paramètres régionaux manquantes ou obsolètes changent, de sorte que votre formatage, l’ordre des clés et les commentaires sont préservés. Les traductions existantes sont laissées telles quelles. Lorsqu’une feuille utilise `insert('…')`, les nouvelles valeurs de paramètres régionaux sont également encapsulées dans `insert(…)`, de sorte que la feuille reste appelable à l’exécution.
-4. Préserve les espaces réservés. La syntaxe d’insertion d’Intlayer <code v-pre>{{token}}</code> est transmise inchangée. Les espaces réservés `{token}` à accolade unique sont également pris en charge : ils deviennent <code v-pre>{{token}}</code> pour la traduction et reviennent à `{token}` lors de l’écriture.
+1. Analyse les exportations par défaut `*.content.ts` et collecte chaque feuille `t({ locale: '…' })`. Les valeurs de locale peuvent être des chaînes de caractères simples ou des nœuds d'insertion Intlayer `insert('…')`.
+2. Initialise le `ui.stringsJson` du bloc d'interface utilisateur avec le texte source, puis exécute le même moteur que [`translate-ui`](/fr/reference/cli-commands/ui-strings#translate-ui) pour les locales manquantes et obsolètes.
+3. Écrit les nouvelles chaînes par locale dans chaque objet `t({ … })`. Les modifications sont précises : seules les lignes de locale manquantes ou obsolètes sont modifiées, ainsi votre formatage, l'ordre des clés et les commentaires sont préservés. Les traductions existantes sont laissées telles quelles. Lorsqu'une feuille utilise `insert('…')`, les nouvelles valeurs de locale sont également enveloppées dans `insert(…)`, afin que la feuille reste appelable à l'exécution.
+4. Préserve les espaces réservés. La syntaxe d'insertion d'Intlayer <code v-pre>{{token}}</code> est transmise telle quelle. Les espaces réservés à accolade unique `{token}` sont également pris en charge : ils deviennent <code v-pre>{{token}}</code> pour la traduction et reviennent à `{token}` lors de l'écriture.
 5. Exécution à blanc avec `--dry-run` : elle signale les nombres manquants/obsolètes sans appeler un LLM ni écrire quoi que ce soit.
 
 <a id="missing-vs-stale"></a>

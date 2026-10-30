@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-來源語系會保留原始 URL。對於裸露的 `data-i18n-locale-src`、絕對 URL、協定相對 URL、`data:` URL 和 `#` 片段會保持不變；查詢字串和片段會保留在原位。有值的標記會為每個非來源語系使用其範本，並且只替換 `{locale}`。如果本地化的圖片出現 404 錯誤，執行階段會恢復原始的 `src` 一次。您需要自行交付 `chart_pt-BR.png`；指令碼不會建立它。
+來源語系會保留原始 URL。對於裸 `data-i18n-locale-src`、絕對 URL、協定相對 URL、`data:` URL 和 `#` 片段，會維持不變；查詢字串和片段會保留在原位。帶值的標記會針對每個非來源語系使用其範本，並且僅取代 `{locale}`。如果本地化圖片傳回 404 錯誤，執行階段會還原原始 `src` 一次。您自行提供 `chart_pt-BR.png`；該指令碼不會建立它。
 
 `data-i18n-locale-href` 適用於此目錄模型。指向 `about.pt-BR.html` 的連結屬於 [HTML 頁面](/zh-Hant/guide/documents/html-pages) 管線。
 

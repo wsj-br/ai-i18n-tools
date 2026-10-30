@@ -48,7 +48,7 @@ Heute nur eine Sprache? Beginnen Sie hier. Diese Sprache kann jede beliebige Spr
 <a id="javascript-or-typescript-app"></a>
 ### JavaScript- oder TypeScript-App
 
-Verwandeln Sie Klartext-Schaltflächen, Beschriftungen und Nachrichten in eine mehrsprachige Benutzeroberfläche. Richten Sie Ihre Laufzeitumgebung ein, markieren Sie den zu übersetzenden Text und verdrahten Sie die Sprachumschaltung. Enthält Coding-Agent-Prompts für den Vorbereitungsschritt.
+Verwandeln Sie Schaltflächen, Beschriftungen und Meldungen im Klartext in eine mehrsprachige Benutzeroberfläche. Richten Sie Ihre Laufzeitumgebung ein, markieren Sie den zu übersetzenden Text und verbinden Sie die Sprachumschaltung. Enthält Coding-Agent-Eingabeaufforderungen für den Vorbereitungsschritt.
 
 React · Next.js · Node.js · CLI
 
@@ -120,9 +120,9 @@ Sie sind sich nicht sicher, welcher Weg der richtige ist? [i18n zu Ihrem Projekt
 
 <div class="home-steps">
 
-1. **Projekt vorbereiten.** Wählen Sie Ihre Sprachen, einen Übersetzungsanbieter und die zu testenden Modelle aus. Für Apps markieren Sie benutzerorientierten Text und richten die Übersetzungs-Laufzeitumgebung ein. Für Websites aktivieren Sie das Sprach-Routing Ihres Frameworks. Die Anleitungen enthalten Coding-Agent-Prompts, wo Quellcode-Änderungen erforderlich sind.
-2. **In verwendbare Dateien übersetzen.** Sobald die Einrichtung abgeschlossen ist, führen Sie `sync` aus. Es extrahiert unterstützte App-Strings, übersetzt den von Ihnen aktivierten Inhalt und schreibt Lokalisierungsdateien oder lokalisierte Seiten.
-3. **Laden, prüfen und fortfahren.** Verbinden Sie die Ausgabe mit Ihrer App oder Website, richten Sie die Sprachumschaltung ein und überprüfen Sie eine Zielsprache. Führen Sie nach Quellcode-Änderungen erneut aus, um neuen oder geänderten Text zu übersetzen.
+1. **Bereiten Sie Ihr Projekt vor.** Wählen Sie Ihre Sprachen, einen Übersetzungsanbieter und die auszuprobierenden Modelle. Für Apps markieren Sie benutzerorientierten Text und richten die Übersetzungs-Laufzeitumgebung ein. Für Websites aktivieren Sie das Sprach-Routing Ihres Frameworks. Die Anleitungen enthalten Coding-Agent-Eingabeaufforderungen, wo Quelltextänderungen erforderlich sind.
+2. **Übersetzen Sie in verwendbare Dateien.** Sobald die Einrichtung abgeschlossen ist, führen Sie `sync` aus. Es extrahiert unterstützte App-Strings, übersetzt den von Ihnen aktivierten Inhalt und schreibt Lokalisierungsdateien oder lokalisierte Seiten.
+3. **Laden, prüfen und fortfahren.** Verbinden Sie die Ausgabe mit Ihrer App oder Website, verbinden Sie die Sprachumschaltung und prüfen Sie eine Zielsprache. Führen Sie es nach Quelltextänderungen erneut aus, um neuen oder geänderten Text zu übersetzen.
 
 </div>
 

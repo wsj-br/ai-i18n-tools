@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-जब आप दस्तावेज़ पृष्ठों और साइट क्रोम (नेविगेशन बार, फ़ुटर, थीम स्ट्रिंग्स) दोनों का अनुवाद करते हैं, तो `features.translateDocs` सक्षम करें और `docs[].docusaurusCatalogDir` सेट करें। जब आप `@docusaurus/*` को अपग्रेड करते हैं या नेविगेशन बार/फ़ुटर/थीम लेबल बदलते हैं, तो अपने Docusaurus प्रोजेक्ट में `docusaurus write-translations` चलाएँ — फिर `translate-docs` या `sync` को फिर से चलाएँ ताकि शेल JSON प्रत्येक स्थानीय फ़ोल्डर में अनुवादित हो जाए।
+जब आप दस्तावेज़ीकरण पृष्ठों और साइट शेल स्ट्रिंग (navbar, footer, theme strings) दोनों का अनुवाद करते हैं, तो `features.translateDocs` को सक्षम करें और `docs[].docusaurusCatalogDir` सेट करें। जब आप `@docusaurus/*` को अपग्रेड करते हैं या navbar/footer/theme लेबल बदलते हैं, तो अपने Docusaurus प्रोजेक्ट में `docusaurus write-translations` चलाएँ — फिर `translate-docs` या `sync` को फिर से चलाएँ ताकि शेल JSON प्रत्येक स्थानीय फ़ोल्डर में अनुवादित हो जाए।
 
 <a id="page-layout"></a>
 ## पेज लेआउट

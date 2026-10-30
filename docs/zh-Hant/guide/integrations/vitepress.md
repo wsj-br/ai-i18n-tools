@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
 ```
 
-當您要在一次 `sync` 執行中同時翻譯頁面內容與 VitePress chrome 字串時，請啟用 `features.translateDocs`。
+啟用 `features.translateDocs`，以便在一次 `sync` 執行中翻譯頁面內容和 VitePress 主題字串。
 
 <a id="page-layout"></a>
 ## 頁面版面
@@ -89,7 +89,7 @@ VitePress 導覽、側邊欄、頁尾、搜尋預留位置及其他 `themeConfig
 
 在 `.vitepress/config.mts` 中透過 `loadTheme()` 載入各語系檔案，並從翻譯後的 JSON 建構 `locales[code].themeConfig`。請參閱 [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts)。
 
-**語言選單字串：** `locales[code].label` 是下拉式選單中每種語言的可見名稱（例如 `Português (Brasil)`）。`themeConfig.langMenuLabel` 是語言切換器按鈕上的 **aria-label**。當省略該選項時，VitePress 會使用 `Change language`。範例目錄改為儲存 `Language`，且 `theme.en.json` 和 `config.hardcoded.example.mts` 都使用相同的句子。將 `langMenuLabel` 放入主題目錄中，並在 `themeConfigFor()` 內設定 `langMenuLabel: t.langMenuLabel` — 請勿將其與每個語系的 `label` 字串混淆。
+**語言選單字串：** `locales[code].label` 是下拉式選單中每種語言的可見名稱（例如 `Português (Brasil)`）。`themeConfig.langMenuLabel` 是語言切換按鈕上的 **aria-label**。當省略該選項時，VitePress 會使用 `Change language`。範例目錄儲存的是 `Language`，且 `theme.en.json` 和 `config.hardcoded.example.mts` 都使用相同的句子。將 `langMenuLabel` 放入主題目錄中，並在 `themeConfigFor()` 內部設定 `langMenuLabel: t.langMenuLabel` — 不要將其與每個語系的 `label` 字串混淆。
 
 在 `sync` / `translate-docs` 期間，當 `theme.en.json` 中的目錄鍵未從 `config.mts` 被參照時（例如 `themeConfigFor()` 中缺少 `t.langMenuLabel`），ai-i18n-tools 會發出警告。
 
@@ -117,7 +117,7 @@ VitePress 導覽、側邊欄、頁尾、搜尋預留位置及其他 `themeConfig
 
 ## Context
 
-ai-i18n-tools translates VitePress chrome through
+ai-i18n-tools translates VitePress theme strings through
 `docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes
 positional keys while English is still inline in `config.mts`
 (`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`,
@@ -177,7 +177,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Order
 
 1. Confirm the catalog file exists.
-2. Reshape keys, wire `loadTheme` and `themeConfigFor`, prefix links.
+2. Reshape keys, connect `loadTheme` and `themeConfigFor`, prefix links.
 3. Ask the user to run `sync` so locale theme files are regenerated from the new
    key names. Do not hand-translate them.
 
@@ -193,7 +193,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Verify
 
 - `pnpm docs:dev`: English and one target locale show translated nav, sidebar,
-  footer, and search chrome.
+  footer, and search strings.
 - A locale page's nav `link` and `activeMatch` include the locale prefix
   (`/pt-BR/guide/`, not `/guide/`).
 - `pnpm docs:build` passes.
@@ -297,7 +297,7 @@ themeConfig: themeConfigFor(theme, code)
 
 將 `activeMatch` 與 `link` 一起作為前綴，以便導覽反白顯示在語言環境路由上運作 (`/pt-BR/guide/` 而非 `/guide/`)。外部 URL 和共用公共資產保持不變。
 
-在 VitePress 專案中將 `ai-i18n-tools` 新增為 **devDependency**（請參閱 `examples/vitepress-docs/package.json`），以便 `config.mts` 可以匯入 `prefixVitepressThemeConfigLinks`。主要的 ai-i18n-tools 文件網站直接從 `src/processors/…` 匯入，因為它使用 monorepo checkout 進行 dogfooding；獨立副本（degit）應使用 npm 套件。
+將 `ai-i18n-tools` 作為 **開發依賴項** 加入 VitePress 專案中（請參閱 `examples/vitepress-docs/package.json`），以便 `config.mts` 可以匯入 `prefixVitepressThemeConfigLinks`。主要的 ai-i18n-tools 文件網站直接從 `src/processors/…` 匯入，因為它直接使用儲存庫內的原始碼；獨立副本 (degit) 應使用 npm 套件。
 
 **撰寫規則**
 

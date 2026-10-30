@@ -79,10 +79,10 @@ Für jeden Eintrag speichert `translate-ui` die **Modell-ID des aktiven Anbieter
 
 `translate-ui` schreibt nur Dateien. Die App muss sie laden.
 
-- JS/TS: i18next mit den Laufzeit-Helfern einbinden, die vom Benutzer ausgewählte Lokalisierungsdatei laden und einen Sprachumschalter hinzufügen. Siehe [i18next einbinden](/de/guide/ui-strings/i18next-runtime) und [Sprachumschalter und RTL](/de/guide/ui-strings/language-switcher).
-- Python: Verwenden Sie die generierte `i18n.py`-Datei oder Ihre gettext-Kataloge. Siehe [Python-Anwendungen](/de/guide/ui-strings/python).
-- Einfaches HTML: Laden Sie das Laufzeit-Skript neben der Seite. Siehe [Einfache HTML-Apps](/de/guide/ui-strings/plain-html).
-- Astro: Siehe [Astro-Website](/de/guide/ui-strings/astro-website).
+- JS/TS: i18next mit den Laufzeit-Helfern einrichten, die vom Benutzer gewählte Locale-Datei laden und einen Sprachumschalter hinzufügen. Siehe [i18next verbinden](/de/guide/ui-strings/i18next-runtime) und [Sprachumschalter und RTL](/de/guide/ui-strings/language-switcher).
+- Python: die generierte `i18n.py` oder Ihre gettext-Kataloge verwenden. Siehe [Python-Anwendungen](/de/guide/ui-strings/python).
+- Reines HTML: das Laufzeit-Skript neben der Seite laden. Siehe [Reine HTML-Apps](/de/guide/ui-strings/plain-html).
+- Astro: siehe [Astro-Website](/de/guide/ui-strings/astro-website).
 
 <a id="optional"></a>
 ## Optional

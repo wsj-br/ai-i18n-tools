@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 pnpm run docs:build  # VitePress build (project-specific script)
 ```
 
-Aktivieren Sie `features.translateDocs`, wenn Sie Seiteninhalte und VitePress-Chrome-Strings in einem `sync`-Lauf übersetzen.
+Aktivieren Sie `features.translateDocs`, wenn Sie Seiteninhalte und VitePress-Theme-Strings in einem `sync`-Durchlauf übersetzen.
 
 <a id="page-layout"></a>
 ## Seitenlayout
@@ -89,7 +89,7 @@ VitePress-Navigation, Seitenleiste, Fußzeile, Suchplatzhalter und andere `theme
 
 Laden Sie die pro-Gebietsschema-Datei in `.vitepress/config.mts` über `loadTheme()` und erstellen Sie `locales[code].themeConfig` aus dem übersetzten JSON. Siehe [examples/vitepress-docs/docs/.vitepress/config.mts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts).
 
-**Sprachmenü-Zeichenfolgen:** `locales[code].label` ist der sichtbare Name jeder Sprache im Dropdown-Menü (zum Beispiel `Português (Brasil)`). `themeConfig.langMenuLabel` ist das **aria-label** auf der Sprachwechsler-Schaltfläche. VitePress verwendet `Change language`, wenn die Option weggelassen wird. Der Beispielkatalog speichert stattdessen `Language`, und sowohl `theme.en.json` als auch `config.hardcoded.example.mts` verwenden denselben Satz. Legen Sie `langMenuLabel` in den Theme-Katalog und verknüpfen Sie `langMenuLabel: t.langMenuLabel` innerhalb von `themeConfigFor()` — verwechseln Sie es nicht mit pro-Locale `label`-Zeichenfolgen.
+**Sprachmenü-Strings:** `locales[code].label` ist der sichtbare Name jeder Sprache im Dropdown-Menü (zum Beispiel `Português (Brasil)`). `themeConfig.langMenuLabel` ist das **aria-label** für die Sprachwechsler-Schaltfläche. VitePress verwendet `Change language`, wenn die Option weggelassen wird. Der Beispielkatalog speichert stattdessen `Language`, und sowohl `theme.en.json` als auch `config.hardcoded.example.mts` verwenden denselben Satz. Legen Sie `langMenuLabel` im Theme-Katalog ab und setzen Sie `langMenuLabel: t.langMenuLabel` innerhalb von `themeConfigFor()` — verwechseln Sie dies nicht mit den pro-lokalen `label`-Strings.
 
 Während `sync` / `translate-docs` warnt ai-i18n-tools, wenn ein Katalogschlüssel in `theme.en.json` nicht von `config.mts` referenziert wird (zum Beispiel ein fehlendes `t.langMenuLabel` in `themeConfigFor()`).
 
@@ -117,7 +117,7 @@ Nach dem ersten erfolgreichen `i18n:sync` / `translate-docs`-Lauf mit `vitepress
 
 ## Context
 
-ai-i18n-tools translates VitePress chrome through
+ai-i18n-tools translates VitePress theme strings through
 `docsOutput.vitepressThemeCatalog`. `extractVitepressThemeCatalog` writes
 positional keys while English is still inline in `config.mts`
 (`themeConfig.nav.0.text`, `themeConfig.sidebar.0.items.0.text`,
@@ -177,7 +177,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Order
 
 1. Confirm the catalog file exists.
-2. Reshape keys, wire `loadTheme` and `themeConfigFor`, prefix links.
+2. Reshape keys, connect `loadTheme` and `themeConfigFor`, prefix links.
 3. Ask the user to run `sync` so locale theme files are regenerated from the new
    key names. Do not hand-translate them.
 
@@ -193,7 +193,7 @@ written `catalogPath`. If `theme.en.json` is missing, stop and ask for that
 ## Verify
 
 - `pnpm docs:dev`: English and one target locale show translated nav, sidebar,
-  footer, and search chrome.
+  footer, and search strings.
 - A locale page's nav `link` and `activeMatch` include the locale prefix
   (`/pt-BR/guide/`, not `/guide/`).
 - `pnpm docs:build` passes.
@@ -297,7 +297,7 @@ themeConfig: themeConfigFor(theme, code)
 
 Präfix `activeMatch` neben `link`, damit die Navigationshervorhebung auf Locale-Routen funktioniert (`/pt-BR/guide/` nicht `/guide/`). Externe URLs und gemeinsam genutzte öffentliche Assets bleiben unverändert.
 
-Fügen Sie `ai-i18n-tools` als **devDependency** im VitePress-Projekt (siehe `examples/vitepress-docs/package.json`) hinzu, damit `config.mts` `prefixVitepressThemeConfigLinks` importieren kann. Die Hauptdokumentationsseite von ai-i18n-tools importiert direkt von `src/processors/…`, da sie den Monorepo-Checkout selbst nutzt; eigenständige Kopien (degit) sollten das npm-Paket verwenden.
+Fügen Sie `ai-i18n-tools` als **devDependency** im VitePress-Projekt hinzu (siehe `examples/vitepress-docs/package.json`), damit `config.mts` `prefixVitepressThemeConfigLinks` importieren kann. Die Hauptdokumentationsseite von ai-i18n-tools importiert direkt von `src/processors/…`, da sie die In-Repo-Quelle direkt verwendet; eigenständige Kopien (degit) sollten das npm-Paket verwenden.
 
 **Regeln für die Erstellung**
 

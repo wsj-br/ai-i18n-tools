@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### 翻译内容
 
-页面主体经过 [文档](/zh-Hans/guide/documents/) 管道。框架界面元素（导航、侧边栏、主题标签）在框架支持的情况下，在同一运行中处理。这与独立的 [JSON](/zh-Hans/guide/json) 管道不同。在浏览器中切换语言的纯 HTML 页面是例外：`mark-html` 和 `translate-ui` 写入扁平 JSON，并且浏览器脚本会应用它。每个语言环境一个 HTML 文件仍保留在文档管道中。
+页面主体通过[文档](/zh-Hans/guide/documents/)管道。框架外壳字符串（导航、侧边栏、主题标签）在框架支持的情况下，会在同一运行中处理。这与独立的[JSON](/zh-Hans/guide/json)管道不同。在浏览器中切换语言的普通 HTML 页面是个例外：`mark-html` 和 `translate-ui` 写入扁平 JSON，然后浏览器脚本会应用它。每个语言环境一个 HTML 文件仍保留在文档管道中。
 
 | 框架 | 外壳和主题字符串 | 方式 |
 | --- | --- | --- |

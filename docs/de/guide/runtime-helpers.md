@@ -86,7 +86,7 @@ applyDirection(lng: string, element?: { setAttribute(name: string, value: string
 
 `getTextDirection` konsultiert zuerst den gebündelten `data/ui-languages-complete.json`-Katalog (dieselbe Quelle wie `generate-ui-languages`), dann fällt es auf `RTL_LANGS` für Codes zurück, die nicht im Katalog sind.
 
-`applyDirection` ist sicher in Node.js – es ist ein No-Op, wenn `document` nicht verfügbar ist. Im Browser lassen Sie `element` weg, um `document.documentElement` zu aktualisieren. Verdrahten Sie es bei Sprachwechsel: `i18n.on('languageChanged', applyDirection)`.
+`applyDirection` ist in Node.js sicher – es führt keine Operationen aus, wenn `document` nicht verfügbar ist. Im Browser lassen Sie `element` weg, um `document.documentElement` zu aktualisieren. Verbinden Sie es bei Sprachwechsel: `i18n.on('languageChanged', applyDirection)`.
 
 <a id="i18next-setup-factories"></a>
 ### i18next-Setup-Fabriken

@@ -85,7 +85,7 @@ Ejecuta `init` una vez. Reescribe `ai-i18n-tools.config.json` cada vez, por lo q
 Conexión del framework: [Integraciones de Python](/es/guide/integrations/python). Formas de llamada y diseño del catálogo: [Aplicaciones de Python](/es/guide/ui-strings/python).
 
 <a id="run-the-agent-prompt"></a>
-## Ejecutar el prompt del agente
+## Ejecutar la instrucción del agente
 
 Abre el proyecto en tu agente de codificación (Cursor, Claude Code, Copilot o similar), inicia un nuevo chat y pega la instrucción a continuación. El proyecto ya debe estar inicializado. No hay nada que editar. Si quieres que se omita algo, por ejemplo, que no haya menú de idiomas, indícalo en el mismo mensaje.
 
@@ -297,7 +297,7 @@ Vuelve a ejecutar `ai-i18n-tools sync` (o `extract` y luego `translate-ui`) desp
 Para traducir `README.md` en la misma ejecución, genera la estructura con `--with-readme` (o añade el bloque a una configuración existente). Consulta [Añadir i18n a tus archivos README y de Markdown](/es/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Hágalo manualmente
+## Hazlo manualmente
 
 Sigue estos pasos si prefieres hacer los cambios tú mismo, o si quieres saber qué hace el prompt. Cada paso coincide con una parte del prompt. Aun así, [instalas la CLI](#install-and-choose-a-provider), [inicializas el proyecto](#initialise-the-project) y [traduces](#choose-models-and-translate) al final.
 

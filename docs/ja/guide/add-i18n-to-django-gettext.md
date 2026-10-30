@@ -7,21 +7,21 @@
 
 現在 gettext を使用していない Streamlit、FastAPI、Flask、デスクトップ、またはスクリプトアプリを構築していますか？代わりに、[Python アプリにi18nを追加する](/ja/guide/add-i18n-to-python) を使用してください。これは小さな `i18n.py` ヘルパーを追加し、JSON カタログを書き込みます。どちらが適用されるかわからない場合は、最後に[該当しない場合](#not-your-case) を参照してください。
 
-フロー：
+流れ:
 
-1. [CLI をインストールし、プロバイダーを選択する](#install-and-choose-a-provider)。
-2. `init` を使用して[プロジェクトを初期化する](#initialise-the-project)。
+1. [CLIをインストールしてプロバイダーを選択する](#install-and-choose-a-provider)。
+2. `init`で[プロジェクトを初期化する](#initialise-the-project)。
 3. [エージェントプロンプトを実行する](#run-the-agent-prompt)。
 4. [結果を確認する](#review-the-result)。
 5. [モデルを選択して翻訳する](#translate) 後、1つの言語を確認します。
 6. [翻訳を維持する](#keep-it-translated)。
 
-ご自身で変更を行いたい場合、またはプロンプトが何をするのか知りたい場合は、[手動で行う](#do-it-by-hand) で同じ手順を1つずつ説明します。
+変更をご自身で行いたい場合、またはプロンプトが何をするのか知りたいですか？[手動で行う](#do-it-by-hand)では、同じ手順を一つずつ説明します。
 
 <a id="install-and-choose-a-provider"></a>
-## インストールとプロバイダーの選択
+## プロバイダーのインストールと選択
 
-この部分はエージェントではなく、ご自身で行います。インストーラーはマシンを変更し、API キーはプロンプトではなくシェルに属する秘密情報です。
+この部分はエージェントではなく、ご自身で行います。インストーラーはマシンを変更し、APIキーはプロンプトではなくシェルに属する秘密情報です。
 
 マシンにすでにNode.js `>=22.16.0`がある場合は、npmパッケージを使用します（[インストール](/ja/guide/installation)）。Pythonプロジェクトの場合は、スタンドアロン実行可能ファイル（Node.jsなし）をインストールします。
 
@@ -39,7 +39,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 インストーラーは `SHA256SUMS.txt` をチェックし、コマンドを `ai-i18n-tools` としてインストールし、`PATH` に追加します。バイナリは公証されておらず、Authenticode 署名もされていません。手動の手順とアセット名：[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
 
-インストールを確認する：
+インストールを確認します:
 
 ```bash
 ai-i18n-tools --version
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-python-django -P cheaperinference
 <a id="run-the-agent-prompt"></a>
 ## エージェントプロンプトを実行する
 
-コーディングエージェント（Cursor、Claude Code、Copilot、または類似のもの）でプロジェクトを開き、新しいチャットを開始して、以下のプロンプトを貼り付けてください。プロジェクトは既に初期化されている必要があります。編集するものは何もありません。例えば言語切り替えなしなど、何かを除外したい場合は、同じメッセージでその旨を伝えてください。
+コーディングエージェント（Cursor、Claude Code、Copilotなど）でプロジェクトを開き、新しいチャットを開始し、以下のプロンプトを貼り付けます。プロジェクトはすでに初期化されている必要があります。編集するものは何もありません。例えば言語切り替えを不要にするなど、何か除外したい場合は、同じメッセージでその旨を伝えてください。
 
 エージェントはまず、CLI と設定が存在することを確認し、いずれかが不足している場合は指示を出して停止します。次に、以下の4つの部分で動作します。
 
@@ -225,7 +225,7 @@ rewrites the `.po` files.
 </details>
 
 <a id="review-the-result"></a>
-## 結果を確認する
+## 結果をレビューする
 
 エージェントはレポートで終了します。翻訳する前に確認してください。
 
@@ -275,7 +275,7 @@ ai-i18n-tools translate-ui
 同じ実行で`README.md`を翻訳するには、`--with-readme`でスキャフォールドします（または既存の設定にブロックを追加します）。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)を参照してください。
 
 <a id="do-it-by-hand"></a>
-## 手動で行う
+## 手動で実行する
 
 変更を自分で加えたい場合、またはプロンプトが何をするかを知りたい場合は、これらの手順を実行してください。各手順はプロンプトの一部に対応しています。最終的には、[CLIをインストール](#install-and-choose-a-provider)し、[プロジェクトを初期化](#initialise-the-project)し、[翻訳](#translate)を行います。
 

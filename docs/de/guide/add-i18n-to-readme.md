@@ -13,19 +13,19 @@ Eine VitePress-, Docusaurus-, Starlight-, Nextra-, Fumadocs- oder Astro-Site ver
 
 Der Ablauf:
 
-1. [Die CLI installieren und einen Anbieter auswählen](#install-and-choose-a-provider).
-2. [Das Projekt initialisieren](#initialise-the-project) mit `init`.
-3. [Den Agenten-Prompt ausführen](#run-the-agent-prompt).
-4. [Das Ergebnis überprüfen](#review-the-result).
-5. [Modelle auswählen und übersetzen](#choose-models-and-translate), dann eine Sprache überprüfen.
+1. [CLI installieren und einen Anbieter auswählen](#install-and-choose-a-provider).
+2. [Projekt initialisieren](#initialise-the-project) mit `init`.
+3. [Agent-Prompt ausführen](#run-the-agent-prompt).
+4. [Ergebnis überprüfen](#review-the-result).
+5. [Modelle auswählen und übersetzen](#choose-models-and-translate), dann eine Sprache prüfen.
 6. [Übersetzt halten](#keep-it-translated).
 
-Sie möchten die Änderungen lieber selbst vornehmen oder möchten wissen, was der Prompt tut? [Manuell vorgehen](#do-it-by-hand) führt die gleichen Schritte einzeln durch.
+Möchten Sie die Änderungen lieber selbst vornehmen oder wissen, was der Prompt tut? [Manuell vorgehen](#do-it-by-hand) führt die gleichen Schritte einzeln durch.
 
 <a id="install-and-choose-a-provider"></a>
-## Installieren und einen Anbieter auswählen
+## Anbieter installieren und auswählen
 
-Diesen Teil erledigen Sie, nicht der Agent. Der Installer ändert Ihre Maschine, und der API-Schlüssel ist ein Geheimnis, das in Ihre Shell gehört, nicht in einen Prompt.
+Diesen Teil erledigen Sie, nicht der Agent. Der Installer nimmt Änderungen an Ihrem System vor, und der API-Schlüssel ist ein Geheimnis, das in Ihre Shell gehört, nicht in einen Prompt.
 
 Ein Repository mit einer `package.json` installiert das Paket als Entwicklungsabhängigkeit. Andere Installationsoptionen: [Installation](/de/guide/installation).
 
@@ -61,7 +61,7 @@ Wählen Sie dann einen Anbieter und legen Sie dessen API-Schlüssel in der Shell
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Ollama benötigt keinen Schlüssel. Andere Voreinstellungen: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers). Merken Sie sich den Anbieternamen, da Sie ihn im nächsten Schritt an `init` übergeben. Der Agent benötigt den Schlüssel nie: er führt nur Befehle aus, die keine Modellaufrufe tätigen. Sie verwenden den Schlüssel später, wenn Sie [übersetzen](#choose-models-and-translate).
+Ollama benötigt keinen Schlüssel. Andere Voreinstellungen: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers). Merken Sie sich den Anbieternamen, da Sie ihn im nächsten Schritt an `init` übergeben. Der Agent benötigt den Schlüssel nie: Er führt nur Befehle aus, die keine Modellaufrufe tätigen. Sie verwenden den Schlüssel später, wenn Sie [übersetzen](#choose-models-and-translate).
 
 <a id="initialise-the-project"></a>
 ## Projekt initialisieren
@@ -75,7 +75,7 @@ Sie führen dies einmal aus, bevor die Aufforderung erfolgt. Es schreibt die Kon
 | Jede andere Vorlage, plus eine README | fügen Sie `--with-readme` zu diesem `init`-Befehl hinzu | Diese Seite für den README-Block |
 | Nur README und Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | Diese Seite |
 
-`--with-readme` ist ein No-Op bei `ui-markdown` und `docs-markdown`, da diese Vorlagen den README-Block bereits enthalten.
+`--with-readme` hat keine Auswirkung auf `ui-markdown` und `docs-markdown`, da diese Vorlagen den README-Block bereits enthalten.
 
 JS/TS-App und README (ein Befehl; `ui-markdown` ist die Standardvorlage):
 
@@ -220,7 +220,7 @@ Der Agent schließt mit einem Bericht ab. Überprüfen Sie ihn, bevor Sie übers
 <a id="choose-models-and-translate"></a>
 ## Modelle auswählen und übersetzen
 
-Diesen Teil führen Sie aus. Er verwendet Ihren API-Schlüssel und verbraucht Guthaben auf Ihrem Konto.
+Sie führen diesen Teil aus. Er verwendet Ihren API-Schlüssel und verursacht Kosten auf Ihrem Konto.
 
 Die Modellliste von `init` ist ein Ausgangspunkt. Bewerten Sie die Chat-Modelle des aktiven Anbieters und schreiben Sie die Auswahl in `translationModels`, sobald die engere Auswahl korrekt aussieht:
 
@@ -245,7 +245,7 @@ Sprachnamen in der Zeile stammen aus `ui-languages.json`, die `extract` neben de
 Committen Sie `translated-docs/` und öffnen Sie die übersetzte README auf dem Host. Relative Links zwischen der Quell-README und `translated-docs/README.de.md` werden für jede Datei neu geschrieben.
 
 <a id="check-one-language"></a>
-### Eine Sprache prüfen
+### Eine Sprache überprüfen
 
 Öffnen Sie `translated-docs/README.de.md` (oder welchen Zielcode Sie gewählt haben) auf dem Host und in der Datei selbst. Die Sprachzeile sollte jedes Gebietsschema auflisten, mit Links, die von der Datei aus funktionieren, die Sie gerade betrachten. Ein Satz, der noch in der Ausgangssprache war, befand sich innerhalb eines Code-Fences, einer URL oder eines Überschriftenankers, oder er war nicht in `contentPaths`.
 
@@ -293,7 +293,7 @@ Verwenden Sie die Umgebungsvariable für den von Ihnen konfigurierten Provider. 
 KI-Übersetzungen können falsch sein. Ein kurzer Hinweis am Ende der README-Datei, wie der in der [README dieses Repositorys](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), informiert die Leser darüber, dass die anderen Sprachen maschinell übersetzt wurden und überprüft werden sollten, bevor man sich auf sie verlässt.
 
 <a id="do-it-by-hand"></a>
-## Manuell vorgehen
+## Machen Sie es manuell
 
 Gehen Sie diese Schritte durch, wenn Sie die Änderungen lieber selbst vornehmen möchten oder wenn Sie wissen möchten, was der Prompt tut. Die ersten beiden entsprechen den Teilen des Prompts. Die letzten beiden sind für zusätzliche Dateien und für Links, die auf eine veröffentlichte Website verweisen. Sie [installieren die CLI](#install-and-choose-a-provider), [initialisieren das Projekt](#initialise-the-project) und [übersetzen](#choose-models-and-translate) am Ende trotzdem.
 

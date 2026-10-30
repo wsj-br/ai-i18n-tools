@@ -98,7 +98,7 @@ Fumadocs utilise des fichiers JSON `meta.json` pour la structure et les titres d
 <a id="ui-catalog"></a>
 ## Catalogue d'interface utilisateur
 
-L'habillage de la mise en page de Fumadocs (espace réservé de recherche, noms d'affichage de locale, et autres remplacements `defineTranslations` / `i18n.translations()` dans `lib/layout.shared.ts`) n'est pas extrait du markdown. Configurez `docsOutput.fumadocsUiCatalog` afin que `translate-docs` amorce le catalogue de la locale source à partir de `sourcePath` et traduise le JSON par locale :
+Les chaînes d'habillage de la mise en page Fumadocs (texte d'espace réservé de recherche, noms d'affichage de locale, et d'autres remplacements `defineTranslations` / `i18n.translations()` dans `lib/layout.shared.ts`) ne sont pas extraites du markdown. Configurez `docsOutput.fumadocsUiCatalog` afin que `translate-docs` initialise le catalogue de la locale source à partir de `sourcePath` et traduise le JSON par locale :
 
 ```json
 {

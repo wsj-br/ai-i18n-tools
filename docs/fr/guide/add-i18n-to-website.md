@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### Ce qui est traduit
 
-Le corps des pages passe par le [pipeline Documents](/fr/guide/documents/). Les éléments d'interface du framework (navigation, barre latérale, étiquettes de thème) sont gérés dans la même exécution lorsque le framework le prend en charge. Ce n'est pas le pipeline [JSON](/fr/guide/json) distinct. Une page HTML simple qui change de langue dans le navigateur est l'exception : `mark-html` et `translate-ui` écrivent du JSON plat, et le script du navigateur l'applique. Un fichier HTML par locale reste sur le pipeline Documents.
+Les corps de page passent par le pipeline [Documents](/fr/guide/documents/). Les chaînes d'habillage du framework (navigation, barre latérale, étiquettes de thème) sont gérées dans la même exécution lorsque le framework le prend en charge. Il ne s'agit pas du pipeline [JSON](/fr/guide/json) distinct. Une page HTML simple qui change de langue dans le navigateur constitue l'exception : `mark-html` et `translate-ui` écrivent du JSON plat, et le script du navigateur l'applique. Un fichier HTML par locale reste sur le pipeline Documents.
 
 | Framework | Chaînes de l'interface et du thème | Comment |
 | --- | --- | --- |

@@ -10,7 +10,7 @@ Você tem um app, um site, um site de documentação ou um README de repositóri
 | --- | --- |
 | Escolha os idiomas, um provedor e os modelos a serem testados | Extrai o texto, traduz, valida o resultado e grava os catálogos ou as páginas |
 | Torna o texto visível ao usuário visível para a ferramenta: chamadas `t()` no código do app, o i18n próprio do seu framework para um site ou um marcador de lista de idiomas em um README | Armazena traduções em cache e as reutiliza em cada nova execução |
-| Integra o resultado ao app, ao roteamento do site ou à linha de idiomas do README | Mostra o progresso e permite revisar traduções no painel |
+| Conecte o resultado ao aplicativo, ao roteamento do site ou à linha de idioma do README | Mostra o progresso e permite que você revise as traduções no painel |
 
 A ferramenta não reescreve seu código-fonte. Prompts para agentes de codificação são fornecidos para a etapa de encapsulamento. Ela não instala i18next nem o i18n do framework do seu site e não cria seu seletor de idioma, embora auxiliares de tempo de execução sejam fornecidos para isso.
 

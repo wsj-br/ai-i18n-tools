@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` `document.documentElement.dir` (ब्राउज़र) सेट करता है या नो-ऑप (Node.js) है। किसी विशिष्ट तत्व को लक्षित करने के लिए एक वैकल्पिक `element` तर्क पास करें। इसे अपने i18n बूटस्ट्रैप में वायर करें — [i18next वायर करें](/hi/guide/ui-strings/i18next-runtime)।
+`applyDirection` `document.documentElement.dir` को (ब्राउज़र में) सेट करता है या (Node.js में) कोई ऑपरेशन नहीं करता है। किसी विशिष्ट एलिमेंट को लक्षित करने के लिए एक वैकल्पिक `element` आर्ग्यूमेंट पास करें। इसे अपने i18n बूटस्ट्रैप में कनेक्ट करें — [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime)।
 
 उन स्ट्रिंग्स के लिए जिनमें `→` तीर हो सकते हैं, उन्हें RTL लेआउट के लिए पलट दें:
 

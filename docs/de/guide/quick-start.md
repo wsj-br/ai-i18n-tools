@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Schnellstart
 
-Diese Seite führt ein einsprachiges Projekt zu seinen ersten übersetzten Dateien. Sie ist für eine JS/TS-App, eine Python-App, eine Website oder Dokumentationsseite oder eine Repository-README und andere Markdown-Dateien gedacht. Sie setzt voraus:
+Diese Seite führt ein einsprachiges Projekt zu seinen ersten übersetzten Dateien. Sie ist gedacht für eine JS/TS-Anwendung, eine Python-Anwendung, eine Website oder Dokumentationsseite oder eine Repository-README und andere Markdown-Dateien. Sie setzt voraus:
 
 - Node.js `>=22.16.0` oder die [eigenständige ausführbare Datei](/de/guide/installation#standalone-executables) für ein Python-Projekt.
 - Einen API-Schlüssel für einen LLM-Anbieter oder eine lokale Ollama-Installation.

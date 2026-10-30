@@ -10,8 +10,8 @@
 流程：
 
 1. [安裝 CLI 並選擇提供者](#install-and-choose-a-provider)。
-2. 使用 `init` [初始化專案](#initialise-the-project)。
-3. [執行代理提示](#run-the-agent-prompt)。
+2. 使用 `init`[初始化專案](#initialise-the-project)。
+3. [執行代理程式提示](#run-the-agent-prompt)。
 4. [檢閱結果](#review-the-result)。
 5. [選擇模型並翻譯](#choose-models-and-translate)，然後檢查一種語言。
 6. [保持翻譯](#keep-it-translated)。
@@ -21,7 +21,7 @@
 <a id="install-and-choose-a-provider"></a>
 ## 安裝並選擇提供者
 
-這部分由您執行，而非代理。安裝程式會變更您的機器，而 API 金鑰是屬於您 shell 的機密，不應出現在提示中。
+這部分由您執行，而不是代理程式。安裝程式會變更您的機器，而 API 金鑰是屬於您 shell 的機密，不應出現在提示中。
 
 當機器上已有 Node.js `>=22.16.0` 時，請使用 npm 套件 ([安裝](/zh-Hant/guide/installation))。若是 Python 專案，請安裝獨立可執行檔 (無需 Node.js)。
 
@@ -51,7 +51,7 @@ ai-i18n-tools --version
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollama 不需要金鑰。其他預設值：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。請記下提供者名稱，因為您將在下一步中將其傳遞給 `init`。代理程式從不需要金鑰：它只執行不進行模型呼叫的命令。您稍後在[翻譯](#choose-models-and-translate)時會使用金鑰。
+Ollama 不需要金鑰。其他預設值：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。請記下提供者名稱，因為您會在下一步將其傳遞給 `init`。代理程式永遠不需要金鑰：它只執行不進行模型呼叫的命令。您稍後在[翻譯](#choose-models-and-translate)時會使用該金鑰。
 
 <a id="initialise-the-project"></a>
 ## 初始化專案
@@ -249,7 +249,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="review-the-result"></a>
 ## 審查結果
 
-代理程式會產生一份報告。在翻譯之前檢查它：
+代理程式結束時會產生一份報告。在翻譯之前檢查它：
 
 - 差異。包裝後的文字應與之前相同，沒有不相關的重新格式化。`git diff --stat` 顯示了多少變更。
 - 報告中跳過的字串和模糊不清的案例：複數保留為一個字串，一個單字既用作儲存值又用作標題，以及由翻譯片段組成的句子。這些需要手動決定。
@@ -262,7 +262,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="choose-models-and-translate"></a>
 ## 選擇模型並翻譯
 
-您執行此部分。它會使用您的 API 金鑰並花費您帳戶中的資金。
+由您執行此部分。它使用您的 API 金鑰並在您的帳戶上花費金錢。
 
 來自 `init` 的模型列表是一個起點。對目前啟用提供者的聊天模型進行排序，當候選清單看起來正確時，將其寫入 `translationModels`：
 
@@ -897,7 +897,7 @@ class App(tk.Tk):
 
 新執行緒會以原始語言啟動，而非視窗的語言。在主執行緒中翻譯，或在執行緒函式開頭呼叫 `set_locale`。其他工具包需要相同的組件：一個設定每個可見文字的函式，以及一個呼叫 `set_locale` 然後呼叫該函式的選單處理程式。PyQt 和 PySide 有自己的重新翻譯掛鉤；請參閱[每個框架中的語系](/zh-Hant/guide/ui-strings/python#locale-in-each-framework)。
 
-這是最後一個手動步驟。請繼續閱讀[選擇模型並翻譯](#choose-models-and-translate)。
+這是最後一個手動步驟。請繼續閱讀 [選擇模型並翻譯](#choose-models-and-translate)。
 
 <a id="not-your-case"></a>
 ## 情況不同？

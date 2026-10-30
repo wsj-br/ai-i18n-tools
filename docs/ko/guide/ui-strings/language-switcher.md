@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection`는 `document.documentElement.dir`(브라우저)를 설정하거나 아무 작업도 수행하지 않습니다(Node.js). 특정 요소를 대상으로 하려면 선택적 `element` 인수를 전달하세요. i18n 부트스트랩에 연결하세요. [i18next 연결](/ko/guide/ui-strings/i18next-runtime).
+`applyDirection`는 `document.documentElement.dir`을 설정합니다(브라우저) 또는 아무 작업도 수행하지 않습니다(Node.js). 선택적 `element` 인수를 전달하여 특정 요소를 대상으로 지정할 수 있습니다. i18n 부트스트랩에서 연결하세요 — [i18next 연결](/ko/guide/ui-strings/i18next-runtime).
 
 `→` 화살표를 포함할 수 있는 문자열의 경우 RTL 레이아웃에 맞춰 방향을 반전하세요:
 

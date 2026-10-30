@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Python 应用程序的选择器。提取、目录和调用形状位于 [Python 应用程序](/zh-Hans/guide/ui-strings/python) 中。现有单语言环境应用程序的分步指南是 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)，其中包含一个 [代理提示](/zh-Hans/guide/add-i18n-to-python#run-the-agent-prompt)。Django、Flask-Babel 目录以及已使用 gettext 的应用程序有其自己的演练和提示：[为 Django / Python gettext 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)。
+如何为 Python 应用程序选择合适的配置。提取、目录和调用形式位于 [Python 应用程序](/zh-Hans/guide/ui-strings/python) 中。针对现有单语言环境应用程序的逐步指南是 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)，并附带 [代理提示](/zh-Hans/guide/add-i18n-to-python#run-the-agent-prompt)。Django、Flask-Babel 目录以及已使用 gettext 的应用程序有其自己的演练和提示：[为 Django / Python gettext 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 和 PyWebView 调用生成的 `i18n.py` 辅助程序（Python 3.10 或更高版本）。Django 保留 Django 的 gettext。存储库中附带了四个可运行的副本：`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext`。Pyramid、Django、Tkinter、Qt 和 PyWebView 没有单独的示例目录。
 

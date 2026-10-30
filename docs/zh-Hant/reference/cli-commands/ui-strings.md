@@ -34,7 +34,7 @@
 
 就地翻譯 Intlayer `*.content.ts` 字典中遺失和過時的語系葉節點，並維持字典作為真實來源 (source of truth)。與 [`migrate-intlayer`](#migrate-intlayer) 不同，此操作不會將應用程式從 Intlayer 移出；它只會填入 `t({ … })` 葉節點。當您想在執行階段保留 Intlayer 並使用 ai-i18n-tools 作為翻譯引擎時，請使用此功能。
 
-它會擷取每個 `t({ … })` 葉節點，用來源文字為所選 UI 區塊的 `strings.json` 植入資料，執行與 [`translate-ui`](#translate-ui) 相同的引擎 (供應商選擇、詞彙表、翻譯情境和模型備援)，然後將每個語系的新字串寫回各個 `t({ … })` 物件中。編輯是精準的：只會變更遺失或過時的語系行，因此您的格式和註解都會保留。Intlayer `{token}` 預留位置會往返轉換為 <code v-pre>{{token}}</code> 以進行翻譯，然後再轉換回來。
+它提取每個`t({ … })`葉節點，將原始文字植入所選UI區塊的`strings.json`中，執行與[`translate-ui`](#translate-ui)相同的引擎（提供者選擇、詞彙表、翻譯上下文和模型備援），然後將新的每個地區的字串寫回每個`t({ … })`物件中。編輯精確：僅更改缺失或過時的地區行，因此您的格式和註解得以保留。Intlayer `{token}`佔位符會往返傳送至<code v-pre>{{token}}</code>進行翻譯並返回。
 
 當葉節點中缺少該語系 (遺失)，或自上次針對該語系執行後來源語系文字已變更 (過時) 時，就會翻譯「葉節點+語系」。過時狀態會在 `cacheDir` 中追蹤，因此編輯該來源字串會在下次執行時重新翻譯該葉節點。來源語言為 `sourceLocale`，可以是任何語言。`--dry-run` 會報告遺失/過時的計數，而不會呼叫 LLM 或寫入任何內容。需要 `features.translateUIStrings` 和 UI 區塊的 `stringsJson` (與 `translate-ui` 相同)。
 

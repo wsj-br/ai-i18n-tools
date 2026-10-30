@@ -79,7 +79,7 @@ ai-i18n-tools translate-ui
 
 `translate-ui` 只會寫入檔案。應用程式必須載入這些檔案。
 
-- JS/TS：使用執行階段輔助程式串接 i18next、載入使用者選擇的語系檔案，並新增語言切換器。請參閱 [串接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 和 [語言切換器與 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
+- JS/TS：設定 i18next 並搭配執行階段輔助程式，載入使用者選擇的地區設定檔案，並新增語言切換器。請參閱 [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 和 [語言切換器與 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
 - Python：使用產生的 `i18n.py` 或您的 gettext 目錄。請參閱 [Python 應用程式](/zh-Hant/guide/ui-strings/python)。
 - 純 HTML：在頁面旁載入執行階段指令碼。請參閱 [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)。
 - Astro：請參閱 [Astro 網站](/zh-Hant/guide/ui-strings/astro-website)。

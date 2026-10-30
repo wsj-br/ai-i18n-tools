@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-पायथन अनुप्रयोगों के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन अनुप्रयोगों](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), एक [एजेंट प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) के साथ। Django, Flask-Babel कैटलॉग और वे ऐप जो पहले से gettext का उपयोग करते हैं, उनके पास अपनी स्वयं की वॉकथ्रू और प्रॉम्प्ट है: [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)।
+पायथन ऐप्लिकेशन के लिए सही सेटअप कैसे चुनें। एक्सट्रैक्शन, कैटलॉग और कॉल शेप्स [पायथन ऐप्लिकेशन](/hi/guide/ui-strings/python) में होते हैं। मौजूदा सिंगल-लोकेल ऐप्लिकेशन के लिए चरण-दर-चरण प्रक्रिया है: [पायथन ऐप्लिकेशन में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें एक [एजेंट प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) भी शामिल है। Django, Flask-Babel कैटलॉग और वे ऐप्लिकेशन जो पहले से gettext का उपयोग करते हैं, उनके लिए अपनी वॉकथ्रू और प्रॉम्प्ट है: [Django / पायथन gettext ऐप्लिकेशन में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)।
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView जनरेट किए गए `i18n.py` हेल्पर (Python 3.10 या नया) को कॉल करते हैं। Django, Django के gettext को बनाए रखता है। रिपॉजिटरी में चार रन करने योग्य प्रतियां शामिल हैं: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext`। Pyramid, Django, Tkinter, Qt, और PyWebView के लिए कोई अलग उदाहरण निर्देशिका नहीं है।
 

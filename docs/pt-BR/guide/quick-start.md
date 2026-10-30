@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Início rápido
 
-Esta página aborda como levar um projeto de um único idioma aos seus primeiros arquivos traduzidos. Ela se destina a um app JS/TS, um app Python, um site ou site de documentação, ou um README de repositório e outros arquivos Markdown. Ela pressupõe:
+Esta página orienta um projeto monolíngue aos seus primeiros arquivos traduzidos. Destina-se a um aplicativo JS/TS, um aplicativo Python, um site ou site de documentação, ou um README de repositório e outros arquivos Markdown. Pressupõe:
 
 - Node.js `>=22.16.0` ou o [executável autônomo](/pt-BR/guide/installation#standalone-executables) para um projeto Python.
 - Uma chave de API para um provedor de LLM ou uma instalação local do Ollama.

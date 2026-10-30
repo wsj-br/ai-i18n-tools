@@ -60,7 +60,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="theme-strings"></a>
 ## थीम स्ट्रिंग्स
 
-Nextra थीम क्रोम (`editLink`, खोज प्लेसहोल्डर, फ़ुटर, इत्यादि) मार्कडाउन से निकाला नहीं जाता है। एक TypeScript डिक्शनरी मॉड्यूल (उदाहरण के लिए `app/_dictionaries/en.ts`) में अंग्रेज़ी स्ट्रिंग लिखें और इसे `translate-docs` के अंदर अनुवाद करें:
+Nextra थीम स्ट्रिंग्स (`editLink`, सर्च प्लेसहोल्डर, फ़ुटर, आदि) मार्कडाउन से नहीं निकाले जाते हैं। अंग्रेज़ी स्ट्रिंग्स एक टाइपस्क्रिप्ट डिक्शनरी मॉड्यूल (उदाहरण के लिए `app/_dictionaries/en.ts`) में लिखें और इसे `translate-docs` के अंदर अनुवाद करें:
 
 ```json
 {
@@ -104,7 +104,7 @@ JSON साइडकार (`i18n/meta.en.json`) या पतली `_meta.ts` 
 <a id="example-project"></a>
 ## उदाहरण प्रोजेक्ट
 
-[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/` पर अंग्रेज़ी स्रोत, कमिट किए गए `pt-BR` और `zh-Hans` पेज ट्री, इनलाइन `_meta.ts` फ़ाइलें, और `app/_dictionaries/{locale}.ts`। एक सर्वर कंपोनेंट (`app/_components/feedback-links.tsx`) एक फ़्लैट-बंडल लुकअप के माध्यम से `t()` का उपयोग करता है ताकि कस्टम क्रोम डिक्शनरी के बगल में बैठ सके। पोर्ट 3070 पर `pnpm run dev` चलाएँ।
+[उदाहरण/नेक्स्ट्रा-डॉक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — `content/en/` पर अंग्रेज़ी स्रोत, कमिट किए गए `pt-BR` और `zh-Hans` पेज ट्री, इनलाइन `_meta.ts` फ़ाइलें, और `app/_dictionaries/{locale}.ts`। एक सर्वर कंपोनेंट (`app/_components/feedback-links.tsx`) एक फ़्लैट-बंडल लुकअप के माध्यम से `t()` का उपयोग करता है ताकि कस्टम शेल स्ट्रिंग्स डिक्शनरी के बगल में रह सकें। पोर्ट 3070 पर `pnpm run dev` चलाएँ।
 
 <a id="agent-prompt-dictionary-and-routes"></a>
 ## एजेंट प्रॉम्प्ट: शब्दकोश और रूट्स
@@ -138,7 +138,7 @@ sidebar labels into the dictionary or into `t()`.
 - `next.config`: `i18n.locales` and `defaultLocale`.
 - English MDX and `_meta.ts` live under `content/en/`. `getPageMap('/${lang}')`
   loads the matching tree.
-- `app/_dictionaries/en.ts` exports the English chrome (`siteTitle`, `footer`,
+- `app/_dictionaries/en.ts` exports the English shell strings (`siteTitle`, `footer`,
   `editLink`, search placeholder, table-of-contents title, last-updated label).
   `get-dictionary.ts` dynamically imports `./${locale}`.
 - Pass those fields into `<Layout>`, `<Navbar>`, and `<Footer>`. Set
@@ -166,7 +166,7 @@ sidebar labels into the dictionary or into `t()`.
 
 - `pnpm build` passes.
 - `/` shows the English dictionary strings. After `sync`, one non-English route
-  shows translated chrome and page titles.
+  shows translated shell strings and page titles.
 - Sidebar labels come from `content/en/**/_meta.ts`, not from the dictionary.
 
 ## Report back
@@ -181,7 +181,7 @@ native language names), and any MDX you were not sure belonged under
 <a id="optional-t-for-app-react-hybrid"></a>
 ## वैकल्पिक: `app/` रिएक्ट (हाइब्रिड) के लिए `t()`
 
-**डिफ़ॉल्ट:** `_meta.ts` ऑब्जेक्ट लिटरल और `app/_dictionaries/en.ts` को `translate-docs` द्वारा अनुवादित किया जाता है। उस क्रोम के लिए किसी `t()` की आवश्यकता नहीं है।
+**डिफ़ॉल्ट:** `_meta.ts` ऑब्जेक्ट लिटरल और `app/_dictionaries/en.ts` `translate-docs` द्वारा अनुवादित किए जाते हैं। उन शेल स्ट्रिंग्स के लिए किसी `t()` की आवश्यकता नहीं है।
 
 **वैकल्पिक हाइब्रिड:** कस्टम सर्वर कंपोनेंट `t("source sentence")` और `translate-ui` को कॉल कर सकते हैं। वाक्य `sourceLocale` में लिखा गया है, जो कोई भी भाषा हो सकती है। उन कॉलों में डिक्शनरी स्ट्रिंग या `_meta.ts` शीर्षक कॉपी न करें। `extract` केवल `t()` के अंदर लिटरल देखता है, इसलिए `ui.sourceRoots` को केवल उन फ़ोल्डरों को सूचीबद्ध करना चाहिए जिनमें वे कॉल शामिल हैं (उदाहरण `app/_components` का उपयोग करता है), न कि `app/_dictionaries`।
 

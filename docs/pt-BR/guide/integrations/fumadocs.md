@@ -98,7 +98,7 @@ Fumadocs usa arquivos JSON `meta.json` para estrutura e títulos da barra latera
 <a id="ui-catalog"></a>
 ## Catálogo da UI
 
-Os elementos de interface do layout do Fumadocs (texto de espaço reservado da pesquisa, nomes de exibição da localidade e outras substituições de `defineTranslations` / `i18n.translations()` em `lib/layout.shared.ts`) não são extraídos do markdown. Configure `docsOutput.fumadocsUiCatalog` para que `translate-docs` inicialize o catálogo da localidade de origem a partir de `sourcePath` e traduza o JSON por localidade:
+As strings do shell de layout do Fumadocs (placeholder de pesquisa, nomes de exibição de localidade e outras substituições `defineTranslations` / `i18n.translations()` em `lib/layout.shared.ts`) não são extraídas do markdown. Configure `docsOutput.fumadocsUiCatalog` para que `translate-docs` inicialize o catálogo da localidade de origem a partir de `sourcePath` e traduza o JSON por localidade:
 
 ```json
 {
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs serve rotas com prefixo de locale via middleware do Next.js (`/docs/getting-started`, `/pt/docs/getting-started`). **Links dentro da página devem permanecer neutros em relação ao locale** (`/docs/getting-started`) para que o prefixo do locale ativo seja aplicado automaticamente.
 
-Habilite o normalizador integrado para que `translate-docs` corrija links em cada arquivo traduzido automaticamente:
+Habilite o normalizador integrado para que `translate-docs` corrija os links em cada arquivo traduzido automaticamente:
 
 ```json
 "docsOutput": {

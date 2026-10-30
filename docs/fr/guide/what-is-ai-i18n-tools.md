@@ -10,7 +10,7 @@ Vous avez une application, un site web, un site de documentation ou un fichier R
 | --- | --- |
 | Choisissez les langues, un fournisseur et les modèles à essayer | Extrait le texte, le traduit, valide le résultat et écrit des catalogues ou des pages |
 | Rendez le texte destiné à l'utilisateur visible par l'outil : appels `t()` dans le code de l'application, l'i18n propre à votre framework pour un site, ou un marqueur de liste de langues dans un fichier README | Met en cache les traductions et les réutilise à chaque réexécution |
-| Intégrez le résultat dans l'application, le routage du site ou la ligne de langue du fichier README | Affiche la progression et vous permet de réviser les traductions dans le tableau de bord |
+| Connecter le résultat à l'application, au routage du site ou à la ligne de langue du fichier README | Affiche la progression et vous permet d'examiner les traductions dans le tableau de bord |
 
 L'outil ne réécrit pas votre code source. Des invites d'agent de codage sont fournies pour l'étape d'encapsulation. Il n'installe pas i18next ni l'i18n de votre framework de site, et il ne construit pas votre sélecteur de langue, bien que des assistants d'exécution soient fournis à cet effet.
 

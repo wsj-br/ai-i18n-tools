@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # 빠른 시작
 
-이 페이지는 단일 언어로 된 프로젝트를 첫 번역 파일로 만드는 과정을 다룹니다. JS/TS 앱, Python 앱, 웹사이트나 문서 사이트, 또는 저장소 README 및 기타 Markdown 파일에 적용됩니다. 다음을 가정합니다.
+이 페이지는 단일 언어 프로젝트가 첫 번역 파일을 생성하도록 안내합니다. JS/TS 앱, Python 앱, 웹사이트 또는 문서 사이트, 또는 리포지토리 README 및 기타 Markdown 파일에 적용됩니다. 다음을 가정합니다:
 
 - Python 프로젝트의 경우 Node.js `>=22.16.0` 또는 [독립 실행 파일](/ko/guide/installation#standalone-executables).
 - LLM 공급자의 API 키 또는 로컬 Ollama 설치.

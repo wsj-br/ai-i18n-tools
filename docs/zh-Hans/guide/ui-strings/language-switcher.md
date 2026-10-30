@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` 设置 `document.documentElement.dir`（浏览器）或不执行任何操作（Node.js）。传递可选的 `element` 参数以定位特定元素。在您的 i18n 引导程序中连接它 — [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)。
+`applyDirection` 设置 `document.documentElement.dir` (浏览器)，或是一个空操作 (Node.js)。传递一个可选的 `element` 参数以定位特定元素。在您的 i18n 引导程序中连接它 — [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime)。
 
 对于可能包含 `→` 箭头的字符串，请在从右到左的布局中翻转它们：
 

@@ -34,13 +34,13 @@ Classifique os modelos de chat do provedor ativo e imprima os melhores (padrão 
 
 Os candidatos vêm da lista `GET /models` do provedor. Quando `providers.cheaperinference.zeroDataRetention` é verdadeiro, essa solicitação é `GET /v1/models?zdr=true`. Linhas expiradas e linhas não-chat (embeddings, fala, imagem, vídeo, moderação, rerankers) são omitidas. Se essa solicitação de catálogo falhar, o comando sai com 1.
 
-`--quality` é o padrão. Ele prioriza ChrF e Arena Score em detrimento do preço. `--price` prioriza o preço em detrimento desses scores e ainda mantém um piso de qualidade, para que um modelo barato não medido não suba na lista. Passar ambas as flags é um erro. Não passar nenhuma significa qualidade. Pesos opcionais de `modelSuggestion` na configuração substituem qualquer um dos perfis. Consulte [Configuração](/pt-BR/reference/configuration#modelsuggestion-optional). Os mesmos pesos são usados pela [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models).
+`--quality` é o padrão. Ele pondera ChrF e Arena Score acima do preço. `--price` pondera o preço acima dessas pontuações e ainda mantém um piso de qualidade, para que um modelo barato não medido não se classifique mais alto do que deveria. Passar ambas as flags é um erro. Não passar nenhuma significa qualidade. Pesos opcionais `modelSuggestion` na configuração substituem qualquer um dos perfis. Consulte [Configuração](/pt-BR/reference/configuration#modelsuggestion-optional). Os mesmos pesos são usados pela [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models).
 
 ChrF é a média das linhas `translation_from` e `translation_to` do languagebench cuja métrica é `chrf`, limitada a `sourceLocale` e `targetLocales` deste projeto. Locales mapeiam para um código de idioma do languagebench (a subtag primária, com alguns aliases como `pt-BR` para `pt` e `zh-Hant` para `zh` e `yue`). Um conjunto vazio usa `en`. Arena é o Arena Score geral do LMArena, não Elo.
 
 O preço de classificação é de `(3 × input + output) / 4` USD por 1M de tokens. Sua origem é resolvida nesta ordem: uma taxa de catálogo não zero, depois as taxas de entrada e saída de models.dev, depois o valor de custo único do languagebench. Um preço de catálogo de `0` significa sem preço, não gratuito. Um preço desconhecido é neutro no perfil de qualidade e o pior no perfil de preço.
 
-Um ChrF ausente é classificado abaixo do piso de qualidade. Os substitutos `0.35` e `0.45` usados para um ChrF ou Arena ausente afetam apenas o índice; a tabela imprime `—` em vez disso.
+Um ChrF ausente é classificado abaixo do piso de qualidade. Os valores de placeholder `0.35` e `0.45` usados quando ChrF ou Arena estão ausentes afetam apenas o índice; a tabela imprime `—` em vez disso.
 
 As linhas que superam o limite vêm primeiro, depois o índice mais alto, depois um preço combinado mais barato. `--top` (padrão `8`, um número inteiro de pelo menos 1) limita a tabela, o fragmento `--json` e `--apply` juntos, após os filtros abaixo.
 

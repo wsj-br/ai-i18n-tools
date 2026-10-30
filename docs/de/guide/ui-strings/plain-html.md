@@ -283,7 +283,7 @@ Diese Marker werden niemals an den Übersetzer gesendet. `mark-html` fügt sie n
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-Das Quell-Gebietsschema behält die ursprüngliche URL bei. Bei einem reinen `data-i18n-locale-src` werden absolute URLs, protokollrelative URLs, `data:`-URLs und `#`-Fragmente unverändert gelassen; Abfragezeichenfolgen und Fragmente bleiben erhalten. Ein bewerteter Marker verwendet seine Vorlage für jedes Nicht-Quell-Gebietsschema und ersetzt nur `{locale}`. Wenn das lokalisierte Bild einen 404-Fehler zurückgibt, stellt die Laufzeitumgebung die ursprüngliche `src` einmal wieder her. Sie liefern `chart_pt-BR.png` selbst aus; das Skript erstellt es nicht.
+Das Quell-Locale behält die ursprüngliche URL bei. Bei einem einfachen `data-i18n-locale-src` bleiben absolute URLs, protokollrelative URLs, `data:`-URLs und `#`-Fragmente unverändert; Abfragezeichenfolgen und Fragmente bleiben erhalten. Ein bewerteter Marker verwendet seine Vorlage für jedes Nicht-Quell-Locale und ersetzt nur `{locale}`. Wenn das lokalisierte Bild einen 404-Fehler zurückgibt, stellt die Laufzeitumgebung das ursprüngliche `src` einmal wieder her. Sie stellen `chart_pt-BR.png` selbst bereit; das Skript erstellt es nicht.
 
 `data-i18n-locale-href` ist für dieses Katalogmodell. Ein Link zu `about.pt-BR.html` gehört zur Pipeline für [HTML-Seiten](/de/guide/documents/html-pages).
 

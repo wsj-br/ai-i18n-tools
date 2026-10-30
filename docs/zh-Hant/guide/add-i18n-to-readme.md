@@ -75,7 +75,7 @@ Ollama 不需要金鑰。其他預設值：[內建提供者](/zh-Hant/guide/prov
 | 任何其他範本，加上 README | 將 `--with-readme` 新增至該 `init` 指令 | 本頁面適用於 README 區塊 |
 | 僅有 README 與 Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | 本頁面 |
 
-`--with-readme` 在 `ui-markdown` 與 `docs-markdown` 上是無作用的，因為那些範本已包含 README 區塊。
+`--with-readme` 對 `ui-markdown` 和 `docs-markdown` 沒有影響，因為那些範本已經包含 README 區塊。
 
 JS/TS 應用程式與 README (一個指令；`ui-markdown` 是預設範本)：
 

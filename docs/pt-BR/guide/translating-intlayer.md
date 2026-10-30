@@ -16,10 +16,10 @@ O [Intlayer](https://intlayer.org/) é uma boa solução para aplicações que m
 <a id="what-translate-intlayer-does"></a>
 ## O que o `translate-intlayer` faz
 
-1. Analisa as exportações padrão de `*.content.ts` e coleta cada folha `t({ locale: '…' })`. Os valores de localidade podem ser strings simples ou nós de inserção `insert('…')` do Intlayer.
-2. Preenche o `ui.stringsJson` do bloco de UI com o texto de origem e, em seguida, executa o mesmo mecanismo que o [`translate-ui`](/pt-BR/reference/cli-commands/ui-strings#translate-ui) para as localidades ausentes e desatualizadas.
-3. Grava as novas strings por localidade de volta em cada objeto `t({ … })`. As edições são cirúrgicas: apenas as linhas de localidade ausentes ou desatualizadas são alteradas, para que sua formatação, ordem de chaves e comentários sejam preservados. As traduções existentes são mantidas como estão. Quando uma folha usa `insert('…')`, os novos valores de localidade também são encapsulados em `insert(…)`, para que a folha permaneça chamável em tempo de execução.
-4. Preserva placeholders. A sintaxe de inserção do Intlayer <code v-pre>{{token}}</code> é passada sem alterações. Placeholders de chaves simples `{token}` também são compatíveis: eles se tornam <code v-pre>{{token}}</code> para tradução e retornam a `{token}` na gravação.
+1. Analisa `*.content.ts` exportações padrão e coleta cada folha `t({ locale: '…' })`. Valores de localidade podem ser strings simples ou nós de inserção `insert('…')` do Intlayer.
+2. Preenche o `ui.stringsJson` do bloco de UI com o texto fonte, então executa o mesmo mecanismo que [`translate-ui`](/pt-BR/reference/cli-commands/ui-strings#translate-ui) para as localidades ausentes e desatualizadas.
+3. Escreve as novas strings por localidade de volta em cada objeto `t({ … })`. As edições são precisas: apenas as linhas de localidade ausentes ou desatualizadas são alteradas, assim sua formatação, ordem das chaves e comentários são preservados. As traduções existentes são mantidas como foram escritas. Quando uma folha usa `insert('…')`, novos valores de localidade também são envolvidos em `insert(…)`, para que a folha permaneça invocável em tempo de execução.
+4. Preserva espaços reservados. A sintaxe de inserção do Intlayer <code v-pre>{{token}}</code> é passada sem alterações. Espaços reservados `{token}` de chave única também são suportados: eles se tornam <code v-pre>{{token}}</code> para tradução e retornam a `{token}` na escrita.
 5. Execução de teste (dry run) com `--dry-run`: ele relata as contagens de ausentes/desatualizados sem chamar um LLM ou gravar nada.
 
 <a id="missing-vs-stale"></a>

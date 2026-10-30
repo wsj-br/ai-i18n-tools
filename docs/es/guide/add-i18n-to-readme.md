@@ -75,7 +75,7 @@ Ejecuta esto una vez, antes de la instrucción. Escribe la configuración y util
 | Cualquier otra plantilla, más un README | añada `--with-readme` a ese comando `init` | Esta página para el bloque README |
 | Solo README y Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | Esta página |
 
-`--with-readme` es una operación nula en `ui-markdown` y `docs-markdown`, porque esas plantillas ya incluyen el bloque README.
+`--with-readme` no tiene efecto en `ui-markdown` y `docs-markdown`, porque esas plantillas ya incluyen el bloque README.
 
 Aplicación JS/TS y README (un comando; `ui-markdown` es la plantilla predeterminada):
 

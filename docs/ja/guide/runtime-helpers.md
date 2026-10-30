@@ -86,7 +86,7 @@ applyDirection(lng: string, element?: { setAttribute(name: string, value: string
 
 `getTextDirection`はバンドルされた`data/ui-languages-complete.json`カタログを最初に参照し（`generate-ui-languages`と同じソース）、カタログにないコードについては`RTL_LANGS`にフォールバックします。
 
-`applyDirection`はNode.jsで安全に使用できます — `document`が利用できない場合は何もしません。ブラウザでは、`document.documentElement`を更新するために`element`を省略します。言語変更時にこれを設定します：`i18n.on('languageChanged', applyDirection)`。
+Node.jsでは`applyDirection`は安全に動作し、`document`が利用できない場合は何も処理を行いません。ブラウザでは、`document.documentElement`を更新するために`element`を省略してください。言語変更時に接続してください: `i18n.on('languageChanged', applyDirection)`。
 
 <a id="i18next-setup-factories"></a>
 ### i18next 設定ファクトリ

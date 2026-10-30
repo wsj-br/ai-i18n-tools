@@ -488,24 +488,28 @@ After changing English content under `docs/` (including `docs/index.md`), run `p
 Run the vitepress server:
 
 ```bash
-pnpm docs:dev
-
+pnpm docs:build && pnpm docs:preview
 ```
 
-Check the links in the docs:
+Check the links in the docs (just the source inenglish, not the translated ones):
 
 ```bash
 LOCALES='de|es|fr|hi|ja|ko|pt-BR|zh-Hans|zh-Hant'
-npx linkinator http://localhost:4173/ai-i18n-tools/ -r   --skip "/ai-i18n-tools/($LOCALES)/" 2>&1 | tee linkcheck.txt 
+npx linkinator http://localhost:4173/ai-i18n-tools/ -r --skip "/ai-i18n-tools/($LOCALES)/" --status-code 429:ok 2>&1 | tee linkcheck.txt 
 ```
+After all translations are complete, run the following command to check the links in the docs (all locales):
 
+Check the links in the docs (all locales):
 
-Then open the browser and check the links in the docs.
+```bash
+npx linkinator http://localhost:4173/ai-i18n-tools/ -r --status-code 429:ok 2>&1 | tee linkcheck.txt 
+```
 
 ### Pre-publish checklist (docs)
 
 - [ ] `pnpm i18n:sync` completed successfully (if English docs under `docs/` changed)
 - [ ] `pnpm docs:build` succeeds locally (included in `pnpm pre-release`)
+- [ ] Check the links in the docs (all locales)
 - [ ] Optional: `pnpm docs:preview` and spot-check routes and locale switcher
 - [ ] Changes are pushed to the branch you will deploy (`pnpm docs:publish` uses the remote ref; default is the current branch, or pass `-- --ref=main`)
 

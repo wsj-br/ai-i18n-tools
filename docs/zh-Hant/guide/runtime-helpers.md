@@ -86,7 +86,7 @@ applyDirection(lng: string, element?: { setAttribute(name: string, value: string
 
 `getTextDirection` 首先查詢組合的 `data/ui-languages-complete.json` 目錄（與 `generate-ui-languages` 相同的來源），然後對於目錄中不存在的代碼回退到 `RTL_LANGS`。
 
-`applyDirection` 在 Node.js 中是安全的——當 `document` 不可用時會無操作。在瀏覽器中，省略 `element` 來更新 `document.documentElement`。在語言變更時接線：`i18n.on('languageChanged', applyDirection)`。
+`applyDirection` 在 Node.js 中是安全的，當 `document` 無法使用時，它會執行無操作。在瀏覽器中，省略 `element` 以更新 `document.documentElement`。在語言變更時連接它：`i18n.on('languageChanged', applyDirection)`。
 
 <a id="i18next-setup-factories"></a>
 ### i18next 設定工廠

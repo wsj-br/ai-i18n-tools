@@ -16,10 +16,10 @@
 <a id="what-translate-intlayer-does"></a>
 ## Qué hace `translate-intlayer`
 
-1. Analiza las exportaciones predeterminadas de `*.content.ts` y recopila cada hoja `t({ locale: '…' })`. Los valores de configuración regional pueden ser cadenas simples o nodos de inserción `insert('…')` de Intlayer.
-2. Inicializa `ui.stringsJson` del bloque de IU con el texto de origen y, a continuación, ejecuta el mismo motor que [`translate-ui`](/es/reference/cli-commands/ui-strings#translate-ui) para las configuraciones regionales que faltan o están obsoletas.
-3. Escribe las nuevas cadenas por configuración regional de vuelta en cada objeto `t({ … })`. Las ediciones son quirúrgicas: solo cambian las líneas de configuración regional que faltan o están obsoletas, por lo que se conservan el formato, el orden de las claves y los comentarios. Las traducciones existentes se dejan tal como están escritas. Cuando una hoja usa `insert('…')`, los nuevos valores de configuración regional también se envuelven en `insert(…)`, para que la hoja siga siendo invocable en tiempo de ejecución.
-4. Conserva los marcadores de posición. La sintaxis de inserción de Intlayer <code v-pre>{{token}}</code> se pasa sin cambios. También se admiten los marcadores de posición con una sola llave `{token}`: se convierten en <code v-pre>{{token}}</code> para la traducción y vuelven a `{token}` al escribir.
+1. Analiza las exportaciones predeterminadas de `*.content.ts` y recopila cada hoja de `t({ locale: '…' })`. Los valores de configuración regional pueden ser cadenas de texto simples o nodos de inserción de Intlayer `insert('…')`.
+2. Inicializa el bloque de interfaz de usuario de `ui.stringsJson` con el texto fuente, luego ejecuta el mismo motor que [`translate-ui`](/es/reference/cli-commands/ui-strings#translate-ui) para las configuraciones regionales faltantes y obsoletas.
+3. Escribe las nuevas cadenas de texto por configuración regional de nuevo en cada objeto `t({ … })`. Las ediciones son precisas: solo cambian las líneas de configuración regional faltantes u obsoletas, por lo que se conservan su formato, orden de claves y comentarios. Las traducciones existentes se mantienen tal cual. Cuando una hoja utiliza `insert('…')`, los nuevos valores de configuración regional también se envuelven en `insert(…)`, para que la hoja siga siendo invocable en tiempo de ejecución.
+4. Conserva los marcadores de posición. La sintaxis de inserción de Intlayer <code v-pre>{{token}}</code> se transfiere sin cambios. También se admiten los marcadores de posición de una sola llave `{token}`: se convierten en <code v-pre>{{token}}</code> para la traducción y vuelven a `{token}` al escribir.
 5. Ejecución de prueba con `--dry-run`: informa de los recuentos de elementos que faltan o están obsoletos sin llamar a un LLM ni escribir nada.
 
 <a id="missing-vs-stale"></a>

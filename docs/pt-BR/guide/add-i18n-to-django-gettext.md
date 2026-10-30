@@ -9,14 +9,14 @@ Criando um aplicativo Streamlit, FastAPI, Flask, desktop ou de script que não u
 
 O fluxo:
 
-1. [Instalar a CLI e escolher um provedor](#install-and-choose-a-provider).
-2. [Inicializar o projeto](#initialise-the-project) com `init`.
-3. [Executar o prompt do agente](#run-the-agent-prompt).
-4. [Revisar o resultado](#review-the-result).
+1. [Instale o CLI e escolha um provedor](#install-and-choose-a-provider).
+2. [Inicialize o projeto](#initialise-the-project) com `init`.
+3. [Execute o prompt do agente](#run-the-agent-prompt).
+4. [Revise o resultado](#review-the-result).
 5. [Escolher modelos e traduzir](#translate), depois verificar um idioma.
 6. [Manter traduzido](#keep-it-translated).
 
-Prefere fazer as alterações você mesmo, ou quer saber o que o prompt faz? [Faça manualmente](#do-it-by-hand) percorre os mesmos passos um de cada vez.
+Prefere fazer as alterações você mesmo, ou quer saber o que o prompt faz? [Faça manualmente](#do-it-by-hand) percorre os mesmos passos um por um.
 
 <a id="install-and-choose-a-provider"></a>
 ## Instalar e escolher um provedor
@@ -37,9 +37,9 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-O instalador verifica `SHA256SUMS.txt`, instala o comando como `ai-i18n-tools` e o adiciona a `PATH`. Os binários não são autenticados ou assinados com Authenticode. Etapas manuais e nomes de ativos: [Executáveis autônomos](/pt-BR/guide/installation#standalone-executables).
+O instalador verifica `SHA256SUMS.txt`, instala o comando como `ai-i18n-tools` e o adiciona a `PATH`. Os binários não são autenticados (notarised) nem assinados com Authenticode. Etapas manuais e nomes de ativos: [Executáveis autônomos](/pt-BR/guide/installation#standalone-executables).
 
-Verificar a instalação:
+Verifique a instalação:
 
 ```bash
 ai-i18n-tools --version
@@ -225,7 +225,7 @@ rewrites the `.po` files.
 </details>
 
 <a id="review-the-result"></a>
-## Revise o resultado
+## Revisar o resultado
 
 O agente termina com um relatório. Verifique-o antes de traduzir:
 
@@ -275,7 +275,7 @@ Reexecute `ai-i18n-tools sync` (ou `extract` e depois `translate-ui`) após alte
 Para traduzir `README.md` na mesma execução, faça o scaffold com `--with-readme` (ou adicione o bloco a uma configuração existente). Consulte [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Faça manualmente
+## Faça isso manualmente
 
 Siga estas etapas se preferir fazer as alterações por conta própria ou se quiser saber o que o prompt faz. Cada etapa corresponde a uma parte do prompt. Você ainda [instala a CLI](#install-and-choose-a-provider), [inicializa o projeto](#initialise-the-project) e [traduz](#translate) no final.
 
@@ -322,7 +322,7 @@ Quando cada aplicativo Django mantém sua própria pasta `locale/`, use um bloco
 `compileMo` escreve o `.mo` para você, então você não precisa de `compilemessages` neste fluxo de trabalho. Escolha uma ferramenta para escrever os catálogos: executar `makemessages` após `translate-ui` reescreve os mesmos arquivos `.po`.
 
 <a id="step-2-wrap-strings"></a>
-## Etapa 2: Envolva strings
+## Etapa 2: Envolver strings
 
 `extract` registra uma string apenas quando é um literal passado para um dos nomes de função em `ui.uiExtractor.funcNames`, ou uma tag de template. Mantenha as chamadas que você tem. Adicione o que está faltando.
 

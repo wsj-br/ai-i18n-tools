@@ -10,18 +10,18 @@
 流程：
 
 1. [安装 CLI 并选择提供商](#install-and-choose-a-provider)。
-2. [使用 `init` 初始化项目](#initialise-the-project)。
+2. 使用 `init`[初始化项目](#initialise-the-project)。
 3. [运行代理提示](#run-the-agent-prompt)。
-4. [审查结果](#review-the-result)。
+4. [查看结果](#review-the-result)。
 5. [选择模型并翻译](#translate)，然后检查一种语言。
 6. [保持翻译状态](#keep-it-translated)。
 
-更喜欢自行更改，或者想知道提示的作用？[手动操作](#do-it-by-hand) 会逐步讲解相同的步骤。
+倾向于自行更改，或者想知道提示的作用？[手动操作](#do-it-by-hand) 会逐步完成相同的步骤。
 
 <a id="install-and-choose-a-provider"></a>
 ## 安装并选择提供商
 
-这部分由您完成，而不是代理。安装程序会更改您的机器，并且 API 密钥是属于您的 shell 的秘密，不应出现在提示中。
+这部分由您完成，而不是代理。安装程序会更改您的机器，API 密钥是属于您 shell 的秘密，不应出现在提示中。
 
 如果机器上已安装 Node.js `>=22.16.0`，请使用 npm 包（参见[安装](/zh-Hans/guide/installation))。对于 Python 项目，请安装独立可执行文件（无需 Node.js）。
 
@@ -79,7 +79,7 @@ ai-i18n-tools init -t ui-python-django -P cheaperinference
 <a id="run-the-agent-prompt"></a>
 ## 运行代理提示
 
-在您的编码代理（Cursor、Claude Code、Copilot 或类似工具）中打开项目，开始新聊天，然后粘贴以下提示。项目必须已初始化。无需编辑任何内容。如果您希望省略某些内容，例如不进行语言切换，请在同一消息中说明。
+在您的编码代理（Cursor、Claude Code、Copilot 或类似工具）中打开项目，开始新聊天，然后粘贴以下提示。项目必须已初始化。无需编辑。如果您想排除某些内容，例如不进行语言切换，请在同一消息中说明。
 
 代理首先检查 CLI 和配置是否存在，如果缺少其中一个，则会停止并给出说明。然后它分四个部分工作：
 
@@ -227,7 +227,7 @@ rewrites the `.po` files.
 <a id="review-the-result"></a>
 ## 审查结果
 
-代理会生成一份报告。在翻译之前检查它：
+代理结束时会生成一份报告。在翻译之前检查它：
 
 - 差异。只有包装的调用、模板标签、配置和语言切换应该有所更改。在您翻译之前，您的 `.po` 和 `.mo` 文件应保持不变。
 - `ai-i18n-tools.config.json`：`gettext.outputDir` 和 `domain` 指向您的应用加载的目录，而 `sourceRoots` 涵盖应用程序代码。

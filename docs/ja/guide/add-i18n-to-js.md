@@ -278,7 +278,7 @@ ai-i18n-tools suggest-models --apply
 
 `--apply`は`translationModels`のみを置き換えます。同じランキングが`ai-i18n-tools dashboard`の[モデル](/ja/guide/translation-dashboard/models)タブにあります。
 
-次に、抽出して翻訳します。
+その後、抽出して翻訳します。
 
 ```bash
 ai-i18n-tools extract
@@ -405,7 +405,7 @@ console.log(t("Hello {{name}}", { name }));
 もう一度`ai-i18n-tools extract`を実行してください。カタログには、ラップした文がリストされているはずです。
 
 <a id="step-4-add-a-language-switch"></a>
-## ステップ4：言語切り替えを追加する
+## ステップ4: 言語切り替えを追加する
 
 [i18nextを接続する](/ja/guide/ui-strings/i18next-runtime#startup-locale)で説明されているように、最初のレンダリングの前に保存されたロケールを復元します。次に、`await loadLocale(code)`に続いて`await i18n.changeLanguage(code)`を呼び出すコントロールを追加します。`ui-languages.json`からオプションを構築します。ウィジェット、ラベル、および右から左へのレイアウトについては、[言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)を参照してください。
 

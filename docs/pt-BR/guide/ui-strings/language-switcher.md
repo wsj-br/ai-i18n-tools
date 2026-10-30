@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` define `document.documentElement.dir` (navegador) ou é uma operação nula (Node.js). Passe um argumento `element` opcional para direcionar um elemento específico. Conecte-o em seu bootstrap i18n — [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime).
+`applyDirection` define `document.documentElement.dir` (navegador) ou não faz nada (Node.js). Passe um argumento opcional `element` para direcionar um elemento específico. Conecte-o no seu bootstrap de i18n — [Conecte o i18next](/pt-BR/guide/ui-strings/i18next-runtime).
 
 Para strings que podem conter setas `→`, inverta-as para layouts RTL:
 

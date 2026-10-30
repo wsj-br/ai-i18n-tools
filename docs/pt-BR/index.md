@@ -46,7 +46,7 @@ Um idioma hoje? Comece aqui. Esse idioma pode ser qualquer um: defina-o como `so
 <a id="javascript-or-typescript-app"></a>
 ### Aplicativo JavaScript ou TypeScript
 
-Transforme botões, rótulos e mensagens de texto simples em uma UI multilíngue. Configure seu runtime, marque o texto a ser traduzido e implemente a troca de idiomas. Inclui prompts para agente de codificação para a etapa de preparação.
+Transforme botões, rótulos e mensagens de texto simples em uma IU multilíngue. Configure seu ambiente de execução, marque o texto a ser traduzido e conecte a troca de idioma. Inclui prompts do agente de codificação para a etapa de preparação.
 
 React · Next.js · Node.js · CLI
 
@@ -118,9 +118,9 @@ Não tem certeza de qual caminho seguir? O guia [Adicionar i18n ao seu projeto](
 
 <div class="home-steps">
 
-1. **Prepare seu projeto.** Escolha seus idiomas, um provedor de tradução e os modelos a serem testados. Para aplicativos, marque o texto voltado para o usuário e configure o tempo de execução da tradução. Para sites, habilite o roteamento de idioma do seu framework. Os guias incluem prompts de agente de codificação onde são necessárias alterações no código-fonte.
-2. **Traduza para arquivos que você pode usar.** Assim que a configuração estiver pronta, execute `sync`. Ele extrai strings de aplicativo suportadas, traduz o conteúdo que você habilitou e escreve arquivos de localidade ou páginas localizadas.
-3. **Carregue, verifique e continue.** Conecte a saída ao seu aplicativo ou site, configure a troca de idioma e verifique um idioma de destino. Execute novamente após alterações no código-fonte para traduzir textos novos ou alterados.
+1. **Prepare seu projeto.** Escolha seus idiomas, um provedor de tradução e os modelos a serem testados. Para aplicativos, marque o texto voltado para o usuário e configure o ambiente de execução de tradução. Para sites, habilite o roteamento de idioma do seu framework. Os guias incluem prompts do agente de codificação onde são necessárias alterações no código-fonte.
+2. **Traduza para arquivos que você pode usar.** Assim que a configuração estiver pronta, execute `sync`. Ele extrai strings de aplicativo compatíveis, traduz o conteúdo que você habilitou e escreve arquivos de localidade ou páginas localizadas.
+3. **Carregue, verifique e continue.** Conecte a saída ao seu aplicativo ou site, conecte a troca de idioma e verifique um idioma de destino. Execute novamente após alterações no código-fonte para traduzir texto novo ou alterado.
 
 </div>
 

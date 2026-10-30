@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-Habilite `features.translateDocs` e defina `docs[].docusaurusCatalogDir` ao traduzir tanto as páginas de documentação quanto o "chrome" do site (barra de navegação, rodapé, strings do tema). Execute `docusaurus write-translations` em seu projeto Docusaurus ao atualizar `@docusaurus/*` ou alterar rótulos da barra de navegação/rodapé/tema — então execute novamente `translate-docs` ou `sync` para que o JSON shell seja traduzido para cada pasta de localidade.
+Habilite `features.translateDocs` e defina `docs[].docusaurusCatalogDir` quando você traduzir tanto as páginas de documentação quanto as strings do shell do site (barra de navegação, rodapé, strings do tema). Execute `docusaurus write-translations` no seu projeto Docusaurus quando você atualizar `@docusaurus/*` ou alterar os rótulos da barra de navegação/rodapé/tema — então execute novamente `translate-docs` ou `sync` para que o JSON do shell seja traduzido para cada pasta de localidade.
 
 <a id="page-layout"></a>
 ## Layout da página

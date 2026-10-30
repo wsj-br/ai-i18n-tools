@@ -283,7 +283,7 @@ Estos marcadores nunca se envían al traductor. `mark-html` no los añade.
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-La configuración regional de origen mantiene la URL original. Para un `data-i18n-locale-src` simple, las URL absolutas, las URL relativas al protocolo, las URL `data:` y los fragmentos de `#` se dejan intactos; las cadenas de consulta y los fragmentos permanecen en su lugar. Un marcador valorado usa su plantilla para cada configuración regional que no sea la de origen y reemplaza solo `{locale}`. Si la imagen localizada devuelve un error 404, el tiempo de ejecución restaura el `src` original una vez. Tú mismo distribuyes `chart_pt-BR.png`; el script no lo crea.
+La configuración regional de origen mantiene la URL original. Para una `data-i18n-locale-src` sin formato, las URL absolutas, las URL relativas al protocolo, las URL `data:` y los fragmentos `#` se dejan intactos; las cadenas de consulta y los fragmentos permanecen en su lugar. Un marcador valorado usa su plantilla para cada configuración regional no de origen y solo reemplaza `{locale}`. Si la imagen localizada devuelve un error 404, el tiempo de ejecución restaura el `src` original una vez. Usted mismo proporciona `chart_pt-BR.png`; el script no lo crea.
 
 `data-i18n-locale-href` es para este modelo de catálogo. Un enlace a `about.pt-BR.html` pertenece a la canalización de [páginas HTML](/es/guide/documents/html-pages).
 

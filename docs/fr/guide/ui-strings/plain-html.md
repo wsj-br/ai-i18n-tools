@@ -283,7 +283,7 @@ Ces marqueurs ne sont jamais envoyés au traducteur. `mark-html` ne les ajoute p
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-La locale source conserve l'URL d'origine. Pour un `data-i18n-locale-src` nu, les URL absolues, les URL relatives au protocole, les URL `data:` et les fragments `#` sont laissés tels quels ; les chaînes de requête et les fragments restent en place. Un marqueur valorisé utilise son modèle pour chaque locale non-source et ne remplace que `{locale}`. Si l'image localisée renvoie une erreur 404, l'exécution restaure l'`src` d'origine une fois. Vous livrez `chart_pt-BR.png` vous-même ; le script ne le crée pas.
+La locale source conserve l'URL d'origine. Pour un `data-i18n-locale-src` nu, les URL absolues, les URL relatives au protocole, les URL `data:` et les fragments `#` sont laissés tels quels ; les chaînes de requête et les fragments restent en place. Un marqueur valorisé utilise son modèle pour chaque locale non source et ne remplace que `{locale}`. Si l'image localisée renvoie une erreur 404, le runtime restaure l'`src` d'origine une fois. Vous fournissez `chart_pt-BR.png` vous-même ; le script ne le crée pas.
 
 `data-i18n-locale-href` est destiné à ce modèle de catalogue. Un lien vers `about.pt-BR.html` appartient au pipeline des [pages HTML](/fr/guide/documents/html-pages).
 

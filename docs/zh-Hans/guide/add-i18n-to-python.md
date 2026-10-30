@@ -10,18 +10,18 @@
 流程：
 
 1. [安装 CLI 并选择提供商](#install-and-choose-a-provider)。
-2. [使用 `init` 初始化项目](#initialise-the-project)。
+2. 使用 `init`[初始化项目](#initialise-the-project)。
 3. [运行代理提示](#run-the-agent-prompt)。
-4. [审查结果](#review-the-result)。
+4. [查看结果](#review-the-result)。
 5. [选择模型并翻译](#choose-models-and-translate)，然后检查一种语言。
 6. [保持翻译](#keep-it-translated)。
 
-更喜欢自行更改，或者想知道提示的作用？[手动操作](#do-it-by-hand) 会逐步讲解相同的步骤。
+倾向于自行更改，或者想知道提示的作用？[手动操作](#do-it-by-hand) 会逐步完成相同的步骤。
 
 <a id="install-and-choose-a-provider"></a>
 ## 安装并选择提供商
 
-这部分由您完成，而不是代理。安装程序会更改您的机器，并且 API 密钥是属于您的 shell 的秘密，不应出现在提示中。
+这部分由您完成，而不是代理。安装程序会更改您的机器，API 密钥是属于您 shell 的秘密，不应出现在提示中。
 
 如果机器上已安装 Node.js `>=22.16.0`，请使用 npm 包（参见[安装](/zh-Hans/guide/installation))。对于 Python 项目，请安装独立可执行文件（无需 Node.js）。
 
@@ -51,7 +51,7 @@ ai-i18n-tools --version
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollama 不需要密钥。其他预设：[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。记下提供商名称，因为您将在下一步中将其传递给 `init`。代理永远不需要密钥：它只运行不进行模型调用的命令。您稍后在[翻译](#choose-models-and-translate)时使用该密钥。
+Ollama 不需要密钥。其他预设：[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。记下提供商名称，因为您将在下一步将其传递给 `init`。代理从不需要密钥：它只运行不进行模型调用的命令。您稍后在[翻译](#choose-models-and-translate)时会使用该密钥。
 
 <a id="initialise-the-project"></a>
 ## 初始化项目
@@ -249,7 +249,7 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 <a id="review-the-result"></a>
 ## 审查结果
 
-代理会生成一份报告。在翻译之前检查它：
+代理结束时会生成一份报告。在翻译之前检查它：
 
 - 差异。包装后的文本应与之前相同，没有不相关的重新格式化。`git diff --stat` 显示了多少更改。
 - 报告中跳过的字符串和模糊情况：复数保留为一个字符串，一个词既用作存储值又用作标题，以及由翻译片段构建的句子。手动决定这些。

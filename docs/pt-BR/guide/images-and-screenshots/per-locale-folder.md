@@ -119,7 +119,7 @@ Defina `localeSubpath` para corresponder ao layout do seu gerador entre `{locale
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-Forneça arquivos PNG correspondentes no mesmo caminho para cada local de destino (por exemplo, `static/img/screenshots/de/screenshot.png`). Prefira `screenshots/[^/]+/` a codificar `screenshots/en-GB/` diretamente, para que a regra permaneça válida após uma mudança em `sourceLocale`.
+Forneça arquivos PNG correspondentes no mesmo caminho para cada localidade de destino (por exemplo, `static/img/screenshots/de/screenshot.png`). Prefira `screenshots/[^/]+/` em vez de codificar `screenshots/en-GB/` para que a regra sobreviva a uma alteração de `sourceLocale`.
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### Predefinição - `docsOutput.style = "docusaurus"`
@@ -150,7 +150,7 @@ Igual a `"doc-system"` com `localeSubpath = "docusaurus-plugin-content-docs/curr
 
 </details>
 
-Forneça arquivos PNG correspondentes em `docs-site/static/img/screenshots/<locale>/screenshot.png`. Para configurações independentes da localidade de origem, prefira `screenshots/[^/]+/` em vez de `screenshots/en-GB/`.
+Forneça arquivos PNG correspondentes em `docs-site/static/img/screenshots/<locale>/screenshot.png`. Para configurações agnósticas à localidade de origem, prefira `screenshots/[^/]+/` em vez de `screenshots/en-GB/`.
 
 Exemplo de implementação: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) com [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
@@ -179,6 +179,6 @@ O mesmo que `"doc-system"` com `localeSubpath: ""` — páginas traduzidas ficam
 
 </details>
 
-Envie PNGs em `public/img/screenshots/<locale>/screenshot.png`. O placeholder `${translatedLocale}` usa sua string de localidade de configuração (por exemplo, `pt-BR`). O preset `astro-starlight` converte para minúsculas os **caminhos de saída** da localidade por padrão (`pt-br/`), mas as pastas de ativos estáticos em `public/img/screenshots/` devem corresponder ao segmento de localidade escrito nas URLs do markdown — mantenha os diretórios de captura de tela alinhados com `${translatedLocale}`, não necessariamente com o uso de maiúsculas e minúsculas da rota Astro.
+Forneça PNGs em `public/img/screenshots/<locale>/screenshot.png`. O placeholder `${translatedLocale}` usa sua string de localidade de configuração (por exemplo, `pt-BR`). O preset `astro-starlight` converte para minúsculas os **caminhos de saída** da localidade por padrão (`pt-br/`), mas as pastas de ativos estáticos em `public/img/screenshots/` devem corresponder ao segmento de localidade escrito nas URLs de markdown — mantenha os diretórios de capturas de tela alinhados com `${translatedLocale}`, não necessariamente com o uso de maiúsculas e minúsculas das rotas do Astro.
 
 Exemplo de implementação: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) e [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).

@@ -69,7 +69,7 @@
 
 순수 Astro SSG 사이트는 i18next를 건너뛸 수 있습니다. 빌드 시 플랫 `{locale}.json`을 로드하고 소스 텍스트 키로 `t('source text')`을 확인합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/ko/guide/ui-strings/astro-website) 참조).
 
-일반 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다. [번역을 위한 HTML 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요. 드롭인 스크립트는 `ai-i18n-tools/html-runtime/i18n.js`입니다.
+일반 HTML 앱은 `t()` 호출 대신 마커 속성을 사용하여 동일한 카탈로그 모델을 따릅니다. — [HTML 번역을 위한 마킹](/ko/guide/ui-strings/plain-html#marking-html-for-translation)을 참조하세요. 바로 사용할 수 있는 스크립트는 `ai-i18n-tools/html-runtime/i18n.js`입니다.
 
 로케일당 하나의 파일이 되어야 하는 정적 HTML은 이 카탈로그가 아닌 문서 파이프라인(`translate-docs` 내부의 `HtmlTemplateExtractor`)입니다. [HTML 페이지](/ko/guide/documents/html-pages)를 참조하세요.
 

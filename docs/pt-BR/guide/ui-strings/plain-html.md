@@ -283,7 +283,7 @@ Esses marcadores nunca são enviados ao tradutor. `mark-html` não os adiciona.
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-A localidade de origem mantém o URL original. Para um `data-i18n-locale-src` puro, URLs absolutos, URLs relativos ao protocolo, URLs `data:` e fragmentos `#` são deixados como estão; strings de consulta e fragmentos permanecem no lugar. Um marcador valorizado usa seu modelo para cada localidade não-fonte e substitui apenas `{locale}`. Se a imagem localizada retornar 404, o tempo de execução restaura o `src` original uma vez. Você distribui `chart_pt-BR.png` por conta própria; o script não o cria.
+A localidade de origem mantém o URL original. Para um `data-i18n-locale-src` simples, URLs absolutos, URLs relativos a protocolo, URLs `data:` e fragmentos `#` são deixados como estão; strings de consulta e fragmentos permanecem no lugar. Um marcador com valor usa seu modelo para cada localidade que não seja a de origem e substitui apenas `{locale}`. Se a imagem localizada retornar 404, o tempo de execução restaura o `src` original uma vez. Você mesmo fornece `chart_pt-BR.png`; o script não o cria.
 
 `data-i18n-locale-href` é para este modelo de catálogo. Um link para `about.pt-BR.html` pertence ao pipeline de [páginas HTML](/pt-BR/guide/documents/html-pages).
 

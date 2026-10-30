@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-문서 페이지와 사이트 크롬(탐색 모음, 바닥글, 테마 문자열)을 모두 번역할 때 `features.translateDocs`을(를) 활성화하고 `docs[].docusaurusCatalogDir`을(를) 설정합니다. `@docusaurus/*`을(를) 업그레이드하거나 탐색 모음/바닥글/테마 레이블을 변경할 때 Docusaurus 프로젝트에서 `docusaurus write-translations`을(를) 실행한 다음, `translate-docs` 또는 `sync`을(를) 다시 실행하여 셸 JSON이 각 로케일 폴더로 번역되도록 합니다.
+문서 페이지와 사이트 셸 문자열(내비게이션 바, 푸터, 테마 문자열)을 모두 번역할 때 `features.translateDocs`을(를) 활성화하고 `docs[].docusaurusCatalogDir`을(를) 설정합니다. `@docusaurus/*`을(를) 업그레이드하거나 내비게이션 바/푸터/테마 레이블을 변경할 때 Docusaurus 프로젝트에서 `docusaurus write-translations`을(를) 실행합니다. 그런 다음, 셸 JSON이 각 로케일 폴더로 번역되도록 `translate-docs` 또는 `sync`을(를) 다시 실행합니다.
 
 <a id="page-layout"></a>
 ## 페이지 레이아웃

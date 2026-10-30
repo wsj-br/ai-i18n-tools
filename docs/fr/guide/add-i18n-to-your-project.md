@@ -1,7 +1,7 @@
 <a id="add-i18n-to-your-project"></a>
 # Ajouter l'i18n à votre projet
 
-Cette section présente l'ensemble des guides pas à pas pour un projet qui ne gère actuellement qu'une seule langue. Commencez ici. Chaque page ci-dessous vous guide pour un type de projet, de la configuration aux premiers fichiers traduits. La section [Démarrer](/fr/guide/what-is-ai-i18n-tools) présente l'outil, les options d'installation, ainsi que les fournisseurs et les modèles. Vous pouvez ouvrir un guide pas à pas sans lire ces pages au préalable.
+Cette section contient l'ensemble des guides pas à pas pour un projet qui n'a actuellement qu'une seule langue. Commencez ici. Chaque page ci-dessous présente un type de projet, de la configuration aux premiers fichiers traduits. [Démarrer](/fr/guide/what-is-ai-i18n-tools) explique ce qu'est l'outil, les options d'installation, ainsi que les fournisseurs et les modèles. Vous pouvez ouvrir un guide pas à pas sans lire ces pages au préalable.
 
 <a id="what-you-do-and-what-the-tool-does"></a>
 ## Ce que vous faites et ce que l'outil fait

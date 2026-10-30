@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Pythonアプリケーション用のセレクター。抽出、カタログ、および呼び出し形状は[Pythonアプリケーション](/ja/guide/ui-strings/python)にあります。既存の単一ロケールアプリのステップバイステップは、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)で、[エージェントプロンプト](/ja/guide/add-i18n-to-python#run-the-agent-prompt)付きです。Django、Flask-Babelカタログ、およびすでにgettextを使用しているアプリには、独自のウォークスルーとプロンプトがあります：[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。
+Pythonアプリケーションに最適なセットアップを選択する方法。抽出、カタログ、および呼び出し形式については、[Pythonアプリケーション](/ja/guide/ui-strings/python)に記載されています。既存の単一ロケールアプリの手順は、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)で、[エージェントプロンプト](/ja/guide/add-i18n-to-python#run-the-agent-prompt)も利用できます。Django、Flask-Babelカタログ、およびgettextをすでに使用しているアプリには、独自のウォークスルーとプロンプトが用意されています。[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)をご覧ください。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWebView は、生成された `i18n.py` ヘルパー（Python 3.10 以降）を呼び出します。Django は Django 標準の gettext を使用します。リポジトリには、`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` の 4 つの実行可能なコピーが同梱されています。Pyramid、Django、Tkinter、Qt、および PyWebView には個別のサンプルディレクトリはありません。
 

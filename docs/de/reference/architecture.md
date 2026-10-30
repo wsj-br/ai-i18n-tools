@@ -69,7 +69,7 @@ Für `.html`- / `.htm`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt)
 
 Einfache Astro SSG-Sites können i18next überspringen: Laden Sie flache `{locale}.json` zur Build-Zeit und lösen Sie `t('source text')` nach Quelltextschlüssel auf. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein (siehe `examples/astro-website/src/i18n/t.ts` und [UI-Strings – Astro-Website](/de/guide/ui-strings/astro-website)).
 
-Reine HTML-Apps folgen demselben Katalogmodell mit Marker-Attributen anstelle von `t()`-Aufrufen – siehe [HTML für die Übersetzung markieren](/de/guide/ui-strings/plain-html#marking-html-for-translation). Das Drop-in-Skript ist `ai-i18n-tools/html-runtime/i18n.js`.
+Reine HTML-Apps folgen demselben Katalogmodell mit Marker-Attributen anstelle von `t()`-Aufrufen — siehe [HTML zur Übersetzung markieren](/de/guide/ui-strings/plain-html#marking-html-for-translation). Das gebrauchsfertige Skript ist `ai-i18n-tools/html-runtime/i18n.js`.
 
 Statisches HTML, das zu einer Datei pro Locale werden soll, ist eine Dokumenten-Pipeline (`HtmlTemplateExtractor` innerhalb von `translate-docs`), nicht dieser Katalog. Siehe [HTML-Seiten](/de/guide/documents/html-pages).
 

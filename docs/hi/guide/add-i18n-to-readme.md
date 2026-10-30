@@ -75,7 +75,7 @@ Ollama को किसी कुंजी की आवश्यकता न�
 | कोई अन्य टेम्प्लेट, और एक README | उस `init` कमांड में `--with-readme` जोड़ें | README ब्लॉक के लिए यह पृष्ठ |
 | केवल README और Markdown | `ai-i18n-tools init -t docs-markdown -P openrouter` | यह पृष्ठ |
 
-`--with-readme` `ui-markdown` और `docs-markdown` पर कोई ऑपरेशन नहीं करता है, क्योंकि उन टेम्प्लेट में पहले से ही README ब्लॉक शामिल है।
+`--with-readme` का `ui-markdown` और `docs-markdown` पर कोई प्रभाव नहीं पड़ता है, क्योंकि उन टेम्प्लेट में पहले से ही README ब्लॉक शामिल है।
 
 JS/TS ऐप और README (एक कमांड; `ui-markdown` डिफ़ॉल्ट टेम्प्लेट है):
 

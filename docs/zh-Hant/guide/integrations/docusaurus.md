@@ -15,7 +15,7 @@ pnpm run i18n:sync   # or: ai-i18n-tools sync
 cd docs-site && pnpm build   # or: cd examples/docusaurus-docs && pnpm build
 ```
 
-當您同時翻譯文件頁面和網站外觀（導覽列、頁尾、主題字串）時，請啟用 `features.translateDocs` 並設定 `docs[].docusaurusCatalogDir`。當您升級 `@docusaurus/*` 或變更導覽列/頁尾/主題標籤時，請在您的 Docusaurus 專案中執行 `docusaurus write-translations` — 然後重新執行 `translate-docs` 或 `sync`，以便將 Shell JSON 翻譯成每個地區設定資料夾。
+當您翻譯文件頁面和網站外殼字串（導覽列、頁尾、主題字串）時，請啟用 `features.translateDocs` 並設定 `docs[].docusaurusCatalogDir`。在您的 Docusaurus 專案中執行 `docusaurus write-translations`，當您升級 `@docusaurus/*` 或更改導覽列/頁尾/主題標籤時 — 然後重新執行 `translate-docs` 或 `sync`，以便將外殼 JSON 翻譯到每個語系資料夾中。
 
 <a id="page-layout"></a>
 ## 頁面版面

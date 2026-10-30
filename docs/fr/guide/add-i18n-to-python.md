@@ -7,21 +7,21 @@ Le moyen le plus rapide est de donner à un agent de codage l'invite de cette pa
 
 Vous utilisez Django, les catalogues Flask-Babel ou GNU gettext, et vous souhaitez conserver ces appels ? Utilisez plutôt [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext). Il conserve `gettext` et écrit les fichiers `.po` et `.mo`, sans utilitaire. Vous ne savez pas lequel s'applique ? Voir [Pas votre cas ?](#not-your-case) à la fin.
 
-Le processus :
+Le flux :
 
-1. [Installer l'interface de ligne de commande (CLI) et choisir un fournisseur](#install-and-choose-a-provider).
+1. [Installer la CLI et choisir un fournisseur](#install-and-choose-a-provider).
 2. [Initialiser le projet](#initialise-the-project) avec `init`.
 3. [Exécuter l'invite de l'agent](#run-the-agent-prompt).
 4. [Examiner le résultat](#review-the-result).
 5. [Choisir les modèles et traduire](#choose-models-and-translate), puis vérifier une langue.
 6. [Maintenir la traduction](#keep-it-translated).
 
-Vous préférez effectuer les modifications vous-même, ou vous voulez savoir ce que fait l'invite ? [Faire manuellement](#do-it-by-hand) décrit les mêmes étapes une par une.
+Vous préférez effectuer les modifications vous-même, ou vous voulez savoir ce que fait l'invite ? [Faites-le manuellement](#do-it-by-hand) parcourt les mêmes étapes une par une.
 
 <a id="install-and-choose-a-provider"></a>
 ## Installer et choisir un fournisseur
 
-Vous effectuez cette partie, pas l'agent. L'installateur modifie votre machine, et la clé API est un secret qui doit rester dans votre shell, pas dans une invite.
+Vous faites cette partie, pas l'agent. L'installateur modifie votre machine, et la clé API est un secret qui doit rester dans votre shell, pas dans une invite.
 
 Utilisez le package npm lorsque la machine dispose déjà de Node.js `>=22.16.0` ([Installation](/fr/guide/installation)). Pour un projet Python, installez l'exécutable autonome (sans Node.js).
 
@@ -51,7 +51,7 @@ Ensuite, choisissez un fournisseur et définissez sa clé API dans le shell qui 
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollama ne nécessite pas de clé. Autres préréglages : [Fournisseurs intégrés](/fr/guide/providers-and-models#built-in-providers). Notez le nom du fournisseur, car vous le passerez à `init` à l'étape suivante. L'agent n'a jamais besoin de la clé : il exécute uniquement des commandes qui n'effectuent aucun appel de modèle. Vous utiliserez la clé plus tard, lorsque vous [traduirez](#choose-models-and-translate).
+Ollama n'a pas besoin de clé. Autres préréglages : [Fournisseurs intégrés](/fr/guide/providers-and-models#built-in-providers). Notez le nom du fournisseur, car vous le passerez à `init` à l'étape suivante. L'agent n'a jamais besoin de la clé : il exécute uniquement des commandes qui n'effectuent aucun appel de modèle. Vous utiliserez la clé plus tard, lorsque vous [traduirez](#choose-models-and-translate).
 
 <a id="initialise-the-project"></a>
 ## Initialiser le projet
@@ -247,9 +247,9 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 ````
 
 <a id="review-the-result"></a>
-## Examiner le résultat
+## Réviser le résultat
 
-L'agent termine par un rapport. Vérifiez-le avant de traduire :
+L'agent termine avec un rapport. Vérifiez-le avant de traduire :
 
 - Le diff. Le texte enveloppé doit être identique à avant, sans reformatage non lié. `git diff --stat` indique l'ampleur des changements.
 - Les chaînes ignorées et les cas ambigus dans le rapport : les pluriels laissés comme une seule chaîne, un mot utilisé comme valeur stockée et comme légende, et les phrases construites à partir de morceaux traduits. Décidez-les manuellement.
@@ -262,7 +262,7 @@ Les chaînes que l'agent a manquées apparaissent plus tard comme du texte qui r
 <a id="choose-models-and-translate"></a>
 ## Choisir les modèles et traduire
 
-Vous exécutez cette partie. Elle utilise votre clé API et dépense de l'argent sur votre compte.
+C'est vous qui exécutez cette partie. Elle utilise votre clé API et dépense de l'argent sur votre compte.
 
 La liste des modèles fournie par `init` constitue un point de départ. Classez les modèles de chat du fournisseur actif et, une fois la sélection finale validée, enregistrez-la dans `translationModels` :
 
@@ -297,7 +297,7 @@ Réexécutez `ai-i18n-tools sync` (ou `extract` puis `translate-ui`) après avoi
 Pour traduire `README.md` dans la même exécution, générez avec `--with-readme` (ou ajoutez le bloc à une configuration existante). Consultez [Ajouter l'i18n à vos documents README et Markdown](/fr/guide/add-i18n-to-readme).
 
 <a id="do-it-by-hand"></a>
-## Faites-le manuellement
+## Faire manuellement
 
 Suivez ces étapes si vous préférez effectuer les modifications vous-même, ou si vous voulez savoir ce que fait l'invite. Chaque étape correspond à une partie de l'invite. Vous [installez toujours la CLI](#install-and-choose-a-provider), [initialisez le projet](#initialise-the-project) et [traduisez](#choose-models-and-translate) à la fin.
 

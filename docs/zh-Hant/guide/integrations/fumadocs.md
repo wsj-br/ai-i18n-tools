@@ -98,7 +98,7 @@ Fumadocs 使用 JSON `meta.json` 檔案來定義側邊欄結構和標題。當 `
 <a id="ui-catalog"></a>
 ## UI 目錄
 
-Fumadocs 版面配置介面元素 (搜尋預留位置、地區設定顯示名稱，以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆寫) 不會從 Markdown 中提取。設定 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 從 `sourcePath` 啟動來源地區設定目錄並翻譯每個地區設定的 JSON：
+Fumadocs 佈局介面字串（搜尋佔位符、地區設定顯示名稱，以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆寫）未從 Markdown 中提取。請設定 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 從 `sourcePath` 啟動來源地區設定目錄，並翻譯每個地區設定的 JSON：
 
 ```json
 {
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-started`、`/pt/docs/getting-started`）。**頁內連結應保持語言中立**（`/docs/getting-started`），以便自動套用當前語言前綴。
 
-啟用內建正規化器，以便 `translate-docs` 自動修正每個翻譯檔案中的連結：
+啟用內建的標準化工具，讓 `translate-docs` 自動修正每個翻譯檔案中的連結：
 
 ```json
 "docsOutput": {

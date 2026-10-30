@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-ソースロケールは元のURLを保持します。ベアな`data-i18n-locale-src`の場合、絶対URL、プロトコル相対URL、`data:` URL、および`#`フラグメントはそのまま残され、クエリ文字列とフラグメントはそのまま維持されます。値を持つマーカーは、ソース以外のすべてのロケールに対してそのテンプレートを使用し、`{locale}`のみを置換します。ローカライズされた画像が404エラーになった場合、ランタイムは元の`src`を一度復元します。`chart_pt-BR.png`はご自身で提供してください。スクリプトはそれを作成しません。
+ソースロケールは元のURLを保持します。ベア`data-i18n-locale-src`の場合、絶対URL、プロトコル相対URL、`data:` URL、および`#`フラグメントは変更されません。クエリ文字列とフラグメントもそのまま維持されます。値を持つマーカーは、ソース以外のすべてのロケールでそのテンプレートを使用し、`{locale}`のみを置き換えます。ローカライズされた画像が404エラーを返した場合、ランタイムは元の`src`を一度だけ復元します。`chart_pt-BR.png`はご自身で提供してください。スクリプトはそれを作成しません。
 
 `data-i18n-locale-href` はこのカタログモデル用です。`about.pt-BR.html` へのリンクは [HTML ページ](/ja/guide/documents/html-pages) パイプラインに属します。
 
