@@ -1,8 +1,8 @@
-<a id="migrating-from-intlayer-to-source-strings-calls"></a>
-# Migrating from Intlayer to source-strings calls
+<a id="migrating-from-intlayer-to-source-string-calls"></a>
+# Migrating from Intlayer to source-string calls
 
 
-[Intlayer](https://intlayer.org/) is ideal for applications that manage translations via typed content dictionaries or translation management systems. `ai-i18n-tools` targets a different workflow: code that uses source-string calls such as `t('English source')`. The string inside `t()` is written in `sourceLocale`, which can be any language. English in these examples is only a sample. By keeping that source string directly in the code, this approach simplifies maintenance and reduces complexity. When this model fits your needs, `migrate-intlayer` imports your existing dictionaries and automatically rewrites compatible call sites. It leaves remaining sites unchanged and generates a report with specific replacement instructions, allowing you to complete the migration in stages or drop the report into a AI coding agent to complete the migration for you.
+[Intlayer](https://intlayer.org/) is ideal for applications that manage translations via typed content dictionaries or translation management systems. `ai-i18n-tools` targets a different workflow: code that uses source-string calls such as `t('English source')`. The string inside `t()` is written in `sourceLocale`, which can be any language. English in these examples is only a sample. By keeping that source string directly in the code, this approach simplifies maintenance and reduces complexity. When this model fits your needs, `migrate-intlayer` imports your existing dictionaries and automatically rewrites compatible call sites. It leaves remaining sites unchanged and generates a report with specific replacement instructions, allowing you to complete the migration in stages or give the report to an AI coding agent to complete the migration for you.
 
 
 Already using i18next JSON translation files? You do not need this migration command; use the [JSON pipeline](/guide/json#i18next-namespace-files) instead.

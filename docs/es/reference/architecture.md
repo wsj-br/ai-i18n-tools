@@ -288,7 +288,7 @@ Canalización `loadI18nConfigFromFile(configPath, cwd)`:
 
 `Logger` admite niveles `debug`, `info`, `warn`, `error` con salida de colores ANSI. El modo detallado (`-v`) habilita `debug`. Cuando se establece `logFilePath`, las líneas de registro también se escriben en ese archivo.
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### Autolocalización (interfaz de usuario de la herramienta)
 
 La herramienta localiza su propia interfaz de usuario — ayuda de CLI, mensajes de registro/resumen/error de alto tráfico y el panel de traducción — por separado del contenido que traduce para usted.

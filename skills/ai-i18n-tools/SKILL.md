@@ -1,6 +1,6 @@
 ---
 name: ai-i18n-tools
-description: Installs and maintains ai-i18n-tools internationalization in consumer projects. Use when adding languages, configuring ai-i18n-tools.config.json, wiring JavaScript or Python UI translation, translating documentation, JSON bundles or SVG assets, or repairing localized links and outputs.
+description: Installs and maintains ai-i18n-tools internationalization in consumer projects. Use when adding languages, configuring ai-i18n-tools.config.json, or translating JavaScript, TypeScript, Python, Django, gettext, VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro websites, plain HTML, README or Markdown, JSON bundles, or SVG assets. For migrating off Intlayer or translating Intlayer dictionaries in place, use the ai-i18n-migrate-intlayer or ai-i18n-translate-intlayer skill.
 ---
 
 # ai-i18n-tools for consumer projects
@@ -17,8 +17,26 @@ Read these files relative to this skill directory, not the project working direc
 - [Documentation](references/documentation.md): README, docs frameworks, static pages, framework shell catalogs.
 - [Assets, links, and SVG](references/assets-and-links.md): localized media, SVG labels, anchors, broken translated links.
 - [JSON](references/json.md): nested source-locale JSON, i18next namespaces, key policies and output layouts.
+- [Providers and models](references/providers.md): provider selection, model fallback chains, credentials, cost.
+- [Glossary](references/glossary.md): terminology consistency, user CSV, forced terms, context files.
 
 Mixed projects need multiple references. Do not load every reference by default.
+Read [providers and models](references/providers.md) when choosing or changing a provider/model, and [glossary](references/glossary.md) when terminology consistency matters.
+
+## Workflow commands
+
+Installed workflow skills are explicit slash commands. Follow this skill first, then only the invoked workflow. A prose request that names one workflow reads the same reference:
+
+| Workflow skill | Read |
+| --- | --- |
+| `ai-i18n-js` | `references/javascript.md` |
+| `ai-i18n-python` | `references/python.md`, generated-helper sections |
+| `ai-i18n-django` | `references/python.md`, gettext, Django, and Flask-Babel sections |
+| `ai-i18n-vitepress`, `ai-i18n-starlight`, `ai-i18n-docusaurus`, `ai-i18n-nextra`, `ai-i18n-fumadocs`, `ai-i18n-readme`, `ai-i18n-plain-html-docs` | `references/documentation.md`, that workflow's section |
+| `ai-i18n-plain-html` | `references/javascript.md`, HTML marker section |
+| `ai-i18n-astro-website` | `references/javascript.md` and `references/documentation.md` |
+
+Migrating an app off Intlayer follows `ai-i18n-migrate-intlayer`: dry-run `ai-i18n-tools migrate-intlayer`, then `--write` only after reviewing the report. `sync` is not the migration command. Filling Intlayer dictionaries while Intlayer stays at runtime follows `ai-i18n-translate-intlayer`: dry-run `ai-i18n-tools translate-intlayer <paths> --dry-run`, then run it without `--dry-run` when authorized. Do not rewrite those call sites to `t()`. JSON bundles and SVG labels stay on the references above when the request is for those pipelines.
 
 ## 1. Inspect before changing
 
@@ -45,7 +63,7 @@ ai-i18n-tools init -P <provider> -t <template>
 
 `init` overwrites the selected configuration, including a custom output target. Do not run it over existing configuration; edit that configuration instead. Inspect scaffolded paths and model choices before syncing.
 
-Configure `providers.<name>` and select `provider` (optional with one configured provider).
+Configure `providers.<name>` and select `provider` (optional with one configured provider); see [providers and models](references/providers.md) for fallback chains, per-locale models, and cost.
 Use the provider's documented API-key environment variable; never paste secrets into config, logs, or commits.
 The CLI loads `.env` from the working directory without overriding existing environment variables.
 Keep source content transmission and provider costs within the user's authorization.
@@ -61,6 +79,7 @@ One project may configure all four. Feature flags are `translateUIStrings`, `tra
 Align config `sourceLocale` with the actual runtime source locale; no particular exported constant name is required.
 Keep `targetLocales`, runtime locale loaders, language manifests, and framework routes aligned.
 Use literal messages; interpolate values after lookup. Do not expect extraction to discover unmarked prose or arbitrary dynamic keys.
+For consistent product names, domain terms, and do-not-translate words across pipelines, curate the glossary; see [glossary](references/glossary.md).
 
 ### Artifact contract
 
@@ -95,6 +114,7 @@ Do not substitute `translate-ui` and assume it extracts first; individual comman
 
 Use installed `--help` for version-specific flags. Online documentation may describe a newer release:
 [installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation),
+[coding-agent skill](https://wsj-br.github.io/ai-i18n-tools/guide/coding-agent-skill),
 [configuration](https://wsj-br.github.io/ai-i18n-tools/reference/configuration),
 [providers](https://wsj-br.github.io/ai-i18n-tools/guide/providers-and-models),
 [CLI reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/).

@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Python 애플리케이션용 선택기입니다. 추출, 카탈로그, 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱에 대한 단계별 안내는 [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)이며, [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-i18n-py)와 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext)가 포함됩니다.
+Python 애플리케이션용 선택기입니다. 추출, 카탈로그, 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱에 대한 단계별 안내는 [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)이며, [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#run-the-agent-prompt)와 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext)가 포함됩니다.
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생성된 `i18n.py` 헬퍼(Python 3.10 이상)를 호출합니다. Django는 Django의 gettext를 유지합니다. 저장소에는 `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` 및 `examples/python-gettext`라는 4개의 실행 가능한 복사본이 포함되어 있습니다. Pyramid, Django, Tkinter, Qt 및 PyWebView에는 별도의 예제 디렉터리가 없습니다.
 

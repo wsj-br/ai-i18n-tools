@@ -517,8 +517,6 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion`（選用）
 

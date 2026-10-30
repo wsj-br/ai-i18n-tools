@@ -51,6 +51,8 @@ Wire Docusaurus [internationalization](https://docusaurus.io/docs/i18n/introduct
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
 
+First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The checklist below is the same work by hand.
+
 - Add the `i18n` block in `docusaurus.config.js`: `defaultLocale`, `locales`, and `localeConfigs[locale].path` when the URL path should differ from the locale code.
 - Run `docusaurus write-translations` so `i18n/<defaultLocale>/` exists, then point `docusaurusCatalogDir` at that folder and run `sync`.
 - Custom React in `src/pages` and `src/components` is not markdown. Mark user-facing copy with `<Translate>` or `translate()` from `@docusaurus/Translate` so `write-translations` can collect it into `code.json`. The message has to be a static string. `write-translations` writes `i18n/<locale>/code.json`; with `docusaurusCatalogDir` set, `translate-docs` translates that JSON with the rest of the shell catalog. ai-i18n-tools does not scan those JSX trees for `t()`.

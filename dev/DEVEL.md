@@ -55,6 +55,7 @@ Local development setup, examples, testing, and publishing for [ai-i18n-tools](h
 | Consumer integration     | `[docs/ai-i18n-tools-context.md](../docs/ai-i18n-tools-context.md)` | Integrating the published npm package into another project                    |
 | Example walkthroughs     | `[examples/README.md](../examples/README.md)`                       | Choosing and running a specific example project                               |
 | Reference docs           | `[docs/reference/](../docs/reference/)`                             | CLI, config schema, programmatic API, architecture                            |
+| Skill listings           | `[dev/skill-listings.md](skill-listings.md)`                        | Publishing the consumer skill to skills.sh, Cursor, Claude Code, Copilot, and Codex |
 
 
 
@@ -482,6 +483,25 @@ GitHub builds the **remote** ref — push your branch before running if your cha
 
 After changing English content under `docs/` (including `docs/index.md`), run `pnpm i18n:sync` so locale trees and theme JSON stay in sync before you build or release. `README.md` and `docs/index.md` are independent — update and translate each separately. After adding or removing headings in `README.md` or `dev/*.md`, run `pnpm update-tocs` so the generated TOC stays accurate.
 
+### Check the links in the docs
+
+Run the vitepress server:
+
+```bash
+pnpm docs:dev
+
+```
+
+Check the links in the docs:
+
+```bash
+LOCALES='de|es|fr|hi|ja|ko|pt-BR|zh-Hans|zh-Hant'
+npx linkinator http://localhost:4173/ai-i18n-tools/ -r   --skip "/ai-i18n-tools/($LOCALES)/" 2>&1 | tee linkcheck.txt 
+```
+
+
+Then open the browser and check the links in the docs.
+
 ### Pre-publish checklist (docs)
 
 - [ ] `pnpm i18n:sync` completed successfully (if English docs under `docs/` changed)
@@ -513,7 +533,7 @@ If the repository is renamed or you move to a custom domain, update `base`, `hea
 | Theme/nav strings from `docs/.vitepress/i18n/theme.*.json` | `translated-docs/` flat README translations (linked from the site, stored in the Git repo only) |
 
 
-Consumer integration guidance shipped on npm includes `docs/ai-i18n-tools-context.md` and the complete `skills/ai-i18n-tools/` directory — see [What gets published](#what-gets-published) under npm publishing below.
+Consumer integration guidance shipped on npm includes `docs/ai-i18n-tools-context.md` and the complete `skills/` tree — see [What gets published](#what-gets-published) under npm publishing below.
 
 ---
 
@@ -549,7 +569,7 @@ pnpm pre-release
 
 `pre-release` (`scripts/pre-release.mjs`) runs, in order:
 
-1. Sync every example `"ai-i18n-tools"` range to `^<root version>` (`scripts/sync-example-ai-i18n-tools-version.mjs`)
+1. Sync every example `"ai-i18n-tools"` range to `^<root version>`, and set `version` in `plugin.json` and `.claude-plugin/` to that same version (`scripts/sync-example-ai-i18n-tools-version.mjs`)
 2. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
 3. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
 4. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
@@ -580,7 +600,7 @@ pnpm version minor   # 1.0.0 → 1.1.0  (new features, backward-compatible)
 pnpm version major   # 1.0.0 → 2.0.0  (breaking changes)
 ```
 
-`pnpm version` runs `scripts/sync-example-ai-i18n-tools-version.mjs`, which rewrites every example `"ai-i18n-tools"` range to `^<new version>`. The workspace override (`ai-i18n-tools: workspace:*`) still links the monorepo to the local checkout, so the unpublished caret range is safe until npm publish. `pnpm pre-release` runs the same sync as its first step, so a hand-edited root version still gets matching example pins.
+`pnpm version` runs `scripts/sync-example-ai-i18n-tools-version.mjs`, which rewrites every example `"ai-i18n-tools"` range to `^<new version>` and sets `version` in `plugin.json`, `.claude-plugin/plugin.json`, and `.claude-plugin/marketplace.json` to the new version. The workspace override (`ai-i18n-tools: workspace:*`) still links the monorepo to the local checkout, so the unpublished caret range is safe until npm publish. `pnpm pre-release` runs the same sync as its first step, so a hand-edited root version still gets matching example pins and manifest versions. Listing steps for those manifests are in [skill listings](skill-listings.md).
 
 If you edit the `package.json` version by hand instead of `pnpm version`, you can still run `node scripts/sync-example-ai-i18n-tools-version.mjs` yourself; `pnpm pre-release` will do it if you skip that.
 
@@ -627,6 +647,8 @@ The script creates an annotated tag `v<version>` at **HEAD**, pushes it to `orig
 
 That GitHub release triggers CI, which runs lint, format check, build, and tests; if all checks pass, it publishes the package to npm. Check the **Actions** tab to verify.
 
+The Release binaries workflow then uploads the platform executables, `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip`, and `ai-i18n-tools-skill.zip`. The skill zip contains every directory under `skills/`, with each skill folder at the top level. It is a GitHub Release asset. It is not part of the npm tarball or the standalone executable. Releases published before that zip was added do not have the asset. The first zip contains only `ai-i18n-tools/`.
+
 **Manual alternative:** you can still create a release from the GitHub **Releases** UI if needed; prefer the script so the tag, title, and notes stay aligned with `package.json` and `release-notes/RELEASE_NOTES_<version>.md`.
 
 ### npm package dry run (optional)
@@ -637,7 +659,7 @@ Inspect what will be included in the tarball:
 pnpm publish --dry-run
 ```
 
-Verify that the output includes `bin/`, `dist/`, `data/`, `docs/ai-i18n-tools-context.md`, `skills/ai-i18n-tools/` (including all five references), `README.md`, and `LICENSE` — and does **not** include `translated-docs/`, the full `docs/` tree, `src/`, `tests/`, or `examples/`.
+Verify that the output includes `bin/`, `dist/`, `data/`, `docs/ai-i18n-tools-context.md`, `skills/` (the shared skill, its five references, and every workflow command), `README.md`, and `LICENSE` — and does **not** include `translated-docs/`, the full `docs/` tree, `src/`, `tests/`, or `examples/`.
 
 ### What gets published
 
@@ -651,6 +673,7 @@ Controlled by the `files` field in `package.json`:
 | `data/`                         | Bundled data (`ui-languages-complete.json` for `generate-ui-languages`)          |
 | `README.md`                     | Main English README                                                              |
 | `docs/ai-i18n-tools-context.md` | Consumer integration guide (shipped on npm)                                      |
+| `skills/`                       | Shared consumer skill, its references, and one slash command per workflow       |
 | `LICENSE`                       | MIT licence                                                                      |
 
 

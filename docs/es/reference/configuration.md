@@ -517,8 +517,6 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (opcional)
 

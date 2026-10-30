@@ -25,7 +25,7 @@ Click **Apply** after changing filters. **Clear** resets all filter fields.
 1. Click the edit icon on a row.
 2. Change the translated text in the modal and save.
 
-If the new text fails the locale writing-system check (for example romanized Hindi for `hi`), the dashboard warns and asks you to confirm. Confirming stores the text anyway. A later `sync --check-cache` still re-validates that row and can retranslate it.
+If the new text fails the locale writing-system check (for example romanised Hindi for `hi`), the dashboard warns and asks you to confirm. Confirming stores the text anyway. A later `sync --check-cache` still re-validates that row and can retranslate it.
 
 The cache stores model `user-edited` for that row. Run `sync --force-update` or `translate-docs --force-update` so on-disk markdown outputs match the cache.
 

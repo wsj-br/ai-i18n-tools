@@ -30,8 +30,6 @@
 | इंटलेयर डिक्शनरी (इंटलेयर से हटें) | [इंटलेयर से माइग्रेट करना](/hi/guide/migrating-from-intlayer) |
 | इंटलेयर डिक्शनरी (इंटलेयर रखें, वहीं अनुवाद करें) | [इंटलेयर का वहीं अनुवाद करना](/hi/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## यह कैसे काम करता है
 

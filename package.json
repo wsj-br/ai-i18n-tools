@@ -29,12 +29,13 @@
     "data/",
     "README.md",
     "docs/ai-i18n-tools-context.md",
-    "skills/ai-i18n-tools/",
+    "skills/",
     "LICENSE"
   ],
   "scripts": {
     "prepare": "node scripts/ensure-built.mjs",
     "sync-version": "node scripts/sync-example-ai-i18n-tools-version.mjs",
+    "version": "node scripts/sync-example-ai-i18n-tools-version.mjs",
     "build": "node scripts/ensure-src-ui-languages-json.mjs && node scripts/write-build-info.mjs && echo '1/6' && tsc && echo '2/6' && node scripts/chmod-cli-bin.mjs && echo '3/6' && node scripts/copy-runtime-ui-languages-json.mjs && echo '4/6' && node scripts/copy-dashboard-app.mjs && echo '5/6' && node scripts/copy-html-runtime.mjs && echo '6/6' && node scripts/copy-i18n-locales.mjs && echo 'Build completed successfully\n'",
     "build:binary": "node scripts/build-sea.mjs",
     "dev": "node scripts/ensure-src-ui-languages-json.mjs && node scripts/copy-runtime-ui-languages-json.mjs && node scripts/copy-dashboard-app.mjs && node scripts/copy-html-runtime.mjs && node scripts/copy-i18n-locales.mjs && tsc --watch",

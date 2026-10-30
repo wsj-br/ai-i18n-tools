@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossary
 
-The glossary ensures consistent product terminology across translations. Users can define a term's translation in one or multiple languages, allowing the AI model to use this predefined translation instead of guessing the best one. It can also be used to keep certain terms, such as product names, unchanged during translation into other languages.
+The glossary ensures consistent product terminology across translations. Users can define a term's translation in one or multiple languages, allowing the AI model to use this predefined translation instead of choosing one itself. It can also be used to keep certain terms, such as product names, unchanged during translation into other languages.
 
 
 Two kinds of guidance are sent to the model:

@@ -48,7 +48,7 @@ Wire Nextra [internationalization](https://nextra.site/docs/guide/i18n): set `i1
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
 
-An English-only Nextra 4 site needs a locale folder, a route param, and Next.js i18n config before `translate-docs` has anywhere to write. The [dictionary prompt](#agent-prompt-dictionary) does this in one pass. Checklist:
+An English-only Nextra 4 site needs a locale folder, a route param, and Next.js i18n config before `translate-docs` has anywhere to write. First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The [dictionary prompt](#agent-prompt-dictionary-and-routes) is the detailed follow-up for the same routes and dictionary. Checklist:
 
 - Move MDX to `content/en/` (English is a locale folder, not the content root).
 - `i18n.locales` and `defaultLocale` in `next.config`.
@@ -60,7 +60,7 @@ An English-only Nextra 4 site needs a locale folder, a route param, and Next.js 
 <a id="theme-strings"></a>
 ## Theme strings
 
-Nextra theme chrome (`editLink`, search placeholder, footer, and so on) is not extracted from markdown. Author English strings in a TypeScript dictionary module (for example `app/_dictionaries/en.ts`) and translate it inside **`translate-docs`**:
+Nextra theme chrome (`editLink`, search placeholder, footer, and so on) is not extracted from markdown. Author English strings in a TypeScript dictionary module (for example `app/_dictionaries/en.ts`) and translate it inside `translate-docs`:
 
 ```json
 {
@@ -88,7 +88,7 @@ The tool writes `app/_dictionaries/{locale}.ts` (default template: `{dir}/{local
 <a id="sidebar-labels-_metats"></a>
 ## Sidebar labels (`_meta.ts`)
 
-Nextra 3+ uses TypeScript `_meta.ts` / `_meta.tsx` files for sidebar structure and titles. When `docsOutput.style` is `"nextra"`, **`translate-docs`** automatically collects `_meta.ts`, `_meta.tsx`, and `_meta.js` under `docsRoot`, translates string literals in the `export default { … }` meta map, and writes mirrored files under `content/{locale}/**`.
+Nextra 3+ uses TypeScript `_meta.ts` / `_meta.tsx` files for sidebar structure and titles. When `docsOutput.style` is `"nextra"`, `translate-docs` automatically collects `_meta.ts`, `_meta.tsx`, and `_meta.js` under `docsRoot`, translates string literals in the `export default { … }` meta map, and writes mirrored files under `content/{locale}/**`.
 
 **Recommended pattern:** keep English literals inline in `content/en/**/_meta.ts` (same as [swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site)):
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra serves locale-prefixed routes via Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`). **In-page links should stay locale-neutral** (`/guide/getting-started`) so Next.js can prefix the active locale automatically.
 
-Enable the built-in normalizer so `translate-docs` fixes links in every translated file automatically:
+Enable the built-in normaliser so `translate-docs` fixes links in every translated file automatically:
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteNextraLinks` defaults to enabled when `style` is `"nextra"`.
 
-| Author in the source locale | After normalizer |
+| Author in the source locale | After normaliser |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
 | `[Guide](../guide/getting-started.mdx)` | `[Guide](/guide/getting-started)` |
@@ -305,7 +305,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 **Authoring rules**
 
-- Cross-page doc links: use **locale-neutral site routes** (`/guide/…`) in English MDX, or `content/en/…` / relative `.mdx` paths and let the normalizer rewrite them during `sync`.
+- Cross-page doc links: use **locale-neutral site routes** (`/guide/…`) in English MDX, or `content/en/…` / relative `.mdx` paths and let the normaliser rewrite them during `sync`.
 - Repo files outside the content tree: use **full URLs**.
 - Do **not** hand-edit links in `content/<locale>/` — regenerate with `sync` / `translate-docs`.
 
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**Site locale codes vs `sourceLocale`:** Nextra and Next.js use short route codes (`en`, `pt-BR`, `zh-Hans`) in `next.config`, `content/{locale}/`, and the `NEXT_LOCALE` cookie. `sourceLocale` in `ai-i18n-tools.config.json` can be a BCP-47 tag such as `en-GB` for translation quality — that tag is **not** a site route. If the browser cookie or `Accept-Language` resolves to a tag outside `i18n.locales` (for example `en-GB` when only `en` is configured), Nextra’s stock proxy can redirect in a loop. The [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) demo wraps `nextra/locales` to reset invalid cookies and paths to the default site locale before delegating.
+**Site locale codes vs `sourceLocale`:** Nextra and Next.js use short route codes (`en`, `pt-BR`, `zh-Hans`) in `next.config`, `content/{locale}/`, and the `NEXT_LOCALE` cookie. `sourceLocale` in `ai-i18n-tools.config.json` can be a BCP-47 tag such as `en-GB` for translation quality — that tag is **not** a site route. If the browser cookie or `Accept-Language` resolves to a tag outside `i18n.locales` (for example `en-GB` when only `en` is configured), Nextra's stock proxy can redirect in a loop. The [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) demo wraps `nextra/locales` to reset invalid cookies and paths to the default site locale before delegating.
 
 This does not work with `output: 'export'` static exports. See [Nextra i18n docs](https://nextra.site/docs/guide/i18n).
 

@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
 
-프레임워크별 init 템플릿 및 에이전트 프롬프트가 포함된 선택기 테이블은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#what-do-you-have)에 있습니다. Python 프레임워크: [Python](/ko/guide/integrations/python).
+프레임워크별 init 템플릿 및 에이전트 프롬프트가 포함된 선택기 테이블은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#initialise-the-project)에 있습니다. Python 프레임워크: [Python](/ko/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## 공유 개념

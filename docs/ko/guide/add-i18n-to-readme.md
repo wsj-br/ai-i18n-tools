@@ -5,7 +5,7 @@
 
 이 도구는 `README.md`을 그대로 두고 언어당 하나의 로케일 파일을 작성합니다(예: `translated-docs/README.de.md`). README 내의 언어 행이 해당 파일들을 서로 연결합니다.
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 어떤 설정에 해당하나요?
 
 | 가지고 있는 것 | 스캐폴드 | 그 다음 |
@@ -17,23 +17,23 @@
 
 `--with-readme`은 `ui-markdown` 및 `docs-markdown`에서 아무 작업도 수행하지 않습니다. 해당 템플릿에는 이미 README 블록이 포함되어 있기 때문입니다.
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## 얻게 되는 것
 
 - `README.md`은 원본 파일로 유지됩니다. 호스트는 이를 저장소의 첫 페이지로 계속 렌더링합니다.
 - 각 대상 로케일은 `translated-docs/README.de.md`과 같은 형제 파일입니다.
 - 원본 및 모든 번역본의 언어 행은 모든 로케일을 나열하며, 독자가 보고 있는 파일에서 작동하는 링크를 포함합니다.
 
-해당 파일들도 번역되어야 하는 경우 `CONTRIBUTING.md`, `CHANGELOG.md` 또는 `docs/` 폴더를 동일한 블록에 추가합니다. [README 이상](#more-than-the-readme)을 참조하세요.
+해당 파일들도 번역되어야 하는 경우 `CONTRIBUTING.md`, `CHANGELOG.md` 또는 `docs/` 폴더를 동일한 블록에 추가합니다. [README 이상](#step-3-more-than-the-readme)을 참조하세요.
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## 설치
 
 CLI를 설치하고([설치](/ko/guide/installation)) 공급자용 API 키를 설정합니다([공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)). Ollama는 키가 필요 없습니다.
 
 `package.json`이 있는 저장소는 패키지를 개발 종속성으로 설치합니다. Node.js 프로젝트가 없는 저장소는 `npx ai-i18n-tools`을 실행하거나 [독립 실행형 실행 파일](/ko/guide/installation#standalone-executables)을 사용할 수 있습니다.
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## 스캐폴드
 
 JS/TS 앱 및 README (하나의 명령; `ui-markdown`은 기본 템플릿입니다):
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init`은 `ai-i18n-tools.config.json`만 작성합니다. `README.md`는 편집하지 않습니다. 구성에 README 블록이 포함된 경우, 붙여넣을 마커 라인을 출력하고 `README.md`이 누락된 경우 경고합니다. 기존 구성은 그대로 둡니다. [이미 가지고 있는 구성에 블록 추가](#add-the-block-to-a-config-you-already-have)에서와 같이 블록을 수동으로 추가하세요.
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## 구성
 
 네 가지 주요 키가 중요합니다:
@@ -140,12 +140,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### 기존 구성에 블록 추가
 
 하이브리드 예시에서 `docs` 객체를 추가하고 `features.translateDocs`을 `true`로 설정합니다. 구성에 이미 `docs` 배열(예: VitePress 또는 Docusaurus 사이트)이 있는 경우, README 객체를 두 번째 항목으로 추가합니다. `sync`는 모든 블록을 실행합니다. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)은 다음과 같이 합니다: 문서 사이트용 블록 하나, `README.md`용 플랫 블록 하나.
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## 언어 목록 추가
 
 독자들이 다른 언어를 볼 수 있도록 이 줄을 `README.md`에 넣으세요. 그 위에 있는 짧은 레이블은 일반적인 산문이며 번역될 것입니다.
@@ -158,7 +158,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 이 줄은 비어 있을 수 있습니다. `translate-docs`는 시작 마커부터 끝 마커까지의 모든 것을 로케일당 하나의 링크로 대체합니다. 펜스 코드 블록 내부의 마커는 무시되므로, 동일한 파일에 있는 구성 샘플은 일치하지 않습니다. 자세한 내용: [언어 전환기](/ko/guide/documents/language-switcher).
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## 번역
 
 ```bash
@@ -172,14 +172,14 @@ ai-i18n-tools status
 
 `translated-docs/`를 커밋하고 호스트에서 번역된 README를 엽니다. 원본 README와 `translated-docs/README.de.md` 사이의 상대 링크는 각 파일에 대해 다시 작성됩니다.
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## 하이브리드 팁
 
 - `docs[].targetLocales`를 사용하여 README를 앱보다 적은 수의 언어로 번역하세요. [문서에 대한 적은 로케일](/ko/guide/combining-pipelines#fewer-locales-for-documents)을 참조하세요.
 - 제품 용어를 `glossary.userGlossary`에 넣으세요. 동일한 CSV가 UI 문자열과 README에 사용됩니다.
 - `ai-i18n-tools sync --no-docs` 또는 `ai-i18n-tools sync --no-ui`를 사용하여 한쪽만 실행하세요.
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## README 이상
 
 `contentPaths`에 경로를 추가하세요. `flatPreserveRelativeDir`은 폴더를 유지하므로, `docs/guide.md`는 다른 `guide.md`와 충돌하는 대신 `translated-docs/docs/guide.de.md`가 됩니다.
@@ -192,7 +192,7 @@ ai-i18n-tools status
 
 언어별로 다른 스크린샷: [이미지 및 스크린샷](/ko/guide/images-and-screenshots/).
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## 호스트의 링크
 
 저장소의 다른 파일로 연결되는 링크는 로케일 파일로 다시 작성됩니다. 게시된 문서 사이트로 연결되는 링크는 그렇지 않습니다. 이 저장소는 `regexAdjustments`를 사용하여 문서 사이트 URL에 로케일을 접두사로 붙입니다.
@@ -208,7 +208,7 @@ ai-i18n-tools status
 
 플랫 링크 재작성기가 먼저 실행된 다음, 이러한 교체가 이루어집니다. [링크 재작성](/ko/guide/documents/link-rewriting)을 참조하세요.
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## 번역 유지
 
 소스 README 또는 앱 문자열이 변경되면 `sync`를 다시 실행하세요. 캐시는 새롭거나 변경된 텍스트만 모델로 보냅니다. `translated-docs/` 아래의 업데이트된 파일을 커밋하세요.
@@ -239,12 +239,12 @@ jobs:
 
 구성한 공급자의 환경 변수를 사용하세요. Ollama는 호스팅된 러너에 설치하지 않으면 적용되지 않습니다.
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## 자동 번역임을 알리기
 
 AI 번역은 틀릴 수 있습니다. [이 저장소의 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)에 있는 것과 같이 README 하단에 짧은 메모를 추가하여 독자들에게 다른 언어는 기계 번역되었으며 의존하기 전에 확인해야 한다고 알립니다.
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## 해당하지 않으시나요?
 
 | 가지고 있는 것 | 읽어볼 것 |
@@ -254,7 +254,7 @@ AI 번역은 틀릴 수 있습니다. [이 저장소의 README](https://github.c
 | 로케일당 하나의 HTML 파일 | [HTML 페이지](/ko/guide/documents/html-pages) |
 | 전체 `translate-docs` 참조 | [문서](/ko/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## 예시
 
 | 프로젝트 | 표시 내용 |
@@ -263,7 +263,7 @@ AI 번역은 틀릴 수 있습니다. [이 저장소의 README](https://github.c
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | UI 문자열, 문서 사이트 및 별도의 플랫 README 블록 |
 | 이 저장소 | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): 플랫 README 블록, 그 다음 VitePress 사이트 |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## 에이전트 프롬프트
 
 이것을 Cursor 또는 다른 코딩 에이전트에 복사하세요. 저장소를 준비합니다. README를 번역하지 않습니다.

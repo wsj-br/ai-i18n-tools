@@ -41,7 +41,7 @@ Quando você não estiver no Docusaurus, ou precisar de âncoras HTML em vez de 
 ## Exemplo
 
 <a id="docusaurus------suffix"></a>
-### Sufixo Docusaurus `{#…}` / `{/* #… */}`
+### Sufixo Docusaurus `` / ``
 
 `docs/overview.md`:
 

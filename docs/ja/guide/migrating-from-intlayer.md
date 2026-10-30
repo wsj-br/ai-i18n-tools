@@ -1,4 +1,4 @@
-<a id="migrating-from-intlayer-to-source-strings-calls"></a>
+<a id="migrating-from-intlayer-to-source-string-calls"></a>
 # Intlayer から source-strings 呼び出しへの移行
 
 [Intlayer](https://intlayer.org/) は、型付きコンテンツ辞書や翻訳管理システムを介して翻訳を管理するアプリケーションに最適です。`ai-i18n-tools` は、`t('English source')` のようなソース文字列の呼び出しを使用するコードという、異なるワークフローを対象としています。`t()` 内の文字列は `sourceLocale` で記述され、これは任意の言語でかまいません。これらの例の英語は単なるサンプルです。そのソース文字列をコード内に直接保持することで、このアプローチはメンテナンスを簡素化し、複雑さを軽減します。このモデルがニーズに合う場合、`migrate-intlayer` は既存の辞書をインポートし、互換性のある呼び出し箇所を自動的に書き換えます。残りの箇所は変更せずに残し、具体的な置換手順を記載したレポートを生成します。これにより、段階的に移行を完了したり、あるいはレポートを AI コーディングエージェントに渡して移行を完了させたりすることができます。

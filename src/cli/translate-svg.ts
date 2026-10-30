@@ -94,7 +94,7 @@ function printTranslateSvgSummary(
   printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
     success: t("✅ SVG translation complete!"),
     interrupted: t(
-      "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+      "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
     ),
   });
 }

@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
 
-選擇表格 (包含每個框架的 init 範本和代理程式提示) 位於 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#what-do-you-have)。Python 框架：[Python](/zh-Hant/guide/integrations/python)。
+選擇表格 (包含每個框架的 init 範本和代理程式提示) 位於 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#initialise-the-project)。Python 框架：[Python](/zh-Hant/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共用概念

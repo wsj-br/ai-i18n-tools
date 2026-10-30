@@ -3,7 +3,7 @@
 
 The **Models** tab ranks the active provider's chat models so you can choose `translationModels` without copying ids by hand. It uses the same ranking as [`suggest-models`](/reference/cli-commands/models#suggest-models). The walkthrough, including why the list holds more than one model, is [AI Models](/guide/ai-models).
 
-Pick **Quality** or **Price**. Quality favors languagebench ChrF and Arena Score. Price favors a lower USD rate and still keeps a quality floor. When the config has more than one provider, a **Provider** menu appears; the default is the provider the dashboard was started with (`provider`, or `-P` / `--provider` on the `dashboard` command). Changing the provider or the priority reloads the table. Optional weights live in [`modelSuggestion`](/reference/configuration#modelsuggestion).
+Pick **Quality** or **Price**. Quality favours languagebench ChrF and Arena Score. Price favours a lower USD rate and still keeps a quality floor. When the config has more than one provider, a **Provider** menu appears; the default is the provider the dashboard was started with (`provider`, or `-P` / `--provider` on the `dashboard` command). Changing the provider or the priority reloads the table. Optional weights live in [`modelSuggestion`](/reference/configuration#modelsuggestion-optional).
 
 The table columns are reorder controls, a checkbox, rank, model id, index (the weighted score times 100), measured ChrF, measured Arena Score, and input/output price in USD per 1M tokens. A missing measurement is an em dash. The rank number is the model's place in the full ranking, before the filters below. Drag a row's handle, or use its up and down buttons, to change its place in this table. **Update** loads rank order again.
 
@@ -17,7 +17,7 @@ The first load downloads languagebench, Arena, and models.dev when the cache is 
 
 ::: info External Benchmark Sources
   Scores are computed from external data sources:
-  - [languagebench ChrF](https://languagebench.github.io/) licensed under CC-BY-SA-4.0,
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) licensed under CC-BY-4.0, and
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) licensed under CC-BY-SA-4.0,
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) licensed under CC-BY-4.0, and
   - [models.dev](https://models.dev/) prices licensed under MIT.
 :::

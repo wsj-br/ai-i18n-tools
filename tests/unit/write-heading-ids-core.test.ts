@@ -6,6 +6,9 @@ import {
   extractHeadingIds,
   injectHtmlHeadingAnchors,
   parseExplicitHeadingId,
+  resolveHeadingFragmentTarget,
+  retargetMarkdownHeadingFragments,
+  rewriteHeadingAnchors,
   slugAzureDevOps,
   slugPymdown,
   stripHeadingIds,
@@ -61,6 +64,37 @@ describe("injectHtmlHeadingAnchors", () => {
     const input = '<a id="design-for-i18n-from-the-start"></a>\n## Plan for i18n early\n';
     const out = injectHtmlHeadingAnchors(input, ctx("github"));
     expect(out).toBe('<a id="plan-for-i18n-early"></a>\n## Plan for i18n early\n');
+  });
+
+  it("collapses a stack of HTML anchors to the current heading slug", () => {
+    const input = [
+      '<a id="agent-prompt-i18n-py"></a>',
+      "",
+      '<a id="agent-prompt-i18npy-helper"></a>',
+      '<a id="run-the-agent-prompt"></a>',
+      "## Run the agent prompt",
+      "",
+    ].join("\n");
+    const once = injectHtmlHeadingAnchors(input, ctx("github"));
+    expect(once).toBe('<a id="run-the-agent-prompt"></a>\n## Run the agent prompt\n');
+    expect(injectHtmlHeadingAnchors(once, ctx("github"))).toBe(once);
+  });
+
+  it("keeps HTML anchors that are not directly above a heading", () => {
+    const input = [
+      '<a id="list-of-examples"></a>',
+      "## List of Examples",
+      "",
+      '<a id="console-app"></a>',
+      '<a id="python-streamlit"></a>',
+      "",
+      "| Example |",
+      "| --- |",
+      "",
+    ].join("\n");
+    const out = injectHtmlHeadingAnchors(input, ctx("github"));
+    expect(out).toContain('<a id="list-of-examples"></a>\n## List of Examples');
+    expect(out).toContain('<a id="console-app"></a>\n<a id="python-streamlit"></a>');
   });
 
   it("replaces a classic {#custom-id} suffix with an HTML anchor for github style", () => {
@@ -196,6 +230,12 @@ describe("injectHtmlHeadingAnchors mdx-comment", () => {
     expect(out).toBe("## Hello {/* #hello */}\n");
   });
 
+  it("drops a stack of HTML anchors when writing mdx-comment", () => {
+    const input = '<a id="old"></a>\n<a id="older"></a>\n## Hello\n';
+    const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
+    expect(out).toBe("## Hello {/* #hello */}\n");
+  });
+
   it("disambiguates duplicate titles with -1", () => {
     const input = "## Hello\n\n## Hello\n";
     const out = injectHtmlHeadingAnchors(input, ctx("mdx-comment"));
@@ -282,6 +322,11 @@ title: T
 });
 
 describe("extractHeadingIds", () => {
+  it("reads an HTML anchor when the heading has no explicit suffix", () => {
+    const input = '<a id="one"></a>\n## Eins\n\n## Two\n';
+    expect(extractHeadingIds(input)).toEqual(["one", undefined]);
+  });
+
   it("returns explicit ids in document order and undefined when absent", () => {
     const input = [
       "# Welcome {/* #welcome */}",
@@ -334,11 +379,70 @@ describe("applyKnownHeadingIds", () => {
     expect(out).toBe('<a id="one"></a>\n## One\n\n## Two\n');
   });
 
+  it("collapses a stack of HTML anchors to the known English id", () => {
+    const input = '<a id="old"></a>\n<a id="older"></a>\n## Eins\n';
+    const out = applyKnownHeadingIds(input, ["one"], "github");
+    expect(out).toBe('<a id="one"></a>\n## Eins\n');
+  });
+
   it("skips headings inside fenced code blocks", () => {
     const input = "```\n## Not {#inside}\n```\n\n## Real\n";
     const out = applyKnownHeadingIds(input, ["real"], "mdx-comment");
     expect(out).toContain("## Not {#inside}");
     expect(out).toContain("## Real {/* #real */}");
+  });
+});
+
+describe("heading fragment redirects", () => {
+  it("retargets a same-file fragment and leaves a fenced example", () => {
+    const input = [
+      "See [Init](#pick-a-template).",
+      "",
+      "```markdown",
+      "[Init](#pick-a-template)",
+      "```",
+      "",
+      '<a id="pick-a-template"></a>',
+      '<a id="initialise-the-project"></a>',
+      "## Initialise the project",
+      "",
+    ].join("\n");
+    const rewritten = rewriteHeadingAnchors(input, ctx("github"));
+    expect(rewritten.redirects.get("pick-a-template")).toBe("initialise-the-project");
+    const out = retargetMarkdownHeadingFragments(rewritten.body, (linkPath) =>
+      linkPath === "" ? rewritten.redirects : undefined
+    );
+    expect(out).toContain("See [Init](#initialise-the-project).");
+    expect(out).toContain("[Init](#pick-a-template)");
+    expect(out).not.toContain('<a id="pick-a-template"></a>');
+  });
+
+  it("resolves a site route and a locale-prefixed route to the source file", () => {
+    const known = new Set(["docs/guide/add-i18n-to-python.md", "docs/examples.md"]);
+    expect(
+      resolveHeadingFragmentTarget({
+        fromRel: "docs/guide/integrations/python.md",
+        linkPath: "/guide/add-i18n-to-python",
+        knownFiles: known,
+        localePrefixes: ["pt-BR", "zh-Hans"],
+      })
+    ).toBe("docs/guide/add-i18n-to-python.md");
+    expect(
+      resolveHeadingFragmentTarget({
+        fromRel: "docs/de/guide/integrations/python.md",
+        linkPath: "/pt-BR/guide/add-i18n-to-python",
+        knownFiles: known,
+        localePrefixes: ["pt-BR", "zh-Hans"],
+      })
+    ).toBe("docs/guide/add-i18n-to-python.md");
+    expect(
+      resolveHeadingFragmentTarget({
+        fromRel: "docs/guide/add-i18n-to-readme.md",
+        linkPath: "/examples",
+        knownFiles: known,
+        localePrefixes: [],
+      })
+    ).toBe("docs/examples.md");
   });
 });
 

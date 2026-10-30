@@ -1,7 +1,7 @@
 <a id="usage--costs"></a>
 # Usage & costs
 
-The **Usage & costs** tab summarizes billed model API calls this project has made — including retries that were later discarded — with token counts and a single USD cost.
+The **Usage & costs** tab summarises billed model API calls this project has made — including retries that were later discarded — with token counts and a single USD cost.
 
 The same aggregates are available on the command line as `ai-i18n-tools usage`.
 

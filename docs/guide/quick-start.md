@@ -51,8 +51,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 Find what you have, run the commands in its block, then continue in the linked guide.
 
-<a id="core-cli-commands"></a>
-
 <a id="a-jsts-app"></a>
 ### A JS/TS app
 
@@ -96,7 +94,7 @@ Pick the template for your framework:
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-Your framework must have its own i18n routing enabled first. Then follow [Add i18n to a website or docs site](/guide/add-i18n-to-website).
+Then follow [Add i18n to a website or docs site](/guide/add-i18n-to-website). Its agent prompt enables the framework's i18n routing. You run `sync` after reviewing that work.
 
 <a id="a-readme-or-markdown-docs"></a>
 ### A README or Markdown docs
@@ -163,7 +161,7 @@ With the package installed locally, scripts resolve `ai-i18n-tools` from `node_m
 
 Prefer `sync` over chaining the individual translate scripts. Use the single-step scripts only when you need one step in isolation.
 
-To have the CLI output and dashboard in another language, pass `-L <code>` or set `AI_I18N_LANG`: see [Tool UI language](/guide/tool-ui-language).
+To show the CLI output and dashboard in another language, pass `-L <code>` or set `AI_I18N_LANG`: see [Tool UI language](/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 

@@ -13,9 +13,9 @@ Which rewriter runs depends on `docsOutput.style`:
 | Layout | Built-in rewriter | What it fixes |
 | --- | --- | --- |
 | `"flat"` (default when no custom `pathTemplate`) | Flat link rewriter (`rewriteRelativeLinks`, on by default) | Cross-page relative links (`guide.md` → `guide.de.md`) and depth prefixes for non-markdown asset URLs |
-| `"vitepress"` | VitePress link normalizer (`rewriteVitepressLinks`, on by default) | README-style `docs/guide/…` paths → site routes (`/guide/…`) |
-| `"nextra"` | Nextra link normalizer (`rewriteNextraLinks`, on by default) | `content/en/…` and relative `.mdx` paths → locale-neutral routes (`/guide/…`) |
-| `"fumadocs"` | Fumadocs link normalizer (`rewriteFumadocsLinks`, on by default) | `content/docs/…` and relative `.mdx` paths → locale-neutral routes (`/docs/…`) |
+| `"vitepress"` | VitePress link normaliser (`rewriteVitepressLinks`, on by default) | README-style `docs/guide/…` paths → site routes (`/guide/…`) |
+| `"nextra"` | Nextra link normaliser (`rewriteNextraLinks`, on by default) | `content/en/…` and relative `.mdx` paths → locale-neutral routes (`/guide/…`) |
+| `"fumadocs"` | Fumadocs link normaliser (`rewriteFumadocsLinks`, on by default) | `content/docs/…` and relative `.mdx` paths → locale-neutral routes (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | None | Source URLs pass through unchanged until `postProcessing` |
 
 Custom `pathTemplate` disables the flat rewriter unless you set `rewriteRelativeLinks: true` explicitly. See [Output layouts](/guide/documents/output-layouts) and [Anchor links](/guide/documents/anchor-links) for cross-page `#anchor` handling.
@@ -64,7 +64,7 @@ See [The flat link rewriter and two-step flow](/guide/images-and-screenshots/lin
 
 | Placeholder | Value |
 | --- | --- |
-| `${translatedLocale}` | Target locale (normalized BCP-47) |
+| `${translatedLocale}` | Target locale (normalised BCP-47) |
 | `${sourceLocale}` | Source locale |
 | `${sourceFullPath}` | Absolute source file path (POSIX `/`) |
 | `${translatedFullPath}` | Absolute translated output path |
@@ -79,7 +79,7 @@ See [The flat link rewriter and two-step flow](/guide/images-and-screenshots/lin
 <a id="per-locale-asset-folder"></a>
 ### Per-locale asset folder
 
-Store assets under a locale-coded subdirectory from day one and swap the segment with one generic rule:
+Store assets under a locale-coded subdirectory from the start and swap the segment with one generic rule:
 
 ```json
 "postProcessing": {
@@ -123,7 +123,7 @@ You usually **do not** need `regexAdjustments` when:
 
 - Cross-page links are simple relative markdown paths and `docsOutput.style = "flat"` (built-in rewriter adds locale suffixes)
 - Assets sit beside source files and the flat rewriter's per-file depth prefix resolves them correctly
-- English and every translated copy use the **same** URL (shared images at site root, colocated assets, VitePress site routes after normalizer)
+- English and every translated copy use the **same** URL (shared images at site root, colocated assets, VitePress site routes after normaliser)
 - VitePress in-site links use site routes or `docs/guide/…` paths with `rewriteVitepressLinks: true`
 - Nextra and Fumadocs in-page links use locale-neutral routes (`/guide/…`, `/docs/…`) or content-root paths with `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 

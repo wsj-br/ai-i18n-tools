@@ -53,7 +53,6 @@ Con el indicador activado, cada solicitud de chat incluye `"zdr": true`, y `list
 
 Deja la opción desactivada cuando la cuenta de Inferencia más económica no requiera retención de datos cero. Si la [Protección de datos](https://platform.cheaperinference.com/dashboard/data-protection) ya está activada para la cuenta, Inferencia más económica sigue rechazando un modelo sin una ruta de retención de datos cero. El error nombra a ese modelo. Para mantener la política de la cuenta, establece `zeroDataRetention` en `true` y cambia a un modelo del catálogo de retención de datos cero. Para mantener el modelo rechazado, desactiva la retención de datos cero en esa página. La cadena de reserva intenta entonces el siguiente modelo configurado.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### Modelos
 

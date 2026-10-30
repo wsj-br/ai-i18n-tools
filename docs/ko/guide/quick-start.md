@@ -51,8 +51,6 @@ LLM을 호출하지 않는 `extract`, `status` 및 기타 명령어에는 둘 �
 
 해당하는 항목을 찾아 해당 블록의 명령어를 실행한 다음, 연결된 가이드에서 계속 진행하세요.
 
-<a id="core-cli-commands"></a>
-
 <a id="a-jsts-app"></a>
 ### JS/TS 앱
 

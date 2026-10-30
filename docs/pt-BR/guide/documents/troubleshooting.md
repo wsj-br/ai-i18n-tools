@@ -31,7 +31,7 @@ Um link Markdown ou `![alt](url)` funciona em inglês, mas retorna 404 em cópia
 2. Adicione ou ajuste `docsOutput.postProcessing.regexAdjustments` para trocar segmentos de localidade ou fazer a ponte entre caminhos `/img/…` absolutos. Para layout plano, lembre-se de que o reescritor de link plano é executado **antes** de `regexAdjustments` — combine padrões com o URL já prefixado.
 3. Certifique-se de que os arquivos de ativos específicos da localidade existam nos caminhos referenciados pelo Markdown reescrito (`translate-docs` reescreve URLs, mas não copia arquivos raster).
 
-<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
 ## A saída em hindi, árabe, CJK ou cirílico é romanizada (letras latinas)
 
 Alguns modelos traduzem o significado, mas escrevem o resultado em letras latinas/romanas (por exemplo, hindi como `Namaste` em vez de `नमस्ते`). `hi` puro significa Devanagari; use `hi-Latn` apenas quando quiser hindi romanizado.

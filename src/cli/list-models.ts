@@ -81,7 +81,7 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
   );
   console.log();
   if (settings.zeroDataRetention) {
-    console.log(chalk.gray(t("Zero data retention catalog (GET /models?zdr=true).")));
+    console.log(chalk.gray(t("Zero-data-retention catalog (GET /models?zdr=true).")));
     console.log();
   }
 

@@ -5,12 +5,12 @@
 
 चरण: टूल इंस्टॉल करें, i18next इंस्टॉल करें, `extract` को एक बार चलाएं, एक छोटी सेटअप फ़ाइल जोड़ें ताकि `t` मौजूद हो, उपयोगकर्ता-सामने वाले टेक्स्ट को रैप करें, फिर अनुवाद करें। सुनिश्चित नहीं हैं कि यह आपका मामला है? अंत में [आपका मामला नहीं?](#not-your-case) देखें।
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## टूल इंस्टॉल करें और कुंजी सेट करें
 
 CLI इंस्टॉल करें ([इंस्टॉलेशन](/hi/guide/installation)) और अपने प्रदाता के लिए API कुंजी सेट करें ([प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key))। Ollama को किसी कुंजी की आवश्यकता नहीं है।
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## कॉन्फ़िग को इनिशियलाइज़ करें
 
 ```bash
@@ -26,7 +26,7 @@ ai-i18n-tools init -P openrouter
 
 हर दूसरी कुंजी [कॉन्फ़िगरेशन](/hi/reference/configuration) में है।
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## रनटाइम लाइब्रेरीज़ इंस्टॉल करें
 
 ai-i18n-tools `i18next` या `react-i18next` पर निर्भर नहीं करता है। ऐप उन्हें इंस्टॉल करता है।
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## एक्सट्रैक्ट को एक बार चलाएं
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 अगले चरण में सेटअप फ़ाइल `strings.json` और `ui-languages.json` को इम्पोर्ट करती है, और केवल `extract` उन्हें लिखता है। यह दोनों को तब भी लिखता है जब उसे कोई `t()` कॉल नहीं मिलती, ताकि ऐप कंपाइल हो सके। 0 स्ट्रिंग की अपेक्षा करें, या 1 की यदि आपके `package.json` में `description` है, क्योंकि एक्सट्रैक्टर इसे डिफ़ॉल्ट रूप से शामिल करता है (`ui.uiExtractor.includePackageDescription`)।
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## बूटस्ट्रैप जोड़ें
 
 i18n सेटअप फ़ाइल बनाएँ। यह न्यूनतम संस्करण स्ट्रिंग को रैप करने और उनका अनुवाद करने के लिए पर्याप्त है। `ai-i18n-tools.config.json` में `SOURCE_LOCALE` `sourceLocale` के बराबर होना चाहिए।
@@ -86,10 +86,10 @@ React का उपयोग नहीं कर रहे हैं? `react-i18
 
 पहली रेंडरिंग से पहले ऐप एंट्री से इस फ़ाइल को इम्पोर्ट करें। Next.js में, इसे एक क्लाइंट मॉड्यूल से इम्पोर्ट करें, जैसा कि [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts) में दिखाया गया है।
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## हार्डकोडेड कॉपी बदलें
 
-इसे मैन्युअल रूप से करें, या [JS/TS प्रॉम्प्ट](#agent-prompt) को कोडिंग एजेंट में पेस्ट करें। `t()` का तर्क वह स्रोत-भाषा वाक्य है जिसे उपयोगकर्ता को देखना चाहिए। फ़्लैट लोकैल फ़ाइलें उस वाक्य द्वारा कुंजीबद्ध होती हैं।
+इसे मैन्युअल रूप से करें, या [JS/TS प्रॉम्प्ट](#run-the-agent-prompt) को कोडिंग एजेंट में पेस्ट करें। `t()` का तर्क वह स्रोत-भाषा वाक्य है जिसे उपयोगकर्ता को देखना चाहिए। फ़्लैट लोकैल फ़ाइलें उस वाक्य द्वारा कुंजीबद्ध होती हैं।
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TS एजेंट प्रॉम्प्ट</summary>
@@ -215,7 +215,7 @@ console.log(t("Hello {{name}}", { name }));
 
 इन्हें अकेला छोड़ दें: `className`, `href` और अन्य URL, इम्पोर्ट पाथ, आईडी, टेस्ट आईडी, एरर कोड, पहचानकर्ताओं के रूप में उपयोग की जाने वाली ऑब्जेक्ट कुंजियाँ, और टिप्पणियों के अंदर का टेक्स्ट।
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## एक्सट्रेक्ट करें और अनुवाद करें
 
 जब लिटरल अपनी जगह पर हों:
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) एक छोटा Node ऐप है जिसका `src/main.js` पहले से ही रैप किया गया है। Next.js उदाहरण रिएक्ट बूटस्ट्रैप है।
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## भाषा स्विचिंग
 
 पहले रेंडर से पहले एक सहेजे गए लोकैल को पुनर्स्थापित करें, जैसा कि [Wire i18next](/hi/guide/ui-strings/i18next-runtime#startup-locale) में वर्णित है। फिर एक नियंत्रण जोड़ें जो `await loadLocale(code)` के बाद `await i18n.changeLanguage(code)` को कॉल करता है: [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher)।
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## इसे अनुवादित रखें
 
 स्रोत टेक्स्ट बदलने के बाद `sync` को फिर से चलाएँ। कैश का मतलब है कि केवल नई या बदली हुई स्ट्रिंग्स मॉडल में जाती हैं। [अनुशंसित package.json स्क्रिप्ट](/hi/guide/quick-start#recommended-packagejson-scripts) से स्क्रिप्ट जोड़ें, और CI में `sync` चलाएँ ताकि अनुवाद में कोई बदलाव न आए।
 
 डिफ़ॉल्ट `init` टेम्पलेट `README.md` का भी अनुवाद करता है। [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) देखें।
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## किसी अन्य टूल से आ रहे हैं
 
 ai-i18n-tools में अपना स्ट्रिंग एक्सट्रैक्टर शामिल है। यदि आपने `i18next-scanner`, `babel-plugin-i18next-extract`, या इसी तरह के किसी अन्य का उपयोग किया है, तो माइग्रेट करने के बाद आप उन देव डिपेंडेंसी को हटा सकते हैं। मौजूदा i18next नेमस्पेस JSON फ़ाइलें [JSON पाइपलाइन](/hi/guide/json#i18next-namespace-files) पर रह सकती हैं। Intlayer `.content.ts` डिक्शनरी को `migrate-intlayer` के साथ इम्पोर्ट किया जा सकता है: [Intlayer से माइग्रेट करना](/hi/guide/migrating-from-intlayer) देखें। रनटाइम पर Intlayer को रखने और केवल उसके अनुवादों को भरने के लिए, `translate-intlayer` का उपयोग करें: [Intlayer को यथास्थान अनुवादित करना](/hi/guide/translating-intlayer) देखें।
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## आपका मामला नहीं?
 
 | आपका आज का कोड | पढ़ें |

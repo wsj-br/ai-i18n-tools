@@ -30,8 +30,6 @@ Les guides pas à pas sont regroupés dans [Ajouter l'i18n à votre projet](/fr/
 | Dictionnaires Intlayer (quitter Intlayer) | [Migration depuis Intlayer](/fr/guide/migrating-from-intlayer) |
 | Dictionnaires Intlayer (garder Intlayer, traduire sur place) | [Traduction d'Intlayer sur place](/fr/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## Fonctionnement
 

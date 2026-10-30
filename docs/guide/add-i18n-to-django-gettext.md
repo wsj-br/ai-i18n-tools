@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-django-python-gettext-app"></a>
+<a id="add-i18n-to-a-django--python-gettext-app"></a>
 # Add i18n to a Django / Python gettext app
 
 This page is for a Python application that translates with GNU gettext, or one that will: Django, Flask with Flask-Babel style catalogs, or any app that calls `gettext()`. You keep the gettext calls. ai-i18n-tools reads them, translates the messages, and writes the `.po` and compiled `.mo` files your app already loads. No helper module is needed.
@@ -9,17 +9,16 @@ Building a Streamlit, FastAPI, Flask, desktop, or script app that has no gettext
 
 The flow:
 
-1. [Install the CLI and choose a provider](#install).
-2. [Initialise the project](#pick-a-template) with `init`.
-3. [Run the agent prompt](#agent-prompt-django-gettext).
+1. [Install the CLI and choose a provider](#install-and-choose-a-provider).
+2. [Initialise the project](#initialise-the-project) with `init`.
+3. [Run the agent prompt](#run-the-agent-prompt).
 4. [Review the result](#review-the-result).
 5. [Choose models and translate](#translate), then check one language.
 6. [Keep it translated](#keep-it-translated).
 
 Prefer to make the changes yourself, or want to know what the prompt does? [Do it by hand](#do-it-by-hand) walks through the same steps one at a time.
 
-<a id="install"></a>
-<a id="choose-a-provider"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Install and choose a provider
 
 You do this part, not the agent. The installer changes your machine, and the API key is a secret that belongs in your shell, not in a prompt.
@@ -39,7 +38,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-The installer checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual steps and asset names: [Standalone executables](/guide/installation#standalone-executables).
+The installer checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarised or Authenticode-signed. Manual steps and asset names: [Standalone executables](/guide/installation#standalone-executables).
 
 Check the install:
 
@@ -55,7 +54,6 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollama needs no key. Other presets: [Built-in providers](/guide/providers-and-models#built-in-providers). Note the provider name, because you pass it to `init` in the next step. The agent never needs the key: it only runs commands that make no model calls. You use the key later, when you [translate](#translate).
 
-<a id="pick-a-template"></a>
 <a id="initialise-the-project"></a>
 ## Initialise the project
 
@@ -78,10 +76,6 @@ Run `init` once. It rewrites `ai-i18n-tools.config.json` every time, so a second
 `ui-python-gettext` and `ui-python-flask` also write an `i18n.py` helper when that file is missing. A gettext app does not need it, so delete it (the prompt does this for you). `ui-python-gettext` also writes JSON files next to the gettext catalogs. To write gettext catalogs only, set `"flatOutput": false` in the `ui` block (the prompt does this too). `ui-python-django` writes neither the helper nor JSON, because Django keeps its own translation system.
 
 Then edit `sourceLocale` and `targetLocales` in `ai-i18n-tools.config.json`. `sourceLocale` is the language of the strings in your code. Any BCP-47 language is valid; examples often use `en`. Write target codes as `pt-BR`. The catalog folder is `pt_BR`, the form gettext and Django expect (`localeFormat` is `posix`).
-
-<a id="agent-prompt-django-gettext"></a>
-
-<a id="agent-prompt-django-and-native-gettext"></a>
 
 <a id="run-the-agent-prompt"></a>
 ## Run the agent prompt
@@ -245,7 +239,7 @@ The agent ends with a report. Check it before you translate:
 
 Commit this state. `translate-ui` rewrites your `.po` files, so you will want a clean diff to review.
 
-<a id="translate"></a>
+<a id="choose-models-and-translate"></a>
 ## Choose models and translate
 
 You run this part. It uses your API key, spends money on your account, and rewrites your `.po` files, so commit first.
@@ -284,14 +278,14 @@ To translate `README.md` in the same run, scaffold with `--with-readme` (or add 
 <a id="do-it-by-hand"></a>
 ## Do it by hand
 
-Work through these steps if you prefer to make the changes yourself, or you want to know what the prompt does. Each step matches a part of the prompt. You still [install the CLI](#install), [initialise the project](#pick-a-template), and [translate](#translate) at the end.
+Work through these steps if you prefer to make the changes yourself, or you want to know what the prompt does. Each step matches a part of the prompt. You still [install the CLI](#install-and-choose-a-provider), [initialise the project](#initialise-the-project), and [translate](#translate) at the end.
 
 1. [Point the config at your catalogs](#point-the-config).
 2. [Wrap strings](#wrap-strings) with the gettext calls you already use.
 3. [Extract and check the calls](#extract-and-check).
 4. [Switch language at runtime](#switch-language).
 
-<a id="point-the-config"></a>
+<a id="step-1-point-the-config-at-your-catalogs"></a>
 ## Step 1: Point the config at your catalogs
 
 The template writes sensible defaults. This is the Django one:
@@ -328,7 +322,7 @@ When each Django app keeps its own `locale/` folder, use one `ui` block per cata
 
 `compileMo` writes the `.mo` for you, so you do not need `compilemessages` in this workflow. Choose one tool to write the catalogs: running `makemessages` after `translate-ui` rewrites the same `.po` files.
 
-<a id="wrap-strings"></a>
+<a id="step-2-wrap-strings"></a>
 ## Step 2: Wrap strings
 
 `extract` records a string only when it is a literal passed to one of the function names in `ui.uiExtractor.funcNames`, or a template tag. Keep the calls you have. Add what is missing.
@@ -372,7 +366,7 @@ _("Hello, %s!" % name)
 _("Hello, {name}!".format(name=name))
 ```
 
-<a id="extract-and-check"></a>
+<a id="step-3-extract-and-check-the-calls"></a>
 ## Step 3: Extract and check the calls
 
 Run `extract` once the calls are wrapped. It writes the extraction cache and fills empty slots from your existing `.po` files. It does not call a model.
@@ -391,7 +385,7 @@ It writes `migrate-python-i18n-report.md`. Read it and fix each listed call by h
 
 Do not pass `--write` on this page. That option rewrites an f-string or a `.format()` call into `t("…", name=name)`, a call that exists only in the `i18n.py` helper. A gettext app has no `t`. A report with no lines means the wrapped calls are safe. It does not mean every sentence was wrapped, so read the diff of `strings.json` and look for text you expected to see.
 
-<a id="switch-language"></a>
+<a id="step-4-switch-language-at-runtime"></a>
 ## Step 4: Switch language at runtime
 
 Your framework chooses the language. ai-i18n-tools does not add a menu or a helper.
@@ -450,7 +444,7 @@ Then add a form to a template:
 
 The view saves the choice in a cookie. To put the language in the URL instead, use `i18n_patterns`. Both are standard Django features. See Django's documentation on internationalisation.
 
-<a id="plain-gettext"></a>
+<a id="plain-gettext-and-flask-babel"></a>
 ### Plain gettext and Flask-Babel
 
 Load the catalog for the language you want and call it. The [python-gettext](/examples#python-gettext) example does this in a command-line tool:

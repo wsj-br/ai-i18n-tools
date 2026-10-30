@@ -3,7 +3,7 @@
 
 **모델** 탭은 활성 공급자의 채팅 모델 순위를 매겨 ID를 수동으로 복사하지 않고도 `translationModels`을(를) 선택할 수 있도록 합니다. 이는 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models)와(과) 동일한 순위를 사용합니다. 목록에 두 개 이상의 모델이 포함된 이유를 포함한 단계별 안내는 [AI 모델](/ko/guide/ai-models)에 있습니다.
 
-**품질** 또는 **가격**을(를) 선택하세요. 품질은 languagebench ChrF 및 Arena 점수를 우선시합니다. 가격은 낮은 USD 요금을 우선시하면서도 품질 하한선을 유지합니다. 구성에 공급자가 둘 이상인 경우 **공급자** 메뉴가 나타납니다. 기본값은 대시보드가 시작된 공급자(`provider` 또는 `dashboard` 명령의 `-P` / `--provider`)입니다. 공급자나 우선순위를 변경하면 테이블이 다시 로드됩니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion)에 있습니다.
+**품질** 또는 **가격**을(를) 선택하세요. 품질은 languagebench ChrF 및 Arena 점수를 우선시합니다. 가격은 낮은 USD 요금을 우선시하면서도 품질 하한선을 유지합니다. 구성에 공급자가 둘 이상인 경우 **공급자** 메뉴가 나타납니다. 기본값은 대시보드가 시작된 공급자(`provider` 또는 `dashboard` 명령의 `-P` / `--provider`)입니다. 공급자나 우선순위를 변경하면 테이블이 다시 로드됩니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)에 있습니다.
 
 테이블 열은 재정렬 컨트롤, 체크박스, 순위, 모델 ID, 인덱스 (가중 점수 곱하기 100), 측정된 ChrF, 측정된 아레나 점수, 그리고 100만 토큰당 USD 입/출력 가격입니다. 측정값이 누락된 경우 대시(—)로 표시됩니다. 순위 번호는 아래 필터가 적용되기 전 전체 순위에서 모델의 위치입니다. 행의 핸들을 끌거나 위/아래 버튼을 사용하여 이 테이블에서 위치를 변경할 수 있습니다. **업데이트**는 순위 순서를 다시 로드합니다.
 

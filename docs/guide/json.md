@@ -60,7 +60,7 @@ Example (multiple source files, lowercase locale folders):
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | Behaviour |
 |-------------|-----------|

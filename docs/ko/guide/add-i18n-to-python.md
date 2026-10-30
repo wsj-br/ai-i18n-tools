@@ -7,17 +7,17 @@
 
 단계:
 
-1. CLI를 [설치](#install)하고 API 키를 설정합니다.
-2. [템플릿을 선택](#pick-a-template)하고 `init`를 실행합니다.
+1. CLI를 [설치](#install-and-choose-a-provider)하고 API 키를 설정합니다.
+2. [템플릿을 선택](#initialise-the-project)하고 `init`를 실행합니다.
 3. `t()` 또는 `_()`에서 [문자열을 래핑](#wrap-strings)합니다.
-4. 이미 안전하지 않게 래핑된 [호출 사이트를 마이그레이션](#migrate)합니다.
-5. [모델을 선택하고 번역](#translate)합니다.
-6. [런타임에 로케일을 전환](#switch-locale)합니다.
+4. 이미 안전하지 않게 래핑된 [호출 사이트를 마이그레이션](#step-3-check-wrapped-calls)합니다.
+5. [모델을 선택하고 번역](#choose-models-and-translate)합니다.
+6. [런타임에 로케일을 전환](#step-4-add-a-language-switch)합니다.
 7. [번역된 상태를 유지](#keep-it-translated)합니다.
 
 이것이 귀하의 경우가 아닌가요? 마지막에 있는 [귀하의 경우가 아닌가요?](#not-your-case)를 참조하십시오.
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 설치
 
 머신에 이미 Node.js `>=22.16.0`가 있는 경우 npm 패키지를 사용하십시오([설치](/ko/guide/installation)). Python 프로젝트의 경우 독립 실행형 실행 파일(Node.js 없음)을 설치하십시오.
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollama는 키가 필요하지 않습니다. 기타 프리셋: [내장 공급자](/ko/guide/providers-and-models#built-in-providers).
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## 템플릿 선택
 
 | 현재 앱 | 명령 | 얻게 되는 것 |
@@ -56,7 +56,7 @@ Ollama는 키가 필요하지 않습니다. 기타 프리셋: [내장 공급자]
 
 `sourceLocale` 및 `targetLocales`를 편집합니다. `sourceLocale`는 소스에 있는 문자열의 언어입니다. 모든 BCP-47 언어가 유효하며, 예시에서는 종종 `en`를 사용합니다. 프레임워크 연결: [Python 통합](/ko/guide/integrations/python). 호출 형태 및 카탈로그 레이아웃: [Python 애플리케이션](/ko/guide/ui-strings/python).
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## 문자열 래핑
 
 먼저 카탈로그 항목을 조회한 다음 보간(interpolate)하세요. 생성된 `i18n.py`에서 `t` 및 `_`을(를) 가져오세요(Django는 `gettext` 및 `ngettext`을(를) 유지합니다).
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## 호출 사이트 마이그레이션
 
 `migrate-python-i18n`은(는) `--write`을(를) 전달하기 전까지는 드라이 런(dry run)으로 작동합니다. 항상 `migrate-python-i18n-report.md`을(를) 작성합니다. 생성된 `i18n.py` 파일은 건너뜁니다. `{value=}` 및 중첩된 형식 사양과 같은 디버그 필드는 보고되며 그대로 유지됩니다.
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 드라이 런에서 수동 검토가 필요한 사이트가 나열되면 `--write`을(를) 실행하기 전에 보고서를 읽어보세요. 선택 사항인 `--report <path>`은(는) 보고서 경로를 변경합니다. 선택 사항인 `--ui-block`은(는) 스캔 범위를 하나의 UI 블록으로 제한합니다.
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## 모델 선택 및 번역
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract`은(는) `strings.json` 및 `ui-languages.json`을(를) 작성합니다. `translate-ui`은(는) 플랫 JSON 파일을 채우며, `ui.gettext`이(가) 설정된 경우 `.po` / `.mo` 카탈로그를 채웁니다. 생성된 카탈로그를 직접 편집하지 마십시오.
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## 런타임 시 로케일 전환
 
 `set_locale`은(는) `ContextVar` 토큰을 반환합니다. 요청이나 콜백이 종료될 때 이를 재설정하십시오.
@@ -323,7 +317,7 @@ FastAPI 및 Flask 미들웨어는 `finally`(Flask: `teardown_request`)에서 재
 
 동일한 실행에서 `README.md`를 번역하려면, `--with-readme`로 스캐폴드합니다 (또는 기존 구성에 블록을 추가합니다). [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 참조하세요.
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## 해당하지 않으시나요?
 
 | 보유한 항목 | 읽기 |
@@ -333,7 +327,7 @@ FastAPI 및 Flask 미들웨어는 `finally`(Flask: `teardown_request`)에서 재
 | 리포지토리 README 또는 기타 마크다운 파일 | [README 및 마크다운 문서에 i18n 추가](/ko/guide/add-i18n-to-readme) |
 | 중첩된 로케일 JSON | [JSON](/ko/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## 예시
 
 | 예시 | 설명 |

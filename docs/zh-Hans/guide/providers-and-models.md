@@ -53,7 +53,6 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 当 Cheaper Inference 账户不需要零数据保留时，请关闭此标志。如果账户已启用 [数据保护](https://platform.cheaperinference.com/dashboard/data-protection)，Cheaper Inference 仍会拒绝没有零数据保留路由的模型。错误会指明该模型。为保留账户策略，请将 `zeroDataRetention` 设置为 `true`，并切换到零数据保留目录中的模型。为保留被拒绝的模型，请在该页面上关闭零数据保留。回退链会尝试下一个配置的模型。
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### 模型
 

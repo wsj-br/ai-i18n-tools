@@ -167,7 +167,7 @@ package.json स्क्रिप्ट — जब npm या pnpm एक स�
 
 विकल्प — यदि आप `PATH` को समायोजित नहीं करना चाहते हैं: `npx ai-i18n-tools …` (एनपीएम) या `pnpm exec ai-i18n-tools …` (पीएनपीएम)। बिना किसी `package.json` प्रविष्टि के एक बार के शून्य-इंस्टॉल के लिए: `npx ai-i18n-tools <cmd>` या `pnpm dlx ai-i18n-tools <cmd>`।
 
-<a id="cloned-monorepo"></a>
+<a id="coding-agent-skill"></a>
 ### क्लोन किया गया मोनोरेपो
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) के पूर्ण क्लोन से पैकेज विकसित करते समय या वर्कस्पेस उदाहरण चलाते समय:

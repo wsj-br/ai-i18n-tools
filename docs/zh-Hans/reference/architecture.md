@@ -288,7 +288,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 `Logger` 支持 `debug`、`info`、`warn`、`error` 级别，并带有 ANSI 颜色输出。详细模式（`-v`）启用 `debug`。当设置了 `logFilePath` 时，日志行也会写入该文件。
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### 工具 UI 自我本地化
 
 该工具会将其自身的 UI（CLI 帮助、高流量日志/摘要/错误消息以及翻译仪表板）与其为您翻译的内容分开进行本地化。

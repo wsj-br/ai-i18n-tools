@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Selector para aplicaciones Python. La extracción, los catálogos y las formas de llamada residen en [aplicaciones Python](/es/guide/ui-strings/python). El paso a paso para una aplicación existente de una sola configuración regional es [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python), con un [prompt de `i18n.py`](/es/guide/add-i18n-to-python#agent-prompt-i18n-py) y un [prompt de Django / gettext](/es/guide/add-i18n-to-python#agent-prompt-django-gettext).
+Selector para aplicaciones Python. La extracción, los catálogos y las formas de llamada residen en [aplicaciones Python](/es/guide/ui-strings/python). El paso a paso para una aplicación existente de una sola configuración regional es [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python), con un [prompt de `i18n.py`](/es/guide/add-i18n-to-python#run-the-agent-prompt) y un [prompt de Django / gettext](/es/guide/add-i18n-to-python#agent-prompt-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide y PyWebView llaman al asistente `i18n.py` generado (Python 3.10 o superior). Django mantiene el gettext de Django. Se incluyen cuatro copias ejecutables en el repositorio: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` y `examples/python-gettext`. Pyramid, Django, Tkinter, Qt y PyWebView no tienen un directorio de ejemplos independiente.
 

@@ -372,7 +372,7 @@ function printTranslateUiRunSummary(
     {
       success: t("✅ UI translation complete!"),
       interrupted: t(
-        "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+        "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
       ),
     },
     {
@@ -617,7 +617,7 @@ async function runTranslateUIBody(
       chalk.magenta(t("{{count}} total entries", { count: entries.length }))
   );
   console.log(chalk.cyan(`${t("Glossary terms:")} `) + chalk.magenta(`${glossary.size}`));
-  console.log(chalk.cyan(`${t("Output dir:")} `) + chalk.magenta(outDir));
+  console.log(chalk.cyan(`${t("Output directory:")} `) + chalk.magenta(outDir));
   if (opts.logPath) {
     console.log(chalk.cyan(`${t("Output log:")} `) + chalk.magenta(opts.logPath));
   }

@@ -34,7 +34,7 @@ Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md
 
 When you are not on Docusaurus, or you need HTML anchors instead of `{#…}` / `{/* #… */}` suffixes:
 
-1. Run `ai-i18n-tools write-heading-ids` on your source `.md` / `.mdx` before `translate-docs` (same `docs[]` / `contentPaths` as usual). It inserts explicit HTML anchors on the line before each heading so `id` values are shared by every translated copy, and it copies those same English ids onto existing translated files. When segment counts line up, the matching cached segment is updated too, so a later `sync --force-update` keeps the repaired id. Re-run it after renaming headings so stale anchor ids are refreshed to match the current title.
+1. Run `ai-i18n-tools write-heading-ids` on your source `.md` / `.mdx` before `translate-docs` (same `docs[]` / `contentPaths` as usual). It inserts explicit HTML anchors on the line before each heading so `id` values are shared by every translated copy, and it copies those same English ids onto existing translated files. When segment counts line up, the matching cached segment is updated too, so a later `sync --force-update` keeps the repaired id. Re-run it after renaming headings so stale anchor ids are refreshed to match the current title. A rename leaves a single anchor: extra `<a id>` lines stacked above that heading are removed, and in-repo markdown links that targeted a removed id are retargeted. An `<a id>` that is not directly above a heading is left in place.
 2. Point your markdown **anchor links** at those stable ids, e.g. `[label](other.md#section-id)`, where `section-id` matches the anchor the tool wrote — not a guess from English words alone.
 
 <a id="example"></a>

@@ -55,7 +55,7 @@ Die Shortlist ist eine Benchmark-Rangliste des Live-Chat-Katalogs des Anbieters.
 
 ChrF verwendet die Übersetzungs-Scores von languagebench für Ihre `sourceLocale` und `targetLocales`. Locales werden einem languagebench-Sprachcode zugeordnet: dem primären Subtag, mit Aliasen wie `pt-BR` für `pt` und `zh-Hant` für `zh`. Ein Modell, das diese Sprachen gut übersetzt, rangiert höher als eines, das nur allgemein gut abschneidet. Embedding-, Bild-, Sprach- und andere Nicht-Chat-Modelle werden übersprungen, ebenso wie IDs, deren Ablaufdatum überschritten ist.
 
-Qualität, das Standardprofil, gewichtet ChrF und Arena Score höher als den Preis. Preis kehrt diese Gewichtung um und hält das oben beschriebene Qualitätsniveau ein. Optionale Gewichtungen sind [`modelSuggestion`](/de/reference/configuration#modelsuggestion).
+Qualität, das Standardprofil, gewichtet ChrF und Arena Score höher als den Preis. Preis kehrt diese Gewichtung um und hält das oben beschriebene Qualitätsniveau ein. Optionale Gewichtungen sind [`modelSuggestion`](/de/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` lädt die Datensätze erneut herunter. Laden Sie danach den Tab **Modelle** neu.
 

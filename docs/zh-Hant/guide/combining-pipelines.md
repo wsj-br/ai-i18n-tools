@@ -21,8 +21,6 @@
 
 建議使用 `sync`，而不是手動串連各個指令。手動執行時，順序、擷取和語系旗標很容易出錯。
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## 結合 UI 字串與文件
 
@@ -82,8 +80,6 @@ UI 區塊預設會將其 `strings.json` 目錄作為文件的術語表提示 (`u
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## 混合式說明文件設定

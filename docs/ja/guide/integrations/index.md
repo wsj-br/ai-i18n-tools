@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
 
-フレームワークごとのinitテンプレートとエージェントプロンプトを含む選択テーブルは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#what-do-you-have)にあります。Pythonフレームワーク：[Python](/ja/guide/integrations/python)。
+フレームワークごとのinitテンプレートとエージェントプロンプトを含む選択テーブルは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#initialise-the-project)にあります。Pythonフレームワーク：[Python](/ja/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共通の概念

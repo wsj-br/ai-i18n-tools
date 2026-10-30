@@ -50,7 +50,7 @@ Align `targetLocales` with `defineI18n().languages` in `lib/i18n.ts` exactly (th
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
 
-An English-only Fumadocs app needs a locale route and `defineI18n` before `translate-docs` can write sibling files. The [agent prompt](#agent-prompt) walks through an existing site. Checklist:
+An English-only Fumadocs app needs a locale route and `defineI18n` before `translate-docs` can write sibling files. First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The [agent prompt](#agent-prompt) on this page is the follow-up that wires the UI catalog. Checklist:
 
 - `defineI18n` in `lib/i18n.ts` with `languages`, `defaultLanguage`, and `parser: "dot"` or `"dir"`.
 - `app/[lang]/` routes and `createI18nMiddleware` from `proxy.ts` (the example's file).
@@ -86,7 +86,7 @@ See `ai-i18n-tools.config.dir.example.json` in [examples/fumadocs-docs](https://
 <a id="sidebar-metajson"></a>
 ## Sidebar (`meta.json`)
 
-Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `docsOutput.style` is `"fumadocs"`, **`translate-docs`** collects `meta.json` under `docsRoot` (or `docs[].fumadocsMetaGlob`), translates string values for keys listed in `docs[].fumadocsMetaTranslatableKeys` (default: `title`, `description`), and writes locale outputs:
+Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `docsOutput.style` is `"fumadocs"`, `translate-docs` collects `meta.json` under `docsRoot` (or `docs[].fumadocsMetaGlob`), translates string values for keys listed in `docs[].fumadocsMetaTranslatableKeys` (default: `title`, `description`), and writes locale outputs:
 
 | Parser | Source locale | Output |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `doc
 <a id="ui-catalog"></a>
 ## UI catalog
 
-Fumadocs layout chrome (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) is not extracted from markdown. Configure **`docsOutput.fumadocsUiCatalog`** so **`translate-docs`** bootstraps the source-locale catalog from `sourcePath` and translates per-locale JSON:
+Fumadocs layout chrome (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) is not extracted from markdown. Configure `docsOutput.fumadocsUiCatalog` so `translate-docs` bootstraps the source-locale catalog from `sourcePath` and translates per-locale JSON:
 
 ```json
 {
@@ -123,8 +123,8 @@ Fumadocs layout chrome (search placeholder, locale display names, and other `def
 }
 ```
 
-- **`catalogPath`** — English flat JSON. The bootstrap reads only the `en` object of `.add({ … })` in `sourcePath`. String literals in that object become catalog keys (`displayName`, `Search(search trigger)`). `.add()` only accepts keys the Fumadocs UI presets registered, so a nav title such as `site.title` cannot live there. The example keeps `site.title` in the JSON and reads `catalog["site.title"]` for `nav.title`. Keys already in the file but absent from the `en` object stay: the merge is `{ ...existing, ...extracted }`. Re-run `sync` when the English literals change.
-- **`outputPathTemplate`** (optional) — per-locale outputs; default: `ui.{locale}.json` beside `catalogPath`.
+- `catalogPath` — English flat JSON. The bootstrap reads only the `en` object of `.add({ … })` in `sourcePath`. String literals in that object become catalog keys (`displayName`, `Search(search trigger)`). `.add()` only accepts keys the Fumadocs UI presets registered, so a nav title such as `site.title` cannot live there. The example keeps `site.title` in the JSON and reads `catalog["site.title"]` for `nav.title`. Keys already in the file but absent from the `en` object stay: the merge is `{ ...existing, ...extracted }`. Re-run `sync` when the English literals change.
+- `outputPathTemplate` (optional) — per-locale outputs; default: `ui.{locale}.json` beside `catalogPath`.
 
 A translated key does nothing until the app reads it. `i18n.translations().get(lang)` returns only keys registered with `.extend()` (the Fumadocs UI presets). Spread the locale catalog into `.add()` so those keys apply, and put native `displayName` **after** the spread so a translation of the English name does not replace it:
 
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs serves locale-prefixed routes via Next.js middleware (`/docs/getting-started`, `/pt/docs/getting-started`). **In-page links should stay locale-neutral** (`/docs/getting-started`) so the active locale prefix is applied automatically.
 
-Enable the built-in normalizer so `translate-docs` fixes links in every translated file automatically:
+Enable the built-in normaliser so `translate-docs` fixes links in every translated file automatically:
 
 ```json
 "docsOutput": {
@@ -235,7 +235,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteFumadocsLinks` defaults to enabled when `style` is `"fumadocs"`.
 
-| Author in the source locale | After normalizer |
+| Author in the source locale | After normaliser |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
@@ -244,7 +244,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 **Authoring rules**
 
-- Cross-page doc links: use **locale-neutral site routes** (`/docs/…`) in English MDX, or `content/docs/…` / relative `.mdx` paths and let the normalizer rewrite them during `sync`.
+- Cross-page doc links: use **locale-neutral site routes** (`/docs/…`) in English MDX, or `content/docs/…` / relative `.mdx` paths and let the normaliser rewrite them during `sync`.
 - Repo files outside the content tree: use **full URLs**.
 - Do **not** hand-edit links in locale-suffixed copies (`*.pt.mdx`) or `content/{locale}/` trees — regenerate with `sync` / `translate-docs`.
 
@@ -253,7 +253,7 @@ See also [Documents — link rewriting](/guide/documents/link-rewriting) and [Co
 <a id="locale-codes"></a>
 ## Locale codes
 
-Keep `targetLocales` in `ai-i18n-tools.config.json` aligned with `defineI18n().languages` in your Fumadocs app **exactly**. The dot example uses short codes (`pt`, `zh`); dir configs may use BCP-47 folders (`pt-BR`, `zh-Hans`). There is no forced normalization — mismatched codes produce wrong output paths or missing pages.
+Keep `targetLocales` in `ai-i18n-tools.config.json` aligned with `defineI18n().languages` in your Fumadocs app **exactly**. The dot example uses short codes (`pt`, `zh`); dir configs may use BCP-47 folders (`pt-BR`, `zh-Hans`). There is no forced normalisation — mismatched codes produce wrong output paths or missing pages.
 
 <a id="multiple-collections"></a>
 ## Multiple collections

@@ -54,6 +54,8 @@ Explicit sidebar `label`s, the site `title`, and `social[].label` in `astro.conf
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
 
+First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The checklist below is the same work by hand.
+
 - `locales` in the Starlight config, including a `root` entry when English should be unprefixed (`label` and required `lang`).
 - `defaultLocale: 'root'` when the default language is that root locale. Omit `defaultLocale` only if Starlight's default already matches.
 - English pages stay in `src/content/docs/`; `translate-docs` writes `src/content/docs/<locale>/`.
@@ -67,7 +69,7 @@ Explicit sidebar `label`s, the site `title`, and `social[].label` in `astro.conf
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## Plain Astro (marketing and app sites)
 
-For static Astro marketing or app sites (not Starlight), combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. The reference implementation is [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): English at `/`, target locales at `/{locale}/`.
+For static Astro marketing or app sites (not Starlight), combine [Astro built-in i18n routing](https://docs.astro.build/en/guides/internationalization/) with ai-i18n-tools. First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The reference implementation is [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): English at `/`, target locales at `/{locale}/`.
 
 Most teams use a **hybrid** of two pipelines on the same page:
 

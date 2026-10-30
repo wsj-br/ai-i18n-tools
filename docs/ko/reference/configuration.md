@@ -517,8 +517,6 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (선택 사항)
 

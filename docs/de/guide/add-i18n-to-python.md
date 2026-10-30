@@ -7,17 +7,17 @@ Verwenden Sie bereits GNU gettext, Django- oder Flask-Kataloge? Behalten Sie die
 
 Die Schritte:
 
-1. Die CLI [installieren](#install) und den API-Schlüssel festlegen.
-2. Eine [Vorlage auswählen](#pick-a-template) und `init` ausführen.
+1. Die CLI [installieren](#install-and-choose-a-provider) und den API-Schlüssel festlegen.
+2. Eine [Vorlage auswählen](#initialise-the-project) und `init` ausführen.
 3. Zeichenfolgen in `t()` oder `_()` [umbrochen](#wrap-strings).
-4. Bereits unsicher umbrochene [Aufrufstellen migrieren](#migrate).
-5. [Modelle auswählen und übersetzen](#translate).
-6. [Lokalisierung zur Laufzeit wechseln](#switch-locale).
+4. Bereits unsicher umbrochene [Aufrufstellen migrieren](#step-3-check-wrapped-calls).
+5. [Modelle auswählen und übersetzen](#choose-models-and-translate).
+6. [Lokalisierung zur Laufzeit wechseln](#step-4-add-a-language-switch).
 7. [Übersetzt halten](#keep-it-translated).
 
 Sie sind sich nicht sicher, ob dies Ihr Fall ist? Siehe [Nicht Ihr Fall?](#not-your-case) am Ende.
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Installieren
 
 Verwenden Sie das npm-Paket, wenn der Computer bereits Node.js `>=22.16.0` hat ([Installation](/de/guide/installation)). Für ein Python-Projekt installieren Sie die eigenständige ausführbare Datei (kein Node.js).
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollama benötigt keinen Schlüssel. Weitere Voreinstellungen: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## Vorlage auswählen
 
 | App heute | Befehl | Was Sie erhalten |
@@ -56,7 +56,7 @@ Ollama benötigt keinen Schlüssel. Weitere Voreinstellungen: [Integrierte Anbie
 
 Bearbeiten Sie `sourceLocale` und `targetLocales`. `sourceLocale` ist die Sprache der Zeichenfolgen in der Quelle. Jede BCP-47-Sprache ist gültig; Beispiele verwenden oft `en`. Framework-Verdrahtung: [Python-Integrationen](/de/guide/integrations/python). Aufrufmuster und Kataloglayout: [Python-Anwendungen](/de/guide/ui-strings/python).
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## Strings umschließen
 
 Suchen Sie zuerst den Katalogeintrag und führen Sie dann die Interpolation durch. Importieren Sie `t` und `_` aus der generierten `i18n.py` (Django behält `gettext` und `ngettext`).
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## Aufrufstellen migrieren
 
 `migrate-python-i18n` ist ein Testlauf, bis Sie `--write` übergeben. Es schreibt immer `migrate-python-i18n-report.md`. Generierte `i18n.py`-Dateien werden übersprungen. Debug-Felder wie `{value=}` und verschachtelte Formatangaben werden gemeldet und unverändert gelassen.
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 Lesen Sie den Bericht vor `--write`, wenn der Testlauf Stellen auflistet, die manuell überprüft werden müssen. Die optionale Option `--report <path>` ändert den Berichtspfad. Die optionale Option `--ui-block` beschränkt den Scan auf einen UI-Block.
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## Modelle auswählen und übersetzen
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract` schreibt `strings.json` und `ui-languages.json`. `translate-ui` füllt die flachen JSON-Dateien und, wenn `ui.gettext` gesetzt ist, die `.po` / `.mo`-Kataloge. Bearbeiten Sie diese generierten Kataloge nicht manuell.
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## Gebietsschema zur Laufzeit wechseln
 
 `set_locale` gibt ein `ContextVar`-Token zurück. Setzen Sie es zurück, wenn die Anfrage oder der Callback endet.
@@ -323,7 +317,7 @@ FastAPI- und Flask-Middleware müssen in `finally` (Flask: `teardown_request`) z
 
 Um `README.md` im selben Durchlauf zu übersetzen, erstellen Sie ein Gerüst mit `--with-readme` (oder fügen Sie den Block zu einer bestehenden Konfiguration hinzu). Siehe [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme).
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## Nicht Ihr Fall?
 
 | Sie haben | Lesen Sie |
@@ -333,7 +327,7 @@ Um `README.md` im selben Durchlauf zu übersetzen, erstellen Sie ein Gerüst mit
 | Eine Repository-README oder andere Markdown-Dateien | [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme) |
 | Verschachteltes Gebietsschema-JSON | [JSON](/de/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## Beispiele
 
 | Beispiel | Beschreibung |

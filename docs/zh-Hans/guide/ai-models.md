@@ -55,7 +55,7 @@ ai-i18n-tools dashboard
 
 ChrF 使用 languagebench 为您的 `sourceLocale` 和 `targetLocales` 提供的翻译分数。区域设置会映射到一个 languagebench 语言代码：主要子标签，以及诸如 `pt-BR` 到 `pt` 和 `zh-Hant` 到 `zh` 的别名。一个能很好地翻译这些语言的模型，其排名会高于一个仅在总体上得分较高的模型。嵌入、图像、语音和其他非聊天模型会被跳过，已过期的 ID 也是如此。
 
-“质量”是默认方案，其对 ChrF 和 Arena Score 的权重高于价格。“价格”方案则反之，但会保留上述的质量下限。可选权重请参阅 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion)。
+“质量”是默认方案，其对 ChrF 和 Arena Score 的权重高于价格。“价格”方案则反之，但会保留上述的质量下限。可选权重请参阅 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion-optional)。
 
 `suggest-models --refresh` 会重新下载数据集。之后请重新加载 **模型** 选项卡。
 

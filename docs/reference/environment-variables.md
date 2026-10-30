@@ -46,4 +46,4 @@ These two variables override `baseUrl` for a configured provider. Every other pr
 | `NO_COLOR` | When `1`, disable ANSI colours in log output. |
 | `I18N_LOG_SESSION_MAX` | Max lines kept per log session (default `5000`). |
 
-At startup the CLI also auto-loads a `.env` file from the current working directory (via Node's `process.loadEnvFile`), so provider API keys are picked up in non-interactive shells that do not source `.envrc` / `direnv`. Variables already present in the environment are never overridden, so real CI/production values still win.
+At startup the CLI also auto-loads a `.env` file from the current working directory (via Node's `process.loadEnvFile`), so provider API keys are loaded in non-interactive shells that do not load `.envrc` via `direnv`. Variables already present in the environment are never overridden, so real CI/production values take precedence.

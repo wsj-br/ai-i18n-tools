@@ -65,14 +65,14 @@ The scanner is configurable: add custom function names via `ui.uiExtractor.funcN
 ai-i18n-tools translate-ui
 ```
 
-Reads `strings.json`, sends batches to the models on the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [AI Models](/guide/ai-models#model-fallback-chain)). Within a locale, up to `uiBatchConcurrency` batches run at once (default **2**; see [Configuration — uiBatchConcurrency](/reference/configuration#uibatchconcurrency-optional)). `-j` still only parallelizes target locales.
+Reads `strings.json`, sends batches to the models on the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [AI Models](/guide/ai-models#model-fallback-chain)). Within a locale, up to `uiBatchConcurrency` batches run at once (default **2**; see [Configuration — uiBatchConcurrency](/reference/configuration#uibatchconcurrency-optional)). `-j` still only parallelises target locales.
 
 <a id="translations-database-stringsjson"></a>
 ### Translations database (`strings.json`)
 
 For each entry, `translate-ui` stores the **model id from the active provider** that successfully translated each locale in an optional `models` object (same locale keys as `translated`). Strings edited in the Translation Dashboard are marked with the sentinel value `user-edited` in `models` for that locale. The per-locale flat files under `ui.flatOutputDir` remain **source string → translation** only; they do not include `models` (so runtime bundles stay unchanged).
 
-> **Note:** Dashboard edits to UI strings live in `strings.json`, not the SQLite documentation cache. Run plain `sync` or `translate-ui` (no special flag) to rewrite flat locale files from the catalog — `--force-update` is **not** forwarded to the UI step. Avoid `--force` on UI commands after manual edits: it re-translates every entry and can overwrite your `user-edited` rows. Catalog rows whose stored translation fails the locale writing-system check (for example romanized Hindi for `hi`) are treated as missing and retranslated without `--force`.
+> **Note:** Dashboard edits to UI strings live in `strings.json`, not the SQLite documentation cache. Run plain `sync` or `translate-ui` (no special flag) to rewrite flat locale files from the catalog — `--force-update` is **not** forwarded to the UI step. Avoid `--force` on UI commands after manual edits: it re-translates every entry and can overwrite your `user-edited` rows. Catalog rows whose stored translation fails the locale writing-system check (for example romanised Hindi for `hi`) are treated as missing and retranslated without `--force`.
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## Step 4: Use the output in your app
@@ -90,7 +90,7 @@ For each entry, `translate-ui` stores the **model id from the active provider** 
 <a id="per-locale-model-overrides"></a>
 ### Per-locale model overrides
 
-Some models translate certain languages better than others. For example, qwen and z-ai models tend to do well with Asian languages. Add `providers.<active>.localeModels` entries to give a prioritized model list for each BCP-47 locale. Those lists are tried before `uiModels` and `translationModels` for that locale. Locale tags match case-insensitively (`zh-cn` and `ZH-CN` are equivalent). With no matching entry, the tool uses the default `uiModels` and `translationModels` order. The same `localeModels` mechanism applies to document, JSON, and SVG translation.
+Some models translate certain languages better than others. For example, qwen and z-ai models tend to do well with Asian languages. Add `providers.<active>.localeModels` entries to give a prioritised model list for each BCP-47 locale. Those lists are tried before `uiModels` and `translationModels` for that locale. Locale tags match case-insensitively (`zh-cn` and `ZH-CN` are equivalent). With no matching entry, the tool uses the default `uiModels` and `translationModels` order. The same `localeModels` mechanism applies to document, JSON, and SVG translation.
 
 <a id="exporting-to-xliff-20"></a>
 ### Exporting to XLIFF 2.0

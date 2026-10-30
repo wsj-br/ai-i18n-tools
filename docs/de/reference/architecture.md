@@ -288,7 +288,7 @@ Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/op
 
 `Logger` unterstützt die Stufen `debug`, `info`, `warn`, `error` mit ANSI-Farbgebung. Der ausführliche Modus (`-v`) aktiviert `debug`. Wenn `logFilePath` gesetzt ist, werden Log-Zeilen zusätzlich in diese Datei geschrieben.
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### Selbstreferenzielle Lokalisierung (Tool-UI)
 
 Das Tool lokalisiert seine eigene Benutzeroberfläche – CLI-Hilfe, häufig verwendete Protokoll-/Zusammenfassungs-/Fehlermeldungen und das Translation Dashboard – separat von den Inhalten, die es für Sie übersetzt.

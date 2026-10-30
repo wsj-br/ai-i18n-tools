@@ -32,7 +32,7 @@
 <a id="ui-strings-ssg"></a>
 ## UI文字列 (SSG)
 
-`init -t ui-astro-website -P ollama` を使用して UI 抽出をスキャフォールドし、ページの HTML も翻訳する場合は `docs[]` ブロックにマージします ([ページの解析と置換](#pages-parse-and-replace) を参照)。リポジトリの README も翻訳します: `init -t ui-astro-website -P ollama --with-readme`。[README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme) を参照してください。TypeScript モジュールと `.astro` frontmatter のコピーを `t('…')` でラップします (ロケール ページを複製するよりも UI 文字列を優先する場合は、テンプレートの `{expression}` ブロックも使用します)。ページの HTML には `t()` は必要ありません。`translate-docs` がコピーします。[JS/TS プロンプト](/ja/guide/add-i18n-to-js#agent-prompt) は、これらの frontmatter ファイルとデータ ファイルに適用されますが、i18next のインストールとブートストラップは除きます。Astro は i18next ではなく `makeT` を使用して、ビルド時に `t` を解決します。
+`init -t ui-astro-website -P ollama` を使用して UI 抽出をスキャフォールドし、ページの HTML も翻訳する場合は `docs[]` ブロックにマージします ([ページの解析と置換](#pages-parse-and-replace) を参照)。リポジトリの README も翻訳します: `init -t ui-astro-website -P ollama --with-readme`。[README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme) を参照してください。TypeScript モジュールと `.astro` frontmatter のコピーを `t('…')` でラップします (ロケール ページを複製するよりも UI 文字列を優先する場合は、テンプレートの `{expression}` ブロックも使用します)。ページの HTML には `t()` は必要ありません。`translate-docs` がコピーします。[JS/TS プロンプト](/ja/guide/add-i18n-to-js#run-the-agent-prompt) は、これらの frontmatter ファイルとデータ ファイルに適用されますが、i18next のインストールとブートストラップは除きます。Astro は i18next ではなく `makeT` を使用して、ビルド時に `t` を解決します。
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama

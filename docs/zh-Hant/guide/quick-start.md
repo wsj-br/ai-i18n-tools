@@ -51,8 +51,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 找出您擁有的專案類型，執行其區塊中的指令，然後繼續閱讀連結的指南。
 
-<a id="core-cli-commands"></a>
-
 <a id="a-jsts-app"></a>
 ### JS/TS 應用程式
 

@@ -21,8 +21,6 @@ Omita las partes con `--no-ui`, `--no-svg`, `--no-docs` o `--no-json`. Los pasos
 
 Prefiera `sync` en lugar de encadenar los comandos individuales manualmente. El orden, la extracción y los indicadores de configuración regional son fáciles de equivocar cuando se ejecutan manualmente.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## Cadenas de la IU y documentos juntos
 
@@ -82,8 +80,6 @@ Utilice `docs[].targetLocales` en un bloque para traducir los archivos de ese bl
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## Configuración de documentación mixta

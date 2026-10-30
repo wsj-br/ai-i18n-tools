@@ -21,8 +21,6 @@
 
 개별 명령을 수동으로 연결하는 것보다 `sync`를 선호합니다. 수동으로 실행할 때 순서, 추출 및 로케일 플래그가 잘못될 수 있습니다.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI 문자열과 문서 함께 사용
 
@@ -82,8 +80,6 @@ UI 블록은 기본적으로 문서화를 위한 용어집 힌트로 `strings.js
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## 혼합 문서 구성

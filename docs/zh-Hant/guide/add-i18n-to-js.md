@@ -5,12 +5,12 @@
 
 步驟如下：安裝工具、安裝 i18next、執行一次 `extract`、新增一個小型設定檔以確保 `t` 存在、包裝面向使用者的文字，然後進行翻譯。不確定這是否符合您的情況？請參閱結尾的 [不符合您的情況？](#not-your-case)。
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 安裝工具並設定金鑰
 
 安裝 CLI ([安裝](/zh-Hant/guide/installation)) 並為您的供應商設定 API 金鑰 ([供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key))。Ollama 不需要金鑰。
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## 初始化設定
 
 ```bash
@@ -26,7 +26,7 @@ ai-i18n-tools init -P openrouter
 
 所有其他鍵的說明請見 [設定](/zh-Hant/reference/configuration)。
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## 安裝執行階段函式庫
 
 ai-i18n-tools 不依賴 `i18next` 或 `react-i18next`。應用程式會自行安裝它們。
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## 執行一次擷取
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 下一步驟中的設定檔會匯入 `strings.json` 和 `ui-languages.json`，且只有 `extract` 會寫入它們。即使找不到任何 `t()` 呼叫，它也會寫入這兩者，這樣應用程式才能編譯。預期會有 0 個字串，或者若您的 `package.json` 中有 `description`，則會有 1 個，因為擷取器預設會包含它 (`ui.uiExtractor.includePackageDescription`)。
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## 新增啟動程式
 
 建立 i18n 設定檔。此精簡版本足以包覆字串並加以翻譯。在 `ai-i18n-tools.config.json` 中，`SOURCE_LOCALE` 必須等於 `sourceLocale`。
@@ -86,10 +86,10 @@ export default i18n;
 
 在首次渲染前，從應用程式的進入點匯入此檔案。在 Next.js 中，請從用戶端模組匯入，模式與 [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts) 相同。
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## 取代寫死的文案
 
-您可以手動執行此操作，或將 [JS/TS 提示](#agent-prompt) 貼到編碼代理程式中。`t()` 的引數是使用者應看見的來源語言句子。扁平的語系檔案會以此句子為鍵。
+您可以手動執行此操作，或將 [JS/TS 提示](#run-the-agent-prompt) 貼到編碼代理程式中。`t()` 的引數是使用者應看見的來源語言句子。扁平的語系檔案會以此句子為鍵。
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TS 代理程式提示</summary>
@@ -215,7 +215,7 @@ console.log(t("Hello {{name}}", { name }));
 
 請勿更動以下項目：`className`、`href` 及其他 URL、匯入路徑、ID、測試 ID、錯誤碼、用作識別碼的物件鍵，以及註解內的文字。
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## 擷取與翻譯
 
 當字面值就緒時：
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) 是一個小型的 Node 應用程式，其 `src/main.js` 已被包裝。Next.js 範例是 React 的啟動程式。
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## 語言切換
 
 如 [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime#startup-locale) 中所述，在首次渲染前還原已儲存的語系。然後新增一個會呼叫 `await loadLocale(code)` 再接著呼叫 `await i18n.changeLanguage(code)` 的控制項：[語言切換器與 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## 保持翻譯更新
 
 變更來源文字後，請重新執行 `sync`。快取機制意味著只有新的或變更的字串會傳送到模型。從 [建議的 package.json 指令碼](/zh-Hant/guide/quick-start#recommended-packagejson-scripts) 新增指令碼，並在 CI 中執行 `sync`，以避免翻譯內容產生偏差。
 
 預設的 `init` 範本也會翻譯 `README.md`。請參閱 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## 從其他工具遷移
 
 ai-i18n-tools 包含其自有的字串擷取器。如果您曾使用 `i18next-scanner`、`babel-plugin-i18next-extract` 或類似工具，可以在遷移後移除這些開發依賴項目。現有的 i18next 命名空間 JSON 檔案可以保留在 [JSON 管線](/zh-Hant/guide/json#i18next-namespace-files) 上。Intlayer `.content.ts` 字典可以使用 `migrate-intlayer` 匯入：請參閱 [從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)。若要在執行階段保留 Intlayer 並僅填入其翻譯，請使用 `translate-intlayer`：請參閱 [就地翻譯 Intlayer](/zh-Hant/guide/translating-intlayer)。
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## 情況不同？
 
 | 您目前的程式碼 | 閱讀 |

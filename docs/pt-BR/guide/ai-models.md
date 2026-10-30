@@ -55,7 +55,7 @@ A lista restrita é um ranking de benchmark do catálogo de chat ao vivo do prov
 
 O ChrF usa as pontuações de tradução do languagebench para seus `sourceLocale` e `targetLocales`. As localidades são mapeadas para um código de idioma do languagebench: a subtag primária, com aliases como `pt-BR` para `pt` e `zh-Hant` para `zh`. Um modelo que traduz bem esses idiomas supera um que só tem uma boa pontuação geral. Modelos de embeddings, imagem, fala e outros que não são de chat são ignorados, assim como os IDs que já passaram da data de validade.
 
-Qualidade, o perfil padrão, dá mais peso ao ChrF e à Pontuação da Arena do que ao preço. Preço inverte essa ênfase e mantém o piso de qualidade descrito acima. Os pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion).
+Qualidade, o perfil padrão, dá mais peso ao ChrF e à Pontuação da Arena do que ao preço. Preço inverte essa ênfase e mantém o piso de qualidade descrito acima. Os pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` baixa novamente os conjuntos de dados. Recarregue a guia **Modelos** depois.
 

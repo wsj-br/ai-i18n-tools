@@ -5,7 +5,7 @@
 
 UI 문자열이 `t()` 호출에 있는 앱의 경우, 대신 [JS/TS 앱에 i18n 추가하기](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)를 사용하세요.
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 무엇을 가지고 있나요?
 
 | 사이트 | 초기화 템플릿 | 시작하기 |
@@ -21,16 +21,16 @@ UI 문자열이 `t()` 호출에 있는 앱의 경우, 대신 [JS/TS 앱에 i18n 
 <details class="agent-prompt">
 <summary>에이전트 프롬프트</summary>
 
-- Astro Starlight: 참고 사항만. Astro `t()` 파일: [JS/TS 프롬프트](/ko/guide/add-i18n-to-js#agent-prompt) (i18next 건너뛰기).
+- Astro Starlight: 참고 사항만. Astro `t()` 파일: [JS/TS 프롬프트](/ko/guide/add-i18n-to-js#run-the-agent-prompt) (i18next 건너뛰기).
 - Docusaurus: 참고 사항만 (`<Translate>`는 Docusaurus 자체 API입니다.).
 - VitePress: [테마 카탈로그 프롬프트](/ko/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off).
-- Nextra: [사전 프롬프트](/ko/guide/integrations/nextra#agent-prompt-dictionary) 및 [하이브리드 `t()` 프롬프트](/ko/guide/integrations/nextra#optional-t-for-app-react-hybrid).
+- Nextra: [사전 프롬프트](/ko/guide/integrations/nextra#agent-prompt-dictionary-and-routes) 및 [하이브리드 `t()` 프롬프트](/ko/guide/integrations/nextra#optional-t-for-app-react-hybrid).
 - Fumadocs: [UI 카탈로그 프롬프트](/ko/guide/integrations/fumadocs#agent-prompt).
-- README 및 Markdown 파일: [README 프롬프트](/ko/guide/add-i18n-to-readme#agent-prompt).
+- README 및 Markdown 파일: [README 프롬프트](/ko/guide/add-i18n-to-readme#run-the-agent-prompt).
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## 단계
 
 동일한 형태가 모든 프레임워크에 적용됩니다. 자세한 내용은 위에 링크된 프레임워크 가이드에 있습니다.
@@ -42,7 +42,7 @@ UI 문자열이 `t()` 호출에 있는 앱의 경우, 대신 [JS/TS 앱에 i18n 
 5. `ai-i18n-tools sync`(또는 `translate-docs`)를 실행한 다음 사이트를 빌드합니다.
 6. 브라우저에서 현지화된 경로를 확인합니다. 프레임워크 자체 로케일 드롭다운이 전환기입니다. README와 같은 일반 Markdown 파일의 경우, [languageListBlock](/ko/guide/documents/language-switcher)을 사용하여 링크 행을 추가합니다.
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## 무엇이 번역되나요?
 
 페이지 본문은 항상 [문서](/ko/guide/documents/) 파이프라인을 거칩니다. 프레임워크 크롬(탐색, 사이드바, 테마 레이블)은 프레임워크가 지원하는 경우 별도의 [JSON](/ko/guide/json) 파이프라인을 통하지 않고 동일한 실행에서 처리됩니다.
@@ -59,7 +59,7 @@ UI 문자열이 `t()` 호출에 있는 앱의 경우, 대신 [JS/TS 앱에 i18n 
 
 이미지 및 스크린샷은 `translate-docs`에 의해 번역되지 않습니다. 로케일별 파일에 대해서는 [이미지 및 스크린샷](/ko/guide/images-and-screenshots/)을 참조하세요.
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## 일반 HTML
 
 페이지가 동작해야 하는 방식에 따라 두 가지 옵션이 있습니다.
@@ -69,7 +69,7 @@ UI 문자열이 `t()` 호출에 있는 앱의 경우, 대신 [JS/TS 앱에 i18n 
 
 파일은 하나의 경로에 속합니다.
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## 해당하지 않으시나요?
 
 - 앱 UI 문자열: [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).

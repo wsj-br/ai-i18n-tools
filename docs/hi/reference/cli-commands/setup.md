@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 ---
 
-<a id="help"></a>
+<a id="doctor"></a>
 ### `help`
 
 **सारांश:** `ai-i18n-tools help [command]`

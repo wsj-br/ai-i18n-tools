@@ -3,7 +3,7 @@
 
 This page installs the CLI and gets the bare `ai-i18n-tools` command working. Already installed? Go to [Quick start](/guide/quick-start).
 
-The published package is ESM-only. Use `import` or `import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported. The npm tarball includes the consumer context at `docs/ai-i18n-tools-context.md` and the complete `skills/ai-i18n-tools/` directory, not the full documentation site; locale-specific copies under `translated-docs/` are in the [GitHub repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
+The published package is ESM-only. Use `import` or `import()` in Node.js or your bundler; do not use `require('ai-i18n-tools')`. The package declares `engines.node` `>=22.16.0`; older Node.js versions are unsupported. The npm tarball includes the consumer context at `docs/ai-i18n-tools-context.md` and the complete `skills/` tree, not the full documentation site; locale-specific copies under `translated-docs/` are in the [GitHub repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
 
 ```bash
 npm install ai-i18n-tools
@@ -32,9 +32,9 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 The installer detects the system, downloads the matching executable, checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools` (`ai-i18n-tools.exe` on Windows), and adds the install directory to `PATH`. The default directory is `~/.local/bin`. Open a new terminal if the command is not found yet. Set `AI_I18N_VERSION` (for example `v1.11.0`) to pin a release, or `AI_I18N_INSTALL_DIR` to choose another directory.
 
-The binaries are not notarized or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning. The macOS installer clears the quarantine flag after the checksum matches.
+The binaries are not notarised or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning. The macOS installer clears the quarantine flag after the checksum matches.
 
-Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). `install.sh` and `install.ps1` stay in the repository root, and the commands above download them from there. The npm tarball and the executable do not contain the Python examples. Those examples stay in the repository as well.
+Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). From the release that adds it, the same page includes `ai-i18n-tools-skill.zip`, every coding-agent skill directory. Releases published before that zip do not include it, and the first zip contains only `ai-i18n-tools/`. `install.sh` and `install.ps1` stay in the repository root, and the commands above download them from there. The npm tarball and the executable do not contain the Python examples or the skill zip. The examples stay in the repository. The skill directories are inside the npm tarball. See [Coding-agent skill](/guide/coding-agent-skill#download-the-skill-directory).
 
 <details>
 <summary>Manual instructions to install <code>ai-i18n-tools</code> executable</summary>
@@ -171,33 +171,15 @@ Alternatives — if you prefer not to adjust `PATH`: `npx ai-i18n-tools …` (np
 <a id="coding-agent-skill"></a>
 ### Coding-agent skill
 
-The [portable consumer skill](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools) teaches installation and maintenance with `ai-i18n-tools sync`. It loads only the relevant JS/TS, Python, documentation, assets/links/SVG, or JSON references. Installing the npm package or standalone executable does not automatically register it with an agent.
+Installing the npm package or the standalone executable does not register the skill with an agent. The install methods, native catalogs, and agents that have no skill folder are on [Coding-agent skill](/guide/coding-agent-skill).
 
-1. Obtain the whole `skills/ai-i18n-tools/` directory. With npm installation, it is at `node_modules/ai-i18n-tools/skills/ai-i18n-tools/`. Without Node.js, download or clone the [repository at the release tag](https://github.com/wsj-br/ai-i18n-tools/tags) matching `ai-i18n-tools --version`; the standalone executable does not bundle skill files.
-2. Copy that directory, including `references/`, into one supported project location below. The final path must end in `ai-i18n-tools/SKILL.md`. Inspect an existing destination before replacing it; do not install duplicate copies into several discovery directories for the same agent.
-3. Reload skills or start a new agent session as required by that agent. Ask it to use the `ai-i18n-tools` skill, and verify it can read a bundled reference. Discovery does not guarantee automatic invocation.
+Obtain every skill directory, each one a folder that contains `SKILL.md`, without cloning this repository:
 
-Supported project locations (see each agent's documentation for personal/global locations and version differences):
+1. Node.js 22.20 or later: `npx skills add wsj-br/ai-i18n-tools --all -y` installs those directories into the agent's skills folder.
+2. Package already installed: copy `node_modules/ai-i18n-tools/skills/.` into that folder.
+3. No Node.js: extract `package/skills/` from the npm tarball for the version in `ai-i18n-tools --version`. From the release that adds it, `ai-i18n-tools-skill.zip` on that GitHub Release contains the same directories. Releases published before the zip do not include it. The first zip contains only `ai-i18n-tools/`.
 
-- [Cursor](https://cursor.com/docs/skills): `.cursor/skills/` or `.agents/skills/`.
-- [Claude Code](https://code.claude.com/docs/en/skills): `.claude/skills/`.
-- [GitHub Copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/create-skills): `.github/skills/`; available in supported agent surfaces, not every Copilot chat interface.
-- [Antigravity](https://antigravity.google/docs/skills/): `.agents/skills/` in current documentation; check the installed product surface/version for legacy `.agent/skills/` support and global paths.
-- [OpenCode](https://opencode.ai/docs/skills/): `.opencode/skills/` or `.agents/skills/`.
-- [Cline](https://docs.cline.bot/customization/skills): `.cline/skills/`.
-
-These are documented discovery paths, not a claim of execution testing in all six agents. The portable skill uses standard `name`/`description` metadata and relative bundled references, without agent-specific permissions or executable scripts. Keep copied skills aligned with the CLI version; a package upgrade does not update separately installed copies.
-
-For prompt-only use or an agent without skills, reference the [consumer context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) from project instructions such as `AGENTS.md`:
-
-```markdown
-Before installing or maintaining ai-i18n-tools, read
-https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md
-and follow only the linked reference that matches this project.
-Use ai-i18n-tools sync for the configured workflow.
-```
-
-That context file uses documentation-site and repository URLs, so it can be copied without the rest of this repository. For an older release, use the same path on the matching tag. Do not use upstream maintainer `AGENTS.md` as consumer instructions.
+Commands and the agent folders are on [Coding-agent skill](/guide/coding-agent-skill#download-the-skill-directory).
 
 <a id="cloned-monorepo"></a>
 ### Cloned monorepo

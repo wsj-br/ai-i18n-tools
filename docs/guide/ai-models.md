@@ -49,13 +49,13 @@ The shortlist is a benchmark ranking of the provider's live chat catalog. The fi
 
 | Signal | What it contributes | Source |
 | --- | --- | --- |
-| ChrF | Translation quality for your project's languages | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena Score | Overall preference from head-to-head comparisons | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | Translation quality for your project's languages | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | Overall preference from head-to-head comparisons | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | USD per 1M tokens | Input and output price | The provider's catalog when it publishes rates, otherwise [models.dev](https://models.dev/) (MIT) |
 
 ChrF uses languagebench's translation scores for your `sourceLocale` and `targetLocales`. Locales map to a languagebench language code: the primary subtag, with aliases such as `pt-BR` to `pt` and `zh-Hant` to `zh`. A model that translates those languages well outranks one that only scores well in general. Embeddings, image, speech, and other non-chat models are skipped, and so are ids past their expiration date.
 
-Quality, the default profile, weights ChrF and Arena Score above price. Price reverses that emphasis and keeps the quality floor described above. Optional weights are [`modelSuggestion`](/reference/configuration#modelsuggestion).
+Quality, the default profile, weights ChrF and Arena Score above price. Price reverses that emphasis and keeps the quality floor described above. Optional weights are [`modelSuggestion`](/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` redownloads the datasets. Reload the **Models** tab afterward.
 
@@ -69,7 +69,7 @@ Every flag, including `--json`, `--list`, and the score formula: [suggest-models
 
 `translationModels` is an ordered list. The CLI tries the first model. On a failed request, a response it cannot parse, or text in the wrong writing system, it tries the next id for that batch.
 
-One id is a single point of failure. A model can time out, return text this tool rejects, or translate one language well and another poorly. A common case is romanized Hindi where `hi` expects Devanagari. Romanized output is rejected for native-script locales. A locale that should stay romanized needs an explicit `-Latn` subtag, such as `hi-Latn`.
+One id is a single point of failure. A model can time out, return text this tool rejects, or translate one language well and another poorly. A common case is romanised Hindi where `hi` expects Devanagari. Romanised output is rejected for native-script locales. A locale that should stay romanised needs an explicit `-Latn` subtag, such as `hi-Latn`.
 
 That is why the shortlist contains several ids, strongest first. Order in the list is the order translation tries.
 

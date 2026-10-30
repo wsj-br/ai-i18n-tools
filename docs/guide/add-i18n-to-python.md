@@ -9,17 +9,16 @@ Using Django, Flask-Babel catalogs, or GNU gettext, and want to keep those calls
 
 The flow:
 
-1. [Install the CLI and choose a provider](#install).
-2. [Initialise the project](#pick-a-template) with `init`.
-3. [Run the agent prompt](#agent-prompt-i18n-py).
+1. [Install the CLI and choose a provider](#install-and-choose-a-provider).
+2. [Initialise the project](#initialise-the-project) with `init`.
+3. [Run the agent prompt](#run-the-agent-prompt).
 4. [Review the result](#review-the-result).
-5. [Choose models and translate](#translate), then check one language.
+5. [Choose models and translate](#choose-models-and-translate), then check one language.
 6. [Keep it translated](#keep-it-translated).
 
 Prefer to make the changes yourself, or want to know what the prompt does? [Do it by hand](#do-it-by-hand) walks through the same steps one at a time.
 
-<a id="install"></a>
-<a id="choose-a-provider"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Install and choose a provider
 
 You do this part, not the agent. The installer changes your machine, and the API key is a secret that belongs in your shell, not in a prompt.
@@ -39,7 +38,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-The installer checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual steps and asset names: [Standalone executables](/guide/installation#standalone-executables).
+The installer checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarised or Authenticode-signed. Manual steps and asset names: [Standalone executables](/guide/installation#standalone-executables).
 
 Check the install:
 
@@ -53,9 +52,8 @@ Then choose a provider and set its API key in the shell that will run the transl
 export CHEAPERINFERENCE_API_KEY=your-key-here
 ```
 
-Ollama needs no key. Other presets: [Built-in providers](/guide/providers-and-models#built-in-providers). Note the provider name, because you pass it to `init` in the next step. The agent never needs the key: it only runs commands that make no model calls. You use the key later, when you [translate](#translate).
+Ollama needs no key. Other presets: [Built-in providers](/guide/providers-and-models#built-in-providers). Note the provider name, because you pass it to `init` in the next step. The agent never needs the key: it only runs commands that make no model calls. You use the key later, when you [translate](#choose-models-and-translate).
 
-<a id="pick-a-template"></a>
 <a id="initialise-the-project"></a>
 ## Initialise the project
 
@@ -65,7 +63,7 @@ This page uses one template, `ui-python`. It writes the config, the `i18n.py` he
 
 | Your app | Notes |
 | --- | --- |
-| Streamlit | The language menu needs a few lines in the app; see [Add a language switch](#switch-locale) |
+| Streamlit | The language menu needs a few lines in the app; see [Add a language switch](#step-4-add-a-language-switch) |
 | FastAPI | The locale is set per request |
 | Flask | Flat JSON catalogs. For Flask-Babel catalogs in `translations/`, use the [gettext page](/guide/add-i18n-to-django-gettext) |
 | Pyramid | Same wiring as Flask |
@@ -87,8 +85,6 @@ Run `init` once. It rewrites `ai-i18n-tools.config.json` every time, so a second
 
 Framework wiring: [Python integrations](/guide/integrations/python). Call shapes and catalog layout: [Python applications](/guide/ui-strings/python).
 
-<a id="agent-prompt-i18n-py"></a>
-<a id="agent-prompt-i18npy-helper"></a>
 <a id="run-the-agent-prompt"></a>
 ## Run the agent prompt
 
@@ -265,8 +261,6 @@ The agent ends with a report. Check it before you translate:
 
 Strings the agent missed show up as text that stays in the source language later. [Step 2](#wrap-strings) has an optional script that prints text that is not wrapped.
 
-<a id="translate"></a>
-
 <a id="choose-models-and-translate"></a>
 ## Choose models and translate
 
@@ -279,7 +273,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` replaces only `translationModels`. Also use `--max-output-price` to limit the price of certain models. if your prefer a GUI, use `ai-i18n-tools dashboard` to select the [models](/guide/translation-dashboard/models). 
+`--apply` replaces only `translationModels`. Use `--max-output-price` to exclude models whose output price exceeds a limit. If you prefer a GUI, use `ai-i18n-tools dashboard` to select the [models](/guide/translation-dashboard/models). 
 
 Then extract and translate:
 
@@ -307,14 +301,14 @@ To translate `README.md` in the same run, scaffold with `--with-readme` (or add 
 <a id="do-it-by-hand"></a>
 ## Do it by hand
 
-Work through these steps if you prefer to make the changes yourself, or you want to know what the prompt does. Each step matches a part of the prompt. You still [install the CLI](#install), [initialise the project](#pick-a-template), and [translate](#translate) at the end.
+Work through these steps if you prefer to make the changes yourself, or you want to know what the prompt does. Each step matches a part of the prompt. You still [install the CLI](#install-and-choose-a-provider), [initialise the project](#initialise-the-project), and [translate](#choose-models-and-translate) at the end.
 
 1. [Place the helper and the catalogs](#place-the-helper) where this repository keeps its code.
 2. [Wrap strings](#wrap-strings) in `t()` or `_()`.
-3. [Check wrapped calls](#migrate) with `migrate-python-i18n`.
-4. [Add a language switch](#switch-locale).
+3. [Check wrapped calls](#step-3-check-wrapped-calls) with `migrate-python-i18n`.
+4. [Add a language switch](#step-4-add-a-language-switch).
 
-<a id="place-the-helper"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## Step 1: Place the helper and the catalogs
 
 `init` writes these at the repository root:
@@ -360,7 +354,7 @@ mypkg = ["locales/*.json"]
 
 Confirm with `ai-i18n-tools extract`. The catalog should appear in the new `locales/` folder.
 
-<a id="wrap-strings"></a>
+<a id="step-2-wrap-strings"></a>
 ## Step 2: Wrap strings
 
 `extract` records a string only when it is a literal passed to `t()` or `_()`. Import them from the generated module.
@@ -373,7 +367,7 @@ _("Hello, %s!") % name
 _("Total: {price:,.2f}").format(price=price)
 ```
 
-These run the formatting before any lookup, so the extractor marks them unsafe. The [next step](#migrate) finds them:
+These run the formatting before any lookup, so the extractor marks them unsafe. The [next step](#step-3-check-wrapped-calls) finds them:
 
 ```python
 _(f"Hello, {name}!")
@@ -510,9 +504,7 @@ if __name__ == "__main__":
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="step-3-check-wrapped-calls"></a>
 ## Step 3: Check wrapped calls
 
 Use this step when the code contains calls that format the string before the catalog lookup. That is typical of older wrapping and of an agent slip:
@@ -555,9 +547,7 @@ A report with no edits means the wrapped calls are safe. It does not mean every 
 
 Optional `--report <path>` changes the report path. Optional `--ui-block` limits the scan to one UI block.
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="step-4-add-a-language-switch"></a>
 ## Step 4: Add a language switch
 
 Every framework needs the same four things:
@@ -567,7 +557,7 @@ Every framework needs the same four things:
 3. Offer a selector built from `get_ui_languages()`.
 4. Remember the choice.
 
-Opening `?lang=pt-BR` does nothing until the app reads it. The [agent prompt](#agent-prompt-i18n-py) does all of this for apps that have a user interface, and it works out the framework for itself. The sections below show the result for Streamlit, FastAPI, Flask, and Tkinter. Other frameworks follow the same rules.
+Opening `?lang=pt-BR` does nothing until the app reads it. The [agent prompt](#run-the-agent-prompt) does all of this for apps that have a user interface, and it works out the framework for itself. The sections below show the result for Streamlit, FastAPI, Flask, and Tkinter. Other frameworks follow the same rules.
 
 <a id="streamlit"></a>
 ### Streamlit
@@ -645,10 +635,10 @@ Change `from i18n import …` to the package path from [Place the helper and the
 
 `streamlit_language_selector()` from `i18n.py` is enough for a short script whose title is a plain string. It calls `set_locale` when the widget is drawn, so a translated `page_title` above it stays on the previous language for that run, and its label stays English. See `examples/python-streamlit`.
 
-<a id="other-frameworks"></a>
+<a id="fastapi-flask-and-tkinter"></a>
 ### FastAPI, Flask, and Tkinter
 
-<a id="request-locale"></a>
+<a id="choose-the-locale-for-a-request"></a>
 #### Choose the locale for a request
 
 A web app has three sources for the language, in this order: the visitor's explicit choice (`?lang=`), the cookie that remembers it, and the browser's `Accept-Language` header. The source language is the fallback.
@@ -836,7 +826,7 @@ def home():
 
 </details>
 
-<a id="language-menu-template"></a>
+<a id="the-language-menu-in-a-template"></a>
 #### The language menu in a template
 
 FastAPI's `Jinja2Templates` and Flask both render this. A link that carries `?lang=` keeps the page and sets the cookie, so the choice sticks on later pages. The `dir` attribute uses `get_direction()` for right-to-left languages.
@@ -909,7 +899,7 @@ class App(tk.Tk):
 
 A new thread starts in the source language, not the window's. Translate in the main thread, or call `set_locale` at the start of the thread function. Other toolkits need the same pieces: a function that sets every visible text, and a menu handler that calls `set_locale` and then that function. PyQt and PySide have their own retranslate hooks; see [Locale in each framework](/guide/ui-strings/python#locale-in-each-framework).
 
-That is the last manual step. Continue at [Choose models and translate](#translate).
+That is the last manual step. Continue at [Choose models and translate](#choose-models-and-translate).
 
 <a id="not-your-case"></a>
 ## Not your case?

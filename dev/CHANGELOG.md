@@ -9,12 +9,22 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: docs — corrected grammar, standardised English (UK) spelling and terminology, split long run-on sentences, removed translation-breaking bold-wrapped inline code (`**\`code\`**`), and reworded idioms that translate poorly across the English documentation. Renamed the `Self-localisation` and `romanised` heading anchors (with their in-repo links) and the VitePress/Nextra/Fumadocs link-normaliser anchors.
+- **Changed**: UI — aligned source UI strings for terminology and grammar: `prioritise` spelling, hyphenated `Zero-data-retention catalog`, `re-translate` wording, `Dry run mode:` punctuation, Unicode ellipsis in dashboard loading labels, `before the interrupt` phrasing, `Output directory:` label, consistent `Config file path` casing, and trailing `comma-separated` phrasing in flag help. Run `pnpm i18n:self` to regenerate locale bundles.
+
+- **Added**: skills — one install ships a slash command per consumer workflow beside the shared `ai-i18n-tools` skill. Workflow commands set `disable-model-invocation` so they load only when named.
+- **Added**: skills — `references/glossary.md` and `references/providers.md` cover terminology consistency (user CSV, forced terms, context files) and provider/model selection (fallback chains, per-locale models, cost), wired into the shared `ai-i18n-tools` skill.
+
+- **Fixed**: write-heading-ids — a renamed heading keeps one HTML anchor for the current slug. Older `<a id>` lines stacked above that heading are removed, and in-repo markdown links to a removed id are retargeted. An `<a id>` that is not directly above a heading is left in place.
+
+- **Added**: skill distribution - root `plugin.json`, Claude Code and Copilot marketplace files, a Codex marketplace catalog, the coding-agent skill install guide, and `dev/skill-listings.md`.
+- **Added**: release - GitHub releases attach `ai-i18n-tools-skill.zip` (the consumer skill directory). `sync-example-ai-i18n-tools-version` keeps plugin manifest `version` fields aligned with `package.json`.
 - **Changed**: CLI - `doctor` names the active provider on catalog lines (`models in cheaperinference's catalog (10 ok)`), prints each provider on one line with `active`, API key status, and `baseUrl`, and marks a current install on the version line instead of repeating it.
 - **Added**: CLI - `doctor` checks config, paths, cache, providers, and environment, verifies model ids against the provider catalog, and warns when a newer GitHub release exists (`--local` skips both network checks).
 
 - **Added**: agent integration - ship a portable `ai-i18n-tools` skill with focused consumer references and a concise, `sync`-first context entrypoint.
 
-- **Changed**: release binaries — the publish job uploads `ai-i18n-tools-*` once, which covers the platform binaries and `ai-i18n-tools-python-examples.zip`, plus `SHA256SUMS.txt`. `install.sh` and `install.ps1` stay in the repository and are not release assets. The installation guide matches that.
+- **Changed**: release binaries — the publish job uploads `ai-i18n-tools-*` once, which covers the platform binaries, `ai-i18n-tools-python-examples.zip`, and `ai-i18n-tools-skill.zip`, plus `SHA256SUMS.txt`. `install.sh` and `install.ps1` stay in the repository and are not release assets. The installation guide matches that.
 
 ## [1.11.0] - 2026-10-27
 

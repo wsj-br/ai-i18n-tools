@@ -21,8 +21,6 @@
 
 व्यक्तिगत कमांड को मैन्युअल रूप से जोड़ने के बजाय `sync` को प्राथमिकता दें। मैन्युअल रूप से चलाने पर क्रम, निष्कर्षण और लोकेल फ़्लैग गलत हो सकते हैं।
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI स्ट्रिंग और दस्तावेज़ एक साथ
 
@@ -82,8 +80,6 @@ UI ब्लॉक डिफ़ॉल्ट रूप से दस्ताव�
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## मिश्रित दस्तावेज़ कॉन्फ़िग

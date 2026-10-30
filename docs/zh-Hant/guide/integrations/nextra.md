@@ -48,7 +48,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在現有網站中啟用 i18n
 
-一個僅有英文的 Nextra 4 網站需要一個語系資料夾、一個路由參數以及 Next.js 的 i18n 設定，這樣 `translate-docs` 才有地方可以寫入。[字典提示](#agent-prompt-dictionary) 能一次完成這些設定。檢查清單：
+一個僅有英文的 Nextra 4 網站需要一個語系資料夾、一個路由參數以及 Next.js 的 i18n 設定，這樣 `translate-docs` 才有地方可以寫入。[字典提示](#agent-prompt-dictionary-and-routes) 能一次完成這些設定。檢查清單：
 
 - 將 MDX 移至 `content/en/` (英文是一個語系資料夾，而非內容根目錄)。
 - 在 `next.config` 中設定 `i18n.locales` 和 `defaultLocale`。

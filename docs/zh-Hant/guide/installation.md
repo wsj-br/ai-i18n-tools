@@ -167,7 +167,7 @@ package.json 指令碼 — 當 npm 或 pnpm 執行指令碼時，它會將 `node
 
 替代方案 — 如果您不想調整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。若要進行一次性的零安裝執行，且不在 `package.json` 中建立項目：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
-<a id="cloned-monorepo"></a>
+<a id="coding-agent-skill"></a>
 ### 已複製的 monorepo
 
 從 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整複製版本開發套件或執行工作區範例時：

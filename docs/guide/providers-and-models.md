@@ -53,7 +53,6 @@ With the flag on, every chat request includes `"zdr": true`, and `list-models`, 
 
 Leave the flag off when the Cheaper Inference account does not require zero data retention. If [Data Protection](https://platform.cheaperinference.com/dashboard/data-protection) is already on for the account, Cheaper Inference still refuses a model with no zero-data-retention route. The error names that model. To keep the account policy, set `zeroDataRetention` to `true` and switch to a model from the zero-data-retention catalog. To keep the refused model, turn zero data retention off on that page. The fallback chain then tries the next configured model.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### Models
 
@@ -71,7 +70,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 Each provider block can define its own `translationModels`, optional `uiModels` and `localeModels`, `maxTokens`, `temperature`, and `requestTimeout` (seconds) or `requestTimeoutMs`. A timeout on the provider overrides the top-level `requestTimeout` / `requestTimeoutMs`. A legacy top-level `openrouter` block is still accepted and auto-migrated to `providers.openrouter` on load.
 
-Optional `pricing` and `modelPricing` set USD per 1,000,000 tokens (`inputPerMTokens` and `outputPerMTokens`) when the provider omits `usage.cost`. `pricing` is the provider-wide default; a `modelPricing` entry overrides it for one model id. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset on those providers. A provider-reported cost is kept as returned. The amount is included in the translation summary, [`usage`](/reference/cli-commands/workflows#usage), and [Usage & costs](/guide/translation-dashboard/usage).
+Optional `pricing` and `modelPricing` set USD per 1M tokens (`inputPerMTokens` and `outputPerMTokens`) when the provider omits `usage.cost`. `pricing` is the provider-wide default; a `modelPricing` entry overrides it for one model id. OpenRouter and Cheaper Inference already return a per-call cost, so leave both unset on those providers. A provider-reported cost is kept as returned. The amount is included in the translation summary, [`usage`](/reference/cli-commands/workflows#usage), and [Usage & costs](/guide/translation-dashboard/usage).
 
 Runnable example with four providers on the same document, including sample rates: [`examples/multi-provider`](/examples#multi-provider).
 

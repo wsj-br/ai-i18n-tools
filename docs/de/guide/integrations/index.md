@@ -8,7 +8,7 @@ Dokumentations-Integrationen verwenden die [Dokumente](/de/guide/documents/)-Pip
 <a id="which-guide-to-read"></a>
 ## Welchen Leitfaden Sie lesen sollten
 
-Die Auswahltabelle mit Initialisierungs-Templates und Agent-Prompts pro Framework befindet sich in [i18n zu einer Website oder Dokumentations-Website hinzufügen](/de/guide/add-i18n-to-website#what-do-you-have). Python-Frameworks: [Python](/de/guide/integrations/python).
+Die Auswahltabelle mit Initialisierungs-Templates und Agent-Prompts pro Framework befindet sich in [i18n zu einer Website oder Dokumentations-Website hinzufügen](/de/guide/add-i18n-to-website#initialise-the-project). Python-Frameworks: [Python](/de/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## Gemeinsame Konzepte

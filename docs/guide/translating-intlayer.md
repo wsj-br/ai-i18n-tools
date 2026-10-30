@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` runs the app on [http://localhost:3093](http://localhost:3093). Switch the locale to `es` or `zh-Hans` before translating and the strings fall back to English; after `pnpm translate` the filled translations appear. Edit an English string and re-run `pnpm translate` to see only that leaf refresh.
+`pnpm dev` runs the app on `http://localhost:3093`. Switch the locale to `es` or `zh-Hans` before translating and the strings fall back to English; after `pnpm translate` the filled translations appear. Edit an English string and re-run `pnpm translate` to see only that leaf refresh.
 
 Full walkthrough: [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md).
 

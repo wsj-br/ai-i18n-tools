@@ -40,7 +40,7 @@ A leaf+locale is translated when the locale is absent from the leaf (missing), o
 
 **Key options:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]`: files/dirs/globs to scan (default: the block's `sourceRoots`). `-l` / `--locale`: comma-separated target locales to fill (default: the block's configured `targetLocales`). `--ui-block`: zero-based index, description, or `stringsJson` path (default: block 0). `-j` parallelizes locales.
+`[paths...]`: files/dirs/globs to scan (default: the block's `sourceRoots`). `-l` / `--locale`: comma-separated target locales to fill (default: the block's configured `targetLocales`). `--ui-block`: zero-based index, description, or `stringsJson` path (default: block 0). `-j` parallelises locales.
 
 **See also:** [migrate-intlayer](#migrate-intlayer), [Migrating from Intlayer](/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ Translate UI strings only (`strings.json` → locale JSON). Requires `features.t
 
 **Key options:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: comma-separated target locales (default: config `targetLocales` minus `sourceLocale`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j` parallelizes **locales**; within each locale, config `uiBatchConcurrency` (default **2**) parallelizes LLM batches (chunks of 50 strings, then plural groups). There is no CLI flag for `uiBatchConcurrency`.
+`-l` / `--locale`: comma-separated target locales (default: config `targetLocales` minus `sourceLocale`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j` parallelises **locales**; within each locale, config `uiBatchConcurrency` (default **2**) parallelises LLM batches (chunks of 50 strings, then plural groups). There is no CLI flag for `uiBatchConcurrency`.
 
 ---
 
@@ -97,7 +97,7 @@ Extract, then translate UI strings (requires `features.translateUIStrings`). UI-
 
 **Synopsis:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Runs `extract` first (requires `features.translateUIStrings`) so each selected catalog matches source, then LLM review of source-locale UI strings (spelling, grammar). `--ui-block` limits extract and review to one block. Terminology hints come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — UI catalogs are not fed back in, so bad copy is not reinforced as glossary). Uses the active LLM provider (its API-key env var).
+Runs `extract` first (requires `features.translateUIStrings`) so each selected catalog matches source, then performs an LLM review of source-locale UI strings (spelling, grammar). `--ui-block` limits extract and review to one block. Terminology hints come from `glossary.userGlossary` CSV only (same scope as `translate-ui` — UI catalogs are not fed back in, so bad copy is not reinforced as glossary). Uses the active LLM provider (its API-key env var).
 
 Exits **1** on failure (missing feature flag, extract failure, missing/invalid catalog, missing API key, or when all batches fail); exit **0** when the run completes successfully (findings are advisory). Writes `proofread-ui-results_<timestamp>.log` under `cacheDir` as a human-readable report (summary, issues, not-reviewed rows, and per-string OK rows); the terminal prints summary counts and issues only (no `[ok]` lines per string). A batch that fails, or a model response that is shorter than the batch and has no usable `index` on each slot, counts those strings as not reviewed. Their issues are dropped so a short array is not applied to the wrong strings. Prints the log filename on the last line. With `--json`, human-style output goes to stderr. Links use `path:line` like the dashboard UI strings link button.
 

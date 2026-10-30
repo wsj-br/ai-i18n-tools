@@ -21,8 +21,6 @@
 
 建议使用 `sync`，而不是手动链接各个命令。手动运行时，顺序、提取和区域设置标志很容易出错。
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI 字符串和文档的组合
 
@@ -82,8 +80,6 @@ UI 区块默认包含其 `strings.json` 目录，作为文档的术语表提示 
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## 混合文档配置

@@ -5,7 +5,7 @@
 
 このツールは`README.md`をそのままにし、言語ごとに1つのロケールファイル（例: `translated-docs/README.de.md`）を書き込みます。README内の言語行がこれらのファイルをリンクします。
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## どのセットアップに該当しますか？
 
 | あなたの状況 | スキャフォールド | その後 |
@@ -17,23 +17,23 @@
 
 `--with-readme`は`ui-markdown`と`docs-markdown`では何もしません。これらのテンプレートにはすでにREADMEブロックが含まれているためです。
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## 得られるもの
 
 - `README.md`はソースファイルのままです。ホストはそれをリポジトリのフロントページとしてレンダリングし続けます。
 - 各ターゲットロケールは、`translated-docs/README.de.md`のような兄弟ファイルになります。
 - ソースおよびすべての翻訳内の言語行には、読者が閲覧しているファイルから機能するリンクとともに、すべてのロケールがリストされます。
 
-これらのファイルも翻訳する必要がある場合は、`CONTRIBUTING.md`、`CHANGELOG.md`、または`docs/`フォルダーを同じブロックに追加します。[README以上のもの](#more-than-the-readme)を参照してください。
+これらのファイルも翻訳する必要がある場合は、`CONTRIBUTING.md`、`CHANGELOG.md`、または`docs/`フォルダーを同じブロックに追加します。[README以上のもの](#step-3-more-than-the-readme)を参照してください。
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## インストール
 
 CLIをインストールし ([インストール](/ja/guide/installation))、プロバイダーのAPIキーを設定します ([プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key))。Ollamaはキーを必要としません。
 
 `package.json`を持つリポジトリは、パッケージを開発依存関係としてインストールします。Node.jsプロジェクトのないリポジトリは、`npx ai-i18n-tools`を実行するか、[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)を使用できます。
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## スキャフォールド
 
 JS/TSアプリとREADME（1つのコマンド。`ui-markdown`がデフォルトテンプレートです）:
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init`は`ai-i18n-tools.config.json`のみを書き込みます。`README.md`は編集しません。設定にREADMEブロックが含まれている場合、貼り付けるマーカー行を出力し、`README.md`が見つからない場合は警告します。既存の設定はそのままにされます。[既存の設定にブロックを追加する](#add-the-block-to-a-config-you-already-have)のように、ブロックを手動で追加してください。
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## 設定
 
 重要なキーは4つです:
@@ -140,12 +140,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### 既存の設定にブロックを追加する
 
 ハイブリッドの例から`docs`オブジェクトを追加し、`features.translateDocs`を`true`に設定します。設定にすでに`docs`配列がある場合（例えばVitePressやDocusaurusサイトなど）、READMEオブジェクトを2番目のエントリとして追加します。`sync`はすべてのブロックを実行します。[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app)では、ドキュメントサイト用に1つのブロック、`README.md`用に1つのフラットブロックを使用しています。
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## 言語リストの追加
 
 読者が他の言語を見るべき場所である`README.md`にこの行を配置します。その上の行にある短いラベルは通常の散文であり、翻訳されます。
@@ -158,7 +158,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 この行は空でも構いません。`translate-docs`は、開始マーカーから終了マーカーまでのすべてを、ロケールごとに1つのリンクに置き換えます。フェンスで囲まれたコードブロック内のマーカーは無視されるため、同じファイル内の設定サンプルは一致しません。詳細: [言語スイッチャー](/ja/guide/documents/language-switcher)。
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## 翻訳する
 
 ```bash
@@ -172,14 +172,14 @@ ai-i18n-tools status
 
 `translated-docs/`をコミットし、ホスト上で翻訳されたREADMEを開きます。ソースREADMEと`translated-docs/README.de.md`間の相対リンクは、各ファイルに対して書き換えられます。
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## ハイブリッドのヒント
 
 - `docs[].targetLocales`を使用して、アプリよりも少ない言語でREADMEを翻訳します。[ドキュメントのロケール数を減らす](/ja/guide/combining-pipelines#fewer-locales-for-documents)を参照してください。
 - 製品用語を`glossary.userGlossary`に入れます。同じCSVがUI文字列とREADMEの両方に使用されます。
 - `ai-i18n-tools sync --no-docs`または`ai-i18n-tools sync --no-ui`を使用して片側のみを実行します。
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## README以外
 
 `contentPaths`にパスを追加します。`flatPreserveRelativeDir`はフォルダーを保持するため、`docs/guide.md`は別の`guide.md`と衝突する代わりに`translated-docs/docs/guide.de.md`になります。
@@ -192,7 +192,7 @@ ai-i18n-tools status
 
 言語ごとに異なるスクリーンショット: [画像とスクリーンショット](/ja/guide/images-and-screenshots/)。
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## ホスト上のリンク
 
 リポジトリ内の他のファイルへのリンクは、ロケールファイルに書き換えられます。公開されているドキュメントサイトへのリンクは書き換えられません。このリポジトリは、ドキュメントサイトのURLに`regexAdjustments`を使用してロケールをプレフィックスとして追加します。
@@ -208,7 +208,7 @@ ai-i18n-tools status
 
 フラットリンク書き換えツールが最初に実行され、次にこれらの置換が実行されます。[リンクの書き換え](/ja/guide/documents/link-rewriting)を参照してください。
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## 翻訳を維持する
 
 ソースのREADMEまたはアプリの文字列が変更された後、`sync`を再実行してください。キャッシュは、新規または変更されたテキストのみをモデルに送信します。更新されたファイルを`translated-docs/`の下でコミットしてください。
@@ -239,12 +239,12 @@ jobs:
 
 設定したプロバイダーの環境変数を使用してください。Ollamaは、ホストされたランナーにインストールしない限り適用されません。
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## 自動翻訳である旨の記載
 
 AI翻訳は誤っている可能性があります。[このリポジトリのREADME](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md)にあるような短い注記をREADMEの最後に記載することで、他の言語が機械翻訳されたものであり、信頼する前に確認する必要があることを読者に伝えます。
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## 当てはまりませんか？
 
 | あなたが持っているもの | 読むべきもの |
@@ -254,7 +254,7 @@ AI翻訳は誤っている可能性があります。[このリポジトリのRE
 | ロケールごとに1つのHTMLファイル | [HTMLページ](/ja/guide/documents/html-pages) |
 | `translate-docs`の完全なリファレンス | [ドキュメント](/ja/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## 例
 
 | プロジェクト | 表示内容 |
@@ -263,7 +263,7 @@ AI翻訳は誤っている可能性があります。[このリポジトリのRE
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | UI文字列、ドキュメントサイト、および個別のフラットなREADMEブロック |
 | このリポジトリ | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): フラットなREADMEブロック、次にVitePressサイト |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## エージェントプロンプト
 
 これをCursorまたは他のコーディングエージェントにコピーしてください。これはリポジトリを準備します。READMEは翻訳しません。

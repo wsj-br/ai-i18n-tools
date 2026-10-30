@@ -3507,7 +3507,7 @@ function printTranslateDocsRunSummary(
   printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
     success: t("✅ Translation complete!"),
     interrupted: t(
-      "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+      "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
     ),
     failure: t(
       "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error)."
@@ -3644,7 +3644,7 @@ export async function runTranslate(
     console.log(chalk.cyan(t("Output log: ")) + chalk.magenta(opts.logPath));
   }
   if (opts.dryRun) {
-    console.log(chalk.yellow(`\n${t("⚠️  Dry run mode - no changes will be made")}`));
+    console.log(chalk.yellow(`\n${t("⚠️  Dry run mode: no changes will be made")}`));
   }
   console.log("");
 

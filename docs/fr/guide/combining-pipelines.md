@@ -21,8 +21,6 @@ Ignorez les parties avec `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`. Les 
 
 Préférez `sync` plutôt que d'enchaîner les commandes individuelles manuellement. L'ordre, l'extraction et les drapeaux de locale sont faciles à mal configurer lorsqu'ils sont exécutés manuellement.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## Chaînes d'interface utilisateur et documents ensemble
 
@@ -82,8 +80,6 @@ Utilisez `docs[].targetLocales` sur un bloc pour traduire les fichiers de ce blo
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## Configuration de documentation mixte

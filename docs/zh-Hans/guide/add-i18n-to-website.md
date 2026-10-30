@@ -5,7 +5,7 @@
 
 对于 UI 字符串位于 `t()` 调用中的应用，请改用[为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)或[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 你的情况是？
 
 | 你的站点 | 初始模板 | 从这里开始 |
@@ -21,16 +21,16 @@
 <details class="agent-prompt">
 <summary>代理提示</summary>
 
-- Astro Starlight：仅注释。Astro `t()` 文件：[JS/TS 提示](/zh-Hans/guide/add-i18n-to-js#agent-prompt)（跳过 i18next）。
+- Astro Starlight：仅注释。Astro `t()` 文件：[JS/TS 提示](/zh-Hans/guide/add-i18n-to-js#run-the-agent-prompt)（跳过 i18next）。
 - Docusaurus：仅注释（`<Translate>` 是 Docusaurus 自己的 API）。
 - VitePress：[主题目录提示](/zh-Hans/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off)。
-- Nextra：[字典提示](/zh-Hans/guide/integrations/nextra#agent-prompt-dictionary) 和[混合 `t()` 提示](/zh-Hans/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
+- Nextra：[字典提示](/zh-Hans/guide/integrations/nextra#agent-prompt-dictionary-and-routes) 和[混合 `t()` 提示](/zh-Hans/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
 - Fumadocs：[UI 目录提示](/zh-Hans/guide/integrations/fumadocs#agent-prompt)。
-- README 和 Markdown 文件：[README 提示](/zh-Hans/guide/add-i18n-to-readme#agent-prompt)。
+- README 和 Markdown 文件：[README 提示](/zh-Hans/guide/add-i18n-to-readme#run-the-agent-prompt)。
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## 步骤
 
 每个框架的流程结构都相同；具体细节请参阅上面链接的框架指南。
@@ -42,7 +42,7 @@
 5. 运行 `ai-i18n-tools sync`（或 `translate-docs`），然后构建站点。
 6. 在浏览器中检查一个本地化路由。框架自带的区域设置下拉菜单就是切换器。对于像 README 这样的扁平 Markdown 文件，使用 [languageListBlock](/zh-Hans/guide/documents/language-switcher) 添加一个链接行。
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## 翻译哪些内容
 
 页面主体始终通过[文档](/zh-Hans/guide/documents/)管道处理。框架外壳（导航、侧边栏、主题标签）在框架支持的情况下，会在同一次运行中处理，而不是通过单独的 [JSON](/zh-Hans/guide/json) 管道。
@@ -59,7 +59,7 @@
 
 `translate-docs` 不会翻译图片和屏幕截图。有关特定于区域设置的文件，请参阅[图片和屏幕截图](/zh-Hans/guide/images-and-screenshots/)。
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## 纯 HTML
 
 有两个选项，具体取决于页面的预期行为：
@@ -69,7 +69,7 @@
 
 一个文件属于一个路径。
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## 不是您的情况？
 
 - 应用 UI 字符串：[向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) 或 [向 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。

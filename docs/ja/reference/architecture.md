@@ -288,7 +288,7 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 
 `Logger`は、ANSIカラー出力で`debug`、`info`、`warn`、`error`レベルをサポートします。詳細モード（`-v`）では`debug`が有効になります。`logFilePath`が設定されている場合、ログ行はそのファイルにも書き込まれます。
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### ツールの自己ローカライズ (ツール UI)
 
 ツールは、コマンドラインインターフェースのヘルプ、高トラフィックログ/サマリー/エラーメッセージ、および翻訳ダッシュボードを含む自身のUIを、翻訳対象のコンテンツとは別にローカライズします。

@@ -34,7 +34,7 @@
 
 候補はプロバイダーの`GET /models`リストから取得されます。`providers.cheaperinference.zeroDataRetention`がtrueの場合、そのリクエストは`GET /v1/models?zdr=true`です。期限切れの行とチャット以外の行（埋め込み、音声、画像、ビデオ、モデレーション、リランカー）は除外されます。そのカタログリクエストが失敗した場合、コマンドは1で終了します。
 
-`--quality`がデフォルトです。これはChrFとArenaスコアを価格よりも重視します。`--price`は価格をそれらのスコアよりも重視しつつ、品質の下限を維持するため、測定されていない安価なモデルがリストの上位に来ることはありません。両方のフラグを渡すとエラーになります。どちらも渡さない場合は品質が優先されます。オプションの`modelSuggestion`設定内の重み付けは、いずれのプロファイルも置き換えます。[Configuration](/ja/reference/configuration#modelsuggestion)を参照してください。同じ重み付けが[dashboard Models tab](/ja/guide/translation-dashboard/models)でも使用されます。
+`--quality`がデフォルトです。これはChrFとArenaスコアを価格よりも重視します。`--price`は価格をそれらのスコアよりも重視しつつ、品質の下限を維持するため、測定されていない安価なモデルがリストの上位に来ることはありません。両方のフラグを渡すとエラーになります。どちらも渡さない場合は品質が優先されます。オプションの`modelSuggestion`設定内の重み付けは、いずれのプロファイルも置き換えます。[Configuration](/ja/reference/configuration#modelsuggestion-optional)を参照してください。同じ重み付けが[dashboard Models tab](/ja/guide/translation-dashboard/models)でも使用されます。
 
 ChrFは、メトリックが`chrf`であるlanguagebenchの`translation_from`および`translation_to`行の平均であり、このプロジェクトの`sourceLocale`および`targetLocales`に限定されます。ロケールはlanguagebenchの言語コード（主要なサブタグ。`pt-BR`から`pt`、`zh-Hant`から`zh`、`yue`へのエイリアスなど一部の例外あり）にマッピングされます。空のセットの場合は`en`が使用されます。ArenaはLMArenaの総合Arenaスコアであり、Eloではありません。ランク付けの価格は100万トークンあたりの`(3 × input + output) / 4` USDです。価格のソースは、ゼロ以外のカタログレート、次にmodels.devの入力および出力レート、最後にlanguagebenchの単一コスト数値の順です。カタログ価格が`0`の場合は価格設定なしとみなされ、無料ではありません。価格不明なモデルは、品質プロファイルでは中立、価格プロファイルでは最悪として扱われます。ChrFが欠落している場合は品質下限を下回る順位になります。ChrFまたはArenaの欠落に対して使用される`0.35`および`0.45`の代用値はインデックスにのみ影響し、テーブルには`—`と表示されます。
 

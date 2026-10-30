@@ -5,12 +5,12 @@
 
 단계: 도구를 설치하고, i18next를 설치하고, `extract`를 한 번 실행하고, `t`가 존재하도록 작은 설정 파일을 추가하고, 사용자에게 보이는 텍스트를 래핑한 다음 번역합니다. 이것이 해당 사례인지 확실하지 않으신가요? 마지막에 [해당 사례가 아닌가요?](#not-your-case)를 참조하세요.
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 도구 설치 및 키 설정
 
 CLI를 설치하고([설치](/ko/guide/installation)) 공급자용 API 키를 설정합니다([공급자 및 API 키](/ko/guide/quick-start#provider-and-api-key)). Ollama는 키가 필요 없습니다.
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## 구성 초기화
 
 ```bash
@@ -26,7 +26,7 @@ ai-i18n-tools init -P openrouter
 
 다른 모든 키는 [구성](/ko/reference/configuration)에 있습니다.
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## 런타임 라이브러리 설치
 
 ai-i18n-tools는 `i18next` 또는 `react-i18next`에 의존하지 않습니다. 앱이 이를 설치합니다.
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## 추출을 한 번 실행
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 다음 단계의 설정 파일은 `strings.json`와 `ui-languages.json`를 가져오며, `extract`만 이를 작성합니다. `t()` 호출을 찾지 못하더라도 둘 다 작성하므로 앱이 컴파일됩니다. 0개의 문자열을 예상하거나, `package.json`에 `description`가 있다면 1개를 예상하세요. 추출기가 기본적으로 이를 포함하기 때문입니다 (`ui.uiExtractor.includePackageDescription`).
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## 부트스트랩 추가
 
 i18n 설정 파일을 생성합니다. 이 최소 버전으로도 문자열을 래핑하고 번역하기에 충분합니다. `SOURCE_LOCALE`는 `ai-i18n-tools.config.json`에서 `sourceLocale`과 같아야 합니다.
@@ -86,10 +86,10 @@ React를 사용하지 않으시나요? `react-i18next` 가져오기(import)와 `
 
 첫 번째 렌더링 전에 앱 엔트리에서 이 파일을 가져옵니다. Next.js에서는 [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts)와 동일한 패턴으로 클라이언트 모듈에서 가져옵니다.
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## 하드코딩된 텍스트 교체
 
-수동으로 이 작업을 수행하거나 [JS/TS 프롬프트](#agent-prompt)를 코딩 에이전트에 붙여넣으세요. `t()`의 인수는 사용자가 보게 될 원본 언어 문장입니다. 플랫 로케일 파일은 해당 문장을 키로 사용합니다.
+수동으로 이 작업을 수행하거나 [JS/TS 프롬프트](#run-the-agent-prompt)를 코딩 에이전트에 붙여넣으세요. `t()`의 인수는 사용자가 보게 될 원본 언어 문장입니다. 플랫 로케일 파일은 해당 문장을 키로 사용합니다.
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TS 에이전트 프롬프트</summary>
@@ -215,7 +215,7 @@ console.log(t("Hello {{name}}", { name }));
 
 다음은 그대로 두세요: `className`, `href` 및 기타 URL, 가져오기 경로, ID, 테스트 ID, 오류 코드, 식별자로 사용되는 객체 키, 그리고 주석 내부 텍스트.
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## 추출 및 번역
 
 리터럴이 제자리에 있을 때:
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app)는 `src/main.js`가 이미 래핑된 작은 Node 앱입니다. Next.js 예시는 React 부트스트랩입니다.
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## 언어 전환
 
 [i18next 연결](/ko/guide/ui-strings/i18next-runtime#startup-locale)에 설명된 대로 첫 렌더링 전에 저장된 로케일을 복원하세요. 그런 다음 `await loadLocale(code)`를 호출한 다음 `await i18n.changeLanguage(code)`를 호출하는 컨트롤을 추가하세요: [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher).
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## 번역 유지
 
 원본 텍스트를 변경한 후 `sync`를 다시 실행하세요. 캐시는 새로 추가되거나 변경된 문자열만 모델로 전송됨을 의미합니다. [권장 package.json 스크립트](/ko/guide/quick-start#recommended-packagejson-scripts)에서 스크립트를 추가하고, 번역이 어긋나지 않도록 CI에서 `sync`를 실행하세요.
 
 기본 `init` 템플릿은 `README.md`도 번역합니다. [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 참조하세요.
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## 다른 도구에서 전환
 
 ai-i18n-tools에는 자체 문자열 추출기가 포함되어 있습니다. `i18next-scanner`, `babel-plugin-i18next-extract` 또는 이와 유사한 것을 사용했다면, 마이그레이션 후 해당 개발 종속성을 제거할 수 있습니다. 기존 i18next 네임스페이스 JSON 파일은 [JSON 파이프라인](/ko/guide/json#i18next-namespace-files)에 유지될 수 있습니다. Intlayer `.content.ts` 사전은 `migrate-intlayer`를 사용하여 가져올 수 있습니다: [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)을 참조하세요. 런타임에 Intlayer를 유지하고 번역만 채우려면 `translate-intlayer`를 사용하세요: [Intlayer를 제자리에서 번역](/ko/guide/translating-intlayer)을 참조하세요.
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## 해당하지 않으시나요?
 
 | 현재 코드 | 참조 |

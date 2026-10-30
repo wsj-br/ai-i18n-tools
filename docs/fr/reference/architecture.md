@@ -288,7 +288,7 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)` :
 
 `Logger` prend en charge les niveaux `debug`, `info`, `warn`, `error` avec sortie couleur ANSI. Le mode verbeux (`-v`) active `debug`. Lorsque `logFilePath` est défini, les lignes de journal sont également écrites dans ce fichier.
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### Auto-localisation (interface utilisateur de l'outil)
 
 L'outil localise sa propre interface utilisateur — aide en ligne de commande, messages de journalisation/résumé/erreur à fort trafic, et le tableau de bord de traduction — séparément du contenu qu'il traduit pour vous.

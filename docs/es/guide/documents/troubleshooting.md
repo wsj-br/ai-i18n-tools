@@ -31,7 +31,7 @@ Un enlace de Markdown o `![alt](url)` funciona en inglés, pero devuelve un erro
 2. Agrega o ajusta `docsOutput.postProcessing.regexAdjustments` para intercambiar segmentos de configuración regional o unir rutas absolutas de `/img/…`. Para un diseño plano, recuerda que el reescritor de enlaces planos se ejecuta **antes** de `regexAdjustments`; haz coincidir los patrones con la URL ya prefijada.
 3. Asegúrate de que los archivos de recursos específicos de la configuración regional existan en las rutas a las que hace referencia el Markdown reescrito (`translate-docs` reescribe las URL, pero no copia los archivos ráster).
 
-<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
 ## La salida en hindi, árabe, CJK o cirílico está romanizada (letras latinas)
 
 Algunos modelos traducen el significado, pero escriben el resultado en letras latinas/romanas (por ejemplo, hindi como `Namaste` en lugar de `नमस्ते`). `hi` a secas significa devanagari; usa `hi-Latn` solo cuando quieras hindi romanizado.

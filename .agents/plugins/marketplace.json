@@ -1,0 +1,20 @@
+{
+  "name": "ai-i18n-tools",
+  "interface": {
+    "displayName": "ai-i18n-tools"
+  },
+  "plugins": [
+    {
+      "name": "ai-i18n-tools",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

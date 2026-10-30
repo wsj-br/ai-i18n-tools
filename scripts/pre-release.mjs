@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Full release gate: sync example `ai-i18n-tools` pins, i18n:self, format,
+ * Full release gate: sync example `ai-i18n-tools` pins and plugin manifest
+ * versions, i18n:self, format,
  * lint, clean, build, test, docs build, and production builds for every
  * workspace example with a site build.
  *
@@ -66,7 +67,7 @@ const EXAMPLE_BUILDS = [
   ["examples/vitepress-docs", "docs:build"],
 ];
 
-banner("Syncing example ai-i18n-tools version pins");
+banner("Syncing example ai-i18n-tools version pins and plugin manifest versions");
 {
   let result;
   try {
@@ -81,6 +82,13 @@ banner("Syncing example ai-i18n-tools version pins");
     }
   } else {
     console.log(`example ai-i18n-tools pins already match ${result.expected}`);
+  }
+  if (result.manifestsUpdated.length > 0) {
+    for (const file of result.manifestsUpdated) {
+      console.log(`updated ${path.relative(root, file)} → ${result.version}`);
+    }
+  } else {
+    console.log(`plugin manifest versions already match ${result.version}`);
   }
 }
 

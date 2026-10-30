@@ -5,7 +5,7 @@
 
 यह टूल `README.md` को यथावत रखता है और प्रति भाषा एक लोकल फ़ाइल लिखता है, उदाहरण के लिए `translated-docs/README.de.md`। README के अंदर एक भाषा पंक्ति उन फ़ाइलों को एक साथ जोड़ती है।
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## आप किस सेटअप में हैं?
 
 | आपके पास है | स्काफ़ोल्ड | फिर |
@@ -17,23 +17,23 @@
 
 `--with-readme` `ui-markdown` और `docs-markdown` पर कोई ऑपरेशन नहीं करता है, क्योंकि उन टेम्प्लेट में पहले से ही README ब्लॉक शामिल है।
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## आपको क्या मिलता है
 
 - `README.md` स्रोत फ़ाइल बनी रहती है। होस्ट इसे रिपॉजिटरी के मुख्य पृष्ठ के रूप में प्रस्तुत करते रहते हैं।
 - प्रत्येक लक्ष्य लोकल `translated-docs/README.de.md` जैसी एक सहोदर फ़ाइल होती है।
 - स्रोत और प्रत्येक अनुवाद में भाषा पंक्ति हर लोकल को सूचीबद्ध करती है, जिसमें ऐसे लिंक होते हैं जो पाठक द्वारा देखी जा रही फ़ाइल से काम करते हैं।
 
-जब उन फ़ाइलों का भी अनुवाद किया जाना चाहिए, तो `CONTRIBUTING.md`, `CHANGELOG.md`, या एक `docs/` फ़ोल्डर को उसी ब्लॉक में जोड़ें। [README से अधिक](#more-than-the-readme) देखें।
+जब उन फ़ाइलों का भी अनुवाद किया जाना चाहिए, तो `CONTRIBUTING.md`, `CHANGELOG.md`, या एक `docs/` फ़ोल्डर को उसी ब्लॉक में जोड़ें। [README से अधिक](#step-3-more-than-the-readme) देखें।
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## इंस्टॉल करें
 
 CLI इंस्टॉल करें ([इंस्टॉलेशन](/hi/guide/installation)) और अपने प्रदाता के लिए API कुंजी सेट करें ([प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key))। Ollama को किसी कुंजी की आवश्यकता नहीं है।
 
 `package.json` वाली एक रिपॉजिटरी पैकेज को एक देव डिपेंडेंसी के रूप में स्थापित करती है। Node.js प्रोजेक्ट के बिना एक रिपॉजिटरी `npx ai-i18n-tools` चला सकती है, या [स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables) का उपयोग कर सकती है।
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## स्काफ़ोल्ड
 
 JS/TS ऐप और README (एक कमांड; `ui-markdown` डिफ़ॉल्ट टेम्प्लेट है):
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init` केवल `ai-i18n-tools.config.json` लिखता है। यह `README.md` को संपादित नहीं करता है। जब कॉन्फ़िग में एक README ब्लॉक शामिल होता है, तो यह चिपकाने के लिए मार्कर लाइन प्रिंट करता है और `README.md` गायब होने पर चेतावनी देता है। एक मौजूदा कॉन्फ़िग को अकेला छोड़ दिया जाता है: ब्लॉक को मैन्युअल रूप से जोड़ें, जैसा कि [आपके पास पहले से मौजूद कॉन्फ़िग में ब्लॉक जोड़ें](#add-the-block-to-a-config-you-already-have) में है।
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## कॉन्फ़िगर करें
 
 चार कुंजियाँ मायने रखती हैं:
@@ -140,12 +140,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### आपके पास पहले से मौजूद कॉन्फ़िग में ब्लॉक जोड़ें
 
 हाइब्रिड उदाहरण से `docs` ऑब्जेक्ट जोड़ें और `features.translateDocs` को `true` पर सेट करें। यदि कॉन्फ़िग में पहले से ही एक `docs` ऐरे है (उदाहरण के लिए, एक VitePress या Docusaurus साइट), तो README ऑब्जेक्ट को दूसरी एंट्री के रूप में जोड़ें। `sync` हर ब्लॉक को चलाता है। [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) ऐसा करता है: डॉक्स साइट के लिए एक ब्लॉक, `README.md` के लिए एक फ़्लैट ब्लॉक।
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## भाषा सूची जोड़ें
 
 इस पंक्ति को `README.md` में रखें, जहाँ पाठकों को अन्य भाषाएँ दिखनी चाहिए। इसके ऊपर की पंक्ति पर एक छोटा लेबल सामान्य गद्य है और इसका अनुवाद किया जाएगा।
@@ -158,7 +158,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 लाइन खाली हो सकती है। `translate-docs` शुरुआती मार्कर से लेकर समापन मार्कर तक सब कुछ प्रति लोकेल एक लिंक के साथ बदल देता है। फेंस्ड कोड ब्लॉक के अंदर के मार्कर अनदेखा किए जाते हैं, इसलिए उसी फ़ाइल में एक कॉन्फ़िग नमूना मेल नहीं खाता। विवरण: [Language switcher](/hi/guide/documents/language-switcher)।
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## अनुवाद करें
 
 ```bash
@@ -172,14 +172,14 @@ ai-i18n-tools status
 
 `translated-docs/` को कमिट करें और होस्ट पर अनुवादित README खोलें। स्रोत README और `translated-docs/README.de.md` के बीच के सापेक्ष लिंक को प्रत्येक फ़ाइल के लिए फिर से लिखा जाता है।
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## हाइब्रिड युक्तियाँ
 
 - `docs[].targetLocales` के साथ ऐप की तुलना में कम भाषाओं में README का अनुवाद करें। [Fewer locales for documents](/hi/guide/combining-pipelines#fewer-locales-for-documents) देखें।
 - उत्पाद शब्दों को `glossary.userGlossary` में डालें। UI स्ट्रिंग और README के लिए एक ही CSV का उपयोग किया जाता है।
 - `ai-i18n-tools sync --no-docs` या `ai-i18n-tools sync --no-ui` के साथ केवल एक पक्ष चलाएं।
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## README से अधिक
 
 `contentPaths` में पाथ जोड़ें। `flatPreserveRelativeDir` फ़ोल्डर रखता है, इसलिए `docs/guide.md` दूसरे `guide.md` से टकराने के बजाय `translated-docs/docs/guide.de.md` बन जाता है।
@@ -192,7 +192,7 @@ ai-i18n-tools status
 
 ऐसी स्क्रीनशॉट जो भाषा के अनुसार भिन्न हों: [छवियाँ और स्क्रीनशॉट](/hi/guide/images-and-screenshots/)।
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## होस्ट पर लिंक
 
 रिपॉजिटरी में अन्य फ़ाइलों के लिंक को लोकले फ़ाइल में फिर से लिखा जाता है। प्रकाशित डॉक्स साइट का लिंक फिर से नहीं लिखा जाता है। यह रिपॉजिटरी अपने डॉक्स-साइट URL को लोकले के साथ `regexAdjustments` का उपयोग करके उपसर्ग करती है:
@@ -208,7 +208,7 @@ ai-i18n-tools status
 
 फ़्लैट लिंक रीराइटर पहले चलता है, फिर ये प्रतिस्थापन होते हैं। [लिंक रीराइटिंग](/hi/guide/documents/link-rewriting) देखें।
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## इसे अनुवादित रखें
 
 स्रोत README या ऐप स्ट्रिंग बदलने के बाद `sync` को फिर से चलाएँ। कैश केवल नया या बदला हुआ टेक्स्ट मॉडल को भेजता है। `translated-docs/` के तहत अपडेट की गई फ़ाइलों को कमिट करें।
@@ -239,12 +239,12 @@ jobs:
 
 आपके द्वारा कॉन्फ़िगर किए गए प्रदाता के लिए पर्यावरण चर का उपयोग करें। Ollama होस्ट किए गए रनर पर तब तक लागू नहीं होता जब तक आप इसे वहाँ स्थापित न करें।
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## बताएँ कि अनुवाद स्वचालित है
 
 AI अनुवाद गलत हो सकते हैं। README के नीचे एक छोटा नोट, जैसा कि [इस रिपॉजिटरी के README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) में है, पाठकों को बताता है कि अन्य भाषाओं का मशीन-अनुवाद किया गया था और उन पर भरोसा करने से पहले उनकी जाँच की जानी चाहिए।
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## आपका मामला नहीं?
 
 | आपके पास | पढ़ें |
@@ -254,7 +254,7 @@ AI अनुवाद गलत हो सकते हैं। README के �
 | प्रति लोकले एक HTML फ़ाइल | [HTML पेज](/hi/guide/documents/html-pages) |
 | पूर्ण `translate-docs` संदर्भ | [दस्तावेज़](/hi/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## उदाहरण
 
 | प्रोजेक्ट | यह क्या दिखाता है |
@@ -263,7 +263,7 @@ AI अनुवाद गलत हो सकते हैं। README के �
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | UI स्ट्रिंग, एक डॉक्स साइट, और एक अलग फ़्लैट README ब्लॉक |
 | यह रिपॉजिटरी | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): फ़्लैट README ब्लॉक, फिर VitePress साइट |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## एजेंट प्रॉम्प्ट
 
 इसे कर्सर या किसी अन्य कोडिंग एजेंट में कॉपी करें। यह रिपॉजिटरी तैयार करता है। यह README का अनुवाद नहीं करता है।

@@ -591,7 +591,7 @@
     seg.currentPage = 1;
     const applyBtn = document.getElementById("seg-btn-apply");
     if (applyBtn) {
-      applyBtn.textContent = t("Loading...");
+      applyBtn.textContent = t("Loading…");
       applyBtn.disabled = true;
     }
     segLoadData();
@@ -2573,7 +2573,7 @@
   function loadStats() {
     const statusEl = document.getElementById("stats-status");
     const contentEl = document.getElementById("stats-content");
-    setStatus(statusEl, t("Loading statistics..."), false);
+    setStatus(statusEl, t("Loading statistics…"), false);
     contentEl.innerHTML = "";
 
     function pct(translated, total) {
@@ -3016,7 +3016,7 @@
 
   function loadUsage() {
     const statusEl = document.getElementById("usage-status");
-    setStatus(statusEl, t("Loading usage..."), false);
+    setStatus(statusEl, t("Loading usage…"), false);
     usageLoadFilterOptions()
       .then(() => usageLoadAggregates())
       .catch((err) => {

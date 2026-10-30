@@ -121,7 +121,7 @@ Prefer `sync` over chaining individual translate commands. Full walkthrough: [Qu
 - [CLI reference](https://wsj-br.github.io/ai-i18n-tools/reference/cli-commands/) · [Configuration](https://wsj-br.github.io/ai-i18n-tools/reference/configuration) · [Runtime helpers](https://wsj-br.github.io/ai-i18n-tools/guide/runtime-helpers)
 - [Examples](https://wsj-br.github.io/ai-i18n-tools/examples) — runnable demos (`npx degit …`)
 - [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — concise prompt / `AGENTS.md` entrypoint for consumer projects
-- [Portable Agent Skill](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools) — installable workflow with JS/TS, Python, documentation, assets/links/SVG, and JSON references; [installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation#coding-agent-skill)
+- [Portable Agent Skills](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills) — one install, then a slash command per workflow: `npx skills add wsj-br/ai-i18n-tools --all -y` (Node.js 22.20+); [install guide](https://wsj-br.github.io/ai-i18n-tools/guide/coding-agent-skill)
 
 <a id="contributing"></a>
 ## Contributing

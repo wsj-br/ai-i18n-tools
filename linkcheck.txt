@@ -1,0 +1,686 @@
+npm notice run ai-i18n-tools@1.12.0 npx
+npm notice run 'linkinator' http://localhost:4173/ai-i18n-tools/ -r --skip /ai-i18n-tools/(de|es|fr|hi|ja|ko|pt-BR|zh-Hans|zh-Hant)/
+→ crawling http://localhost:4173/ai-i18n-tools/
+[200] http://localhost:4173/ai-i18n-tools/
+[200] http://localhost:4173/ai-i18n-tools/vp-icons.css
+[200] http://localhost:4173/ai-i18n-tools/assets/chunks/metadata.b4f176e8.js
+[200] http://localhost:4173/ai-i18n-tools/assets/inter-roman-latin.BOE8-mWI.woff2
+[200] http://localhost:4173/ai-i18n-tools/assets/style.CJ_GO8Zl.css
+[200] http://localhost:4173/ai-i18n-tools/assets/app.B9HU7hyO.js
+[200] http://localhost:4173/ai-i18n-tools/assets/chunks/assets.4PxXiKO1.js
+[200] http://localhost:4173/ai-i18n-tools/assets/index.md.BbbPJ7Vk.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/chunks/theme.CyUV3M_9.js
+[200] http://localhost:4173/ai-i18n-tools/favicon.ico
+[200] http://localhost:4173/ai-i18n-tools/ai-i18n-tools_logo.svg
+[200] http://localhost:4173/ai-i18n-tools/assets/chunks/framework.D80yvZ66.js
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/typescript.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/what-is-ai-i18n-tools.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/nextjs.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/react.svg
+[200] http://localhost:4173/ai-i18n-tools/examples.html
+[200] http://localhost:4173/ai-i18n-tools/reference/configuration.html
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/terminal.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/nodejs.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-js.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/python.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/streamlit.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/fastapi.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/flask.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-python.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/vitepress.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/astro.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-django-gettext.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/docusaurus.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/github.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/gitlab.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-website.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/bitbucket.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-readme.html
+[200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-your-project.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/openai.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/anthropic.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/quick-start.html
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/openrouter.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/gemini.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/brands/ollama.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/providers-and-models.html
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/refresh-cw.svg
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/layout-dashboard.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/ai-models.html
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/layers.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/file-text.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/combining-pipelines.html
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/code.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/braces.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/python.html
+[200] http://localhost:4173/ai-i18n-tools/icons/ui/languages.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/json.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translating-intlayer.html
+[200] http://localhost:4173/ai-i18n-tools/guide/migrating-from-intlayer.html
+[200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/
+[200] http://localhost:4173/ai-i18n-tools/guide/installation.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/i18next-runtime.html
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/plain-html.html
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_what-is-ai-i18n-tools.md.DY7w3Kn_.lean.js
+[200] https://img.shields.io/badge/license-MIT-blue.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/coding-agent-skill.html
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/language-switcher.html
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/t-calls-and-plurals.html
+[200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/astro-website.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/html-pages.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/anchor-links.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/output-layouts.html
+[200] https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white
+[200] https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white
+[200] https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black
+[200] https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white
+[200] https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black
+[200] https://img.shields.io/npm/v/ai-i18n-tools.svg
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/language-switcher.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/link-rewriting.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/cli-options.html
+[200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-web-app.html
+[200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/troubleshooting.html
+[200] http://localhost:4173/ai-i18n-tools/guide/documents/troubleshooting.html
+[200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-colocated.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/docusaurus.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/astro.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/nextra.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/vitepress.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/fumadocs.html
+[200] http://localhost:4173/ai-i18n-tools/guide/integrations/python.html
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/shared-image.html
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/per-locale-folder.html
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/link-rewriting.html
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/troubleshooting.html
+[200] http://localhost:4173/ai-i18n-tools/guide/tool-ui-language.html
+[200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/colocated-screenshots.html
+[200] http://localhost:4173/ai-i18n-tools/guide/glossary.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/documentation-cache.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/glossary.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/ui-strings.html
+[200] http://localhost:4173/ai-i18n-tools/guide/runtime-helpers.html
+[200] http://localhost:4173/ai-i18n-tools/assets/examples.md.r_kWuPCY.lean.js
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/failures.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/markdown-issues.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/usage.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/models.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/setup.html
+[200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/statistics.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/ui-strings.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/models.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/documents.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/content.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/workflows.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/tools.html
+[200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/maintenance.html
+[200] http://localhost:4173/ai-i18n-tools/reference/architecture.html
+[200] http://localhost:4173/ai-i18n-tools/reference/programmatic-api.html
+[200] http://localhost:4173/ai-i18n-tools/reference/environment-variables.html
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-your-project.md.CX641G-V.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_providers-and-models.md.CLB1Hkt-.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_index.md.BWB_3Hcf.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_quick-start.md.D5zeg9DH.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ai-models.md.CLqG9nRi.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_combining-pipelines.md.B4fsdrAk.lean.js
+[200] http://localhost:4173/ai-i18n-tools/translation-dashboard.png
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_index.md.CtggAs_z.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translating-intlayer.md.CB3OdFi5.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_migrating-from-intlayer.md.BxKmOzwh.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_index.md.DNu0gIVO.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_python.md.Dlg5cRrN.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_json.md.DFS0qxCk.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_installation.md.mUXjSAe3.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_index.md.notvDecJ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-js.md.jgh5SSRl.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_configuration.md.EHNryUUB.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-website.md.D4QY3n2v.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-readme.md.C9Wvy-8x.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_index.md.CGtyiILJ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-django-gettext.md.OeKjq4UL.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_i18next-runtime.md.Ds1KeKav.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_t-calls-and-plurals.md.DUGtXjsT.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_astro-website.md.DPNaoLIx.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_anchor-links.md.nCseEHRQ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_language-switcher.md.I0gOXZIG.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_cli-options.md.B2J2C7U7.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_translated-svg-web-app.md.FnADjNjE.lean.js
+[200] https://models.dev/
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_translated-svg-colocated.md.B6P_cPyd.lean.js
+[200] https://direnv.net/
+[200] https://docs.astro.build/en/guides/internationalization/
+[200] https://huggingface.co/spaces/fair-forward/languagebench
+[200] https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_troubleshooting.md.DBRJwE1I.lean.js
+[200] https://github.com/wsj-br/ai-i18n-tools
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_shared-image.md.BjCf9ONQ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_docusaurus.md.BISEVy8T.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_python.md.DH61kp_B.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_troubleshooting.md.Dv75JCcQ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_index.md.ZCUsXdvu.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_troubleshooting.md.DPkliLjO.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_tool-ui-language.md.C3OUF8N1.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_colocated-screenshots.md.BZ6k7sbH.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_link-rewriting.md.cY_5eWIE.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_index.md.CxLsuBj5.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_language-switcher.md.DmwK2PmE.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_coding-agent-skill.md.BlSTvd2x.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_html-pages.md.7nyJnxVn.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_documentation-cache.md.rvJyyF-N.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_glossary.md.Ct3t5exT.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_ui-strings.md.CFC0jhMq.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_failures.md.DCFhknF0.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_markdown-issues.md.Dla-mMwQ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_usage.md.BsbMh9j1.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_models.md.K_YBqvh0.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_output-layouts.md.B7ZphIzs.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_statistics.md.D1PvXHsE.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_setup.md.CfHzrLE2.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_ui-strings.md.DERZ-QJS.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_models.md.CdlbUO0M.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_documents.md.Ev9bjmEv.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_workflows.md.DjPiPJdW.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_content.md.CULKAaN7.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_tools.md.DABDBfk-.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_maintenance.md.1bhbWVYS.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_programmatic-api.md.CAfv4mJ4.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_link-rewriting.md.B_bwRCOw.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_environment-variables.md.D1sO_gJJ.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_astro.md.B-cr77Sf.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_per-locale-folder.md.C0C459mD.lean.js
+[200] https://platform.cheaperinference.com/dashboard/data-protection
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration
+[200] https://intlayer.org/
+[200] https://starlight.astro.build/guides/sidebar/
+[200] https://starlight.astro.build/guides/i18n/
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_glossary.md.DZbUr4Km.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_fumadocs.md.CnbTEVQ5.lean.js
+[200] https://starlight.astro.build/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate
+[200] https://astro.build/
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_runtime-helpers.md.Bf7iH1Ak.lean.js
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_nextra.md.BL58bW1m.lean.js
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs
+[429] https://cursor.directory/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-migration/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_vitepress.md.dPK04pDU.lean.js
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-python.md.D0t-Vy9Z.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/reference_architecture.md.DBOW-3G-.lean.js
+[200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_plain-html.md.CydE8u8o.lean.js
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs
+[200] https://docusaurus.io/
+[200] https://docusaurus.io/docs/i18n/introduction
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/
+[200] https://nextra.site/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate/README.md
+[200] https://www.fumadocs.dev/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/
+[200] https://nextra.site/docs/guide/i18n
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/images/translation_demo_svg.svg
+[200] https://github.com/wsj-br/ai-i18n-tools/releases
+[200] https://vitepress.dev/
+[200] https://vitepress.dev/reference/default-theme-config
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/
+[200] https://vitepress.dev/guide/i18n
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/public/assets/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs
+[200] https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts
+[200] https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md
+[200] https://github.com/wsj-br/duplistatus
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/app/page.tsx
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md
+[200] https://github.com/shuding/nextra/tree/main/examples/swr-site
+[200] https://github.com/wsj-br/transrewrt
+[200] https://github.com/vercel/swr-site
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/plain-html/public/i18n.js
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md
+[200] https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh
+[200] https://github.com/vercel-labs/skills/blob/main/docs/agents.md
+[200] https://github.com/wsj-br/transrewrt/blob/main/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs
+[200] https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json
+[200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-website/src/i18n/t.ts
+[200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts
+[200] https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts
+
+  [200] http://localhost:4173/ai-i18n-tools/
+http://localhost:4173/ai-i18n-tools/
+  [200] http://localhost:4173/ai-i18n-tools/vp-icons.css
+  [200] http://localhost:4173/ai-i18n-tools/assets/chunks/metadata.b4f176e8.js
+  [200] http://localhost:4173/ai-i18n-tools/assets/inter-roman-latin.BOE8-mWI.woff2
+  [200] http://localhost:4173/ai-i18n-tools/assets/style.CJ_GO8Zl.css
+  [200] http://localhost:4173/ai-i18n-tools/assets/app.B9HU7hyO.js
+  [200] http://localhost:4173/ai-i18n-tools/assets/chunks/assets.4PxXiKO1.js
+  [200] http://localhost:4173/ai-i18n-tools/assets/index.md.BbbPJ7Vk.lean.js
+  [200] http://localhost:4173/ai-i18n-tools/assets/chunks/theme.CyUV3M_9.js
+  [200] http://localhost:4173/ai-i18n-tools/favicon.ico
+  [200] http://localhost:4173/ai-i18n-tools/ai-i18n-tools_logo.svg
+  [200] http://localhost:4173/ai-i18n-tools/assets/chunks/framework.D80yvZ66.js
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/typescript.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/what-is-ai-i18n-tools.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/nextjs.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/react.svg
+  [200] http://localhost:4173/ai-i18n-tools/examples.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/configuration.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/terminal.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/nodejs.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-js.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/python.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/streamlit.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/fastapi.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/flask.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-python.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/vitepress.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/astro.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-django-gettext.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/docusaurus.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/github.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/gitlab.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-website.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/bitbucket.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-readme.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-your-project.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/openai.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/anthropic.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/quick-start.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/openrouter.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/gemini.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/brands/ollama.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/providers-and-models.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/refresh-cw.svg
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/layout-dashboard.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/ai-models.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/layers.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/file-text.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/combining-pipelines.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/code.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/braces.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/python.html
+  [200] http://localhost:4173/ai-i18n-tools/icons/ui/languages.svg
+  [200] http://localhost:4173/ai-i18n-tools/guide/json.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translating-intlayer.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/migrating-from-intlayer.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/
+  [200] http://localhost:4173/ai-i18n-tools/guide/installation.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/
+  [200] https://img.shields.io/badge/license-MIT-blue.svg
+  [200] https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white
+  [200] https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white
+  [200] https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black
+  [200] https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white
+  [200] https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black
+  [200] https://img.shields.io/npm/v/ai-i18n-tools.svg
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE
+  [200] https://github.com/wsj-br/ai-i18n-tools
+  [200] https://github.com/wsj-br/ai-i18n-tools/releases
+http://localhost:4173/ai-i18n-tools/guide/what-is-ai-i18n-tools.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/i18next-runtime.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/plain-html.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_what-is-ai-i18n-tools.md.DY7w3Kn_.lean.js
+  [200] http://localhost:4173/ai-i18n-tools/guide/coding-agent-skill.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/language-switcher.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/t-calls-and-plurals.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/ui-strings/astro-website.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/html-pages.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/anchor-links.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/output-layouts.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/language-switcher.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/link-rewriting.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/cli-options.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-web-app.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/documents/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-colocated.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/docusaurus.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/astro.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/nextra.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/vitepress.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/fumadocs.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/integrations/python.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/shared-image.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/per-locale-folder.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/link-rewriting.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/tool-ui-language.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/colocated-screenshots.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/glossary.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/documentation-cache.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/glossary.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/ui-strings.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/runtime-helpers.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/failures.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/markdown-issues.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/usage.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/models.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/setup.html
+  [200] http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/statistics.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/ui-strings.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/models.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/documents.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/content.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/workflows.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/tools.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/cli-commands/maintenance.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/architecture.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/programmatic-api.html
+  [200] http://localhost:4173/ai-i18n-tools/reference/environment-variables.html
+http://localhost:4173/ai-i18n-tools/examples.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/examples.md.r_kWuPCY.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-your-project.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-your-project.md.CX641G-V.lean.js
+http://localhost:4173/ai-i18n-tools/guide/providers-and-models.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_providers-and-models.md.CLB1Hkt-.lean.js
+  [200] https://platform.cheaperinference.com/dashboard/data-protection
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_index.md.BWB_3Hcf.lean.js
+  [200] http://localhost:4173/ai-i18n-tools/translation-dashboard.png
+http://localhost:4173/ai-i18n-tools/guide/quick-start.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_quick-start.md.D5zeg9DH.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ai-models.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ai-models.md.CLqG9nRi.lean.js
+  [200] https://models.dev/
+  [200] https://huggingface.co/spaces/fair-forward/languagebench
+  [200] https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset
+http://localhost:4173/ai-i18n-tools/guide/combining-pipelines.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_combining-pipelines.md.B4fsdrAk.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_index.md.CtggAs_z.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translating-intlayer.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translating-intlayer.md.CB3OdFi5.lean.js
+  [200] https://intlayer.org/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-translate
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md
+http://localhost:4173/ai-i18n-tools/guide/migrating-from-intlayer.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_migrating-from-intlayer.md.BxKmOzwh.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-migration/README.md
+http://localhost:4173/ai-i18n-tools/guide/svg-translation/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_index.md.DNu0gIVO.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/python.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_python.md.Dlg5cRrN.lean.js
+http://localhost:4173/ai-i18n-tools/guide/json.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_json.md.DFS0qxCk.lean.js
+http://localhost:4173/ai-i18n-tools/guide/installation.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_installation.md.mUXjSAe3.lean.js
+  [200] https://direnv.net/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/pnpm-workspace.yaml
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/dev/DEVEL.md
+http://localhost:4173/ai-i18n-tools/guide/integrations/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_index.md.notvDecJ.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-js.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-js.md.jgh5SSRl.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts
+http://localhost:4173/ai-i18n-tools/reference/configuration.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_configuration.md.EHNryUUB.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-website.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-website.md.D4QY3n2v.lean.js
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-readme.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-readme.md.C9Wvy-8x.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_index.md.CGtyiILJ.lean.js
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-django-gettext.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-django-gettext.md.OeKjq4UL.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/i18next-runtime.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_i18next-runtime.md.Ds1KeKav.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/console-app/src/main.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/t-calls-and-plurals.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_t-calls-and-plurals.md.DUGtXjsT.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/astro-website.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_astro-website.md.DPNaoLIx.lean.js
+  [200] https://docs.astro.build/en/guides/internationalization/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/
+http://localhost:4173/ai-i18n-tools/guide/documents/anchor-links.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_anchor-links.md.nCseEHRQ.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs/
+http://localhost:4173/ai-i18n-tools/guide/documents/language-switcher.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_language-switcher.md.I0gOXZIG.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/ai-i18n-tools.config.json
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/translated-docs/README.de.md
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/ai-i18n-tools.config.json
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json
+http://localhost:4173/ai-i18n-tools/guide/documents/cli-options.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_cli-options.md.B2J2C7U7.lean.js
+http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-web-app.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_translated-svg-web-app.md.FnADjNjE.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/images/translation_demo_svg.svg
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/public/assets/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/app/page.tsx
+http://localhost:4173/ai-i18n-tools/guide/svg-translation/translated-svg-colocated.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_translated-svg-colocated.md.B6P_cPyd.lean.js
+  [200] https://github.com/wsj-br/duplistatus/blob/master/ai-i18n-tools.config.json
+  [200] https://github.com/wsj-br/duplistatus/blob/master/documentation/static/assets/duplistatus_toolbar.svg
+  [200] https://github.com/wsj-br/duplistatus
+  [200] https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/overview.md
+http://localhost:4173/ai-i18n-tools/guide/svg-translation/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_svg-translation_troubleshooting.md.DBRJwE1I.lean.js
+http://localhost:4173/ai-i18n-tools/guide/integrations/docusaurus.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_docusaurus.md.BISEVy8T.lean.js
+  [200] https://docusaurus.io/
+  [200] https://docusaurus.io/docs/i18n/introduction
+http://localhost:4173/ai-i18n-tools/guide/integrations/python.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_python.md.DH61kp_B.lean.js
+http://localhost:4173/ai-i18n-tools/guide/documents/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_troubleshooting.md.Dv75JCcQ.lean.js
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/shared-image.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_shared-image.md.BjCf9ONQ.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/docs/public/translation-dashboard.png
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_index.md.ZCUsXdvu.lean.js
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/troubleshooting.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_troubleshooting.md.DPkliLjO.lean.js
+http://localhost:4173/ai-i18n-tools/guide/tool-ui-language.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_tool-ui-language.md.C3OUF8N1.lean.js
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/colocated-screenshots.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_colocated-screenshots.md.BZ6k7sbH.lean.js
+  [200] https://github.com/wsj-br/duplistatus/blob/master/documentation/docs/user-guide/dashboard.md
+  [200] https://github.com/wsj-br/duplistatus/blob/master/scripts/take-screenshots.ts
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/link-rewriting.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_link-rewriting.md.cY_5eWIE.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/
+http://localhost:4173/ai-i18n-tools/guide/documents/
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_index.md.CxLsuBj5.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/language-switcher.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_language-switcher.md.DmwK2PmE.lean.js
+http://localhost:4173/ai-i18n-tools/guide/coding-agent-skill.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_coding-agent-skill.md.BlSTvd2x.lean.js
+  [429] https://cursor.directory/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/skills/ai-i18n-tools
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md
+  [200] https://github.com/vercel-labs/skills/blob/main/docs/agents.md
+http://localhost:4173/ai-i18n-tools/guide/documents/html-pages.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_html-pages.md.7nyJnxVn.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/documentation-cache.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_documentation-cache.md.rvJyyF-N.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/glossary.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_glossary.md.Ct3t5exT.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/ui-strings.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_ui-strings.md.CFC0jhMq.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/failures.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_failures.md.DCFhknF0.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/markdown-issues.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_markdown-issues.md.Dla-mMwQ.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/usage.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_usage.md.BsbMh9j1.lean.js
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/models.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_models.md.K_YBqvh0.lean.js
+http://localhost:4173/ai-i18n-tools/guide/documents/output-layouts.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_output-layouts.md.B7ZphIzs.lean.js
+  [200] https://starlight.astro.build/guides/i18n/
+http://localhost:4173/ai-i18n-tools/guide/translation-dashboard/statistics.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_translation-dashboard_statistics.md.D1PvXHsE.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/setup.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_setup.md.CfHzrLE2.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/ui-strings.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_ui-strings.md.DERZ-QJS.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/models.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_models.md.CdlbUO0M.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/documents.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_documents.md.Ev9bjmEv.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/workflows.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_workflows.md.DjPiPJdW.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/content.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_content.md.CULKAaN7.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/tools.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_tools.md.DABDBfk-.lean.js
+http://localhost:4173/ai-i18n-tools/reference/cli-commands/maintenance.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_cli-commands_maintenance.md.1bhbWVYS.lean.js
+http://localhost:4173/ai-i18n-tools/reference/programmatic-api.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_programmatic-api.md.CAfv4mJ4.lean.js
+http://localhost:4173/ai-i18n-tools/reference/environment-variables.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_environment-variables.md.D1sO_gJJ.lean.js
+http://localhost:4173/ai-i18n-tools/guide/documents/link-rewriting.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_documents_link-rewriting.md.B_bwRCOw.lean.js
+http://localhost:4173/ai-i18n-tools/guide/integrations/astro.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_astro.md.B-cr77Sf.lean.js
+  [200] https://starlight.astro.build/guides/sidebar/
+  [200] https://starlight.astro.build/
+  [200] https://astro.build/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/astro.config.mjs
+http://localhost:4173/ai-i18n-tools/guide/images-and-screenshots/per-locale-folder.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_images-and-screenshots_per-locale-folder.md.C0C459mD.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md
+  [200] https://github.com/wsj-br/transrewrt
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/scripts/screenshot-locales.sh
+  [200] https://github.com/wsj-br/transrewrt/blob/main/README.md
+  [200] https://github.com/wsj-br/transrewrt/blob/main/ai-i18n-tools.config.json
+http://localhost:4173/ai-i18n-tools/guide/glossary.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_glossary.md.DZbUr4Km.lean.js
+http://localhost:4173/ai-i18n-tools/guide/integrations/fumadocs.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_fumadocs.md.CnbTEVQ5.lean.js
+  [200] https://www.fumadocs.dev/
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/
+  [200] https://github.com/vercel/swr-site
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/fumadocs-docs/lib/layout.shared.ts
+http://localhost:4173/ai-i18n-tools/guide/runtime-helpers.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_runtime-helpers.md.Bf7iH1Ak.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/
+http://localhost:4173/ai-i18n-tools/guide/integrations/nextra.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_nextra.md.BL58bW1m.lean.js
+  [200] https://nextra.site/
+  [200] https://nextra.site/docs/guide/i18n
+  [200] https://github.com/shuding/nextra/tree/main/examples/swr-site
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-website/src/i18n/t.ts
+http://localhost:4173/ai-i18n-tools/guide/integrations/vitepress.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_integrations_vitepress.md.dPK04pDU.lean.js
+  [200] https://vitepress.dev/
+  [200] https://vitepress.dev/reference/default-theme-config
+  [200] https://vitepress.dev/guide/i18n
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/vitepress-docs/docs/.vitepress/config.mts
+http://localhost:4173/ai-i18n-tools/guide/add-i18n-to-python.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_add-i18n-to-python.md.D0t-Vy9Z.lean.js
+http://localhost:4173/ai-i18n-tools/reference/architecture.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/reference_architecture.md.DBOW-3G-.lean.js
+http://localhost:4173/ai-i18n-tools/guide/ui-strings/plain-html.html
+  [200] http://localhost:4173/ai-i18n-tools/assets/guide_ui-strings_plain-html.md.CydE8u8o.lean.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/plain-html/public/i18n.js
+  [200] https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts
+ERROR: Detected 1 broken links. Scanned 303 links in 1.668 seconds.

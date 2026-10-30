@@ -899,7 +899,7 @@ function rawConfigHasReadmeBlock(raw: RawI18nConfigInput): boolean {
  * `docs-markdown` - README and Markdown files only (no UI strings).
  * `ui-docusaurus` - Documents (markdown/JSON translation) for Docusaurus sites.
  * `ui-starlight` - Documents (markdown translation) for Astro Starlight sites.
- * `ui-vitepress` - Documents (markdown translation) for VitePress sites, plus JSON theme JSON via `json[]`.
+ * `ui-vitepress` - Documents (markdown translation) for VitePress sites, plus the theme catalog via `docsOutput.vitepressThemeCatalog`.
  *
  * Templates include the top-level fields the scaffold needs so the generated file is self-documenting.
  * See the documentation site and `docs/reference/configuration.md` for a full field reference.

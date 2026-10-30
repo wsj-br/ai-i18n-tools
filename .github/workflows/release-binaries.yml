@@ -99,7 +99,7 @@ jobs:
             echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Assemble checksums and the Python examples archive
+      - name: Assemble checksums, Python examples, and the skill archive
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -115,8 +115,12 @@ jobs:
             examples/python-fastapi \
             examples/python-gettext \
             -x '*/__pycache__/*' '*.pyc' '*/.venv/*'
+          (
+            cd skills
+            zip -r "$GITHUB_WORKSPACE/dist-sea/release/ai-i18n-tools-skill.zip" -- *
+          )
           cd dist-sea/release
-          # ai-i18n-tools-* already includes ai-i18n-tools-python-examples.zip.
+          # ai-i18n-tools-* already includes the Python examples zip and the skill zip.
           # install.sh and install.ps1 stay in the repository.
           gh release upload "$tag" \
             ai-i18n-tools-* \

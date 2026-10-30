@@ -167,7 +167,7 @@ package.json 脚本 — 当 npm 或 pnpm 运行脚本时，它会将 `node_modul
 
 替代方案 — 如果您不想调整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。对于无需安装、一次性运行且没有 `package.json` 条目的情况：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
-<a id="cloned-monorepo"></a>
+<a id="coding-agent-skill"></a>
 ### 克隆的 monorepo
 
 在从 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整克隆中开发软件包或运行工作区示例时：

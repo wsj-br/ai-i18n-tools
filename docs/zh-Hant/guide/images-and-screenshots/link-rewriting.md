@@ -22,7 +22,7 @@
 
 **Astro Starlight MDX：** Starlight 內容通常是 `.mdx`。對於這些檔案，`translate-docs` 僅執行 `postProcessing.regexAdjustments` — 沒有扁平、VitePress、Nextra 或 Fumadocs 連結重寫器。各語系的截圖路徑仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 規則；請參閱 [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)。
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
+<a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress 連結正規化器 (`style: "vitepress"`)
 
 當 `docsOutput.rewriteVitepressLinks` 為 `true` 時（當 `style` 為 `"vitepress"` 時的預設值），在區段重新組裝後會執行一個單獨的正規化器（而不是平面重寫器）。它針對 VitePress / 文件系統網站，其中英文內容位於內容根目錄，而地區設定則位於同級資料夾中（`docs/de/guide/…`）。
@@ -46,12 +46,12 @@
 
 各語系的截圖資料夾在需要時仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 規則；請參閱[各語系資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)。
 
-<a id="nextra-link-normalizer-style-nextra"></a>
+<a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra 連結正規化器 (`style: "nextra"`)
 
 當 `docsOutput.rewriteNextraLinks` 為 `true`（預設為 `style` 是 `"nextra"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs 連結正規化器 (`style: "fumadocs"`)
 
 當 `docsOutput.rewriteFumadocsLinks` 為 `true`（預設為 `style` 是 `"fumadocs"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/zh-Hant/guide/integrations/fumadocs#link-conventions)。

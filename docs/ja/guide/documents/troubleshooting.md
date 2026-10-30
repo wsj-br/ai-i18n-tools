@@ -31,7 +31,7 @@ Markdown リンクまたは `![alt](url)` は英語では機能しますが、�
 2. ロケールセグメントを交換したり、絶対 `/img/…` パスをブリッジしたりするために、`docsOutput.postProcessing.regexAdjustments` を追加または調整します。フラットレイアウトの場合、フラットリンクの書き換えは **前に** `regexAdjustments` が実行されることを覚えておいてください。すでにプレフィックスが付けられた URL に対してパターンを照合します。
 3. 書き換えられた markdown が参照するパスにロケール固有のアセットファイルが存在することを確認します (`translate-docs` は URL を書き換えますが、ラスターファイルをコピーしません)。
 
-<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
 ## ヒンディー語、アラビア語、CJK、またはキリル文字の出力がローマ字化（ラテン文字）される
 
 一部のモデルは意味を翻訳しますが、結果をラテン文字（ローマ字）で出力することがあります（例えば、ヒンディー語が `नमस्ते` ではなく `Namaste` として出力される）。`hi` 単独はデーヴァナーガリー文字を意味します。ローマ字化されたヒンディー語が必要な場合のみ `hi-Latn` を使用してください。

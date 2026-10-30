@@ -139,11 +139,11 @@ Other relative `href`, `src`, `srcset`, and `poster` URLs are depth-prefixed so 
 | `{llocale}` | Lowercase locale |
 | `{LOCALE}` | Uppercase locale |
 
-`img/trulli.jpg` becomes `img/trulli-pt-BR.jpg`. With `onlyIfExists: true` (the default), that URL is used only when the localized file exists; otherwise the original shared asset is kept. Set `onlyIfExists: false` only when another build or CDN step guarantees those files.
+`img/trulli.jpg` becomes `img/trulli-pt-BR.jpg`. With `onlyIfExists: true` (the default), that URL is used only when the localised file exists; otherwise the original shared asset is kept. Set `onlyIfExists: false` only when another build or CDN step guarantees those files.
 
-`include` matches URL paths such as `img/**`. Use `assetRoot` to set the filesystem directory against which localized candidates—especially root-relative URLs such as `/img/trulli.jpg`—are checked.
+`include` matches URL paths such as `img/**`. Use `assetRoot` to set the filesystem directory against which localised candidates—especially root-relative URLs such as `/img/trulli.jpg`—are checked.
 
-The same localization rules apply to `srcset`, `poster`, `<source src>`, icon `<link href>`, and `og:image` / `twitter:image`. The pipeline rewrites references but does not create, translate, or copy asset files. CSS `url()` values are not rewritten.
+The same localisation rules apply to `srcset`, `poster`, `<source src>`, icon `<link href>`, and `og:image` / `twitter:image`. The pipeline rewrites references but does not create, translate, or copy asset files. CSS `url()` values are not rewritten.
 
 <a id="language-list-and-hreflang"></a>
 ## Language list and hreflang
@@ -213,7 +213,7 @@ Sentence translations stay in the cache. The file-tracking hash also includes th
 | Output is `site/pt-BR/site/index.html` | Set `docsOutput.docsRoot` to `"site"` so that source prefix is stripped. |
 | Link still points to the English page | Use a relative `.html` / `.htm` link, and include the target page in the same `docs[]` block. |
 | Image path is broken from a locale page | Keep it relative so depth rewriting can apply; remember that CSS `url()` is not rewritten. |
-| Localized image is not selected | Check `localizedAssets.include`, the filename `pattern`, and whether the candidate exists when `onlyIfExists` is true. |
+| Localised image is not selected | Check `localizedAssets.include`, the filename `pattern`, and whether the candidate exists when `onlyIfExists` is true. |
 | Language list is empty or unchanged | Keep both marker comments in the correct order and outside `script`, `style`, `pre`, and `code`. |
 | Dropdown does not navigate | Add `data-lang-select` to the `<select>` and load `html-runtime/lang-select.js`. |
 | Hreflang URLs use the wrong host | Set `hreflang.siteUrl` to the final public origin. |

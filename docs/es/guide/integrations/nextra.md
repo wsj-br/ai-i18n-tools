@@ -48,7 +48,7 @@ Conecte la [internacionalización](https://nextra.site/docs/guide/i18n) de Nextr
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n en un sitio existente
 
-Un sitio Nextra 4 solo en inglés necesita una carpeta de configuración regional, un parámetro de ruta y la configuración i18n de Next.js antes de que `translate-docs` tenga dónde escribir. El [diccionario de indicaciones](#agent-prompt-dictionary) hace esto en una sola pasada. Lista de verificación:
+Un sitio Nextra 4 solo en inglés necesita una carpeta de configuración regional, un parámetro de ruta y la configuración i18n de Next.js antes de que `translate-docs` tenga dónde escribir. El [diccionario de indicaciones](#agent-prompt-dictionary-and-routes) hace esto en una sola pasada. Lista de verificación:
 
 - Mover MDX a `content/en/` (el inglés es una carpeta de configuración regional, no la raíz del contenido).
 - `i18n.locales` y `defaultLocale` en `next.config`.

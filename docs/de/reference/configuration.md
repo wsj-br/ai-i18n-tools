@@ -517,8 +517,6 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 

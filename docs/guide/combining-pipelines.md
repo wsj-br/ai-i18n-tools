@@ -21,8 +21,6 @@ Skip parts with `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json`. The docs and
 
 Prefer `sync` over chaining the individual commands by hand. Order, extraction, and locale flags are easy to get wrong when run manually.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI strings and documents together
 
@@ -82,8 +80,6 @@ Use `docs[].targetLocales` on a block to translate that block's files to a small
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## Mixed documentation config

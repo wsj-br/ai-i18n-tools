@@ -371,7 +371,7 @@ export async function runTranslateJson(
     printTranslationRunSummary(opts, sum, Date.now() - wallStart, "success", {
       success: t("✅ JSON translation complete!"),
       interrupted: t(
-        "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+        "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
       ),
     });
   } catch (e) {
@@ -379,7 +379,7 @@ export async function runTranslateJson(
       printTranslationRunSummary(opts, sum, Date.now() - wallStart, "interrupted", {
         success: t("✅ JSON translation complete!"),
         interrupted: t(
-          "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt)."
+          "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
         ),
       });
       throw isRunInterruptedError(e) ? e : interruptErrorFromSignal(opts.abortSignal!);

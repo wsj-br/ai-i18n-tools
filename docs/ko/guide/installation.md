@@ -167,7 +167,7 @@ package.json 스크립트 — npm 또는 pnpm이 스크립트를 실행할 때 `
 
 대안 — `PATH`을 조정하고 싶지 않은 경우: `npx ai-i18n-tools …`(npm) 또는 `pnpm exec ai-i18n-tools …`(pnpm)를 사용합니다. `package.json` 항목 없이 일회성으로 설치 없이 실행하려면: `npx ai-i18n-tools <cmd>` 또는 `pnpm dlx ai-i18n-tools <cmd>`를 사용합니다.
 
-<a id="cloned-monorepo"></a>
+<a id="coding-agent-skill"></a>
 ### 클론된 모노레포
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)의 전체 클론에서 패키지를 개발하거나 작업 공간 예제를 실행할 때:

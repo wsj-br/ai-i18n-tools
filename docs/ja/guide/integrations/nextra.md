@@ -48,7 +48,7 @@ Nextra の [国際化](https://nextra.site/docs/guide/i18n) を設定します�
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
-英語のみのNextra 4サイトでは、`translate-docs` が書き込み先を持つ前に、ロケールフォルダー、ルートパラメーター、Next.jsのi18n設定が必要です。[辞書プロンプト](#agent-prompt-dictionary)はこれを1回のパスで実行します。チェックリスト:
+英語のみのNextra 4サイトでは、`translate-docs` が書き込み先を持つ前に、ロケールフォルダー、ルートパラメーター、Next.jsのi18n設定が必要です。[辞書プロンプト](#agent-prompt-dictionary-and-routes)はこれを1回のパスで実行します。チェックリスト:
 
 - MDXを `content/en/` に移動します (英語はコンテンツのルートではなく、ロケールフォルダーです)。
 - `next.config` 内の `i18n.locales` と `defaultLocale`。

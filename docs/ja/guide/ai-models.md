@@ -55,7 +55,7 @@ ai-i18n-tools dashboard
 
 ChrFは、プロジェクトの`sourceLocale`と`targetLocales`に対するlanguagebenchの翻訳スコアを使用します。ロケールはlanguagebenchの言語コード(プライマリサブタグ)にマッピングされ、`pt-BR`から`pt`、`zh-Hant`から`zh`などのエイリアスがあります。これらの言語をうまく翻訳するモデルは、一般的にスコアが高いだけのモデルよりも上位にランク付けされます。埋め込み、画像、音声、その他の非チャットモデルはスキップされ、有効期限が切れたIDも同様です。
 
-デフォルトのプロファイルである「品質」は、価格よりもChrFとArenaスコアを重視します。「価格」はその重点を逆転させますが、上記の品質下限は維持します。オプションの重みについては[`modelSuggestion`](/ja/reference/configuration#modelsuggestion)を参照してください。
+デフォルトのプロファイルである「品質」は、価格よりもChrFとArenaスコアを重視します。「価格」はその重点を逆転させますが、上記の品質下限は維持します。オプションの重みについては[`modelSuggestion`](/ja/reference/configuration#modelsuggestion-optional)を参照してください。
 
 `suggest-models --refresh`はデータセットを再ダウンロードします。その後、**「モデル」** タブをリロードしてください。
 

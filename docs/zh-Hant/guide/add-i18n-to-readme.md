@@ -5,7 +5,7 @@
 
 此工具會將 `README.md` 保留在原位，並為每種語言寫入一個語系檔案，例如 `translated-docs/README.de.md`。README 內部的語言列會將這些檔案連結在一起。
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 您屬於哪種設定？
 
 | 您擁有 | 鷹架 | 接著 |
@@ -17,23 +17,23 @@
 
 `--with-readme` 在 `ui-markdown` 與 `docs-markdown` 上是無作用的，因為那些範本已包含 README 區塊。
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## 您會獲得什麼
 
 - `README.md` 仍是來源檔案。主機將繼續將其轉譯為存放庫首頁。
 - 每個目標語系都是一個同層級檔案，例如 `translated-docs/README.de.md`。
 - 來源與每個翻譯中的語言列會列出所有語系，且連結可從讀者正在查看的檔案中正常運作。
 
-當這些檔案也應被翻譯時，請將 `CONTRIBUTING.md`、`CHANGELOG.md` 或 `docs/` 資料夾新增至相同的區塊。請參閱 [不僅是 README](#more-than-the-readme)。
+當這些檔案也應被翻譯時，請將 `CONTRIBUTING.md`、`CHANGELOG.md` 或 `docs/` 資料夾新增至相同的區塊。請參閱 [不僅是 README](#step-3-more-than-the-readme)。
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## 安裝
 
 安裝 CLI ([安裝](/zh-Hant/guide/installation)) 並為您的供應商設定 API 金鑰 ([供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key))。Ollama 不需要金鑰。
 
 具有 `package.json` 的存放庫會將套件安裝為開發依賴項。沒有 Node.js 專案的存放庫可以執行 `npx ai-i18n-tools`，或使用 [獨立可執行檔](/zh-Hant/guide/installation#standalone-executables)。
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## 鷹架
 
 JS/TS 應用程式與 README (一個指令；`ui-markdown` 是預設範本)：
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init` 僅會寫入 `ai-i18n-tools.config.json`。它不會編輯 `README.md`。當設定檔包含 README 區塊時，它會印出要貼上的標記行，並在 `README.md` 遺失時發出警告。現有的設定檔會被保留不動：請手動新增區塊，如 [將區塊新增至您已有的設定檔](#add-the-block-to-a-config-you-already-have) 中所述。
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## 設定
 
 有四個鍵很重要：
@@ -140,12 +140,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### 將區塊新增至現有設定檔
 
 將混合式範例中的 `docs` 物件附加進來，並將 `features.translateDocs` 設為 `true`。如果設定檔中已有 `docs` 陣列（例如 VitePress 或 Docusaurus 網站），請將 README 物件作為第二個項目附加。`sync` 會執行每個區塊。[examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) 就是這樣做的：一個區塊用於文件網站，一個扁平區塊用於 `README.md`。
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## 新增語言清單
 
 將此行放入 `README.md` 中，讀者應會在此處看到其他語言。其上一行的簡短標籤是一般文字，將會被翻譯。
@@ -158,7 +158,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 該行可以為空。`translate-docs` 會將從開頭標記到結尾標記之間的所有內容，替換為每個語系的單一連結。圍欄式程式碼區塊內的標記會被忽略，因此同一檔案中的設定檔範例不會匹配。詳細資訊：[語言切換器](/zh-Hant/guide/documents/language-switcher)。
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## 翻譯
 
 ```bash
@@ -172,14 +172,14 @@ ai-i18n-tools status
 
 提交 `translated-docs/` 並在主機上開啟翻譯後的 README。來源 README 與 `translated-docs/README.de.md` 之間的相對連結會為每個檔案重寫。
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## 混合式訣竅
 
 - 使用 `docs[].targetLocales` 將 README 翻譯成比應用程式更少的語言。請參閱[減少文件語系](/zh-Hant/guide/combining-pipelines#fewer-locales-for-documents)。
 - 將產品術語放入 `glossary.userGlossary`。UI 字串和 README 使用同一個 CSV。
 - 使用 `ai-i18n-tools sync --no-docs` 或 `ai-i18n-tools sync --no-ui` 僅執行其中一邊。
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## 不僅是 README
 
 將路徑新增至 `contentPaths`。`flatPreserveRelativeDir` 會保留資料夾，因此 `docs/guide.md` 會變成 `translated-docs/docs/guide.de.md`，而不會與另一個 `guide.md` 衝突。
@@ -192,7 +192,7 @@ ai-i18n-tools status
 
 每個語言不同的螢幕截圖：[圖片與螢幕截圖](/zh-Hant/guide/images-and-screenshots/)。
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## 主機上的連結
 
 連到存放庫中其他檔案的連結會被重寫為地區設定檔案。連到已發佈文件網站的連結則不會。此存放庫使用 `regexAdjustments` 將地區設定加到其文件網站 URL 的前綴：
@@ -208,7 +208,7 @@ ai-i18n-tools status
 
 扁平連結重寫器會先執行，然後才是這些取代。請參閱 [連結重寫](/zh-Hant/guide/documents/link-rewriting)。
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## 保持翻譯更新
 
 在來源 README 或應用程式字串變更後，重新執行 `sync`。快取只會將新的或變更的文字傳送給模型。將更新的檔案提交到 `translated-docs/` 下。
@@ -239,12 +239,12 @@ jobs:
 
 使用您設定的提供者對應的環境變數。除非您在託管的執行器上安裝 Ollama，否則它不會在上面運作。
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## 說明此為自動翻譯
 
 AI 翻譯可能有誤。在 README 底部加上簡短的註解，就像 [此存放庫的 README](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md) 中的註解一樣，告訴讀者其他語言是機器翻譯的，並且在使用前應先檢查。
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## 情況不同？
 
 | 您有 | 請閱讀 |
@@ -254,7 +254,7 @@ AI 翻譯可能有誤。在 README 底部加上簡短的註解，就像 [此存�
 | 每個地區設定一個 HTML 檔案 | [HTML 頁面](/zh-Hant/guide/documents/html-pages) |
 | 完整的 `translate-docs` 參考資料 | [文件](/zh-Hant/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## 範例
 
 | 專案 | 顯示內容 |
@@ -263,7 +263,7 @@ AI 翻譯可能有誤。在 README 底部加上簡短的註解，就像 [此存�
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | UI 字串、一個文件網站，以及一個獨立的扁平 README 區塊 |
 | 此存放庫 | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): 扁平的 README 區塊，然後是 VitePress 網站 |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## 代理提示
 
 將此內容複製到 Cursor 或其他編碼代理中。它會準備存放庫。它不會翻譯 README。

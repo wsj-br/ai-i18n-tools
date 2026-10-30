@@ -53,7 +53,6 @@ Lorsque l'indicateur est activé, chaque requête de chat inclut `"zdr": true`, 
 
 Laissez l'indicateur désactivé lorsque le compte Cheaper Inference ne nécessite pas de rétention nulle des données. Si [Protection des données](https://platform.cheaperinference.com/dashboard/data-protection) est déjà activée pour le compte, Cheaper Inference refuse toujours un modèle sans route de rétention nulle des données. L'erreur nomme ce modèle. Pour conserver la politique du compte, définissez `zeroDataRetention` sur `true` et passez à un modèle du catalogue de rétention nulle des données. Pour conserver le modèle refusé, désactivez la rétention nulle des données sur cette page. La chaîne de secours essaie alors le modèle configuré suivant.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### Modèles
 

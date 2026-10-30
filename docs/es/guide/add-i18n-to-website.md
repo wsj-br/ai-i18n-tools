@@ -5,7 +5,7 @@ Esta página está pensada para un sitio de documentación (Markdown o MDX) o un
 
 Para una aplicación cuyas cadenas de interfaz de usuario residen en llamadas a `t()`, usa [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) o [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) en su lugar.
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## ¿Qué tienes?
 
 | Su sitio | Plantilla de inicio | Empiece aquí |
@@ -21,16 +21,16 @@ Para una aplicación cuyas cadenas de interfaz de usuario residen en llamadas a 
 <details class="agent-prompt">
 <summary>Prompts del agente</summary>
 
-- Astro Starlight: solo notas. Archivos Astro `t()`: [prompt JS/TS](/es/guide/add-i18n-to-js#agent-prompt) (omitir i18next).
+- Astro Starlight: solo notas. Archivos Astro `t()`: [prompt JS/TS](/es/guide/add-i18n-to-js#run-the-agent-prompt) (omitir i18next).
 - Docusaurus: solo notas (`<Translate>` es la propia API de Docusaurus).
 - VitePress: [prompt de catálogo de temas](/es/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off).
-- Nextra: [prompt de diccionario](/es/guide/integrations/nextra#agent-prompt-dictionary) y [prompt híbrido `t()`](/es/guide/integrations/nextra#optional-t-for-app-react-hybrid).
+- Nextra: [prompt de diccionario](/es/guide/integrations/nextra#agent-prompt-dictionary-and-routes) y [prompt híbrido `t()`](/es/guide/integrations/nextra#optional-t-for-app-react-hybrid).
 - Fumadocs: [prompt de catálogo de UI](/es/guide/integrations/fumadocs#agent-prompt).
-- Archivos README y Markdown: [prompt de README](/es/guide/add-i18n-to-readme#agent-prompt).
+- Archivos README y Markdown: [prompt de README](/es/guide/add-i18n-to-readme#run-the-agent-prompt).
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## Pasos
 
 La misma estructura funciona para cada framework; los detalles se encuentran en la guía del framework enlazada anteriormente.
@@ -42,7 +42,7 @@ La misma estructura funciona para cada framework; los detalles se encuentran en 
 5. Ejecuta `ai-i18n-tools sync` (o `translate-docs`), luego compila el sitio.
 6. Verifica una ruta localizada en el navegador. El desplegable de idioma del propio framework es el selector. Para un archivo markdown plano como un README, añade una fila de enlace con [languageListBlock](/es/guide/documents/language-switcher).
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## ¿Qué se traduce?
 
 Los cuerpos de las páginas siempre pasan por el pipeline de [Documentos](/es/guide/documents/). Los elementos de interfaz del framework (navegación, barra lateral, etiquetas de tema) se gestionan en la misma ejecución donde el framework lo soporta, no a través del pipeline de [JSON](/es/guide/json) separado.
@@ -59,7 +59,7 @@ Los cuerpos de las páginas siempre pasan por el pipeline de [Documentos](/es/gu
 
 Las imágenes y capturas de pantalla no son traducidas por `translate-docs`. Para archivos específicos de la configuración regional, consulta [Imágenes y capturas de pantalla](/es/guide/images-and-screenshots/).
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## HTML sin formato
 
 Dos opciones, dependiendo de cómo deba comportarse la página:
@@ -69,7 +69,7 @@ Dos opciones, dependiendo de cómo deba comportarse la página:
 
 Un archivo pertenece a una ruta.
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## ¿No es su caso?
 
 - Cadenas de interfaz de usuario de la aplicación: [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) o [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python).

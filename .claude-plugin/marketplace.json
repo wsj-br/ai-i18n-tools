@@ -1,0 +1,25 @@
+{
+  "name": "ai-i18n-tools",
+  "owner": {
+    "name": "Waldemar Scudeller Jr."
+  },
+  "metadata": {
+    "description": "Internationalization workflow for application UI, documentation, JSON, and SVG.",
+    "version": "1.12.0"
+  },
+  "plugins": [
+    {
+      "name": "ai-i18n-tools",
+      "source": "./",
+      "description": "Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.",
+      "version": "1.12.0",
+      "author": {
+        "name": "Waldemar Scudeller Jr."
+      },
+      "homepage": "https://wsj-br.github.io/ai-i18n-tools/",
+      "repository": "https://github.com/wsj-br/ai-i18n-tools",
+      "license": "MIT",
+      "keywords": ["i18n", "internationalization", "translation", "localization"]
+    }
+  ]
+}

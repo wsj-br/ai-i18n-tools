@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Pythonアプリケーションの選択ガイドです。抽出、カタログ、呼び出し形式については[Pythonアプリケーション](/ja/guide/ui-strings/python)で説明しています。既存の単一ロケールアプリへの導入手順は[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)にあり、[`i18n.py`プロンプト](/ja/guide/add-i18n-to-python#agent-prompt-i18n-py)と[Django / gettextプロンプト](/ja/guide/add-i18n-to-python#agent-prompt-django-gettext)が含まれています。
+Pythonアプリケーションの選択ガイドです。抽出、カタログ、呼び出し形式については[Pythonアプリケーション](/ja/guide/ui-strings/python)で説明しています。既存の単一ロケールアプリへの導入手順は[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)にあり、[`i18n.py`プロンプト](/ja/guide/add-i18n-to-python#run-the-agent-prompt)と[Django / gettextプロンプト](/ja/guide/add-i18n-to-python#agent-prompt-django-gettext)が含まれています。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWebView は、生成された `i18n.py` ヘルパー（Python 3.10 以降）を呼び出します。Django は Django 標準の gettext を使用します。リポジトリには、`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` の 4 つの実行可能なコピーが同梱されています。Pyramid、Django、Tkinter、Qt、および PyWebView には個別のサンプルディレクトリはありません。
 

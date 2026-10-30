@@ -288,7 +288,7 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 
 `Logger`는 ANSI 색상 출력과 함께 `debug`, `info`, `warn`, `error` 수준을 지원합니다. 자세한 모드(`-v`)는 `debug`을 활성화합니다. `logFilePath`이 설정된 경우 로그 라인은 해당 파일에도 기록됩니다.
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### 자체 지역화(도구 UI)
 
 도구는 사용자가 번역한 콘텐츠와 별개로 자체 UI — CLI 도움말, 고交通 로그/요약/오류 메시지 및 번역 대시보드를 지역화합니다.

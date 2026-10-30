@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## कौन सी गाइड पढ़ें
 
-प्रत्येक फ्रेमवर्क के लिए इनिट टेम्प्लेट और एजेंट प्रॉम्प्ट के साथ, चॉइसर तालिका [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#what-do-you-have) में है। Python फ्रेमवर्क: [Python](/hi/guide/integrations/python)।
+प्रत्येक फ्रेमवर्क के लिए इनिट टेम्प्लेट और एजेंट प्रॉम्प्ट के साथ, चॉइसर तालिका [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#initialise-the-project) में है। Python फ्रेमवर्क: [Python](/hi/guide/integrations/python)।
 
 <a id="shared-concepts"></a>
 ## साझा अवधारणाएं

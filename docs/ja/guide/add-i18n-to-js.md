@@ -5,12 +5,12 @@
 
 手順：ツールをインストールし、i18nextをインストールし、`extract` を一度実行し、`t` が存在するように小さなセットアップファイルを追加し、ユーザー向けテキストをラップし、その後翻訳します。これがあなたのケースに当てはまるか不明ですか？最後に [あなたのケースではない場合](#not-your-case) を参照してください。
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## ツールをインストールし、キーを設定する
 
 CLIをインストールし ([インストール](/ja/guide/installation))、プロバイダーのAPIキーを設定します ([プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key))。Ollamaはキーを必要としません。
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## 設定を初期化する
 
 ```bash
@@ -26,7 +26,7 @@ ai-i18n-tools init -P openrouter
 
 その他のすべてのキーは [設定](/ja/reference/configuration) にあります。
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## ランタイムライブラリをインストールする
 
 ai-i18n-tools は `i18next` または `react-i18next` に依存しません。アプリがそれらをインストールします。
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## extractを一度実行する
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 次のステップのセットアップファイルは `strings.json` と `ui-languages.json` をインポートし、`extract` のみがそれらを書き込みます。`t()` の呼び出しが見つからない場合でも両方を書き込むため、アプリはコンパイルされます。0個の文字列を想定してください。ただし、`package.json` に `description` がある場合は1個です。これは、エクストラクターがデフォルトでそれを含めるためです (`ui.uiExtractor.includePackageDescription`)。
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## ブートストラップを追加する
 
 i18nセットアップファイルを作成します。この最小限のバージョンで、文字列をラップして翻訳するのに十分です。`SOURCE_LOCALE` は `ai-i18n-tools.config.json` 内の `sourceLocale` と等しくなければなりません。
@@ -86,10 +86,10 @@ Reactを使用していませんか？`react-i18next` のインポートと `.us
 
 最初のレンダリングの前に、アプリのエントリからこのファイルをインポートします。Next.jsでは、[examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts) と同じパターンで、クライアントモジュールからインポートします。
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## ハードコードされたコピーを置き換える
 
-手動で行うか、コーディングエージェントに[JS/TSプロンプト](#agent-prompt)を貼り付けます。`t()`への引数は、ユーザーに表示されるべきソース言語の文です。フラットなロケールファイルは、その文をキーとしています。
+手動で行うか、コーディングエージェントに[JS/TSプロンプト](#run-the-agent-prompt)を貼り付けます。`t()`への引数は、ユーザーに表示されるべきソース言語の文です。フラットなロケールファイルは、その文をキーとしています。
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TSエージェントプロンプト</summary>
@@ -215,7 +215,7 @@ console.log(t("Hello {{name}}", { name }));
 
 これらはそのままにしてください: `className`、`href`、その他のURL、インポートパス、ID、テストID、エラーコード、識別子として使用されるオブジェクトキー、およびコメント内のテキスト。
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## 抽出と翻訳
 
 リテラルが配置されたら:
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app)は、`src/main.js`がすでにラップされている小さなNodeアプリです。Next.jsの例はReactのブートストラップです。
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## 言語切り替え
 
 [i18nextの配線](/ja/guide/ui-strings/i18next-runtime#startup-locale)で説明されているように、最初のレンダリングの前に保存されたロケールを復元します。その後、`await loadLocale(code)`に続いて`await i18n.changeLanguage(code)`を呼び出すコントロールを追加します: [言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)。
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## 翻訳を維持する
 
 ソーステキストを変更した後、`sync`を再実行します。キャッシュにより、新規または変更された文字列のみがモデルに送られます。[推奨されるpackage.jsonスクリプト](/ja/guide/quick-start#recommended-packagejson-scripts)からスクリプトを追加し、CIで`sync`を実行して翻訳がずれないようにします。
 
 デフォルトの`init`テンプレートは`README.md`も翻訳します。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)を参照してください。
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## 他のツールからの移行
 
 ai-i18n-toolsには独自の文字列抽出機能が含まれています。`i18next-scanner`、`babel-plugin-i18next-extract`などを使用していた場合、移行後にそれらの開発依存関係を削除できます。既存のi18next名前空間JSONファイルは、[JSONパイプライン](/ja/guide/json#i18next-namespace-files)に残すことができます。Intlayerの`.content.ts`辞書は`migrate-intlayer`でインポートできます。[Intlayerからの移行](/ja/guide/migrating-from-intlayer)を参照してください。実行時にIntlayerを維持し、その翻訳のみを埋めるには、`translate-intlayer`を使用します。[Intlayerをその場で翻訳する](/ja/guide/translating-intlayer)を参照してください。
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## 当てはまりませんか？
 
 | 現在のコード | 参照 |

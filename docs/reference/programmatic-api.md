@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # Programmatic API
 
-All public types and classes are exported from the package root. Example: running the translate-UI step from Node.js without the CLI:
+All public types and classes are exported from the package root. Example: running the translate-ui step from Node.js without the CLI:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `resolveDocumentationOutputPath` | Resolve output file path for a translated document. |
 | `Glossary` / `GlossaryMatcher` | Load and apply translation glossaries, including optional term `Context` notes. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Load `glossary.contextFiles` and fingerprint guidance for cache invalidation. |
-| `runTranslateUI` | Programmatic translate-UI entry point. |
+| `runTranslateUI` | Programmatic translate-ui entry point. |
 | `writeInitConfigFile` | Write a starter config JSON (`template`, `cwd`, a required `providerKey`, and optional `{ withReadme }`). Returns `{ readmeBlockAdded, hasReadmeBlock }`. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | Starter `translationModels` per built-in preset used by `init -P`. |
 | `PROVIDER_PRESETS` | Built-in provider preset map (`baseUrl`, `apiKeyEnv`). |

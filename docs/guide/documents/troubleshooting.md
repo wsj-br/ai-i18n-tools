@@ -31,10 +31,10 @@ A markdown link or `![alt](url)` works in English but returns 404 in translated 
 2. Add or adjust `docsOutput.postProcessing.regexAdjustments` to swap locale segments or bridge absolute `/img/…` paths. For flat layout, remember the flat link rewriter runs **before** `regexAdjustments` — match patterns against the already-prefixed URL.
 3. Ensure locale-specific asset files exist at the paths the rewritten markdown references (`translate-docs` rewrites URLs but does not copy raster files).
 
-<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanized-latin-letters"></a>
-## Hindi, Arabic, CJK, or Cyrillic output is romanized (Latin letters)
+<a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
+## Hindi, Arabic, CJK, or Cyrillic output is romanised (Latin letters)
 
-Some models translate the meaning but write the result in Latin/Roman letters (for example Hindi as `Namaste` instead of `नमस्ते`). Bare `hi` means Devanagari; use `hi-Latn` only when you want romanized Hindi.
+Some models translate the meaning but write the result in Latin/Roman letters (for example Hindi as `Namaste` instead of `नमस्ते`). Bare `hi` means Devanagari; use `hi-Latn` only when you want romanised Hindi.
 
 **Fix**
 

@@ -53,7 +53,6 @@ Wenn das Flag aktiviert ist, enthält jede Chat-Anfrage `"zdr": true`, und `list
 
 Lassen Sie das Flag deaktiviert, wenn das Cheaper Inference-Konto keine Null-Datenaufbewahrung erfordert. Wenn [Datenschutz](https://platform.cheaperinference.com/dashboard/data-protection) für das Konto bereits aktiviert ist, lehnt Cheaper Inference ein Modell ohne Route für Null-Datenaufbewahrung weiterhin ab. Die Fehlermeldung nennt dieses Modell. Um die Kontorichtlinie beizubehalten, setzen Sie `zeroDataRetention` auf `true` und wechseln Sie zu einem Modell aus dem Katalog für Null-Datenaufbewahrung. Um das abgelehnte Modell beizubehalten, deaktivieren Sie die Null-Datenaufbewahrung auf dieser Seite. Die Fallback-Kette versucht dann das nächste konfigurierte Modell.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### Modelle
 

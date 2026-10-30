@@ -5,7 +5,7 @@ Esta página é para um repositório no GitHub, GitLab, Bitbucket ou qualquer ou
 
 A ferramenta mantém o `README.md` no lugar e grava um arquivo de localidade por idioma, por exemplo, `translated-docs/README.de.md`. Uma linha de idiomas dentro do README conecta esses arquivos.
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Qual é a sua configuração?
 
 | Você tem | Scaffold | Então |
@@ -17,23 +17,23 @@ A ferramenta mantém o `README.md` no lugar e grava um arquivo de localidade por
 
 `--with-readme` não tem efeito em `ui-markdown` e `docs-markdown`, porque esses templates já incluem o bloco do README.
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## O que você obtém
 
 - O `README.md` permanece como o arquivo de origem. Os hosts continuam a renderizá-lo como a página inicial do repositório.
 - Cada localidade de destino é um arquivo no mesmo nível, como `translated-docs/README.de.md`.
 - A linha de idiomas na origem e em cada tradução lista todas as localidades, com links que funcionam a partir do arquivo que o leitor está visualizando.
 
-Adicione `CONTRIBUTING.md`, `CHANGELOG.md` ou uma pasta `docs/` ao mesmo bloco quando esses arquivos também devem ser traduzidos. Consulte [Mais do que o README](#more-than-the-readme).
+Adicione `CONTRIBUTING.md`, `CHANGELOG.md` ou uma pasta `docs/` ao mesmo bloco quando esses arquivos também devem ser traduzidos. Consulte [Mais do que o README](#step-3-more-than-the-readme).
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## Instalar
 
 Instale a CLI ([Instalação](/pt-BR/guide/installation)) e defina a chave de API para o seu provedor ([Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key)). O Ollama não precisa de chave.
 
 Um repositório com um `package.json` instala o pacote como uma dependência de desenvolvimento. Um repositório sem um projeto Node.js pode executar o `npx ai-i18n-tools` ou usar o [executável autônomo](/pt-BR/guide/installation#standalone-executables).
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## Scaffold
 
 Aplicativo JS/TS e README (um comando; `ui-markdown` é o template padrão):
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init` grava apenas o `ai-i18n-tools.config.json`. Ele não edita o `README.md`. Quando a configuração inclui um bloco do README, ele imprime a linha marcadora para colar e avisa se o `README.md` estiver ausente. Uma configuração existente não é alterada: adicione o bloco manualmente, conforme [Adicionar o bloco a uma configuração que você já tem](#add-the-block-to-a-config-you-already-have).
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## Configurar
 
 Quatro chaves são importantes:
@@ -140,12 +140,12 @@ As configurações da lista de idiomas são as mesmas do exemplo híbrido. Elas 
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### Adicionar o bloco a uma configuração que você já tem
 
 Anexe o objeto `docs` do exemplo híbrido e defina `features.translateDocs` como `true`. Se a configuração já tiver um array `docs` (um site VitePress ou Docusaurus, por exemplo), anexe o objeto README como uma segunda entrada. `sync` executa todos os blocos. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) faz isso: um bloco para o site de documentação, um bloco simples para `README.md`.
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## Adicionar a lista de idiomas
 
 Coloque esta linha em `README.md`, onde os leitores devem ver os outros idiomas. Um rótulo curto na linha acima é prosa normal e será traduzido.
@@ -158,7 +158,7 @@ Coloque esta linha em `README.md`, onde os leitores devem ver os outros idiomas.
 
 A linha pode estar vazia. `translate-docs` substitui tudo, do marcador de abertura ao marcador de fechamento, por um link por localidade. Marcadores dentro de blocos de código delimitados são ignorados, portanto, uma amostra de configuração no mesmo arquivo não corresponde. Detalhes: [Seletor de idiomas](/pt-BR/guide/documents/language-switcher).
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## Traduzir
 
 ```bash
@@ -172,14 +172,14 @@ Os nomes dos idiomas na linha vêm de `ui-languages.json`, que `extract` grava a
 
 Faça o commit de `translated-docs/` e abra o README traduzido no host. Os links relativos entre o README de origem e `translated-docs/README.de.md` são reescritos para cada arquivo.
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## Dicas para o modo híbrido
 
 - Traduza o README para menos idiomas que o aplicativo com `docs[].targetLocales`. Consulte [Menos localidades para documentos](/pt-BR/guide/combining-pipelines#fewer-locales-for-documents).
 - Coloque os termos do produto em `glossary.userGlossary`. O mesmo CSV é usado para as strings da interface do usuário e para o README.
 - Execute apenas um lado com `ai-i18n-tools sync --no-docs` ou `ai-i18n-tools sync --no-ui`.
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## Mais do que o README
 
 Adicione caminhos a `contentPaths`. `flatPreserveRelativeDir` mantém as pastas, então `docs/guide.md` se torna `translated-docs/docs/guide.de.md` em vez de colidir com outro `guide.md`.
@@ -192,7 +192,7 @@ Um arquivo `.translate-ignore` ignora os caminhos que você não quer que sejam 
 
 Capturas de tela que diferem por idioma: [Imagens e capturas de tela](/pt-BR/guide/images-and-screenshots/).
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## Links no host
 
 Links para outros arquivos no repositório são reescritos para o arquivo de localidade. Links para um site de documentação publicado não são reescritos. Este repositório adiciona um prefixo de localidade aos URLs do site de documentação usando `regexAdjustments`:
@@ -208,7 +208,7 @@ Links para outros arquivos no repositório são reescritos para o arquivo de loc
 
 O reescritor de links simples é executado primeiro, depois estas substituições. Consulte [Reescrita de links](/pt-BR/guide/documents/link-rewriting).
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## Mantenha traduzido
 
 Reexecute `sync` depois que o README de origem ou as strings do aplicativo mudarem. O cache envia apenas o texto novo ou alterado para o modelo. Faça o commit dos arquivos atualizados em `translated-docs/`.
@@ -239,12 +239,12 @@ jobs:
 
 Use a variável de ambiente para o provedor que você configurou. Ollama não se aplica em um runner hospedado, a menos que você o instale lá.
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## Informar que a tradução é automática
 
 As traduções de IA podem estar incorretas. Uma nota curta no final do README, como a que está no [README deste repositório](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), informa aos leitores que os outros idiomas foram traduzidos por máquina e devem ser verificados antes de você confiar neles.
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## Não é o seu caso?
 
 | Se você tem | Leia |
@@ -254,7 +254,7 @@ As traduções de IA podem estar incorretas. Uma nota curta no final do README, 
 | Um arquivo HTML por localidade | [Páginas HTML](/pt-BR/guide/documents/html-pages) |
 | A referência completa de `translate-docs` | [Documentos](/pt-BR/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## Exemplos
 
 | Projeto | O que ele mostra |
@@ -263,7 +263,7 @@ As traduções de IA podem estar incorretas. Uma nota curta no final do README, 
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | Strings de UI, um site de documentação e um bloco de README simples separado |
 | Este repositório | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): bloco de README simples, depois o site VitePress |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## Prompt do agente
 
 Copie isto no Cursor ou em outro agente de codificação. Ele prepara o repositório. Ele não traduz o README.

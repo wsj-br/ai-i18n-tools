@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Per-locale folder (URL rewriting)
 
-Use for README/USER-GUIDE with `docsOutput.style = "flat"`, and for doc-system sites (`docsOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) and for `"vitepress"` / other doc-system presets that serve screenshots from a shared static URL tree. Link-rewriting details for VitePress: [Link rewriting — VitePress](/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+Use for README/USER-GUIDE with `docsOutput.style = "flat"`, and for doc-system sites (`docsOutput.style = "doc-system"` or aliases `"docusaurus"` / `"astro-starlight"`) and for `"vitepress"` / other doc-system presets that serve screenshots from a shared static URL tree. Link-rewriting details for VitePress: [Link rewriting — VitePress](/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Directory layout

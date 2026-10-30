@@ -30,8 +30,6 @@ Die Anleitungen sind unter [i18n zu Ihrem Projekt hinzufügen](/de/guide/add-i18
 | Intlayer-Wörterbücher (von Intlayer migrieren) | [Migration von Intlayer](/de/guide/migrating-from-intlayer) |
 | Intlayer-Wörterbücher (Intlayer beibehalten, direkt übersetzen) | [Intlayer direkt übersetzen](/de/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## So funktioniert's
 

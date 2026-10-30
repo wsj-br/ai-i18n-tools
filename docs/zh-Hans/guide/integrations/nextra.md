@@ -48,7 +48,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在现有站点中启用 i18n
 
-一个仅支持英语的 Nextra 4 站点需要一个区域设置文件夹、一个路由参数和 Next.js i18n 配置，才能让 `translate-docs` 有地方可写。[字典提示](#agent-prompt-dictionary) 可以一次性完成此操作。清单：
+一个仅支持英语的 Nextra 4 站点需要一个区域设置文件夹、一个路由参数和 Next.js i18n 配置，才能让 `translate-docs` 有地方可写。[字典提示](#agent-prompt-dictionary-and-routes) 可以一次性完成此操作。清单：
 
 - 将 MDX 移动到 `content/en/`（英语是一个区域设置文件夹，而不是内容根目录）。
 - `next.config` 中的 `i18n.locales` 和 `defaultLocale`。

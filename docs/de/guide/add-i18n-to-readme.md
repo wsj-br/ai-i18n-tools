@@ -5,7 +5,7 @@ Diese Seite ist für ein Repository auf GitHub, GitLab, Bitbucket oder einem and
 
 Das Tool belässt `README.md` an Ort und Stelle und schreibt eine Locale-Datei pro Sprache, zum Beispiel `translated-docs/README.de.md`. Eine Sprachzeile innerhalb der README verknüpft diese Dateien miteinander.
 
-<a id="which-setup-are-you-in"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Welches Setup verwenden Sie?
 
 | Sie haben | Gerüst | Dann |
@@ -17,23 +17,23 @@ Das Tool belässt `README.md` an Ort und Stelle und schreibt eine Locale-Datei p
 
 `--with-readme` ist ein No-Op bei `ui-markdown` und `docs-markdown`, da diese Vorlagen den README-Block bereits enthalten.
 
-<a id="what-you-get"></a>
+<a id="initialise-the-project"></a>
 ## Was Sie erhalten
 
 - `README.md` bleibt die Quelldatei. Hosts rendern sie weiterhin als Startseite des Repositorys.
 - Jedes Ziellokale ist eine gleichgeordnete Datei wie `translated-docs/README.de.md`.
 - Die Sprachzeile in der Quelle und in jeder Übersetzung listet jedes Lokale auf, mit Links, die von der Datei aus funktionieren, die der Leser gerade betrachtet.
 
-Fügen Sie `CONTRIBUTING.md`, `CHANGELOG.md` oder einen `docs/`-Ordner zum selben Block hinzu, wenn diese Dateien ebenfalls übersetzt werden sollen. Siehe [Mehr als die README](#more-than-the-readme).
+Fügen Sie `CONTRIBUTING.md`, `CHANGELOG.md` oder einen `docs/`-Ordner zum selben Block hinzu, wenn diese Dateien ebenfalls übersetzt werden sollen. Siehe [Mehr als die README](#step-3-more-than-the-readme).
 
-<a id="install"></a>
+<a id="run-the-agent-prompt"></a>
 ## Installieren
 
 Installieren Sie die CLI ([Installation](/de/guide/installation)) und legen Sie den API-Schlüssel für Ihren Anbieter fest ([Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key)). Ollama benötigt keinen Schlüssel.
 
 Ein Repository mit einem `package.json` installiert das Paket als Entwicklungsabhängigkeit. Ein Repository ohne Node.js-Projekt kann `npx ai-i18n-tools` ausführen oder die [eigenständige ausführbare Datei](/de/guide/installation#standalone-executables) verwenden.
 
-<a id="scaffold"></a>
+<a id="review-the-result"></a>
 ## Gerüst
 
 JS/TS-App und README (ein Befehl; `ui-markdown` ist die Standardvorlage):
@@ -56,7 +56,7 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 
 `init` schreibt nur `ai-i18n-tools.config.json`. Es bearbeitet `README.md` nicht. Wenn die Konfiguration einen README-Block enthält, druckt es die einzufügende Markierungszeile und warnt, wenn `README.md` fehlt. Eine bestehende Konfiguration wird nicht angetastet: Fügen Sie den Block manuell hinzu, wie unter [Fügen Sie den Block zu einer bereits vorhandenen Konfiguration hinzu](#add-the-block-to-a-config-you-already-have).
 
-<a id="configure"></a>
+<a id="choose-models-and-translate"></a>
 ## Konfigurieren
 
 Vier Schlüssel sind wichtig:
@@ -140,12 +140,12 @@ Die Einstellungen für die Sprachliste sind die gleichen wie im Hybridbeispiel. 
 
 </details>
 
-<a id="add-the-block-to-a-config-you-already-have"></a>
+<a id="check-one-language"></a>
 ### Den Block zu einer bestehenden Konfiguration hinzufügen
 
 Fügen Sie das Objekt `docs` aus dem Hybridbeispiel an und setzen Sie `features.translateDocs` auf `true`. Wenn die Konfiguration bereits ein Array `docs` enthält (z. B. eine VitePress- oder Docusaurus-Site), fügen Sie das README-Objekt als zweiten Eintrag an. `sync` führt jeden Block aus. [examples/nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) macht dies: ein Block für die Dokumentationsseite, ein flacher Block für `README.md`.
 
-<a id="add-the-language-list"></a>
+<a id="keep-it-translated"></a>
 ## Sprachliste hinzufügen
 
 Fügen Sie diese Zeile in `README.md` ein, wo Leser die anderen Sprachen sehen sollen. Ein kurzes Label in der Zeile darüber ist normaler Text und wird übersetzt.
@@ -158,7 +158,7 @@ Fügen Sie diese Zeile in `README.md` ein, wo Leser die anderen Sprachen sehen s
 
 Die Zeile kann leer sein. `translate-docs` ersetzt alles vom öffnenden bis zum schließenden Marker durch einen Link pro Gebietsschema. Marker innerhalb von Codeblöcken werden ignoriert, sodass ein Konfigurationsbeispiel in derselben Datei nicht übereinstimmt. Details: [Sprachumschalter](/de/guide/documents/language-switcher).
 
-<a id="translate"></a>
+<a id="hybrid-tips"></a>
 ## Übersetzen
 
 ```bash
@@ -172,14 +172,14 @@ Sprachnamen in der Zeile stammen aus `ui-languages.json`, die `extract` neben de
 
 Committen Sie `translated-docs/` und öffnen Sie die übersetzte README auf dem Host. Relative Links zwischen der Quell-README und `translated-docs/README.de.md` werden für jede Datei neu geschrieben.
 
-<a id="hybrid-tips"></a>
+<a id="say-that-the-translation-is-automatic"></a>
 ## Hybrid-Tipps
 
 - Übersetzen Sie die README mit `docs[].targetLocales` in weniger Sprachen als die App. Siehe [Weniger Gebietsschemas für Dokumente](/de/guide/combining-pipelines#fewer-locales-for-documents).
 - Fügen Sie Produktbegriffe in `glossary.userGlossary` ein. Dieselbe CSV-Datei wird für UI-Strings und für die README verwendet.
 - Führen Sie nur eine Seite mit `ai-i18n-tools sync --no-docs` oder `ai-i18n-tools sync --no-ui` aus.
 
-<a id="more-than-the-readme"></a>
+<a id="do-it-by-hand"></a>
 ## Mehr als die README
 
 Fügen Sie Pfade zu `contentPaths` hinzu. `flatPreserveRelativeDir` behält Ordner bei, sodass `docs/guide.md` zu `translated-docs/docs/guide.de.md` wird, anstatt mit einem anderen `guide.md` zu kollidieren.
@@ -192,7 +192,7 @@ Eine `.translate-ignore`-Datei überspringt Pfade, die Sie nicht übersetzen mö
 
 Screenshots, die sich je nach Sprache unterscheiden: [Bilder und Screenshots](/de/guide/images-and-screenshots/).
 
-<a id="links-on-the-host"></a>
+<a id="step-1-configure-the-docs-block"></a>
 ## Links auf dem Host
 
 Links zu anderen Dateien im Repository werden auf die Lokalisierungsdatei umgeschrieben. Ein Link zu einer veröffentlichten Dokumentationsseite wird nicht umgeschrieben. Dieses Repository versieht seine Dokumentations-Site-URLs mit dem Gebietsschema unter Verwendung von `regexAdjustments`:
@@ -208,7 +208,7 @@ Links zu anderen Dateien im Repository werden auf die Lokalisierungsdatei umgesc
 
 Der Flat-Link-Rewriter wird zuerst ausgeführt, dann diese Ersetzungen. Siehe [Link-Umschreibung](/de/guide/documents/link-rewriting).
 
-<a id="keep-it-translated"></a>
+<a id="add-the-block-to-a-config-you-already-have"></a>
 ## Übersetzt halten
 
 Führen Sie `sync` erneut aus, nachdem die Quell-README oder die App-Strings geändert wurden. Der Cache sendet nur neuen oder geänderten Text an das Modell. Committen Sie die aktualisierten Dateien unter `translated-docs/`.
@@ -239,12 +239,12 @@ jobs:
 
 Verwenden Sie die Umgebungsvariable für den von Ihnen konfigurierten Provider. Ollama funktioniert nicht auf einem gehosteten Runner, es sei denn, Sie installieren es dort.
 
-<a id="say-that-the-translation-is-automatic"></a>
+<a id="step-2-add-the-language-list"></a>
 ## Darauf hinweisen, dass die Übersetzung automatisch erfolgt
 
 KI-Übersetzungen können falsch sein. Ein kurzer Hinweis am Ende der README-Datei, wie der in der [README dieses Repositorys](https://github.com/wsj-br/ai-i18n-tools/blob/main/README.md), informiert die Leser darüber, dass die anderen Sprachen maschinell übersetzt wurden und überprüft werden sollten, bevor man sich auf sie verlässt.
 
-<a id="not-your-case"></a>
+<a id="step-3-more-than-the-readme"></a>
 ## Nicht Ihr Fall?
 
 | Sie haben | Lesen Sie |
@@ -254,7 +254,7 @@ KI-Übersetzungen können falsch sein. Ein kurzer Hinweis am Ende der README-Dat
 | Eine HTML-Datei pro Gebietsschema | [HTML-Seiten](/de/guide/documents/html-pages) |
 | Die vollständige `translate-docs`-Referenz | [Dokumente](/de/guide/documents/) |
 
-<a id="examples"></a>
+<a id="step-4-links-on-the-host"></a>
 ## Beispiele
 
 | Projekt | Was es zeigt |
@@ -263,7 +263,7 @@ KI-Übersetzungen können falsch sein. Ein kurzer Hinweis am Ende der README-Dat
 | [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) | UI-Strings, eine Dokumentations-Site und ein separater flacher README-Block |
 | Dieses Repository | [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/ai-i18n-tools.config.json): flacher README-Block, dann die VitePress-Site |
 
-<a id="agent-prompt"></a>
+<a id="not-your-case"></a>
 ## Agenten-Prompt
 
 Kopieren Sie dies in Cursor oder einen anderen Coding-Agenten. Es bereitet das Repository vor. Es übersetzt die README nicht.

@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` 會從 Python、Jinja、Django 和 Qt `.ui` 檔案中擷取 UI 字串，然後寫入以來源語言字串為鍵的扁平 JSON、GNU gettext 目錄，或兩者皆是。`sourceLocale` 可以是任何語言。執行階段協助程式是標準程式庫 `i18n.py` (Python 3.10 或更新版本)。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 會呼叫該協助程式。Django 則使用其自己的 gettext。
 
-將地區設定新增至現有的單一語言應用程式：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，包括 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-i18n-py) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函數清單：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
+將地區設定新增至現有的單一語言應用程式：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，包括 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#run-the-agent-prompt) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函數清單：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
 
 可執行的副本位於 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它們是 Python 專案。前三個使用虛擬環境 (virtualenv) 和 `pip install -r requirements.txt`。`python-gettext` 僅使用標準函式庫。它們不是 npm 套件。發行封存檔 `ai-i18n-tools-python-examples.zip` 包含相同的四個目錄。npm tarball 和獨立執行檔則不包含。
 
@@ -74,7 +74,7 @@ Gettext 檔案使用 `msgctxt` 作為內容，並使用 `msgid` / `msgid_plural`
 
 `t(..., plurals=True)` 若具有英文來源地區設定和明確的複數來源，將會跳過模型並儲存來自來源字串的 `one` / `other`。
 
-<a id="locale-in-each-framework"></a>
+<a id="things-to-know"></a>
 ## 各框架中的地區設定
 
 `set_locale` 會傳回 `ContextVar` 權杖。請在 `finally` 中重設它，包含 FastAPI 和 Flask 中介軟體，以確保並行請求不會洩漏地區設定。

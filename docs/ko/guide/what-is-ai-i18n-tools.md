@@ -30,8 +30,6 @@
 | Intlayer 사전(Intlayer에서 마이그레이션) | [Intlayer에서 마이그레이션하기](/ko/guide/migrating-from-intlayer) |
 | Intlayer 사전(Intlayer 유지, 인플레이스 번역) | [Intlayer 인플레이스 번역하기](/ko/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## 작동 방식
 

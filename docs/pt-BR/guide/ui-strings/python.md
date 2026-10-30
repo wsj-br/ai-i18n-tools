@@ -3,7 +3,7 @@
 
 O `ai-i18n-tools` extrai strings de IU de arquivos Python e de arquivos `.ui` do Jinja, Django e Qt e, em seguida, grava em JSON simples com chaves baseadas na string do idioma de origem, em catálogos GNU gettext ou em ambos. O `sourceLocale` pode ser qualquer idioma. O auxiliar de tempo de execução é um `i18n.py` da biblioteca padrão (Python 3.10 ou mais recente). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid e FastAPI chamam esse auxiliar. O Django usa o próprio gettext do Django.
 
-Como adicionar localidades a um aplicativo de idioma único existente: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), incluindo o [prompt do `i18n.py`](/pt-BR/guide/add-i18n-to-python#agent-prompt-i18n-py) e o [prompt do Django / gettext](/pt-BR/guide/add-i18n-to-python#agent-prompt-django-gettext). Seletor de framework: [Integrações com Python](/pt-BR/guide/integrations/python). Lista de funções: [Runtime do Python (`i18n.py`)](/pt-BR/reference/programmatic-api#python-runtime).
+Como adicionar localidades a um aplicativo de idioma único existente: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), incluindo o [prompt do `i18n.py`](/pt-BR/guide/add-i18n-to-python#run-the-agent-prompt) e o [prompt do Django / gettext](/pt-BR/guide/add-i18n-to-python#agent-prompt-django-gettext). Seletor de framework: [Integrações com Python](/pt-BR/guide/integrations/python). Lista de funções: [Runtime do Python (`i18n.py`)](/pt-BR/reference/programmatic-api#python-runtime).
 
 Cópias executáveis residem em `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` e `examples/python-gettext`. São projetos Python. Os três primeiros utilizam um virtualenv e `pip install -r requirements.txt`. O `python-gettext` utiliza apenas a biblioteca padrão. Eles não são pacotes npm. O arquivo de lançamento `ai-i18n-tools-python-examples.zip` contém os mesmos quatro diretórios. O tarball npm e o executável independente não contêm.
 
@@ -74,7 +74,7 @@ Arquivos Gettext usam `msgctxt` para contexto e `msgid` / `msgid_plural` para pl
 
 O `t(..., plurals=True)` com um local de origem em inglês e uma fonte de plural explícita ignora o modelo e armazena `one` / `other` a partir das strings de origem.
 
-<a id="locale-in-each-framework"></a>
+<a id="things-to-know"></a>
 ## Localidade em cada framework
 
 `set_locale` retorna um token `ContextVar`. Redefina-o em `finally`, incluindo middleware FastAPI e Flask, para que solicitações simultâneas não vazem uma localidade.

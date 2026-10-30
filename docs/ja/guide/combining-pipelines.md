@@ -21,8 +21,6 @@
 
 個々のコマンドを手動で連結するよりも、`sync`を使用することをお勧めします。手動で実行すると、順序、抽出、およびロケールフラグを間違えやすくなります。
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI文字列とドキュメントをまとめて
 
@@ -82,8 +80,6 @@ UIブロックには、デフォルトでドキュメント用の用語集ヒン
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## 混合ドキュメント設定

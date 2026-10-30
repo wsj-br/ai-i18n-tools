@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` Python से और Jinja, Django, और Qt `.ui` फ़ाइलों से UI स्ट्रिंग निकालता है, फिर स्रोत-भाषा स्ट्रिंग, GNU gettext कैटलॉग, या दोनों द्वारा कुंजीबद्ध फ़्लैट JSON लिखता है। `sourceLocale` कोई भी भाषा हो सकती है। रनटाइम हेल्पर एक मानक-पुस्तकालय `i18n.py` है (Python 3.10 या नया)। Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, और FastAPI उस हेल्पर को कॉल करते हैं। Django अपने स्वयं के gettext का उपयोग करता है।
 
-किसी मौजूदा एकल-भाषा ऐप में लोकेल जोड़ना: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-i18n-py) और [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल हैं। फ़्रेमवर्क चयनकर्ता: [Python एकीकरण](/hi/guide/integrations/python)। फ़ंक्शन सूची: [Python रनटाइम (`i18n.py`)](/hi/reference/programmatic-api#python-runtime)।
+किसी मौजूदा एकल-भाषा ऐप में लोकेल जोड़ना: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) और [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल हैं। फ़्रेमवर्क चयनकर्ता: [Python एकीकरण](/hi/guide/integrations/python)। फ़ंक्शन सूची: [Python रनटाइम (`i18n.py`)](/hi/reference/programmatic-api#python-runtime)।
 
 रन करने योग्य प्रतियां `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext` में रहती हैं। ये पायथन प्रोजेक्ट्स हैं। पहले तीन virtualenv और `pip install -r requirements.txt` का उपयोग करते हैं। `python-gettext` केवल स्टैंडर्ड लाइब्रेरी का उपयोग करता है। ये npm पैकेज नहीं हैं। रिलीज़ आर्काइव `ai-i18n-tools-python-examples.zip` में वही चार डायरेक्टरीज़ शामिल हैं। npm टारबॉल और स्टैंडअलोन निष्पादन योग्य फ़ाइल में ये नहीं हैं।
 
@@ -74,7 +74,7 @@ Gettext फ़ाइलें संदर्भ के लिए `msgctxt` औ�
 
 एक इंग्लिश सोर्स लोकेल और स्पष्ट प्लुरल सोर्स के साथ `t(..., plurals=True)`, मॉडल को छोड़ देता है और सोर्स स्ट्रिंग्स से `one` / `other` को स्टोर करता है।
 
-<a id="locale-in-each-framework"></a>
+<a id="things-to-know"></a>
 ## हर फ़्रेमवर्क में लोकेल
 
 `set_locale` एक `ContextVar` टोकन लौटाता है। इसे `finally` में रीसेट करें, जिसमें FastAPI और Flask मिडलवेयर शामिल हैं, ताकि समवर्ती अनुरोध (concurrent requests) किसी लोकेल को लीक न करें।

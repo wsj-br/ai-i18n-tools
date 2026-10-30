@@ -418,7 +418,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 973
+        "line": 1005
       }
     ]
   },
@@ -552,6 +552,37 @@
       }
     ]
   },
+  "89844320": {
+    "source": "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt).",
+    "translated": {
+      "fr": "⚠️ Traduction interrompue — résumé partiel (les jetons et le coût reflètent le travail de l'API effectué avant l'interruption).",
+      "es": "⚠️ Traducción interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de la API completado antes de la interrupción).",
+      "de": "⚠️ Übersetzung unterbrochen — teilweise Zusammenfassung (Tokens und Kosten spiegeln die vor der Unterbrechung abgeschlossene API-Arbeit wider).",
+      "hi": "⚠️ अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत API कार्य को दर्शाते हैं जो बाधित होने से पहले पूरा हुआ था)।",
+      "ko": "⚠️ 번역 중단됨 — 부분 요약 (토큰 및 비용은 중단 전 완료된 API 작업을 반영합니다).",
+      "ja": "⚠️ 翻訳が中断されました — 部分的な概要 (トークンとコストは中断前に完了したAPI作業を反映しています)。",
+      "zh-Hans": "⚠️ 翻译中断 — 部分摘要（令牌和费用反映了中断前已完成的 API 工作）。",
+      "pt-BR": "⚠️ Tradução interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
+      "zh-Hant": "⚠️ 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doc-translate.ts",
+        "line": 3509
+      }
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
+  },
   "97139627": {
     "source": "(none)",
     "translated": {
@@ -581,7 +612,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 499
+        "line": 531
       },
       {
         "file": "src/cli/index.ts",
@@ -3007,39 +3038,6 @@
       }
     ]
   },
-  "139e81f7": {
-    "source": "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
-    "translated": {
-      "es": "⚠️  Traducción interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de API completado antes de la interrupción).",
-      "fr": "⚠️  Traduction interrompue — résumé partiel (les jetons et le coût reflètent le travail API effectué avant l'interruption).",
-      "hi-Latn": "⚠️  Translation interrupt hua — partial summary (tokens aur cost us API kaam ko reflect karte hain jo interrupt se pehle complete hua).",
-      "ja": "⚠️  翻訳が中断されました — 部分的なサマリー (トークンとコストは中断前に完了した API 作業を反映しています)。",
-      "de": "⚠️  Übersetzung unterbrochen — Teilzusammenfassung (Tokens und Kosten beziehen sich auf API-Arbeit vor der Unterbrechung).",
-      "pt-BR": "⚠️  Tradução interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
-      "zh-Hant": "⚠️  翻譯已中斷 — 部分摘要（Token 數量與費用反映中斷前已完成的 API 工作）。",
-      "ko": "⚠️  번역이 중단됨 — 부분 요약 (토큰 및 비용은 중단 전 완료된 API 작업을 반영함).",
-      "zh-Hans": "⚠️  翻译已中断 — 部分摘要（令牌和费用反映中断前已完成的 API 工作）。",
-      "hi": "⚠️  अनुवाद बाधित — आंशिक सारांश (टोकन और लागत बाधित होने से पहले पूर्ण किए गए API कार्य को दर्शाते हैं)।"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "openai/gpt-5.5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "z-ai/glm-5",
-      "hi": "~anthropic/claude-sonnet-latest"
-    },
-    "locations": [
-      {
-        "file": "src/cli/doc-translate.ts",
-        "line": 3509
-      }
-    ]
-  },
   "6026f65b": {
     "source": "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error).",
     "translated": {
@@ -3351,46 +3349,36 @@
       }
     ]
   },
-  "9ee39506": {
-    "source": "⚠️  Dry run mode - no changes will be made",
+  "b978a7e6": {
+    "source": "⚠️  Dry run mode: no changes will be made",
     "translated": {
-      "es": "⚠️  Modo simulacro - no se realizarán cambios",
-      "fr": "⚠️  Mode simulation — aucune modification ne sera effectuée",
-      "hi-Latn": "⚠️  Dry run mode - koi changes nahi honge",
-      "ja": "⚠️  ドライランモード - 変更は行われません",
-      "de": "⚠️  Dry-Run-Modus - es werden keine Änderungen vorgenommen",
-      "pt-BR": "⚠️  Modo de simulação - nenhuma alteração será feita",
-      "zh-Hant": "⚠️  試執行模式 — 不會進行任何變更",
-      "ko": "⚠️  드라이 런 모드 - 변경 사항이 적용되지 않음",
-      "zh-Hans": "⚠️  试运行模式 - 不会进行任何更改",
-      "hi": "⚠️  ड्राई रन मोड - कोई परिवर्तन नहीं किया जाएगा"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "openai/gpt-5.5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "z-ai/glm-5",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "⚠️ Mode simulation : aucune modification ne sera effectuée",
+      "es": "⚠️ Modo de simulación: no se realizarán cambios",
+      "de": "⚠️ Simulationsmodus: Es werden keine Änderungen vorgenommen",
+      "hi": "⚠️ ड्राई रन मोड: कोई बदलाव नहीं किया जाएगा",
+      "ko": "⚠️ 시험 실행 모드: 변경 사항이 적용되지 않습니다",
+      "ja": "⚠️ ドライランモード: 変更は行われません",
+      "zh-Hans": "⚠️ 试运行模式：不会进行任何更改",
+      "pt-BR": "⚠️ Modo de simulação: nenhuma alteração será feita",
+      "zh-Hant": "⚠️ 試執行模式：不會進行任何變更"
     },
     "locations": [
       {
         "file": "src/cli/doc-translate.ts",
         "line": 3647
-      },
-      {
-        "file": "src/cli/translate-svg.ts",
-        "line": 158
-      },
-      {
-        "file": "src/cli/translate-ui-strings.ts",
-        "line": 634
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "4f62837d": {
     "source": "Locale concurrency:",
@@ -3701,6 +3689,37 @@
       }
     ]
   },
+  "03b3ed5d": {
+    "source": "version {{version}} (latest release)",
+    "translated": {
+      "de": "Version {{version}} (neuestes Release)",
+      "fr": "version {{version}} (dernière version)",
+      "es": "versión {{version}} (última versión)",
+      "hi": "संस्करण {{version}} (नवीनतम रिलीज़)",
+      "ko": "버전 {{version}} (최신 릴리스)",
+      "zh-Hans": "版本 {{version}} (最新版本)",
+      "pt-BR": "versão {{version}} (última versão)",
+      "ja": "バージョン {{version}} (最新リリース)",
+      "zh-Hant": "版本 {{version}} (最新版本)"
+    },
+    "models": {
+      "de": "gemini-2.5-pro",
+      "fr": "gemini-2.5-pro",
+      "es": "gemini-2.5-pro",
+      "hi": "gemini-2.5-pro",
+      "ko": "gemini-2.5-pro",
+      "zh-Hans": "gemini-2.5-pro",
+      "pt-BR": "gemini-2.5-pro",
+      "ja": "gemini-2.5-pro",
+      "zh-Hant": "gemini-2.5-pro"
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 122
+      }
+    ]
+  },
   "4d2d2cb6": {
     "source": "version {{version}}",
     "translated": {
@@ -3728,7 +3747,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 120
+        "line": 124
       }
     ]
   },
@@ -3759,7 +3778,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 281
+        "line": 285
       }
     ]
   },
@@ -3790,7 +3809,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 282
+        "line": 286
       }
     ]
   },
@@ -3821,7 +3840,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 283
+        "line": 287
       }
     ]
   },
@@ -3852,7 +3871,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 284
+        "line": 288
       }
     ]
   },
@@ -3883,7 +3902,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 285
+        "line": 289
       },
       {
         "file": "src/cli/usage.ts",
@@ -3930,7 +3949,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 286
+        "line": 290
       }
     ]
   },
@@ -3961,7 +3980,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 304
+        "line": 308
       }
     ]
   },
@@ -3992,7 +4011,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 338
+        "line": 342
       }
     ]
   },
@@ -4023,7 +4042,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 341
+        "line": 345
       }
     ]
   },
@@ -4054,7 +4073,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 371
+        "line": 375
       }
     ]
   },
@@ -4085,7 +4104,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 383
+        "line": 387
       }
     ]
   },
@@ -4116,7 +4135,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 426
+        "line": 444
       }
     ]
   },
@@ -4147,7 +4166,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 442
+        "line": 461
       }
     ]
   },
@@ -4178,7 +4197,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 448
+        "line": 471
       }
     ]
   },
@@ -4209,38 +4228,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 457
-      }
-    ]
-  },
-  "03b3ed5d": {
-    "source": "version {{version}} (latest release)",
-    "translated": {
-      "de": "Version {{version}} (neuestes Release)",
-      "fr": "version {{version}} (dernière version)",
-      "es": "versión {{version}} (última versión)",
-      "hi": "संस्करण {{version}} (नवीनतम रिलीज़)",
-      "ko": "버전 {{version}} (최신 릴리스)",
-      "zh-Hans": "版本 {{version}} (最新版本)",
-      "pt-BR": "versão {{version}} (última versão)",
-      "ja": "バージョン {{version}} (最新リリース)",
-      "zh-Hant": "版本 {{version}} (最新版本)"
-    },
-    "models": {
-      "de": "gemini-2.5-pro",
-      "fr": "gemini-2.5-pro",
-      "es": "gemini-2.5-pro",
-      "hi": "gemini-2.5-pro",
-      "ko": "gemini-2.5-pro",
-      "zh-Hans": "gemini-2.5-pro",
-      "pt-BR": "gemini-2.5-pro",
-      "ja": "gemini-2.5-pro",
-      "zh-Hant": "gemini-2.5-pro"
-    },
-    "locations": [
-      {
-        "file": "src/cli/doctor.ts",
-        "line": 462
+        "line": 481
       }
     ]
   },
@@ -4271,7 +4259,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 468
+        "line": 495
       }
     ]
   },
@@ -4302,7 +4290,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 476
+        "line": 505
       }
     ]
   },
@@ -4333,7 +4321,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 485
+        "line": 515
       }
     ]
   },
@@ -4364,7 +4352,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 497
+        "line": 529
       }
     ]
   },
@@ -4395,7 +4383,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 499
+        "line": 531
       }
     ]
   },
@@ -4426,7 +4414,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 520
+        "line": 552
       }
     ]
   },
@@ -4457,7 +4445,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 526
+        "line": 558
       }
     ]
   },
@@ -4488,7 +4476,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 543
+        "line": 575
       }
     ]
   },
@@ -4519,7 +4507,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 575
+        "line": 607
       }
     ]
   },
@@ -4550,7 +4538,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 582
+        "line": 614
       }
     ]
   },
@@ -4581,7 +4569,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 586
+        "line": 618
       }
     ]
   },
@@ -4612,7 +4600,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 592
+        "line": 624
       }
     ]
   },
@@ -4643,7 +4631,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 600
+        "line": 632
       }
     ]
   },
@@ -4674,7 +4662,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 610
+        "line": 642
       }
     ]
   },
@@ -4705,7 +4693,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 620
+        "line": 652
       }
     ]
   },
@@ -4736,7 +4724,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 632
+        "line": 664
       }
     ]
   },
@@ -4767,7 +4755,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 644
+        "line": 676
       }
     ]
   },
@@ -4798,7 +4786,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 663
+        "line": 695
       }
     ]
   },
@@ -4829,7 +4817,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 672
+        "line": 704
       }
     ]
   },
@@ -4860,7 +4848,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 681
+        "line": 713
       }
     ]
   },
@@ -4891,7 +4879,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 691
+        "line": 723
       }
     ]
   },
@@ -4922,7 +4910,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 702
+        "line": 734
       }
     ]
   },
@@ -4953,7 +4941,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 713
+        "line": 745
       }
     ]
   },
@@ -4984,7 +4972,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 729
+        "line": 761
       }
     ]
   },
@@ -5015,7 +5003,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 740
+        "line": 772
       }
     ]
   },
@@ -5046,7 +5034,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 754
+        "line": 786
       }
     ]
   },
@@ -5077,7 +5065,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 760
+        "line": 792
       }
     ]
   },
@@ -5108,7 +5096,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 763
+        "line": 795
       }
     ]
   },
@@ -5139,7 +5127,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 773
+        "line": 805
       }
     ]
   },
@@ -5170,7 +5158,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 782
+        "line": 814
       }
     ]
   },
@@ -5201,7 +5189,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 786
+        "line": 818
       }
     ]
   },
@@ -5232,7 +5220,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 814
+        "line": 846
       }
     ]
   },
@@ -5263,7 +5251,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 828
+        "line": 860
       }
     ]
   },
@@ -5294,7 +5282,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 831
+        "line": 863
       }
     ]
   },
@@ -5325,7 +5313,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 844
+        "line": 876
       }
     ]
   },
@@ -5356,7 +5344,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 853
+        "line": 885
       }
     ]
   },
@@ -5387,7 +5375,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 862
+        "line": 894
       }
     ]
   },
@@ -5418,7 +5406,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 868
+        "line": 900
       }
     ]
   },
@@ -5449,7 +5437,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 871
+        "line": 903
       }
     ]
   },
@@ -5480,7 +5468,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 884
+        "line": 916
       }
     ]
   },
@@ -5511,7 +5499,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 895
+        "line": 927
       }
     ]
   },
@@ -5542,7 +5530,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 901
+        "line": 933
       }
     ]
   },
@@ -5573,7 +5561,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 902
+        "line": 934
       }
     ]
   },
@@ -5604,7 +5592,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 907
+        "line": 939
       }
     ]
   },
@@ -5635,7 +5623,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 922
+        "line": 954
       }
     ]
   },
@@ -5666,7 +5654,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 934
+        "line": 966
       }
     ]
   },
@@ -5697,7 +5685,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 938
+        "line": 970
       }
     ]
   },
@@ -5728,7 +5716,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 942
+        "line": 974
       }
     ]
   },
@@ -5759,7 +5747,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 948
+        "line": 980
       }
     ]
   },
@@ -5790,7 +5778,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 949
+        "line": 981
       }
     ]
   },
@@ -5821,7 +5809,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 954
+        "line": 986
       }
     ]
   },
@@ -5852,7 +5840,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 961
+        "line": 993
       }
     ]
   },
@@ -5883,7 +5871,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 967
+        "line": 999
       }
     ]
   },
@@ -5914,7 +5902,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 985
+        "line": 1017
       }
     ]
   },
@@ -5945,7 +5933,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 991
+        "line": 1023
       }
     ]
   },
@@ -5976,7 +5964,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1036
+        "line": 1068
       }
     ]
   },
@@ -6007,7 +5995,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1039
+        "line": 1071
       }
     ]
   },
@@ -6038,7 +6026,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1041
+        "line": 1073
       }
     ]
   },
@@ -6069,7 +6057,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1047
+        "line": 1079
       }
     ]
   },
@@ -6100,7 +6088,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1048
+        "line": 1080
       }
     ]
   },
@@ -6131,7 +6119,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1052
+        "line": 1084
       }
     ]
   },
@@ -6162,7 +6150,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1054
+        "line": 1086
       }
     ]
   },
@@ -6193,7 +6181,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1068
+        "line": 1100
       }
     ]
   },
@@ -6224,7 +6212,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1070
+        "line": 1102
       }
     ]
   },
@@ -6255,7 +6243,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1078
+        "line": 1110
       }
     ]
   },
@@ -6286,7 +6274,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1095
+        "line": 1127
       }
     ]
   },
@@ -6317,7 +6305,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1098
+        "line": 1130
       }
     ]
   },
@@ -6334,12 +6322,6 @@
       "ko": "{{provider}} 카탈로그의 모델: {{detail}}",
       "zh-Hant": "{{provider}} 目錄中的模型：{{detail}}"
     },
-    "locations": [
-      {
-        "file": "src/cli/doctor.ts",
-        "line": 1103
-      }
-    ],
     "models": {
       "es": "gemini-2.5-pro",
       "hi": "gemini-2.5-pro",
@@ -6350,7 +6332,13 @@
       "pt-BR": "gemini-2.5-pro",
       "ko": "gemini-2.5-pro",
       "zh-Hant": "gemini-2.5-pro"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1135
+      }
+    ]
   },
   "ee370440": {
     "source": "models in {{provider}}'s catalog ({{count}} ok)",
@@ -6365,12 +6353,6 @@
       "ko": "{{provider}} 카탈로그의 모델({{count}}개 정상)",
       "zh-Hant": "{{provider}} 目錄中的模型 ({{count}} 個正常)"
     },
-    "locations": [
-      {
-        "file": "src/cli/doctor.ts",
-        "line": 1112
-      }
-    ],
     "models": {
       "es": "gemini-2.5-pro",
       "hi": "gemini-2.5-pro",
@@ -6381,7 +6363,13 @@
       "pt-BR": "gemini-2.5-pro",
       "ko": "gemini-2.5-pro",
       "zh-Hant": "gemini-2.5-pro"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/doctor.ts",
+        "line": 1144
+      }
+    ]
   },
   "4cb866fd": {
     "source": "{{name}} (set)",
@@ -6410,7 +6398,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1132
+        "line": 1164
       }
     ]
   },
@@ -6441,7 +6429,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1138
+        "line": 1170
       }
     ]
   },
@@ -7906,6 +7894,10 @@
       {
         "file": "src/cli/index.ts",
         "line": 531
+      },
+      {
+        "file": "src/cli/index.ts",
+        "line": 821
       }
     ]
   },
@@ -8766,38 +8758,36 @@
       }
     ]
   },
-  "655899ca": {
-    "source": "Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)",
+  "263a2d55": {
+    "source": "Model ids to benchmark, comma-separated (default: all configured model ids from translationModels, uiModels, and localeModels)",
     "translated": {
-      "de": "Kommagetrennte Modell-IDs für den Benchmark (Standard: alle konfigurierten Modell-IDs aus translationModels, uiModels und localeModels)",
-      "es": "Ids de modelo separados por comas para evaluar (predeterminado: todos los ids de modelo configurados en translationModels, uiModels y localeModels)",
-      "fr": "Identifiants de modèles séparés par des virgules à évaluer (par défaut : tous les identifiants de modèles configurés dans translationModels, uiModels et localeModels)",
-      "ja": "ベンチマーク対象のモデル ID をカンマ区切りで指定します（デフォルト: translationModels、uiModels、localeModels に設定されているすべてのモデル ID）",
-      "hi-Latn": "Benchmark karne ke liye comma-separated model ids (default: translationModels, uiModels, aur localeModels se configure kiye gaye sabhi model ids)",
-      "pt-BR": "IDs de modelos separados por vírgula para o benchmark (padrão: todos os IDs de modelos configurados em translationModels, uiModels e localeModels)",
-      "zh-Hans": "以逗号分隔的待测试模型 ID(默认为 translationModels、uiModels 和 localeModels 中配置的所有模型 ID)",
-      "zh-Hant": "以逗號分隔的模型 ID 以進行基準測試（預設：translationModels、uiModels 和 localeModels 中所有已設定的模型 ID）",
-      "ko": "벤치마크할 모델 ID (쉼표로 구분, 기본값: translationModels, uiModels, localeModels에 설정된 모든 모델 ID)",
-      "hi": "बेंचमार्क करने के लिए कॉमा से अलग किए गए मॉडल IDs (डिफ़ॉल्ट: translationModels, uiModels, और localeModels से सभी कॉन्फ़िगर किए गए मॉडल IDs)"
-    },
-    "models": {
-      "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "ID de modèles à évaluer, séparés par des virgules (par défaut : tous les ID de modèles configurés à partir de translationModels, uiModels et localeModels)",
+      "es": "IDs de modelos para comparar, separados por comas (predeterminado: todos los IDs de modelos configurados de translationModels, uiModels y localeModels)",
+      "de": "Modell-IDs zum Benchmarking, kommagetrennt (Standard: alle konfigurierten Modell-IDs aus translationModels, uiModels und localeModels)",
+      "hi": "बेंचमार्क करने के लिए मॉडल आईडी, कॉमा से अलग किए गए (डिफ़ॉल्ट: translationModels, uiModels और localeModels से सभी कॉन्फ़िगर किए गए मॉडल आईडी)",
+      "ko": "벤치마크할 모델 ID (쉼표로 구분) (기본값: translationModels, uiModels, localeModels의 모든 구성된 모델 ID)",
+      "ja": "ベンチマークするモデルID (カンマ区切り) (デフォルト: translationModels、uiModels、localeModels から設定されたすべてのモデルID)",
+      "zh-Hans": "要进行基准测试的模型 ID，逗号分隔（默认：来自 translationModels、uiModels 和 localeModels 的所有已配置模型 ID）",
+      "pt-BR": "IDs de modelo para benchmark, separados por vírgulas (padrão: todos os IDs de modelo configurados de translationModels, uiModels e localeModels)",
+      "zh-Hant": "要進行基準測試的模型 ID，以逗號分隔 (預設：來自 translationModels、uiModels 和 localeModels 的所有已設定模型 ID)"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
         "line": 753
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "d5c0befb": {
     "source": "Inline sample text to translate (overrides --file and the default)",
@@ -9060,39 +9050,6 @@
       {
         "file": "src/cli/index.ts",
         "line": 819
-      }
-    ]
-  },
-  "a91f6b96": {
-    "source": "config file path",
-    "translated": {
-      "fr": "chemin du fichier de configuration",
-      "es": "ruta del archivo de configuración",
-      "hi-Latn": "config file path",
-      "ja": "設定ファイルのパス",
-      "de": "Konfigurationsdateipfad",
-      "pt-BR": "caminho do arquivo de configuração",
-      "zh-Hant": "設定檔路徑",
-      "ko": "구성 파일 경로",
-      "zh-Hans": "配置文件路径",
-      "hi": "कॉन्फ़िग फ़ाइल पथ"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
-    },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 821
       }
     ]
   },
@@ -10739,36 +10696,36 @@
       }
     ]
   },
-  "8bb8d6a8": {
-    "source": "Comma-separated target locales to fill (default: the block's configured targetLocales)",
+  "f8d0f596": {
+    "source": "Target locales to fill, comma-separated (default: the block's configured targetLocales)",
     "translated": {
-      "es": "Idiomas de destino separados por comas para rellenar (predeterminado: los targetLocales configurados del bloque)",
-      "fr": "Locales cibles séparées par des virgules à remplir (par défaut : les targetLocales configurées du bloc)",
-      "hi": "भरने के लिए कॉमा-सेपरेटेड लक्ष्य स्थानीय भाषाएँ (डिफ़ॉल्ट: ब्लॉक की कॉन्फ़िगर की गई targetLocales)",
-      "de": "Kommagetrennte Zielsprachen zum Ausfüllen (Standard: die konfigurierten Zielsprachen des Blocks)",
-      "zh-Hans": "要填充的以逗号分隔的目标区域设置（默认：块配置的目标区域设置）",
-      "pt-BR": "Localidades de destino separadas por vírgulas para preencher (padrão: targetLocales configuradas do bloco)",
-      "ko": "채울 대상 로케일(쉼표로 구분) (기본값: 블록에 구성된 targetLocales)",
-      "ja": "埋めるターゲットロケール（カンマ区切り、デフォルト: ブロックに設定されたtargetLocales）",
-      "zh-Hant": "要填入的目標語系（以逗號分隔，預設：區塊已設定的 targetLocales）"
-    },
-    "models": {
-      "es": "gemini-2.5-flash",
-      "fr": "gemini-2.5-flash",
-      "hi": "gemini-2.5-flash",
-      "de": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
-      "pt-BR": "gemini-2.5-flash",
-      "ko": "gemini-2.5-flash",
-      "ja": "gemini-2.5-flash",
-      "zh-Hant": "gemini-2.5-flash"
+      "fr": "Locales cibles à remplir, séparées par des virgules (par défaut : les targetLocales configurées du bloc)",
+      "es": "Configuraciones regionales de destino a rellenar, separadas por comas (predeterminado: las configuraciones regionales de destino configuradas del bloque)",
+      "de": "Zu füllende Ziel-Locales, kommagetrennt (Standard: die konfigurierten targetLocales des Blocks)",
+      "hi": "भरने के लिए लक्ष्य लोकेल, कॉमा से अलग किए गए (डिफ़ॉल्ट: ब्लॉक के कॉन्फ़िगर किए गए targetLocales)",
+      "ko": "채울 대상 로캘 (쉼표로 구분) (기본값: 블록에 구성된 targetLocales)",
+      "ja": "入力するターゲットロケール (カンマ区切り) (デフォルト: ブロックの設定済み targetLocales)",
+      "zh-Hans": "要填充的目标语言区域，逗号分隔（默认：该块已配置的目标语言区域）",
+      "pt-BR": "Locales de destino para preencher, separados por vírgulas (padrão: os targetLocales configurados do bloco)",
+      "zh-Hant": "要填入的目標地區設定，以逗號分隔 (預設：區塊的已設定 targetLocales)"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
         "line": 1309
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "c9c95c18": {
     "source": "UI block to use: zero-based index, description, or strings.json path (default: block 0)",
@@ -12417,38 +12374,36 @@
       }
     ]
   },
-  "b3a0ff97": {
-    "source": "💡 All files were skipped (cache matches output). Use --force-update to re-process files (using translation cache) or --force to retranslate files",
+  "5627f51b": {
+    "source": "💡 All files were skipped (cache matches output). Use --force-update to re-process files (using translation cache) or --force to re-translate files",
     "translated": {
       "fr": "💡 Tous les fichiers ont été ignorés (le cache correspond à la sortie). Utilisez --force-update pour retraiter les fichiers (en utilisant le cache de traduction) ou --force pour retraduire les fichiers",
-      "es": "💡 Todos los archivos se omitieron (la caché coincide con la salida). Usa --force-update para reprocesar archivos (usando la caché de traducción) o --force para retraducir archivos",
-      "de": "💡 Alle Dateien wurden übersprungen (Cache stimmt mit Ausgabe überein). Verwende --force-update, um Dateien erneut zu verarbeiten (mit Übersetzungs-Cache), oder --force, um Dateien neu zu übersetzen",
-      "ja": "💡 すべてのファイルがスキップされました（キャッシュと出力が一致）。翻訳キャッシュを使用してファイルを再処理するには --force-update を、再翻訳するには --force を使用してください",
-      "hi-Latn": "💡 Saari files skip kar di gayi (cache output se match karta hai). Files ko re-process karne ke liye --force-update (translation cache use karke) ya retranslate karne ke liye --force use karo",
-      "pt-BR": "💡 Todos os arquivos foram ignorados (cache corresponde à saída). Use --force-update para reprocessar os arquivos (usando o cache de tradução) ou --force para traduzir novamente",
-      "zh-Hans": "💡 所有文件已跳过（缓存与输出匹配）。使用 --force-update 重新处理文件（使用翻译缓存）或使用 --force 重新翻译文件",
-      "zh-Hant": "💡 所有檔案已略過（快取與輸出相符）。使用 --force-update 重新處理檔案（使用翻譯快取），或使用 --force 重新翻譯檔案",
-      "ko": "💡 모든 파일을 건너뛰었습니다 (캐시가 출력과 일치함). 파일을 재처리하려면 --force-update를(번역 캐시 사용) 또는 파일을 다시 번역하려면 --force를 사용하세요",
-      "hi": "💡 सभी फ़ाइलें स्किप की गईं (कैश आउटपुट से मेल खाता है)। फ़ाइलों को फिर से प्रोसेस करने के लिए --force-update (अनुवाद कैश का उपयोग करते हुए) या फिर से अनुवाद करने के लिए --force का उपयोग करें"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "es": "💡 Todos los archivos fueron omitidos (la caché coincide con la salida). Usa --force-update para volver a procesar los archivos (usando la caché de traducción) o --force para volver a traducir los archivos",
+      "de": "💡 Alle Dateien wurden übersprungen (Cache stimmt mit Ausgabe überein). Verwenden Sie --force-update, um Dateien neu zu verarbeiten (mithilfe des Übersetzungs-Caches) oder --force, um Dateien neu zu übersetzen",
+      "hi": "💡 सभी फ़ाइलें छोड़ दी गईं (कैश आउटपुट से मेल खाता है)। फ़ाइलों को फिर से प्रोसेस करने के लिए --force-update का उपयोग करें (अनुवाद कैश का उपयोग करके) या फ़ाइलों को फिर से अनुवादित करने के लिए --force का उपयोग करें",
+      "ko": "💡 모든 파일이 건너뛰어졌습니다 (캐시가 출력과 일치합니다). --force-update를 사용하여 파일을 다시 처리하거나 (번역 캐시 사용) --force를 사용하여 파일을 다시 번역하십시오",
+      "ja": "💡 すべてのファイルがスキップされました (キャッシュが出力と一致)。--force-update を使用してファイルを再処理 (翻訳キャッシュを使用) するか、--force を使用してファイルを再翻訳してください",
+      "zh-Hans": "💡 所有文件均已跳过（缓存与输出匹配）。使用 --force-update 重新处理文件（使用翻译缓存）或使用 --force 重新翻译文件",
+      "pt-BR": "💡 Todos os arquivos foram ignorados (o cache corresponde à saída). Use --force-update para reprocessar arquivos (usando o cache de tradução) ou --force para retraduzir arquivos",
+      "zh-Hant": "💡 所有檔案均已跳過 (快取符合輸出)。使用 --force-update 重新處理檔案 (使用翻譯快取) 或使用 --force 重新翻譯檔案"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
         "line": 2046
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "69b8ff23": {
     "source": "❌ [translate-docs] {{error}}",
@@ -14116,38 +14071,36 @@
       }
     ]
   },
-  "d25f5bb2": {
-    "source": "Comma-separated target locales for translate-ui, translate-svg, and translate-docs steps (optional; defaults from config / ui-languages.json)",
+  "445df616": {
+    "source": "Target locales for translate-ui, translate-svg, and translate-docs steps, comma-separated (optional; defaults from config / ui-languages.json)",
     "translated": {
-      "fr": "Locales cibles séparées par des virgules pour les étapes translate-ui, translate-svg et translate-docs (facultatif ; valeurs par défaut depuis config / ui-languages.json)",
-      "es": "Configuraciones regionales de destino separadas por comas para los pasos translate-ui, translate-svg y translate-docs (opcional; valores predeterminados desde config / ui-languages.json)",
-      "hi-Latn": "translate-ui, translate-svg, aur translate-docs steps ke liye comma-separated target locales (optional; config / ui-languages.json se defaults)",
-      "ja": "translate-ui、translate-svg、translate-docsステップのターゲットロケール（カンマ区切り、省略可; デフォルトはconfig / ui-languages.json）",
-      "de": "Kommagetrennte Ziel-Locales für translate-ui, translate-svg und translate-docs (optional; Standardwerte aus config / ui-languages.json)",
-      "pt-BR": "Localidades de destino separadas por vírgula para as etapas translate-ui, translate-svg e translate-docs (opcional; padrões da config / ui-languages.json)",
-      "zh-Hant": "translate-ui、translate-svg 及 translate-docs 步驟的逗號分隔目標語系（選填；預設值來自設定 / ui-languages.json）",
-      "ko": "translate-ui, translate-svg, translate-docs 단계의 쉼표로 구분된 대상 로케일 (선택 사항; config / ui-languages.json의 기본값 사용)",
-      "zh-Hans": "translate-ui、translate-svg 和 translate-docs 步骤的逗号分隔目标语言（可选；默认来自配置 / ui-languages.json）",
-      "hi": "translate-ui, translate-svg, और translate-docs चरणों के लिए कॉमा से अलग टारगेट लोकेल (वैकल्पिक; डिफ़ॉल्ट config / ui-languages.json से)"
-    },
-    "models": {
-      "fr": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "Locales cibles pour les étapes translate-ui, translate-svg et translate-docs, séparées par des virgules (facultatif ; valeurs par défaut de config / ui-languages.json)",
+      "es": "Configuraciones regionales de destino para los pasos translate-ui, translate-svg y translate-docs, separadas por comas (opcional; valores predeterminados de config / ui-languages.json)",
+      "de": "Ziel-Locales für die Schritte translate-ui, translate-svg und translate-docs, kommagetrennt (optional; Standardwerte aus config / ui-languages.json)",
+      "hi": "translate-ui, translate-svg और translate-docs चरणों के लिए लक्ष्य लोकेल, कॉमा से अलग किए गए (वैकल्पिक; कॉन्फ़िग / ui-languages.json से डिफ़ॉल्ट)",
+      "ko": "translate-ui, translate-svg, translate-docs 단계의 대상 로캘 (쉼표로 구분) (선택 사항; config / ui-languages.json에서 기본값 가져옴)",
+      "ja": "translate-ui、translate-svg、translate-docs ステップのターゲットロケール (カンマ区切り) (オプション; config / ui-languages.json からデフォルト設定)",
+      "zh-Hans": "用于 translate-ui、translate-svg 和 translate-docs 步骤的目标语言区域，逗号分隔（可选；默认为 config / ui-languages.json 中的配置）",
+      "pt-BR": "Locales de destino para as etapas translate-ui, translate-svg e translate-docs, separados por vírgulas (opcional; padrões da configuração / ui-languages.json)",
+      "zh-Hant": "用於 translate-ui、translate-svg 和 translate-docs 步驟的目標地區設定，以逗號分隔 (選用；預設來自 config / ui-languages.json)"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
         "line": 2610
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "67a44c00": {
     "source": "Only translate files under this path (docs/SVG); project-relative or absolute",
@@ -18084,7 +18037,7 @@
       },
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 226
+        "line": 286
       }
     ]
   },
@@ -18422,36 +18375,36 @@
       }
     ]
   },
-  "41daff31": {
-    "source": "Zero data retention catalog (GET /models?zdr=true).",
+  "88de3be9": {
+    "source": "Zero-data-retention catalog (GET /models?zdr=true).",
     "translated": {
-      "es": "Catálogo sin retención de datos (GET /models?zdr=true).",
-      "hi": "शून्य-डेटा-प्रतिधारण कैटलॉग (GET /models?zdr=true).",
-      "de": "Katalog mit Null-Datenaufbewahrung (GET /models?zdr=true).",
       "fr": "Catalogue sans rétention de données (GET /models?zdr=true).",
-      "zh-Hans": "零数据保留目录 (GET /models?zdr=true)。",
+      "es": "Catálogo sin retención de datos (GET /models?zdr=true).",
+      "de": "Katalog ohne Datenaufbewahrung (GET /models?zdr=true).",
+      "hi": "शून्य-डेटा-प्रतिधारण कैटलॉग (GET /models?zdr=true)।",
       "ko": "제로 데이터 보존 카탈로그 (GET /models?zdr=true).",
-      "pt-BR": "Catálogo de retenção zero de dados (GET /models?zdr=true).",
-      "ja": "データ保持なしカタログ (GET /models?zdr=true)",
+      "ja": "ゼロデータ保持カタログ (GET /models?zdr=true)。",
+      "zh-Hans": "零数据保留目录 (GET /models?zdr=true)。",
+      "pt-BR": "Catálogo sem retenção de dados (GET /models?zdr=true).",
       "zh-Hant": "零資料保留目錄 (GET /models?zdr=true)。"
-    },
-    "models": {
-      "es": "gemini-2.5-flash",
-      "hi": "gemini-2.5-flash",
-      "de": "gemini-2.5-flash",
-      "fr": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
-      "ko": "gemini-2.5-flash",
-      "pt-BR": "gemini-2.5-flash",
-      "ja": "gemini-2.5-flash",
-      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/list-models.ts",
         "line": 84
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "8cf0e18a": {
     "source": "No models returned by the provider.",
@@ -20899,31 +20852,18 @@
       }
     ]
   },
-  "a7e1403b": {
-    "source": "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
+  "158b5638": {
+    "source": "⚠️  JSON translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt).",
     "translated": {
-      "es": "⚠️  Traducción JSON interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de API completado antes de la interrupción).",
-      "fr": "⚠️  Traduction JSON interrompue — résumé partiel (jetons et coût reflètent le travail API effectué avant l'interruption).",
-      "ja": "⚠️  JSON翻訳が中断されました — 部分的な概要(トークンとコストは中断前に完了したAPI処理を反映しています)",
-      "de": "⚠️  JSON-Übersetzung unterbrochen – Teilzusammenfassung (Tokens und Kosten spiegeln die vor dem Abbruch abgeschlossene API-Arbeit wider).",
-      "hi-Latn": "⚠️  JSON translation rukavat mein aa gayi — partial summary (tokens aur cost interrupt se pehle complete hue API kaam ko darshate hain).",
-      "zh-Hant": "⚠️  JSON 翻譯中斷 — 部分摘要（token 與費用反映中斷前已完成的 API 作業）。",
-      "zh-Hans": "⚠️  JSON 翻译已中断——部分摘要（令牌数和费用反映中断前已完成的 API 工作）。",
-      "ko": "⚠️  JSON 번역이 중단됨 — 부분 요약(토큰 및 비용은 중단 전 완료된 API 작업 기준).",
-      "pt-BR": "⚠️  Tradução JSON interrompida — resumo parcial (tokens e custo refletem o trabalho de API concluído antes da interrupção).",
-      "hi": "⚠️  JSON अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत बाधा से पहले पूर्ण हुए API कार्य को दर्शाते हैं)।"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "⚠️ Traduction JSON interrompue — résumé partiel (les jetons et le coût reflètent le travail de l'API effectué avant l'interruption).",
+      "es": "⚠️ Traducción JSON interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de la API completado antes de la interrupción).",
+      "de": "⚠️ JSON-Übersetzung unterbrochen — teilweise Zusammenfassung (Tokens und Kosten spiegeln die vor der Unterbrechung abgeschlossene API-Arbeit wider).",
+      "hi": "⚠️ JSON अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत API कार्य को दर्शाते हैं जो बाधित होने से पहले पूरा हुआ था)।",
+      "ko": "⚠️ JSON 번역 중단됨 — 부분 요약 (토큰 및 비용은 중단 전 완료된 API 작업을 반영합니다).",
+      "ja": "⚠️ JSON翻訳が中断されました — 部分的な概要 (トークンとコストは中断前に完了したAPI作業を反映しています)。",
+      "zh-Hans": "⚠️ JSON 翻译中断 — 部分摘要（令牌和费用反映了中断前已完成的 API 工作）。",
+      "pt-BR": "⚠️ Tradução JSON interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
+      "zh-Hant": "⚠️ JSON 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
     "locations": [
       {
@@ -20934,7 +20874,18 @@
         "file": "src/cli/translate-json-run.ts",
         "line": 381
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "30ce5c36": {
     "source": "📊 Summary:",
@@ -21332,38 +21283,36 @@
       }
     ]
   },
-  "2aaa46f7": {
-    "source": "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
+  "486a59c6": {
+    "source": "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt).",
     "translated": {
-      "es": "⚠️  Traducción SVG interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de API completado antes de la interrupción).",
-      "fr": "⚠️  Traduction SVG interrompue — résumé partiel (les tokens et le coût reflètent le travail API complété avant l'interruption).",
-      "hi-Latn": "⚠️  SVG translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
-      "ja": "⚠️  SVG翻訳が中断されました — 部分的なサマリー（中断前に完了したAPI処理のトークンとコストを反映）。",
-      "de": "⚠️  SVG-Übersetzung unterbrochen — Teilzusammenfassung (Token und Kosten spiegeln die vor Unterbrechung abgeschlossene API-Arbeit wider).",
-      "pt-BR": "⚠️  Tradução SVG interrompida — resumo parcial (tokens e custo refletem o trabalho de API concluído antes da interrupção).",
-      "zh-Hant": "⚠️  SVG 翻譯已中斷 — 部分摘要（Token 用量和費用僅反映中斷前已完成的 API 工作）。",
-      "ko": "⚠️  SVG 번역이 중단되었습니다 — 부분 요약(토큰 및 비용은 중단 전에 완료된 API 작업 기준).",
-      "zh-Hans": "⚠️ SVG 翻译中断 — 部分摘要（token 和费用反映中断前完成的 API 工作）。",
-      "hi": "⚠️  SVG अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत बाधा से पहले पूर्ण हुए API कार्य को दर्शाते हैं)।"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "z-ai/glm-5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "mistralai/mistral-large-2512",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "⚠️ Traduction SVG interrompue — résumé partiel (les jetons et le coût reflètent le travail de l'API effectué avant l'interruption).",
+      "es": "⚠️ Traducción SVG interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de la API completado antes de la interrupción).",
+      "de": "⚠️ SVG-Übersetzung unterbrochen — teilweise Zusammenfassung (Tokens und Kosten spiegeln die vor der Unterbrechung abgeschlossene API-Arbeit wider).",
+      "hi": "⚠️ SVG अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत API कार्य को दर्शाते हैं जो बाधित होने से पहले पूरा हुआ था)।",
+      "ko": "⚠️ SVG 번역 중단됨 — 부분 요약 (토큰 및 비용은 중단 전 완료된 API 작업을 반영합니다).",
+      "ja": "⚠️ SVG翻訳が中断されました — 部分的な概要 (トークンとコストは中断前に完了したAPI作業を反映しています)。",
+      "zh-Hans": "⚠️ SVG 翻译中断 — 部分摘要（令牌和费用反映了中断前已完成的 API 工作）。",
+      "pt-BR": "⚠️ Tradução SVG interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
+      "zh-Hant": "⚠️ SVG 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
     "locations": [
       {
         "file": "src/cli/translate-svg.ts",
         "line": 96
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "c1163c83": {
     "source": "🌐 Translating {{fileCount}} SVG file(s) to {{localeCount}} locale(s)",
@@ -21428,6 +21377,43 @@
       {
         "file": "src/cli/translate-svg.ts",
         "line": 152
+      }
+    ]
+  },
+  "9ee39506": {
+    "source": "⚠️  Dry run mode - no changes will be made",
+    "translated": {
+      "es": "⚠️  Modo simulacro - no se realizarán cambios",
+      "fr": "⚠️  Mode simulation — aucune modification ne sera effectuée",
+      "hi-Latn": "⚠️  Dry run mode - koi changes nahi honge",
+      "ja": "⚠️  ドライランモード - 変更は行われません",
+      "de": "⚠️  Dry-Run-Modus - es werden keine Änderungen vorgenommen",
+      "pt-BR": "⚠️  Modo de simulação - nenhuma alteração será feita",
+      "zh-Hant": "⚠️  試執行模式 — 不會進行任何變更",
+      "ko": "⚠️  드라이 런 모드 - 변경 사항이 적용되지 않음",
+      "zh-Hans": "⚠️  试运行模式 - 不会进行任何更改",
+      "hi": "⚠️  ड्राई रन मोड - कोई परिवर्तन नहीं किया जाएगा"
+    },
+    "models": {
+      "es": "~anthropic/claude-sonnet-latest",
+      "fr": "~anthropic/claude-sonnet-latest",
+      "hi-Latn": "~anthropic/claude-sonnet-latest",
+      "ja": "~anthropic/claude-sonnet-latest",
+      "de": "openai/gpt-5.5",
+      "pt-BR": "~anthropic/claude-sonnet-latest",
+      "zh-Hant": "~anthropic/claude-sonnet-latest",
+      "ko": "~anthropic/claude-sonnet-latest",
+      "zh-Hans": "z-ai/glm-5",
+      "hi": "~anthropic/claude-sonnet-latest"
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-svg.ts",
+        "line": 158
+      },
+      {
+        "file": "src/cli/translate-ui-strings.ts",
+        "line": 634
       }
     ]
   },
@@ -21631,38 +21617,36 @@
       }
     ]
   },
-  "5d669d09": {
-    "source": "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
+  "74893c4e": {
+    "source": "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt).",
     "translated": {
-      "es": "⚠️  Traducción de interfaz interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de API completado antes de la interrupción).",
-      "fr": "⚠️  Traduction de l'interface interrompue — résumé partiel (les tokens et le coût reflètent le travail API complété avant l'interruption).",
-      "hi-Latn": "⚠️  UI translation interrupted — partial summary (tokens and cost reflect API work completed before interrupt).",
-      "ja": "⚠️  UI翻訳が中断されました — 部分的なサマリー（中断前に完了したAPI処理のトークンとコストを反映）。",
-      "de": "⚠️  UI-Übersetzung unterbrochen — Teilzusammenfassung (Token und Kosten spiegeln die vor Unterbrechung abgeschlossene API-Arbeit wider).",
-      "pt-BR": "⚠️  Tradução de interface interrompida — resumo parcial (tokens e custo refletem o trabalho de API concluído antes da interrupção).",
-      "zh-Hant": "⚠️  介面翻譯已中斷 — 部分摘要（Token 用量和費用僅反映中斷前已完成的 API 工作）。",
-      "ko": "⚠️  UI 번역이 중단되었습니다 — 부분 요약(토큰 및 비용은 중단 전에 완료된 API 작업 기준).",
-      "zh-Hans": "⚠️ UI 翻译中断 — 部分摘要（token 和费用反映中断前完成的 API 工作）。",
-      "hi": "⚠️  UI अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत बाधा से पहले पूर्ण हुए API कार्य को दर्शाते हैं)।"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "z-ai/glm-5",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "mistralai/mistral-large-2512",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "⚠️ Traduction UI interrompue — résumé partiel (les jetons et le coût reflètent le travail de l'API effectué avant l'interruption).",
+      "es": "⚠️ Traducción de UI interrumpida — resumen parcial (los tokens y el coste reflejan el trabajo de la API completado antes de la interrupción).",
+      "de": "⚠️ UI-Übersetzung unterbrochen — teilweise Zusammenfassung (Tokens und Kosten spiegeln die vor der Unterbrechung abgeschlossene API-Arbeit wider).",
+      "hi": "⚠️ UI अनुवाद बाधित हुआ — आंशिक सारांश (टोकन और लागत API कार्य को दर्शाते हैं जो बाधित होने से पहले पूरा हुआ था)।",
+      "ko": "⚠️ UI 번역 중단됨 — 부분 요약 (토큰 및 비용은 중단 전 완료된 API 작업을 반영합니다).",
+      "ja": "⚠️ UI翻訳が中断されました — 部分的な概要 (トークンとコストは中断前に完了したAPI作業を反映しています)。",
+      "zh-Hans": "⚠️ UI 翻译中断 — 部分摘要（令牌和费用反映了中断前已完成的 API 工作）。",
+      "pt-BR": "⚠️ Tradução da UI interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
+      "zh-Hant": "⚠️ UI 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
         "line": 374
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "be995cd8": {
     "source": "wrote Gettext catalog {{locale}} → {{path}}",
@@ -21893,38 +21877,36 @@
       }
     ]
   },
-  "eae1823b": {
-    "source": "Output dir:",
+  "c8cd7804": {
+    "source": "Output directory:",
     "translated": {
-      "es": "Directorio de salida:",
       "fr": "Répertoire de sortie :",
-      "hi-Latn": "Output dir:",
-      "ja": "出力ディレクトリ:",
+      "es": "Directorio de salida:",
       "de": "Ausgabeverzeichnis:",
-      "pt-BR": "Diretório de saída:",
-      "zh-Hant": "輸出目錄：",
+      "hi": "आउटपुट डायरेक्टरी:",
       "ko": "출력 디렉터리:",
+      "ja": "出力ディレクトリ:",
       "zh-Hans": "输出目录：",
-      "hi": "आउटपुट डायरेक्टरी:"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "openai/gpt-5.5",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "pt-BR": "Diretório de saída:",
+      "zh-Hant": "輸出目錄："
     },
     "locations": [
       {
         "file": "src/cli/translate-ui-strings.ts",
         "line": 620
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "31c1b29a": {
     "source": "Parallel translations:",
@@ -23522,7 +23504,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 175
+        "line": 208
       }
     ]
   },
@@ -23555,11 +23537,11 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 196
+        "line": 236
       },
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 263
+        "line": 322
       }
     ]
   },
@@ -23592,11 +23574,11 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 216
+        "line": 276
       },
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 278
+        "line": 347
       }
     ]
   },
@@ -23629,11 +23611,11 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 223
+        "line": 283
       },
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 284
+        "line": 353
       }
     ]
   },
@@ -23664,7 +23646,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 287
+        "line": 356
       }
     ]
   },
@@ -23695,7 +23677,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 301
+        "line": 370
       }
     ]
   },
@@ -23728,7 +23710,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 334
+        "line": 403
       }
     ]
   },
@@ -23761,7 +23743,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 347
+        "line": 416
       }
     ]
   },
@@ -23794,7 +23776,7 @@
     "locations": [
       {
         "file": "src/cli/write-heading-ids.ts",
-        "line": 357
+        "line": 426
       }
     ]
   },
@@ -24713,19 +24695,19 @@
       }
     ]
   },
-  "8524de96": {
-    "source": "Loading...",
+  "5f02f05c": {
+    "source": "Loading…",
     "translated": {
-      "es": "Cargando...",
-      "fr": "Chargement...",
-      "hi-Latn": "Loading...",
-      "ja": "読み込み中...",
-      "de": "Wird geladen...",
-      "pt-BR": "Carregando...",
+      "es": "Cargando…",
+      "fr": "Chargement…",
+      "hi-Latn": "Load ho raha hai…",
+      "ja": "読み込み中…",
+      "de": "Wird geladen…",
+      "pt-BR": "Carregando…",
       "zh-Hant": "載入中…",
-      "ko": "로드 중...",
-      "zh-Hans": "正在加载...",
-      "hi": "लोड हो रहा है..."
+      "ko": "로드 중…",
+      "zh-Hans": "加载中…",
+      "hi": "लोड हो रहा है…"
     },
     "models": {
       "es": "~anthropic/claude-sonnet-latest",
@@ -24736,13 +24718,25 @@
       "pt-BR": "~anthropic/claude-sonnet-latest",
       "zh-Hant": "~anthropic/claude-sonnet-latest",
       "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "openai/gpt-5.5",
+      "zh-Hans": "~anthropic/claude-sonnet-latest",
       "hi": "~anthropic/claude-sonnet-latest"
     },
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
         "line": 594
+      },
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 1542
+      },
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 1900
+      },
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 2442
       }
     ]
   },
@@ -25394,47 +25388,6 @@
       {
         "file": "src/dashboard-app/app.js",
         "line": 1531
-      }
-    ]
-  },
-  "5f02f05c": {
-    "source": "Loading…",
-    "translated": {
-      "es": "Cargando…",
-      "fr": "Chargement…",
-      "hi-Latn": "Load ho raha hai…",
-      "ja": "読み込み中…",
-      "de": "Wird geladen…",
-      "pt-BR": "Carregando…",
-      "zh-Hant": "載入中…",
-      "ko": "로드 중…",
-      "zh-Hans": "加载中…",
-      "hi": "लोड हो रहा है…"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
-    },
-    "locations": [
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 1542
-      },
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 1900
-      },
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 2442
       }
     ]
   },
@@ -26517,38 +26470,36 @@
       }
     ]
   },
-  "0f397603": {
-    "source": "Loading statistics...",
+  "c252d1fd": {
+    "source": "Loading statistics…",
     "translated": {
-      "es": "Cargando estadísticas...",
-      "fr": "Chargement des statistiques...",
-      "hi-Latn": "Statistics load ho rahi hai...",
-      "ja": "統計を読み込み中...",
-      "de": "Statistiken werden geladen...",
-      "pt-BR": "Carregando estatísticas...",
-      "zh-Hant": "載入統計資料中...",
-      "ko": "통계 로드 중...",
-      "zh-Hans": "正在加载统计信息...",
-      "hi": "आँकड़े लोड हो रहे हैं..."
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "fr": "Chargement des statistiques…",
+      "es": "Cargando estadísticas…",
+      "de": "Statistiken laden…",
+      "hi": "सांख्यिकी लोड हो रही है…",
+      "ko": "통계 로드 중…",
+      "ja": "統計を読み込み中…",
+      "zh-Hans": "正在加载统计信息…",
+      "pt-BR": "Carregando estatísticas…",
+      "zh-Hant": "正在載入統計資料…"
     },
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
         "line": 2576
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "823ad5a9": {
     "source": "Statistics loaded.",
@@ -27024,36 +26975,36 @@
       }
     ]
   },
-  "861d2c88": {
-    "source": "Loading usage...",
+  "b4cb40f8": {
+    "source": "Loading usage…",
     "translated": {
-      "ja": "使用量を読み込み中...",
-      "hi": "उपयोग लोड हो रहा है...",
-      "de": "Nutzung wird geladen...",
-      "es": "Cargando uso...",
-      "fr": "Chargement de l'utilisation...",
-      "zh-Hans": "正在加载用量...",
-      "ko": "사용량 로드 중...",
-      "zh-Hant": "正在載入用量...",
-      "pt-BR": "Carregando uso..."
-    },
-    "models": {
-      "ja": "z-ai/glm-5.2",
-      "hi": "qwen/qwen3.7-max",
-      "de": "qwen/qwen3.7-max",
-      "es": "qwen/qwen3.7-max",
-      "fr": "qwen/qwen3.7-max",
-      "zh-Hans": "z-ai/glm-5.2",
-      "ko": "z-ai/glm-5.2",
-      "zh-Hant": "z-ai/glm-5.2",
-      "pt-BR": "qwen/qwen3.7-max"
+      "fr": "Chargement de l'utilisation…",
+      "es": "Cargando uso…",
+      "de": "Nutzung laden…",
+      "hi": "उपयोग लोड हो रहा है…",
+      "ko": "사용량 로드 중…",
+      "ja": "使用状況を読み込み中…",
+      "zh-Hans": "正在加载使用情况…",
+      "pt-BR": "Carregando uso…",
+      "zh-Hant": "正在載入使用量…"
     },
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
         "line": 3019
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "e355b050": {
     "source": "Delete all usage data ({{calls}} call row(s) and {{totals}} monthly total(s))? This cannot be undone.",
@@ -28986,38 +28937,36 @@
       }
     ]
   },
-  "d2bf58c2": {
-    "source": "Translation failures - prioritize by retry order, inspect source segment, and log source links.",
+  "fff72fb0": {
+    "source": "Translation failures - prioritise by retry order, inspect source segment, and log source links.",
     "translated": {
-      "es": "Errores de traducción - priorizar por orden de reintento, inspeccionar segmento de origen y enlaces de registro de origen.",
-      "fr": "Échecs de traduction - prioriser par ordre de nouvelle tentative, inspecter le segment source et les liens journaux sources.",
-      "hi-Latn": "Translation failures - retry order se prioritize karo, source segment inspect karo, aur log source links dekhein.",
-      "ja": "翻訳の失敗 - 再試行順で優先順位を付け、ソースセグメントを確認し、ソースリンクをログに記録します。",
+      "fr": "Échecs de traduction - prioriser par ordre de nouvelle tentative, inspecter le segment source et enregistrer les liens source.",
+      "es": "Errores de traducción - priorizar por orden de reintento, inspeccionar segmento de origen y registrar enlaces de origen.",
       "de": "Übersetzungsfehler – nach Wiederholungsreihenfolge priorisieren, Quellsegment prüfen und Quelllinks protokollieren.",
-      "pt-BR": "Falhas de tradução - priorize por ordem de nova tentativa, inspecione o segmento de origem e os links de log.",
-      "zh-Hant": "翻譯失敗 - 依重試順序排定優先順序、檢查來源片段，並記錄來源連結。",
-      "ko": "번역 실패 - 재시도 순서로 우선순위 지정, 소스 세그먼트 검사, 소스 링크 로그.",
-      "zh-Hans": "翻译失败 - 按重试顺序排列优先级，检查源片段并记录源链接。",
-      "hi": "अनुवाद विफलताएँ - पुनः प्रयास क्रम के अनुसार प्राथमिकता दें, स्रोत सेगमेंट देखें, और स्रोत लिंक लॉग करें।"
-    },
-    "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi-Latn": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest"
+      "hi": "अनुवाद विफलताएँ - पुनः प्रयास क्रम के अनुसार प्राथमिकता दें, स्रोत खंड का निरीक्षण करें, और स्रोत लिंक लॉग करें।",
+      "ko": "번역 실패 - 재시도 순서로 우선순위 지정, 원본 세그먼트 검사, 원본 링크 기록.",
+      "ja": "翻訳の失敗 — 再試行順序で優先順位を付け、ソースセグメントを検査し、ソースリンクをログに記録します。",
+      "zh-Hans": "翻译失败 - 按重试顺序优先处理，检查源片段，并记录源链接。",
+      "pt-BR": "Falhas de tradução - priorize pela ordem de nova tentativa, inspecione o segmento de origem e registre os links de origem.",
+      "zh-Hant": "翻譯失敗 - 依重試順序優先處理、檢查來源區段並記錄來源連結。"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
         "line": 216
       }
-    ]
+    ],
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    }
   },
   "1e9b9f7e": {
     "source": "If you see old entries, run",

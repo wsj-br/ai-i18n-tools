@@ -3,7 +3,7 @@
 
 Use this path for an interactive page that stays one HTML file. `extract` reads `data-i18n*` markers into `strings.json`, `translate-ui` writes one flat JSON bundle per locale, and a browser script applies the strings. The same script can suffix image filenames and keep links on the current page.
 
-For a static site that should emit one translated HTML file per locale (no runtime, rewritten cross-page links), use [HTML pages](/guide/documents/html-pages) instead. A file belongs to one path.
+For a static site that should emit one translated HTML file per locale (no runtime, rewritten cross-page links), use [HTML pages](/guide/documents/html-pages) instead. Each file belongs to only one pipeline.
 
 <a id="quick-start"></a>
 ## Quick start
@@ -282,7 +282,7 @@ These markers are never sent to the translator. `mark-html` does not add them.
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-The source locale keeps the original URL. For a bare `data-i18n-locale-src`, absolute URLs, protocol-relative URLs, `data:` URLs, and `#` fragments are left alone; query strings and fragments stay in place. A valued marker uses its template for every non-source locale and replaces only `{locale}`. If the localized image 404s, the runtime restores the original `src` once. You ship `chart_pt-BR.png` yourself; the script does not create it.
+The source locale keeps the original URL. For a bare `data-i18n-locale-src`, absolute URLs, protocol-relative URLs, `data:` URLs, and `#` fragments are left alone; query strings and fragments stay in place. A valued marker uses its template for every non-source locale and replaces only `{locale}`. If the localised image 404s, the runtime restores the original `src` once. You ship `chart_pt-BR.png` yourself; the script does not create it.
 
 `data-i18n-locale-href` is for this catalog model. A link to `about.pt-BR.html` belongs to the [HTML pages](/guide/documents/html-pages) pipeline.
 
@@ -364,7 +364,7 @@ Do not auto-redirect by `navigator.language` on top of this. The runtime already
 
 `normalizeI18nText` in the runtime matches `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): trim, then collapse whitespace. Because the source-language text is the catalog key, a missing translation falls back to that source text.
 
-The runnable demo is [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` serves it at [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR).
+The runnable demo is [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` serves it at `http://localhost:3090/?locale=pt-BR`.
 
 <a id="runtime-source"></a>
 ## Runtime source

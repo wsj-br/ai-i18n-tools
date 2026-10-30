@@ -30,8 +30,6 @@
 | Intlayer辞書（Intlayerから移行） | [Intlayerからの移行](/ja/guide/migrating-from-intlayer) |
 | Intlayer辞書（Intlayerを維持し、その場で翻訳） | [Intlayerをその場で翻訳する](/ja/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## 仕組み
 

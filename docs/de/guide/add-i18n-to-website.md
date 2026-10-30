@@ -5,7 +5,7 @@ Diese Seite ist für eine Dokumentationswebsite (Markdown oder MDX) oder eine Ma
 
 Für eine App, deren UI-Strings in `t()`-Aufrufen liegen, verwenden Sie stattdessen [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) oder [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python).
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Was haben Sie?
 
 | Ihre Website | Init-Vorlage | Hier starten |
@@ -21,16 +21,16 @@ Für eine App, deren UI-Strings in `t()`-Aufrufen liegen, verwenden Sie stattdes
 <details class="agent-prompt">
 <summary>Agent-Prompts</summary>
 
-- Astro Starlight: nur Hinweise. Astro `t()`-Dateien: [JS/TS-Prompt](/de/guide/add-i18n-to-js#agent-prompt) (i18next überspringen).
+- Astro Starlight: nur Hinweise. Astro `t()`-Dateien: [JS/TS-Prompt](/de/guide/add-i18n-to-js#run-the-agent-prompt) (i18next überspringen).
 - Docusaurus: nur Hinweise (`<Translate>` ist die eigene API von Docusaurus).
 - VitePress: [Theme-Katalog-Prompt](/de/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off).
-- Nextra: [Wörterbuch-Prompt](/de/guide/integrations/nextra#agent-prompt-dictionary) und [hybrider `t()`-Prompt](/de/guide/integrations/nextra#optional-t-for-app-react-hybrid).
+- Nextra: [Wörterbuch-Prompt](/de/guide/integrations/nextra#agent-prompt-dictionary-and-routes) und [hybrider `t()`-Prompt](/de/guide/integrations/nextra#optional-t-for-app-react-hybrid).
 - Fumadocs: [UI-Katalog-Prompt](/de/guide/integrations/fumadocs#agent-prompt).
-- README- und Markdown-Dateien: [README-Prompt](/de/guide/add-i18n-to-readme#agent-prompt).
+- README- und Markdown-Dateien: [README-Prompt](/de/guide/add-i18n-to-readme#run-the-agent-prompt).
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## Schritte
 
 Die gleiche Struktur funktioniert für jedes Framework; die Details finden Sie im oben verlinkten Framework-Leitfaden.
@@ -42,7 +42,7 @@ Die gleiche Struktur funktioniert für jedes Framework; die Details finden Sie i
 5. Führen Sie `ai-i18n-tools sync` (oder `translate-docs`) aus und erstellen Sie dann die Site.
 6. Überprüfen Sie eine lokalisierte Route im Browser. Das eigene Locale-Dropdown des Frameworks ist der Umschalter. Fügen Sie für eine einfache Markdown-Datei wie eine README-Datei eine Linkzeile mit [languageListBlock](/de/guide/documents/language-switcher) hinzu.
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## Was wird übersetzt
 
 Seiteninhalte durchlaufen immer die [Dokumente](/de/guide/documents/)-Pipeline. Framework-Chrome (Navigation, Seitenleiste, Theme-Labels) wird im selben Durchlauf behandelt, sofern das Framework dies unterstützt, und nicht über die separate [JSON](/de/guide/json)-Pipeline.
@@ -59,7 +59,7 @@ Seiteninhalte durchlaufen immer die [Dokumente](/de/guide/documents/)-Pipeline. 
 
 Bilder und Screenshots werden nicht von `translate-docs` übersetzt. Für sprachspezifische Dateien siehe [Bilder und Screenshots](/de/guide/images-and-screenshots/).
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## Reines HTML
 
 Zwei Optionen, je nachdem, wie sich die Seite verhalten soll:
@@ -69,7 +69,7 @@ Zwei Optionen, je nachdem, wie sich die Seite verhalten soll:
 
 Eine Datei gehört zu einem Pfad.
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## Nicht Ihr Fall?
 
 - App-UI-Strings: [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) oder [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python).

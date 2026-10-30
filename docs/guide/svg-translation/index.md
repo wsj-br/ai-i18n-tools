@@ -30,7 +30,7 @@ Do **not** use `translate-svg` for:
 <a id="design-for-i18n-from-the-start"></a>
 ## Design for i18n from the start
 
-SVGs are easiest to translate when labels are real text elements from day one:
+SVGs are easiest to translate when labels are real text elements from the start:
 
 - Put human-readable copy in `<text>`, `<title>`, and `<desc>`.
 - Avoid converting labels to paths in your design tool — path data is opaque to the translator.

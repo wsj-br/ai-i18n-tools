@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ai-i18n-tools",
+  "version": "1.12.0",
+  "description": "Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.",
+  "author": {
+    "name": "Waldemar Scudeller Jr."
+  },
+  "homepage": "https://wsj-br.github.io/ai-i18n-tools/",
+  "repository": "https://github.com/wsj-br/ai-i18n-tools",
+  "license": "MIT",
+  "keywords": ["i18n", "internationalization", "translation", "localization"]
+}

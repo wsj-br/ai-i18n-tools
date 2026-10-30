@@ -5,12 +5,12 @@
 
 步骤如下：安装工具，安装 i18next，运行一次 `extract`，添加一个小型设置文件以确保 `t` 存在，包装面向用户的文本，然后进行翻译。不确定这是否适合您的情况？请参阅末尾的 [不适合您的情况？](#not-your-case)。
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 安装工具并设置密钥
 
 安装 CLI（[安装](/zh-Hans/guide/installation)) 并为您的提供商设置 API 密钥（[提供商和 API 密钥](/zh-Hans/guide/quick-start#provider-and-api-key))。Ollama 不需要密钥。
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## 初始化配置
 
 ```bash
@@ -26,7 +26,7 @@ ai-i18n-tools init -P openrouter
 
 所有其他键都在 [配置](/zh-Hans/reference/configuration) 中。
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## 安装运行时库
 
 ai-i18n-tools 不依赖于 `i18next` 或 `react-i18next`。应用需要自行安装它们。
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## 运行一次提取命令
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 下一步中的设置文件会导入 `strings.json` 和 `ui-languages.json`，并且只有 `extract` 会写入它们。即使找不到任何 `t()` 调用，它也会写入这两个文件，这样应用才能编译。预计会提取 0 个字符串，或者如果您的 `package.json` 中有 `description`，则会提取 1 个，因为提取器默认会包含它 (`ui.uiExtractor.includePackageDescription`)。
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## 添加引导程序
 
 创建 i18n 设置文件。这个最小化版本足以包装字符串并进行翻译。`ai-i18n-tools.config.json` 中的 `SOURCE_LOCALE` 必须等于 `sourceLocale`。
@@ -86,10 +86,10 @@ export default i18n;
 
 在首次渲染之前，从应用入口导入此文件。在 Next.js 中，从客户端模块导入它，模式与 [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts) 相同。
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## 替换硬编码的文本
 
-手动执行此操作，或将 [JS/TS 提示](#agent-prompt) 粘贴到编码代理中。`t()` 的参数是用户应该看到的源语言句子。扁平化的区域设置文件以此句子为键。
+手动执行此操作，或将 [JS/TS 提示](#run-the-agent-prompt) 粘贴到编码代理中。`t()` 的参数是用户应该看到的源语言句子。扁平化的区域设置文件以此句子为键。
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TS 代理提示</summary>
@@ -215,7 +215,7 @@ console.log(t("Hello {{name}}", { name }));
 
 请勿改动以下内容：`className`、`href` 和其他 URL、导入路径、ID、测试 ID、错误代码、用作标识符的对象键以及注释内的文本。
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## 提取和翻译
 
 当字面量就位后：
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) 是一个小型 Node 应用，其 `src/main.js` 已被包装。Next.js 示例是 React 引导程序。
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## 语言切换
 
 在首次渲染前恢复已保存的区域设置，如 [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime#startup-locale) 中所述。然后添加一个控件，该控件先调用 `await loadLocale(code)`，再调用 `await i18n.changeLanguage(code)`：[语言切换器和 RTL](/zh-Hans/guide/ui-strings/language-switcher)。
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## 保持翻译更新
 
 更改源文本后，重新运行 `sync`。缓存意味着只有新的或更改的字符串会发送到模型。添加 [推荐的 package.json 脚本](/zh-Hans/guide/quick-start#recommended-packagejson-scripts) 中的脚本，并在 CI 中运行 `sync`，以确保翻译不会偏离。
 
 默认的 `init` 模板也会翻译 `README.md`。请参阅[为你的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## 从其他工具迁移
 
 ai-i18n-tools 包含其自己的字符串提取器。如果你使用过 `i18next-scanner`、`babel-plugin-i18next-extract` 或类似工具，可以在迁移后移除这些开发依赖项。现有的 i18next 命名空间 JSON 文件可以保留在 [JSON 管道](/zh-Hans/guide/json#i18next-namespace-files) 上。Intlayer `.content.ts` 词典可以使用 `migrate-intlayer` 导入：请参阅[从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)。要在运行时保留 Intlayer 并仅填充其翻译，请使用 `translate-intlayer`：请参阅[就地翻译 Intlayer](/zh-Hans/guide/translating-intlayer)。
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## 不是您的情况？
 
 | 您当前的代码 | 阅读 |

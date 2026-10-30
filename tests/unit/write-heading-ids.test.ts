@@ -70,6 +70,79 @@ describe("runWriteHeadingIds", () => {
     );
   });
 
+  it("collapses stacked anchors and retargets same-file and cross-file fragments", () => {
+    writeFile(
+      path.join(tmp, "docs", "guide", "page.md"),
+      [
+        "See [Init](#old-id) and [other](other.md#keep).",
+        "",
+        '<a id="old-id"></a>',
+        '<a id="new-id"></a>',
+        "## New id",
+        "",
+      ].join("\n")
+    );
+    writeFile(
+      path.join(tmp, "docs", "guide", "other.md"),
+      ["See [page](/guide/page#old-id).", "", "## Keep", ""].join("\n")
+    );
+    writeFile(
+      path.join(tmp, "i18n", "de", "docs", "guide", "page.md"),
+      [
+        "Siehe [Init](#old-id).",
+        "",
+        '<a id="old-id"></a>',
+        '<a id="new-id"></a>',
+        "## Neu",
+        "",
+      ].join("\n")
+    );
+    const config = parseI18nConfig(
+      mergeWithDefaults({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          translationModels: ["m"],
+          maxTokens: 100,
+          temperature: 0.1,
+        },
+        features: { translateDocs: true },
+        ui: { sourceRoots: [], stringsJson: "s.json", flatOutputDir: "locales" },
+        cacheDir: ".cache",
+        docs: [
+          {
+            contentPaths: ["docs/"],
+            outputDir: "i18n",
+            docsOutput: { style: "nested", docsRoot: "docs" },
+          },
+        ],
+      })
+    );
+
+    runWriteHeadingIds({
+      cwd: tmp,
+      config,
+      slugStyle: "github",
+      dryRun: false,
+      verbose: false,
+    });
+
+    const page = fs.readFileSync(path.join(tmp, "docs", "guide", "page.md"), "utf8");
+    expect(page).toContain("See [Init](#new-id)");
+    expect(page).not.toContain('<a id="old-id"></a>');
+    expect(page).toContain('<a id="new-id"></a>\n## New id');
+    const other = fs.readFileSync(path.join(tmp, "docs", "guide", "other.md"), "utf8");
+    expect(other).toContain("See [page](/guide/page#new-id).");
+    const translated = fs.readFileSync(
+      path.join(tmp, "i18n", "de", "docs", "guide", "page.md"),
+      "utf8"
+    );
+    expect(translated).toContain("Siehe [Init](#new-id).");
+    expect(translated).not.toContain('<a id="old-id"></a>');
+    expect(translated).toContain('<a id="new-id"></a>\n## Neu');
+  });
+
   it("skips a missing translated file and strips mid-line ids with --remove", () => {
     writeFile(path.join(tmp, "docs", "a.md"), "## Hello {/* #hello */}\n");
     writeFile(path.join(tmp, "docs", "b.md"), "## Other {/* #other */}\n");

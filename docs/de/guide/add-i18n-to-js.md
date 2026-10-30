@@ -5,12 +5,12 @@ Diese Seite ist für eine JS/TS-App (React, Next.js, Node oder eine CLI), deren 
 
 Die Schritte: das Tool installieren, i18next installieren, `extract` einmal ausführen, eine kleine Setup-Datei hinzufügen, damit `t` existiert, den benutzerorientierten Text umschließen und dann übersetzen. Sie sind sich nicht sicher, ob dies auf Sie zutrifft? Siehe [Nicht Ihr Fall?](#not-your-case) am Ende.
 
-<a id="install-the-tool-and-set-the-key"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Das Tool installieren und den Schlüssel festlegen
 
 Installieren Sie die CLI ([Installation](/de/guide/installation)) und legen Sie den API-Schlüssel für Ihren Anbieter fest ([Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key)). Ollama benötigt keinen Schlüssel.
 
-<a id="initialise-the-config"></a>
+<a id="initialise-the-project"></a>
 ## Die Konfiguration initialisieren
 
 ```bash
@@ -26,7 +26,7 @@ Dies schreibt `ai-i18n-tools.config.json`. Vier Schlüssel sind vorerst wichtig:
 
 Jeder andere Schlüssel ist in [Konfiguration](/de/reference/configuration).
 
-<a id="install-the-runtime-libraries"></a>
+<a id="run-the-agent-prompt"></a>
 ## Die Laufzeitbibliotheken installieren
 
 ai-i18n-tools hängt nicht von `i18next` oder `react-i18next` ab. Die App installiert sie.
@@ -40,7 +40,7 @@ pnpm add i18next
 pnpm add react-i18next
 ```
 
-<a id="run-extract-once"></a>
+<a id="review-the-result"></a>
 ## Extract einmal ausführen
 
 ```bash
@@ -49,7 +49,7 @@ ai-i18n-tools extract
 
 Die Setup-Datei im nächsten Schritt importiert `strings.json` und `ui-languages.json`, und nur `extract` schreibt sie. Sie schreibt beide, auch wenn sie keine `t()`-Aufrufe findet, damit die App kompiliert. Erwarten Sie 0 Strings, oder 1, wenn Ihre `package.json` eine `description` hat, weil der Extractor sie standardmäßig einschließt (`ui.uiExtractor.includePackageDescription`).
 
-<a id="add-the-bootstrap"></a>
+<a id="choose-models-and-translate"></a>
 ## Den Bootstrap hinzufügen
 
 Erstellen Sie die i18n-Setup-Datei. Diese minimale Version reicht aus, um Strings zu umschließen und zu übersetzen. `SOURCE_LOCALE` muss `sourceLocale` in `ai-i18n-tools.config.json` entsprechen.
@@ -86,10 +86,10 @@ Wenn die App beginnt, Pluralformen zu verwenden, fügen Sie die Quell-Locale-Fla
 
 Importieren Sie diese Datei aus dem App-Einstiegspunkt vor dem ersten Rendern. In Next.js importieren Sie sie aus einem Client-Modul, dem gleichen Muster folgend wie [examples/nextjs-app/src/lib/i18n.ts](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/nextjs-app/src/lib/i18n.ts).
 
-<a id="replace-hardcoded-copy"></a>
+<a id="check-one-language"></a>
 ## Hardcodierten Text ersetzen
 
-Machen Sie dies manuell, oder fügen Sie den [JS/TS-Prompt](#agent-prompt) in einen Coding-Agenten ein. Das Argument für `t()` ist der Satz in der Ausgangssprache, den der Benutzer sehen soll. Flache Locale-Dateien werden nach diesem Satz geschlüsselt.
+Machen Sie dies manuell, oder fügen Sie den [JS/TS-Prompt](#run-the-agent-prompt) in einen Coding-Agenten ein. Das Argument für `t()` ist der Satz in der Ausgangssprache, den der Benutzer sehen soll. Flache Locale-Dateien werden nach diesem Satz geschlüsselt.
 
 <details class="agent-prompt" id="agent-prompt">
 <summary>JS/TS-Agenten-Prompt</summary>
@@ -215,7 +215,7 @@ Regeln (auch in [t()-Aufrufen und Pluralen](/de/guide/ui-strings/t-calls-and-plu
 
 Lassen Sie diese unverändert: `className`, `href` und andere URLs, Importpfade, IDs, Test-IDs, Fehlercodes, als Bezeichner verwendete Objektschlüssel und Text innerhalb von Kommentaren.
 
-<a id="extract-and-translate"></a>
+<a id="keep-it-translated"></a>
 ## Extrahieren und Übersetzen
 
 Wenn die Literale vorhanden sind:
@@ -230,24 +230,24 @@ ai-i18n-tools status
 
 [examples/console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) ist eine kleine Node-App, deren `src/main.js` bereits umschlossen ist. Das Next.js-Beispiel ist der React-Bootstrap.
 
-<a id="language-switching"></a>
+<a id="do-it-by-hand"></a>
 ## Sprachwechsel
 
 Stellen Sie ein gespeichertes Locale vor dem ersten Rendern wieder her, wie in [i18next verbinden](/de/guide/ui-strings/i18next-runtime#startup-locale) beschrieben. Fügen Sie dann ein Steuerelement hinzu, das `await loadLocale(code)` gefolgt von `await i18n.changeLanguage(code)` aufruft: [Sprachumschalter und RTL](/de/guide/ui-strings/language-switcher).
 
-<a id="keep-it-translated"></a>
+<a id="step-1-install-the-runtime-libraries"></a>
 ## Übersetzt halten
 
 Führen Sie `sync` erneut aus, nachdem Sie den Quelltext geändert haben. Der Cache bedeutet, dass nur neue oder geänderte Strings an das Modell gesendet werden. Fügen Sie die Skripte aus [Empfohlene package.json-Skripte](/de/guide/quick-start#recommended-packagejson-scripts) hinzu und führen Sie `sync` in CI aus, damit die Übersetzungen nicht abweichen.
 
 Die Standardvorlage `init` übersetzt auch `README.md`. Siehe [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme).
 
-<a id="coming-from-another-tool"></a>
+<a id="step-2-extract-once-and-add-the-bootstrap"></a>
 ## Umstieg von einem anderen Tool
 
 ai-i18n-tools enthält einen eigenen String-Extraktor. Wenn Sie `i18next-scanner`, `babel-plugin-i18next-extract` oder Ähnliches verwendet haben, können Sie diese Entwicklungsabhängigkeiten nach der Migration entfernen. Bestehende i18next-Namespace-JSON-Dateien können in der [JSON-Pipeline](/de/guide/json#i18next-namespace-files) verbleiben. Intlayer `.content.ts`-Wörterbücher können mit `migrate-intlayer` importiert werden: siehe [Migration von Intlayer](/de/guide/migrating-from-intlayer). Um Intlayer zur Laufzeit beizubehalten und nur dessen Übersetzungen zu füllen, verwenden Sie `translate-intlayer`: siehe [Intlayer vor Ort übersetzen](/de/guide/translating-intlayer).
 
-<a id="not-your-case"></a>
+<a id="step-3-wrap-strings"></a>
 ## Nicht Ihr Fall?
 
 | Ihr Code heute | Lesen Sie |

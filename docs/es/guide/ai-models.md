@@ -55,7 +55,7 @@ La preselección es una clasificación de benchmarks del catálogo de chat en vi
 
 ChrF utiliza las puntuaciones de traducción de languagebench para tus `sourceLocale` y `targetLocales`. Las configuraciones regionales se asignan a un código de idioma de languagebench: la subetiqueta principal, con alias como `pt-BR` para `pt` y `zh-Hant` para `zh`. Un modelo que traduce bien esos idiomas supera en la clasificación a uno que solo obtiene una buena puntuación general. Se omiten los modelos de embeddings, imagen, voz y otros que no sean de chat, así como los ID que hayan superado su fecha de caducidad.
 
-"Calidad", el perfil predeterminado, pondera ChrF y Arena Score por encima del precio. "Precio" invierte ese énfasis y mantiene el umbral de calidad descrito anteriormente. Las ponderaciones opcionales son [`modelSuggestion`](/es/reference/configuration#modelsuggestion).
+"Calidad", el perfil predeterminado, pondera ChrF y Arena Score por encima del precio. "Precio" invierte ese énfasis y mantiene el umbral de calidad descrito anteriormente. Las ponderaciones opcionales son [`modelSuggestion`](/es/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` vuelve a descargar los conjuntos de datos. Después, vuelve a cargar la pestaña **Modelos**.
 

@@ -4,15 +4,40 @@ Use this context when installing or maintaining internationalization in a projec
 
 This file is self-contained. Every link below is a published documentation page or a repository URL, so it still works when the file is copied into a prompt or another project.
 
-Read the [consumer skill](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/SKILL.md) for the workflow, then only the reference that matches the task:
+Read the [consumer skill](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/SKILL.md) for the shared workflow. One install includes that skill and a slash command for each workflow below. Read only the reference that matches the task:
 
 - [JavaScript / TypeScript](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/javascript.md): source-string UI, i18next, browser/SSR runtime, and HTML markers.
 - [Python](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/python.md): generated helper or existing gettext, Django, and Flask-Babel.
 - [Documentation](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/documentation.md): README, documentation frameworks, static pages, and shell catalogs.
-- [Assets, links, and SVG](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/assets-and-links.md): localized images, anchors, link rewriting, and SVG labels.
+- [Assets, links, and SVG](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/assets-and-links.md): localised images, anchors, link rewriting, and SVG labels.
 - [JSON](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/json.md): nested locale bundles and namespaces.
+- [Providers and models](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/providers.md): provider selection, model fallback chains, credentials, and cost.
+- [Glossary](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/glossary.md): terminology consistency, user CSV, forced terms, and context files.
 
-Those files also ship in the npm package at `node_modules/ai-i18n-tools/skills/ai-i18n-tools/`. The links above track the repository `main` branch. For an older install, open the same paths from the [matching release tag](https://github.com/wsj-br/ai-i18n-tools/tags) or the installed package, and prefer `ai-i18n-tools --help` over a newer online guide.
+Those files also ship in the npm package at `node_modules/ai-i18n-tools/skills/ai-i18n-tools/`. The workflow commands are sibling directories under `node_modules/ai-i18n-tools/skills/`. The links above track the repository `main` branch. For an older install, open the same paths from the [matching release tag](https://github.com/wsj-br/ai-i18n-tools/tags) or the installed package, and prefer `ai-i18n-tools --help` over a newer online guide.
+
+## Workflow commands
+
+Type one command, or name it in the request. Each command follows the shared skill and then only its own template:
+
+| Command | Workflow |
+| --- | --- |
+| `/ai-i18n-js` | JavaScript or TypeScript source-string UI |
+| `/ai-i18n-python` | Generated Python helper and flat JSON catalogs |
+| `/ai-i18n-django` | Django, Flask-Babel, or plain gettext |
+| `/ai-i18n-vitepress` | VitePress |
+| `/ai-i18n-starlight` | Astro Starlight docs |
+| `/ai-i18n-docusaurus` | Docusaurus |
+| `/ai-i18n-nextra` | Nextra |
+| `/ai-i18n-fumadocs` | Fumadocs |
+| `/ai-i18n-astro-website` | Vanilla Astro website, page HTML plus build-time `t()` |
+| `/ai-i18n-plain-html` | One HTML file, switched in the browser |
+| `/ai-i18n-plain-html-docs` | One HTML tree per locale |
+| `/ai-i18n-readme` | README and repository Markdown |
+| `/ai-i18n-migrate-intlayer` | One-time move from Intlayer to `t()` calls. Dry-run `migrate-intlayer` before `--write`. |
+| `/ai-i18n-translate-intlayer` | Fill Intlayer dictionaries in place. Dry-run `translate-intlayer --dry-run` before translating. |
+
+A request that does not name a command uses the shared skill and the matching reference above. `sync` is not the Intlayer migration or in-place translation command.
 
 ## Walkthroughs and examples
 
@@ -41,7 +66,7 @@ The [examples index](https://wsj-br.github.io/ai-i18n-tools/examples) lists the 
 
 The CLI needs Node.js >=22.16 when installed through npm, or a standalone executable without a separate Node.js installation. A global CLI or executable does not provide imports from `ai-i18n-tools/runtime`; JS/TS apps using those imports need the package in their own dependencies.
 
-Installing the package does not register an agent skill. Copy the entire `skills/ai-i18n-tools/` directory, including references, into the agent's supported skill location. See [skill installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation#coding-agent-skill).
+Installing the package does not register an agent skill. With Node.js 22.20 or later, `npx skills add wsj-br/ai-i18n-tools --all -y` installs every skill directory into the agent's skills folder. If the package is already installed, copy `node_modules/ai-i18n-tools/skills/.` into that folder. With no Node.js, extract `package/skills/` from the npm tarball for this version, or unpack `ai-i18n-tools-skill.zip` from the matching GitHub Release when that asset is present. See [skill installation](https://wsj-br.github.io/ai-i18n-tools/guide/coding-agent-skill).
 
 For an agent without skills, point project instructions at this file or its [repository copy](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md), for example: “Before installing or maintaining ai-i18n-tools, read https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md and follow only the linked reference that matches this project.” Do not point consumer agents at the upstream maintainer guide.
 

@@ -51,8 +51,6 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 
 Identifique o que você tem, execute os comandos no bloco correspondente e depois continue no guia vinculado.
 
-<a id="core-cli-commands"></a>
-
 <a id="a-jsts-app"></a>
 ### Um app JS/TS
 

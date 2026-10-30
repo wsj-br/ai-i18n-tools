@@ -4,10 +4,12 @@ import chalk from "chalk";
 import matter from "@11ty/gray-matter";
 const matterStringify = matter.stringify;
 import {
-  applyHeadingAnchorsToMarkdown,
+  applyHeadingAnchorsToMarkdownDetailed,
   applyKnownHeadingIds,
   defaultPymdownOptions,
   extractHeadingIds,
+  resolveHeadingFragmentTarget,
+  retargetMarkdownHeadingFragments,
   stripHeadingIdsAnywhere,
   type PymdownSlugOptions,
   type SlugStyle,
@@ -138,6 +140,37 @@ function syncCacheForRepositionedHeadingIds(args: {
   return updated;
 }
 
+function localePrefixesForHeadingLinks(config: I18nConfig): string[] {
+  const codes = new Set<string>(config.targetLocales);
+  for (const block of config.docs) {
+    for (const code of getDocumentationTargetLocaleCodesForBlock(config, block)) {
+      codes.add(code);
+    }
+  }
+  return [...codes].sort((a, b) => b.length - a.length);
+}
+
+function retargetHeadingLinks(args: {
+  markdown: string;
+  fromRel: string;
+  knownFiles: ReadonlySet<string>;
+  localePrefixes: readonly string[];
+  redirectsByRel: ReadonlyMap<string, ReadonlyMap<string, string>>;
+}): string {
+  return retargetMarkdownHeadingFragments(args.markdown, (linkPath) => {
+    const target = resolveHeadingFragmentTarget({
+      fromRel: args.fromRel,
+      linkPath,
+      knownFiles: args.knownFiles,
+      localePrefixes: args.localePrefixes,
+    });
+    if (!target) {
+      return undefined;
+    }
+    return args.redirectsByRel.get(target);
+  });
+}
+
 function collectBlockMarkdownRelPaths(args: {
   block: DocBlock;
   projectRoot: string;
@@ -183,7 +216,14 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
 
   let filesWritten = 0;
   let filesUnchanged = 0;
-  const englishNextByRel = new Map<string, string>();
+  const remove = Boolean(opts.remove);
+  const localePrefixes = localePrefixesForHeadingLinks(opts.config);
+  const pending: Array<{
+    rel: string;
+    raw: string;
+    markdown: string;
+    redirects: Map<string, string>;
+  }> = [];
 
   for (const rel of relPaths) {
     const abs = path.join(opts.cwd, rel);
@@ -202,34 +242,53 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
       continue;
     }
 
-    const next = applyHeadingAnchorsToMarkdown(
+    const detailed = applyHeadingAnchorsToMarkdownDetailed(
       raw,
       opts.slugStyle,
       opts.slugStyle === "pymdown" ? opts.pymdown : undefined,
-      Boolean(opts.remove)
+      remove
     );
-    englishNextByRel.set(rel, next);
+    pending.push({ rel, raw, markdown: detailed.markdown, redirects: detailed.redirects });
+  }
 
-    if (next === raw) {
+  const knownFiles = new Set(pending.map((item) => item.rel.replace(/\\/g, "/")));
+  const redirectsByRel = new Map(
+    pending.map((item) => [item.rel.replace(/\\/g, "/"), item.redirects] as const)
+  );
+  const englishNextByRel = new Map<string, string>();
+
+  for (const item of pending) {
+    const rel = item.rel.replace(/\\/g, "/");
+    const next = remove
+      ? item.markdown
+      : retargetHeadingLinks({
+          markdown: item.markdown,
+          fromRel: rel,
+          knownFiles,
+          localePrefixes,
+          redirectsByRel,
+        });
+    englishNextByRel.set(item.rel, next);
+
+    if (next === item.raw) {
       filesUnchanged += 1;
       if (opts.verbose) {
-        console.log(chalk.gray(t("  unchanged {{path}}", { path: rel })));
+        console.log(chalk.gray(t("  unchanged {{path}}", { path: item.rel })));
       }
       continue;
     }
 
     filesWritten += 1;
     if (opts.dryRun) {
-      console.log(chalk.cyan(t("[dry-run] would update {{path}}", { path: rel })));
+      console.log(chalk.cyan(t("[dry-run] would update {{path}}", { path: item.rel })));
     } else {
-      writeAtomicUtf8(abs, next);
-      console.log(chalk.green(t("  Wrote {{path}}", { path: rel })));
+      writeAtomicUtf8(path.join(opts.cwd, item.rel), next);
+      console.log(chalk.green(t("  Wrote {{path}}", { path: item.rel })));
     }
   }
 
   let translatedFilesWritten = 0;
   let translatedFilesUnchanged = 0;
-  const remove = Boolean(opts.remove);
 
   for (const block of opts.config.docs) {
     const blockRels = collectBlockMarkdownRelPaths({
@@ -268,9 +327,19 @@ export function runWriteHeadingIds(opts: WriteHeadingIdsOptions): {
           );
           continue;
         }
-        const next = applyBodyTransform(translatedRaw, (body) =>
-          remove ? stripHeadingIdsAnywhere(body) : applyKnownHeadingIds(body, ids, opts.slugStyle)
-        );
+        const next = applyBodyTransform(translatedRaw, (body) => {
+          if (remove) {
+            return stripHeadingIdsAnywhere(body);
+          }
+          const withIds = applyKnownHeadingIds(body, ids, opts.slugStyle);
+          return retargetHeadingLinks({
+            markdown: withIds,
+            fromRel: rel.replace(/\\/g, "/"),
+            knownFiles,
+            localePrefixes,
+            redirectsByRel,
+          });
+        });
         const translatedRel = path.relative(opts.cwd, outPath) || outPath;
         if (next === translatedRaw) {
           translatedFilesUnchanged += 1;

@@ -22,7 +22,7 @@ Para cualquier estilo que no sea `flat` (incluidos `"nested"`, `"doc-system"` y 
 
 **Astro Starlight MDX:** El contenido de Starlight a menudo es `.mdx`. Para esos archivos, `translate-docs` ejecuta `postProcessing.regexAdjustments` solamente — sin reescritor de enlaces planos, VitePress, Nextra o Fumadocs. Las rutas de las capturas de pantalla por configuración regional siguen utilizando la misma regla `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`; consulte [ejemplos/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/).
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
+<a id="vitepress-link-normaliser-style-vitepress"></a>
 ### Normalizador de enlaces de VitePress (`style: "vitepress"`)
 
 Cuando `docsOutput.rewriteVitepressLinks` es `true` (valor predeterminado cuando `style` es `"vitepress"`), se ejecuta un normalizador independiente después del reensamblaje del segmento (en lugar del reescritor plano). Está dirigido a sitios de VitePress/sistemas de documentación donde el inglés se encuentra en la raíz del contenido y las configuraciones regionales se encuentran en carpetas hermanas (`docs/de/guide/…`).
@@ -46,12 +46,12 @@ El reescritor plano y el normalizador de VitePress son mutuamente excluyentes po
 
 Las carpetas de capturas de pantalla por configuración regional siguen utilizando la misma regla `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` cuando es necesario; consulte [Carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder).
 
-<a id="nextra-link-normalizer-style-nextra"></a>
+<a id="nextra-link-normaliser-style-nextra"></a>
 ### Normalizador de enlaces de Nextra (`style: "nextra"`)
 
 Cuando `docsOutput.rewriteNextraLinks` es `true` (predeterminado cuando `style` es `"nextra"`), un normalizador separado se ejecuta después del reensamblaje del segmento. Reescribe `content/en/…` y las rutas relativas de `.mdx` a rutas neutrales para la configuración regional (`/guide/…`). Consulta [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Normalizador de enlaces de Fumadocs (`style: "fumadocs"`)
 
 Cuando `docsOutput.rewriteFumadocsLinks` es `true` (predeterminado cuando `style` es `"fumadocs"`), un normalizador separado se ejecuta después del reensamblaje del segmento. Reescribe `content/docs/…` y las rutas relativas de `.mdx` a rutas neutrales para la configuración regional (`/docs/…`). Consulta [Integración de Fumadocs — Convenciones de enlaces](/es/guide/integrations/fumadocs#link-conventions).

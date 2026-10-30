@@ -288,7 +288,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 `Logger` 支援 `debug`、`info`、`warn`、`error` 層級，並帶有 ANSI 顏色輸出。詳細模式（`-v`）啟用 `debug`。當設定了 `logFilePath` 時，記錄行也會寫入該檔案。
 
-<a id="self-localization-tool-ui"></a>
+<a id="self-localisation-tool-ui"></a>
 ### 工具使用者介面自行本地化
 
 此工具會將其自身的使用者介面（命令列說明、高流量記錄/摘要/錯誤訊息，以及翻譯儀表板）與您需要翻譯的內容分開進行本地化。

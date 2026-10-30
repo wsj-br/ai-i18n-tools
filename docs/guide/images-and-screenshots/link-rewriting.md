@@ -10,7 +10,7 @@ For `docsOutput.style = "flat"` (and unless `rewriteRelativeLinks: false` or a c
 
 1. **Source URL** — image path in translated markdown (after segment reassembly)
 2. **Flat link rewriter** — prepends a depth prefix (`../`, `../../docs/`, …)
-3. **`regexAdjustments`** — swaps the locale folder segment (`en-GB` → `${translatedLocale}`)
+3. `regexAdjustments` — swaps the locale folder segment (`en-GB` → `${translatedLocale}`)
 4. **Output URL** — final path written to the translated file
 
 Example with `outputDir: "translated-docs/"` and source `README.md` at repo root:
@@ -22,14 +22,14 @@ For any non-`flat` style (including `"nested"`, `"doc-system"`, and presets such
 
 **Astro Starlight MDX:** Starlight content is often `.mdx`. For those files, `translate-docs` runs `postProcessing.regexAdjustments` only — no flat, VitePress, Nextra, or Fumadocs link rewriter. Per-locale screenshot paths still use the same `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule; see [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/).
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
-### VitePress link normalizer (`style: "vitepress"`)
+<a id="vitepress-link-normaliser-style-vitepress"></a>
+### VitePress link normaliser (`style: "vitepress"`)
 
-When `docsOutput.rewriteVitepressLinks` is `true` (default when `style` is `"vitepress"`), a separate normalizer runs after segment reassembly (instead of the flat rewriter). It targets VitePress / doc-system sites where English lives at the content root and locales sit in sibling folders (`docs/de/guide/…`).
+When `docsOutput.rewriteVitepressLinks` is `true` (default when `style` is `"vitepress"`), a separate normaliser runs after segment reassembly (instead of the flat rewriter). It targets VitePress / doc-system sites where English lives at the content root and locales sit in sibling folders (`docs/de/guide/…`).
 
 1. **Source href** — link in translated markdown (after segment reassembly)
-2. **VitePress link normalizer** — rewrites doc paths to site routes (`/guide/…`)
-3. **`regexAdjustments`** — optional locale-folder swap for screenshots (`screenshots/en-GB/` → `screenshots/de/`, …)
+2. **VitePress link normaliser** — rewrites doc paths to site routes (`/guide/…`)
+3. `regexAdjustments` — optional locale-folder swap for screenshots (`screenshots/en-GB/` → `screenshots/de/`, …)
 4. **Output href** — final URL written to the translated file
 
 Typical rewrites:
@@ -42,19 +42,19 @@ Typical rewrites:
 
 For projects that sync `README.md` → `docs/index.md`, use full GitHub URLs in `README.md` for `LICENSE`, `examples/`, and other files outside the VitePress tree. See [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
 
-The flat rewriter and VitePress normalizer are mutually exclusive per `docs[]` block — only one runs before `regexAdjustments`. See [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
+The flat rewriter and VitePress normaliser are mutually exclusive per `docs[]` block — only one runs before `regexAdjustments`. See [VitePress integration — Link conventions](/guide/integrations/vitepress#link-conventions).
 
 Per-locale screenshot folders still use the same `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` rule when needed; see [Per-locale folder](/guide/images-and-screenshots/per-locale-folder).
 
-<a id="nextra-link-normalizer-style-nextra"></a>
-### Nextra link normalizer (`style: "nextra"`)
+<a id="nextra-link-normaliser-style-nextra"></a>
+### Nextra link normaliser (`style: "nextra"`)
 
-When `docsOutput.rewriteNextraLinks` is `true` (default when `style` is `"nextra"`), a separate normalizer runs after segment reassembly. It rewrites `content/en/…` and relative `.mdx` paths to locale-neutral routes (`/guide/…`). See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
+When `docsOutput.rewriteNextraLinks` is `true` (default when `style` is `"nextra"`), a separate normaliser runs after segment reassembly. It rewrites `content/en/…` and relative `.mdx` paths to locale-neutral routes (`/guide/…`). See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
-### Fumadocs link normalizer (`style: "fumadocs"`)
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
+### Fumadocs link normaliser (`style: "fumadocs"`)
 
-When `docsOutput.rewriteFumadocsLinks` is `true` (default when `style` is `"fumadocs"`), a separate normalizer runs after segment reassembly. It rewrites `content/docs/…` and relative `.mdx` paths to locale-neutral routes (`/docs/…`). See [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
+When `docsOutput.rewriteFumadocsLinks` is `true` (default when `style` is `"fumadocs"`), a separate normaliser runs after segment reassembly. It rewrites `content/docs/…` and relative `.mdx` paths to locale-neutral routes (`/docs/…`). See [Fumadocs integration — Link conventions](/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Per-file depth prefix with `flatPreserveRelativeDir`

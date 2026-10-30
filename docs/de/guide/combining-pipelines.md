@@ -21,8 +21,6 @@ Dieses Repository ist ein solches Projekt. [`ai-i18n-tools.config.json`](https:/
 
 Bevorzugen Sie `sync` gegenüber dem manuellen Verketten der einzelnen Befehle. Reihenfolge, Extraktion und Gebietsschema-Flags können bei manueller Ausführung leicht falsch sein.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## UI-Strings und Dokumente gemeinsam
 
@@ -82,8 +80,6 @@ Verwenden Sie `docs[].targetLocales` für einen Block, um die Dateien dieses Blo
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## Gemischte Dokumentationskonfiguration

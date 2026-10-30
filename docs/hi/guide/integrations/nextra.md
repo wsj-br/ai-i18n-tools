@@ -48,7 +48,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="enable-i18n-in-an-existing-site"></a>
 ### किसी मौजूदा साइट में i18n सक्षम करें
 
-एक केवल अंग्रेज़ी वाली Nextra 4 साइट को एक स्थानीय फ़ोल्डर, एक रूट पैरामीटर और Next.js i18n कॉन्फ़िग की आवश्यकता होती है, इससे पहले कि `translate-docs` के पास लिखने के लिए कोई जगह हो। [डिक्शनरी प्रॉम्प्ट](#agent-prompt-dictionary) यह एक ही बार में करता है। चेकलिस्ट:
+एक केवल अंग्रेज़ी वाली Nextra 4 साइट को एक स्थानीय फ़ोल्डर, एक रूट पैरामीटर और Next.js i18n कॉन्फ़िग की आवश्यकता होती है, इससे पहले कि `translate-docs` के पास लिखने के लिए कोई जगह हो। [डिक्शनरी प्रॉम्प्ट](#agent-prompt-dictionary-and-routes) यह एक ही बार में करता है। चेकलिस्ट:
 
 - MDX को `content/en/` में ले जाएँ (अंग्रेज़ी एक स्थानीय फ़ोल्डर है, सामग्री रूट नहीं)।
 - `next.config` में `i18n.locales` और `defaultLocale`।

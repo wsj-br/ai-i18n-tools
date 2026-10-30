@@ -32,7 +32,7 @@
 <a id="ui-strings-ssg"></a>
 ## UI 字符串 (SSG)
 
-使用 `init -t ui-astro-website -P ollama` 搭建 UI 提取框架，然后在翻译页面 HTML 时合并 `docs[]` 块（请参阅[解析和替换页面](#pages-parse-and-replace))。此外，还需翻译仓库的 README：`init -t ui-astro-website -P ollama --with-readme`。请参阅[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。在 TypeScript 模块和 `.astro` frontmatter 中，将副本包装在 `t('…')` 中（以及在您倾向于使用 UI 字符串而不是重复的区域设置页面时，包装在模板 `{expression}` 块中）。页面 HTML 不需要 `t()`：`translate-docs` 会复制它。[JS/TS 提示](/zh-Hans/guide/add-i18n-to-js#agent-prompt) 适用于这些 frontmatter 和数据文件，但 i18next 安装和引导除外 — Astro 在构建时使用 `makeT` 解析 `t`，而不是使用 i18next。
+使用 `init -t ui-astro-website -P ollama` 搭建 UI 提取框架，然后在翻译页面 HTML 时合并 `docs[]` 块（请参阅[解析和替换页面](#pages-parse-and-replace))。此外，还需翻译仓库的 README：`init -t ui-astro-website -P ollama --with-readme`。请参阅[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。在 TypeScript 模块和 `.astro` frontmatter 中，将副本包装在 `t('…')` 中（以及在您倾向于使用 UI 字符串而不是重复的区域设置页面时，包装在模板 `{expression}` 块中）。页面 HTML 不需要 `t()`：`translate-docs` 会复制它。[JS/TS 提示](/zh-Hans/guide/add-i18n-to-js#run-the-agent-prompt) 适用于这些 frontmatter 和数据文件，但 i18next 安装和引导除外 — Astro 在构建时使用 `makeT` 解析 `t`，而不是使用 i18next。
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama

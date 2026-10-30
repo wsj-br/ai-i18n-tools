@@ -3,7 +3,7 @@
 
 `ai-i18n-tools`는 Python과 Jinja, Django, Qt `.ui` 파일에서 UI 문자열을 추출한 다음, 소스 언어 문자열을 키로 사용하는 플랫 JSON, GNU gettext 카탈로그 또는 둘 다를 작성합니다. `sourceLocale`는 모든 언어가 될 수 있습니다. 런타임 헬퍼는 표준 라이브러리 `i18n.py`(Python 3.10 이상)입니다. Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid, FastAPI는 해당 헬퍼를 호출합니다. Django는 Django 자체의 gettext를 사용합니다.
 
-기존 단일 언어 앱에 로캘 추가하기: [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python), [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-i18n-py) 및 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext) 포함. 프레임워크 선택기: [Python 통합](/ko/guide/integrations/python). 함수 목록: [Python 런타임(`i18n.py`)](/ko/reference/programmatic-api#python-runtime).
+기존 단일 언어 앱에 로캘 추가하기: [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python), [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#run-the-agent-prompt) 및 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext) 포함. 프레임워크 선택기: [Python 통합](/ko/guide/integrations/python). 함수 목록: [Python 런타임(`i18n.py`)](/ko/reference/programmatic-api#python-runtime).
 
 실행 가능한 복사본은 `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` 및 `examples/python-gettext`에 있습니다. 이들은 Python 프로젝트입니다. 처음 세 개는 virtualenv와 `pip install -r requirements.txt`를 사용합니다. `python-gettext`은(는) 표준 라이브러리만 사용합니다. 이들은 npm 패키지가 아닙니다. 릴리스 아카이브 `ai-i18n-tools-python-examples.zip`에는 동일한 네 개의 디렉터리가 포함되어 있습니다. npm tarball 및 독립 실행형 실행 파일에는 포함되어 있지 않습니다.
 
@@ -74,7 +74,7 @@ Gettext 파일은 컨텍스트에 `msgctxt`을(를) 사용하고 복수형에 `m
 
 영어 소스 로캘과 명시적 복수형 소스가 있는 `t(..., plurals=True)`은(는) 모델을 건너뛰고 소스 문자열에서 `one` / `other`을(를) 저장합니다.
 
-<a id="locale-in-each-framework"></a>
+<a id="things-to-know"></a>
 ## 각 프레임워크의 로캘
 
 `set_locale`은(는) `ContextVar` 토큰을 반환합니다. 동시 요청 시 로케일이 유출되지 않도록 FastAPI 및 Flask 미들웨어를 포함한 `finally`에서 이를 재설정하십시오.

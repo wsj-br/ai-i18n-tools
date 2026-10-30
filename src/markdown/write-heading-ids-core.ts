@@ -284,8 +284,128 @@ function formatCleanHeading(hashes: string, visibleTitle: string): string {
   return `${hashes} ${visibleTitle}`;
 }
 
-function precedingLineIsHtmlAnchor(lines: string[], headingIndex: number): boolean {
-  return headingIndex > 0 && HTML_ANCHOR_LINE_RE.test(lines[headingIndex - 1]!);
+function htmlAnchorId(line: string): string | undefined {
+  return line.match(HTML_ANCHOR_LINE_RE)?.[2];
+}
+
+function isBlankLine(line: string): boolean {
+  return line.trim() === "";
+}
+
+interface PrecedingAnchorBlock {
+  /** First `<a id>` line of the run directly above the heading. */
+  start: number;
+  ids: string[];
+}
+
+/**
+ * `<a id>` lines above a heading. Blank lines between those anchors, and between
+ * the run and the heading, stay inside the block. Any other line ends the walk,
+ * so anchors that sit above a paragraph or a table are not heading anchors.
+ */
+function precedingHtmlAnchorBlock(
+  lines: string[],
+  headingIndex: number
+): PrecedingAnchorBlock | null {
+  let i = headingIndex - 1;
+  let start = -1;
+  const idsRev: string[] = [];
+  while (i >= 0) {
+    const line = lines[i]!;
+    if (isBlankLine(line)) {
+      i -= 1;
+      continue;
+    }
+    const id = htmlAnchorId(line);
+    if (id === undefined) {
+      break;
+    }
+    idsRev.push(id);
+    start = i;
+    i -= 1;
+  }
+  if (start < 0) {
+    return null;
+  }
+  return { start, ids: idsRev.reverse() };
+}
+
+/**
+ * Replace the heading's HTML-anchor block with `replacement` (`null` drops it).
+ * Returns the heading's index after the edit and the ids that were not kept.
+ */
+function collapsePrecedingHtmlAnchors(
+  lines: string[],
+  headingIndex: number,
+  replacement: string | null,
+  keptId: string
+): { headingIndex: number; removedIds: string[] } {
+  const block = precedingHtmlAnchorBlock(lines, headingIndex);
+  if (!block) {
+    if (replacement === null) {
+      return { headingIndex, removedIds: [] };
+    }
+    lines.splice(headingIndex, 0, replacement);
+    return { headingIndex: headingIndex + 1, removedIds: [] };
+  }
+
+  const removedIds = block.ids.filter((id) => id !== keptId);
+  const alreadyOne =
+    replacement !== null &&
+    block.ids.length === 1 &&
+    block.ids[0] === keptId &&
+    block.start === headingIndex - 1 &&
+    lines[block.start] === replacement;
+  if (alreadyOne) {
+    return { headingIndex, removedIds: [] };
+  }
+
+  const insert = replacement === null ? [] : [replacement];
+  lines.splice(block.start, headingIndex - block.start, ...insert);
+  return { headingIndex: block.start + insert.length, removedIds };
+}
+
+function noteHeadingRedirect(
+  redirects: Map<string, string>,
+  conflicts: Set<string>,
+  removed: string,
+  kept: string
+): void {
+  if (removed === kept || conflicts.has(removed)) {
+    return;
+  }
+  const prev = redirects.get(removed);
+  if (prev === undefined) {
+    redirects.set(removed, kept);
+    return;
+  }
+  if (prev !== kept) {
+    redirects.delete(removed);
+    conflicts.add(removed);
+  }
+}
+
+function collectHtmlAnchorIds(lines: string[]): Set<string> {
+  const ids = new Set<string>();
+  let fence: OpenCodeFence | null = null;
+  for (const line of lines) {
+    if (fence) {
+      if (isCodeFenceClose(line, fence)) {
+        fence = null;
+      }
+      continue;
+    }
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
+      continue;
+    }
+    const id = htmlAnchorId(line);
+    if (id !== undefined) {
+      ids.add(id);
+    }
+  }
+  return ids;
 }
 
 /**
@@ -303,15 +423,17 @@ function stripEmbeddedHeadingIdTokens(titlePart: string): string {
 }
 
 /**
- * Fence-aware walk of ATX headings; returns each heading's explicit id (or `undefined`
- * when the title has no end-of-line `{#id}` or MDX heading-id comment suffix).
+ * Fence-aware walk of ATX headings. An explicit `{#id}` or MDX comment suffix wins.
+ * Otherwise the id is the HTML anchor in the block directly above the heading, or
+ * `undefined` when that heading has neither.
  */
 export function extractHeadingIds(markdownBody: string): (string | undefined)[] {
   const ids: (string | undefined)[] = [];
   const lines = markdownBody.split("\n");
   let fence: OpenCodeFence | null = null;
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i]!;
     if (fence) {
       if (isCodeFenceClose(line, fence)) {
         fence = null;
@@ -326,9 +448,16 @@ export function extractHeadingIds(markdownBody: string): (string | undefined)[] 
     }
 
     const hm = line.match(ATX_HEADING_RE);
-    if (hm) {
-      ids.push(parseExplicitHeadingId(hm[2]!).id);
+    if (!hm) {
+      continue;
     }
+    const explicit = parseExplicitHeadingId(hm[2]!).id;
+    if (explicit !== undefined) {
+      ids.push(explicit);
+      continue;
+    }
+    const block = precedingHtmlAnchorBlock(lines, i);
+    ids.push(block && block.ids.length > 0 ? block.ids[block.ids.length - 1] : undefined);
   }
 
   return ids;
@@ -336,9 +465,9 @@ export function extractHeadingIds(markdownBody: string): (string | undefined)[] 
 
 /**
  * Write known English heading ids onto translated ATX headings in document order.
- * Strips any embedded classic / MDX heading-id token (including mid-line) and a
- * preceding HTML anchor, then writes the known id in `style`. Headings with no
- * corresponding known id are left untouched.
+ * Strips any embedded classic / MDX heading-id token (including mid-line) and the
+ * whole HTML-anchor block above the heading, then writes the known id in `style`.
+ * Headings with no corresponding known id are left untouched.
  */
 export function applyKnownHeadingIds(
   markdownBody: string,
@@ -382,24 +511,20 @@ export function applyKnownHeadingIds(
 
       if (htmlStyle) {
         const clean = formatCleanHeading(hashes, visibleTitle);
-        if (precedingLineIsHtmlAnchor(lines, i)) {
-          lines[i - 1] = formatHtmlAnchorLine(knownId);
-          lines[i] = clean;
-          i += 1;
-          continue;
-        }
-        lines[i] = clean;
-        lines.splice(i, 0, formatHtmlAnchorLine(knownId));
-        i += 2;
+        const collapsed = collapsePrecedingHtmlAnchors(
+          lines,
+          i,
+          formatHtmlAnchorLine(knownId),
+          knownId
+        );
+        lines[collapsed.headingIndex] = clean;
+        i = collapsed.headingIndex + 1;
         continue;
       }
 
-      if (precedingLineIsHtmlAnchor(lines, i)) {
-        lines.splice(i - 1, 1);
-        i -= 1;
-      }
-      lines[i] = formatHeadingWithMdxComment(hashes, visibleTitle, knownId);
-      i += 1;
+      const collapsed = collapsePrecedingHtmlAnchors(lines, i, null, knownId);
+      lines[collapsed.headingIndex] = formatHeadingWithMdxComment(hashes, visibleTitle, knownId);
+      i = collapsed.headingIndex + 1;
       continue;
     }
 
@@ -499,18 +624,30 @@ export function stripHeadingIds(markdownBody: string): string {
   return lines.join("\n");
 }
 
+export interface HeadingAnchorRewrite {
+  body: string;
+  /** Removed heading ids that are no longer live, mapped to the id that replaced them. */
+  redirects: Map<string, string>;
+}
+
 /**
- * Rewrites ATX headings (outside fenced code) to the selected slug style, replacing any existing
- * HTML `<a id>` line, classic `{#id}` suffix, or MDX comment id. HTML styles write
- * `<a id="slug"></a>` on the line above a suffix-free heading; `mdx-comment` writes the id on the
- * heading line and drops a preceding HTML anchor when present. Slugs always come from visible
- * heading text (existing custom ids are not kept).
+ * Rewrites ATX headings (outside fenced code) to the selected slug style. HTML styles leave
+ * one `<a id="slug"></a>` immediately above a suffix-free heading and drop any older anchors
+ * stacked in that block. `mdx-comment` writes the id on the heading line and drops the whole
+ * preceding HTML-anchor block. Slugs always come from visible heading text.
+ * `redirects` maps a removed id to the kept id when that removed id is no longer an anchor.
  */
-export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
+export function rewriteHeadingAnchors(
+  markdownBody: string,
+  ctx: SlugContext
+): HeadingAnchorRewrite {
   const lines = markdownBody.split("\n");
   let fence: OpenCodeFence | null = null;
   let i = 0;
   const htmlStyle = ctx.style !== "mdx-comment";
+  const redirects = new Map<string, string>();
+  const conflicts = new Set<string>();
+  const live = new Set<string>();
 
   while (i < lines.length) {
     const line = lines[i]!;
@@ -534,34 +671,253 @@ export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext)
       const hashes = hm[1]!;
       const parsed = parseExplicitHeadingId(hm[2]!);
       const expectedId = computeAnchorIdForHeading(parsed.text, line, ctx);
+      live.add(expectedId);
+      if (parsed.id && parsed.id !== expectedId) {
+        noteHeadingRedirect(redirects, conflicts, parsed.id, expectedId);
+      }
 
       if (htmlStyle) {
         const clean = formatCleanHeading(hashes, parsed.text);
-        if (precedingLineIsHtmlAnchor(lines, i)) {
-          lines[i - 1] = formatHtmlAnchorLine(expectedId);
-          lines[i] = clean;
-          i += 1;
-          continue;
+        const collapsed = collapsePrecedingHtmlAnchors(
+          lines,
+          i,
+          formatHtmlAnchorLine(expectedId),
+          expectedId
+        );
+        for (const id of collapsed.removedIds) {
+          noteHeadingRedirect(redirects, conflicts, id, expectedId);
         }
-        lines[i] = clean;
-        lines.splice(i, 0, formatHtmlAnchorLine(expectedId));
-        i += 2;
+        lines[collapsed.headingIndex] = clean;
+        i = collapsed.headingIndex + 1;
         continue;
       }
 
-      if (precedingLineIsHtmlAnchor(lines, i)) {
-        lines.splice(i - 1, 1);
-        i -= 1;
+      const collapsed = collapsePrecedingHtmlAnchors(lines, i, null, expectedId);
+      for (const id of collapsed.removedIds) {
+        noteHeadingRedirect(redirects, conflicts, id, expectedId);
       }
-      lines[i] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
-      i += 1;
+      lines[collapsed.headingIndex] = formatHeadingWithMdxComment(hashes, parsed.text, expectedId);
+      i = collapsed.headingIndex + 1;
       continue;
     }
 
     i += 1;
   }
 
+  for (const id of collectHtmlAnchorIds(lines)) {
+    live.add(id);
+  }
+  for (const id of live) {
+    redirects.delete(id);
+  }
+  for (const id of conflicts) {
+    redirects.delete(id);
+  }
+
+  return { body: lines.join("\n"), redirects };
+}
+
+/**
+ * Rewrites ATX headings (outside fenced code) to the selected slug style, replacing any existing
+ * HTML `<a id>` line, classic `{#id}` suffix, or MDX comment id. HTML styles write one
+ * `<a id="slug"></a>` immediately above a suffix-free heading and drop older anchors stacked
+ * above it. `mdx-comment` writes the id on the heading line and drops the preceding HTML-anchor
+ * block. Slugs always come from visible heading text (existing custom ids are not kept).
+ */
+export function injectHtmlHeadingAnchors(markdownBody: string, ctx: SlugContext): string {
+  return rewriteHeadingAnchors(markdownBody, ctx).body;
+}
+
+const MD_LINK_DEST_RE = /\]\(([^)\s]+)\)/g;
+
+function retargetLinkDests(
+  segment: string,
+  resolveRedirects: (linkPath: string) => ReadonlyMap<string, string> | undefined
+): string {
+  return segment.replace(MD_LINK_DEST_RE, (full, dest: string) => {
+    if (dest.startsWith("<")) {
+      return full;
+    }
+    const hash = dest.indexOf("#");
+    if (hash < 0) {
+      return full;
+    }
+    const linkPath = dest.slice(0, hash);
+    const query = linkPath.indexOf("?");
+    const pathForResolve = query === -1 ? linkPath : linkPath.slice(0, query);
+    const fragment = dest.slice(hash + 1);
+    if (fragment.length === 0) {
+      return full;
+    }
+    const map = resolveRedirects(pathForResolve);
+    const next = map?.get(fragment);
+    if (!next || next === fragment) {
+      return full;
+    }
+    return `](${linkPath}#${next})`;
+  });
+}
+
+/** Rewrite markdown link fragments on one line, leaving inline code spans unchanged. */
+function retargetLineOutsideCodeSpans(
+  line: string,
+  resolveRedirects: (linkPath: string) => ReadonlyMap<string, string> | undefined
+): string {
+  let result = "";
+  let i = 0;
+  while (i < line.length) {
+    const tick = line.indexOf("`", i);
+    const end = tick === -1 ? line.length : tick;
+    result += retargetLinkDests(line.slice(i, end), resolveRedirects);
+    if (tick === -1) {
+      break;
+    }
+    const close = line.indexOf("`", tick + 1);
+    if (close === -1) {
+      result += line.slice(tick);
+      break;
+    }
+    result += line.slice(tick, close + 1);
+    i = close + 1;
+  }
+  return result;
+}
+
+/**
+ * Outside fenced code, replace a markdown link fragment when `resolveRedirects` maps it.
+ * `linkPath` is the URL before `#` (`""` for a same-file `#fragment`). An undefined map
+ * leaves that link alone.
+ */
+export function retargetMarkdownHeadingFragments(
+  markdown: string,
+  resolveRedirects: (linkPath: string) => ReadonlyMap<string, string> | undefined
+): string {
+  const lines = markdown.split("\n");
+  let fence: OpenCodeFence | null = null;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i]!;
+    if (fence) {
+      if (isCodeFenceClose(line, fence)) {
+        fence = null;
+      }
+      continue;
+    }
+    const fenceOpen = matchCodeFenceOpen(line);
+    if (fenceOpen) {
+      fence = fenceOpen;
+      continue;
+    }
+    const next = retargetLineOutsideCodeSpans(line, resolveRedirects);
+    if (next !== line) {
+      lines[i] = next;
+    }
+  }
   return lines.join("\n");
+}
+
+function toPosixPath(p: string): string {
+  return p.replace(/\\/g, "/");
+}
+
+function normalizePosixPath(p: string): string {
+  const parts: string[] = [];
+  for (const seg of toPosixPath(p).split("/")) {
+    if (seg === "" || seg === ".") {
+      continue;
+    }
+    if (seg === "..") {
+      parts.pop();
+      continue;
+    }
+    parts.push(seg);
+  }
+  return parts.join("/");
+}
+
+function matchKnownDocFile(candidate: string, knownFiles: ReadonlySet<string>): string | undefined {
+  const noExt = candidate.replace(/\.mdx?$/i, "");
+  const options = [
+    candidate,
+    `${noExt}.md`,
+    `${noExt}.mdx`,
+    `${noExt}/index.md`,
+    `${noExt}/index.mdx`,
+  ];
+  for (const opt of options) {
+    if (knownFiles.has(opt)) {
+      return opt;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Map a markdown link path to a processed source file. An empty path is the file that
+ * contains the link. Site routes (`/guide/foo`) try `docs/` plus the route, after a
+ * leading locale prefix is removed. External URLs are not resolved.
+ */
+export function resolveHeadingFragmentTarget(args: {
+  fromRel: string;
+  linkPath: string;
+  knownFiles: ReadonlySet<string>;
+  localePrefixes: readonly string[];
+}): string | undefined {
+  let linkPath = args.linkPath.trim();
+  if (linkPath === "") {
+    return args.fromRel;
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(linkPath)) {
+    return undefined;
+  }
+
+  const hash = linkPath.indexOf("#");
+  if (hash >= 0) {
+    linkPath = linkPath.slice(0, hash);
+  }
+  const query = linkPath.indexOf("?");
+  if (query >= 0) {
+    linkPath = linkPath.slice(0, query);
+  }
+  if (linkPath === "") {
+    return args.fromRel;
+  }
+
+  linkPath = toPosixPath(linkPath);
+  const candidates: string[] = [];
+  if (linkPath.startsWith("/")) {
+    let route = linkPath.replace(/\/+$/, "");
+    const prefixes = [...args.localePrefixes].sort((a, b) => b.length - a.length);
+    for (const loc of prefixes) {
+      if (route === `/${loc}` || route.startsWith(`/${loc}/`)) {
+        route = route.slice(loc.length + 1);
+        if (route === "") {
+          route = "/";
+        }
+        break;
+      }
+    }
+    if (route.startsWith("/")) {
+      route = route.slice(1);
+    }
+    route = route.replace(/\/+$/, "");
+    if (route === "" || route === "index") {
+      candidates.push("index", "docs/index", "README");
+    } else {
+      candidates.push(route, `docs/${route}`);
+    }
+  } else {
+    const from = toPosixPath(args.fromRel);
+    const dir = from.includes("/") ? from.slice(0, from.lastIndexOf("/")) : "";
+    candidates.push(normalizePosixPath(dir.length > 0 ? `${dir}/${linkPath}` : linkPath));
+  }
+
+  for (const candidate of candidates) {
+    const hit = matchKnownDocFile(candidate, args.knownFiles);
+    if (hit) {
+      return hit;
+    }
+  }
+  return undefined;
 }
 
 export function defaultPymdownOptions(): PymdownSlugOptions {
@@ -572,23 +928,43 @@ export function defaultPymdownOptions(): PymdownSlugOptions {
   };
 }
 
+export interface HeadingAnchorsMarkdownResult {
+  markdown: string;
+  redirects: Map<string, string>;
+}
+
+/** Same as {@link applyHeadingAnchorsToMarkdown}, plus ids removed by the rewrite. */
+export function applyHeadingAnchorsToMarkdownDetailed(
+  markdown: string,
+  style: SlugStyle,
+  pymdown?: PymdownSlugOptions,
+  remove = false
+): HeadingAnchorsMarkdownResult {
+  const parsed = matter(markdown);
+  const content = typeof parsed.content === "string" ? parsed.content : String(parsed.content);
+  if (remove) {
+    const nextBody = stripHeadingIds(content);
+    return {
+      markdown: nextBody === content ? markdown : matterStringify(nextBody, parsed.data),
+      redirects: new Map(),
+    };
+  }
+  const rewritten = rewriteHeadingAnchors(content, {
+    style,
+    pymdown: style === "pymdown" ? (pymdown ?? defaultPymdownOptions()) : undefined,
+    counts: new Map(),
+  });
+  return {
+    markdown: rewritten.body === content ? markdown : matterStringify(rewritten.body, parsed.data),
+    redirects: rewritten.redirects,
+  };
+}
+
 export function applyHeadingAnchorsToMarkdown(
   markdown: string,
   style: SlugStyle,
   pymdown?: PymdownSlugOptions,
   remove = false
 ): string {
-  const parsed = matter(markdown);
-  const content = typeof parsed.content === "string" ? parsed.content : String(parsed.content);
-  const nextBody = remove
-    ? stripHeadingIds(content)
-    : injectHtmlHeadingAnchors(content, {
-        style,
-        pymdown: style === "pymdown" ? (pymdown ?? defaultPymdownOptions()) : undefined,
-        counts: new Map(),
-      });
-  if (nextBody === content) {
-    return markdown;
-  }
-  return matterStringify(nextBody, parsed.data);
+  return applyHeadingAnchorsToMarkdownDetailed(markdown, style, pymdown, remove).markdown;
 }

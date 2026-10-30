@@ -53,7 +53,6 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 Cheaper Inference アカウントでゼロデータ保持が不要な場合は、このフラグをオフのままにしてください。アカウントで [データ保護](https://platform.cheaperinference.com/dashboard/data-protection) がすでにオンになっている場合、Cheaper Inference は、ゼロデータ保持ルートがないモデルを拒否します。エラーはそのモデル名を指定します。アカウントポリシーを維持するには、`zeroDataRetention` を `true` に設定し、ゼロデータ保持カタログのモデルに切り替えてください。拒否されたモデルを維持するには、そのページでゼロデータ保持をオフにしてください。フォールバックチェーンは、次に設定されたモデルを試行します。
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### モデル
 

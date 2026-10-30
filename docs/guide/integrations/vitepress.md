@@ -48,7 +48,7 @@ Wire VitePress [internationalization](https://vitepress.dev/guide/i18n): the sou
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Enable i18n in an existing site
 
-An English-only VitePress config needs these pieces before translated pages show up. The [agent prompt](#wire-configmts-to-generated-theme-json-one-off) covers the theme-catalog half.
+An English-only VitePress config needs these pieces before translated pages show up. First-time setup uses the prompt on [Add i18n to a website or docs site](/guide/add-i18n-to-website#run-the-agent-prompt). The [theme catalog prompt](#wire-configmts-to-generated-theme-json-one-off) is the follow-up after the first `sync`, when nav strings are still inline in the config.
 
 - `locales.root` for English (`label`, `lang`, and `themeConfig`).
 - One `locales[code]` entry per target locale: `label`, `lang`, `link: '/${code}/'`, and per-locale `title` / `description`.
@@ -58,7 +58,7 @@ An English-only VitePress config needs these pieces before translated pages show
 <a id="theme-strings"></a>
 ## Theme strings
 
-VitePress nav, sidebar, footer, search placeholder, and other `themeConfig` labels are not extracted from markdown. Configure **`docsOutput.vitepressThemeCatalog`** so **`translate-docs`** bootstraps the source-locale catalog from `.vitepress/config.mts` (when strings are inline) and translates locale theme JSON files:
+VitePress nav, sidebar, footer, search placeholder, and other `themeConfig` labels are not extracted from markdown. Configure `docsOutput.vitepressThemeCatalog` so `translate-docs` bootstraps the source-locale catalog from `.vitepress/config.mts` (when strings are inline) and translates locale theme JSON files:
 
 ```json
 {
@@ -82,8 +82,8 @@ VitePress nav, sidebar, footer, search placeholder, and other `themeConfig` labe
 }
 ```
 
-- **`catalogPath`** — English nested JSON. The bootstrap from `config.mts` applies only while those English strings are still inline in the config. After `themeConfigFor` reads the catalog, `mergeThemeCatalogs` keeps the existing file, and `theme.en.json` is the source of truth. Edit that file when the wording changes (or put the English back into `config.mts` for one `sync`). Renaming a key changes the segment hash (`path`, a NUL byte, then the value), so the next `sync` re-translates that string once for every target locale.
-- **`outputPathTemplate`** (optional) — per-locale outputs; default: same directory as `catalogPath` with `theme.{locale}.json`.
+- `catalogPath` — English nested JSON. The bootstrap from `config.mts` applies only while those English strings are still inline in the config. After `themeConfigFor` reads the catalog, `mergeThemeCatalogs` keeps the existing file, and `theme.en.json` is the source of truth. Edit that file when the wording changes (or put the English back into `config.mts` for one `sync`). Renaming a key changes the segment hash (`path`, a NUL byte, then the value), so the next `sync` re-translates that string once for every target locale.
+- `outputPathTemplate` (optional) — per-locale outputs; default: same directory as `catalogPath` with `theme.{locale}.json`.
 
 `init -t ui-vitepress` also scaffolds starter `docs/.vitepress/config.mts` and `docs/.vitepress/i18n/theme.en.json` when those files do not exist yet. The config loads the catalog via `loadTheme()` and wires standard VitePress i18n labels (including `langMenuLabel`) in `themeConfigFor()`.
 
@@ -221,11 +221,11 @@ Downstream projects sometimes copy `README.md` into the VitePress site as `docs/
 
 | Link type | Works on GitHub | Works on VitePress |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | Yes | No — use site routes or let the normalizer rewrite during sync |
+| `docs/guide/foo.md` | Yes | No — use site routes or let the normaliser rewrite during sync |
 | `./LICENSE`, `examples/demo/` | Yes (repo-relative) | No — use **full URLs** |
 | `/guide/foo` | No | Yes |
 
-**Recommendation for synced README → index:** In `README.md`, use **full URLs** for anything outside the VitePress content tree (`LICENSE`, `examples/`, config files, agent context files) and for translated README copies under `translated-docs/`. Use `docs/guide/…` paths (or site routes in English docs under `docs/`) for in-site documentation links; a sync script or `rewriteVitepressLinks` normalizer can convert those to `/guide/…` routes.
+**Recommendation for synced README → index:** In `README.md`, use **full URLs** for anything outside the VitePress content tree (`LICENSE`, `examples/`, config files, agent context files) and for translated README copies under `translated-docs/`. Use `docs/guide/…` paths (or site routes in English docs under `docs/`) for in-site documentation links; a sync script or `rewriteVitepressLinks` normaliser can convert those to `/guide/…` routes.
 
 **This repository** keeps `README.md` and `docs/index.md` as **independent files**: README is a concise GitHub/npm landing page; `docs/index.md` is the docs-site entry point that links into `/guide/` and `/reference/`. Detailed guides live under `docs/` — do not duplicate long reference material in the README. Update each according to its audience when shared facts change.
 
@@ -242,7 +242,7 @@ Example links for a synced README in another project:
 
 VitePress serves English pages from the content root and locale copies from `docs/<locale>/…`, but **in-page links must use site routes** (`/guide/quick-start`, `/reference/configuration`) — not repo-relative paths like `docs/guide/quick-start.md` or `../guide/quick-start.md`. Those README-style paths work in GitHub but break inside VitePress (404 in dev and on GitHub Pages).
 
-Enable the built-in normalizer so `translate-docs` fixes links in every translated file automatically:
+Enable the built-in normaliser so `translate-docs` fixes links in every translated file automatically:
 
 ```json
 "docsOutput": {
@@ -254,7 +254,7 @@ Enable the built-in normalizer so `translate-docs` fixes links in every translat
 
 `rewriteVitepressLinks` defaults to enabled when `style` is `"vitepress"`.
 
-| Author in the source locale | After normalizer (source-locale root output) | After normalizer (translated `docs/<locale>/` output) |
+| Author in the source locale | After normaliser (source-locale root output) | After normaliser (translated `docs/<locale>/` output) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
 | `[JSON](docs/guide/json.md)` | `[JSON](/guide/json)` | `[JSON](/pt-BR/guide/json)` (locale prefix matches folder) |
 | `[Quick start](/guide/quick-start)` in body or `hero.actions[].link` | unchanged (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-Prefix **`activeMatch`** alongside **`link`** so nav highlighting works on locale routes (`/pt-BR/guide/` not `/guide/`). External URLs and shared public assets stay unchanged.
+Prefix `activeMatch` alongside `link` so nav highlighting works on locale routes (`/pt-BR/guide/` not `/guide/`). External URLs and shared public assets stay unchanged.
 
 Add `ai-i18n-tools` as a **devDependency** in the VitePress project (see `examples/vitepress-docs/package.json`) so `config.mts` can import `prefixVitepressThemeConfigLinks`. The main ai-i18n-tools documentation site imports from `src/processors/…` directly because it dogfoods the monorepo checkout; standalone copies (degit) should use the npm package.
 

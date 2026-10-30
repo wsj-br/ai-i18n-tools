@@ -82,7 +82,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <a id="website-or-documentation"></a>
 ### Website or documentation
 
-Publish localized pages and connect them to your site's language routes. Follow framework-specific steps for navigation, theme labels, and the language menu.
+Publish localised pages and connect them to your site's language routes. Follow framework-specific steps for navigation, theme labels, and the language menu.
 
 VitePress · Starlight · Docusaurus · Astro
 
@@ -117,7 +117,7 @@ Not sure which path fits? [Add i18n to your project](/guide/add-i18n-to-your-pro
 <div class="home-steps">
 
 1. **Prepare your project.** Pick your languages, a translation provider, and the models to try. For apps, mark user-facing text and set up the translation runtime. For sites, enable your framework's language routing. The guides include coding-agent prompts where source changes are needed.
-2. **Translate into files you can use.** Once setup is ready, run `sync`. It extracts supported app strings, translates the content you enabled, and writes locale files or localized pages.
+2. **Translate into files you can use.** Once setup is ready, run `sync`. It extracts supported app strings, translates the content you enabled, and writes locale files or localised pages.
 3. **Load, check, and keep going.** Connect the output to your app or site, wire language switching, and check a target language. Rerun after source changes to translate new or changed text.
 
 </div>
@@ -155,7 +155,7 @@ t("Save changes");
 
 :::
 
-The source sentence stays readable in your code. Your app loads the generated locale files at runtime. Want to see the full wiring? [Explore the working Next.js example](/examples#nextjs-app). Websites follow a different path: [generate localized pages](/guide/add-i18n-to-website) instead of wrapping every paragraph.
+The source sentence stays readable in your code. Your app loads the generated locale files at runtime. Want to see the full wiring? [Explore the working Next.js example](/examples#nextjs-app). Websites follow a different path: [generate localised pages](/guide/add-i18n-to-website) instead of wrapping every paragraph.
 
 <a id="built-for-the-next-update-too"></a>
 ## Built for the next update, too
@@ -282,7 +282,7 @@ See how a Streamlit app wraps its messages and uses translated JSON without addi
 <a id="docs-in-more-languages"></a>
 ### Docs in more languages
 
-See translated VitePress pages alongside localized navigation and theme labels.
+See translated VitePress pages alongside localised navigation and theme labels.
 
 [Explore the VitePress example](/examples#vitepress-docs)
 

@@ -34,7 +34,7 @@
 
 候选模型来自提供商的 `GET /models` 列表。当 `providers.cheaperinference.zeroDataRetention` 为 true 时，该请求为 `GET /v1/models?zdr=true`。过期行和非聊天行（嵌入、语音、图像、视频、内容审核、重排器）将被排除。如果该目录请求失败，命令将以状态 1 退出。
 
-`--quality` 是默认设置。它将 ChrF 和 Arena 分数的权重置于价格之上。`--price` 将价格权重置于这些分数之上，同时保持质量底线，因此未测量的廉价模型不会跳到列表前面。同时传递两个标志会导致错误。不传递任何标志则表示按质量排序。配置中的可选 `modelSuggestion` 权重可替换任一配置文件。请参阅 [Configuration](/zh-Hans/reference/configuration#modelsuggestion)。相同的权重也用于 [dashboard Models tab](/zh-Hans/guide/translation-dashboard/models)。
+`--quality` 是默认设置。它将 ChrF 和 Arena 分数的权重置于价格之上。`--price` 将价格权重置于这些分数之上，同时保持质量底线，因此未测量的廉价模型不会跳到列表前面。同时传递两个标志会导致错误。不传递任何标志则表示按质量排序。配置中的可选 `modelSuggestion` 权重可替换任一配置文件。请参阅 [Configuration](/zh-Hans/reference/configuration#modelsuggestion-optional)。相同的权重也用于 [dashboard Models tab](/zh-Hans/guide/translation-dashboard/models)。
 
 ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值，其指标为 `chrf`，仅限于此项目的 `sourceLocale` 和 `targetLocales`。区域设置映射到 languagebench 语言代码（主要子标签，包含一些别名，例如 `pt-BR` 到 `pt` 以及 `zh-Hant` 到 `zh` 和 `yue`）。空集使用 `en`。Arena 是 LMArena 的整体 Arena 分数，而非 Elo 分数。排名价格为每百万 token `(3 × input + output) / 4` 美元。价格来源依次为：非零目录费率、models.dev 输入和输出费率，最后是 languagebench 的单一成本数字。目录价格 `0` 表示未定价，而非免费。未知价格在质量配置文件中为中性，在价格配置文件中为最差。缺失的 ChrF 会排在质量底线之下。用于缺失 ChrF 或 Arena 的 `0.35` 和 `0.45` 替补值仅影响索引；表格中打印 `—` 代替。
 

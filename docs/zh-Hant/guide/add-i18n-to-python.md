@@ -7,17 +7,17 @@
 
 步驟如下：
 
-1. [安裝](#install) CLI 並設定 API 金鑰。
-2. [挑選範本](#pick-a-template) 並執行 `init`。
+1. [安裝](#install-and-choose-a-provider) CLI 並設定 API 金鑰。
+2. [挑選範本](#initialise-the-project) 並執行 `init`。
 3. 在 `t()` 或 `_()` 中 [包裝字串](#wrap-strings)。
-4. [遷移](#migrate) 已經不安全地包裝的呼叫位置。
-5. [選擇模型並翻譯](#translate)。
-6. [在執行階段切換語區](#switch-locale)。
+4. [遷移](#step-3-check-wrapped-calls) 已經不安全地包裝的呼叫位置。
+5. [選擇模型並翻譯](#choose-models-and-translate)。
+6. [在執行階段切換語區](#step-4-add-a-language-switch)。
 7. [維持翻譯狀態](#keep-it-translated)。
 
 不確定這是否符合您的情況？請參閱結尾的 [不符合您的情況？](#not-your-case)。
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 安裝
 
 當機器上已有 Node.js `>=22.16.0` 時，請使用 npm 套件 ([安裝](/zh-Hant/guide/installation))。若是 Python 專案，請安裝獨立可執行檔 (無需 Node.js)。
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollama 不需要金鑰。其他預設值：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## 選擇範本
 
 | 現有應用程式 | 指令 | 您會得到什麼 |
@@ -56,7 +56,7 @@ Ollama 不需要金鑰。其他預設值：[內建提供者](/zh-Hant/guide/prov
 
 編輯 `sourceLocale` 和 `targetLocales`。`sourceLocale` 是原始碼中字串的語言。任何 BCP-47 語言皆有效；範例通常使用 `en`。框架接線：[Python 整合](/zh-Hant/guide/integrations/python)。呼叫形式和目錄版面配置：[Python 應用程式](/zh-Hant/guide/ui-strings/python)。
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## 封裝字串
 
 先查詢目錄項目，然後進行插值。從產生的 `i18n.py` 匯入 `t` 與 `_`（Django 保留 `gettext` 與 `ngettext`）。
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## 遷移呼叫位置
 
 在傳入 `--write` 之前，`migrate-python-i18n` 僅為試運行。它總是會寫入 `migrate-python-i18n-report.md`。產生的 `i18n.py` 檔案會被略過。諸如 `{value=}` 與巢狀格式規範等除錯欄位會被回報並保留在原處。
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 當試運行列出需要人工審查的站點時，請在執行 `--write` 前閱讀報告。選用的 `--report <path>` 可變更報告路徑。選用的 `--ui-block` 可將掃描限制在單一 UI 區塊。
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## 選擇模型並翻譯
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract` 會寫入 `strings.json` 與 `ui-languages.json`。`translate-ui` 會填入扁平化 JSON 檔案，且當設定 `ui.gettext` 時，會填入 `.po` / `.mo` 目錄。請勿手動編輯這些產生的目錄。
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## 在執行階段切換語系
 
 `set_locale` 會傳回一個 `ContextVar` 權杖。請在請求或回呼結束時重設它。
@@ -323,7 +317,7 @@ FastAPI 與 Flask 中介軟體必須在 `finally` (Flask: `teardown_request`) �
 
 若要在同一次執行中翻譯 `README.md`，請使用 `--with-readme` 建立架構 (或將該區塊新增至現有設定檔)。請參閱 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## 情況不同？
 
 | 您的情況 | 請閱讀 |
@@ -333,7 +327,7 @@ FastAPI 與 Flask 中介軟體必須在 `finally` (Flask: `teardown_request`) �
 | 儲存庫 README 或其他 Markdown 檔案 | [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme) |
 | 巢狀語系 JSON | [JSON](/zh-Hant/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## 範例
 
 | 範例 | 顯示內容 |

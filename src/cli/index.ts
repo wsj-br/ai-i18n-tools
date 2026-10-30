@@ -751,7 +751,7 @@ program
   .option(
     "--model <ids>",
     t(
-      "Comma-separated model ids to benchmark (default: all configured model ids from translationModels, uiModels, and localeModels)"
+      "Model ids to benchmark, comma-separated (default: all configured model ids from translationModels, uiModels, and localeModels)"
     )
   )
   .option("--text <text>", t("Inline sample text to translate (overrides --file and the default)"))
@@ -818,7 +818,7 @@ program
   .command("init")
   .description(t("Write starter ai-i18n-tools JSON config"))
   .usage("-P <provider> [options]")
-  .option("-o, --output <path>", t("config file path"), DEFAULT_CONFIG_FILENAME)
+  .option("-o, --output <path>", t("Config file path"), DEFAULT_CONFIG_FILENAME)
   .option(
     "-t, --template <name>",
     t(
@@ -1306,7 +1306,7 @@ program
   .argument("[paths...]", t("Files/dirs/globs to scan (default: ui.sourceRoots)"))
   .option(
     "-l, --locale <codes>",
-    t("Comma-separated target locales to fill (default: the block's configured targetLocales)")
+    t("Target locales to fill, comma-separated (default: the block's configured targetLocales)")
   )
   .option(
     "--ui-block <selector>",
@@ -2044,7 +2044,7 @@ program
         console.log(
           chalk.cyan(
             t(
-              "💡 All files were skipped (cache matches output). Use --force-update to re-process files (using translation cache) or --force to retranslate files"
+              "💡 All files were skipped (cache matches output). Use --force-update to re-process files (using translation cache) or --force to re-translate files"
             )
           )
         );
@@ -2608,7 +2608,7 @@ program
   .option(
     "-l, --locale <codes>",
     t(
-      "Comma-separated target locales for translate-ui, translate-svg, and translate-docs steps (optional; defaults from config / ui-languages.json)"
+      "Target locales for translate-ui, translate-svg, and translate-docs steps, comma-separated (optional; defaults from config / ui-languages.json)"
     )
   )
   .option(

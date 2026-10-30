@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-पायथन एप्लिकेशन के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन एप्लिकेशन](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें एक [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-i18n-py) और एक [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल है।
+पायथन एप्लिकेशन के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन एप्लिकेशन](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें एक [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) और एक [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल है।
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView जनरेट किए गए `i18n.py` हेल्पर (Python 3.10 या नया) को कॉल करते हैं। Django, Django के gettext को बनाए रखता है। रिपॉजिटरी में चार रन करने योग्य प्रतियां शामिल हैं: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext`। Pyramid, Django, Tkinter, Qt, और PyWebView के लिए कोई अलग उदाहरण निर्देशिका नहीं है।
 

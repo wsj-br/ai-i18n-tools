@@ -53,7 +53,6 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 Cheaper Inference 계정에서 제로 데이터 보존이 필요하지 않은 경우 이 플래그를 비활성화 상태로 두십시오. 계정에 [데이터 보호](https://platform.cheaperinference.com/dashboard/data-protection)가 이미 활성화되어 있는 경우에도 Cheaper Inference는 제로 데이터 보존 경로가 없는 모델을 거부합니다. 오류 메시지에 해당 모델의 이름이 표시됩니다. 계정 정책을 유지하려면 `zeroDataRetention`을(를) `true`(으)로 설정하고 제로 데이터 보존 카탈로그의 모델로 전환하십시오. 거부된 모델을 유지하려면 해당 페이지에서 제로 데이터 보존을 비활성화하십시오. 그러면 폴백 체인이 다음으로 구성된 모델을 시도합니다.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### 모델
 

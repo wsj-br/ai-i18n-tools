@@ -22,7 +22,7 @@
 
 **एस्ट्रो स्टारलाइट एमडीएक्स:** स्टारलाइट सामग्री अक्सर `.mdx` होती है। उन फ़ाइलों के लिए, `translate-docs` केवल `postProcessing.regexAdjustments` चलाता है — कोई फ़्लैट, वाइटप्रेस, नेक्सट्रा, या फ़्यूमाडॉक्स लिंक रीराइटर नहीं। प्रति-लोकेल स्क्रीनशॉट पाथ अभी भी वही `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` नियम का उपयोग करते हैं; [उदाहरण/एस्ट्रो-डॉक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) देखें।
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
+<a id="vitepress-link-normaliser-style-vitepress"></a>
 ### वाइटप्रेस लिंक नॉर्मलाइज़र (`style: "vitepress"`)
 
 जब `docsOutput.rewriteVitepressLinks` `true` होता है (जब `style` `"vitepress"` होता है तो डिफ़ॉल्ट), एक अलग नॉर्मलाइज़र खंड पुनर्संयोजन के बाद चलता है (फ़्लैट रीराइटर के बजाय)। यह वाइटप्रेस / डॉक-सिस्टम साइटों को लक्षित करता है जहाँ अंग्रेजी सामग्री रूट पर रहती है और लोकेल सिबलिंग फ़ोल्डरों में बैठते हैं (`docs/de/guide/…`)।
@@ -46,12 +46,12 @@
 
 प्रति-लोकेल स्क्रीनशॉट फ़ोल्डर अभी भी आवश्यकता पड़ने पर वही `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` नियम का उपयोग करते हैं; [प्रति-लोकेल फ़ोल्डर](/hi/guide/images-and-screenshots/per-locale-folder) देखें।
 
-<a id="nextra-link-normalizer-style-nextra"></a>
+<a id="nextra-link-normaliser-style-nextra"></a>
 ### नेक्सट्रा लिंक नॉर्मलाइज़र (`style: "nextra"`)
 
 जब `docsOutput.rewriteNextraLinks` `true` होता है (जब `style` `"nextra"` होता है तो डिफ़ॉल्ट), एक अलग नॉर्मलाइज़र खंड पुनर्संयोजन के बाद चलता है। यह `content/en/…` और सापेक्ष `.mdx` पाथ को लोकेल-न्यूट्रल रूट में रीराइट करता है (`/guide/…`)। [नेक्सट्रा एकीकरण — लिंक कन्वेंशन](/hi/guide/integrations/nextra#link-conventions) देखें।
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### फुमाडॉक्स लिंक नॉर्मलाइज़र (`style: "fumadocs"`)
 
 जब `docsOutput.rewriteFumadocsLinks` `true` होता है (जब `style` `"fumadocs"` होता है तो डिफ़ॉल्ट), तो सेगमेंट रीअसेंबली के बाद एक अलग नॉर्मलाइज़र चलता है। यह `content/docs/…` और सापेक्ष `.mdx` पाथ को लोकेल-न्यूट्रल रूट (`/docs/…`) में फिर से लिखता है। [फुमाडॉक्स इंटीग्रेशन — लिंक कन्वेंशन्स](/hi/guide/integrations/fumadocs#link-conventions) देखें।

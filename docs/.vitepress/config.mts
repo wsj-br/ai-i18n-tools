@@ -45,6 +45,10 @@ function guideSidebar(t: ThemeCatalog) {
       items: [
         { text: t.sidebar.whatIs, link: "/guide/what-is-ai-i18n-tools" },
         { text: t.sidebar.installation, link: "/guide/installation" },
+        {
+          text: t.sidebar.codingAgentSkill ?? "Coding-agent skill",
+          link: "/guide/coding-agent-skill",
+        },
         { text: t.sidebar.quickStart, link: "/guide/quick-start" },
         { text: t.sidebar.providers, link: "/guide/providers-and-models" },
         { text: t.sidebar.aiModels ?? "AI Models", link: "/guide/ai-models" },

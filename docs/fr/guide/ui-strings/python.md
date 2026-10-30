@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` extrait les chaînes d'IU de Python et des fichiers `.ui` Jinja, Django et Qt, puis écrit du JSON plat dont les clés sont les chaînes de la langue source, des catalogues GNU gettext, ou les deux. `sourceLocale` peut être n'importe quelle langue. L'utilitaire d'exécution est un `i18n.py` de la bibliothèque standard (Python 3.10 ou plus récent). Streamlit, Tkinter, PyQt, PySide, PyWebView, Flask, Pyramid et FastAPI appellent cet utilitaire. Django utilise son propre gettext.
 
-Ajouter des locales à une application monolingue existante : [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), y compris l'[invite `i18n.py`](/fr/guide/add-i18n-to-python#agent-prompt-i18n-py) et l'[invite Django / gettext](/fr/guide/add-i18n-to-python#agent-prompt-django-gettext). Sélecteur de framework : [Intégrations Python](/fr/guide/integrations/python). Liste des fonctions : [Exécution Python (`i18n.py`)](/fr/reference/programmatic-api#python-runtime).
+Ajouter des locales à une application monolingue existante : [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), y compris l'[invite `i18n.py`](/fr/guide/add-i18n-to-python#run-the-agent-prompt) et l'[invite Django / gettext](/fr/guide/add-i18n-to-python#agent-prompt-django-gettext). Sélecteur de framework : [Intégrations Python](/fr/guide/integrations/python). Liste des fonctions : [Exécution Python (`i18n.py`)](/fr/reference/programmatic-api#python-runtime).
 
 Les copies exécutables se trouvent dans `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Ce sont des projets Python. Les trois premiers utilisent un virtualenv et `pip install -r requirements.txt`. `python-gettext` utilise uniquement la bibliothèque standard. Ce ne sont pas des paquets npm. L'archive de version `ai-i18n-tools-python-examples.zip` contient les quatre mêmes répertoires. L'archive tar npm et l'exécutable autonome ne les contiennent pas.
 
@@ -74,7 +74,7 @@ Les fichiers Gettext utilisent `msgctxt` pour le contexte et `msgid` / `msgid_pl
 
 `t(..., plurals=True)` avec une locale source anglaise et une source plurielle explicite ignore le modèle et stocke `one` / `other` à partir des chaînes sources.
 
-<a id="locale-in-each-framework"></a>
+<a id="things-to-know"></a>
 ## Locale dans chaque framework
 
 `set_locale` renvoie un jeton `ContextVar`. Réinitialisez-le dans `finally`, y compris dans les middlewares FastAPI et Flask, afin que les requêtes simultanées ne provoquent pas de fuite de paramètres régionaux.

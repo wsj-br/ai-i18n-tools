@@ -15,7 +15,7 @@ Choosing the right directory layout before any screenshots exist is the single b
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### Markdown with `docsOutput.style = "flat"` (README, USER-GUIDE)
 
-Store screenshots under a locale-coded subdirectory from day one:
+Store screenshots under a locale-coded subdirectory from the start:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ Set `docs[].docsOutput.docsRoot` to the root of the files written in `sourceLoca
 
 The flat link rewriter does **not** run for `doc-system` (unlike `"flat"`). `postProcessing.regexAdjustments` sees the original URL from source markdown — typically an absolute or site-root path such as `/img/screenshots/en-GB/foo.png`.
 
-**Per-locale folder** layout applies when screenshots live in a shared static URL tree: use a locale-coded folder from day one and one generic `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule (see [Config — doc-system](/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
+**Per-locale folder** layout applies when screenshots live in a shared static URL tree: use a locale-coded folder from the start and one generic `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` rule (see [Config — doc-system](/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 **Colocated screenshots** apply when each locale's translated docs store assets beside the markdown (no URL rewriting). Your screenshot script must write PNGs into paths derived from `{outputDir}`, `{locale}`, and `{localeSubpath}` — the Docusaurus preset below is the reference layout.
 
@@ -78,7 +78,7 @@ When you add i18n later, the screenshot script adopts the `getScreenshotDir` spl
 
 Equivalent to `docsOutput.style = "doc-system"` with `localeSubpath: ""` — translated pages sit directly under `{outputDir}/{locale}/`.
 
-Store screenshots under a locale-coded path from day one:
+Store screenshots under a locale-coded path from the start:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

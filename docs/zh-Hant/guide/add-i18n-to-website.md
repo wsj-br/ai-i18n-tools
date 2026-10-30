@@ -5,7 +5,7 @@
 
 若應用程式的 UI 字串存於 `t()` 呼叫中，請改用 [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 或 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## 您的情況是？
 
 | 你的網站 | 初始化範本 | 從這裡開始 |
@@ -21,16 +21,16 @@
 <details class="agent-prompt">
 <summary>Agent 提示</summary>
 
-- Astro Starlight：僅註解。Astro `t()` 檔案：[JS/TS 提示](/zh-Hant/guide/add-i18n-to-js#agent-prompt)（略過 i18next）。
+- Astro Starlight：僅註解。Astro `t()` 檔案：[JS/TS 提示](/zh-Hant/guide/add-i18n-to-js#run-the-agent-prompt)（略過 i18next）。
 - Docusaurus：僅註解（`<Translate>` 是 Docusaurus 自己的 API）。
 - VitePress：[佈景主題目錄提示](/zh-Hant/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off)。
-- Nextra：[字典提示](/zh-Hant/guide/integrations/nextra#agent-prompt-dictionary) 和 [混合 `t()` 提示](/zh-Hant/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
+- Nextra：[字典提示](/zh-Hant/guide/integrations/nextra#agent-prompt-dictionary-and-routes) 和 [混合 `t()` 提示](/zh-Hant/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
 - Fumadocs：[UI 目錄提示](/zh-Hant/guide/integrations/fumadocs#agent-prompt)。
-- README 和 Markdown 檔案：[README 提示](/zh-Hant/guide/add-i18n-to-readme#agent-prompt)。
+- README 和 Markdown 檔案：[README 提示](/zh-Hant/guide/add-i18n-to-readme#run-the-agent-prompt)。
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## 步驟
 
 每個框架的作法大同小異；詳細資訊請見上方連結的框架指南。
@@ -42,7 +42,7 @@
 5. 執行 `ai-i18n-tools sync`（或 `translate-docs`），然後建置網站。
 6. 在瀏覽器中檢查本地化路由。框架自己的語系下拉式選單就是切換器。對於像 README 這樣的單一 markdown 檔案，請使用 [languageListBlock](/zh-Hant/guide/documents/language-switcher) 新增一個連結列。
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## 翻譯的內容
 
 頁面主體一律會通過 [文件](/zh-Hant/guide/documents/) 管線處理。框架外觀（導覽、側邊欄、佈景主題標籤）會在框架支援的情況下，於同一次執行中處理，而不是透過獨立的 [JSON](/zh-Hant/guide/json) 管線。
@@ -59,7 +59,7 @@
 
 `translate-docs` 不會翻譯圖片與螢幕擷取畫面。關於特定語系的檔案，請參閱[圖片與螢幕擷取畫面](/zh-Hant/guide/images-and-screenshots/)。
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## 純 HTML
 
 有兩種選項，取決於頁面的應有行為：
@@ -69,7 +69,7 @@
 
 一個檔案屬於一個路徑。
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## 情況不同？
 
 - 應用程式 UI 字串：[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 或 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。

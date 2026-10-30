@@ -7,17 +7,17 @@
 
 चरण:
 
-1. सीएलआई को [इंस्टॉल करें](#install) और एपीआई कुंजी सेट करें।
-2. एक [टेम्पलेट चुनें](#pick-a-template) और `init` चलाएँ।
+1. सीएलआई को [इंस्टॉल करें](#install-and-choose-a-provider) और एपीआई कुंजी सेट करें।
+2. एक [टेम्पलेट चुनें](#initialise-the-project) और `init` चलाएँ।
 3. `t()` या `_()` में [स्ट्रिंग्स लपेटें](#wrap-strings)।
-4. उन [कॉल साइट्स को माइग्रेट करें](#migrate) जो पहले से असुरक्षित रूप से लपेटी गई हैं।
-5. [मॉडल चुनें और अनुवाद करें](#translate)।
-6. [रनटाइम पर लोकल स्विच करें](#switch-locale)।
+4. उन [कॉल साइट्स को माइग्रेट करें](#step-3-check-wrapped-calls) जो पहले से असुरक्षित रूप से लपेटी गई हैं।
+5. [मॉडल चुनें और अनुवाद करें](#choose-models-and-translate)।
+6. [रनटाइम पर लोकल स्विच करें](#step-4-add-a-language-switch)।
 7. [इसे अनुवादित रखें](#keep-it-translated)।
 
 सुनिश्चित नहीं हैं कि यह आपका मामला है? अंत में [क्या यह आपका मामला नहीं है?](#not-your-case) देखें।
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## इंस्टॉल करें
 
 एनपीएम पैकेज का उपयोग करें जब मशीन में पहले से ही Node.js `>=22.16.0` ([इंस्टॉलेशन](/hi/guide/installation)) हो। एक पायथन प्रोजेक्ट के लिए, स्टैंडअलोन निष्पादन योग्य (कोई Node.js नहीं) इंस्टॉल करें।
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollama को किसी कुंजी की आवश्यकता नहीं है। अन्य प्रीसेट: [Built-in providers](/hi/guide/providers-and-models#built-in-providers)।
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## एक टेम्प्लेट चुनें
 
 | आज का ऐप | कमांड | आपको क्या मिलता है |
@@ -56,7 +56,7 @@ Ollama को किसी कुंजी की आवश्यकता न�
 
 `sourceLocale` और `targetLocales` को संपादित करें। `sourceLocale` स्रोत में स्ट्रिंग्स की भाषा है। कोई भी BCP-47 भाषा मान्य है; उदाहरण अक्सर `en` का उपयोग करते हैं। फ़्रेमवर्क वायरिंग: [पायथन इंटीग्रेशन](/hi/guide/integrations/python)। कॉल आकार और कैटलॉग लेआउट: [पायथन एप्लिकेशन](/hi/guide/ui-strings/python)।
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## स्ट्रिंग्स को रैप करें
 
 पहले कैटलॉग प्रविष्टि देखें, फिर इंटरपोलेट करें। जनरेट की गई `i18n.py` से `t` और `_` को आयात करें (Django `gettext` और `ngettext` को रखता है)।
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## कॉल साइट्स को माइग्रेट करें
 
 `migrate-python-i18n` तब तक एक ड्राई रन है जब तक आप `--write` पास नहीं करते। यह हमेशा `migrate-python-i18n-report.md` लिखता है। जनरेट की गई `i18n.py` फ़ाइलों को छोड़ दिया जाता है। `{value=}` जैसे डिबग फ़ील्ड और नेस्टेड फॉर्मेट स्पेक्स की रिपोर्ट की जाती है और उन्हें वैसे ही छोड़ दिया जाता है।
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 जब ड्राई रन मैन्युअल-समीक्षा साइटों को सूचीबद्ध करता है तो `--write` से पहले रिपोर्ट पढ़ें। वैकल्पिक `--report <path>` रिपोर्ट पथ को बदलता है। वैकल्पिक `--ui-block` स्कैन को एक UI ब्लॉक तक सीमित करता है।
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## मॉडल चुनें और अनुवाद करें
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract` `strings.json` और `ui-languages.json` लिखता है। `translate-ui` फ्लैट JSON फ़ाइलों को भरता है और, जब `ui.gettext` सेट होता है, तो `.po` / `.mo` कैटलॉग को भरता है। उन जनरेट किए गए कैटलॉग को मैन्युअल रूप से संपादित न करें।
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## रनटाइम पर लोकैल स्विच करें
 
 `set_locale` एक `ContextVar` टोकन लौटाता है। अनुरोध या कॉलबैक समाप्त होने पर इसे रीसेट करें।
@@ -323,7 +317,7 @@ FastAPI और Flask मिडलवेयर को `finally` (Flask: `teardown
 
 `README.md` को उसी रन में अनुवाद करने के लिए, `--with-readme` के साथ स्कैफोल्ड करें (या किसी मौजूदा कॉन्फ़िग में ब्लॉक जोड़ें)। देखें [अपनी README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## आपका मामला नहीं?
 
 | आपके पास है | पढ़ें |
@@ -333,7 +327,7 @@ FastAPI और Flask मिडलवेयर को `finally` (Flask: `teardown
 | एक रिपॉजिटरी README या अन्य मार्कडाउन फ़ाइलें | [अपने README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) |
 | नेस्टेड लोकैल JSON | [JSON](/hi/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## उदाहरण
 
 | उदाहरण | यह क्या दिखाता है |

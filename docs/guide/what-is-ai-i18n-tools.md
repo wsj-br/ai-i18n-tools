@@ -31,8 +31,6 @@ The walkthroughs are grouped in [Add i18n to your project](/guide/add-i18n-to-yo
 | Intlayer dictionaries (move off Intlayer) | [Migrating from Intlayer](/guide/migrating-from-intlayer) |
 | Intlayer dictionaries (keep Intlayer, translate in place) | [Translating Intlayer in place](/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## How it works
 

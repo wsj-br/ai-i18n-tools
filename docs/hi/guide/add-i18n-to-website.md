@@ -5,7 +5,7 @@
 
 ऐसे ऐप के लिए जिसके UI स्ट्रिंग `t()` कॉल में रहते हैं, इसके बजाय [JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) का उपयोग करें।
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## आपके पास क्या है?
 
 | आपकी साइट | प्रारंभिक टेम्पलेट | यहां से शुरू करें |
@@ -21,16 +21,16 @@
 <details class="agent-prompt">
 <summary>एजेंट प्रॉम्प्ट</summary>
 
-- एस्ट्रो स्टारलाइट: केवल नोट्स। एस्ट्रो `t()` फ़ाइलें: [JS/TS प्रॉम्प्ट](/hi/guide/add-i18n-to-js#agent-prompt) (i18next छोड़ें)।
+- एस्ट्रो स्टारलाइट: केवल नोट्स। एस्ट्रो `t()` फ़ाइलें: [JS/TS प्रॉम्प्ट](/hi/guide/add-i18n-to-js#run-the-agent-prompt) (i18next छोड़ें)।
 - डॉक्यूसॉरस: केवल नोट्स (`<Translate>` डॉक्यूसॉरस का अपना एपीआई है)।
 - वाइटप्रेस: [थीम कैटलॉग प्रॉम्प्ट](/hi/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off)।
-- नेक्सट्रा: [डिक्शनरी प्रॉम्प्ट](/hi/guide/integrations/nextra#agent-prompt-dictionary) और [हाइब्रिड `t()` प्रॉम्प्ट](/hi/guide/integrations/nextra#optional-t-for-app-react-hybrid)।
+- नेक्सट्रा: [डिक्शनरी प्रॉम्प्ट](/hi/guide/integrations/nextra#agent-prompt-dictionary-and-routes) और [हाइब्रिड `t()` प्रॉम्प्ट](/hi/guide/integrations/nextra#optional-t-for-app-react-hybrid)।
 - फुमाडॉक्स: [UI कैटलॉग प्रॉम्प्ट](/hi/guide/integrations/fumadocs#agent-prompt)।
-- README और मार्कडाउन फ़ाइलें: [README प्रॉम्प्ट](/hi/guide/add-i18n-to-readme#agent-prompt)।
+- README और मार्कडाउन फ़ाइलें: [README प्रॉम्प्ट](/hi/guide/add-i18n-to-readme#run-the-agent-prompt)।
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## चरण
 
 हर फ्रेमवर्क के लिए समान आकार काम करता है; विवरण ऊपर दिए गए फ्रेमवर्क गाइड में हैं।
@@ -42,7 +42,7 @@
 5. `ai-i18n-tools sync` (या `translate-docs`) चलाएँ, फिर साइट बनाएँ।
 6. ब्राउज़र में एक स्थानीयकृत मार्ग की जाँच करें। फ्रेमवर्क का अपना लोकल ड्रॉपडाउन स्विचर है। README जैसी एक सपाट मार्कडाउन फ़ाइल के लिए, [languageListBlock](/hi/guide/documents/language-switcher) के साथ एक लिंक पंक्ति जोड़ें।
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## क्या अनुवादित होता है
 
 पेज बॉडी हमेशा [दस्तावेज़](/hi/guide/documents/) पाइपलाइन से गुजरती हैं। फ्रेमवर्क क्रोम (नेविगेशन, साइडबार, थीम लेबल) को उसी रन में संभाला जाता है जहाँ फ्रेमवर्क इसका समर्थन करता है, अलग [JSON](/hi/guide/json) पाइपलाइन के माध्यम से नहीं।
@@ -59,7 +59,7 @@
 
 छवियां और स्क्रीनशॉट `translate-docs` द्वारा अनुवादित नहीं होते हैं। लोकेल-विशिष्ट फ़ाइलों के लिए, [छवियां और स्क्रीनशॉट](/hi/guide/images-and-screenshots/) देखें।
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## सादा HTML
 
 दो विकल्प, इस बात पर निर्भर करता है कि पृष्ठ को कैसे व्यवहार करना चाहिए:
@@ -69,7 +69,7 @@
 
 एक फ़ाइल एक पाथ से संबंधित है।
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## आपका मामला नहीं?
 
 - ऐप UI स्ट्रिंग्स: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)।

@@ -45,7 +45,7 @@ Use this when:
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
 
-Maximum **target locales** translated at the same time (`translate-ui`, `translate-docs`, `translate-svg`, and the matching steps inside `sync`). If omitted, the CLI uses **4** for UI translation and **3** for documentation translation (built-in defaults). Override per run with `-j` / `--concurrency`.
+Maximum target locales translated at the same time (`translate-ui`, `translate-docs`, `translate-svg`, and the matching steps inside `sync`). If omitted, the CLI uses **4** for UI translation and **3** for documentation translation (built-in defaults). Override per run with `-j` / `--concurrency`.
 
 ---
 
@@ -118,7 +118,7 @@ Each `providers.<name>` block accepts:
 - `uiModels` (optional)
   Ordered UI-only model list for `translate-ui`, plural generation (Step 0 and Pass B), and `proofread-ui`. Tried after any matching `localeModels` entry for the target locale, before `translationModels`.
 - `localeModels` (optional)
-  Per-locale overrides for **all** translation pipelines. Array of `{ "locale": "<BCP-47>", "models": ["…"] }` objects. Locale tags are matched case-insensitively (`pt-br` = `pt-BR`). Each locale's list is tried first for that locale only, then pipeline-specific tiers (`uiModels` for UI) and `translationModels`. Duplicate normalized locale keys are rejected at config load.
+  Per-locale overrides for **all** translation pipelines. Array of `{ "locale": "<BCP-47>", "models": ["…"] }` objects. Locale tags are matched case-insensitively (`pt-br` = `pt-BR`). Each locale's list is tried first for that locale only, then pipeline-specific tiers (`uiModels` for UI) and `translationModels`. Duplicate normalised locale keys are rejected at config load.
 - `baseUrl`
   OpenAI-compatible base URL. Overrides the preset base URL; required for a non-preset provider.
 - `apiKeyEnv`
@@ -134,9 +134,18 @@ Each `providers.<name>` block accepts:
 - `requestTimeoutMs`
   Maximum time in milliseconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45000` (45 seconds). Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
 - `pricing` (optional)
-  Provider-wide USD per 1,000,000 tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter and Cheaper Inference), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row. A matching `modelPricing` entry overrides this default. A provider-reported cost is never replaced. When neither config rate matches, the tools use the models.dev list price for that model id (input and output USD per 1M tokens). Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage). If none of those sources apply, the cost stays unknown (`—`), never `$0.00`.
+  Provider-wide USD per 1M tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter and Cheaper Inference), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row.
+
+  The cost source is resolved in this order:
+
+  1. a matching `modelPricing` entry (overrides this provider default);
+  2. a provider-reported cost (never replaced);
+  3. this `pricing` rate;
+  4. the models.dev list price for that model id (input and output USD per 1M tokens).
+
+  Rows that were stored without a cost can still be estimated later by [`usage`](/reference/cli-commands/workflows#usage) and [Usage & costs](/guide/translation-dashboard/usage). If none of those sources apply, the cost stays unknown (`—`), never `$0.00`.
 - `modelPricing` (optional)
-  Per-model USD per 1,000,000 tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Overrides `pricing` for that model id. Applied at call time when the provider omitted `usage.cost`, and stored with the call.
+  Per-model USD per 1M tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Overrides `pricing` for that model id. Applied at call time when the provider omitted `usage.cost`, and stored with the call.
 - `zeroDataRetention` (optional, `providers.cheaperinference` only)
   When `true`, chat requests send `"zdr": true` and `list-models`, `check-models`, and `suggest-models` load `GET /v1/models?zdr=true`. Omitted means off. See [Zero data retention](/guide/providers-and-models#cheaperinference-zero-data-retention).
 
@@ -247,7 +256,12 @@ To compare the configured models on real translation work, run `ai-i18n-tools be
 | `translateJson`      | 3        | Arbitrary nested JSON under `json[]` (`translate-json`).                                                                                                           |
 | `translateSVG`       | —        | Translate `.svg` files (requires the top-level `svg` block).                                                                                                       |
 
-Each flag defaults to `true` when the key is omitted. An omitted `true` with nothing to translate is skipped: no UI block has `sourceRoots`, no docs block has `contentPaths` or `docusaurusCatalogDir`, `json[]` has no `contentPaths`, or `svg` is unset. Writing the flag as `true` when that pipeline has no work is a config error. Writing `false` turns that pipeline off for `sync` even when sources exist. `--no-ui`, `--no-docs`, `--no-json`, and `--no-svg` skip the step for one run.
+Each flag defaults to `true` when the key is omitted. The behaviour is:
+
+- An omitted `true` with nothing to translate is skipped: no UI block has `sourceRoots`, no docs block has `contentPaths` or `docusaurusCatalogDir`, `json[]` has no `contentPaths`, or `svg` is unset.
+- Writing the flag as `true` when that pipeline has no work is a config error.
+- Writing `false` turns that pipeline off for `sync` even when sources exist.
+- `--no-ui`, `--no-docs`, `--no-json`, and `--no-svg` skip the step for one run.
 
 **Translate** SVG files with `translate-svg` when `features.translateSVG` is true and a top-level `svg` block is configured. The `sync` command runs that step when the flag is on and `svg` is set (unless `--no-svg`).
 
@@ -394,13 +408,13 @@ Rewrite relative links after translation (auto-enabled when `docsOutput.style = 
 - `docsOutput.linkRewriteDocsRoot`
 Repo root used when computing flat-link rewrite prefixes. Usually leave this as `"."` unless your translated docs live under a different project root.
 - `docsOutput.rewriteVitepressLinks`
-When `true`, run the VitePress link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside the source-locale files under `docsRoot`. The source language is `sourceLocale` and can be any language. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in the source-locale files — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
+When `true`, run the VitePress link normaliser after translation. Defaults to enabled when `docsOutput.style` is `"vitepress"`. Use with any `doc-system` layout where locale folders sit beside the source-locale files under `docsRoot`. The source language is `sourceLocale` and can be any language. Rewrites README-style `docs/guide/…` paths to site routes (`/guide/…`) and locale-relative `../guide/…` links. For links to repo files outside the VitePress tree (`LICENSE`, `examples/`), use full URLs in the source-locale files — see [VitePress integration — README as the docs homepage](/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-When `true`, run the Nextra link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
+When `true`, run the Nextra link normaliser after translation. Defaults to enabled when `docsOutput.style` is `"nextra"`. Rewrites `content/en/…` and relative `.mdx` paths to locale-neutral site routes (`/guide/…`) for Next.js `i18n`. See [Nextra integration — Link conventions](/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
 `"dot"` (default) or `"dir"`. Dot writes `stem.{locale}.mdx` beside the source-locale files; dir writes locale folders like Nextra. The source language is `sourceLocale` and can be any language. See [Fumadocs integration — Page layout](/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
-When `true`, run the Fumadocs link normalizer after translation. Defaults to enabled when `docsOutput.style` is `"fumadocs"`. Rewrites content paths and relative `.mdx` links to `/docs/…` routes.
+When `true`, run the Fumadocs link normaliser after translation. Defaults to enabled when `docsOutput.style` is `"fumadocs"`. Rewrites content paths and relative `.mdx` links to `/docs/…` routes.
 - `docsOutput.fumadocsUiCatalog`
 Optional. Fumadocs UI override catalog bootstrap + translation inside `translate-docs`. Fields: `sourcePath` (e.g. `lib/layout.shared.ts`), `catalogPath` (generated English JSON), optional `outputPathTemplate` (default: `ui.{locale}.json` beside `catalogPath`).
 - `docs[].fumadocsMetaGlob`
@@ -520,8 +534,6 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 
@@ -530,7 +542,7 @@ Weights for [`suggest-models`](/reference/cli-commands/models#suggest-models) an
 - `quality` — default ChrF `0.45`, Arena `0.35`, price `0.20`, quality floor `0.7`
 - `price` — default ChrF `0.35`, Arena `0.20`, price `0.45`, quality floor `0.6`
 
-Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalized to sum to 1, so `45`, `35`, and `20` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
+Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalised to sum to 1, so `45`, `35`, and `20` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
 
 ```json
 "modelSuggestion": {

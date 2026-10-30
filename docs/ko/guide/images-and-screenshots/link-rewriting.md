@@ -22,7 +22,7 @@
 
 **Astro Starlight MDX:** Starlight 콘텐츠는 종종 `.mdx`입니다. 해당 파일에 대해서는 `translate-docs`이 `postProcessing.regexAdjustments`만 실행합니다 — 플랫, VitePress, Nextra 또는 Fumadocs 링크 재작성기는 실행하지 않습니다. 로케일별 스크린샷 경로는 여전히 동일한 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용합니다. [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)를 참조하세요.
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
+<a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress 링크 정규화 도구 (`style: "vitepress"`)
 
 `docsOutput.rewriteVitepressLinks`가 `true`일 때(기본값은 `style`가 `"vitepress"`일 때), 세그먼트 재조립 후에 별도의 정규화 도구가 실행됩니다(플랫 재작성기 대신). 이는 영어가 콘텐츠 루트에 있고 로케일이 형제 폴더(예: `docs/de/guide/…`)에 있는 VitePress/문서 시스템 사이트를 대상으로 합니다.
@@ -46,12 +46,12 @@
 
 로케일별 스크린샷 폴더는 필요 시 여전히 동일한 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 규칙을 사용합니다. [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder)를 참조하세요.
 
-<a id="nextra-link-normalizer-style-nextra"></a>
+<a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra 링크 정규화 도구 (`style: "nextra"`)
 
 `docsOutput.rewriteNextraLinks`이(가) `true`인 경우(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/en/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs 링크 정규화 도구 (`style: "fumadocs"`)
 
 `docsOutput.rewriteFumadocsLinks`이(가) `true`인 경우(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/docs/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/ko/guide/integrations/fumadocs#link-conventions)을 참조하세요.

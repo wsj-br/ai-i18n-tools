@@ -48,7 +48,7 @@ Nextra [국제화](https://nextra.site/docs/guide/i18n)를 연결합니다. `nex
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 기존 사이트에서 i18n 활성화하기
 
-영어 전용 Nextra 4 사이트는 `translate-docs`이 쓸 곳이 생기기 전에 로케일 폴더, 라우트 매개변수, Next.js i18n 구성이 필요합니다. [사전 프롬프트](#agent-prompt-dictionary)는 이 작업을 한 번에 수행합니다. 체크리스트:
+영어 전용 Nextra 4 사이트는 `translate-docs`이 쓸 곳이 생기기 전에 로케일 폴더, 라우트 매개변수, Next.js i18n 구성이 필요합니다. [사전 프롬프트](#agent-prompt-dictionary-and-routes)는 이 작업을 한 번에 수행합니다. 체크리스트:
 
 - MDX를 `content/en/`으로 이동(영어는 콘텐츠 루트가 아닌 로케일 폴더임).
 - `next.config`의 `i18n.locales` 및 `defaultLocale`.

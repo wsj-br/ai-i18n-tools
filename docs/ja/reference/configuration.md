@@ -517,8 +517,6 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (オプション)
 

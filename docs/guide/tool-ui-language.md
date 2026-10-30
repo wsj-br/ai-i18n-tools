@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Tool UI language
 
-The `ai-i18n-tools` localizes its own user interface — CLI help text, high-traffic log/summary/error messages, and the Translation Dashboard — independently of your project's `sourceLocale` / `targetLocales`. No configuration is required: by default the tool follows your OS locale.
+The `ai-i18n-tools` localises its own user interface — CLI help text, high-traffic log/summary/error messages, and the Translation Dashboard — independently of your project's `sourceLocale` / `targetLocales`. No configuration is required: by default the tool follows your OS locale.
 
 <a id="locale-resolution"></a>
 ## Locale resolution
@@ -26,7 +26,7 @@ English (UK, source), German, Spanish, French, Hindi, Japanese, Korean, Portugue
 <a id="translation-dashboard"></a>
 ## Translation Dashboard
 
-The Translation Dashboard reads the resolved locale, layout direction, and translation bundle from `GET /api/ui-i18n` and applies them on load (it sets `<html lang>` / `dir` and localizes static markup via `data-i18n*` attributes).
+The Translation Dashboard reads the resolved locale, layout direction, and translation bundle from `GET /api/ui-i18n` and applies them on load (it sets `<html lang>` / `dir` and localises static markup via `data-i18n*` attributes).
 
 <a id="related"></a>
 ## Related

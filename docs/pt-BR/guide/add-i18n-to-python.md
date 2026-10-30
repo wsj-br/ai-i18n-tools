@@ -7,17 +7,17 @@ Já usa catálogos GNU gettext, Django ou Flask? Mantenha essas chamadas. Escolh
 
 As etapas:
 
-1. [Instale](#install) a CLI e defina a chave de API.
-2. [Escolha um modelo](#pick-a-template) e execute o `init`.
+1. [Instale](#install-and-choose-a-provider) a CLI e defina a chave de API.
+2. [Escolha um modelo](#initialise-the-project) e execute o `init`.
 3. [Envolva as strings](#wrap-strings) em `t()` ou `_()`.
-4. [Migre os locais de chamada](#migrate) que já estão envolvidos de forma insegura.
-5. [Escolha os modelos e traduza](#translate).
-6. [Alterne o locale em tempo de execução](#switch-locale).
+4. [Migre os locais de chamada](#step-3-check-wrapped-calls) que já estão envolvidos de forma insegura.
+5. [Escolha os modelos e traduza](#choose-models-and-translate).
+6. [Alterne o locale em tempo de execução](#step-4-add-a-language-switch).
 7. [Mantenha tudo traduzido](#keep-it-translated).
 
 Não tem certeza se este é o seu caso? Consulte [Não é o seu caso?](#not-your-case) no final.
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## Instalar
 
 Use o pacote npm quando a máquina já tiver o Node.js `>=22.16.0` ([Instalação](/pt-BR/guide/installation)). Para um projeto Python, instale o executável autônomo (sem Node.js).
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 O Ollama não precisa de chave. Outras predefinições: [Provedores integrados](/pt-BR/guide/providers-and-models#built-in-providers).
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## Escolha um modelo
 
 | App hoje | Comando | O que você obtém |
@@ -56,7 +56,7 @@ O Ollama não precisa de chave. Outras predefinições: [Provedores integrados](
 
 Edite `sourceLocale` e `targetLocales`. `sourceLocale` é o idioma das strings na origem. Qualquer idioma BCP-47 é válido; os exemplos geralmente usam `en`. Conexão com o framework: [Integrações Python](/pt-BR/guide/integrations/python). Formatos de chamada e layout do catálogo: [Aplicações Python](/pt-BR/guide/ui-strings/python).
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## Envolva as strings
 
 Procure primeiro a entrada do catálogo e, em seguida, interpole. Importe o `t` e o `_` do `i18n.py` gerado (o Django mantém o `gettext` e o `ngettext`).
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## Migrar locais de chamada
 
 O `migrate-python-i18n` é uma simulação (dry run) até que você passe o `--write`. Ele sempre grava o `migrate-python-i18n-report.md`. Arquivos `i18n.py` gerados são ignorados. Campos de depuração, como `{value=}` e especificações de formato aninhadas, são relatados e mantidos no lugar.
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 Leia o relatório antes do `--write` quando a simulação listar locais que exigem revisão manual. O `--report <path>` opcional altera o caminho do relatório. O `--ui-block` opcional limita a verificação a um bloco de interface.
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## Escolha os modelos e traduza
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract` grava `strings.json` e `ui-languages.json`. `translate-ui` preenche os arquivos JSON simples e, quando `ui.gettext` está definido, os catálogos `.po` / `.mo`. Não edite manualmente esses catálogos gerados.
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## Alterne a localidade em tempo de execução
 
 `set_locale` retorna um token `ContextVar`. Redefina-o quando a solicitação ou o retorno de chamada terminar.
@@ -323,7 +317,7 @@ Reexecute `ai-i18n-tools sync` (ou `extract` e depois `translate-ui`) após alte
 
 Para traduzir `README.md` na mesma execução, faça o scaffold com `--with-readme` (ou adicione o bloco a uma configuração existente). Consulte [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## Não é o seu caso?
 
 | Você tem | Leia |
@@ -333,7 +327,7 @@ Para traduzir `README.md` na mesma execução, faça o scaffold com `--with-read
 | Um README de repositório ou outros arquivos Markdown | [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme) |
 | JSON de localidade aninhado | [JSON](/pt-BR/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## Exemplos
 
 | Exemplo | O que mostra |

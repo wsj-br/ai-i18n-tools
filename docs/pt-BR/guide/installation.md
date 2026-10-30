@@ -167,7 +167,7 @@ Em seguida, execute, por exemplo, `pnpm run i18n:sync`. Consulte [Scripts recome
 
 Alternativas — se você preferir não ajustar o `PATH`: `npx ai-i18n-tools …` (npm) ou `pnpm exec ai-i18n-tools …` (pnpm). Para uma execução única sem instalação e sem entrada no `package.json`: `npx ai-i18n-tools <cmd>` ou `pnpm dlx ai-i18n-tools <cmd>`.
 
-<a id="cloned-monorepo"></a>
+<a id="coding-agent-skill"></a>
 ### Monorepo clonado
 
 Ao desenvolver o pacote ou executar exemplos do workspace a partir de um clone completo de [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):

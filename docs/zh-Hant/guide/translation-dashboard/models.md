@@ -3,7 +3,7 @@
 
 「**模型**」分頁會為現用供應商的對話模型進行排序，讓您不必手動複製 ID 即可選擇 `translationModels`。此分頁使用的排序方式與 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 相同。如需逐步操作說明，以及瞭解清單為何包含多個模型，請參閱 [AI 模型](/zh-Hant/guide/ai-models)。
 
-選擇 **品質** 或 **價格**。品質優先考慮 languagebench ChrF 和 Arena Score。價格則優先考慮較低的美元費率，同時維持一定的品質底線。當設定中包含多個供應商時，會出現 **供應商** 選單；預設值為啟動儀表板時所使用的供應商（`provider`，或在 `dashboard` 指令上的 `-P` / `--provider`）。變更供應商或優先順序會重新載入表格。選用的權重位於 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion) 中。
+選擇 **品質** 或 **價格**。品質優先考慮 languagebench ChrF 和 Arena Score。價格則優先考慮較低的美元費率，同時維持一定的品質底線。當設定中包含多個供應商時，會出現 **供應商** 選單；預設值為啟動儀表板時所使用的供應商（`provider`，或在 `dashboard` 指令上的 `-P` / `--provider`）。變更供應商或優先順序會重新載入表格。選用的權重位於 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion-optional) 中。
 
 表格欄位包含重新排序控制項、核取方塊、排名、模型 ID、指數（加權分數乘以 100）、測量到的 ChrF、測量到的 Arena 分數，以及每 100 萬個權杖的輸入/輸出價格（美元）。遺失的測量值以破折號表示。排名數字表示模型在完整排名中的位置，位於下方篩選器之前。拖曳列的控點，或使用其向上和向下按鈕，以變更其在此表格中的位置。「**更新**」會再次載入排名順序。
 

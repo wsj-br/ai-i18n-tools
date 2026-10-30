@@ -68,7 +68,7 @@ Paths outside `docsRoot` fall back to the [nested](#nested-default) layout (`{ou
 
 Set `docs[].docsOutput.docsRoot` to the root of the files written in `sourceLocale` (for example `"docs"`, `"src/content/docs"`, or `"content/en"` when English is the source). `sourceLocale` can be any language. When `docsOutput.style = "doc-system"`, you must set `localeSubpath` explicitly (use an alias below for presets). Use `localeSubpath: ""` when translated pages sit directly under `{outputDir}/{locale}/` (Starlight-style).
 
-Docusaurus shell JSON from `docusaurusCatalogDir` and other JSON artifacts under doc-system presets follow the same folder layout as markdown. With `style: "flat"`, JSON label files still use the nested shape unless you set `jsonPathTemplate`.
+Docusaurus shell JSON from `docusaurusCatalogDir` and other JSON artefacts under doc-system presets follow the same folder layout as markdown. With `style: "flat"`, JSON label files still use the nested shape unless you set `jsonPathTemplate`.
 
 <a id="doc-system-aliases"></a>
 ## Doc-system aliases
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight ships UI strings for many locales; optional custom UI overrides use `src/content/i18n/en.json` with `jsonPathTemplate: "{outputDir}/{locale}.json"` in a separate `docs[]` block when needed.
 
-VitePress nav/sidebar/footer strings are not in markdown — configure `docsOutput.vitepressThemeCatalog` and translate inside **`translate-docs`**. See [VitePress integration](/guide/integrations/vitepress).
+VitePress nav/sidebar/footer strings are not in markdown — configure `docsOutput.vitepressThemeCatalog` and translate inside `translate-docs`. See [VitePress integration](/guide/integrations/vitepress).
 
-Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdown — use `docs[].nextraDictionaryPath` and automatic `_meta` collection when `style: "nextra"`, all inside **`translate-docs`**. See [Nextra integration](/guide/integrations/nextra).
+Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdown — use `docs[].nextraDictionaryPath` and automatic `_meta` collection when `style: "nextra"`, all inside `translate-docs`. See [Nextra integration](/guide/integrations/nextra).
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra theme dictionary (`.ts`) and `_meta.ts` sidebar labels are not in markdow
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — Nextra-style locale folders; uses the same `doc-system` engine with empty `localeSubpath`.
+- `"dir"` — Nextra-style locale folders; uses the same `doc-system` engine with empty `localeSubpath`.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs UI overrides (`lib/layout.shared.ts`) and `meta.json` sidebar labels are not in markdown — use `docsOutput.fumadocsUiCatalog` and automatic `meta.json` collection when `style: "fumadocs"`, all inside **`translate-docs`**. See [Fumadocs integration](/guide/integrations/fumadocs).
+Fumadocs UI overrides (`lib/layout.shared.ts`) and `meta.json` sidebar labels are not in markdown — use `docsOutput.fumadocsUiCatalog` and automatic `meta.json` collection when `style: "fumadocs"`, all inside `translate-docs`. See [Fumadocs integration](/guide/integrations/fumadocs).
 
 For link and asset URL rewriting beyond built-in relative-link fixes, see [Link rewriting](/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 

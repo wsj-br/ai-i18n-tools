@@ -30,8 +30,6 @@ Los tutoriales están agrupados en [Añadir i18n a tu proyecto](/es/guide/add-i1
 | Diccionarios de Intlayer (migrar de Intlayer) | [Migrar de Intlayer](/es/guide/migrating-from-intlayer) |
 | Diccionarios de Intlayer (mantener Intlayer, traducir in situ) | [Traducir Intlayer in situ](/es/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## Cómo funciona
 

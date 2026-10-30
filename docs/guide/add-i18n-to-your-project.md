@@ -21,7 +21,7 @@ Every walkthrough follows the same order. The page you pick fills in the details
 
 1. Install the CLI and set your provider's API key. Ollama needs no key. [Installation](/guide/installation) and [Provider and API key](/guide/quick-start#provider-and-api-key).
 2. Run `init` with the template that page names. This writes `ai-i18n-tools.config.json`.
-3. Prepare the project so the tool can see the text.
+3. Prepare the project so the tool can see the text. Use that page's agent prompt, or the hand steps on the same page.
 4. Run `ai-i18n-tools sync`, then `ai-i18n-tools status`.
 5. Load the output, check one target language, and rerun `sync` when the source changes. The cache sends only new or changed text to the model.
 
@@ -30,10 +30,10 @@ Every walkthrough follows the same order. The page you pick fills in the details
 
 | You have | Page | What that page covers |
 | --- | --- | --- |
-| A JS/TS app (React, Next.js, Node, CLI) whose buttons and messages are still plain text | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) | Install i18next, add the bootstrap, wrap literals in `t()`, then `extract` and `translate-ui` |
+| A JS/TS app (React, Next.js, Node, CLI) whose buttons and messages are still plain text | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) | Install i18next, add the bootstrap, wrap literals in `t()`, and add a language switch, then `extract` and `translate-ui` |
 | A Python app (Streamlit, FastAPI, Flask, desktop, scripts) | [Add i18n to a Python app](/guide/add-i18n-to-python) | Place the `i18n.py` helper, wrap `t()` or `_()`, add a language switch. The CLI can run from a standalone executable with no Node.js install |
 | A Django app, Flask with Flask-Babel catalogs, or any app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) | Keep `gettext`, `{% blocktranslate %}`, and your `.po` files. The tool fills and compiles the catalogs |
-| A documentation or marketing site (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) | Enable the framework's own language routes, then translate pages and theme labels |
+| A documentation or marketing site (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) | Enable the framework's i18n with the page's agent prompt, then `sync` to translate pages and theme labels |
 | A repository README and other Markdown files, usually next to an app | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) | One file per language (`translated-docs/README.de.md`) and a language row in the README. `init --with-readme` adds that block to any template |
 | More than one of the above in one repository | [Combining pipelines](/guide/combining-pipelines) | One config and one `sync`. The usual pair is app UI strings plus the README |
 | Intlayer dictionaries, and you want to keep Intlayer | [Translating Intlayer in place](/guide/translating-intlayer) | `translate-intlayer` fills missing and stale leaves inside `*.content.ts` |

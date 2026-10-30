@@ -517,8 +517,6 @@ SVG फ़ाइलों के लिए शीर्ष-स्तरीय �
 
 ---
 
-<a id="modelsuggestion"></a>
-
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (वैकल्पिक)
 

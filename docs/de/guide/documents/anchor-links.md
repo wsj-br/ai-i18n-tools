@@ -41,7 +41,7 @@ Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}` / `{/*
 ## Beispiel
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `{#…}` / `{/* #… */}`-Suffix
+### Docusaurus `` / ``-Suffix
 
 `docs/overview.md`:
 

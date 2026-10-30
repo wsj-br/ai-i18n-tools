@@ -8,7 +8,7 @@ Documentation integrations use the [Documents](/guide/documents/) pipeline (`tra
 <a id="which-guide-to-read"></a>
 ## Which guide to read
 
-The chooser table, with init templates and agent prompts per framework, is in [Add i18n to a website or docs site](/guide/add-i18n-to-website#what-do-you-have). Python frameworks: [Python](/guide/integrations/python).
+The chooser table, with one init template per framework, is in [Add i18n to a website or docs site](/guide/add-i18n-to-website#initialise-the-project). The walkthrough prompt on that page enables the framework's i18n. The integration pages below keep the shell-catalog details. Python frameworks: [Python](/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## Shared concepts

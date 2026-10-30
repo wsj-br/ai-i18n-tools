@@ -7,17 +7,17 @@
 
 手順：
 
-1. CLIを[インストール](#install)し、APIキーを設定します。
-2. [テンプレートを選択](#pick-a-template)し、`init`を実行します。
+1. CLIを[インストール](#install-and-choose-a-provider)し、APIキーを設定します。
+2. [テンプレートを選択](#initialise-the-project)し、`init`を実行します。
 3. `t()`または`_()`で[文字列をラップ](#wrap-strings)します。
-4. すでに安全でない方法でラップされている[呼び出しサイトを移行](#migrate)します。
-5. [モデルを選択して翻訳](#translate)します。
-6. [実行時にロケールを切り替え](#switch-locale)ます。
+4. すでに安全でない方法でラップされている[呼び出しサイトを移行](#step-3-check-wrapped-calls)します。
+5. [モデルを選択して翻訳](#choose-models-and-translate)します。
+6. [実行時にロケールを切り替え](#step-4-add-a-language-switch)ます。
 7. [翻訳を維持](#keep-it-translated)します。
 
 これがあなたのケースに当てはまるか不明ですか？最後に[あなたのケースではない場合](#not-your-case)を参照してください。
 
-<a id="install"></a>
+<a id="install-and-choose-a-provider"></a>
 ## インストール
 
 マシンにすでにNode.js `>=22.16.0`がある場合は、npmパッケージを使用します（[インストール](/ja/guide/installation)）。Pythonプロジェクトの場合は、スタンドアロン実行可能ファイル（Node.jsなし）をインストールします。
@@ -44,7 +44,7 @@ export CHEAPERINFERENCE_API_KEY=your-key-here
 
 Ollamaにはキーは不要です。その他のプリセットについては、[組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)を参照してください。
 
-<a id="pick-a-template"></a>
+<a id="initialise-the-project"></a>
 ## テンプレートを選択する
 
 | 現在のアプリ | コマンド | 得られるもの |
@@ -56,7 +56,7 @@ Ollamaにはキーは不要です。その他のプリセットについては�
 
 `sourceLocale`と`targetLocales`を編集します。`sourceLocale`はソース内の文字列の言語です。任意のBCP-47言語が有効です。例ではよく`en`が使用されます。フレームワークの配線：[Python統合](/ja/guide/integrations/python)。呼び出しの形式とカタログのレイアウト：[Pythonアプリケーション](/ja/guide/ui-strings/python)。
 
-<a id="wrap-strings"></a>
+<a id="run-the-agent-prompt"></a>
 ## 文字列をラップする
 
 最初にカタログエントリを検索し、次に補間を行います。生成された `i18n.py` から `t` と `_` をインポートします（Djangoは `gettext` と `ngettext` を保持します）。
@@ -264,9 +264,7 @@ human.
 
 </details>
 
-<a id="migrate"></a>
-
-<a id="migrate-call-sites"></a>
+<a id="review-the-result"></a>
 ## 呼び出しサイトを移行する
 
 `migrate-python-i18n` は `--write` を渡すまでドライランとして動作します。常に `migrate-python-i18n-report.md` を書き込みます。生成された `i18n.py` ファイルはスキップされます。`{value=}` などのデバッグフィールドやネストされたフォーマット指定はレポートされ、そのまま残されます。
@@ -277,8 +275,6 @@ ai-i18n-tools migrate-python-i18n --write
 ```
 
 ドライランで手動確認が必要なサイトがリストアップされた場合は、`--write` を実行する前にレポートを読んでください。オプションの `--report <path>` でレポートのパスを変更できます。オプションの `--ui-block` でスキャンを1つのUIブロックに制限できます。
-
-<a id="translate"></a>
 
 <a id="choose-models-and-translate"></a>
 ## モデルを選択して翻訳する
@@ -299,9 +295,7 @@ ai-i18n-tools translate-ui
 
 `extract` は `strings.json` および `ui-languages.json` を書き込みます。`translate-ui` はフラットな JSON ファイルを埋め、`ui.gettext` が設定されている場合は `.po` / `.mo` カタログを埋めます。生成されたカタログを手動で編集しないでください。
 
-<a id="switch-locale"></a>
-
-<a id="switch-locale-at-runtime"></a>
+<a id="check-one-language"></a>
 ## 実行時にロケールを切り替える
 
 `set_locale` は `ContextVar` トークンを返します。リクエストまたはコールバックが終了したときにリセットしてください。
@@ -323,7 +317,7 @@ FastAPI および Flask ミドルウェアは `finally` (Flask: `teardown_reques
 
 同じ実行で`README.md`を翻訳するには、`--with-readme`でスキャフォールドします（または既存の設定にブロックを追加します）。[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)を参照してください。
 
-<a id="not-your-case"></a>
+<a id="do-it-by-hand"></a>
 ## 当てはまりませんか？
 
 | お持ちの | 参照 |
@@ -333,7 +327,7 @@ FastAPI および Flask ミドルウェアは `finally` (Flask: `teardown_reques
 | リポジトリのREADMEまたはその他のMarkdownファイル | [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme) |
 | ネストされたロケールJSON | [JSON](/ja/guide/json) |
 
-<a id="examples"></a>
+<a id="step-1-place-the-helper-and-the-catalogs"></a>
 ## 例
 
 | 例 | 内容 |

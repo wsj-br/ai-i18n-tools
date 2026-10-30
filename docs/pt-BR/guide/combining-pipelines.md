@@ -21,8 +21,6 @@ Pule partes com `--no-ui`, `--no-svg`, `--no-docs` ou `--no-json`. As etapas de 
 
 Prefira `sync` em vez de encadear os comandos individuais manualmente. As flags de ordem, extração e localidade são fáceis de errar quando executadas manualmente.
 
-<a id="combined-sync"></a>
-
 <a id="ui-strings-and-documents-together"></a>
 ## Strings de UI e documentos juntos
 
@@ -82,8 +80,6 @@ Use `docs[].targetLocales` em um bloco para traduzir os arquivos desse bloco par
   ]
 }
 ```
-
-<a id="mixed-documentation-config-docsoutputstyle--docusaurus--flat"></a>
 
 <a id="mixed-documentation-config"></a>
 ## Configuração de documentação mista

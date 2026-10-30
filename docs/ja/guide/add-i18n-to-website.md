@@ -5,7 +5,7 @@
 
 UI文字列が`t()`呼び出しにあるアプリの場合は、代わりに[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)または[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)を使用してください。
 
-<a id="what-do-you-have"></a>
+<a id="install-and-choose-a-provider"></a>
 ## どのようなものをお持ちですか？
 
 | あなたのサイト | 初期テンプレート | ここから開始 |
@@ -21,16 +21,16 @@ UI文字列が`t()`呼び出しにあるアプリの場合は、代わりに[JS/
 <details class="agent-prompt">
 <summary>エージェントプロンプト</summary>
 
-- Astro Starlight: 注記のみ。Astro `t()`ファイル: [JS/TSプロンプト](/ja/guide/add-i18n-to-js#agent-prompt) (i18nextをスキップ)。
+- Astro Starlight: 注記のみ。Astro `t()`ファイル: [JS/TSプロンプト](/ja/guide/add-i18n-to-js#run-the-agent-prompt) (i18nextをスキップ)。
 - Docusaurus: 注記のみ（`<Translate>`はDocusaurus独自のAPIです）。
 - VitePress: [テーマカタログプロンプト](/ja/guide/integrations/vitepress#wire-configmts-to-generated-theme-json-one-off)。
-- Nextra: [ディクショナリプロンプト](/ja/guide/integrations/nextra#agent-prompt-dictionary)と[ハイブリッド`t()`プロンプト](/ja/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
+- Nextra: [ディクショナリプロンプト](/ja/guide/integrations/nextra#agent-prompt-dictionary-and-routes)と[ハイブリッド`t()`プロンプト](/ja/guide/integrations/nextra#optional-t-for-app-react-hybrid)。
 - Fumadocs: [UIカタログプロンプト](/ja/guide/integrations/fumadocs#agent-prompt)。
-- READMEとMarkdownファイル: [READMEプロンプト](/ja/guide/add-i18n-to-readme#agent-prompt)。
+- READMEとMarkdownファイル: [READMEプロンプト](/ja/guide/add-i18n-to-readme#run-the-agent-prompt)。
 
 </details>
 
-<a id="steps"></a>
+<a id="initialise-the-project"></a>
 ## 手順
 
 同じ形式がすべてのフレームワークで機能します。詳細については、上記のフレームワークガイドを参照してください。
@@ -42,7 +42,7 @@ UI文字列が`t()`呼び出しにあるアプリの場合は、代わりに[JS/
 5. `ai-i18n-tools sync`（または`translate-docs`）を実行し、サイトをビルドします。
 6. ブラウザでローカライズされたルートを確認します。フレームワーク独自のロケールドロップダウンがスイッチャーです。READMEのようなフラットなMarkdownファイルの場合は、[languageListBlock](/ja/guide/documents/language-switcher)を使用してリンク行を追加します。
 
-<a id="what-gets-translated"></a>
+<a id="run-the-agent-prompt"></a>
 ## 何が翻訳されるか
 
 ページ本文は常に[ドキュメント](/ja/guide/documents/)パイプラインを通過します。フレームワークのクローム（ナビゲーション、サイドバー、テーマラベル）は、フレームワークがサポートしている場合は同じ実行で処理され、個別の[JSON](/ja/guide/json)パイプラインを介しては処理されません。
@@ -59,7 +59,7 @@ UI文字列が`t()`呼び出しにあるアプリの場合は、代わりに[JS/
 
 画像とスクリーンショットは`translate-docs`によって翻訳されません。ロケール固有のファイルについては、[画像とスクリーンショット](/ja/guide/images-and-screenshots/)を参照してください。
 
-<a id="plain-html"></a>
+<a id="review-the-result"></a>
 ## プレーンHTML
 
 ページの動作に応じて、2つのオプションがあります。
@@ -69,7 +69,7 @@ UI文字列が`t()`呼び出しにあるアプリの場合は、代わりに[JS/
 
 ファイルは1つのパスに属します。
 
-<a id="not-your-case"></a>
+<a id="choose-models-and-translate"></a>
 ## 当てはまりませんか？
 
 - アプリのUI文字列：[JS/TSアプリにi18nを追加](/ja/guide/add-i18n-to-js) または [Pythonアプリにi18nを追加](/ja/guide/add-i18n-to-python)。

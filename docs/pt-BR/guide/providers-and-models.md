@@ -53,7 +53,6 @@ Com a flag ativada, cada solicitação de chat inclui `"zdr": true`, e `list-mod
 
 Deixe a flag desativada quando a conta Cheaper Inference não exigir retenção zero de dados. Se a [Proteção de Dados](https://platform.cheaperinference.com/dashboard/data-protection) já estiver ativada para a conta, Cheaper Inference ainda recusa um modelo sem uma rota de retenção zero de dados. O erro nomeia esse modelo. Para manter a política da conta, defina `zeroDataRetention` como `true` e mude para um modelo do catálogo de retenção zero de dados. Para manter o modelo recusado, desative a retenção zero de dados naquela página. A cadeia de fallback então tenta o próximo modelo configurado.
 
-<a id="model-fallback-chain"></a>
 <a id="models"></a>
 ### Modelos
 

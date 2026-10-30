@@ -21,7 +21,7 @@ Translate markdown, MDX, `.astro`, optional Docusaurus catalog JSON (`docusaurus
 
 **Synopsis:** `ai-i18n-tools write-heading-ids [options]`
 
-Requires at least one `docs[]` block. Collects `.md` / `.mdx` under each block's `contentPaths` (honours `.translate-ignore`). By default inserts an HTML anchor line `<a id="slug"></a>` immediately before each flat ATX `#` heading (skips headings inside fenced code blocks). Existing heading ids of any form (HTML anchor line, classic `{#id}` suffix, MDX `{/* #id */}` comment) are replaced with the selected style; the slug is always derived from the current heading text. With `--slug-style mdx-comment`, writes a Docusaurus MDX comment suffix on the heading line instead (same github-style slug algorithm) and drops a preceding HTML anchor when present. `--remove` strips all of those heading-id forms and writes nothing in their place.
+Requires at least one `docs[]` block. Collects `.md` / `.mdx` under each block's `contentPaths` (honours `.translate-ignore`). By default inserts an HTML anchor line `<a id="slug"></a>` immediately before each flat ATX `#` heading (skips headings inside fenced code blocks). Existing heading ids of any form (HTML anchor line, classic `{#id}` suffix, MDX `{/* #id */}` comment) are replaced with the selected style; the slug is always derived from the current heading text. When several HTML anchors are stacked above one heading, only the anchor for the current heading text is kept, and in-repo markdown links that pointed at a removed id are updated to the id that remains. An `<a id>` that is not directly above a heading is left in place. With `--slug-style mdx-comment`, writes a Docusaurus MDX comment suffix on the heading line instead (same github-style slug algorithm) and drops the preceding HTML-anchor block when present. `--remove` strips all of those heading-id forms and writes nothing in their place.
 
 After updating source files, the command also walks each locale's existing translated markdown (same `docsOutput` path mapping as `translate-docs`). It copies the **source-locale** heading ids onto the matching ATX headings in document order — it never slugs the translated title — and moves a mid-heading `{#id}` / `{/* #id */}` (or stray HTML `<a id>`) back to the form Docusaurus / the chosen style expects. The source language is `sourceLocale` and can be any language. Missing translated files are skipped. `--remove` strips heading ids from those translated files as well, including misplaced mid-line tokens.
 
@@ -42,7 +42,7 @@ When a translated file's heading ids are repositioned or repaired, the matching 
 
 Scans markdown/MDX under each `docs[]` block's `contentPaths` (same discovery as `translate-docs`, honours `.translate-ignore`): delimiter pairing, unclosed inline code, and `STRONG_OUTSIDE_LINK` when `**`/`__` wrap a `[text](url)` link.
 
-Prints `relativePath:line: [ISSUE_CODE] message` lines to stderr; exit code **1** if any issue. `--json`: JSON report on stdout. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.
+Prints `relativePath:line: [ISSUE_CODE] message` lines to stderr; exits with code **1** if any issue is found. `--json`: JSON report on stdout. Writes `markdown_source_issues` in `cacheDir` unless `--no-cache`. `-v` adds source hashes to stderr lines.
 
 **Key options:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 

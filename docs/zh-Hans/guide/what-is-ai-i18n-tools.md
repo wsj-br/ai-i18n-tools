@@ -30,8 +30,6 @@
 | Intlayer 字典（迁出 Intlayer） | [从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer) |
 | Intlayer 字典（保留 Intlayer，就地翻译） | [就地翻译 Intlayer](/zh-Hans/guide/translating-intlayer) |
 
-<a id="which-should-i-use"></a>
-
 <a id="how-it-works"></a>
 ## 工作原理
 

@@ -55,7 +55,7 @@ ai-i18n-tools dashboard
 
 ChrF는 `sourceLocale` 및 `targetLocales`에 대한 languagebench의 번역 점수를 사용합니다. 로캘은 languagebench 언어 코드에 매핑됩니다. 기본 하위 태그이며 `pt-BR`를 `pt`으로, `zh-Hant`를 `zh`으로 매핑하는 등의 별칭이 있습니다. 해당 언어를 잘 번역하는 모델이 전반적으로만 점수가 좋은 모델보다 순위가 높습니다. 임베딩, 이미지, 음성 및 기타 비채팅 모델은 건너뛰며, 만료일이 지난 ID도 마찬가지입니다.
 
-기본 프로필인 Quality는 가격보다 ChrF와 Arena 점수에 가중치를 둡니다. Price는 그 강조점을 반대로 하고 위에서 설명한 품질 하한을 유지합니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion)입니다.
+기본 프로필인 Quality는 가격보다 ChrF와 Arena 점수에 가중치를 둡니다. Price는 그 강조점을 반대로 하고 위에서 설명한 품질 하한을 유지합니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)입니다.
 
 `suggest-models --refresh`는 데이터 세트를 다시 다운로드합니다. 그 후에 **모델** 탭을 다시 로드하세요.
 

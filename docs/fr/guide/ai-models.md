@@ -55,7 +55,7 @@ La liste restreinte est un classement de benchmark du catalogue de chat en direc
 
 ChrF utilise les scores de traduction de languagebench pour vos `sourceLocale` et `targetLocales`. Les paramètres régionaux correspondent à un code de langue languagebench : la sous-étiquette principale, avec des alias tels que `pt-BR` pour `pt` et `zh-Hant` pour `zh`. Un modèle qui traduit bien ces langues surclasse celui qui n'obtient de bons scores qu'en général. Les modèles d'embeddings, d'image, de parole et autres modèles non-chat sont ignorés, tout comme les ID ayant dépassé leur date d'expiration.
 
-Qualité, le profil par défaut, accorde plus d'importance au score ChrF et à l'Arena Score qu'au prix. Prix inverse cette priorité et conserve le seuil de qualité décrit ci-dessus. Les pondérations facultatives sont [`modelSuggestion`](/fr/reference/configuration#modelsuggestion).
+Qualité, le profil par défaut, accorde plus d'importance au score ChrF et à l'Arena Score qu'au prix. Prix inverse cette priorité et conserve le seuil de qualité décrit ci-dessus. Les pondérations facultatives sont [`modelSuggestion`](/fr/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` retélécharge les jeux de données. Rechargez ensuite l'onglet **Modèles**.
 

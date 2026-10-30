@@ -22,7 +22,7 @@
 
 **Astro Starlight MDX:** Starlightのコンテンツはしばしば`.mdx`です。これらのファイルに対して、`translate-docs`は`postProcessing.regexAdjustments`のみを実行します — フラット、VitePress、Nextra、またはFumadocsのリンクリライターは実行されません。ロケールごとのスクリーンショットパスは引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`ルールを使用します。[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)を参照してください。
 
-<a id="vitepress-link-normalizer-style-vitepress"></a>
+<a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress リンク正規化機能 (`style: "vitepress"`)
 
 `docsOutput.rewriteVitepressLinks`が`true`（`style`が`"vitepress"`の場合のデフォルト）の場合、セグメントの再構成後に（フラットなリライターではなく）別のノーマライザーが実行されます。これは、英語がコンテンツルートにあり、ロケールが兄弟フォルダー（`docs/de/guide/…`）にあるVitePress / ドキュメントシステムサイトを対象としています。
@@ -46,12 +46,12 @@
 
 ロケールごとのスクリーンショットフォルダーは、必要に応じて引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments`ルールを使用します。[ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder)を参照してください。
 
-<a id="nextra-link-normalizer-style-nextra"></a>
+<a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra リンク正規化機能 (`style: "nextra"`)
 
 `docsOutput.rewriteNextraLinks` が `true` の場合（`style` が `"nextra"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/en/…` と相対 `.mdx` パスをロケール中立のルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/ja/guide/integrations/nextra#link-conventions) を参照してください。
 
-<a id="fumadocs-link-normalizer-style-fumadocs"></a>
+<a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs リンク正規化機能 (`style: "fumadocs"`)
 
 `docsOutput.rewriteFumadocsLinks` が `true` の場合（`style` が `"fumadocs"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/docs/…` と相対 `.mdx` パスをロケール中立のルート（`/docs/…`）に書き換えます。[Fumadocs integration — Link conventions](/ja/guide/integrations/fumadocs#link-conventions) を参照してください。
