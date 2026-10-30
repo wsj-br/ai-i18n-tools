@@ -50,7 +50,7 @@ Alinhe `targetLocales` com `defineI18n().languages` em `lib/i18n.ts` exatamente 
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n em um site existente
 
-Um app Fumadocs somente em inglês precisa de uma rota de localidade e de `defineI18n` antes que `translate-docs` possa gravar arquivos irmãos. O [prompt do agente](#agent-prompt) percorre um site existente. Checklist:
+Um aplicativo Fumadocs somente em inglês precisa de uma rota de localidade e `defineI18n` antes que `translate-docs` possa gravar arquivos irmãos. A configuração inicial usa o prompt em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website#run-the-agent-prompt). O [prompt do agente](#agent-prompt) nesta página é o acompanhamento que conecta o catálogo da UI. Lista de verificação:
 
 - `defineI18n` em `lib/i18n.ts` com `languages`, `defaultLanguage` e `parser: "dot"` ou `"dir"`.
 - Rotas `app/[lang]/` e `createI18nMiddleware` de `proxy.ts` (o arquivo do exemplo).
@@ -86,7 +86,7 @@ Consulte `ai-i18n-tools.config.dir.example.json` em [examples/fumadocs-docs](htt
 <a id="sidebar-metajson"></a>
 ## Barra lateral (`meta.json`)
 
-Fumadocs usa arquivos JSON `meta.json` para a estrutura e títulos da barra lateral. Quando `docsOutput.style` é `"fumadocs"`, **`translate-docs`** coleta `meta.json` sob `docsRoot` (ou `docs[].fumadocsMetaGlob`), traduz valores de string para chaves listadas em `docs[].fumadocsMetaTranslatableKeys` (padrão: `title`, `description`) e escreve as saídas de localidade:
+Fumadocs usa arquivos JSON `meta.json` para estrutura e títulos da barra lateral. Quando `docsOutput.style` é `"fumadocs"`, `translate-docs` coleta `meta.json` sob `docsRoot` (ou `docs[].fumadocsMetaGlob`), traduz valores de string para chaves listadas em `docs[].fumadocsMetaTranslatableKeys` (padrão: `title`, `description`) e grava saídas de localidade:
 
 | Analisador | Localidade de origem | Saída |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ Fumadocs usa arquivos JSON `meta.json` para a estrutura e títulos da barra late
 <a id="ui-catalog"></a>
 ## Catálogo da UI
 
-O chrome do layout do Fumadocs (placeholder da pesquisa, nomes de exibição da localidade e outras substituições de `defineTranslations` / `i18n.translations()` em `lib/layout.shared.ts`) não é extraído do markdown. Configure **`docsOutput.fumadocsUiCatalog`** para que **`translate-docs`** inicialize o catálogo da localidade de origem a partir de `sourcePath` e traduza o JSON por localidade:
+Os elementos de interface do layout do Fumadocs (texto de espaço reservado da pesquisa, nomes de exibição da localidade e outras substituições de `defineTranslations` / `i18n.translations()` em `lib/layout.shared.ts`) não são extraídos do markdown. Configure `docsOutput.fumadocsUiCatalog` para que `translate-docs` inicialize o catálogo da localidade de origem a partir de `sourcePath` e traduza o JSON por localidade:
 
 ```json
 {
@@ -123,8 +123,8 @@ O chrome do layout do Fumadocs (placeholder da pesquisa, nomes de exibição da 
 }
 ```
 
-- **`catalogPath`** — JSON simples (flat) em inglês. A inicialização lê apenas o objeto `en` de `.add({ … })` em `sourcePath`. Literais de string nesse objeto se tornam chaves do catálogo (`displayName`, `Search(search trigger)`). `.add()` aceita apenas chaves que as predefinições da UI do Fumadocs registraram, portanto, um título de navegação como `site.title` não pode ficar lá. O exemplo mantém `site.title` no JSON e lê `catalog["site.title"]` para `nav.title`. As chaves que já estão no arquivo, mas ausentes do objeto `en`, permanecem: a mesclagem é `{ ...existing, ...extracted }`. Execute `sync` novamente quando os literais em inglês mudarem.
-- **`outputPathTemplate`** (opcional) — saídas por localidade; padrão: `ui.{locale}.json` ao lado de `catalogPath`.
+- `catalogPath` — JSON plano em inglês. A inicialização lê apenas o objeto `en` de `.add({ … })` em `sourcePath`. Literais de string nesse objeto tornam-se chaves do catálogo (`displayName`, `Search(search trigger)`). `.add()` aceita apenas chaves que as predefinições da UI do Fumadocs registraram, então um título de navegação como `site.title` não pode residir lá. O exemplo mantém `site.title` no JSON e lê `catalog["site.title"]` para `nav.title`. Chaves já no arquivo, mas ausentes do objeto `en`, permanecem: a mesclagem é `{ ...existing, ...extracted }`. Execute novamente `sync` quando os literais em inglês mudarem.
+- `outputPathTemplate` (opcional) — saídas por localidade; padrão: `ui.{locale}.json` ao lado de `catalogPath`.
 
 Uma chave traduzida não faz nada até que o app a leia. `i18n.translations().get(lang)` retorna apenas as chaves registradas com `.extend()` (as predefinições da UI do Fumadocs). Espalhe (spread) o catálogo de localidades em `.add()` para que essas chaves sejam aplicadas e coloque o `displayName` nativo **após** o spread para que uma tradução do nome em inglês não o substitua:
 
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs serve rotas com prefixo de locale via middleware do Next.js (`/docs/getting-started`, `/pt/docs/getting-started`). **Links dentro da página devem permanecer neutros em relação ao locale** (`/docs/getting-started`) para que o prefixo do locale ativo seja aplicado automaticamente.
 
-Habilite o normalizador integrado para que `translate-docs` corrija os links em cada arquivo traduzido automaticamente:
+Habilite o normalizador integrado para que `translate-docs` corrija links em cada arquivo traduzido automaticamente:
 
 ```json
 "docsOutput": {
@@ -244,16 +244,16 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 
 **Regras de autoria**
 
-- Links de documentação entre páginas: use **rotas de site neutras em local** (`/docs/…`) em MDX em inglês, ou `content/docs/…` / caminhos relativos `.mdx` e deixe o normalizador reescrevê-los durante `sync`.
-- Arquivos de repositório fora da árvore de conteúdo: use **URLs completas**.
-- Não edite **manualmente** links em cópias com sufixo de local (`*.pt.mdx`) ou árvores `content/{locale}/` — regenere com `sync` / `translate-docs`.
+- Links de documentos entre páginas: use **rotas de site neutras em relação à localidade** (`/docs/…`) em MDX em inglês, ou `content/docs/…` / caminhos relativos `.mdx` e deixe o normalizador reescrevê-los durante `sync`.
+- Arquivos do repositório fora da árvore de conteúdo: use **URLs completas**.
+- **Não** edite links manualmente em cópias com sufixo de localidade (`*.pt.mdx`) ou árvores `content/{locale}/` — regenere com `sync` / `translate-docs`.
 
 Veja também [Documentos — reescrita de links](/pt-BR/guide/documents/link-rewriting) e [Configuração — `docsOutput`](/pt-BR/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Códigos de locale
 
-Mantenha `targetLocales` em `ai-i18n-tools.config.json` alinhado com `defineI18n().languages` no seu aplicativo Fumadocs **exatamente**. O exemplo de ponto usa códigos curtos (`pt`, `zh`); configurações de diretório podem usar pastas BCP-47 (`pt-BR`, `zh-Hans`). Não há normalização forçada — códigos não coincidentes produzem caminhos de saída errados ou páginas faltantes.
+Mantenha `targetLocales` em `ai-i18n-tools.config.json` alinhado com `defineI18n().languages` em seu aplicativo Fumadocs **exatamente**. O exemplo de ponto usa códigos curtos (`pt`, `zh`); as configurações de diretório podem usar pastas BCP-47 (`pt-BR`, `zh-Hans`). Não há normalização forçada — códigos incompatíveis produzem caminhos de saída incorretos ou páginas ausentes.
 
 <a id="multiple-collections"></a>
 ## Múltiplas coleções

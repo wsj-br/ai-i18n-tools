@@ -41,10 +41,11 @@ pip install -r requirements.txt
 <a id="which-example-matches-my-project"></a>
 ## 哪個範例符合我的專案？
 
-- JS/TS 應用程式：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md)（最小）或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。指南：[將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js)。
-- Python 應用程式：python-streamlit、python-flask、python-fastapi 或 python-gettext。指南：[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。
-- 網站或文件網站：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html 或 plain-html-docs。指南：[將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website)。
-- 應用程式旁的儲存庫 README：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)（nextjs 範例也包含一個文件網站）。指南：[將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。
+- JS/TS 應用程式：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (最小) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。指南：[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js)。
+- Python 應用程式：python-streamlit、python-flask 或 python-fastapi。指南：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。
+- Django 或 GNU gettext 應用程式：python-gettext (一個 gettext 命令列工具；沒有 Django 範例目錄)。指南：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。
+- 網站或文件網站：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html 或 plain-html-docs。指南：[為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website)。
+- 應用程式旁的儲存庫 README：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 範例也包含文件網站)。指南：[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 - 其他：multi-provider、test-markdown 和 intlayer-migration。
 
 <a id="list-of-examples"></a>
@@ -80,7 +81,7 @@ pip install -r requirements.txt
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 字典 `.ts` shell，加上一個 `t()` 伺服器元件 (`pt-BR`、`zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI 目錄 (`pt`, `zh`, dot 解析器) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 純 HTML + `data-i18n*` 標記；靜態語系 JSON（儀表板式 UI） | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
-| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | 純 HTML 文件：每個語言區域一個頁面、在地化圖片、hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
+| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | 作為文件的純 HTML：每個語系一個頁面、本地化圖片、hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | 選擇或基準測試 LLM 提供者 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 回歸測試 Markdown / CJK 翻譯 (天城文, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, 重置 + AI 代理報告) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |

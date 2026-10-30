@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Idioma da IU da ferramenta
 
-O `ai-i18n-tools` localiza sua própria interface de usuário — texto de ajuda da CLI, mensagens de log/resumo/erro de alto tráfego e o Painel de Tradução — independentemente do `sourceLocale` / `targetLocales` do seu projeto. Nenhuma configuração é necessária: por padrão, a ferramenta segue a localidade do seu sistema operacional.
+A `ai-i18n-tools` localiza sua própria interface de usuário — texto de ajuda da CLI, mensagens de log/resumo/erro de alto tráfego e o Painel de Tradução — independentemente da `sourceLocale` / `targetLocales` do seu projeto. Nenhuma configuração é necessária: por padrão, a ferramenta segue a localidade do seu sistema operacional.
 
 <a id="locale-resolution"></a>
 ## Resolução de localidade

@@ -15,7 +15,7 @@
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### `docsOutput.style = "flat"` के साथ मार्कडाउन (README, USER-GUIDE)
 
-पहले दिन से ही स्थानीय-कोडित उपनिर्देशिका के तहत स्क्रीनशॉट स्टोर करें:
+शुरू से ही एक स्थानीय-कोडित उप-निर्देशिका के अंतर्गत स्क्रीनशॉट संग्रहीत करें:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 फ्लैट लिंक रewriter `doc-system` (`"flat"` के विपरीत) के लिए **नहीं** चलता है। `postProcessing.regexAdjustments` स्रोत मार्कडाउन से मूल URL देखता है — आमतौर पर `/img/screenshots/en-GB/foo.png` जैसा एक पूर्ण या साइट-रूट पथ।
 
-**प्रति-स्थानिक फ़ोल्डर** लेआउट तब लागू होता है जब स्क्रीनशॉट एक साझा स्थिर URL ट्री में रहते हैं: पहले दिन से एक स्थानीय-कोडित फ़ोल्डर और एक सामान्य `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` नियम का उपयोग करें ([कॉन्फ़िग — डॉक-सिस्टम](/hi/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) देखें)।
+**प्रति-स्थानीय फ़ोल्डर** लेआउट तब लागू होता है जब स्क्रीनशॉट एक साझा स्थिर URL ट्री में रहते हैं: शुरू से ही एक स्थानीय-कोडित फ़ोल्डर और एक सामान्य `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` नियम का उपयोग करें ([कॉन्फ़िग — डॉक-सिस्टम](/hi/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) देखें)।
 
 **सह-स्थित स्क्रीनशॉट** तब लागू होते हैं जब प्रत्येक स्थानीय के अनुवादित दस्तावेज़ मार्कडाउन के बगल में एसेट संग्रहीत करते हैं (कोई URL पुनर्लेखन नहीं)। आपकी स्क्रीनशॉट स्क्रिप्ट को `{outputDir}`, `{locale}`, और `{localeSubpath}` से प्राप्त पथों में PNG लिखना होगा — नीचे दिया गया Docusaurus प्रीसेट संदर्भ लेआउट है।
 
@@ -78,7 +78,7 @@ images/screenshots/en-GB/settings.png
 
 `docsOutput.style = "doc-system"` के बराबर `localeSubpath: ""` के साथ — अनुवादित पृष्ठ सीधे `{outputDir}/{locale}/` के अंतर्गत आते हैं।
 
-पहले दिन से ही लोकेल-कोडित पथ के अंतर्गत स्क्रीनशॉट संग्रहीत करें:
+शुरू से ही एक स्थानीय-कोडित पथ के अंतर्गत स्क्रीनशॉट संग्रहीत करें:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

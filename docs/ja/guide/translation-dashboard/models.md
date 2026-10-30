@@ -3,7 +3,7 @@
 
 「**モデル**」タブでは、アクティブなプロバイダーのチャットモデルがランク付けされているため、ID を手動でコピーすることなく `translationModels` を選択できます。このタブでは [`suggest-models`](/ja/reference/cli-commands/models#suggest-models) と同じランキングが使用されます。リストに複数のモデルが含まれる理由などの詳細な説明は、[AI モデル](/ja/guide/ai-models) をご覧ください。
 
-**品質**または**価格**を選択します。品質はlanguagebenchのChrFとArena Scoreを優先します。価格は米ドルのレートが低いことを優先しつつ、品質の最低基準を維持します。設定に複数のプロバイダーがある場合、**プロバイダー**メニューが表示されます。デフォルトはダッシュボードの起動時に使用されたプロバイダー（`provider`、または`dashboard`コマンドでの`-P` / `--provider`）です。プロバイダーまたは優先順位を変更すると、テーブルが再読み込みされます。オプションの重み付けについては[`modelSuggestion`](/ja/reference/configuration#modelsuggestion-optional)を参照してください。
+**品質**または**価格**を選択してください。品質はlanguagebench ChrFとArena Scoreを優先します。価格はより低いUSDレートを優先し、品質の下限を維持します。設定に複数のプロバイダーがある場合、**プロバイダー**メニューが表示されます。デフォルトは、ダッシュボードが起動されたプロバイダーです (`provider`、または`dashboard`コマンドでの`-P` / `--provider`)。プロバイダーまたは優先度を変更すると、テーブルが再読み込みされます。オプションの重みは[`modelSuggestion`](/ja/reference/configuration#modelsuggestion-optional)にあります。
 
 テーブルの列は、並べ替えコントロール、チェックボックス、ランク、モデルID、インデックス（重み付けされたスコアの100倍）、測定されたChrF、測定されたアリーナスコア、および100万トークンあたりの入出力価格（米ドル）です。測定値がない場合は、emダッシュで示されます。ランク番号は、以下のフィルターを適用する前の、完全なランキングにおけるモデルの順位です。行のハンドルをドラッグするか、上下ボタンを使用して、このテーブル内での位置を変更します。**更新**すると、ランク順が再度読み込まれます。
 
@@ -16,8 +16,8 @@
 初回読み込み時は、キャッシュが空の場合にlanguagebench、Arena、models.devをダウンロードするため、時間がかかることがあります。以降の読み込みでは、`<cacheDir>/benchmark-scores.json`にある7日間のキャッシュが再利用されます。このタブには更新ボタンはありません。CLIで`ai-i18n-tools suggest-models --refresh`を使用してキャッシュを更新してから、タブを再読み込みしてください。同じコマンドでリストを表示または適用することもできます。
 
 ::: info 外部ベンチマークソース
-  スコアは外部データソースから算出されます。
-  - [languagebench ChrF](https://languagebench.github.io/) は CC-BY-SA-4.0 ライセンスに基づいて提供されています。
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) は CC-BY-4.0 ライセンスに基づいて提供されています。
-  - [models.dev](https://models.dev/) の価格は MIT ライセンスに基づいて提供されています。
+  スコアは以下の外部データソースから計算されます。
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) (CC-BY-SA-4.0ライセンス)
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC-BY-4.0ライセンス)、および
+  - [models.dev](https://models.dev/) の価格 (MITライセンス)
 :::

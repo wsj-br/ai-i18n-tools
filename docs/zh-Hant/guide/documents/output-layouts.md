@@ -68,7 +68,7 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 將 `docs[].docsOutput.docsRoot` 設定為以 `sourceLocale` 編寫的檔案的根目錄（例如，當來源為英文時，設為 `"docs"`、`"src/content/docs"` 或 `"content/en"`）。`sourceLocale` 可以是任何語言。當 `docsOutput.style = "doc-system"` 時，您必須明確設定 `localeSubpath`（使用下方的別名來取得預設組態）。當翻譯頁面直接位於 `{outputDir}/{locale}/` 下時，請使用 `localeSubpath: ""`（Starlight 風格）。
 
-來自 `docusaurusCatalogDir` 的 Docusaurus shell JSON 以及文件系統預設下的其他 JSON 產物，遵循與 Markdown 相同的資料夾佈局。使用 `style: "flat"` 時，JSON 標籤檔案仍會使用巢狀結構，除非您設定 `jsonPathTemplate`。
+Docusaurus shell JSON 來自 `docusaurusCatalogDir` 以及文件系統預設集下的其他 JSON 構件，遵循與 Markdown 相同的資料夾佈局。搭配 `style: "flat"`，JSON 標籤檔案仍使用巢狀結構，除非您設定 `jsonPathTemplate`。
 
 <a id="doc-system-aliases"></a>
 ## 文件系統別名
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight 為許多地區提供 UI 字串；選擇性的自訂 UI 覆蓋使用 `src/content/i18n/en.json` 和 `jsonPathTemplate: "{outputDir}/{locale}.json"` 在單獨的 `docs[]` 區塊中，如果需要的話。
 
-VitePress 導覽/側邊欄/頁尾字串不在 markdown 中 — 請設定 `docsOutput.vitepressThemeCatalog` 並在 **`translate-docs`** 內翻譯。請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
+VitePress 導覽/側邊欄/頁腳字串不在 Markdown 中 — 請設定 `docsOutput.vitepressThemeCatalog` 並在 `translate-docs` 內部翻譯。請參閱 [VitePress 整合](/zh-Hant/guide/integrations/vitepress)。
 
-Nextra 主題字典 (`.ts`) 與 `_meta.ts` 側邊欄標籤不在 markdown 中 — 請使用 `docs[].nextraDictionaryPath` 並在 `style: "nextra"` 時自動收集 `_meta`，全都在 **`translate-docs`** 內。請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra)。
+Nextra 主題字典 (`.ts`) 以及 `_meta.ts` 側邊欄標籤不在 Markdown 中 — 當 `style: "nextra"` 時，請使用 `docs[].nextraDictionaryPath` 和自動 `_meta` 收集，全部在 `translate-docs` 內部。請參閱 [Nextra 整合](/zh-Hant/guide/integrations/nextra)。
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra 主題字典 (`.ts`) 與 `_meta.ts` 側邊欄標籤不在 markdown 中 �
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — Nextra 風格的語系資料夾；使用相同的 `doc-system` 引擎，但 `localeSubpath` 為空。
+- `"dir"` — Nextra 風格的地區設定資料夾；使用相同的 `doc-system` 引擎，搭配空的 `localeSubpath`。
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs UI 覆寫 (`lib/layout.shared.ts`) 與 `meta.json` 側邊欄標籤不在 markdown 中 — 請使用 `docsOutput.fumadocsUiCatalog` 並在 `style: "fumadocs"` 時自動收集 `meta.json`，全都在 **`translate-docs`** 內。請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。
+Fumadocs UI 覆寫 (`lib/layout.shared.ts`) 以及 `meta.json` 側邊欄標籤不在 Markdown 中 — 當 `style: "fumadocs"` 時，請使用 `docsOutput.fumadocsUiCatalog` 和自動 `meta.json` 收集，全部在 `translate-docs` 內部。請參閱 [Fumadocs 整合](/zh-Hant/guide/integrations/fumadocs)。
 
 對於內建相對連結修正以外的連結和資產 URL 重寫，請參閱[連結重寫](/zh-Hant/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`)。
 

@@ -48,7 +48,7 @@ Nextra [국제화](https://nextra.site/docs/guide/i18n)를 연결합니다. `nex
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 기존 사이트에서 i18n 활성화하기
 
-영어 전용 Nextra 4 사이트는 `translate-docs`이 쓸 곳이 생기기 전에 로케일 폴더, 라우트 매개변수, Next.js i18n 구성이 필요합니다. [사전 프롬프트](#agent-prompt-dictionary-and-routes)는 이 작업을 한 번에 수행합니다. 체크리스트:
+영어 전용 Nextra 4 사이트는 `translate-docs`가 작성할 공간을 마련하기 전에 로케일 폴더, 경로 매개변수, Next.js i18n 구성이 필요합니다. 첫 설정은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#run-the-agent-prompt)의 프롬프트를 사용합니다. [사전 프롬프트](#agent-prompt-dictionary-and-routes)는 동일한 경로 및 사전에 대한 자세한 후속 조치입니다. 체크리스트:
 
 - MDX를 `content/en/`으로 이동(영어는 콘텐츠 루트가 아닌 로케일 폴더임).
 - `next.config`의 `i18n.locales` 및 `defaultLocale`.
@@ -60,7 +60,7 @@ Nextra [국제화](https://nextra.site/docs/guide/i18n)를 연결합니다. `nex
 <a id="theme-strings"></a>
 ## 테마 문자열
 
-Nextra 테마 크롬(`editLink`, 검색 자리 표시자, 바닥글 등)은 마크다운에서 추출되지 않습니다. TypeScript 사전 모듈(예: `app/_dictionaries/en.ts`)에 영어 문자열을 작성하고 **`translate-docs`** 내에서 번역합니다.
+Nextra 테마 크롬(`editLink`, 검색 플레이스홀더, 바닥글 등)은 마크다운에서 추출되지 않습니다. TypeScript 사전 모듈(예: `app/_dictionaries/en.ts`)에 영어 문자열을 작성하고 `translate-docs` 내에서 번역하세요:
 
 ```json
 {
@@ -88,7 +88,7 @@ Nextra 테마 사전 문자열에 **절대** `json[]`를 사용하지 마세요.
 <a id="sidebar-labels-_metats"></a>
 ## 사이드바 레이블 (`_meta.ts`)
 
-Nextra 3+는 사이드바 구조 및 제목에 TypeScript `_meta.ts` / `_meta.tsx` 파일을 사용합니다. `docsOutput.style`가 `"nextra"`일 때, **`translate-docs`** 는 `docsRoot` 아래의 `_meta.ts`, `_meta.tsx`, `_meta.js`를 자동으로 수집하고, `export default { … }` 메타 맵의 문자열 리터럴을 번역하며, `content/{locale}/**` 아래에 미러링된 파일을 작성합니다.
+Nextra 3 이상은 사이드바 구조 및 제목에 TypeScript `_meta.ts` / `_meta.tsx` 파일을 사용합니다. `docsOutput.style`가 `"nextra"`일 때, `translate-docs`는 `docsRoot` 아래에 `_meta.ts`, `_meta.tsx`, `_meta.js`을 자동으로 수집하고, `export default { … }` 메타 맵의 문자열 리터럴을 번역하며, `content/{locale}/**` 아래에 미러링된 파일을 작성합니다.
 
 **권장 패턴:** 영어 리터럴을 `content/en/**/_meta.ts`에 인라인으로 유지합니다([swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site)와 동일):
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra는 Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`)를 통해 로케일 접두사가 붙은 경로를 제공합니다. **페이지 내 링크는 로케일 중립을 유지해야 합니다** (`/guide/getting-started`). 그래야 Next.js가 활성 로케일을 자동으로 접두사로 붙일 수 있습니다.
 
-내장 노멀라이저를 활성화하여 `translate-docs`가 모든 번역 파일의 링크를 자동으로 수정하도록 하세요:
+내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 하세요:
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ Nextra는 Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-starte
 
 `style`이 `"nextra"`일 때 `rewriteNextraLinks`는 기본적으로 활성화됩니다.
 
-| 소스 로케일에서 작성 | 정규화기 이후 |
+| 소스 로케일에서 작성 | 정규화 도구 적용 후 |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/ko/guide/getting-started)` |
 | `[Guide](/ko/guide/getting-started.mdx)` | `[Guide](/ko/guide/getting-started)` |
@@ -305,9 +305,9 @@ Nextra는 Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-starte
 
 **작성 규칙**
 
-- 페이지 간 문서 링크: 영어 MDX에서 **로케일 중립 사이트 경로** (`/guide/…`)를 사용하거나, `content/en/…` / 상대 `.mdx` 경로를 사용하고 정규화 도구가 `sync` 중에 다시 작성하도록 합니다.
-- 콘텐츠 트리 외부의 저장소 파일: **전체 URL**을 사용합니다.
-- `content/<locale>/`에서 링크를 수동으로 편집**하지 마십시오**. `sync` / `translate-docs`로 다시 생성하십시오.
+- 페이지 간 문서 링크: 영어 MDX에서 **로케일 중립 사이트 경로** (`/guide/…`)를 사용하거나, `content/en/…` / 상대 `.mdx` 경로를 사용하고 정규화 도구가 `sync` 동안 다시 작성하도록 하세요.
+- 콘텐츠 트리 외부에 있는 리포지토리 파일: **전체 URL**을 사용하세요.
+- `content/<locale>/`에서 링크를 수동으로 편집하지 **마세요** — `sync` / `translate-docs`로 다시 생성하세요.
 
 <a id="optional-locale-proxy"></a>
 ## 선택적 로케일 프록시
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**사이트 로케일 코드 vs `sourceLocale`:** Nextra 및 Next.js는 `next.config`, `content/{locale}/` 및 `NEXT_LOCALE` 쿠키에서 짧은 경로 코드(`en`, `pt-BR`, `zh-Hans`)를 사용합니다. `ai-i18n-tools.config.json`의 `sourceLocale`는 번역 품질을 위해 `en-GB`와 같은 BCP-47 태그일 수 있습니다. 이 태그는 사이트 경로가 **아닙니다**. 브라우저 쿠키 또는 `Accept-Language`가 `i18n.locales` 외부의 태그(예: `en`만 구성된 경우 `en-GB`)로 확인되면 Nextra의 기본 프록시가 루프에서 리디렉션될 수 있습니다. [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 데모는 `nextra/locales`를 래핑하여 유효하지 않은 쿠키 및 경로를 기본 사이트 로케일로 재설정한 다음 위임합니다.
+**사이트 로케일 코드 대 `sourceLocale`:** Nextra와 Next.js는 `next.config`, `content/{locale}/` 및 `NEXT_LOCALE` 쿠키에서 짧은 경로 코드 (`en`, `pt-BR`, `zh-Hans`)를 사용합니다. `ai-i18n-tools.config.json`의 `sourceLocale`은 번역 품질을 위한 `en-GB`와 같은 BCP-47 태그일 수 있습니다 — 해당 태그는 사이트 경로가 **아닙니다**. 브라우저 쿠키 또는 `Accept-Language`이 `i18n.locales` 외부에 있는 태그로 확인되면 (예: `en`만 구성된 경우 `en-GB`), Nextra의 기본 프록시가 루프에서 리디렉션될 수 있습니다. [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 데모는 위임하기 전에 `nextra/locales`를 래핑하여 유효하지 않은 쿠키와 경로를 기본 사이트 로케일로 재설정합니다.
 
 이것은 `output: 'export'` 정적 내보내기와 함께 작동하지 않습니다. [Nextra i18n 문서](https://nextra.site/docs/guide/i18n)를 참조하십시오.
 

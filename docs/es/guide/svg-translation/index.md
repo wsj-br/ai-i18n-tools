@@ -30,7 +30,7 @@ Use `translate-svg` cuando:
 <a id="design-for-i18n-from-the-start"></a>
 ## Diseñar para i18n desde el principio
 
-Los SVG son más fáciles de traducir cuando las etiquetas son elementos de texto reales desde el primer día:
+Los SVG son más fáciles de traducir cuando las etiquetas son elementos de texto reales desde el principio:
 
 - Ponga texto legible por humanos en `<text>`, `<title>` y `<desc>`.
 - Evite convertir etiquetas en rutas en su herramienta de diseño: los datos de ruta son opacos para el traductor.

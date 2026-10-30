@@ -50,8 +50,8 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **你不需要手动编写复数形式。** 在源代码中，只需编写一次消息，并在第二个参数中传递两样东西：
 
-1. **`plurals: true`** —— 告诉提取脚本和 `translate-ui` 此调用是一个基数复数组。
-2. **`count`** —— i18next 在运行时用于选择正确形式的数字。
+1. `plurals: true` — 告诉 extract 和 `translate-ui` 此调用是一个基数复数组。
+2. `count` — i18next 在运行时使用的数字，用于选择正确的形式。
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **验证：** 如果消息包含 **两个或更多** 不同的 <code v-pre>{{…}}</code> 占位符，**其中一个必须是** <code v-pre>{{count}}</code>（复数轴）。否则 `extract` 会 **失败** 并给出明确的文件/行号消息。
 
-在 LLM 返回 CLDR 形式后，`translate-ui` 还会根据 **原始开发者字面量** 检查每种形式：每个源占位符都必须出现在每个类别中（包括 `one`），形式不得发明新的 <code v-pre>{{…}}</code> / `%d` / `{n}` 标记，并且仅包含名词的源（没有 <code v-pre>{{count}}</code> 且没有数字，例如像 `Minutes` 这样的单位标签）必须保持仅名词。不匹配将丢弃该模型的响应，并重试备用列表中的下一个模型。
+LLM返回CLDR形式后，`translate-ui`还会根据**原始开发者字面量**检查每种形式：每个源占位符必须出现在每个类别中（包括`one`），形式不得创建新的<code v-pre>{{…}}</code> / `%d` / `{n}` 令牌，并且仅名词源（没有<code v-pre>{{count}}</code>和数字，例如`Minutes`之类的单位标签）必须保持仅名词。不匹配项会丢弃该模型的响应，并重试回退列表中的下一个模型。
 
 **两个独立的计数**（例如章节和页数）不能共享一个复数消息 —— 使用 **两个** `t()` 调用（每个调用带有 `plurals: true` 和各自的 `count`）并在 UI 中拼接。
 

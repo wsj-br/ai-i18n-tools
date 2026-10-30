@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # 프로그래밍 방식 API
 
-모든 공용 타입과 클래스는 패키지 루트에서 내보냅니다. 예: CLI 없이 Node.js에서 UI 번역 단계를 실행하는 경우:
+모든 공개 타입과 클래스는 패키지 루트에서 내보내집니다. 예시: CLI 없이 Node.js에서 translate-ui 단계를 실행하는 방법:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `resolveDocumentationOutputPath` | 번역된 문서의 출력 파일 경로 결정. |
 | `Glossary` / `GlossaryMatcher` | 번역 용어집을 로드하고 적용하며, 선택적인 용어 `Context` 메모를 포함합니다. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 캐시 무효화를 위한 `glossary.contextFiles` 및 지문 가이드를 로드합니다. |
-| `runTranslateUI` | 프로그래밍 방식 번역 UI 진입점. |
+| `runTranslateUI` | 프로그래밍 방식의 translate-ui 진입점. |
 | `writeInitConfigFile` | 시작 구성 JSON(`template`, `cwd`, 필수 `providerKey` 및 선택 사항 `{ withReadme }`)을 작성합니다. `{ readmeBlockAdded, hasReadmeBlock }`을(를) 반환합니다. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`에서 사용하는 내장 프리셋당 스타터 `translationModels`. |
 | `PROVIDER_PRESETS` | 내장 공급자 사전 설정 맵 (`baseUrl`, `apiKeyEnv`). |

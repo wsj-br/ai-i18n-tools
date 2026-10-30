@@ -1,7 +1,7 @@
 <a id="add-i18n-to-your-project"></a>
 # Add i18n to your project
 
-This section is the set of walkthroughs for a project that speaks one language today. Start here. Each page below takes one kind of project from setup to the first translated files. [Get started](/guide/what-is-ai-i18n-tools) covers what the tool is, install options, and providers and models. You can open a walkthrough without reading those pages first.
+This section is the set of walkthroughs for a project that currently has only one language. Start here. Each page below takes one kind of project from setup to the first translated files. [Get started](/guide/what-is-ai-i18n-tools) covers what the tool is, install options, and providers and models. You can open a walkthrough without reading those pages first.
 
 <a id="what-you-do-and-what-the-tool-does"></a>
 ## What you do and what the tool does

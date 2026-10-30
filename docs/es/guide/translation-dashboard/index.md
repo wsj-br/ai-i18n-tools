@@ -3,8 +3,8 @@
 
 El Panel de control de traducción es una interfaz de usuario web local para inspeccionar y editar los datos de traducción de su proyecto. Lee de tres almacenes:
 
-- Caché de SQLite (`cacheDir`) — traducciones de segmentos de documentación, registros de fallos, escaneos de problemas de Markdown, uso de llamadas a la API facturadas
-- **`strings.json`** — catálogo de cadenas de la interfaz de usuario (cadenas simples y grupos plurales)
+- Caché de SQLite (`cacheDir`) — traducciones de segmentos de documentación, registros de fallos, escaneos de problemas de markdown, uso de llamadas a la API facturadas
+- `strings.json` — catálogo de cadenas de UI (cadenas simples y grupos plurales)
 - **CSV del glosario de usuario** (`glossary.userGlossary`) — sugerencias de terminología para `translate-ui` y `proofread-ui`
 
 Úselo después de una ejecución de traducción para encontrar problemas, anular resultados incorrectos o revisar la cobertura de la caché, sin tener que buscar manualmente en SQLite o JSON.
@@ -48,7 +48,7 @@ La interfaz de usuario del panel de control utiliza la misma resolución de conf
 | Cadena o plural de la interfaz de usuario | `sync` o `translate-ui` simple | `--force` (sobrescribe `user-edited` filas) |
 | Fila del glosario | siguiente `translate-ui` o `proofread-ui` | — |
 
-**Documentación (caché de SQLite)** — Las ediciones manuales se etiquetan con el modelo `user-edited` en la caché. Las ediciones que no superan la comprobación del sistema de escritura de la configuración regional (por ejemplo, hindi romanizado para `hi`) muestran una advertencia; la confirmación guarda el texto de todos modos. Volver a ejecutar `translate-docs` o `sync` en una fuente sin cambios reutiliza la traducción en caché (sin llamada a LLM). Ejecute `sync --force-update` o `translate-docs --force-update` para actualizar el markdown en disco desde la caché. Utilice `--check-cache` para volver a validar las configuraciones regionales de scripts nativos sin reescribir cada archivo (incluidas las ediciones de scripts incorrectos confirmadas). Utilice `--force` solo si desea omitir la caché y volver a traducir desde el LLM (sobrescribiendo las correcciones manuales).
+**Documentación (caché de SQLite)** — Las ediciones manuales se etiquetan con el modelo `user-edited` en la caché. Las ediciones que fallan la comprobación del sistema de escritura de la configuración regional (por ejemplo, hindi romanizado para `hi`) muestran una advertencia; confirmar guarda el texto de todos modos. Volver a ejecutar `translate-docs` o `sync` en una fuente sin cambios reutiliza la traducción en caché (sin llamada a LLM). Ejecute `sync --force-update` o `translate-docs --force-update` para actualizar el markdown en disco desde la caché. Utilice `--check-cache` para revalidar las configuraciones regionales de script nativo sin reescribir cada archivo (incluidas las ediciones de script incorrecto confirmadas). Utilice `--force` solo si desea omitir la caché y volver a traducir desde el LLM (sobrescribiendo las correcciones manuales).
 
 **Cadenas de interfaz de usuario (`strings.json`)** — Las ediciones manuales se etiquetan con `user-edited` en `models[locale]`. Volver a ejecutar `translate-ui` o `sync` omite las entradas que ya tienen una traducción. Use `--force` en los comandos de la interfaz de usuario para volver a traducir y sobrescribir las correcciones manuales.
 

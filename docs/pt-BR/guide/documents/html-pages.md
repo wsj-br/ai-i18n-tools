@@ -139,11 +139,11 @@ O `docsOutput.localizedAssets` pode selecionar um nome de arquivo de imagem ou �
 | `{llocale}` | Localidade em minúsculas |
 | `{LOCALE}` | Localidade em maiúsculas |
 
-`img/trulli.jpg` se torna `img/trulli-pt-BR.jpg`. Com `onlyIfExists: true` (o padrão), essa URL é usada apenas quando o arquivo localizado existe; caso contrário, o asset compartilhado original é mantido. Defina `onlyIfExists: false` apenas quando outra etapa de build ou CDN garantir esses arquivos.
+`img/trulli.jpg` se torna `img/trulli-pt-BR.jpg`. Com `onlyIfExists: true` (o padrão), essa URL é usada apenas quando o arquivo localizado existe; caso contrário, o ativo compartilhado original é mantido. Defina `onlyIfExists: false` apenas quando outra etapa de build ou CDN garantir esses arquivos.
 
-`include` corresponde a caminhos de URL como `img/**`. Use `assetRoot` para definir o diretório do sistema de arquivos no qual os candidatos localizados — especialmente URLs relativas à raiz, como `/img/trulli.jpg` — são verificados.
+`include` corresponde a caminhos de URL como `img/**`. Use `assetRoot` para definir o diretório do sistema de arquivos contra o qual os candidatos localizados — especialmente URLs relativas à raiz, como `/img/trulli.jpg` — são verificados.
 
-As mesmas regras de localização se aplicam a `srcset`, `poster`, `<source src>`, ícone `<link href>` e `og:image` / `twitter:image`. O pipeline reescreve as referências, mas não cria, traduz ou copia arquivos de asset. Os valores de `url()` do CSS não são reescritos.
+As mesmas regras de localização se aplicam a `srcset`, `poster`, `<source src>`, ícone `<link href>` e `og:image` / `twitter:image`. O pipeline reescreve referências, mas não cria, traduz ou copia arquivos de ativos. Valores CSS `url()` não são reescritos.
 
 <a id="language-list-and-hreflang"></a>
 ## Lista de idiomas e hreflang
@@ -213,7 +213,7 @@ As traduções de frases permanecem no cache. O hash de rastreamento de arquivos
 | A saída é `site/pt-BR/site/index.html` | Defina `docsOutput.docsRoot` como `"site"` para que o prefixo de origem seja removido. |
 | O link ainda aponta para a página em inglês | Use um link `.html` / `.htm` relativo e inclua a página de destino no mesmo bloco `docs[]`. |
 | O caminho da imagem está quebrado a partir de uma página de localidade | Mantenha-o relativo para que a reescrita de profundidade possa ser aplicada; lembre-se de que o `url()` do CSS não é reescrito. |
-| A imagem localizada não está selecionada | Verifique `localizedAssets.include`, o nome do arquivo `pattern` e se o candidato existe quando `onlyIfExists` é verdadeiro. |
+| Imagem localizada não selecionada | Verifique `localizedAssets.include`, o nome do arquivo `pattern` e se o candidato existe quando `onlyIfExists` é verdadeiro. |
 | A lista de idiomas está vazia ou inalterada | Mantenha ambos os comentários de marcador na ordem correta e fora de `script`, `style`, `pre` e `code`. |
 | O menu suspenso não navega | Adicione `data-lang-select` ao `<select>` e carregue `html-runtime/lang-select.js`. |
 | As URLs hreflang usam o host incorreto | Defina `hreflang.siteUrl` para a origem pública final. |

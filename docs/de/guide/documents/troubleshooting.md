@@ -32,9 +32,9 @@ Ein Markdown-Link oder `![alt](url)` funktioniert auf Englisch, gibt aber in üb
 3. Stellen Sie sicher, dass sprachspezifische Asset-Dateien unter den Pfaden existieren, auf die das umgeschriebene Markdown verweist (`translate-docs` schreibt URLs um, kopiert aber keine Rasterdateien).
 
 <a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
-## Hindi, Arabisch, CJK oder Kyrillisch wird romanisiert (lateinische Buchstaben)
+## Hindi-, Arabisch-, CJK- oder Kyrillisch-Ausgabe wird romanisiert (lateinische Buchstaben)
 
-Einige Modelle übersetzen die Bedeutung, schreiben das Ergebnis aber in lateinischen/römischen Buchstaben (z. B. Hindi als `Namaste` anstelle von `नमस्ते`). Ein bloßes `hi` bedeutet Devanagari; verwenden Sie `hi-Latn` nur, wenn Sie romanisiertes Hindi wünschen.
+Einige Modelle übersetzen die Bedeutung, schreiben das Ergebnis aber in lateinischen/römischen Buchstaben (zum Beispiel Hindi als `Namaste` anstelle von `नमस्ते`). Bloßes `hi` bedeutet Devanagari; verwenden Sie `hi-Latn` nur, wenn Sie romanisiertes Hindi wünschen.
 
 **Behebung**
 

@@ -33,7 +33,7 @@ Chaque pipeline suit la même boucle principale : **extraire les segments → pr
 | | `src/glossary/` | Chargement du glossaire, suggestions de termes et fichiers de contexte de projet facultatifs pour les invites |
 | | `src/utils/` | Logger, hachage, analyseur d'ignorance, tables de largeur d'affichage, chargeur `.env` |
 | **Runtime de votre application** | `src/runtime/` | Assistants i18next et utilitaires d'affichage — exportés sous le nom de `'ai-i18n-tools/runtime'` ([Assistants d'exécution](/fr/guide/runtime-helpers)) |
-| **Interface utilisateur de l'outil** *(dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Localise la CLI et le tableau de bord de traduction de ce package — séparé du contenu de votre projet ([Auto-localisation](#self-localization-tool-ui)) |
+| **Interface de l'outil** *(dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Localise la CLI et le tableau de bord de traduction de ce package — séparément du contenu de votre projet ([Auto-localisation](#self-localisation-tool-ui)) |
 
 Tout ce qui est destiné à un usage programmatique est réexporté depuis `src/index.ts` ([API programmatique](/fr/reference/programmatic-api)).
 
@@ -125,7 +125,7 @@ i18next charge ces fichiers comme des bundles de ressources et recherche les tra
 - Envoyer un tableau JSON de chaînes et demander un tableau JSON de traductions en retour.
 - Inclure des indications de glossaire si disponibles.
 
-`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre et se rabat sur le suivant en cas d'erreur d'analyse, de réseau ou de script incorrect (y compris le repli romanisé/latin pour les locales à écriture native). La CLI construit cette liste par locale cible à partir de `localeModels`, de `uiModels` (facultatif) et de `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` essaie chaque modèle dans l'ordre, en se rabattant sur les erreurs d'analyse, de réseau ou de script incorrect (y compris le repli romanisé/latin pour les locales à script natif). La CLI construit cette liste par locale cible à partir de `localeModels`, de `uiModels` facultatif et de `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)).
 
 ---
 
@@ -203,7 +203,18 @@ La protection partagée des attributs/clés pour les modèles Astro et MDX JSX e
 
 Une base de données SQLite (via `node:sqlite`) stocke des lignes indexées par `(source_hash, locale)`, avec `translated_text`, `model`, `filepath`, `last_hit_at` et des champs associés. Le hachage correspond aux 16 premiers caractères hexadécimaux SHA-256 du contenu normalisé (espaces réduits).
 
-À chaque exécution, les segments sont recherchés par hachage × locale. Seules les erreurs de cache sont transmises au LLM. Après la traduction, `last_hit_at` est réinitialisé pour les lignes de segment dans la portée de traduction actuelle qui n'ont pas été atteintes. Les succès de cache lors de la traduction de documents effacent les lignes `translation_failures` obsolètes pour ce segment. `cleanup` exécute `sync --force-update` en premier, puis supprime les lignes de segment obsolètes (`last_hit_at` nul / chemin de fichier vide), élague les clés `file_tracking` lorsque le chemin source résolu est manquant sur le disque (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.), supprime les lignes de traduction dont le chemin de fichier de métadonnées pointe vers un fichier manquant, élague les lignes `translation_failures` orphelines, élague les lignes `markdown_source_issues` orphelines dont le chemin source résolu est manquant sur le disque, et supprime les lignes de cache pour les locales absentes de la configuration (`sourceLocale`, racine `targetLocales`, et tout `docs[]` / `json[]` `targetLocales` par bloc ; SQLite uniquement — utilisez `purge-locale` pour supprimer les fichiers générés) ; il ne sauvegarde pas `cache.db` à moins que `--backup <path>` ne soit passé, ce qui écrit d'abord une sauvegarde à ce chemin.
+À chaque exécution, les segments sont recherchés par hachage × locale. Seules les absences de cache sont envoyées au LLM. Après la traduction, `last_hit_at` est réinitialisé pour les lignes de segment dans la portée de traduction actuelle qui n'ont pas été atteintes. Les succès de cache lors de la traduction de documents effacent les lignes `translation_failures` obsolètes pour ce segment.
+
+`cleanup` exécute `sync --force-update` en premier, puis :
+
+- supprime les lignes de segment obsolètes (`last_hit_at` nul / chemin de fichier vide) ;
+- élague les clés `file_tracking` lorsque le chemin source résolu est manquant sur le disque (`doc-block:…`, `json-block:…`, `svg-files:…`, etc.) ;
+- supprime les lignes de traduction dont le chemin de fichier de métadonnées pointe vers un fichier manquant ;
+- élague les lignes `translation_failures` orphelines ;
+- élague les lignes `markdown_source_issues` orphelines dont le chemin source résolu est manquant sur le disque ;
+- supprime les lignes de cache pour les locales absentes de la configuration (`sourceLocale`, `targetLocales` racine, et tout `docs[]` / `json[]` `targetLocales` par bloc ; SQLite uniquement — utilisez `purge-locale` pour supprimer les fichiers générés).
+
+Il ne sauvegarde pas `cache.db` à moins que `--backup <path>` ne soit passé, ce qui écrit d'abord une sauvegarde à ce chemin.
 
 Les appels au modèle facturés (traductions acceptées et tentatives ignorées) sont stockés dans `api_calls`. Après une commande ayant enregistré des appels, les lignes de détail datant de plus de sept jours calendaires UTC sont transférées vers les `api_totals`. `usage` et la vue Utilisation et coûts du tableau de bord combinent ces deux tables. Voir [Utilisation et coûts](/fr/guide/translation-dashboard/usage).
 
@@ -289,14 +300,14 @@ Pipeline `loadI18nConfigFromFile(configPath, cwd)` :
 `Logger` prend en charge les niveaux `debug`, `info`, `warn`, `error` avec sortie couleur ANSI. Le mode verbeux (`-v`) active `debug`. Lorsque `logFilePath` est défini, les lignes de journal sont également écrites dans ce fichier.
 
 <a id="self-localisation-tool-ui"></a>
-### Auto-localisation (interface utilisateur de l'outil)
+### Auto-localisation (interface de l'outil)
 
-L'outil localise sa propre interface utilisateur — aide en ligne de commande, messages de journalisation/résumé/erreur à fort trafic, et le tableau de bord de traduction — séparément du contenu qu'il traduit pour vous.
+L'outil localise sa propre interface utilisateur — l'aide de la CLI, les messages de journal/résumé/erreur à fort trafic et le tableau de bord de traduction — séparément du contenu qu'il traduit pour vous.
 
-- **Résolution de la locale** (`resolveUiLocale` dans `src/core/ui-locale.ts`) : choisit la locale de l'interface utilisateur à partir de `-L` / `--ui-lang` > `AI_I18N_LANG` > configuration `uiLanguage` > locale du système d'exploitation hôte (`Intl.DateTimeFormat().resolvedOptions().locale`). Le candidat est normalisé et mis en correspondance avec l'ensemble de bundles livrés exactement ou par la variation la plus proche (par exemple `pt-PT` → `pt-BR`, `en-US` → `en-GB`), en revenant à la locale source (`en-GB`). La CLI résout une fois avant la construction de l'aide (analyse pré-parsing des arguments) et à nouveau après le chargement de la configuration afin que `uiLanguage` s'applique (le drapeau et la variable d'environnement l'emportent toujours).
-- **Exécution** (`src/i18n/index.ts`) : un `t(source, vars)` minimal avec interpolation <code v-pre>{{name}}</code>, indexé par la chaîne source anglaise par rapport aux bundles plats par locale dans `src/i18n/locales/<code>.json` (copié vers `dist/i18n/locales` à la construction). Les clés ou bundles manquants renvoient le texte source. C'est le même modèle clé-par-défaut que les chaînes d'interface utilisateur — il n'y a pas de recherche par hachage.
+- **Résolution de la locale** (`resolveUiLocale` dans `src/core/ui-locale.ts`) : sélectionne la locale de l'interface utilisateur à partir de `-L` / `--ui-lang` > `AI_I18N_LANG` > configuration `uiLanguage` > locale du système d'exploitation hôte (`Intl.DateTimeFormat().resolvedOptions().locale`). Le candidat est normalisé et mis en correspondance avec l'ensemble de bundles livré, soit exactement, soit par la variation la plus proche (par exemple `pt-PT` → `pt-BR`, `en-US` → `en-GB`), en revenant à la locale source (`en-GB`). La CLI résout une fois avant la construction de l'aide (analyse argv pré-analyse) et à nouveau après le chargement de la configuration afin que `uiLanguage` s'applique (le drapeau et la variable d'environnement l'emportent toujours).
+- **Exécution** (`src/i18n/index.ts`) : un `t(source, vars)` minimal avec interpolation <code v-pre>{{name}}</code>, indexé par la chaîne source anglaise par rapport à des bundles plats par locale dans `src/i18n/locales/<code>.json` (copiés dans `dist/i18n/locales` à la construction). Les clés ou bundles manquants renvoient le texte source. C'est le même modèle clé-comme-défaut que les chaînes d'interface utilisateur — il n'y a pas de recherche par hachage.
 - **Tableau de bord** : le serveur expose `GET /api/ui-i18n` renvoyant `{ locale, dir, bundle }` pour la locale d'interface utilisateur résolue ; le frontend définit `<html lang>` / `dir` et localise le balisage statique via les attributs `data-i18n*`.
-- **Dogfooding** : les bundles sont produits par `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`), qui extrait et traduit le bloc `ui` de la CLI et du tableau de bord dans `ai-i18n-tools.config.json`. Les clés de catalogue proviennent des appels `t()` à travers `src/cli/` et `src/i18n/` ainsi que des marqueurs `data-i18n*` du tableau de bord dans `src/dashboard-app/index.html`.
+- **Dogfooding** : les bundles sont produits par `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`), qui extrait et traduit le bloc `ui` de la CLI et du tableau de bord dans `ai-i18n-tools.config.json`. Les clés de catalogue proviennent des appels `t()` à travers `src/cli/` et `src/i18n/` plus les marqueurs `data-i18n*` du tableau de bord dans `src/dashboard-app/index.html`.
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

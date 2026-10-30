@@ -6,7 +6,15 @@
 
 **概要:** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-`markdown_source_issues`テーブル全体をクリアし、次に`sync --force-update`を実行して（有効な場合は抽出、UI、SVG、ドキュメント、および`translate-json`）、現在構成されているドキュメントのマークダウン問題が再生成されるようにします。その後、古いセグメント行（nullの`last_hit_at` / 空のファイルパス）を削除し、ディスク上に解決されたソースパスが存在しない`file_tracking`行を破棄し、`filepath`メタデータが欠落しているファイルを指している翻訳行を削除し、孤立した`translation_failures`行を整理し、構成に存在しないロケールのキャッシュ行（`sourceLocale`、ルート`targetLocales`、およびブロックごとの`docs[]` / `json[]` `targetLocales`）を破棄します。廃止されたロケールのキャッシュのみ — 生成されたドキュメント、フラットUIファイル、および`strings.json`エントリはそのまま残されます（それらを削除するには[`purge-locale`](#purge-locale)を使用してください）。同期後に整理数（古いセグメント、孤立した`file_tracking`、孤立した翻訳、孤立した失敗、未構成のロケール）と前処理のマークダウン問題クリア数をログに記録します。
+`markdown_source_issues`テーブル全体をクリアし、その後`sync --force-update`（抽出、UI、SVG、ドキュメント、および有効な場合は`translate-json`）を実行して、現在設定されているドキュメントのMarkdownの問題が再生成されるようにします。その後、次の処理を行います。
+
+- 古いセグメント行（nullの`last_hit_at` / 空のファイルパス）を削除します。
+- 解決されたソースパスがディスク上に存在しない`file_tracking`行を破棄します。
+- `filepath`メタデータが欠落しているファイルを指している翻訳行を削除します。
+- 孤立した`translation_failures`行を削除します。
+- 設定に存在しないロケールのキャッシュ行（`sourceLocale`、ルート`targetLocales`、およびブロックごとの`docs[]` / `json[]` `targetLocales`）を破棄します。
+
+廃止されたロケールに対してはキャッシュのみが対象となり、生成されたドキュメント、フラットUIファイル、および`strings.json`エントリはそのまま残されます（これらを削除するには[`purge-locale`](#purge-locale)を使用します）。同期後、削除数（古いセグメント、孤立した`file_tracking`、孤立した翻訳、孤立した失敗、未設定のロケール）と事前のMarkdown問題クリア数がログに記録されます。
 
 **主なオプション:** `--dry-run`, `--backup`
 
@@ -30,8 +38,8 @@
 
 **概要:** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-指定されたロケールのすべてのキャッシュ行を`translations`、`file_tracking`、`translation_failures`から削除し、そのロケールの生成成果物も削除します: 翻訳ドキュメント（`docs[]`から解決された`.md` / `.mdx` / `.astro`出力、ソースが削除された孤立した出力を含む — カスタム`pathTemplate`が設定されている場合を除き、各ブロックの出力ツリーをスイープして検出）、ロケールごとのフラットUIファイル（`<flatOutputDir>/<locale>.json`）、および`strings.json`内のそのロケールのエントリ。
+`translations`、`file_tracking`、および`translation_failures`から指定されたロケールのすべてのキャッシュ行を削除し、そのロケール用に生成された成果物も削除します。これには、翻訳されたドキュメント（`docs[]`から解決された`.md` / `.mdx` / `.astro`出力。ソースが削除された孤立した出力も含む — カスタム`pathTemplate`が設定されている場合を除き、各ブロックの出力ツリーをスキャンして見つけられます）、ロケールごとのフラットUIファイル（`<flatOutputDir>/<locale>.json`）、および`strings.json`内のロケールのエントリが含まれます。
 
-ロケールは繰り返し可能な`-l` / `--locale`で渡されます（BCP-47に正規化）。ロケールごとのカウント（キャッシュ行、ドキュメント、`strings.json`エントリ、フラットファイル）を出力します。パージ対象がないロケールについては警告します（エラーにはしません）。`-y` / `--yes` / `-f` / `--force`が指定されない限り確認を求めます。`--dry-run`: カウントと削除されるファイルを報告し、何も削除しません。`--keep-files`: SQLiteキャッシュのみをパージし、生成ファイルと`strings.json`はそのまま残します。`--backup <path>`が渡されない限りSQLiteバックアップは作成されず、渡された場合は削除前にバックアップをそのパスに書き出します。
+ロケールは、繰り返し指定可能な `-l` / `--locale` で渡します (BCP-47 に正規化されます)。ロケールごとのカウント (キャッシュ行、ドキュメント、`strings.json` エントリ、フラットファイル) を出力し、パージ対象がないロケールについては警告を出力します (エラーにはなりません)。`-y` / `--yes` / `-f` / `--force` が指定されていない限り、確認プロンプトが表示されます。`--dry-run`: カウントと削除されるファイルを報告しますが、何も削除しません。`--keep-files`: 生成されたファイルと `strings.json` はそのまま残し、SQLite キャッシュのみをパージします。`--backup <path>` が渡されない限り、SQLite のバックアップは作成されません。このオプションを渡すと、削除前にそのパスへバックアップが書き込まれます。
 
 **主なオプション:** `-l` / `--locale`, `--dry-run`, `-y` / `--yes`, `-f` / `--force`, `--keep-files`, `--backup`

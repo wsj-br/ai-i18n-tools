@@ -48,7 +48,7 @@ VitePress [국제화](https://vitepress.dev/guide/i18n)를 연결합니다. 소�
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 기존 사이트에서 i18n 활성화하기
 
-영어 전용 VitePress 구성에서 번역된 페이지가 표시되려면 다음 부분이 필요합니다. [에이전트 프롬프트](#wire-configmts-to-generated-theme-json-one-off)는 테마 카탈로그 부분을 다룹니다.
+번역된 페이지가 표시되려면 영어 전용 VitePress 구성에 다음 요소가 필요합니다. 첫 설정 시 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#run-the-agent-prompt)의 프롬프트를 사용합니다. [테마 카탈로그 프롬프트](#wire-configmts-to-generated-theme-json-one-off)는 첫 번째 `sync` 이후의 후속 작업이며, 이때 탐색 문자열은 여전히 구성에 인라인으로 있습니다.
 
 - 영어용 `locales.root`(`label`, `lang`, `themeConfig`).
 - 대상 로캘당 하나의 `locales[code]` 항목: `label`, `lang`, `link: '/${code}/'` 및 로캘별 `title` / `description`.
@@ -58,7 +58,7 @@ VitePress [국제화](https://vitepress.dev/guide/i18n)를 연결합니다. 소�
 <a id="theme-strings"></a>
 ## 테마 문자열
 
-VitePress 탐색, 사이드바, 바닥글, 검색 자리 표시자 및 기타 `themeConfig` 레이블은 마크다운에서 추출되지 않습니다. **`translate-docs`** 이(가) (문자열이 인라인일 때) `.vitepress/config.mts`에서 소스 로캘 카탈로그를 부트스트랩하고 로캘 테마 JSON 파일을 번역하도록 **`docsOutput.vitepressThemeCatalog`** 을(를) 구성하십시오.
+VitePress 탐색, 사이드바, 푸터, 검색 플레이스홀더 및 기타 `themeConfig` 레이블은 마크다운에서 추출되지 않습니다. `docsOutput.vitepressThemeCatalog`을(를) 구성하여 `translate-docs`가 `.vitepress/config.mts`에서 소스 로케일 카탈로그를 부트스트랩하고(문자열이 인라인일 때) 로케일 테마 JSON 파일을 번역하도록 합니다.
 
 ```json
 {
@@ -82,8 +82,8 @@ VitePress 탐색, 사이드바, 바닥글, 검색 자리 표시자 및 기타 `t
 }
 ```
 
-- **`catalogPath`** — 영어 중첩 JSON. `config.mts`의 부트스트랩은 해당 영어 문자열이 아직 구성에 인라인으로 있는 동안에만 적용됩니다. `themeConfigFor`이(가) 카탈로그를 읽은 후에는 `mergeThemeCatalogs`이(가) 기존 파일을 유지하고 `theme.en.json`이(가) 신뢰할 수 있는 단일 소스가 됩니다. 문구가 변경되면 해당 파일을 편집하십시오(또는 하나의 `sync`를 위해 영어를 `config.mts`에 다시 넣으십시오). 키 이름을 바꾸면 세그먼트 해시(`path`, NUL 바이트, 그 다음 값)가 변경되므로 다음 `sync`은(는) 모든 대상 로캘에 대해 해당 문자열을 한 번씩 다시 번역합니다.
-- **`outputPathTemplate`**(선택 사항) — 로캘별 출력, 기본값: `theme.{locale}.json`이(가) 있는 `catalogPath`와(과) 동일한 디렉터리.
+- `catalogPath` — 영어 중첩 JSON. `config.mts`의 부트스트랩은 해당 영어 문자열이 구성에 인라인으로 있는 동안에만 적용됩니다. `themeConfigFor`가 카탈로그를 읽은 후, `mergeThemeCatalogs`은(는) 기존 파일을 유지하고 `theme.en.json`가 신뢰할 수 있는 소스가 됩니다. 문구가 변경될 때 해당 파일을 편집합니다(또는 하나의 `sync`을(를) 위해 영어를 `config.mts`에 다시 넣습니다). 키 이름을 변경하면 세그먼트 해시(`path`, NUL 바이트, 그 다음 값)가 변경되므로 다음 `sync`은(는) 대상 로케일마다 해당 문자열을 한 번 다시 번역합니다.
+- `outputPathTemplate` (선택 사항) — 로케일별 출력; 기본값: `catalogPath`과(와) 동일한 디렉터리에 `theme.{locale}.json` 포함.
 
 `init -t ui-vitepress`는 또한 해당 파일이 아직 존재하지 않을 때 시작용 `docs/.vitepress/config.mts` 및 `docs/.vitepress/i18n/theme.en.json`를 스캐폴드합니다. 구성은 `loadTheme()`를 통해 카탈로그를 로드하고 `themeConfigFor()`에 표준 VitePress i18n 레이블(`langMenuLabel` 포함)을 연결합니다.
 
@@ -221,11 +221,11 @@ inline on purpose.
 
 | 링크 유형 | GitHub에서 작동 | VitePress에서 작동 |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | 예 | 아니오 — 사이트 라우트를 사용하거나 동기화 중 노멀라이저가 재작성하도록 허용 |
+| `docs/guide/foo.md` | 예 | 아니요 — 사이트 경로를 사용하거나 동기화 중에 정규화 도구가 다시 작성하도록 합니다 |
 | `./LICENSE`, `examples/demo/` | 예 (저장소 상대 경로) | 아니오 — **전체 URL** 사용 |
 | `/guide/foo` | 아니오 | 예 |
 
-**동기화된 README → index 권장 사항:** `README.md`에서 VitePress 콘텐츠 트리 외부의 모든 항목(`LICENSE`, `examples/`, 설정 파일, 에이전트 컨텍스트 파일) 및 `translated-docs/` 아래의 번역된 README 사본에 대해 **전체 URL**을 사용하십시오. 사이트 내 문서 링크에는 `docs/guide/…` 경로(또는 `docs/` 아래 영어 문서에서 사이트 라우트)를 사용하십시오; 동기화 스크립트나 `rewriteVitepressLinks` 노멀라이저가 이를 `/guide/…` 라우트로 변환할 수 있습니다.
+**동기화된 README → index에 대한 권장 사항:** `README.md`에서 VitePress 콘텐츠 트리(`LICENSE`, `examples/`, 구성 파일, 에이전트 컨텍스트 파일) 외부에 있는 모든 항목과 `translated-docs/` 아래의 번역된 README 사본에 **전체 URL**을(를) 사용합니다. 사이트 내 문서 링크에는 `docs/guide/…` 경로(또는 `docs/` 아래 영어 문서의 사이트 경로)를 사용합니다. 동기화 스크립트 또는 `rewriteVitepressLinks` 정규화 도구가 이를 `/guide/…` 경로로 변환할 수 있습니다.
 
 **이 리포지토리는** `README.md`와 `docs/index.md`을 **독립된 파일**로 유지합니다: README는 간결한 GitHub/npm 랜딩 페이지이며, `docs/index.md`는 `/guide/` 및 `/reference/`로 연결되는 문서 사이트 진입점입니다. 상세 가이드는 `docs/` 아래에 있습니다 — README에 긴 참조 자료를 중복하지 마세요. 공유된 정보가 변경되면 각각의 대상 독자에 맞게 업데이트하세요.
 
@@ -242,7 +242,7 @@ inline on purpose.
 
 VitePress는 콘텐츠 루트에서 영어 페이지를 제공하고 `docs/<locale>/…`에서 로케일 복사본을 제공하지만, **페이지 내 링크는 사이트 라우트를 사용해야** 합니다 (`/guide/quick-start`, `/reference/configuration`) — `docs/guide/quick-start.md` 또는 `../guide/quick-start.md`와 같은 저장소 상대 경로를 사용하지 마세요. 이러한 README 스타일의 경로는 GitHub에서는 작동하지만 VitePress 내부에서는 작동하지 않습니다(개발 환경 및 GitHub Pages에서 404 발생).
 
-내장 노멀라이저를 활성화하여 `translate-docs`가 모든 번역 파일의 링크를 자동으로 수정하도록 하세요:
+내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 하세요:
 
 ```json
 "docsOutput": {
@@ -254,9 +254,9 @@ VitePress는 콘텐츠 루트에서 영어 페이지를 제공하고 `docs/<loca
 
 `rewriteVitepressLinks`는 `style`이(가) `"vitepress"`일 때 기본적으로 활성화됩니다.
 
-| 소스 로캘의 작성자 | 정규화 프로그램 이후(소스 로캘 루트 출력) | 정규화 프로그램 이후(번역된 `docs/<locale>/` 출력) |
+| 소스 로케일의 작성자 | 정규화 도구 적용 후 (소스 로케일 루트 출력) | 정규화 도구 적용 후 (번역된 `docs/<locale>/` 출력) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
-| `[JSON](/ko/guide/json)` | `[JSON](/ko/guide/json)` | `[JSON](/pt-BR/guide/json)`(로캘 접두사가 폴더와 일치) |
+| `[JSON](/ko/guide/json)` | `[JSON](/ko/guide/json)` | `[JSON](/pt-BR/guide/json)` (로케일 접두사가 폴더와 일치) |
 | `[Quick start](/ko/guide/quick-start)` 본문 또는 `hero.actions[].link` | 변경 없음 (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
 | 로케일 인덱스의 `[Home](./README.md)` | `/` | `/pt-BR/` |
 | `hero.image.src: /ai-i18n-tools_logo.svg` | 변경 없음 | 변경 없음 (공유 `docs/public/` 에셋) |
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-로케일 라우트에서 nav 하이라이팅이 작동하도록 **`link`** 와 함께 **`activeMatch`** 에 접두사를 지정하세요(`/guide/`이(가) 아닌 `/pt-BR/guide/`). 외부 URL 및 공유 퍼블릭 에셋은 변경되지 않습니다.
+`activeMatch`을(를) `link`과(와) 함께 접두사로 사용하여 로케일 경로(`/guide/`이(가) 아닌 `/pt-BR/guide/`)에서 탐색 하이라이팅이 작동하도록 합니다. 외부 URL 및 공유 공용 자산은 변경되지 않습니다.
 
 VitePress 프로젝트에 `ai-i18n-tools`을(를) **devDependency**로 추가하세요(`examples/vitepress-docs/package.json` 참조). 이를 통해 `config.mts`가 `prefixVitepressThemeConfigLinks`을(를) 임포트할 수 있습니다. 기본 ai-i18n-tools 문서 사이트는 모노레포 체크아웃을 자체적으로 사용(dogfood)하므로 `src/processors/…`에서 직접 임포트합니다. 독립 복사본(degit)은 npm 패키지를 사용해야 합니다.
 

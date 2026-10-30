@@ -68,7 +68,7 @@ Les chemins en dehors de `docsRoot` utilisent par défaut la mise en page [imbri
 
 Définissez `docs[].docsOutput.docsRoot` sur la racine des fichiers écrits en `sourceLocale` (par exemple `"docs"`, `"src/content/docs"` ou `"content/en"` lorsque l'anglais est la source). `sourceLocale` peut être n'importe quelle langue. Lorsque `docsOutput.style = "doc-system"`, vous devez définir `localeSubpath` explicitement (utilisez un alias ci-dessous pour les préréglages). Utilisez `localeSubpath: ""` lorsque les pages traduites se trouvent directement sous `{outputDir}/{locale}/` (style Starlight).
 
-Le JSON de l'interpréteur de commandes Docusaurus de `docusaurusCatalogDir` et d'autres artefacts JSON sous les préréglages du système de documentation suivent la même disposition de dossiers que le markdown. Avec `style: "flat"`, les fichiers d'étiquettes JSON utilisent toujours la forme imbriquée, sauf si vous définissez `jsonPathTemplate`.
+Le JSON de l'interface Docusaurus depuis `docusaurusCatalogDir` et les autres artefacts JSON sous les préréglages du système de documentation suivent la même structure de dossiers que le markdown. Avec `style: "flat"`, les fichiers d'étiquettes JSON utilisent toujours la forme imbriquée à moins que vous ne définissiez `jsonPathTemplate`.
 
 <a id="doc-system-aliases"></a>
 ## Alias du système de documentation
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight fournit des chaînes d'interface pour de nombreuses locales ; les remplacements personnalisés facultatifs utilisent `src/content/i18n/en.json` avec `jsonPathTemplate: "{outputDir}/{locale}.json"` dans un bloc `docs[]` séparé si nécessaire.
 
-Les chaînes de navigation/barre latérale/pied de page de VitePress ne sont pas en markdown — configurez `docsOutput.vitepressThemeCatalog` et traduisez à l'intérieur de **`translate-docs`**. Voir [intégration VitePress](/fr/guide/integrations/vitepress).
+Les chaînes de navigation/barre latérale/pied de page de VitePress ne sont pas en markdown — configurez `docsOutput.vitepressThemeCatalog` et traduisez à l'intérieur de `translate-docs`. Voir [intégration VitePress](/fr/guide/integrations/vitepress).
 
-Le dictionnaire de thème Nextra (`.ts`) et les étiquettes de barre latérale `_meta.ts` ne sont pas en markdown — utilisez `docs[].nextraDictionaryPath` et la collecte automatique `_meta` lorsque `style: "nextra"`, le tout à l'intérieur de **`translate-docs`**. Voir [intégration Nextra](/fr/guide/integrations/nextra).
+Le dictionnaire de thème Nextra (`.ts`) et les étiquettes de barre latérale `_meta.ts` ne sont pas en markdown — utilisez `docs[].nextraDictionaryPath` et la collecte automatique de `_meta` lorsque `style: "nextra"`, le tout à l'intérieur de `translate-docs`. Voir [intégration Nextra](/fr/guide/integrations/nextra).
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Le dictionnaire de thème Nextra (`.ts`) et les étiquettes de barre latérale `
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — dossiers de locale de style Nextra ; utilise le même moteur `doc-system` avec `localeSubpath` vide.
+- `"dir"` — dossiers de locale de style Nextra ; utilise le même moteur `doc-system` avec un `localeSubpath` vide.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Les remplacements d'interface utilisateur de Fumadocs (`lib/layout.shared.ts`) et les étiquettes de barre latérale `meta.json` ne sont pas en markdown — utilisez `docsOutput.fumadocsUiCatalog` et la collecte automatique `meta.json` lorsque `style: "fumadocs"`, le tout à l'intérieur de **`translate-docs`**. Voir [intégration Fumadocs](/fr/guide/integrations/fumadocs).
+Les remplacements d'interface utilisateur Fumadocs (`lib/layout.shared.ts`) et les étiquettes de barre latérale `meta.json` ne sont pas en markdown — utilisez `docsOutput.fumadocsUiCatalog` et la collecte automatique de `meta.json` lorsque `style: "fumadocs"`, le tout à l'intérieur de `translate-docs`. Voir [intégration Fumadocs](/fr/guide/integrations/fumadocs).
 
 Pour la réécriture d'URL de liens et de ressources au-delà des corrections de liens relatifs intégrées, consultez [Réécriture de liens](/fr/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 

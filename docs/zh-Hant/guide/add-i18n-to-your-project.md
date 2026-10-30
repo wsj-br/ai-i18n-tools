@@ -19,20 +19,21 @@
 
 每個逐步教學都遵循相同的順序。您所選的頁面會提供詳細資訊。
 
-1. 安裝 CLI 並設定您的供應商 API 金鑰。Ollama 不需要金鑰。請參閱 [安裝](/zh-Hant/guide/installation) 和 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
-2. 使用該頁面指定的範本執行 `init`。這會寫入 `ai-i18n-tools.config.json`。
-3. 準備專案，讓工具能看見文字。
+1. 安裝 CLI 並設定您的供應商 API 金鑰。Ollama 無需金鑰。[安裝](/zh-Hant/guide/installation) 和 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
+2. 執行 `init`，並使用該頁面指定的範本。這會寫入 `ai-i18n-tools.config.json`。
+3. 準備專案，讓工具能夠看到文字。使用該頁面的代理程式提示，或同一頁面上的手動步驟。
 4. 執行 `ai-i18n-tools sync`，然後執行 `ai-i18n-tools status`。
 5. 載入輸出，檢查一個目標語言，並在來源變更時重新執行 `sync`。快取只會將新增或變更的文字傳送給模型。
 
 <a id="pages-in-this-section"></a>
 ## 本節頁面
 
-| 您的專案類型 | 頁面 | 該頁面涵蓋內容 |
+| 您擁有 | 頁面 | 該頁面涵蓋的內容 |
 | --- | --- | --- |
-| 一個 JS/TS 應用程式 (React、Next.js、Node、CLI)，其按鈕和訊息仍為純文字 | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) | 安裝 i18next、新增啟動程式碼、用 `t()` 包裝字面值，然後執行 `extract` 和 `translate-ui` |
-| 一個 Python 應用程式 (Streamlit、FastAPI、Flask、Django、gettext) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) | 使用 `t()` 或 `_()` 包裝，或保留 GNU gettext。CLI 可透過獨立可執行檔執行，無需安裝 Node.js |
-| 一個文件或行銷網站 (VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、純 HTML) | [為網站或文件站新增 i18n](/zh-Hant/guide/add-i18n-to-website) | 啟用框架自身的語言路由，然後翻譯頁面和主題標籤 |
+| 一個 JS/TS 應用程式 (React、Next.js、Node、CLI)，其按鈕和訊息仍為純文字 | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) | 安裝 i18next，新增啟動程式碼，將字面值包裝在 `t()` 中，並新增語言切換器，然後 `extract` 和 `translate-ui` |
+| 一個 Python 應用程式 (Streamlit、FastAPI、Flask、桌面、指令碼) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) | 放置 `i18n.py` 輔助程式，包裝 `t()` 或 `_()`，新增語言切換器。CLI 可以從獨立的可執行檔執行，無需安裝 Node.js |
+| 一個 Django 應用程式、使用 Flask-Babel 目錄的 Flask，或任何已使用 GNU gettext 的應用程式 | [為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext) | 保留 `gettext`、`{% blocktranslate %}` 和您的 `.po` 檔案。該工具會填入並編譯目錄 |
+| 一個文件或行銷網站 (VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、純 HTML) | [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website) | 使用該頁面的代理程式提示啟用框架的 i18n，然後 `sync` 以翻譯頁面和主題標籤 |
 | 一個儲存庫 README 和其他 Markdown 檔案，通常與應用程式放在一起 | [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme) | 每種語言一個檔案 (`translated-docs/README.de.md`)，並在 README 中加入一個語言列。`init --with-readme` 會將該區塊新增至任何範本 |
 | 一個儲存庫中包含上述多種類型 | [結合管線](/zh-Hant/guide/combining-pipelines) | 一個設定檔和一個 `sync`。常見的組合是應用程式 UI 字串加上 README |
 | Intlayer 字典，且您想保留 Intlayer | [原地翻譯 Intlayer](/zh-Hant/guide/translating-intlayer) | `translate-intlayer` 會填補 `*.content.ts` 內遺失和過時的葉節點 |

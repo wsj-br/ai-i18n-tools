@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Idioma de la interfaz de usuario de la herramienta
 
-La `ai-i18n-tools` localiza su propia interfaz de usuario (texto de ayuda de la CLI, mensajes de registro/resumen/error de alto tráfico y el Panel de traducción) independientemente de la `sourceLocale` / `targetLocales` de su proyecto. No se requiere configuración: por defecto, la herramienta sigue la configuración regional de su sistema operativo.
+La `ai-i18n-tools` localiza su propia interfaz de usuario — texto de ayuda de la CLI, mensajes de registro/resumen/error frecuentes y el Panel de Traducción — independientemente de la `sourceLocale` / `targetLocales` de su proyecto. No se requiere configuración: por defecto, la herramienta sigue la configuración regional de su sistema operativo.
 
 <a id="locale-resolution"></a>
 ## Resolución de la configuración regional
@@ -26,7 +26,7 @@ Inglés (Reino Unido, origen), alemán, español, francés, hindi, japonés, cor
 <a id="translation-dashboard"></a>
 ## Panel de traducción
 
-El Panel de traducción lee la configuración regional resuelta, la dirección del diseño y el paquete de traducción de `GET /api/ui-i18n` y los aplica al cargar (establece `<html lang>` / `dir` y localiza el marcado estático a través de los atributos `data-i18n*`).
+El Panel de Traducción lee la configuración regional resuelta, la dirección del diseño y el paquete de traducción de `GET /api/ui-i18n` y los aplica al cargar (establece `<html lang>` / `dir` y localiza el marcado estático a través de atributos `data-i18n*`).
 
 <a id="related"></a>
 ## Relacionado

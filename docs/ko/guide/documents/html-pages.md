@@ -139,11 +139,11 @@ HTML 추출기는 다음을 번역합니다:
 | `{llocale}` | 소문자 로케일 |
 | `{LOCALE}` | 대문자 로케일 |
 
-`img/trulli.jpg`은 `img/trulli-pt-BR.jpg`이 됩니다. `onlyIfExists: true`(기본값)를 사용하면 해당 URL은 지역화된 파일이 존재할 때만 사용되며, 그렇지 않으면 원본 공유 자산이 유지됩니다. 다른 빌드나 CDN 단계에서 해당 파일을 보장하는 경우에만 `onlyIfExists: false`을 설정하세요.
+`img/trulli.jpg`은(는) `img/trulli-pt-BR.jpg`이(가) 됩니다. `onlyIfExists: true` (기본값)을(를) 사용하면 지역화된 파일이 존재할 때만 해당 URL이 사용되며, 그렇지 않으면 원래 공유 자산이 유지됩니다. 다른 빌드 또는 CDN 단계에서 해당 파일들을 보장하는 경우에만 `onlyIfExists: false`을(를) 설정하세요.
 
-`include`은 `img/**`과 같은 URL 경로와 일치합니다. `assetRoot`를 사용하여 지역화 후보, 특히 `/img/trulli.jpg`과 같은 루트 상대 URL이 확인되는 파일 시스템 디렉터리를 설정하세요.
+`include`은(는) `img/**`과(와) 같은 URL 경로와 일치합니다. `assetRoot`을(를) 사용하여 지역화된 후보(특히 `/img/trulli.jpg`과(와) 같은 루트 상대 URL)가 확인되는 파일 시스템 디렉터리를 설정하세요.
 
-동일한 지역화 규칙이 `srcset`, `poster`, `<source src>`, 아이콘 `<link href>` 및 `og:image` / `twitter:image`에 적용됩니다. 파이프라인은 참조를 재작성하지만 자산 파일을 생성, 번역 또는 복사하지는 않습니다. CSS `url()` 값은 재작성되지 않습니다.
+동일한 지역화 규칙이 `srcset`, `poster`, `<source src>`, 아이콘 `<link href>`, 그리고 `og:image` / `twitter:image`에 적용됩니다. 파이프라인은 참조를 다시 작성하지만, 자산 파일을 생성, 번역 또는 복사하지 않습니다. CSS `url()` 값은 다시 작성되지 않습니다.
 
 <a id="language-list-and-hreflang"></a>
 ## 언어 목록 및 hreflang
@@ -213,7 +213,7 @@ HTML 추출기는 다음을 번역합니다:
 | 출력이 `site/pt-BR/site/index.html`임 | 소스 접두사가 제거되도록 `docsOutput.docsRoot`을 `"site"`로 설정하세요. |
 | 링크가 여전히 영어 페이지를 가리킴 | 상대적 `.html` / `.htm` 링크를 사용하고, 대상 페이지를 동일한 `docs[]` 블록에 포함하세요. |
 | 로캘 페이지에서 이미지 경로가 손상됨 | 깊이 재작성이 적용될 수 있도록 상대 경로로 유지하세요. CSS `url()`은 재작성되지 않는다는 점을 유의하세요. |
-| 지역화된 이미지가 선택되지 않음 | `localizedAssets.include`, 파일 이름 `pattern`, 그리고 `onlyIfExists`이 true일 때 후보가 존재하는지 확인하세요. |
+| 지역화된 이미지가 선택되지 않음 | `localizedAssets.include`, 파일 이름 `pattern`, 그리고 `onlyIfExists`가 true일 때 후보가 존재하는지 확인하세요. |
 | 언어 목록이 비어 있거나 변경되지 않음 | 두 마커 주석을 올바른 순서로 유지하고 `script`, `style`, `pre` 및 `code` 외부에 배치하세요. |
 | 드롭다운이 탐색되지 않음 | `<select>`에 `data-lang-select`을(를) 추가하고 `html-runtime/lang-select.js`을(를) 로드합니다. |
 | Hreflang URL이 잘못된 호스트를 사용함 | `hreflang.siteUrl`을(를) 최종 퍼블릭 오리진으로 설정합니다. |

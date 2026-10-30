@@ -68,11 +68,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Python-App
 
-Umschließen Sie benutzerorientierten Text und laden Sie übersetzte Nachrichten mit einem generierten Helfer, oder behalten Sie natives gettext bei. Führen Sie die Übersetzungs-CLI aus einer eigenständigen ausführbaren Datei ohne separate Node.js-Installation aus.
+Umschließen Sie benutzerorientierten Text und laden Sie übersetzte Nachrichten mit einem generierten Helfer. Verwenden Sie bereits Django oder GNU gettext? Behalten Sie Ihre gettext-Aufrufe bei und lassen Sie das Tool die `.po`-Dateien füllen. Führen Sie die Übersetzungs-CLI von einer eigenständigen ausführbaren Datei ohne separate Node.js-Installation aus.
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[I18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python)
+[i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) · [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">
@@ -86,7 +86,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <a id="website-or-documentation"></a>
 ### Website oder Dokumentation
 
-Lokalisierte Seiten veröffentlichen und sie mit den Sprachrouten Ihrer Website verbinden. Befolgen Sie frameworkspezifische Schritte für Navigation, Theme-Bezeichnungen und das Sprachmenü.
+Veröffentlichen Sie lokalisierte Seiten und verbinden Sie diese mit den Sprachrouten Ihrer Website. Befolgen Sie frameworkspezifische Schritte für Navigation, Theme-Labels und das Sprachmenü.
 
 VitePress · Starlight · Docusaurus · Astro
 
@@ -120,9 +120,9 @@ Sie sind sich nicht sicher, welcher Weg der richtige ist? [i18n zu Ihrem Projekt
 
 <div class="home-steps">
 
-1. **Bereiten Sie Ihr Projekt vor.** Wählen Sie Ihre Sprachen, einen Übersetzungsanbieter und die zu testenden Modelle aus. Markieren Sie bei Apps den für Benutzer sichtbaren Text und richten Sie die Übersetzungs-Runtime ein. Aktivieren Sie bei Websites das Sprach-Routing Ihres Frameworks. Die Anleitungen enthalten Prompts für Coding-Agenten, wo Änderungen an der Quelle erforderlich sind.
-2. **Übersetzen Sie in Dateien, die Sie verwenden können.** Sobald die Einrichtung abgeschlossen ist, führen Sie `sync` aus. Es extrahiert unterstützte App-Strings, übersetzt die von Ihnen aktivierten Inhalte und schreibt Locale-Dateien oder lokalisierte Seiten.
-3. **Laden, prüfen und fortfahren.** Verbinden Sie die Ausgabe mit Ihrer App oder Website, richten Sie die Sprachumschaltung ein und prüfen Sie eine Zielsprache. Führen Sie den Befehl nach Änderungen an der Quelle erneut aus, um neuen oder geänderten Text zu übersetzen.
+1. **Projekt vorbereiten.** Wählen Sie Ihre Sprachen, einen Übersetzungsanbieter und die zu testenden Modelle aus. Für Apps markieren Sie benutzerorientierten Text und richten die Übersetzungs-Laufzeitumgebung ein. Für Websites aktivieren Sie das Sprach-Routing Ihres Frameworks. Die Anleitungen enthalten Coding-Agent-Prompts, wo Quellcode-Änderungen erforderlich sind.
+2. **In verwendbare Dateien übersetzen.** Sobald die Einrichtung abgeschlossen ist, führen Sie `sync` aus. Es extrahiert unterstützte App-Strings, übersetzt den von Ihnen aktivierten Inhalt und schreibt Lokalisierungsdateien oder lokalisierte Seiten.
+3. **Laden, prüfen und fortfahren.** Verbinden Sie die Ausgabe mit Ihrer App oder Website, richten Sie die Sprachumschaltung ein und überprüfen Sie eine Zielsprache. Führen Sie nach Quellcode-Änderungen erneut aus, um neuen oder geänderten Text zu übersetzen.
 
 </div>
 
@@ -159,7 +159,7 @@ t("Save changes");
 
 :::
 
-Der Quellsatz bleibt in Ihrem Code lesbar. Ihre App lädt die generierten Lokalisierungsdateien zur Laufzeit. Möchten Sie die vollständige Implementierung sehen? [Erkunden Sie das funktionierende Next.js-Beispiel](/de/examples#nextjs-app). Websites verfolgen einen anderen Ansatz: [generieren Sie lokalisierte Seiten](/de/guide/add-i18n-to-website), anstatt jeden Absatz zu umschließen.
+Der Quelltext bleibt in Ihrem Code lesbar. Ihre App lädt die generierten Lokalisierungsdateien zur Laufzeit. Möchten Sie die vollständige Anbindung sehen? [Erkunden Sie das funktionierende Next.js-Beispiel](/de/examples#nextjs-app). Websites verfolgen einen anderen Ansatz: [generieren Sie lokalisierte Seiten](/de/guide/add-i18n-to-website), anstatt jeden Absatz zu umschließen.
 
 <a id="built-for-the-next-update-too"></a>
 ## Auch für das nächste Update ausgelegt
@@ -286,7 +286,7 @@ Sehen Sie, wie eine Streamlit-App ihre Nachrichten kapselt und übersetztes JSON
 <a id="docs-in-more-languages"></a>
 ### Dokumentation in weiteren Sprachen
 
-Sehen Sie übersetzte VitePress-Seiten zusammen mit lokalisierter Navigation und Theme-Bezeichnungen.
+Sehen Sie übersetzte VitePress-Seiten zusammen mit lokalisierter Navigation und Theme-Labels.
 
 [Das VitePress-Beispiel erkunden](/de/examples#vitepress-docs)
 

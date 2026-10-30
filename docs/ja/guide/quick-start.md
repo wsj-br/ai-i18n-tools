@@ -71,7 +71,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-これらのセットアップには`ui-python-gettext`、`ui-python-flask`、または`ui-python-django`を使用します。次に、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)に進みます。
+その後、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)に従ってください。
+
+Djangoアプリ、Flask-Babelカタログを使用するFlask、またはすでに`gettext`を呼び出しているアプリは、それらの呼び出しを保持します。代わりに、`ui-python-django`、`ui-python-flask`、または`ui-python-gettext`でスキャフォールドし、その後、[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)に従ってください。
 
 <a id="a-website-or-documentation-site"></a>
 ### ウェブサイトまたはドキュメントサイト
@@ -92,7 +94,7 @@ ai-i18n-tools suggest-models --apply
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-まず、使用しているフレームワーク独自のi18nルーティングを有効にする必要があります。その後、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)に従ってください。
+その後、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)に従ってください。そのエージェントプロンプトは、フレームワークのi18nルーティングを有効にします。その作業を確認した後、`sync`を実行します。
 
 <a id="a-readme-or-markdown-docs"></a>
 ### READMEまたはMarkdownドキュメント
@@ -123,11 +125,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 プロジェクトの準備ができたら:
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync`は、設定で有効になっているすべてのステップを順番に実行します。`status`は、ロケールごとに翻訳された内容を表示します。ツールがテキストを認識できないプロジェクトで初めて実行した場合、エラーなしで終了し、有用なものは何も書き込まれません。そのため、`status`に文字列が表示されない場合は、あなたのパスに対応するガイドに戻ってください。
+`doctor`は、設定、パス、プロバイダー、および環境が準備できていることを確認します。`--local`を渡さない限り、プロバイダーでモデルIDも検証します。`sync`は、設定で有効になっているすべてのステップを順番に実行します。`status`は、ロケールごとに何が翻訳されているかを表示します。ツールがテキストを認識できないプロジェクトで初回実行すると、エラーなしで終了し、何も有用なものを書き込みません。したがって、`status`が文字列を表示しない場合は、パスのガイドに戻ってください。
 
 `suggest-models` は、公開されているベンチマークからアクティブなプロバイダーのチャットモデルをランク付けします。`suggest-models --apply` は `translationModels` を置き換え、`uiModels` と `localeModels` はそのままにします。同じランキングがダッシュボードの **モデル** タブにあります。ランキングの仕組み、およびリストに複数のモデルが含まれる理由については、[AI モデル](/ja/guide/ai-models) を参照してください。コマンドリファレンス: [suggest-models](/ja/reference/cli-commands/models#suggest-models).
 
@@ -158,7 +161,7 @@ ai-i18n-tools status
 
 個々の翻訳スクリプトを連結するよりも `sync` を使用してください。1つのステップを単独で実行する必要がある場合にのみ、シングルステップのスクリプトを使用してください。
 
-CLIの出力とダッシュボードを別の言語で表示するには、`-L <code>` を渡すか、`AI_I18N_LANG` を設定します。[ツールUIの言語](/ja/guide/tool-ui-language) を参照してください。
+CLI出力とダッシュボードを別の言語で表示するには、`-L <code>`を渡すか、`AI_I18N_LANG`を設定します。[ツールのUI言語](/ja/guide/tool-ui-language)を参照してください。
 
 <a id="combined-sync"></a>
 

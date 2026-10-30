@@ -48,7 +48,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在现有站点中启用 i18n
 
-一个仅支持英语的 Nextra 4 站点需要一个区域设置文件夹、一个路由参数和 Next.js i18n 配置，才能让 `translate-docs` 有地方可写。[字典提示](#agent-prompt-dictionary-and-routes) 可以一次性完成此操作。清单：
+仅限英文的 Nextra 4 站点需要语言环境文件夹、路由参数和 Next.js i18n 配置，然后 `translate-docs` 才能写入内容。首次设置使用 [添加 i18n 到网站或文档站点](/zh-Hans/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。[字典提示](#agent-prompt-dictionary-and-routes) 是针对相同路由和字典的详细后续步骤。清单：
 
 - 将 MDX 移动到 `content/en/`（英语是一个区域设置文件夹，而不是内容根目录）。
 - `next.config` 中的 `i18n.locales` 和 `defaultLocale`。
@@ -60,7 +60,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="theme-strings"></a>
 ## 主题字符串
 
-Nextra 主题界面元素（`editLink`、搜索占位符、页脚等）不会从 markdown 中提取。请在 TypeScript 字典模块（例如 `app/_dictionaries/en.ts`）中编写英文字符串，并在 **`translate-docs`** 中对其进行翻译：
+Nextra 主题界面元素 (`editLink`、搜索占位符、页脚等) 不会从 Markdown 中提取。请在 TypeScript 字典模块中编写英文字符串 (例如 `app/_dictionaries/en.ts`)，并在 `translate-docs` 中翻译它：
 
 ```json
 {
@@ -88,7 +88,7 @@ Nextra 主题界面元素（`editLink`、搜索占位符、页脚等）不会从
 <a id="sidebar-labels-_metats"></a>
 ## 侧边栏标签（`_meta.ts`）
 
-Nextra 3+ 使用 TypeScript `_meta.ts` / `_meta.tsx` 文件来定义侧边栏结构和标题。当 `docsOutput.style` 为 `"nextra"` 时，**`translate-docs`** 会自动收集 `docsRoot` 下的 `_meta.ts`、`_meta.tsx` 和 `_meta.js`，翻译 `export default { … }` meta 映射中的字符串字面量，并在 `content/{locale}/**` 下写入镜像文件。
+Nextra 3+ 使用 TypeScript `_meta.ts` / `_meta.tsx` 文件来定义侧边栏结构和标题。当 `docsOutput.style` 为 `"nextra"` 时，`translate-docs` 会自动收集 `docsRoot` 下的 `_meta.ts`、`_meta.tsx` 和 `_meta.js`，翻译 `export default { … }` 元数据映射中的字符串字面量，并在 `content/{locale}/**` 下写入镜像文件。
 
 **推荐模式：** 在 `content/en/**/_meta.ts` 中保留内联的英文字面量（与 [swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site) 相同）：
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra 通过 Next.js `i18n`（`/guide/getting-started`、`/pt-BR/guide/getting-started`）提供带区域设置前缀的路由。**页面内链接应保持区域设置中立**（`/guide/getting-started`），以便 Next.js 能自动添加当前区域设置前缀。
 
-启用内置的规范化器，以便 `translate-docs` 自动修复每个翻译文件中的链接：
+启用内置规范化器，以便 `translate-docs` 自动修复每个翻译文件中的链接：
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ Nextra 通过 Next.js `i18n`（`/guide/getting-started`、`/pt-BR/guide/getting-
 
 当 `style` 为 `"nextra"` 时，`rewriteNextraLinks` 默认启用。
 
-| 在源区域设置中创作 | 经过规范化工具处理后 |
+| 在源语言环境编写 | 规范化后 |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/zh-Hans/guide/getting-started)` |
 | `[Guide](/zh-Hans/guide/getting-started.mdx)` | `[Guide](/zh-Hans/guide/getting-started)` |
@@ -305,9 +305,9 @@ Nextra 通过 Next.js `i18n`（`/guide/getting-started`、`/pt-BR/guide/getting-
 
 **编写规则**
 
-- 跨页面文档链接：在英文 MDX 中使用**区域设置中立的站点路由**（`/guide/…`），或使用 `content/en/…` / 相对 `.mdx` 路径，让规范化器在 `sync` 期间重写它们。
-- 内容树之外的仓库文件：使用**完整 URL**。
-- **不要**手动编辑 `content/<locale>/` 中的链接 — 请使用 `sync` / `translate-docs` 重新生成。
+- 跨页面文档链接：在英文 MDX 中使用 **语言环境无关的站点路由** (`/guide/…`)，或使用 `content/en/…` / 相对 `.mdx` 路径，并让规范化器在 `sync` 期间重写它们。
+- 内容树之外的仓库文件：使用 **完整 URL**。
+- **不要**手动编辑 `content/<locale>/` 中的链接 — 使用 `sync` / `translate-docs` 重新生成。
 
 <a id="optional-locale-proxy"></a>
 ## 可选的区域设置代理
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**站点区域设置代码与 `sourceLocale` 的对比：** Nextra 和 Next.js 在 `next.config`、`content/{locale}/` 和 `NEXT_LOCALE` cookie 中使用短路由代码（`en`、`pt-BR`、`zh-Hans`）。`ai-i18n-tools.config.json` 中的 `sourceLocale` 可以是 BCP-47 标签（例如 `en-GB`）以提高翻译质量 — 该标签**不是**站点路由。如果浏览器 cookie 或 `Accept-Language` 解析为 `i18n.locales` 之外的标签（例如仅配置了 `en` 时的 `en-GB`），Nextra 的默认代理可能会陷入重定向循环。[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 演示项目包装了 `nextra/locales`，在委托之前将无效的 cookie 和路径重置为默认站点区域设置。
+**站点语言环境代码与 `sourceLocale`：** Nextra 和 Next.js 在 `next.config`、`content/{locale}/` 和 `NEXT_LOCALE` cookie 中使用短路由代码 (`en`、`pt-BR`、`zh-Hans`)。`ai-i18n-tools.config.json` 中的 `sourceLocale` 可以是 BCP-47 标签，例如 `en-GB`，用于翻译质量 — 该标签**不是**站点路由。如果浏览器 cookie 或 `Accept-Language` 解析为 `i18n.locales` 之外的标签 (例如，当仅配置了 `en` 时为 `en-GB`)，Nextra 的默认代理可能会陷入重定向循环。[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) 演示包装了 `nextra/locales`，以便在委托之前将无效的 cookie 和路径重置为默认站点语言环境。
 
 这不适用于 `output: 'export'` 静态导出。参见 [Nextra i18n 文档](https://nextra.site/docs/guide/i18n)。
 

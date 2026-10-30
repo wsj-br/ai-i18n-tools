@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Python 애플리케이션용 선택기입니다. 추출, 카탈로그, 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱에 대한 단계별 안내는 [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python)이며, [`i18n.py` 프롬프트](/ko/guide/add-i18n-to-python#run-the-agent-prompt)와 [Django / gettext 프롬프트](/ko/guide/add-i18n-to-python#agent-prompt-django-gettext)가 포함됩니다.
+Python 애플리케이션용 선택기. 추출, 카탈로그 및 호출 형태는 [Python 애플리케이션](/ko/guide/ui-strings/python)에 있습니다. 기존 단일 로케일 앱을 위한 단계별 가이드는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)이며, [에이전트 프롬프트](/ko/guide/add-i18n-to-python#run-the-agent-prompt)가 함께 제공됩니다. Django, Flask-Babel 카탈로그 및 이미 gettext를 사용하는 앱에는 자체적인 연습 과정과 프롬프트가 있습니다: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생성된 `i18n.py` 헬퍼(Python 3.10 이상)를 호출합니다. Django는 Django의 gettext를 유지합니다. 저장소에는 `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` 및 `examples/python-gettext`라는 4개의 실행 가능한 복사본이 포함되어 있습니다. Pyramid, Django, Tkinter, Qt 및 PyWebView에는 별도의 예제 디렉터리가 없습니다.
 
@@ -29,7 +29,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생�
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()`은 로케일을 세션 상태와 쿼리 문자열에 기록합니다. 모든 위젯에 고정된 `key`을 부여하십시오. 자세한 내용: [Locale — Streamlit](/ko/guide/ui-strings/python#streamlit).
+`set_locale`를 `st.set_page_config` 및 다른 모든 `t()` 전에 호출하세요. 레이블을 번역할 수 있도록 앱에 메뉴를 그리세요. `streamlit_language_selector()`는 위젯이 그려질 때 로케일을 세션 상태와 쿼리 문자열에 기록하는데, 이는 번역된 페이지 제목에는 너무 늦으며, 해당 레이블은 영어로 유지됩니다. 레시피: [언어 전환 추가](/ko/guide/add-i18n-to-python#step-4-add-a-language-switch). 모든 위젯에 고정된 `key`를 부여하세요. 세부 정보: [로케일 — Streamlit](/ko/guide/ui-strings/python#streamlit).
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide 및 PyWebView는 생�
 <a id="django"></a>
 ### Django
 
-`gettext`, `ngettext` 및 `{% blocktrans %}`를 유지하십시오. `init -t ui-python-django`은 Django의 `locale/` 디렉터리 및 `django` 도메인과 일치하며 Django의 런타임을 그대로 둡니다. 자세한 내용: [Locale — Django](/ko/guide/ui-strings/python#django).
+`gettext`, `ngettext` 및 `{% blocktrans %}`를 유지하세요. `init -t ui-python-django`는 Django의 `locale/` 디렉터리와 `django` 도메인과 일치하며, Django의 런타임을 그대로 둡니다. 연습 과정: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext). 세부 정보: [로케일 — Django](/ko/guide/ui-strings/python#django).
 
 <a id="existing-gettext"></a>
 ### 기존 gettext
 
-`_()`, `gettext()` 및 `ngettext()`를 그대로 두십시오. `ui.gettext`을 현재 카탈로그 트리로 지정하고 `extract`를 실행한 다음 `translate-ui`를 실행하십시오. [python-gettext](/ko/examples#python-gettext) 예제는 gettext 전용(`flatOutput: false`)입니다. `init -t ui-python-gettext`도 플랫 JSON을 작성합니다. 자세한 내용: [Locale — Existing gettext](/ko/guide/ui-strings/python#gettext).
+`_()`, `gettext()` 및 `ngettext()`를 그대로 두세요. `ui.gettext`를 현재 카탈로그 트리에 지정하고 `extract`를 실행한 다음 `translate-ui`를 실행하세요. [python-gettext](/ko/examples#python-gettext) 예시는 gettext 전용입니다 (`flatOutput: false`). `init -t ui-python-gettext`는 또한 플랫 JSON을 기록합니다. 연습 과정: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext). 세부 정보: [로케일 — 기존 gettext](/ko/guide/ui-strings/python#gettext).
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt 및 PyWebView

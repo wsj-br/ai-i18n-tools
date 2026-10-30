@@ -3,9 +3,9 @@
 
 O Painel de Tradução é uma interface de usuário web local para inspecionar e editar os dados de tradução do seu projeto. Ele lê de três armazenamentos:
 
-- Cache SQLite (`cacheDir`) — traduções de segmentos de documentação, registros de falhas, varreduras de problemas de markdown, uso de chamadas de API faturadas
-- **`strings.json`** — catálogo de strings da UI (strings simples e grupos de plural)
-- **CSV de glossário do usuário** (`glossary.userGlossary`) — dicas de terminologia para `translate-ui` e `proofread-ui`
+- cache SQLite (`cacheDir`) — traduções de segmentos de documentação, registros de falha, verificações de problemas de Markdown, uso faturado de chamadas de API
+- `strings.json` — catálogo de strings da UI (strings simples e grupos de plural)
+- **CSV do glossário do usuário** (`glossary.userGlossary`) — dicas de terminologia para `translate-ui` e `proofread-ui`
 
 Use-o após uma execução de tradução para encontrar problemas, substituir saídas ruins ou revisar a cobertura do cache — sem precisar vasculhar o SQLite ou JSON manualmente.
 
@@ -48,7 +48,7 @@ A interface do painel usa a mesma resolução de localidade que a CLI: `-L` / `-
 | String ou plural da UI | `sync` ou `translate-ui` simples | `--force` (sobrescreve `user-edited` linhas) |
 | Linha do glossário | próximo `translate-ui` ou `proofread-ui` | — |
 
-**Documentação (cache SQLite)** — Edições manuais são marcadas com o modelo `user-edited` no cache. Edições que falham na verificação do sistema de escrita do local (por exemplo, hindi romanizado para `hi`) exibem um aviso; a confirmação salva o texto de qualquer forma. Reexecutar `translate-docs` ou `sync` em uma fonte inalterada reutiliza a tradução em cache (sem chamada LLM). Execute `sync --force-update` ou `translate-docs --force-update` para atualizar o markdown em disco a partir do cache. Use `--check-cache` para revalidar locais de script nativo sem reescrever todos os arquivos (incluindo edições de script incorretas confirmadas). Use `--force` apenas se quiser ignorar o cache e retraduzir do LLM (sobrescrevendo correções manuais).
+**Documentação (cache SQLite)** — Edições manuais são marcadas com o modelo `user-edited` no cache. Edições que falham na verificação do sistema de escrita da localidade (por exemplo, hindi romanizado para `hi`) exibem um aviso; confirmar salva o texto mesmo assim. Executar novamente `translate-docs` ou `sync` em uma fonte inalterada reutiliza a tradução em cache (sem chamada de LLM). Execute `sync --force-update` ou `translate-docs --force-update` para atualizar o Markdown em disco a partir do cache. Use `--check-cache` para revalidar localidades de script nativo sem reescrever cada arquivo (incluindo edições confirmadas com script incorreto). Use `--force` apenas se quiser ignorar o cache e retraduzir do LLM (sobrescrevendo correções manuais).
 
 **Strings da UI (`strings.json`)** — Edições manuais são marcadas com `user-edited` em `models[locale]`. Reexecutar `translate-ui` ou `sync` ignora entradas que já possuem uma tradução. Use `--force` nos comandos da UI para re-traduzir e sobrescrever correções manuais.
 

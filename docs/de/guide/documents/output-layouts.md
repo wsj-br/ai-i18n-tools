@@ -68,7 +68,7 @@ Pfade außerhalb von `docsRoot` greifen auf das [verschachtelte](#nested-default
 
 Setzen Sie `docs[].docsOutput.docsRoot` auf das Stammverzeichnis der in `sourceLocale` geschriebenen Dateien (zum Beispiel `"docs"`, `"src/content/docs"` oder `"content/en"`, wenn Englisch die Ausgangssprache ist). `sourceLocale` kann jede Sprache sein. Wenn `docsOutput.style = "doc-system"`, müssen Sie `localeSubpath` explizit festlegen (verwenden Sie einen Alias unten für Voreinstellungen). Verwenden Sie `localeSubpath: ""`, wenn übersetzte Seiten direkt unter `{outputDir}/{locale}/` liegen (im Starlight-Stil).
 
-Docusaurus-Shell-JSON aus `docusaurusCatalogDir` und andere JSON-Artefakte unter Doc-System-Voreinstellungen folgen dem gleichen Ordnerlayout wie Markdown. Mit `style: "flat"` verwenden JSON-Label-Dateien weiterhin die verschachtelte Form, es sei denn, Sie legen `jsonPathTemplate` fest.
+Docusaurus Shell-JSON von `docusaurusCatalogDir` und andere JSON-Artefakte unter Doc-System-Presets folgen demselben Ordnerlayout wie Markdown. Mit `style: "flat"` verwenden JSON-Label-Dateien immer noch die verschachtelte Form, es sei denn, Sie legen `jsonPathTemplate` fest.
 
 <a id="doc-system-aliases"></a>
 ## Doc-System-Aliase
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight liefert UI-Zeichenketten für viele Sprachen; optionale benutzerdefinierte UI-Überschreibungen verwenden `src/content/i18n/en.json` mit `jsonPathTemplate: "{outputDir}/{locale}.json"` in einem separaten `docs[]`-Block, wenn nötig.
 
-VitePress Navigations-/Seitenleisten-/Fußzeilen-Strings sind nicht in Markdown – konfigurieren Sie `docsOutput.vitepressThemeCatalog` und übersetzen Sie innerhalb von **`translate-docs`**. Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
+VitePress Navigations-/Sidebar-/Footer-Strings sind nicht in Markdown — konfigurieren Sie `docsOutput.vitepressThemeCatalog` und übersetzen Sie innerhalb von `translate-docs`. Siehe [VitePress-Integration](/de/guide/integrations/vitepress).
 
-Nextra Theme-Wörterbuch (`.ts`) und `_meta.ts` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docs[].nextraDictionaryPath` und die automatische `_meta`-Sammlung, wenn `style: "nextra"`, alles innerhalb von **`translate-docs`**. Siehe [Nextra-Integration](/de/guide/integrations/nextra).
+Nextra Theme-Wörterbuch (`.ts`) und `_meta.ts` Sidebar-Labels sind nicht in Markdown — verwenden Sie `docs[].nextraDictionaryPath` und die automatische `_meta`-Sammlung, wenn `style: "nextra"`, alles innerhalb von `translate-docs`. Siehe [Nextra-Integration](/de/guide/integrations/nextra).
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra Theme-Wörterbuch (`.ts`) und `_meta.ts` Seitenleistenbeschriftungen sind
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** – Locale-Ordner im Nextra-Stil; verwendet die gleiche `doc-system`-Engine mit leerem `localeSubpath`.
+- `"dir"` — Nextra-Stil-Locale-Ordner; verwendet dieselbe `doc-system`-Engine mit leerem `localeSubpath`.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs UI-Überschreibungen (`lib/layout.shared.ts`) und `meta.json` Seitenleistenbeschriftungen sind nicht in Markdown – verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von **`translate-docs`**. Siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs).
+Fumadocs UI-Overrides (`lib/layout.shared.ts`) und `meta.json` Sidebar-Labels sind nicht in Markdown — verwenden Sie `docsOutput.fumadocsUiCatalog` und die automatische `meta.json`-Sammlung, wenn `style: "fumadocs"`, alles innerhalb von `translate-docs`. Siehe [Fumadocs-Integration](/de/guide/integrations/fumadocs).
 
 Informationen zum Umschreiben von Link- und Asset-URLs, die über die integrierten Korrekturen für relative Links hinausgehen, finden Sie unter [Link-Umschreibung](/de/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 

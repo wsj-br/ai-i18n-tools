@@ -40,7 +40,7 @@ Una hoja+localización se traduce cuando la localización está ausente de la ho
 
 **Opciones clave:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]`: archivos/directorios/globs a escanear (predeterminado: el `sourceRoots` del bloque). `-l` / `--locale`: localizaciones de destino separadas por comas para rellenar (predeterminado: el `targetLocales` configurado del bloque). `--ui-block`: índice de base cero, descripción o ruta `stringsJson` (predeterminado: bloque 0). `-j` paraleliza las localizaciones.
+`[paths...]`: archivos/directorios/globs a escanear (predeterminado: el `sourceRoots` del bloque). `-l` / `--locale`: configuraciones regionales de destino separadas por comas para completar (predeterminado: el `targetLocales` configurado del bloque). `--ui-block`: índice de base cero, descripción o ruta de `stringsJson` (predeterminado: bloque 0). `-j` paraleliza las configuraciones regionales.
 
 **Véase también:** [migrate-intlayer](#migrate-intlayer), [Migración desde Intlayer](/es/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ Traduce solo las cadenas de la interfaz de usuario (`strings.json` → JSON de i
 
 **Opciones clave:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: configuración regional de destino separada por comas (predeterminado: `targetLocales` menos `sourceLocale`). `--force`: volver a traducir todas las entradas por configuración regional (ignorar las traducciones existentes). `--dry-run`: sin escrituras, sin llamadas a la API. `-j` paraleliza las **configuraciones regionales**; dentro de cada configuración regional, la configuración `uiBatchConcurrency` (predeterminado **2**) paraleliza los lotes de LLM (fragmentos de 50 cadenas, luego grupos plurales). No hay un indicador de CLI para `uiBatchConcurrency`.
+`-l` / `--locale`: configuraciones regionales de destino separadas por comas (predeterminado: la configuración `targetLocales` menos `sourceLocale`). `--force`: volver a traducir todas las entradas por configuración regional (ignorar las traducciones existentes). `--dry-run`: sin escrituras, sin llamadas a la API. `-j` paraleliza las **configuraciones regionales**; dentro de cada configuración regional, la configuración `uiBatchConcurrency` (predeterminado **2**) paraleliza los lotes de LLM (fragmentos de 50 cadenas, luego grupos plurales). No hay un indicador de CLI para `uiBatchConcurrency`.
 
 ---
 
@@ -97,7 +97,7 @@ Extrae y luego traduce cadenas de interfaz de usuario (requiere `features.transl
 
 **Sinopsis:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Ejecuta `extract` primero (requiere `features.translateUIStrings`) para que cada catálogo seleccionado coincida con el origen, y luego realiza una revisión con LLM de las cadenas de la interfaz de usuario del idioma de origen (ortografía, gramática). `--ui-block` limita la extracción y la revisión a un solo bloque. Las sugerencias de terminología provienen únicamente del CSV `glossary.userGlossary` (mismo alcance que `translate-ui`: los catálogos de la interfaz de usuario no se retroalimentan, por lo que los textos erróneos no se refuerzan como glosario). Utiliza el proveedor de LLM activo (su variable de entorno de clave de API).
+Ejecuta `extract` primero (requiere `features.translateUIStrings`) para que cada catálogo seleccionado coincida con el origen, luego realiza una revisión de LLM de las cadenas de interfaz de usuario de la configuración regional de origen (ortografía, gramática). `--ui-block` limita la extracción y revisión a un bloque. Las sugerencias de terminología provienen únicamente del CSV de `glossary.userGlossary` (mismo alcance que `translate-ui` — los catálogos de la interfaz de usuario no se retroalimentan, por lo que el texto deficiente no se refuerza como glosario). Utiliza el proveedor de LLM activo (su variable de entorno de clave de API).
 
 Devuelve **1** en caso de error (feature flag faltante, error de extracción, catálogo ausente o no válido, clave de API faltante, o cuando fallan todos los lotes); y **0** cuando la ejecución finaliza correctamente (los hallazgos son solo informativos). Escribe `proofread-ui-results_<timestamp>.log` en `cacheDir` como un informe legible (resumen, incidencias, filas no revisadas y filas con estado OK por cadena); la terminal muestra solo los recuentos del resumen y las incidencias (sin líneas `[ok]` por cadena). Si un lote falla, o si la respuesta del modelo es más corta que el lote y no contiene un `index` utilizable en cada posición, esas cadenas se cuentan como no revisadas. Sus incidencias se descartan para evitar que una matriz más corta se aplique a las cadenas incorrectas. Muestra el nombre del archivo de registro en la última línea. Con `--json`, la salida en formato legible se dirige a stderr. Los enlaces utilizan `path:line`, al igual que el botón de enlace de cadenas en la interfaz del panel.
 

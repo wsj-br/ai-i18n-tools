@@ -57,6 +57,28 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ---
 
 <a id="doctor"></a>
+### `doctor`
+
+**개요:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+
+프로젝트가 번역 준비가 되었는지 확인합니다. 보고서에는 구성 구문 및 스키마, 비즈니스 규칙, 설치된 버전, 소스 및 출력 경로, UI 카탈로그 파일, 캐시 통계, 구성된 공급자, 설정된 지원 환경 변수 및 모델 ID가 포함됩니다.
+
+기본적으로 `doctor`은(는) 활성 공급자의 카탈로그와 구성된 모델 ID를 확인하고 설치된 버전을 최신 GitHub 릴리스와 비교합니다. `--local`은(는) 두 네트워크 호출을 모두 건너뜁니다. 최신 릴리스 또는 실패한 GitHub 요청은 경고입니다. 누락되거나 만료된 모델 ID는 명령을 실패하게 합니다. 어떤 확인에서라도 경고가 발생하면 `--strict`은(는) 오류와 함께 종료됩니다.
+
+API 키 값은 절대 인쇄되지 않습니다. 설정된 키는 `NAME (set)`(으)로 표시됩니다.
+
+누락된 입력 경로는 실패합니다. 누락된 출력 디렉터리는 첫 번째 번역 실행 시 생성되기 때문에 참고 사항입니다. `doctor`은(는) 구성을 다시 작성하거나, 디렉터리를 생성하거나, 소스 텍스트를 모델로 보내지 않습니다.
+
+**주요 옵션:** `--local`, `--strict`, `--json`
+
+```bash
+ai-i18n-tools doctor
+ai-i18n-tools doctor --local
+```
+
+---
+
+<a id="help"></a>
 ### `help`
 
 **개요:** `ai-i18n-tools help [command]`

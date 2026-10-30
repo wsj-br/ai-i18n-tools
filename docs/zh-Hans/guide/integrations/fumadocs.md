@@ -50,7 +50,7 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在现有站点中启用 i18n
 
-一个纯英文的 Fumadocs 应用需要一个区域设置路由和 `defineI18n`，然后 `translate-docs` 才能写入同级文件。[代理提示](#agent-prompt) 会引导您完成一个现有站点的操作。清单：
+仅限英文的 Fumadocs 应用需要一个区域设置路由和 `defineI18n`，然后 `translate-docs` 才能写入同级文件。首次设置使用 [为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。此页面上的 [代理提示](#agent-prompt) 是后续步骤，用于连接 UI 目录。清单：
 
 - 在 `lib/i18n.ts` 中使用 `languages`、`defaultLanguage` 和 `parser: "dot"` 或 `"dir"` 来 `defineI18n`。
 - 从 `proxy.ts`（示例文件）中 `app/[lang]/` 路由和 `createI18nMiddleware`。
@@ -86,7 +86,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="sidebar-metajson"></a>
 ## 侧边栏 (`meta.json`)
 
-Fumadocs 使用 JSON `meta.json` 文件来定义侧边栏结构和标题。当 `docsOutput.style` 为 `"fumadocs"` 时，**`translate-docs`** 会收集 `docsRoot`（或 `docs[].fumadocsMetaGlob`）下的 `meta.json`，翻译 `docs[].fumadocsMetaTranslatableKeys` 中列出的键的字符串值（默认：`title`、`description`），并写入区域设置输出：
+Fumadocs 使用 JSON `meta.json` 文件来定义侧边栏结构和标题。当 `docsOutput.style` 为 `"fumadocs"` 时，`translate-docs` 会在 `docsRoot`（或 `docs[].fumadocsMetaGlob`）下收集 `meta.json`，翻译 `docs[].fumadocsMetaTranslatableKeys` 中列出的键的字符串值（默认值：`title`，`description`），并写入区域设置输出：
 
 | 解析器 | 源区域设置 | 输出 |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ Fumadocs 使用 JSON `meta.json` 文件来定义侧边栏结构和标题。当 `
 <a id="ui-catalog"></a>
 ## UI 目录
 
-Fumadocs 布局外壳（搜索占位符、区域设置显示名称以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆盖）不会从 Markdown 中提取。配置 **`docsOutput.fumadocsUiCatalog`**，以便 **`translate-docs`** 从 `sourcePath` 引导源区域设置目录，并翻译每个区域设置的 JSON：
+Fumadocs 布局界面元素（搜索占位符、区域设置显示名称以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆盖）不会从 Markdown 中提取。配置 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 从 `sourcePath` 引导源区域设置目录并翻译每个区域设置的 JSON：
 
 ```json
 {
@@ -123,8 +123,8 @@ Fumadocs 布局外壳（搜索占位符、区域设置显示名称以及 `lib/la
 }
 ```
 
-- **`catalogPath`** — 英文扁平化 JSON。引导程序只读取 `sourcePath` 中 `.add({ … })` 的 `en` 对象。该对象中的字符串字面量会成为目录键（`displayName`、`Search(search trigger)`）。`.add()` 只接受 Fumadocs UI 预设已注册的键，因此像 `site.title` 这样的导航标题不能放在那里。示例将 `site.title` 保留在 JSON 中，并为 `nav.title` 读取 `catalog["site.title"]`。文件中已有但 `en` 对象中没有的键会保留下来：合并是 `{ ...existing, ...extracted }`。当英文字面量发生变化时，请重新运行 `sync`。
-- **`outputPathTemplate`**（可选）— 每个区域设置的输出；默认值：`ui.{locale}.json` 与 `catalogPath` 相邻。
+- `catalogPath` — 英文扁平 JSON。引导程序仅读取 `sourcePath` 中 `.add({ … })` 的 `en` 对象。该对象中的字符串字面量成为目录键（`displayName`，`Search(search trigger)`）。`.add()` 只接受 Fumadocs UI 预设注册的键，因此像 `site.title` 这样的导航标题不能放在那里。示例将 `site.title` 保留在 JSON 中，并为 `nav.title` 读取 `catalog["site.title"]`。文件中已存在但 `en` 对象中没有的键会保留：合并方式为 `{ ...existing, ...extracted }`。当英文字面量更改时，重新运行 `sync`。
+- `outputPathTemplate`（可选）— 每个区域设置的输出；默认值：`ui.{locale}.json` 位于 `catalogPath` 旁边。
 
 已翻译的键在应用读取之前不会生效。`i18n.translations().get(lang)` 只返回通过 `.extend()`（Fumadocs UI 预设）注册的键。将语言区域目录展开到 `.add()` 中，以便这些键生效，并将原生 `displayName` 放在展开**之后**，这样英文名称的翻译就不会替换它：
 
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs 通过 Next.js 中间件（`/docs/getting-started`、`/pt/docs/getting-started`）提供带语言前缀的路由。**页内链接应保持语言中立**（`/docs/getting-started`），以便自动应用当前语言前缀。
 
-启用内置的规范化器，以便 `translate-docs` 自动修复每个翻译文件中的链接：
+启用内置规范化器，以便 `translate-docs` 自动修复每个翻译文件中的链接：
 
 ```json
 "docsOutput": {
@@ -235,7 +235,7 @@ Fumadocs 通过 Next.js 中间件（`/docs/getting-started`、`/pt/docs/getting-
 
 当 `style` 为 `"fumadocs"` 时，`rewriteFumadocsLinks` 默认启用。
 
-| 在源区域设置中创作 | 经过规范化程序后 |
+| 在源区域设置中编写 | 规范化后 |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
@@ -244,16 +244,16 @@ Fumadocs 通过 Next.js 中间件（`/docs/getting-started`、`/pt/docs/getting-
 
 **编写规则**
 
-- 跨页面文档链接：在英文 MDX 中使用**语言中立的站点路由**（`/docs/…`），或使用 `content/docs/…` / 相对 `.mdx` 路径，并让规范化器在 `sync` 期间重写它们。
-- 内容树之外的仓库文件：使用**完整 URL**。
-- 请**不要**手动编辑带语言后缀副本（`*.pt.mdx`）或 `content/{locale}/` 树中的链接——请使用 `sync` / `translate-docs` 重新生成。
+- 跨页面文档链接：在英文 MDX 中使用 **语言环境无关的站点路由** (`/docs/…`)，或使用 `content/docs/…` / 相对 `.mdx` 路径，让规范器在 `sync` 期间重写它们。
+- 内容树之外的仓库文件：使用 **完整 URL**。
+- **不要**手动编辑带有语言环境后缀的副本 (`*.pt.mdx`) 或 `content/{locale}/` 树中的链接 — 使用 `sync` / `translate-docs` 重新生成。
 
 另请参阅 [文档——链接重写](/zh-Hans/guide/documents/link-rewriting) 和 [配置——`docsOutput`](/zh-Hans/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## 区域设置代码
 
-请将 `ai-i18n-tools.config.json` 中的 `targetLocales` 与你的 Fumadocs 应用中的 `defineI18n().languages` 保持**完全**一致。dot 示例使用短代码（`pt`、`zh`）；目录配置可使用 BCP-47 文件夹（`pt-BR`、`zh-Hans`）。不进行强制标准化 — 不匹配的代码会导致输出路径错误或页面缺失。
+确保 Fumadocs 应用中 `ai-i18n-tools.config.json` 的 `targetLocales` 与 `defineI18n().languages` **完全**一致。点示例使用短代码（`pt`，`zh`）；目录配置可以使用 BCP-47 文件夹（`pt-BR`，`zh-Hans`）。没有强制规范化 — 不匹配的代码会导致错误的输出路径或页面缺失。
 
 <a id="multiple-collections"></a>
 ## 多个集合

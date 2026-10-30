@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossaire
 
-Le glossaire garantit une terminologie produit cohérente dans toutes les traductions. Les utilisateurs peuvent définir la traduction d'un terme dans une ou plusieurs langues, ce qui permet au modèle d'IA d'utiliser cette traduction prédéfinie au lieu de deviner la meilleure option. Il peut également être utilisé pour conserver certains termes, tels que les noms de produits, inchangés lors de la traduction dans d'autres langues.
+Le glossaire assure une terminologie produit cohérente dans toutes les traductions. Les utilisateurs peuvent définir la traduction d'un terme dans une ou plusieurs langues, permettant au modèle d'IA d'utiliser cette traduction prédéfinie au lieu d'en choisir une lui-même. Il peut également être utilisé pour conserver certains termes, tels que les noms de produits, inchangés lors de la traduction dans d'autres langues.
 
 Deux types d'indications sont envoyés au modèle :
 

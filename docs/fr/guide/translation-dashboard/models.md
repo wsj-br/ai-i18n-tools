@@ -3,7 +3,7 @@
 
 L'onglet **Modèles** classe les modèles de chat du fournisseur actif afin que vous puissiez choisir `translationModels` sans copier manuellement leurs ID. Il utilise le même classement que [`suggest-models`](/fr/reference/cli-commands/models#suggest-models). La présentation détaillée, qui explique notamment pourquoi la liste contient plusieurs modèles, se trouve dans [Modèles d'IA](/fr/guide/ai-models).
 
-Choisissez **Qualité** ou **Prix**. La qualité privilégie le score ChrF de languagebench et l'Arena Score. Le prix privilégie un tarif en USD plus bas tout en conservant un seuil de qualité. Lorsque la configuration comporte plusieurs fournisseurs, un menu **Fournisseur** apparaît ; la valeur par défaut est le fournisseur avec lequel le tableau de bord a été démarré (`provider`, ou `-P` / `--provider` lors de la commande `dashboard`). Changer de fournisseur ou de priorité recharge le tableau. Les pondérations optionnelles se trouvent dans [`modelSuggestion`](/fr/reference/configuration#modelsuggestion-optional).
+Choisissez la **Qualité** ou le **Prix**. La Qualité privilégie languagebench ChrF et Arena Score. Le Prix privilégie un taux USD plus bas et maintient un seuil de qualité. Lorsque la configuration comporte plusieurs fournisseurs, un menu **Fournisseur** apparaît ; la valeur par défaut est le fournisseur avec lequel le tableau de bord a été démarré (`provider`, ou `-P` / `--provider` avec la commande `dashboard`). La modification du fournisseur ou de la priorité recharge le tableau. Les pondérations facultatives se trouvent dans [`modelSuggestion`](/fr/reference/configuration#modelsuggestion-optional).
 
 Les colonnes du tableau sont des commandes de réorganisation, une case à cocher, le rang, l'ID du modèle, l'index (le score pondéré multiplié par 100), le ChrF mesuré, le Score Arena mesuré, et le prix d'entrée/sortie en USD par million de jetons. Une mesure manquante est un tiret cadratin. Le numéro de rang est la place du modèle dans le classement complet, avant les filtres ci-dessous. Faites glisser la poignée d'une ligne, ou utilisez ses boutons haut et bas, pour modifier sa place dans ce tableau. **Mettre à jour** charge à nouveau l'ordre de classement.
 
@@ -15,9 +15,9 @@ Cochez les modèles que vous souhaitez. La ligne d'état indique combien sont s�
 
 Le premier chargement télécharge languagebench, Arena et models.dev lorsque le cache est vide, ce qui peut prendre un certain temps. Les chargements ultérieurs réutilisent le cache de 7 jours situé à `<cacheDir>/benchmark-scores.json`. L'onglet ne possède pas de bouton d'actualisation. Actualisez le cache depuis l'interface en ligne de commande avec `ai-i18n-tools suggest-models --refresh`, puis rechargez l'onglet. La même commande peut afficher ou appliquer la liste.
 
-::: info Sources de référence externes
+::: info Sources de Référence Externes
   Les scores sont calculés à partir de sources de données externes :
-  - [languagebench ChrF](https://languagebench.github.io/) sous licence CC-BY-SA-4.0,
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) sous licence CC-BY-4.0, et
-  - [models.dev](https://models.dev/) prix sous licence MIT.
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) sous licence CC-BY-SA-4.0,
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) sous licence CC-BY-4.0, et
+  - les prix [models.dev](https://models.dev/) sous licence MIT.
 :::

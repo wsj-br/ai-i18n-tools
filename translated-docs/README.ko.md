@@ -37,7 +37,8 @@ JavaScript/TypeScript 앱, Python 앱 및 문서 사이트에 언어를 추가�
 | 가지고 있는 것 | 시작 지점 |
 | --- | --- |
 | 소스에 일반 텍스트가 있는 JS/TS 앱(React, Next.js, Node, CLI) | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
-| Python 앱(Streamlit, FastAPI, Flask, Django, gettext) | [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| 파이썬 앱 (Streamlit, FastAPI, Flask, 데스크톱, 스크립트) | [파이썬 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| Django 앱, Flask-Babel 카탈로그 또는 이미 GNU gettext를 사용하는 앱 | [Django / 파이썬 gettext 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트(VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, 일반 HTML) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
 | 저장소 README 및 기타 Markdown 파일(앱 유무와 관계없이) | [README 및 Markdown 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
 | 이미 `t()` 또는 `_()`를 호출하는 코드 | [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) |
@@ -94,6 +95,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 | --- | --- | --- |
 | JS/TS 앱 | `ai-i18n-tools init -P openrouter` | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
 | Python 앱 | `ai-i18n-tools init -t ui-python -P openrouter` | [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| Django 또는 GNU gettext 앱 | `ai-i18n-tools init -t ui-python-django -P openrouter` (또는 `ui-python-gettext`, `ui-python-flask`) | [Django / 파이썬 gettext 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트 | `ai-i18n-tools init -t ui-vitepress -P openrouter` (프레임워크에 맞게 템플릿을 교체하세요) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
 | 앱 유무와 관계없이 README | `ai-i18n-tools init -P openrouter` (JS/TS 앱 + README) 또는 `init -t docs-markdown` | [README 및 마크다운 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
 
@@ -101,7 +103,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 JS/TS 앱은 먼저 텍스트를 `t()`으로 래핑해야 합니다. 일반 텍스트에서 실행하면 `sync`은 오류 없이 완료되지만 유용한 내용을 작성하지 않습니다. 또한 사이트 프레임워크는 `sync` 전에 자체 i18n 라우팅이 활성화되어 있어야 합니다.
 
-웹사이트용 템플릿: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, 그리고 `ui-plain-html` 또는 `docs-plain-html`. README 및 마크다운 전용: `docs-markdown`. README 블록을 포함하려면 다른 템플릿에 `--with-readme`를 추가하세요. 기타 Python 템플릿: `ui-python-gettext`, `ui-python-flask`, `ui-python-django`. 중첩된 i18next JSON: `ui-json-bundles`. 전체 목록: [CLI 설정 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/setup).
+웹사이트용 템플릿: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, 및 `ui-plain-html` 또는 `docs-plain-html`. README 및 Markdown 전용: `docs-markdown`. 다른 템플릿에 `--with-readme`를 추가하여 README 블록을 포함합니다. 파이썬 gettext 앱: `ui-python-django`, `ui-python-flask`, `ui-python-gettext`. 중첩된 i18next JSON: `ui-json-bundles`. 전체 목록: [CLI 설정 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/setup).
 
 `suggest-models`은(는) 게시된 벤치마크를 기준으로 활성 공급자의 채팅 모델 순위를 매기며, `suggest-models --apply`은(는) `translationModels`을(를) 대체합니다. 동일한 순위가 [모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translation-dashboard/models) 탭에 있습니다. 가이드: [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models). 명령어 참조: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/models#suggest-models).
 
@@ -114,11 +116,12 @@ JS/TS 앱은 먼저 텍스트를 `t()`으로 래핑해야 합니다. 일반 텍�
 - [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [LLM 공급자](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models) · [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models)
 - [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/python) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
 - [Intlayer](https://intlayer.org/) — [사전을 바로 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translating-intlayer) · [소스 문자열 호출로 이동](https://wsj-br.github.io/ai-i18n-tools/ko/guide/migrating-from-intlayer)
-- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, 및 [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
-- [프로젝트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-your-project) — [JS/TS 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) · [Python 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) · [웹사이트 또는 문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) · [README 및 마크다운 문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) · [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines)
+- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, 및 [파이썬](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
+- [프로젝트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-your-project) — [JS/TS 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) · [파이썬 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) · [Django / gettext 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) · [웹사이트 또는 문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) · [README 및 Markdown 문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) · [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines)
 - [CLI 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 도우미](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
 - [예시](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모 (`npx degit …`)
-- [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 저장소의 어시스턴트 통합 가이드
+- [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 프로젝트를 위한 간결한 프롬프트 / `AGENTS.md` 진입점
+- [휴대용 에이전트 스킬](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills) — 한 번 설치 후 워크플로당 슬래시 명령: `npx skills add wsj-br/ai-i18n-tools --all -y` (Node.js 22.20+); [설치 가이드](https://wsj-br.github.io/ai-i18n-tools/ko/guide/coding-agent-skill)
 
 <a id="contributing"></a>
 ## 기여하기

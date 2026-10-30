@@ -47,15 +47,15 @@ Abre **Modelos**. Elige **Calidad** o **Precio**. Marca las filas que quieras. L
 
 La preselección es una clasificación de benchmarks del catálogo de chat en vivo del proveedor. La primera ejecución descarga tres conjuntos de datos públicos y puede tardar un rato. Las ejecuciones posteriores reutilizan la caché de 7 días en `<cacheDir>/benchmark-scores.json` (normalmente `.translation-cache/benchmark-scores.json`).
 
-| Señal | Qué aporta | Fuente |
+| Señal | Lo que aporta | Fuente |
 | --- | --- | --- |
-| ChrF | Calidad de la traducción para los idiomas de tu proyecto | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena Score | Preferencia general a partir de comparaciones directas | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | Calidad de traducción para los idiomas de su proyecto | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Puntuación Arena | Preferencia general de comparaciones directas | [Puntuación Arena de LMArena](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | USD por cada millón de tokens | Precio de entrada y salida | El catálogo del proveedor cuando publica las tarifas; si no, [models.dev](https://models.dev/) (MIT) |
 
 ChrF utiliza las puntuaciones de traducción de languagebench para tus `sourceLocale` y `targetLocales`. Las configuraciones regionales se asignan a un código de idioma de languagebench: la subetiqueta principal, con alias como `pt-BR` para `pt` y `zh-Hant` para `zh`. Un modelo que traduce bien esos idiomas supera en la clasificación a uno que solo obtiene una buena puntuación general. Se omiten los modelos de embeddings, imagen, voz y otros que no sean de chat, así como los ID que hayan superado su fecha de caducidad.
 
-"Calidad", el perfil predeterminado, pondera ChrF y Arena Score por encima del precio. "Precio" invierte ese énfasis y mantiene el umbral de calidad descrito anteriormente. Las ponderaciones opcionales son [`modelSuggestion`](/es/reference/configuration#modelsuggestion-optional).
+Calidad, el perfil predeterminado, pondera ChrF y la Puntuación Arena por encima del precio. El precio invierte ese énfasis y mantiene el nivel mínimo de calidad descrito anteriormente. Los pesos opcionales son [`modelSuggestion`](/es/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` vuelve a descargar los conjuntos de datos. Después, vuelve a cargar la pestaña **Modelos**.
 
@@ -69,7 +69,7 @@ Todas las marcas, incluidas `--json`, `--list` y la fórmula de puntuación: [su
 
 `translationModels` es una lista ordenada. La CLI prueba el primer modelo. Si una solicitud falla, si recibe una respuesta que no puede analizar o texto en el sistema de escritura incorrecto, prueba el siguiente ID para ese lote.
 
-Un solo ID es un único punto de fallo. Un modelo puede exceder el tiempo de espera, devolver texto que esta herramienta rechaza o traducir bien un idioma y mal otro. Un caso común es el hindi romanizado cuando `hi` espera devanagari. El resultado romanizado se rechaza para las configuraciones regionales con escritura nativa. Una configuración regional que deba permanecer romanizada necesita una subetiqueta `-Latn` explícita, como `hi-Latn`.
+Un ID es un único punto de fallo. Un modelo puede agotar el tiempo de espera, devolver texto que esta herramienta rechaza, o traducir un idioma bien y otro mal. Un caso común es el hindi romanizado donde `hi` espera Devanagari. La salida romanizada se rechaza para las configuraciones regionales con escritura nativa. Una configuración regional que deba permanecer romanizada necesita una subetiqueta `-Latn` explícita, como `hi-Latn`.
 
 Por eso la preselección contiene varios ID, los más potentes primero. El orden en la lista es el orden en que se intentan las traducciones.
 

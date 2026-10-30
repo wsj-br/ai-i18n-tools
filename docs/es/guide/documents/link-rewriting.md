@@ -13,9 +13,9 @@ El reescritor que se ejecuta depende de `docsOutput.style`:
 | Diseño | Reescriptor integrado | Qué corrige |
 | --- | --- | --- |
 | `"flat"` (predeterminado cuando no hay `pathTemplate` personalizado) | Reescriptor de enlaces planos (`rewriteRelativeLinks`, activado por defecto) | Enlaces relativos entre páginas (`guide.md` → `guide.de.md`) y prefijos de profundidad para URL de activos que no son markdown |
-| `"vitepress"` | Normalizador de enlaces de VitePress (`rewriteVitepressLinks`, activado por defecto) | Rutas `docs/guide/…` de estilo README → rutas del sitio (`/guide/…`) |
-| `"nextra"` | Normalizador de enlaces de Nextra (`rewriteNextraLinks`, activado por defecto) | Rutas `content/en/…` y `.mdx` relativas → rutas neutrales respecto al idioma (`/guide/…`) |
-| `"fumadocs"` | Normalizador de enlaces de Fumadocs (`rewriteFumadocsLinks`, activado por defecto) | Rutas `content/docs/…` y `.mdx` relativas → rutas neutrales respecto al idioma (`/docs/…`) |
+| `"vitepress"` | Normalizador de enlaces de VitePress (`rewriteVitepressLinks`, activado por defecto) | Rutas `docs/guide/…` estilo README → rutas del sitio (`/guide/…`) |
+| `"nextra"` | Normalizador de enlaces de Nextra (`rewriteNextraLinks`, activado por defecto) | Rutas `content/en/…` y `.mdx` relativas → rutas neutrales respecto a la configuración regional (`/guide/…`) |
+| `"fumadocs"` | Normalizador de enlaces de Fumadocs (`rewriteFumadocsLinks`, activado por defecto) | Rutas `content/docs/…` y `.mdx` relativas → rutas neutrales respecto a la configuración regional (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Ninguno | Las URL de origen pasan sin cambios hasta `postProcessing` |
 
 `pathTemplate` personalizado desactiva el reescritor plano a menos que establezca `rewriteRelativeLinks: true` explícitamente. Consulte [Diseños de salida](/es/guide/documents/output-layouts) y [Enlaces de anclaje](/es/guide/documents/anchor-links) para el manejo de `#anchor` entre páginas.
@@ -79,7 +79,7 @@ Las cadenas `replace` admiten variables de plantilla expandidas por archivo y co
 <a id="per-locale-asset-folder"></a>
 ### Carpeta de activos por configuración regional
 
-Almacene los activos en un subdirectorio codificado por configuración regional desde el primer día e intercambie el segmento con una regla genérica:
+Almacene los activos en un subdirectorio con código de configuración regional desde el principio e intercambie el segmento con una regla genérica:
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ Prefiera las rutas relativas (`../assets/name.png`) ubicadas en el markdown de o
 
 Normalmente **no** necesita `regexAdjustments` cuando:
 
-- Los enlaces entre páginas son rutas de markdown relativas simples y `docsOutput.style = "flat"` (el reescritor incorporado agrega sufijos de configuración regional)
+- Los enlaces entre páginas son rutas Markdown relativas simples y `docsOutput.style = "flat"` (el reescritor integrado añade sufijos de configuración regional)
 - Los activos se encuentran junto a los archivos de origen y el prefijo de profundidad por archivo del reescritor plano los resuelve correctamente
-- El inglés y cada copia traducida usan la **misma** URL (imágenes compartidas en la raíz del sitio, activos colocados, rutas del sitio de VitePress después del normalizador)
-- Los enlaces internos del sitio de VitePress usan rutas del sitio o rutas `docs/guide/…` con `rewriteVitepressLinks: true`
+- El inglés y cada copia traducida utilizan la **misma** URL (imágenes compartidas en la raíz del sitio, activos colocalizados, rutas del sitio de VitePress después del normalizador)
+- Los enlaces internos de VitePress utilizan rutas del sitio o rutas `docs/guide/…` con `rewriteVitepressLinks: true`
 - Los enlaces en la página de Nextra y Fumadocs utilizan rutas neutrales respecto al idioma (`/guide/…`, `/docs/…`) o rutas de raíz de contenido con `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>

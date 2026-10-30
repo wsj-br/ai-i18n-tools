@@ -45,7 +45,7 @@ Verwenden Sie dies, wenn:
 <a id="concurrency-optional"></a>
 ### `concurrency` (optional)
 
-Maximale Anzahl gleichzeitig übersetzter **Zielgebietsschemata** (`translate-ui`, `translate-docs`, `translate-svg` und die entsprechenden Schritte in `sync`). Wenn nicht angegeben, verwendet die CLI standardmäßig **4** für die UI-Übersetzung und **3** für die Dokumentationsübersetzung (integrierte Vorgaben). Kann pro Ausführung mit `-j` / `--concurrency` überschrieben werden.
+Maximale Anzahl gleichzeitig übersetzter Ziellokale (`translate-ui`, `translate-docs`, `translate-svg` und die entsprechenden Schritte innerhalb von `sync`). Wird dies weggelassen, verwendet die CLI **4** für die UI-Übersetzung und **3** für die Dokumentationsübersetzung (integrierte Standardwerte). Pro Lauf mit `-j` / `--concurrency` überschreiben.
 
 ---
 
@@ -114,11 +114,11 @@ Maximale Wartezeit für jede LLM-Anfrage, für jeden Anbieter. `requestTimeout` 
 Jeder `providers.<name>`-Block akzeptiert:
 
 - `translationModels`
-  Bevorzugte geordnete Liste von Modell-IDs (reine Upstream-IDs, kein `provider/`-Präfix; OpenRouter-IDs behalten ihr natives `vendor/model`-Format). Die erste wird zuerst versucht; spätere Einträge sind Fallbacks bei Fehlern. Dies ist die globale Standardkette für jede Pipeline, wenn keine spezifischere Ebene zutrifft.
+  Bevorzugte geordnete Liste von Modell-IDs (einfache Upstream-IDs, kein `provider/`-Präfix; OpenRouter-IDs behalten ihre native `vendor/model`-Form). Der erste Eintrag wird zuerst versucht; spätere Einträge dienen als Fallbacks bei Fehlern. Dies ist die globale Standardkette für jede Pipeline, wenn keine spezifischere Stufe zutrifft.
 - `uiModels` (optional)
-  Geordnete, nur für die Benutzeroberfläche bestimmte Modellliste für `translate-ui`, Pluralgenerierung (Schritt 0 und Durchgang B) und `proofread-ui`. Wird nach jedem passenden `localeModels`-Eintrag für das Zielland vor `translationModels` versucht.
+  Geordnete Liste von Modellen nur für die Benutzeroberfläche für `translate-ui`, Pluralgenerierung (Schritt 0 und Durchlauf B) und `proofread-ui`. Wird nach jedem passenden `localeModels`-Eintrag für das Ziellokal versucht, vor `translationModels`.
 - `localeModels` (optional)
-  Pro-Locale-Überschreibungen für **alle** Übersetzungs-Pipelines. Array von `{ "locale": "<BCP-47>", "models": ["…"] }`-Objekten. Locale-Tags werden unabhängig von Groß- und Kleinschreibung abgeglichen (`pt-br` = `pt-BR`). Die Liste jedes Locales wird zuerst nur für dieses Locale versucht, dann Pipeline-spezifische Ebenen (`uiModels` für UI) und `translationModels`. Doppelte normalisierte Locale-Schlüssel werden beim Laden der Konfiguration abgelehnt.
+  Lokalspezifische Überschreibungen für **alle** Übersetzungs-Pipelines. Array von `{ "locale": "<BCP-47>", "models": ["…"] }`-Objekten. Lokale-Tags werden ohne Berücksichtigung der Groß-/Kleinschreibung abgeglichen (`pt-br` = `pt-BR`). Die Liste jedes Lokals wird zuerst nur für dieses Lokal versucht, dann Pipeline-spezifische Stufen (`uiModels` für UI) und `translationModels`. Doppelte normalisierte Lokale-Schlüssel werden beim Laden der Konfiguration abgelehnt.
 - `baseUrl`
   OpenAI-kompatible Basis-URL. Überschreibt die voreingestellte Basis-URL; erforderlich für einen nicht voreingestellten Anbieter.
 - `apiKeyEnv`
@@ -130,15 +130,24 @@ Jeder `providers.<name>`-Block akzeptiert:
 - `temperature`
   Sampling-Temperatur. Standard: `0.2`.
 - `requestTimeout`
-  Maximale Zeit in Sekunden, die für jede Anfrage an diesen Anbieter gewartet werden soll. Überschreibt das übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegen, beträgt der Standardwert `45` Sekunden. Legen Sie für dasselbe Objekt nur entweder `requestTimeout` oder `requestTimeoutMs` fest.
+  Maximale Wartezeit in Sekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `45` Sekunden. Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
 - `requestTimeoutMs`
-  Maximale Zeit in Millisekunden, die für jede Anfrage an diesen Anbieter gewartet werden soll. Überschreibt das übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegen, beträgt der Standardwert `45000` (45 Sekunden). Legen Sie für dasselbe Objekt nur entweder `requestTimeout` oder `requestTimeoutMs` fest.
+  Maximale Wartezeit in Millisekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `45000` (45 Sekunden). Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
 - `pricing` (optional)
-  Anbieterweite USD pro 1.000.000 Token: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf kein vom Anbieter gemeldetes `usage.cost` aufweist (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabetoken dieses Aufrufs angewendet. Der Betrag ist in der Übersetzungszusammenfassung enthalten und wird in der Zeile `api_calls` gespeichert. Ein übereinstimmender `modelPricing`-Eintrag überschreibt diesen Standardwert. Ein vom Anbieter gemeldeter Preis wird niemals ersetzt. Wenn kein Konfigurationssatz übereinstimmt, verwenden die Tools den models.dev-Listenpreis für diese Modell-ID (Eingabe- und Ausgabe-USD pro 1 Mio. Token). Zeilen, die ohne Kosten gespeichert wurden, können später noch durch [`usage`](/de/reference/cli-commands/workflows#usage) und [Usage & costs](/de/guide/translation-dashboard/usage) geschätzt werden. Wenn keine dieser Quellen zutrifft, bleiben die Kosten unbekannt (`—`), niemals `$0.00`.
+  Anbieterweite USD pro 1 Mio. Tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf keine vom Anbieter gemeldeten `usage.cost` hat (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabe-Tokens dieses Aufrufs angewendet. Der Betrag wird in der Übersetzungszusammenfassung aufgeführt und in der `api_calls`-Zeile gespeichert.
+
+Die Kostenquelle wird in dieser Reihenfolge aufgelöst:
+
+1. ein passender `modelPricing`-Eintrag (überschreibt diesen Anbieter-Standard);
+  2. ein vom Anbieter gemeldeter Preis (wird nie ersetzt);
+  3. dieser `pricing`-Satz;
+  4. der models.dev-Listenpreis für diese Modell-ID (Eingabe- und Ausgabe-USD pro 1 Mio. Tokens).
+
+Zeilen, die ohne Kosten gespeichert wurden, können später immer noch über [`usage`](/de/reference/cli-commands/workflows#usage) und [Nutzung & Kosten](/de/guide/translation-dashboard/usage) geschätzt werden. Wenn keine dieser Quellen zutrifft, bleiben die Kosten unbekannt (`—`), niemals `$0.00`.
 - `modelPricing` (optional)
-  Modellspezifische USD pro 1.000.000 Token: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zum Zeitpunkt des Aufrufs angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
+  Modellspezifische USD pro 1 Mio. Tokens: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. Überschreibt `pricing` für diese Modell-ID. Wird zum Zeitpunkt des Aufrufs angewendet, wenn der Anbieter `usage.cost` weggelassen hat, und mit dem Aufruf gespeichert.
 - `zeroDataRetention` (optional, nur `providers.cheaperinference`)
-  Wenn `true` aktiviert ist, senden Chat-Anfragen `"zdr": true` und `list-models`, und `check-models` sowie `suggest-models` laden `GET /v1/models?zdr=true`. Weglassen bedeutet deaktiviert. Siehe [Null-Datenaufbewahrung](/de/guide/providers-and-models#cheaperinference-zero-data-retention).
+  Wenn `true`, senden Chat-Anfragen `"zdr": true` und `list-models`, `check-models`, und `suggest-models` laden `GET /v1/models?zdr=true`. Weggelassen bedeutet ausgeschaltet. Siehe [Zero data retention](/de/guide/providers-and-models#cheaperinference-zero-data-retention).
 
 Integrierte Anbieter-Presets (Schlüssel — Basis-URL — API-Schlüssel-Umgebungsvariable):
 
@@ -246,7 +255,12 @@ Um die konfigurierten Modelle bei realen Übersetzungsarbeiten zu vergleichen, f
 | `translateJson` | 3 | Beliebige verschachtelte JSON-Struktur unter `json[]` (`translate-json`). |
 | `translateSVG` | — | Übersetzen Sie `.svg`-Dateien (erfordert den `svg`-Block auf oberster Ebene). |
 
-Jedes Flag hat standardmäßig den Wert `true`, wenn der Schlüssel weggelassen wird. Eine weggelassene `true` ohne zu übersetzende Inhalte wird übersprungen: Kein UI-Block hat `sourceRoots`, kein Dokumentationsblock hat `contentPaths` oder `docusaurusCatalogDir`, `json[]` hat keine `contentPaths` oder `svg` ist nicht gesetzt. Das Flag als `true` zu schreiben, wenn diese Pipeline keine Aufgaben hat, ist ein Konfigurationsfehler. Das Schreiben von `false` schaltet diese Pipeline für `sync` aus, selbst wenn Quellen vorhanden sind. `--no-ui`, `--no-docs`, `--no-json` und `--no-svg` überspringen den Schritt für einen einzigen Durchlauf.
+Jedes Flag hat den Standardwert `true`, wenn der Schlüssel weggelassen wird. Das Verhalten ist:
+
+- Ein weggelassenes `true` ohne zu übersetzenden Inhalt wird übersprungen: kein UI-Block hat `sourceRoots`, kein Docs-Block hat `contentPaths` oder `docusaurusCatalogDir`, `json[]` hat kein `contentPaths`, oder `svg` ist nicht gesetzt.
+- Das Schreiben des Flags als `true`, wenn diese Pipeline keine Arbeit hat, ist ein Konfigurationsfehler.
+- Das Schreiben von `false` schaltet diese Pipeline für `sync` aus, selbst wenn Quellen vorhanden sind.
+- `--no-ui`, `--no-docs`, `--no-json` und `--no-svg` überspringen den Schritt für einen Lauf.
 
 **Übersetzen** Sie SVG-Dateien mit `translate-svg`, wenn `features.translateSVG` wahr ist und ein `svg`-Block auf oberster Ebene konfiguriert ist. Der Befehl `sync` führt diesen Schritt aus, wenn das Flag aktiviert und `svg` gesetzt ist (außer `--no-svg`).
 
@@ -387,19 +401,19 @@ Wenn `true`, verwenden integrierte Ausgabelayouts (`nested`, `flat`, `doc-system
 - `docsOutput.flatPreserveRelativeDir`
 Wenn `docsOutput.style = "flat"`, Quellunterverzeichnisse beibehalten, damit Dateien mit demselben Basisnamen nicht kollidieren. Standard `false`.
 - `docsOutput.rewriteRelativeLinks`
-Relative Links nach der Übersetzung umschreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und kein benutzerdefiniertes `pathTemplate`).
+Relative Links nach der Übersetzung umschreiben (automatisch aktiviert, wenn `docsOutput.style = "flat"` und keine benutzerdefinierte `pathTemplate`).
 - `docsOutput.linkRewriteDocsRoot`
-Repo-Root, der beim Berechnen von Präfixen für die Umschreibung von Flat-Links verwendet wird. Lassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Root.
+Repo-Stammverzeichnis, das beim Berechnen von Präfixen für das Umschreiben von Flat-Links verwendet wird. Belassen Sie dies normalerweise als `"."`, es sei denn, Ihre übersetzten Dokumente befinden sich unter einem anderen Projekt-Stammverzeichnis.
 - `docsOutput.rewriteVitepressLinks`
-Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"vitepress"` ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich Gebietsschema-Ordner neben den Ausgangssprache-Dateien unter `docsRoot` befinden. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und gebietsschema-relative `../guide/…`-Links um. Für Links zu Repo-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in den Ausgangssprache-Dateien – siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-and-the-docs-homepage).
+Wenn `true`, den VitePress-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"vitepress"` ist. Verwenden Sie dies mit jedem `doc-system`-Layout, bei dem sich Locale-Ordner neben den Quelldateien unter `docsRoot` befinden. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Schreibt README-ähnliche `docs/guide/…`-Pfade in Site-Routen (`/guide/…`) und locale-relative `../guide/…`-Links um. Für Links zu Repo-Dateien außerhalb des VitePress-Baums (`LICENSE`, `examples/`) verwenden Sie vollständige URLs in den Quelldateien – siehe [VitePress-Integration – README als Dokumentations-Homepage](/de/guide/integrations/vitepress#readme-and-the-docs-homepage).
 - `docsOutput.rewriteNextraLinks`
-Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"nextra"` ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in gebietsschema-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
+Wenn `true`, den Nextra-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"nextra"` ist. Schreibt `content/en/…` und relative `.mdx`-Pfade in locale-neutrale Site-Routen (`/guide/…`) für Next.js `i18n` um. Siehe [Nextra-Integration – Link-Konventionen](/de/guide/integrations/nextra#link-conventions).
 - `docsOutput.fumadocsParser`
-`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben die Ausgangssprache-Dateien; dir schreibt Gebietsschema-Ordner wie Nextra. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
+`"dot"` (Standard) oder `"dir"`. Dot schreibt `stem.{locale}.mdx` neben die Quelldateien; dir schreibt Locale-Ordner wie Nextra. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein. Siehe [Fumadocs-Integration – Seitenlayout](/de/guide/integrations/fumadocs#page-layout).
 - `docsOutput.rewriteFumadocsLinks`
 Wenn `true`, den Fumadocs-Link-Normalisierer nach der Übersetzung ausführen. Standardmäßig aktiviert, wenn `docsOutput.style` `"fumadocs"` ist. Schreibt Inhaltspfade und relative `.mdx`-Links in `/docs/…`-Routen um.
 - `docsOutput.fumadocsUiCatalog`
-Optional. Fumadocs UI-Überschreibung Katalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `sourcePath` (z. B. `lib/layout.shared.ts`), `catalogPath` (generiertes englisches JSON), optional `outputPathTemplate` (Standard: `ui.{locale}.json` neben `catalogPath`).
+Optional. Fumadocs UI-Überschreibungskatalog-Bootstrap + Übersetzung innerhalb von `translate-docs`. Felder: `sourcePath` (z. B. `lib/layout.shared.ts`), `catalogPath` (generiertes englisches JSON), optional `outputPathTemplate` (Standard: `ui.{locale}.json` neben `catalogPath`).
 - `docs[].fumadocsMetaGlob`
 Optionale Glob(s) für die `meta.json`-Sammlung, wenn `docsOutput.style` `"fumadocs"` ist. Standard: rekursives `meta.json` unter `docsOutput.docsRoot`.
 - `docs[].fumadocsMetaTranslatableKeys`
@@ -525,7 +539,7 @@ Gewichtungen für [`suggest-models`](/de/reference/cli-commands/models#suggest-m
 - `quality` – Standard-ChrF `0.45`, Arena `0.35`, Preis `0.20`, Qualitätsuntergrenze `0.7`
 - `price` – Standard-ChrF `0.35`, Arena `0.20`, Preis `0.45`, Qualitätsuntergrenze `0.6`
 
-Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und mindestens `0`, und mindestens einer ist größer als `0`. Sie werden auf eine Summe von 1 normalisiert, sodass `45`, `35` und `20` den Standard-Qualitätswerten entsprechen. `qualityFloor` ist optional, liegt im Bereich `(0, 1]` und ist der Anteil des besten ChrF im Kandidatenpool. Modelle unterhalb der Untergrenze, einschließlich jedes Modells ohne ChrF-Messung, werden nach denen sortiert, die sie überschreiten.
+Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und mindestens `0`, und mindestens einer ist größer als `0`. Sie werden so normalisiert, dass sie sich zu 1 summieren, sodass `45`, `35` und `20` den Qualitätsstandards entsprechen. `qualityFloor` ist optional, im Bereich `(0, 1]`, und ist der Anteil des besten ChrF im Kandidatenpool. Modelle unterhalb des Schwellenwerts, einschließlich jedes Modells ohne ChrF-Messung, werden nach denen sortiert, die ihn überschreiten.
 
 ```json
 "modelSuggestion": {

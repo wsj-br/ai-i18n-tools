@@ -139,11 +139,11 @@ HTML 提取器会翻译：
 | `{llocale}` | 小写语言区域 |
 | `{LOCALE}` | 大写语言区域 |
 
-`img/trulli.jpg` 变为 `img/trulli-pt-BR.jpg`。使用 `onlyIfExists: true`（默认值）时，仅当本地化文件存在时才使用该 URL；否则保留原始共享资源。仅当其他构建或 CDN 步骤保证这些文件存在时，才设置 `onlyIfExists: false`。
+`img/trulli.jpg` 变为 `img/trulli-pt-BR.jpg`。在 `onlyIfExists: true`（默认值）下，仅当本地化文件存在时才使用该 URL；否则保留原始共享资产。仅当另一个构建或 CDN 步骤保证这些文件存在时才设置 `onlyIfExists: false`。
 
-`include` 匹配诸如 `img/**` 之类的 URL 路径。使用 `assetRoot` 设置用于检查本地化候选项（尤其是诸如 `/img/trulli.jpg` 之类的根相对 URL）的文件系统目录。
+`include` 匹配 `img/**` 等 URL 路径。使用 `assetRoot` 设置文件系统目录，用于检查本地化候选项（尤其是 `/img/trulli.jpg` 等根相对 URL）。
 
-相同的本地化规则适用于 `srcset`、`poster`、`<source src>`、图标 `<link href>` 以及 `og:image` / `twitter:image`。管道会重写引用，但不会创建、翻译或复制资源文件。CSS `url()` 值不会被重写。
+相同的本地化规则适用于 `srcset`、`poster`、`<source src>`、图标 `<link href>` 以及 `og:image` / `twitter:image`。管道会重写引用，但不会创建、翻译或复制资产文件。CSS `url()` 值不会被重写。
 
 <a id="language-list-and-hreflang"></a>
 ## 语言列表与 hreflang
@@ -213,7 +213,7 @@ HTML 提取器会翻译：
 | 输出为 `site/pt-BR/site/index.html` | 将 `docsOutput.docsRoot` 设置为 `"site"`，以便剥离源前缀。 |
 | 链接仍指向英文页面 | 使用相对 `.html` / `.htm` 链接，并将目标页面包含在同一个 `docs[]` 块中。 |
 | 从语言版本页面访问时图片路径失效 | 保持相对路径以便应用深度重写；请记住 CSS `url()` 不会被重写。 |
-| 未选择本地化图片 | 检查 `localizedAssets.include`、文件名 `pattern`，以及当 `onlyIfExists` 为 true 时候选项是否存在。 |
+| 未选择本地化图像 | 检查 `localizedAssets.include`、文件名 `pattern`，以及当 `onlyIfExists` 为 true 时候选项是否存在。 |
 | 语言列表为空或未更改 | 保持两个标记注释顺序正确，并位于 `script`、`style`、`pre` 和 `code` 之外。 |
 | 下拉菜单无法跳转 | 将 `data-lang-select` 添加到 `<select>` 并加载 `html-runtime/lang-select.js`。 |
 | Hreflang URL 使用了错误的主机 | 将 `hreflang.siteUrl` 设置为最终的公共源站。 |

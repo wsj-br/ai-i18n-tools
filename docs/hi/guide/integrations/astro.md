@@ -54,6 +54,8 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 <a id="enable-i18n-in-an-existing-site"></a>
 ### किसी मौजूदा साइट में i18n सक्षम करें
 
+पहली बार का सेटअप [वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#run-the-agent-prompt) पर दिए गए प्रॉम्प्ट का उपयोग करता है। नीचे दी गई चेकलिस्ट हाथ से किए गए काम के समान है।
+
 - स्टारलाइट कॉन्फ़िग में `locales`, जिसमें एक `root` प्रविष्टि शामिल है जब अंग्रेजी अप्रत्यक्ष होनी चाहिए (`label` और आवश्यक `lang`)।
 - `defaultLocale: 'root'` जब डिफ़ॉल्ट भाषा वह रूट स्थानीय हो। `defaultLocale` को तभी छोड़ें जब स्टारलाइट का डिफ़ॉल्ट पहले से मेल खाता हो।
 - अंग्रेजी पृष्ठ `src/content/docs/` में रहते हैं; `translate-docs` `src/content/docs/<locale>/` लिखता है।
@@ -67,7 +69,7 @@ src/content/docs/guide/setup.mdx    →  src/content/docs/fr/guide/setup.mdx
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## सादा एस्ट्रो (मार्केटिंग और ऐप साइटें)
 
-स्थैतिक एस्ट्रो मार्केटिंग या ऐप साइटों (स्टारलाइट नहीं) के लिए, [एस्ट्रो अंतर्निहित i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-tools के साथ संयोजित करें। संदर्भ कार्यान्वयन [उदाहरण/एस्ट्रो-वेबसाइट](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) है: `/` पर अंग्रेजी, `/{locale}/` पर लक्ष्य लोकेल।
+स्टैटिक एस्ट्रो मार्केटिंग या ऐप साइटों (स्टारलाइट नहीं) के लिए, [एस्ट्रो बिल्ट-इन i18n राउटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-tools के साथ संयोजित करें। पहली बार का सेटअप [वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#run-the-agent-prompt) पर दिए गए प्रॉम्प्ट का उपयोग करता है। संदर्भ कार्यान्वयन [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) है: अंग्रेजी `/` पर, लक्षित लोकेल `/{locale}/` पर।
 
 अधिकांश टीमें एक ही पृष्ठ पर दो पाइपलाइनों के **हाइब्रिड** का उपयोग करती हैं:
 

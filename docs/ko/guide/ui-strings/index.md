@@ -12,7 +12,7 @@
 | --- | --- |
 | 하드코딩된 소스 문자열이 있고 아직 `t()`가 없는 JS/TS | [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) |
 | 소스에 `t()`가 이미 있는 React / Next.js / Node | [i18next 연결](/ko/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 애플리케이션](/ko/guide/ui-strings/python). 초기화: `ui-python`, `ui-python-gettext`, `ui-python-flask` 또는 `ui-python-django`. 도우미: `i18n.py`. 기존 앱에 로케일을 추가하려면 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 참조하세요. |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [파이썬 애플리케이션](/ko/guide/ui-strings/python). 초기화: `ui-python`, `ui-python-gettext`, `ui-python-flask`, 또는 `ui-python-django`. 도우미: `i18n.py`. 기존 앱에 로케일을 추가하려면 [파이썬 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 참조하거나, 앱이 gettext를 사용하는 경우 [Django / 파이썬 gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)를 참조하십시오. |
 | 일반 HTML (마크업에 `t()` 없음) | [일반 HTML 앱](/ko/guide/ui-strings/plain-html) |
 | Astro 마케팅 사이트 (하이브리드) | [Astro 웹사이트](/ko/guide/ui-strings/astro-website) |
 | `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/ko/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json`을 읽고 각 대상 로케일에 대해 활성 LLM 제공업체의 모델로 배치를 보낸 다음 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인 `localeModels(locale)` → `uiModels` → `translationModels`을 사용합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조). 로케일 내에서 한 번에 최대 `uiBatchConcurrency`개의 배치가 실행됩니다(기본값 **2**, [구성 — uiBatchConcurrency](/ko/reference/configuration#uibatchconcurrency-optional) 참조). `-j`는 여전히 대상 로케일만 병렬화합니다.
+`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 제공자의 모델로 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인: `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조). 로케일 내에서 최대 `uiBatchConcurrency`개의 배치가 동시에 실행됩니다(기본값 **2**; [구성 — uiBatchConcurrency](/ko/reference/configuration#uibatchconcurrency-optional) 참조). `-j`는 여전히 대상 로케일만 병렬화합니다.
 
 <a id="translations-database-stringsjson"></a>
 ### 번역 데이터베이스 (`strings.json`)
 
 각 항목에 대해 `translate-ui`는 선택적 `models` 개체(`translated`와 동일한 로케일 키)에 각 로케일을 성공적으로 번역한 **활성 공급자의 모델 ID**를 저장합니다. 번역 대시보드에서 편집된 문자열은 해당 로케일에 대해 `models`에 센티넬 값 `user-edited`으로 표시됩니다. `ui.flatOutputDir` 아래의 로케일별 플랫 파일은 **원본 문자열 → 번역**만 유지하며, `models`를 포함하지 않습니다(따라서 런타임 번들은 변경되지 않습니다).
 
-> **참고:** UI 문자열에 대한 대시보드 편집은 SQLite 문서 캐시가 아닌 `strings.json`에 저장됩니다. 카탈로그에서 평면 로케일 파일을 다시 작성하려면 일반 `sync` 또는 `translate-ui`를(특수 플래그 없이) 실행하십시오 — `--force-update`은(는) UI 단계로 전달되지 **않습니다**. 수동 편집 후 UI 명령에 `--force`을(를) 사용하지 마십시오: 모든 항목을 다시 번역하여 `user-edited` 행을 덮어쓸 수 있습니다. 저장된 번역이 로케일 문자 체계 검사에 실패한 카탈로그 행(예: `hi`에 대한 로마자 표기 힌디어)은 누락된 것으로 간주되어 `--force` 없이 다시 번역됩니다.
+> **참고:** UI 문자열에 대한 대시보드 편집 내용은 SQLite 문서 캐시가 아닌 `strings.json`에 저장됩니다. 카탈로그에서 플랫 로케일 파일을 다시 작성하려면 일반 `sync` 또는 `translate-ui`(특수 플래그 없음)를 실행하십시오. `--force-update`는 UI 단계로 **전달되지 않습니다**. 수동 편집 후 UI 명령에 `--force`를 사용하지 마십시오. 이는 모든 항목을 다시 번역하고 `user-edited` 행을 덮어쓸 수 있습니다. 저장된 번역이 로케일 쓰기 시스템 검사(예: `hi`에 대한 로마자화된 힌디어)에 실패한 카탈로그 행은 누락된 것으로 간주되어 `--force` 없이 다시 번역됩니다.
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## 4단계: 앱에서 출력 사용하기
@@ -90,7 +90,7 @@ ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### 로케일별 모델 재정의
 
-일부 모델은 특정 언어를 다른 모델보다 더 잘 번역합니다. 예를 들어 qwen 및 z-ai 모델은 아시아 언어에서 좋은 성능을 보이는 경향이 있습니다. 각 BCP-47 로케일에 대한 우선순위 모델 목록을 제공하려면 `providers.<active>.localeModels` 항목을 추가하세요. 이 목록은 해당 로케일에 대해 `uiModels` 및 `translationModels`보다 먼저 시도됩니다. 로케일 태그는 대소문자를 구분하지 않고 일치합니다(`zh-cn`와 `ZH-CN`는 동일합니다). 일치하는 항목이 없으면 도구는 기본 `uiModels` 및 `translationModels` 순서를 사용합니다. 동일한 `localeModels` 메커니즘이 문서, JSON, SVG 번역에 적용됩니다.
+일부 모델은 다른 모델보다 특정 언어를 더 잘 번역합니다. 예를 들어, qwen 및 z-ai 모델은 아시아 언어에 강한 경향이 있습니다. 각 BCP-47 로케일에 대한 우선순위 모델 목록을 제공하려면 `providers.<active>.localeModels` 항목을 추가하십시오. 해당 로케일에 대해 `uiModels` 및 `translationModels`보다 먼저 해당 목록이 시도됩니다. 로케일 태그는 대소문자를 구분하지 않습니다(`zh-cn`와 `ZH-CN`는 동일합니다). 일치하는 항목이 없으면 도구는 기본 `uiModels` 및 `translationModels` 순서를 사용합니다. 동일한 `localeModels` 메커니즘이 문서, JSON 및 SVG 번역에 적용됩니다.
 
 <a id="exporting-to-xliff-20"></a>
 ### XLIFF 2.0으로 내보내기

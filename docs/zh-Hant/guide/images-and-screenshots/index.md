@@ -15,7 +15,7 @@
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### 搭配 `docsOutput.style = "flat"` 的 Markdown（README、USER-GUIDE）
 
-從第一天起，就在地區代碼子目錄下儲存螢幕截圖：
+從一開始就將螢幕截圖儲存在語言環境編碼的子目錄下：
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 平面鏈接改寫器 **not** 對 `doc-system` 執行（與 `"flat"` 不同）。`postProcessing.regexAdjustments` 會看到來自來源 markdown 的原始 URL — 通常是絕對路徑或站點根路徑，例如 `/img/screenshots/en-GB/foo.png`。
 
-當螢幕擷取畫面位於共用靜態 URL 樹狀目錄中時，適用 **各語系資料夾** 版面配置：從一開始就使用以語系編碼的資料夾，以及一條通用的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 規則 (請參閱 [設定 — 文件系統](/zh-Hant/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system))。
+**每個地區的資料夾**佈局適用於當螢幕截圖位於共享的靜態 URL 樹中時：從一開始就使用地區代碼資料夾，以及一個通用的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 規則（請參閱 [Config — doc-system](/zh-Hant/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)）。
 
 **並置螢幕截圖** 適用於每個地區設定的翻譯文件將資產儲存在 Markdown 旁邊 (無 URL 重寫)。您的螢幕截圖指令碼必須將 PNG 寫入從 `{outputDir}`、`{locale}` 和 `{localeSubpath}` 派生的路徑 — 下面的 Docusaurus 預設值是參考版面配置。
 
@@ -78,7 +78,7 @@ images/screenshots/en-GB/settings.png
 
 等同於使用 `docsOutput.style = "doc-system"` 搭配 `localeSubpath: ""` —— 翻譯頁面直接放在 `{outputDir}/{locale}/` 下方。
 
-從第一天起就將截圖儲存在以語系編碼的路徑下：
+從一開始就將螢幕截圖儲存在語言環境編碼的路徑下：
 
 ```
 public/img/screenshots/en-GB/screenshot.png

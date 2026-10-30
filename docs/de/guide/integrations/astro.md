@@ -54,6 +54,8 @@ Explizite Sidebar-`label`s, die Site-`title` und `social[].label` in `astro.conf
 <a id="enable-i18n-in-an-existing-site"></a>
 ### i18n auf einer bestehenden Site aktivieren
 
+Die erstmalige Einrichtung erfolgt über die Eingabeaufforderung unter [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website#run-the-agent-prompt). Die folgende Checkliste beschreibt dieselbe Arbeit, manuell ausgeführt.
+
 - `locales` in der Starlight-Konfiguration, einschließlich eines `root`-Eintrags, wenn Englisch ohne Präfix sein soll (`label` und erforderliches `lang`).
 - `defaultLocale: 'root'`, wenn die Standardsprache dieses Root-Locale ist. Lassen Sie `defaultLocale` nur weg, wenn Starlights Standard bereits übereinstimmt.
 - Englische Seiten bleiben in `src/content/docs/`; `translate-docs` schreibt `src/content/docs/<locale>/`.
@@ -67,7 +69,7 @@ Explizite Sidebar-`label`s, die Site-`title` und `social[].label` in `astro.conf
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## Reines Astro (Marketing- und App-Seiten)
 
-Für statische Astro-Marketing- oder App-Seiten (nicht Starlight) kombinieren Sie [Astro integriertes i18n-Routing](https://docs.astro.build/en/guides/internationalization/) mit ai-i18n-tools. Die Referenzimplementierung ist [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): Englisch unter `/`, Zielsprachen unter `/{locale}/`.
+Für statische Astro-Marketing- oder App-Websites (nicht Starlight) kombinieren Sie [Astro integriertes i18n-Routing](https://docs.astro.build/en/guides/internationalization/) mit ai-i18n-tools. Die erstmalige Einrichtung erfolgt über die Eingabeaufforderung unter [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website#run-the-agent-prompt). Die Referenzimplementierung ist [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): Englisch unter `/`, Zielsprachen unter `/{locale}/`.
 
 Die meisten Teams verwenden eine **Hybridlösung** aus zwei Pipelines auf derselben Seite:
 

@@ -54,6 +54,8 @@ Los `label` explícitos de la barra lateral, el `title` del sitio y `social[].la
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n en un sitio existente
 
+La configuración inicial utiliza la indicación en [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website#run-the-agent-prompt). La lista de verificación a continuación es el mismo trabajo manual.
+
 - `locales` en la configuración de Starlight, incluyendo una entrada `root` cuando el inglés no debe tener prefijo (`label` y el `lang` requerido).
 - `defaultLocale: 'root'` cuando el idioma predeterminado es esa configuración regional raíz. Omita `defaultLocale` solo si el valor predeterminado de Starlight ya coincide.
 - Las páginas en inglés permanecen en `src/content/docs/`; `translate-docs` escribe `src/content/docs/<locale>/`.
@@ -67,7 +69,7 @@ Los `label` explícitos de la barra lateral, el `title` del sitio y `social[].la
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## Astro simple (sitios de marketing y aplicaciones)
 
-Para sitios estáticos de marketing o aplicaciones de Astro (no Starlight), combine el [enrutamiento i18n integrado de Astro](https://docs.astro.build/en/guides/internationalization/) con ai-i18n-tools. La implementación de referencia es [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): inglés en `/`, configuraciones regionales de destino en `/{locale}/`.
+Para sitios de marketing o aplicaciones estáticos de Astro (no Starlight), combina [enrutamiento i18n integrado de Astro](https://docs.astro.build/en/guides/internationalization/) con ai-i18n-tools. La configuración inicial utiliza la indicación en [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website#run-the-agent-prompt). La implementación de referencia es [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): inglés en `/`, locales de destino en `/{locale}/`.
 
 La mayoría de los equipos utilizan un **híbrido** de dos pipelines en la misma página:
 

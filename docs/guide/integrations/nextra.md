@@ -60,7 +60,7 @@ An English-only Nextra 4 site needs a locale folder, a route param, and Next.js 
 <a id="theme-strings"></a>
 ## Theme strings
 
-Nextra theme chrome (`editLink`, search placeholder, footer, and so on) is not extracted from markdown. Author English strings in a TypeScript dictionary module (for example `app/_dictionaries/en.ts`) and translate it inside `translate-docs`:
+Nextra theme strings (`editLink`, search placeholder, footer, and so on) are not extracted from markdown. Author English strings in a TypeScript dictionary module (for example `app/_dictionaries/en.ts`) and translate it inside `translate-docs`:
 
 ```json
 {
@@ -104,7 +104,7 @@ Optional: override collection with `docs[].nextraMetaGlob` or restrict translata
 <a id="example-project"></a>
 ## Example project
 
-[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — English sources at `content/en/`, committed `pt-BR` and `zh-Hans` page trees, inline `_meta.ts` files, and `app/_dictionaries/{locale}.ts`. One server component (`app/_components/feedback-links.tsx`) uses `t()` through a flat-bundle lookup so custom chrome can sit beside the dictionary. Run `pnpm run dev` on port 3070.
+[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) — English sources at `content/en/`, committed `pt-BR` and `zh-Hans` page trees, inline `_meta.ts` files, and `app/_dictionaries/{locale}.ts`. One server component (`app/_components/feedback-links.tsx`) uses `t()` through a flat-bundle lookup so custom shell strings can sit beside the dictionary. Run `pnpm run dev` on port 3070.
 
 <a id="agent-prompt-dictionary-and-routes"></a>
 ## Agent prompt: dictionary and routes
@@ -138,7 +138,7 @@ sidebar labels into the dictionary or into `t()`.
 - `next.config`: `i18n.locales` and `defaultLocale`.
 - English MDX and `_meta.ts` live under `content/en/`. `getPageMap('/${lang}')`
   loads the matching tree.
-- `app/_dictionaries/en.ts` exports the English chrome (`siteTitle`, `footer`,
+- `app/_dictionaries/en.ts` exports the English shell strings (`siteTitle`, `footer`,
   `editLink`, search placeholder, table-of-contents title, last-updated label).
   `get-dictionary.ts` dynamically imports `./${locale}`.
 - Pass those fields into `<Layout>`, `<Navbar>`, and `<Footer>`. Set
@@ -166,7 +166,7 @@ sidebar labels into the dictionary or into `t()`.
 
 - `pnpm build` passes.
 - `/` shows the English dictionary strings. After `sync`, one non-English route
-  shows translated chrome and page titles.
+  shows translated shell strings and page titles.
 - Sidebar labels come from `content/en/**/_meta.ts`, not from the dictionary.
 
 ## Report back
@@ -181,7 +181,7 @@ native language names), and any MDX you were not sure belonged under
 <a id="optional-t-for-app-react-hybrid"></a>
 ## Optional: `t()` for `app/` React (hybrid)
 
-**Default:** `_meta.ts` object literals and `app/_dictionaries/en.ts` are translated by `translate-docs`. No `t()` is required for that chrome.
+**Default:** `_meta.ts` object literals and `app/_dictionaries/en.ts` are translated by `translate-docs`. No `t()` is required for those shell strings.
 
 **Optional hybrid:** custom server components can call `t("source sentence")` and `translate-ui`. The sentence is written in `sourceLocale`, which can be any language. Do not copy dictionary strings or `_meta.ts` titles into those calls. `extract` only sees literals inside `t()`, so `ui.sourceRoots` should list only the folders that contain those calls (the example uses `app/_components`), not `app/_dictionaries`.
 

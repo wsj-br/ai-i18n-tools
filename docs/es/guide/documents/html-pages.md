@@ -139,11 +139,11 @@ Otras URL relativas `href`, `src`, `srcset` y `poster` se prefijan con la profun
 | `{llocale}` | Configuración regional en minúsculas |
 | `{LOCALE}` | Configuración regional en mayúsculas |
 
-`img/trulli.jpg` se convierte en `img/trulli-pt-BR.jpg`. Con `onlyIfExists: true` (el valor predeterminado), esa URL se utiliza solo cuando existe el archivo localizado; de lo contrario, se conserva el recurso compartido original. Configure `onlyIfExists: false` solo cuando otro paso de compilación o de CDN garantice esos archivos.
+`img/trulli.jpg` se convierte en `img/trulli-pt-BR.jpg`. Con `onlyIfExists: true` (el valor predeterminado), esa URL se utiliza solo cuando el archivo localizado existe; de lo contrario, se mantiene el recurso compartido original. Establece `onlyIfExists: false` solo cuando otro paso de compilación o CDN garantice esos archivos.
 
-`include` coincide con rutas de URL como `img/**`. Utilice `assetRoot` para establecer el directorio del sistema de archivos con el que se comparan los candidatos localizados, especialmente las URL relativas a la raíz como `/img/trulli.jpg`.
+`include` coincide con rutas de URL como `img/**`. Utiliza `assetRoot` para establecer el directorio del sistema de archivos contra el que se comprueban los candidatos localizados, especialmente las URL relativas a la raíz como `/img/trulli.jpg`.
 
-Las mismas reglas de localización se aplican a `srcset`, `poster`, `<source src>`, el icono `<link href>` y `og:image` / `twitter:image`. La canalización reescribe las referencias, pero no crea, traduce ni copia archivos de recursos. Los valores `url()` de CSS no se reescriben.
+Las mismas reglas de localización se aplican a `srcset`, `poster`, `<source src>`, el icono `<link href>`, y `og:image` / `twitter:image`. La canalización reescribe las referencias, pero no crea, traduce ni copia archivos de recursos. Los valores `url()` de CSS no se reescriben.
 
 <a id="language-list-and-hreflang"></a>
 ## Lista de idiomas y hreflang
@@ -213,7 +213,7 @@ Las traducciones de oraciones permanecen en la caché. El hash de seguimiento de
 | La salida es `site/pt-BR/site/index.html` | Configure `docsOutput.docsRoot` en `"site"` para que se elimine el prefijo de origen. |
 | El enlace aún apunta a la página en inglés | Utilice un enlace `.html` / `.htm` relativo e incluya la página de destino en el mismo bloque `docs[]`. |
 | La ruta de la imagen está rota desde una página de configuración regional | Manténgala relativa para que se pueda aplicar la reescritura de profundidad; recuerde que el `url()` de CSS no se reescribe. |
-| La imagen localizada no está seleccionada | Compruebe `localizedAssets.include`, el nombre de archivo `pattern` y si el candidato existe cuando `onlyIfExists` es verdadero. |
+| La imagen localizada no está seleccionada | Comprueba `localizedAssets.include`, el nombre de archivo `pattern`, y si el candidato existe cuando `onlyIfExists` es verdadero. |
 | La lista de idiomas está vacía o sin cambios | Mantenga ambos comentarios de marcador en el orden correcto y fuera de `script`, `style`, `pre` y `code`. |
 | El menú desplegable no navega | Añada `data-lang-select` al `<select>` y cargue `html-runtime/lang-select.js`. |
 | Las URL hreflang usan el host incorrecto | Establezca `hreflang.siteUrl` en el origen público final. |

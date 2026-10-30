@@ -13,6 +13,7 @@
 |---------|---------|
 | [`version`](setup#version) | CLIのバージョンとビルドタイムスタンプを表示します。 |
 | [`init`](setup#init) | 初期設定ファイルを書き出します。`-t` がスキャフォールドテンプレートを選択します。 |
+| [`doctor`](setup#doctor) | 設定、パス、プロバイダー、および環境が翻訳可能であることを確認します。 |
 | [`help`](setup#help) | サブコマンドのヘルプを表示します。 |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | 古い/孤立した/未設定ロケールのキャッシュ行を削除し、Markdownのissueを再作成します。 |
 | [`clean-temp`](maintenance#clean-temp) | `*.log`、`*.tmp`、およびキャッシュのバックアップを検索して削除します。 |
-| [`purge-locale`](maintenance#purge-locale) | ロケールのキャッシュ行と生成されたアーティファクトを削除します。 |
+| [`purge-locale`](maintenance#purge-locale) | ロケール用のキャッシュ行および生成された成果物を削除します。 |
 
 <a id="dashboard--glossarytools"></a>
 ### [ダッシュボードと用語集](tools)
@@ -91,6 +92,7 @@
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

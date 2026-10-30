@@ -37,7 +37,8 @@ CLI और टूलकिट जो JavaScript/TypeScript ऐप्स, Python 
 | आपके पास है | यहाँ से शुरू करें |
 | --- | --- |
 | एक JS/TS ऐप (React, Next.js, Node, CLI) जिसमें स्रोत में प्लेन टेक्स्ट है | [एक JS/TS ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-js) |
-| एक Python ऐप (Streamlit, FastAPI, Flask, Django, gettext) | [एक Python ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-python) |
+| एक Python ऐप (Streamlit, FastAPI, Flask, डेस्कटॉप, स्क्रिप्ट) | [एक Python ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-python) |
+| एक Django ऐप, Flask-Babel कैटलॉग, या एक ऐसा ऐप जो पहले से GNU gettext का उपयोग करता है | [एक Django / Python gettext ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-django-gettext) |
 | एक वेबसाइट या डॉक्स साइट (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, प्लेन HTML) | [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-website) |
 | एक रिपॉजिटरी README और अन्य मार्कडाउन फ़ाइलें (एक ऐप के साथ या उसके बिना) | [अपने README और मार्कडाउन डॉक्स में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-readme) |
 | कोड जो पहले से ही `t()` या `_()` को कॉल करता है | [UI स्ट्रिंग](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) |
@@ -94,6 +95,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 | --- | --- | --- |
 | एक JS/TS ऐप | `ai-i18n-tools init -P openrouter` | [एक JS/TS ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-js) |
 | एक Python ऐप | `ai-i18n-tools init -t ui-python -P openrouter` | [एक Python ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-python) |
+| एक Django या GNU gettext ऐप | `ai-i18n-tools init -t ui-python-django -P openrouter` (या `ui-python-gettext`, `ui-python-flask`) | [एक Django / Python gettext ऐप में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-django-gettext) |
 | एक वेबसाइट या डॉक्स साइट | `ai-i18n-tools init -t ui-vitepress -P openrouter` (अपने फ्रेमवर्क के लिए टेम्पलेट बदलें) | [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-website) |
 | एक README, ऐप के साथ या उसके बिना | `ai-i18n-tools init -P openrouter` (JS/TS ऐप + README) या `init -t docs-markdown` | [अपनी README और मार्कडाउन डॉक्स में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-readme) |
 
@@ -101,7 +103,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 एक JS/TS ऐप को पहले अपने टेक्स्ट को `t()` में रैप करना होगा। सादे टेक्स्ट पर चलाएँ, `sync` बिना किसी त्रुटि के समाप्त हो जाता है और कुछ भी उपयोगी नहीं लिखता है। `sync` से पहले आपके साइट फ्रेमवर्क में भी अपनी i18n रूटिंग सक्षम होनी चाहिए।
 
-वेबसाइटों के लिए टेम्पलेट: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, और `ui-plain-html` या `docs-plain-html`। केवल README और मार्कडाउन: `docs-markdown`। README ब्लॉक को शामिल करने के लिए किसी अन्य टेम्पलेट में `--with-readme` जोड़ें। अन्य पायथन टेम्पलेट: `ui-python-gettext`, `ui-python-flask`, `ui-python-django`। नेस्टेड i18next JSON: `ui-json-bundles`। पूरी सूची: [CLI सेटअप संदर्भ](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/setup)।
+वेबसाइटों के लिए टेम्पलेट: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, और `ui-plain-html` या `docs-plain-html`। केवल README और Markdown: `docs-markdown`। README ब्लॉक को शामिल करने के लिए किसी अन्य टेम्पलेट में `--with-readme` जोड़ें। Python gettext ऐप्स: `ui-python-django`, `ui-python-flask`, `ui-python-gettext`। नेस्टेड i18next JSON: `ui-json-bundles`। पूरी सूची: [CLI सेटअप संदर्भ](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/setup)।
 
 `suggest-models` सक्रिय प्रोवाइडर के चैट मॉडल को प्रकाशित बेंचमार्क से रैंक करता है, और `suggest-models --apply`, `translationModels` की जगह लेता है। यही रैंकिंग [मॉडल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/translation-dashboard/models) टैब पर है। गाइड: [AI मॉडल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ai-models)। कमांड संदर्भ: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/models#suggest-models)।
 
@@ -114,11 +116,12 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 - [इंस्टॉलेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation) · [क्विक स्टार्ट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/quick-start) · [LLM प्रोवाइडर](https://wsj-br.github.io/ai-i18n-tools/hi/guide/providers-and-models) · [AI मॉडल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ai-models)
 - [UI स्ट्रिंग](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/) · [प्लेन HTML](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/hi/guide/ui-strings/python) · [दस्तावेज़](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/) · [HTML पेज](https://wsj-br.github.io/ai-i18n-tools/hi/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/hi/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/hi/guide/svg-translation/)
 - [Intlayer](https://intlayer.org/) — [डिक्शनरी को उसी जगह पर अनुवाद करें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/translating-intlayer) · [सोर्स-स्ट्रिंग कॉल पर ले जाएँ](https://wsj-br.github.io/ai-i18n-tools/hi/guide/migrating-from-intlayer)
-- [एकीकरण](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, और [पायथन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/python)
-- [अपने प्रोजेक्ट में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-your-project) — [JS/TS ऐप](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-js) · [पायथन ऐप](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-python) · [वेबसाइट या डॉक्स साइट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-website) · [README और मार्कडाउन डॉक्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-readme) · [पाइपलाइनों का संयोजन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/combining-pipelines)
+- [इंटीग्रेशन](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, और [Python](https://wsj-br.github.io/ai-i18n-tools/hi/guide/integrations/python)
+- [अपने प्रोजेक्ट में i18n जोड़ें](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-your-project) — [JS/TS ऐप](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-js) · [Python ऐप](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-python) · [Django / gettext ऐप](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-django-gettext) · [वेबसाइट या डॉक्स साइट](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-website) · [README और Markdown डॉक्स](https://wsj-br.github.io/ai-i18n-tools/hi/guide/add-i18n-to-readme) · [पाइपलाइन को संयोजित करना](https://wsj-br.github.io/ai-i18n-tools/hi/guide/combining-pipelines)
 - [CLI संदर्भ](https://wsj-br.github.io/ai-i18n-tools/hi/reference/cli-commands/) · [कॉन्फ़िगरेशन](https://wsj-br.github.io/ai-i18n-tools/hi/reference/configuration) · [रनटाइम हेल्पर](https://wsj-br.github.io/ai-i18n-tools/hi/guide/runtime-helpers)
 - [उदाहरण](https://wsj-br.github.io/ai-i18n-tools/hi/examples) — चलाने योग्य डेमो (`npx degit …`)
-- [AI एजेंट संदर्भ](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — उपभोक्ता रेपो में सहायकों के लिए एकीकरण गाइड
+- [AI एजेंट संदर्भ](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — उपभोक्ता प्रोजेक्ट्स के लिए संक्षिप्त प्रॉम्प्ट / `AGENTS.md` एंट्रीपॉइंट
+- [पोर्टेबल एजेंट स्किल्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills) — एक इंस्टॉलेशन, फिर प्रति वर्कफ़्लो एक स्लैश कमांड: `npx skills add wsj-br/ai-i18n-tools --all -y` (Node.js 22.20+); [इंस्टॉलेशन गाइड](https://wsj-br.github.io/ai-i18n-tools/hi/guide/coding-agent-skill)
 
 <a id="contributing"></a>
 ## योगदान

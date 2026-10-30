@@ -22,7 +22,8 @@ Die Anleitungen sind unter [i18n zu Ihrem Projekt hinzufügen](/de/guide/add-i18
 | Sie haben | Beginnen Sie hier |
 | --- | --- |
 | Eine JS/TS-App (React, Next.js, Node, CLI) mit Klartext im Quellcode | [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) |
-| Eine Python-App (Streamlit, FastAPI, Flask, Django, gettext, Desktop) | [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) |
+| Eine Python-App (Streamlit, FastAPI, Flask, Desktop, Skripte) | [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) |
+| Eine Django-App, Flask-Babel-Kataloge oder eine App, die bereits GNU gettext verwendet | [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext) |
 | Eine Website oder Dokumentationsseite (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, reines HTML) | [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website) |
 | Eine Repository-README und andere Markdown-Dateien, normalerweise neben einer App | [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme) |
 | Eigenständige verschachtelte JSON-Lokalisierungsdateien | [JSON](/de/guide/json) |

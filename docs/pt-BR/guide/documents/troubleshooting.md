@@ -34,7 +34,7 @@ Um link Markdown ou `![alt](url)` funciona em inglês, mas retorna 404 em cópia
 <a id="hindi-arabic-cjk-or-cyrillic-output-is-romanised-latin-letters"></a>
 ## A saída em hindi, árabe, CJK ou cirílico é romanizada (letras latinas)
 
-Alguns modelos traduzem o significado, mas escrevem o resultado em letras latinas/romanas (por exemplo, hindi como `Namaste` em vez de `नमस्ते`). `hi` puro significa Devanagari; use `hi-Latn` apenas quando quiser hindi romanizado.
+Alguns modelos traduzem o significado, mas escrevem o resultado em letras latinas/romanas (por exemplo, hindi como `Namaste` em vez de `नमस्ते`). O `hi` puro significa Devanagari; use `hi-Latn` apenas quando quiser hindi romanizado.
 
 **Correção**
 

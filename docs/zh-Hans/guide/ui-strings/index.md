@@ -12,7 +12,7 @@
 | --- | --- |
 | 带有硬编码源字符串且尚无 `t()` 的 JS/TS | [向 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) |
 | React / Next.js / Node，源中已有 `t()` | [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 应用程序](/zh-Hans/guide/ui-strings/python)。初始化：`ui-python`, `ui-python-gettext`, `ui-python-flask` 或 `ui-python-django`。辅助工具：`i18n.py`。若要为现有应用程序添加语言环境，请参阅 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)。 |
+| Python (`t()`、`_()`、gettext、Jinja、Django) | [Python 应用程序](/zh-Hans/guide/ui-strings/python)。初始化：`ui-python`、`ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。辅助工具：`i18n.py`。要将语言环境添加到现有应用程序，请参阅[将 i18n 添加到 Python 应用程序](/zh-Hans/guide/add-i18n-to-python)，或者当应用程序使用 gettext 时，请参阅[将 i18n 添加到 Django / Python gettext 应用程序](/zh-Hans/guide/add-i18n-to-django-gettext)。 |
 | 纯 HTML（标记中没有 `t()`） | [纯 HTML 应用](/zh-Hans/guide/ui-strings/plain-html) |
 | Astro 营销网站（混合） | [Astro 网站](/zh-Hans/guide/ui-strings/astro-website) |
 | `t()` 规则、插值、复数 | [t() 调用和复数](/zh-Hans/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-读取 `strings.json`，为每个目标语言区域将批次发送到活跃 LLM 提供商上的模型，并将扁平化 JSON 文件（`de.json`、`fr.json` 等）写入 `ui.flatOutputDir`。模型选择使用 UI 链：`localeModels(locale)` → `uiModels` → `translationModels`（请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain))。在单个语言区域内，最多可同时运行 `uiBatchConcurrency` 个批次（默认值为 **2**；请参阅 [配置 — uiBatchConcurrency](/zh-Hans/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然仅对目标语言区域进行并行处理。
+读取 `strings.json`，将批次发送到活动 LLM 提供程序上的模型，以处理每个目标语言环境，并将平面 JSON 文件（`de.json`、`fr.json` 等）写入 `ui.flatOutputDir`。模型选择使用 UI 链：`localeModels(locale)` → `uiModels` → `translationModels`（请参阅[AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain))。在一个语言环境内，最多可同时运行 `uiBatchConcurrency` 个批次（默认值 **2**；请参阅[配置 — uiBatchConcurrency](/zh-Hans/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然只并行处理目标语言环境。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻译数据库 (`strings.json`)
 
 对于每个条目，`translate-ui` 将成功翻译每个区域设置的**活动提供程序的模型 ID**存储在一个可选的 `models` 对象中（与 `translated` 具有相同的区域设置键）。在翻译仪表板中编辑的字符串在该区域设置的 `models` 中用哨兵值 `user-edited` 标记。`ui.flatOutputDir` 下的每个区域设置的平面文件仍仅为**源字符串 → 翻译**；它们不包含 `models`（因此运行时捆绑包保持不变）。
 
-> **注意：** 对 UI 字符串的控制台编辑保存在 `strings.json` 中，而不是 SQLite 文档缓存中。运行普通的 `sync` 或 `translate-ui`（无特殊标志）以从目录重写扁平区域设置文件 —— `--force-update` **不会** 转发到 UI 步骤。在手动编辑后，避免在 UI 命令上使用 `--force`：它会重新翻译每个条目，并可能覆盖您的 `user-edited` 行。存储的翻译未通过区域设置书写系统检查的目录行（例如 `hi` 的罗马拼音印地语）将被视为缺失，并在不使用 `--force` 的情况下重新翻译。
+> **注意:** 对 UI 字符串的仪表板编辑存储在 `strings.json` 中，而不是 SQLite 文档缓存中。运行普通的 `sync` 或 `translate-ui`（不带特殊标志）以从目录中重写平面语言环境文件 — `--force-update` **不会**转发到 UI 步骤。手动编辑后，避免在 UI 命令上使用 `--force`：它会重新翻译每个条目，并可能覆盖您的 `user-edited` 行。目录行中存储的翻译未能通过语言环境书写系统检查的（例如，`hi` 的罗马化印地语）将被视为缺失并重新翻译，无需 `--force`。
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## 第 4 步：在你的应用中使用输出
@@ -90,7 +90,7 @@ ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### 每个区域模型覆盖
 
-有些模型在翻译某些语言时表现更佳。例如，qwen 和 z-ai 模型在处理亚洲语言方面往往表现出色。添加 `providers.<active>.localeModels` 条目，为每个 BCP-47 语言区域提供一个优先模型列表。对于该语言区域，这些列表会在 `uiModels` 和 `translationModels` 之前尝试。语言区域标记不区分大小写匹配（`zh-cn` 和 `ZH-CN` 是等效的）。如果没有匹配的条目，该工具将使用默认的 `uiModels` 和 `translationModels` 顺序。同样的 `localeModels` 机制也适用于文档、JSON 和 SVG 翻译。
+有些模型在翻译某些语言方面比其他模型表现更好。例如，qwen 和 z-ai 模型在亚洲语言方面表现良好。添加 `providers.<active>.localeModels` 条目，为每个 BCP-47 语言环境提供一个优先模型列表。对于该语言环境，这些列表会在 `uiModels` 和 `translationModels` 之前尝试。语言环境标签不区分大小写匹配（`zh-cn` 和 `ZH-CN` 是等效的）。如果没有匹配的条目，该工具将使用默认的 `uiModels` 和 `translationModels` 顺序。相同的 `localeModels` 机制适用于文档、JSON 和 SVG 翻译。
 
 <a id="exporting-to-xliff-20"></a>
 ### 导出到 XLIFF 2.0

@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
 
-프레임워크별 init 템플릿 및 에이전트 프롬프트가 포함된 선택기 테이블은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#initialise-the-project)에 있습니다. Python 프레임워크: [Python](/ko/guide/integrations/python).
+프레임워크당 하나의 초기화 템플릿이 있는 선택기 테이블은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#initialise-the-project)에 있습니다. 해당 페이지의 연습 프롬프트는 프레임워크의 i18n을 활성화합니다. 아래 통합 페이지에는 셸 카탈로그 세부 정보가 유지됩니다. Python 프레임워크: [Python](/ko/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## 공유 개념

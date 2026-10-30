@@ -3,7 +3,7 @@
 
 Die Registerkarte **Modelle** stuft die Chat-Modelle des aktiven Anbieters ein, sodass Sie `translationModels` auswählen können, ohne IDs manuell kopieren zu müssen. Sie verwendet dasselbe Ranking wie [`suggest-models`](/de/reference/cli-commands/models#suggest-models). Eine exemplarische Vorgehensweise, die auch erklärt, warum die Liste mehr als ein Modell enthält, finden Sie unter [KI-Modelle](/de/guide/ai-models).
 
-Wählen Sie **Qualität** oder **Preis**. Qualität bevorzugt den Languagebench ChrF und den Arena Score. Preis bevorzugt einen niedrigeren USD-Tarif unter Beibehaltung eines Qualitäts-Mindeststandards. Wenn die Konfiguration mehr als einen Anbieter enthält, erscheint ein **Anbieter**-Menü; der Standardwert ist der Anbieter, mit dem das Dashboard gestartet wurde (`provider` oder `-P` / `--provider` beim `dashboard`-Befehl). Das Ändern des Anbieters oder der Priorität lädt die Tabelle neu. Optionale Gewichtungen finden Sie in [`modelSuggestion`](/de/reference/configuration#modelsuggestion-optional).
+Wählen Sie **Qualität** oder **Preis**. Qualität bevorzugt languagebench ChrF und Arena Score. Preis bevorzugt einen niedrigeren USD-Kurs und hält dennoch eine Qualitätsuntergrenze aufrecht. Wenn die Konfiguration mehr als einen Anbieter hat, erscheint ein **Anbieter**-Menü; die Standardeinstellung ist der Anbieter, mit dem das Dashboard gestartet wurde (`provider`, oder `-P` / `--provider` beim `dashboard`-Befehl). Das Ändern des Anbieters oder der Priorität lädt die Tabelle neu. Optionale Gewichtungen finden Sie unter [`modelSuggestion`](/de/reference/configuration#modelsuggestion-optional).
 
 Die Tabellenspalten sind Steuerelemente zum Neuanordnen, ein Kontrollkästchen, Rang, Modell-ID, Index (der gewichtete Score mal 100), gemessener ChrF, gemessener Arena Score und Eingabe-/Ausgabepreis in USD pro 1 Mio. Tokens. Eine fehlende Messung wird durch einen Gedankenstrich dargestellt. Die Rangnummer ist die Position des Modells in der vollständigen Rangliste, vor den unten stehenden Filtern. Ziehen Sie den Ziehpunkt einer Zeile oder verwenden Sie deren Auf- und Ab-Schaltflächen, um ihre Position in dieser Tabelle zu ändern. **Aktualisieren** lädt die Rangfolge erneut.
 
@@ -16,8 +16,8 @@ Markieren Sie die gewünschten Modelle. Die Statuszeile zeigt an, wie viele ausg
 Beim ersten Laden werden languagebench, Arena und models.dev bei leerem Cache heruntergeladen, was einige Zeit in Anspruch nehmen kann. Spätere Ladevorgänge verwenden den 7-Tage-Cache unter `<cacheDir>/benchmark-scores.json`. Der Tab verfügt über keine Schaltfläche zum Aktualisieren. Aktualisieren Sie den Cache über die CLI mit `ai-i18n-tools suggest-models --refresh` und laden Sie anschließend den Tab neu. Derselbe Befehl kann die Liste ausgeben oder anwenden.
 
 ::: info Externe Benchmark-Quellen
-  Die Bewertungen werden aus externen Datenquellen berechnet:
-  - [languagebench ChrF](https://languagebench.github.io/) lizenziert unter CC-BY-SA-4.0,
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) lizenziert unter CC-BY-4.0, und
+  Die Scores werden aus externen Datenquellen berechnet:
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) lizenziert unter CC-BY-SA-4.0,
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) lizenziert unter CC-BY-4.0, und
   - [models.dev](https://models.dev/) Preise lizenziert unter MIT.
 :::

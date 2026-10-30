@@ -75,7 +75,7 @@ You run this once, before the prompt. It writes the config and uses the provider
 | Any other template, plus a README | add `--with-readme` to that `init` command | This page for the README block |
 | README and Markdown only | `ai-i18n-tools init -t docs-markdown -P openrouter` | This page |
 
-`--with-readme` is a no-op on `ui-markdown` and `docs-markdown`, because those templates already include the README block.
+`--with-readme` has no effect on `ui-markdown` and `docs-markdown`, because those templates already include the README block.
 
 JS/TS app and README (one command; `ui-markdown` is the default template):
 

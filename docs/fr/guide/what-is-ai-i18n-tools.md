@@ -22,7 +22,8 @@ Les guides pas à pas sont regroupés dans [Ajouter l'i18n à votre projet](/fr/
 | Vous avez | Commencez ici |
 | --- | --- |
 | Une application JS/TS (React, Next.js, Node, CLI) avec du texte brut dans le code source | [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js) |
-| Une application Python (Streamlit, FastAPI, Flask, Django, gettext, desktop) | [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) |
+| Une application Python (Streamlit, FastAPI, Flask, de bureau, scripts) | [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) |
+| Une application Django, des catalogues Flask-Babel, ou une application qui utilise déjà GNU gettext | [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext) |
 | Un site web ou un site de documentation (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, HTML simple) | [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website) |
 | Un fichier README de dépôt et d'autres fichiers Markdown, généralement à côté d'une application | [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme) |
 | Fichiers de locale JSON imbriqués autonomes | [JSON](/fr/guide/json) |

@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # 工具 UI 语言
 
-`ai-i18n-tools` 会独立于你项目的 `sourceLocale` / `targetLocales` 对其自身的用户界面进行本地化——包括 CLI 帮助文本、高频日志/摘要/错误消息以及翻译仪表板。无需任何配置：默认情况下，该工具会遵循你的操作系统区域设置。
+`ai-i18n-tools` 会本地化其自身的用户界面——CLI 帮助文本、高流量日志/摘要/错误消息以及翻译仪表板——独立于您项目的 `sourceLocale` / `targetLocales`。无需配置：默认情况下，该工具遵循您的操作系统区域设置。
 
 <a id="locale-resolution"></a>
 ## 区域设置解析
@@ -26,7 +26,7 @@ UI 区域设置从以下来源解析，优先级从高到低：
 <a id="translation-dashboard"></a>
 ## 翻译仪表板
 
-翻译仪表板会从 `GET /api/ui-i18n` 读取解析后的区域设置、布局方向和翻译包，并在加载时应用它们（它会设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性对静态标记进行本地化）。
+翻译仪表板从 `GET /api/ui-i18n` 读取已解析的区域设置、布局方向和翻译包，并在加载时应用它们（它设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性本地化静态标记）。
 
 <a id="related"></a>
 ## 相关内容

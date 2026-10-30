@@ -22,7 +22,8 @@
 | 보유한 프로젝트 | 시작 위치 |
 | --- | --- |
 | 소스에 일반 텍스트가 있는 JS/TS 앱(React, Next.js, Node, CLI) | [JS/TS 앱에 i18n 추가하기](/ko/guide/add-i18n-to-js) |
-| Python 앱(Streamlit, FastAPI, Flask, Django, gettext, 데스크톱) | [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python) |
+| 파이썬 앱 (스트림릿, FastAPI, 플라스크, 데스크톱, 스크립트) | [파이썬 앱에 i18n 추가](/ko/guide/add-i18n-to-python) |
+| Django 앱, Flask-Babel 카탈로그, 또는 이미 GNU gettext를 사용하는 앱 | [Django / 파이썬 gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트(VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, 일반 HTML) | [웹사이트 또는 문서 사이트에 i18n 추가하기](/ko/guide/add-i18n-to-website) |
 | 리포지토리 README 및 기타 Markdown 파일(보통 앱 옆에 위치) | [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme) |
 | 독립형 중첩 JSON 로케일 파일 | [JSON](/ko/guide/json) |

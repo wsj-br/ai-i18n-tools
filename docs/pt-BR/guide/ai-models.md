@@ -47,15 +47,15 @@ Abra **Modelos**. Escolha **Qualidade** ou **Preço**. Marque as linhas que voc�
 
 A lista restrita é um ranking de benchmark do catálogo de chat ao vivo do provedor. A primeira execução baixa três conjuntos de dados públicos e pode levar algum tempo. Execuções posteriores reutilizam o cache de 7 dias em `<cacheDir>/benchmark-scores.json` (geralmente `.translation-cache/benchmark-scores.json`).
 
-| Sinal | O que contribui | Fonte |
+| Sinal | O que ele contribui | Fonte |
 | --- | --- | --- |
-| ChrF | Qualidade da tradução para os idiomas do seu projeto | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena Score | Preferência geral de comparações diretas | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | Qualidade da tradução para os idiomas do seu projeto | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | Preferência geral de comparações diretas | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | USD por 1 milhão de tokens | Preço de entrada e saída | O catálogo do provedor quando ele publica as taxas, caso contrário, [models.dev](https://models.dev/) (MIT) |
 
 O ChrF usa as pontuações de tradução do languagebench para seus `sourceLocale` e `targetLocales`. As localidades são mapeadas para um código de idioma do languagebench: a subtag primária, com aliases como `pt-BR` para `pt` e `zh-Hant` para `zh`. Um modelo que traduz bem esses idiomas supera um que só tem uma boa pontuação geral. Modelos de embeddings, imagem, fala e outros que não são de chat são ignorados, assim como os IDs que já passaram da data de validade.
 
-Qualidade, o perfil padrão, dá mais peso ao ChrF e à Pontuação da Arena do que ao preço. Preço inverte essa ênfase e mantém o piso de qualidade descrito acima. Os pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
+Qualidade, o perfil padrão, pondera ChrF e Arena Score acima do preço. Preço inverte essa ênfase e mantém o nível mínimo de qualidade descrito acima. Pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` baixa novamente os conjuntos de dados. Recarregue a guia **Modelos** depois.
 
@@ -69,7 +69,7 @@ Todas as flags, incluindo `--json`, `--list` e a fórmula de pontuação: [sugge
 
 `translationModels` é uma lista ordenada. A CLI tenta o primeiro modelo. Em caso de falha na solicitação, uma resposta que não consegue analisar ou um texto no sistema de escrita errado, ela tenta o próximo id para aquele lote.
 
-Um id é um ponto único de falha. Um modelo pode exceder o tempo limite, retornar um texto que esta ferramenta rejeita ou traduzir bem um idioma e mal outro. Um caso comum é o hindi romanizado, em que `hi` espera o Devanagari. A saída romanizada é rejeitada para localidades com escrita nativa. Uma localidade que deve permanecer romanizada precisa de uma subtag `-Latn` explícita, como `hi-Latn`.
+Um ID é um único ponto de falha. Um modelo pode atingir o tempo limite, retornar texto que esta ferramenta rejeita ou traduzir um idioma bem e outro mal. Um caso comum é o hindi romanizado onde `hi` espera Devanagari. A saída romanizada é rejeitada para localidades com script nativo. Uma localidade que deve permanecer romanizada precisa de uma subtag `-Latn` explícita, como `hi-Latn`.
 
 É por isso que a lista de preferência contém vários ids, com os mais fortes primeiro. A ordem na lista é a ordem em que a tradução tenta.
 

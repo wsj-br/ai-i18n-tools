@@ -51,6 +51,8 @@ Docusaurus [अंतर्राष्ट्रीयकरण](https://docusau
 <a id="enable-i18n-in-an-existing-site"></a>
 ### किसी मौजूदा साइट में i18n सक्षम करें
 
+पहली बार का सेटअप [वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#run-the-agent-prompt) पर दिए गए प्रॉम्प्ट का उपयोग करता है। नीचे दी गई चेकलिस्ट हाथ से किए गए काम के समान है।
+
 - `docusaurus.config.js` में `i18n` ब्लॉक जोड़ें: `defaultLocale`, `locales`, और `localeConfigs[locale].path` जब URL पाथ स्थानीय कोड से भिन्न होना चाहिए।
 - `docusaurus write-translations` चलाएँ ताकि `i18n/<defaultLocale>/` मौजूद हो, फिर उस फ़ोल्डर पर `docusaurusCatalogDir` को इंगित करें और `sync` चलाएँ।
 - `src/pages` और `src/components` में कस्टम रिएक्ट मार्कडाउन नहीं है। उपयोगकर्ता-सामना करने वाली कॉपी को `@docusaurus/Translate` से `<Translate>` या `translate()` के साथ चिह्नित करें ताकि `write-translations` इसे `code.json` में एकत्र कर सके। संदेश एक स्थिर स्ट्रिंग होना चाहिए। `write-translations` `i18n/<locale>/code.json` लिखता है; `docusaurusCatalogDir` सेट होने पर, `translate-docs` उस JSON को बाकी शेल कैटलॉग के साथ अनुवादित करता है। ai-i18n-tools उन JSX ट्री को `t()` के लिए स्कैन नहीं करता है।

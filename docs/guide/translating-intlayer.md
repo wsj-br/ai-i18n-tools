@@ -18,7 +18,7 @@
 
 1. Parses `*.content.ts` default exports and collects every `t({ locale: '…' })` leaf. Locale values can be plain strings or Intlayer `insert('…')` insertion nodes.
 2. Seeds the UI block's `ui.stringsJson` with the source text, then runs the same engine as [`translate-ui`](/reference/cli-commands/ui-strings#translate-ui) for the missing and stale locales.
-3. Writes the new per-locale strings back into each `t({ … })` object. Edits are surgical: only the missing or stale locale lines change, so your formatting, key order, and comments are preserved. Existing translations are left as written. When a leaf uses `insert('…')`, new locale values are wrapped in `insert(…)` too, so the leaf stays callable at runtime.
+3. Writes the new per-locale strings back into each `t({ … })` object. Edits are precise: only the missing or stale locale lines change, so your formatting, key order, and comments are preserved. Existing translations are left as written. When a leaf uses `insert('…')`, new locale values are wrapped in `insert(…)` too, so the leaf stays callable at runtime.
 4. Preserves placeholders. Intlayer's insertion syntax <code v-pre>{{token}}</code> is passed through unchanged. Single-brace `{token}` placeholders are also supported: they become <code v-pre>{{token}}</code> for translation and return to `{token}` on write.
 5. Dry run with `--dry-run`: it reports the missing/stale counts without calling an LLM or writing anything.
 

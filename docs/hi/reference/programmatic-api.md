@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # प्रोग्रामेटिक एपीआई
 
-सभी सार्वजनिक प्रकार और कक्षाएं पैकेज रूट से निर्यात की जाती हैं। उदाहरण: सीएलआई के बिना Node.js से translate-UI चरण चलाना:
+सभी सार्वजनिक प्रकार और क्लास पैकेज रूट से निर्यात किए जाते हैं। उदाहरण: CLI के बिना Node.js से translate-ui चरण को चलाना:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `resolveDocumentationOutputPath` | अनुवादित दस्तावेज़ के लिए आउटपुट फ़ाइल पथ हल करें। |
 | `Glossary` / `GlossaryMatcher` | वैकल्पिक शब्द `Context` नोट्स सहित अनुवाद शब्दावलियों को लोड और लागू करें। |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | कैश अमान्यकरण के लिए `glossary.contextFiles` और फ़िंगरप्रिंट मार्गदर्शन लोड करें। |
-| `runTranslateUI` | प्रोग्रामेटिक translate-UI एंट्री पॉइंट। |
+| `runTranslateUI` | प्रोग्रामेटिक translate-ui एंट्री पॉइंट। |
 | `writeInitConfigFile` | एक स्टार्टर कॉन्फ़िग JSON लिखें (`template`, `cwd`, एक आवश्यक `providerKey`, और वैकल्पिक `{ withReadme }`)। `{ readmeBlockAdded, hasReadmeBlock }` लौटाता है। |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` द्वारा उपयोग किए जाने वाले प्रति अंतर्निहित प्रीसेट के लिए स्टार्टर `translationModels`। |
 | `PROVIDER_PRESETS` | अंतर्निहित प्रदाता प्रीसेट मैप (`baseUrl`, `apiKeyEnv`)। |

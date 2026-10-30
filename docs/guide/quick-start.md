@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Quick start
 
-This page takes a project that speaks one language to its first translated files. It is for a JS/TS app, a Python app, a website or documentation site, or a repository README and other Markdown files. It assumes:
+This page guides a single-language project to its first translated files. It is for a JS/TS app, a Python app, a website or documentation site, or a repository README and other Markdown files. It assumes:
 
 - Node.js `>=22.16.0`, or the [standalone executable](/guide/installation#standalone-executables) for a Python project.
 - An API key for an LLM provider, or a local Ollama install.

@@ -45,7 +45,7 @@
 <a id="concurrency-optional"></a>
 ### `concurrency`（オプション）
 
-同時に翻訳される最大**ターゲットロケール数**（`translate-ui`、`translate-docs`、`translate-svg`、および`sync`内の対応するステップ）。省略された場合、CLIはUI翻訳に**4**、ドキュメント翻訳に**3**を使用します（組み込みのデフォルト）。実行ごとに`-j` / `--concurrency`で上書きできます。
+同時に翻訳されるターゲットロケールの最大数（`translate-ui`、`translate-docs`、`translate-svg`、および`sync`内の対応するステップ）。省略された場合、CLIはUI翻訳には**4**を、ドキュメント翻訳には**3**を使用します（組み込みのデフォルト）。実行ごとに`-j` / `--concurrency`で上書きします。
 
 ---
 
@@ -114,13 +114,13 @@
 各`providers.<name>`ブロックは以下を受け入れます：
 
 - `translationModels`
-  モデルIDの優先順位付きリスト（プレーンなアップストリームID、`provider/`プレフィックスなし。OpenRouter IDはネイティブの`vendor/model`形式を保持）。最初のエントリが最初に試行され、後のエントリはエラー時のフォールバックです。これは、より具体的な階層が適用されない場合の、すべてのパイプラインに対するグローバルなデフォルトチェーンです。
+  優先されるモデルIDの順序付きリスト（プレーンなアップストリームID、`provider/`プレフィックスなし。OpenRouter IDはネイティブの`vendor/model`形式を保持します）。最初に試行され、その後のエントリはエラー時のフォールバックです。より具体的な階層が適用されない場合、これはすべてのパイプラインのグローバルなデフォルトチェーンです。
 - `uiModels`（オプション）
-  `translate-ui`、複数形生成（ステップ0とパスB）、および`proofread-ui`用の、UI専用の順序付きモデルリスト。ターゲットロケールに一致する`localeModels`エントリの後に、`translationModels`の前に試行されます。
+  `translate-ui`、複数形生成（ステップ0およびパスB）、および`proofread-ui`用のUI専用モデルの順序付きリスト。ターゲットロケールに一致する`localeModels`エントリの後に、`translationModels`の前に試行されます。
 - `localeModels`（オプション）
-  **すべての**翻訳パイプラインに対するロケールごとのオーバーライド。`{ "locale": "<BCP-47>", "models": ["…"] }`オブジェクトの配列。ロケールタグは、大文字と小文字を区別せずに照合されます（`pt-br` = `pt-BR`）。各ロケールのリストは、そのロケールに対してのみ最初に試行され、次にパイプライン固有の階層（UIの場合は`uiModels`）と`translationModels`が試行されます。重複する正規化されたロケールキーは、設定の読み込み時に拒否されます。
+  **すべての**翻訳パイプラインに対するロケールごとの上書き。`{ "locale": "<BCP-47>", "models": ["…"] }`オブジェクトの配列。ロケールタグはケースインセンシティブに照合されます（`pt-br` = `pt-BR`）。各ロケールのリストは、そのロケールに対してのみ最初に試行され、次にパイプライン固有の階層（UIの場合は`uiModels`）と`translationModels`が試行されます。重複する正規化されたロケールキーは、設定の読み込み時に拒否されます。
 - `baseUrl`
-  OpenAI互換のベースURL。プリセットのベースURLをオーバーライドします。プリセット以外のプロバイダーには必須です。
+  OpenAI互換のベースURL。プリセットのベースURLを上書きします。プリセット以外のプロバイダーには必須です。
 - `apiKeyEnv`
   APIキーを保持する環境変数。プリセットの環境変数をオーバーライドします。
 - `headers`
@@ -130,15 +130,24 @@
 - `temperature`
   サンプリング温度。デフォルト: `0.2`。
 - `requestTimeout`
-  このプロバイダーへの各リクエストを待機する最大時間（秒）。最上位の `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーと最上位設定のいずれもタイムアウトを設定していない場合、デフォルトは `45` 秒です。同一オブジェクト上で `requestTimeout` と `requestTimeoutMs` の両方を設定しないでください。
+  このプロバイダーへの各リクエストを待機する最大時間（秒）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定しない場合、デフォルトは`45`秒です。同じオブジェクトで`requestTimeout`と`requestTimeoutMs`のいずれか一方のみを設定してください。
 - `requestTimeoutMs`
-  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。最上位の `requestTimeout` / `requestTimeoutMs` を上書きします。このプロバイダーと最上位設定のいずれもタイムアウトを設定していない場合、デフォルトは `45000`（45秒）です。同一オブジェクト上で `requestTimeout` と `requestTimeoutMs` の両方を設定しないでください。
+  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定しない場合、デフォルトは`45000`（45秒）です。同じオブジェクトで`requestTimeout`と`requestTimeoutMs`のいずれか一方のみを設定してください。
 - `pricing`（オプション）
-  プロバイダー全体の100万トークンあたりの米ドル単価：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。課金対象の呼び出しにプロバイダーから報告された `usage.cost` がない場合（OpenRouterおよびCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls` 行に保存されます。一致する `modelPricing` エントリがある場合、このデフォルト値は上書きされます。プロバイダーから報告されたコストが置き換えられることはありません。どちらの設定レートも一致しない場合、ツールはモデルIDの models.dev リスト価格（100万トークンあたりの入力および出力米ドル）を使用します。コストなしで保存された行は、後で [`usage`](/ja/reference/cli-commands/workflows#usage) および [Usage & costs](/ja/guide/translation-dashboard/usage) によって推定できます。これらのソースのいずれも適用されない場合、コストは不明（`—`）のままとなり、`$0.00` になることはありません。
+  プロバイダー全体の100万トークンあたりのUSD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。請求対象の呼び出しにプロバイダーが報告した`usage.cost`がない場合（OpenRouterおよびCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls`行に保存されます。
+
+コストソースは次の順序で解決されます。
+
+1. 一致する`modelPricing`エントリ（このプロバイダーのデフォルトを上書きします）。
+  2. プロバイダーが報告したコスト（置き換えられることはありません）。
+  3. この`pricing`レート。
+  4. そのモデルIDのmodels.devリスト価格（入力および出力の100万トークンあたりのUSD）。
+
+コストなしで保存された行は、後で[`usage`](/ja/reference/cli-commands/workflows#usage)および[使用状況とコスト](/ja/guide/translation-dashboard/usage)によって見積もることができます。これらのソースのいずれも適用されない場合、コストは不明（`—`）のままで、`$0.00`になることはありません。
 - `modelPricing`（オプション）
-  モデルごとの100万トークンあたりの米ドル単価：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDに対して `pricing` を上書きします。プロバイダーが `usage.cost` を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
-- `zeroDataRetention` (オプション、`providers.cheaperinference`のみ)
-  `true`の場合、チャットリクエストは`"zdr": true`と`list-models`を送信し、`check-models`と`suggest-models`は`GET /v1/models?zdr=true`をロードします。省略するとオフになります。[ゼロデータ保持](/ja/guide/providers-and-models#cheaperinference-zero-data-retention)を参照してください。
+  モデルごとの100万トークンあたりのUSD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。そのモデルIDの`pricing`を上書きします。プロバイダーが`usage.cost`を省略した場合に呼び出し時に適用され、呼び出しとともに保存されます。
+- `zeroDataRetention`（オプション、`providers.cheaperinference`のみ）
+  `true`の場合、チャットリクエストは`"zdr": true`と`list-models`を送信し、`check-models`と`suggest-models`は`GET /v1/models?zdr=true`をロードします。省略された場合はオフを意味します。[ゼロデータ保持](/ja/guide/providers-and-models#cheaperinference-zero-data-retention)を参照してください。
 
 組み込みプロバイダープリセット（キー — ベースURL — APIキー環境変数）：
 
@@ -246,7 +255,12 @@
 | `translateJson` | 3 | `json[]` 配下の任意のネストされた JSON（`translate-json`）。 |
 | `translateSVG` | — | `.svg` ファイルを翻訳（トップレベルの `svg` ブロックが必要です）。 |
 
-各フラグは、キーが省略されている場合、デフォルトで `true` になります。翻訳するものがない省略された `true` はスキップされます。UIブロックに `sourceRoots` がなく、ドキュメントブロックに `contentPaths` や `docusaurusCatalogDir` がなく、`json[]` に `contentPaths` がなく、または `svg` が設定されていない場合です。そのパイプラインに処理がない場合にフラグを `true` と記述すると、設定エラーになります。`false` と記述すると、ソースが存在する場合でも、`sync` に対してそのパイプラインがオフになります。`--no-ui`、`--no-docs`、`--no-json`、および `--no-svg` は、1回の実行に対してそのステップをスキップします。
+キーが省略された場合、各フラグはデフォルトで`true`になります。動作は次のとおりです。
+
+- 翻訳するものがない`true`が省略された場合、スキップされます。つまり、UIブロックに`sourceRoots`がなく、ドキュメントブロックに`contentPaths`または`docusaurusCatalogDir`がなく、`json[]`に`contentPaths`がなく、または`svg`が設定されていません。
+- そのパイプラインに作業がない場合にフラグを`true`と記述すると、設定エラーになります。
+- `false`と記述すると、ソースが存在する場合でも、`sync`のそのパイプラインがオフになります。
+- `--no-ui`、`--no-docs`、`--no-json`、および`--no-svg`は、1回の実行でそのステップをスキップします。
 
 **Translate** は、`features.translateSVG` が true で、トップレベルの `svg` ブロックが設定されている場合、`translate-svg` を使用して SVG ファイルを翻訳します。`sync` コマンドは、フラグがオンで `svg` が設定されている場合にそのステップを実行します（`--no-svg` の場合を除く）。
 
@@ -387,21 +401,21 @@ Docusaurus レイアウトのソースドキュメントルート（例: `"docs"
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`の場合、ソースサブディレクトリを保持して、同じベース名のファイルが衝突しないようにします。デフォルトは`false`。
 - `docsOutput.rewriteRelativeLinks`
-翻訳後に相対リンクを書き換えます (`docsOutput.style = "flat"` で、かつカスタムの `pathTemplate` がない場合に自動で有効になります)。
+翻訳後に相対リンクを書き換えます (`docsOutput.style = "flat"`が有効で、カスタムの`pathTemplate`がない場合に自動的に有効になります)。
 - `docsOutput.linkRewriteDocsRoot`
-フラットリンクリライトのプレフィックスを計算する際に使用されるリポジトリのルートです。翻訳されたドキュメントが別のプロジェクトルートに存在する場合を除き、通常は `"."` のままにします。
+フラットリンクの書き換えプレフィックスを計算する際に使用されるリポジトリのルート。翻訳されたドキュメントが別のプロジェクトルートにある場合を除き、通常はこれを`"."`のままにしておきます。
 - `docsOutput.rewriteVitepressLinks`
-`true` の場合、翻訳後に VitePress のリンクノーマライザーを実行します。`docsOutput.style` が `"vitepress"` の場合、デフォルトで有効になります。`docsRoot` の下で、ロケールフォルダがソースロケールファイルの隣に配置される任意の `doc-system` レイアウトで使用します。ソース言語は `sourceLocale` で、どの言語でもかまいません。README スタイルの `docs/guide/…` パスをサイトルート (`/guide/…`) とロケール相対の `../guide/…` リンクに書き換えます。VitePress ツリー外のリポジトリファイル (`LICENSE`、`examples/`) へのリンクには、ソースロケールファイル内で完全な URL を使用してください。[VitePress 統合 — ドキュメントのホームページとしての README](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage) を参照してください。
+`true`の場合、翻訳後にVitePressリンク正規化ツールを実行します。`docsOutput.style`が`"vitepress"`の場合、デフォルトで有効になります。`docsRoot`下のソースロケールファイルの隣にロケールフォルダがある`doc-system`レイアウトで使用します。ソース言語は`sourceLocale`であり、任意の言語にすることができます。READMEスタイルの`docs/guide/…`パスをサイトルート(`/guide/…`)およびロケール相対`../guide/…`リンクに書き換えます。VitePressツリー外のリポジトリファイル(`LICENSE`、`examples/`)へのリンクには、ソースロケールファイルで完全なURLを使用してください — [VitePress統合 — ドキュメントのホームページとしてのREADME](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage)を参照してください。
 - `docsOutput.rewriteNextraLinks`
-`true` の場合、翻訳後に Nextra のリンクノーマライザーを実行します。`docsOutput.style` が `"nextra"` の場合、デフォルトで有効になります。Next.js `i18n` のために、`content/en/…` と相対 `.mdx` パスをロケールに依存しないサイトルート (`/guide/…`) に書き換えます。[Nextra 統合 — リンクの規約](/ja/guide/integrations/nextra#link-conventions) を参照してください。
+`true`の場合、翻訳後にNextraリンク正規化ツールを実行します。`docsOutput.style`が`"nextra"`の場合、デフォルトで有効になります。Next.js `i18n`の場合、`content/en/…`および相対`.mdx`パスをロケールに依存しないサイトルート(`/guide/…`)に書き換えます。[Nextra統合 — リンク規則](/ja/guide/integrations/nextra#link-conventions)を参照してください。
 - `docsOutput.fumadocsParser`
-`"dot"` (デフォルト) または `"dir"`。Dot はソースロケールファイルの隣に `stem.{locale}.mdx` を書き込み、dir は Nextra のようにロケールフォルダを書き込みます。ソース言語は `sourceLocale` で、どの言語でもかまいません。[Fumadocs 統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout) を参照してください。
+`"dot"` (デフォルト) または `"dir"`。ドットはソースロケールファイルの隣に`stem.{locale}.mdx`を書き込み、ディレクトリはNextraのようにロケールフォルダを書き込みます。ソース言語は`sourceLocale`であり、任意の言語にすることができます。[Fumadocs統合 — ページレイアウト](/ja/guide/integrations/fumadocs#page-layout)を参照してください。
 - `docsOutput.rewriteFumadocsLinks`
-`true` の場合、翻訳後に Fumadocs のリンクノーマライザーを実行します。`docsOutput.style` が `"fumadocs"` の場合、デフォルトで有効になります。コンテンツパスと相対 `.mdx` リンクを `/docs/…` ルートに書き換えます。
+`true`の場合、翻訳後にFumadocsリンク正規化ツールを実行します。`docsOutput.style`が`"fumadocs"`の場合、デフォルトで有効になります。コンテンツパスと相対`.mdx`リンクを`/docs/…`ルートに書き換えます。
 - `docsOutput.fumadocsUiCatalog`
-オプション。`translate-docs` 内で Fumadocs UI の上書きカタログのブートストラップと翻訳を行います。フィールド: `sourcePath` (例: `lib/layout.shared.ts`)、`catalogPath` (生成された英語の JSON)、オプションの `outputPathTemplate` (デフォルト: `catalogPath` の隣の `ui.{locale}.json`)。
+オプション。Fumadocs UIオーバーライドカタログのブートストラップ + `translate-docs`内の翻訳。フィールド: `sourcePath` (例: `lib/layout.shared.ts`), `catalogPath` (生成された英語JSON), オプションの`outputPathTemplate` (デフォルト: `catalogPath`の隣の`ui.{locale}.json`)。
 - `docs[].fumadocsMetaGlob`
-オプションの glob パターン。`docsOutput.style` が `"fumadocs"` の場合の `meta.json` 収集用です。デフォルト: `docsOutput.docsRoot` 以下の再帰的な `meta.json`。
+`docsOutput.style`が`"fumadocs"`の場合の`meta.json`コレクション用のオプションのglob。デフォルト: `docsOutput.docsRoot`下の再帰的な`meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 Fumadocs の `meta.json` で文字列値を翻訳するプロパティ名です（デフォルト: `title`、`description`）。
 - `docsOutput.localizedAssets`
@@ -525,7 +539,7 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 - `quality` — デフォルトのChrF `0.45`、アリーナ `0.35`、価格 `0.20`、品質の下限 `0.7`
 - `price` — デフォルトのChrF `0.35`、アリーナ `0.20`、価格 `0.45`、品質の下限 `0.6`
 
-各プロファイルオブジェクトには、`chrf`、`arena`、および `price` が必要です。各値は有限で、少なくとも `0` であり、そのうち少なくとも1つは `0` より大きくなければなりません。それらは合計が1になるように正規化されるため、`45`、`35`、および `20` は品質のデフォルト値と一致します。`qualityFloor` はオプションで、`(0, 1]` の範囲にあり、候補プール内の最高のChrFの割合です。下限を下回るモデル（ChrF測定値がないモデルを含む）は、その下限をクリアするモデルの後にソートされます。
+各プロファイルオブジェクトには、`chrf`、`arena`、および`price`が必要です。各値は有限で、少なくとも`0`であり、少なくとも1つは`0`より大きいです。それらは合計が1になるように正規化されているため、`45`、`35`、および`20`は品質のデフォルトと一致します。`qualityFloor`はオプションで、`(0, 1]`の範囲にあり、候補プール内の最高のChrFの割合です。フロアを下回るモデル（ChrF測定値がないモデルを含む）は、フロアをクリアするモデルの後にソートされます。
 
 ```json
 "modelSuggestion": {

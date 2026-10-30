@@ -40,7 +40,7 @@ Uma folha+localidade é traduzida quando a localidade está ausente da folha (au
 
 **Opções principais:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]`: arquivos/diretórios/globs para escanear (padrão: o `sourceRoots` do bloco). `-l` / `--locale`: localidades de destino separadas por vírgula para preencher (padrão: o `targetLocales` configurado do bloco). `--ui-block`: índice baseado em zero, descrição ou caminho `stringsJson` (padrão: bloco 0). `-j` paraleliza as localidades.
+`[paths...]`: arquivos/diretórios/globs para escanear (padrão: o `sourceRoots` do bloco). `-l` / `--locale`: locales de destino separados por vírgulas para preencher (padrão: os `targetLocales` configurados do bloco). `--ui-block`: índice baseado em zero, descrição ou caminho `stringsJson` (padrão: bloco 0). `-j` paraleliza locales.
 
 **Consulte também:** [migrate-intlayer](#migrate-intlayer), [Migrando do Intlayer](/pt-BR/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ Traduz apenas strings da UI (`strings.json` → JSON de localidade). Requer `fea
 
 **Opções principais:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: localidades de destino separadas por vírgulas (padrão: config `targetLocales` menos `sourceLocale`). `--force`: retraduzir todas as entradas por localidade (ignorar traduções existentes). `--dry-run`: sem gravações, sem chamadas de API. `-j` paraleliza **localidades**; dentro de cada localidade, config `uiBatchConcurrency` (padrão **2**) paraleliza lotes LLM (blocos de 50 strings, depois grupos plurais). Não há flag CLI para `uiBatchConcurrency`.
+`-l` / `--locale`: locales de destino separados por vírgulas (padrão: configuração `targetLocales` menos `sourceLocale`). `--force`: retraduzir todas as entradas por locale (ignorar traduções existentes). `--dry-run`: sem gravações, sem chamadas de API. `-j` paraleliza **locales**; dentro de cada locale, a configuração `uiBatchConcurrency` (padrão **2**) paraleliza lotes LLM (blocos de 50 strings, depois grupos de plural). Não há flag CLI para `uiBatchConcurrency`.
 
 ---
 
@@ -97,7 +97,7 @@ Extrai e depois traduz strings de UI (requer `features.translateUIStrings`). Som
 
 **Sinopse:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Executa `extract` primeiro (requer `features.translateUIStrings`) para que cada catálogo selecionado corresponda à origem, e depois faz a revisão por LLM das strings de UI do idioma de origem (ortografia, gramática). `--ui-block` limita a extração e a revisão a um único bloco. As dicas de terminologia vêm apenas do CSV `glossary.userGlossary` (mesmo escopo de `translate-ui` — os catálogos de UI não são realimentados, para que textos mal redigidos não sejam reforçados como glossário). Usa o provedor de LLM ativo (sua variável de ambiente de chave de API).
+Executa `extract` primeiro (requer `features.translateUIStrings`) para que cada catálogo selecionado corresponda à origem, depois realiza uma revisão LLM de strings de UI do locale de origem (ortografia, gramática). `--ui-block` limita a extração e revisão a um bloco. Dicas de terminologia vêm apenas do CSV `glossary.userGlossary` (mesmo escopo que `translate-ui` — catálogos de UI não são realimentados, então cópias ruins não são reforçadas como glossário). Usa o provedor LLM ativo (sua variável de ambiente de chave de API).
 
 Retorna **1** em caso de falha (feature flag ausente, falha na extração, catálogo ausente/inválido, chave de API ausente ou quando todos os lotes falham); retorna **0** quando a execução é concluída com sucesso (os resultados são consultivos). Grava `proofread-ui-results_<timestamp>.log` em `cacheDir` como um relatório legível (resumo, problemas, linhas não revisadas e linhas de OK por string); o terminal exibe apenas as contagens do resumo e os problemas (sem linhas `[ok]` por string). Um lote que falha, ou uma resposta do modelo que seja menor que o lote e não tenha um `index` utilizável em cada slot, considera essas strings como não revisadas. Os problemas delas são descartados para que um array curto não seja aplicado às strings erradas. Exibe o nome do arquivo de log na última linha. Com `--json`, a saída em formato legível é direcionada ao stderr. Os links usam `path:line` como o botão de link de strings da interface do painel.
 

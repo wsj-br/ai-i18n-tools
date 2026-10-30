@@ -48,7 +48,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="enable-i18n-in-an-existing-site"></a>
 ### किसी मौजूदा साइट में i18n सक्षम करें
 
-एक केवल अंग्रेज़ी वाली Nextra 4 साइट को एक स्थानीय फ़ोल्डर, एक रूट पैरामीटर और Next.js i18n कॉन्फ़िग की आवश्यकता होती है, इससे पहले कि `translate-docs` के पास लिखने के लिए कोई जगह हो। [डिक्शनरी प्रॉम्प्ट](#agent-prompt-dictionary-and-routes) यह एक ही बार में करता है। चेकलिस्ट:
+केवल अंग्रेज़ी वाली Nextra 4 साइट को एक लोकले फ़ोल्डर, एक रूट पैरामीटर, और Next.js i18n कॉन्फ़िग की आवश्यकता होती है, इससे पहले कि `translate-docs` कहीं लिख सके। पहली बार सेटअप [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#run-the-agent-prompt) पर प्रॉम्प्ट का उपयोग करता है। [डिक्शनरी प्रॉम्प्ट](#agent-prompt-dictionary-and-routes) उन्हीं रूट्स और डिक्शनरी के लिए विस्तृत अनुवर्ती है। चेकलिस्ट:
 
 - MDX को `content/en/` में ले जाएँ (अंग्रेज़ी एक स्थानीय फ़ोल्डर है, सामग्री रूट नहीं)।
 - `next.config` में `i18n.locales` और `defaultLocale`।
@@ -60,7 +60,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="theme-strings"></a>
 ## थीम स्ट्रिंग्स
 
-नेक्स्ट्रा थीम क्रोम (`editLink`, खोज प्लेसहोल्डर, फुटर, और इसी तरह) मार्कडाउन से निकाला नहीं जाता है। एक टाइपस्क्रिप्ट डिक्शनरी मॉड्यूल (उदाहरण के लिए `app/_dictionaries/en.ts`) में अंग्रेजी स्ट्रिंग्स लिखें और इसे **`translate-docs`** के अंदर अनुवादित करें:
+Nextra थीम क्रोम (`editLink`, खोज प्लेसहोल्डर, फ़ुटर, इत्यादि) मार्कडाउन से निकाला नहीं जाता है। एक TypeScript डिक्शनरी मॉड्यूल (उदाहरण के लिए `app/_dictionaries/en.ts`) में अंग्रेज़ी स्ट्रिंग लिखें और इसे `translate-docs` के अंदर अनुवाद करें:
 
 ```json
 {
@@ -88,7 +88,7 @@ content/en/guide/getting-started.mdx  →  content/zh-Hans/guide/getting-started
 <a id="sidebar-labels-_metats"></a>
 ## साइडबार लेबल (`_meta.ts`)
 
-नेक्स्ट्रा 3+ साइडबार संरचना और शीर्षकों के लिए टाइपस्क्रिप्ट `_meta.ts` / `_meta.tsx` फ़ाइलों का उपयोग करता है। जब `docsOutput.style` `"nextra"` होता है, तो **`translate-docs`** स्वचालित रूप से `docsRoot` के तहत `_meta.ts`, `_meta.tsx`, और `_meta.js` एकत्र करता है, `export default { … }` मेटा मैप में स्ट्रिंग लिटरल का अनुवाद करता है, और `content/{locale}/**` के तहत मिरर की गई फ़ाइलें लिखता है।
+Nextra 3+ साइडबार संरचना और शीर्षकों के लिए TypeScript `_meta.ts` / `_meta.tsx` फ़ाइलों का उपयोग करता है। जब `docsOutput.style` `"nextra"` होता है, तो `translate-docs` स्वचालित रूप से `_meta.ts`, `_meta.tsx`, और `_meta.js` को `docsRoot` के तहत एकत्र करता है, `export default { … }` मेटा मैप में स्ट्रिंग लिटरल का अनुवाद करता है, और `content/{locale}/**` के तहत मिरर की गई फ़ाइलें लिखता है।
 
 **अनुशंसित पैटर्न:** `content/en/**/_meta.ts` में अंग्रेजी लिटरल को इनलाइन रखें ([swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site) के समान):
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 नेक्स्ट्रा नेक्स्ट.जेएस `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`) के माध्यम से लोकेल-प्रीफ़िक्स्ड रूट प्रदान करता है। **इन-पेज लिंक लोकेल-न्यूट्रल रहने चाहिए** (`/guide/getting-started`) ताकि नेक्स्ट.जेएस सक्रिय लोकेल को स्वचालित रूप से प्रीफ़िक्स कर सके।
 
-बिल्ट-इन नॉर्मलाइज़र को सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक कर दे:
+बिल्ट-इन नॉर्मलाइज़र सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक करे:
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ plural or server-concurrency case you did not convert.
 
 जब `style` `"nextra"` हो तो `rewriteNextraLinks` डिफ़ॉल्ट रूप से सक्षम होता है।
 
-| स्रोत स्थानीय में लेखक | नॉर्मलाइज़र के बाद |
+| स्रोत लोकले में लिखें | नॉर्मलाइज़र के बाद |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/hi/guide/getting-started)` |
 | `[Guide](/hi/guide/getting-started.mdx)` | `[Guide](/hi/guide/getting-started)` |
@@ -305,8 +305,8 @@ plural or server-concurrency case you did not convert.
 
 **लेखन नियम**
 
-- क्रॉस-पेज डॉक लिंक: अंग्रेजी MDX में **लोकेल-न्यूट्रल साइट रूट** (`/guide/…`) का उपयोग करें, या `content/en/…` / सापेक्ष `.mdx` पाथ का उपयोग करें और सामान्यीकरणकर्ता को `sync` के दौरान उन्हें फिर से लिखने दें।
-- सामग्री ट्री के बाहर रेपो फ़ाइलें: **पूर्ण URL** का उपयोग करें।
+- क्रॉस-पेज डॉक लिंक: अंग्रेज़ी MDX में **लोकले-न्यूट्रल साइट रूट्स** (`/guide/…`) का उपयोग करें, या `content/en/…` / रिलेटिव `.mdx` पाथ का उपयोग करें और नॉर्मलाइज़र को `sync` के दौरान उन्हें फिर से लिखने दें।
+- कंटेंट ट्री के बाहर रेपो फ़ाइलें: **पूर्ण URL** का उपयोग करें।
 - `content/<locale>/` में लिंक को मैन्युअल रूप से संपादित **न करें** — `sync` / `translate-docs` के साथ फिर से जनरेट करें।
 
 <a id="optional-locale-proxy"></a>
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**साइट लोकेल कोड बनाम `sourceLocale`:** नेक्स्ट्रा और नेक्स्ट.जेएस `next.config`, `content/{locale}/`, और `NEXT_LOCALE` कुकी में छोटे रूट कोड (`en`, `pt-BR`, `zh-Hans`) का उपयोग करते हैं। `ai-i18n-tools.config.json` में `sourceLocale` अनुवाद गुणवत्ता के लिए BCP-47 टैग हो सकता है जैसे `en-GB` — वह टैग साइट रूट **नहीं** है। यदि ब्राउज़र कुकी या `Accept-Language` `i18n.locales` के बाहर एक टैग पर हल होता है (उदाहरण के लिए `en-GB` जब केवल `en` कॉन्फ़िगर किया गया हो), तो नेक्स्ट्रा का स्टॉक प्रॉक्सी लूप में रीडायरेक्ट कर सकता है। [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) डेमो अमान्य कुकीज़ और पाथ को डिफ़ॉल्ट साइट लोकेल पर रीसेट करने के लिए `nextra/locales` को लपेटता है, इससे पहले कि वह डेलिगेट करे।
+**साइट लोकले कोड बनाम `sourceLocale`:** Nextra और Next.js `next.config`, `content/{locale}/`, और `NEXT_LOCALE` कुकी में छोटे रूट कोड (`en`, `pt-BR`, `zh-Hans`) का उपयोग करते हैं। `ai-i18n-tools.config.json` में `sourceLocale` अनुवाद गुणवत्ता के लिए `en-GB` जैसा BCP-47 टैग हो सकता है — वह टैग साइट रूट **नहीं** है। यदि ब्राउज़र कुकी या `Accept-Language`, `i18n.locales` के बाहर किसी टैग पर रिज़ॉल्व होता है (उदाहरण के लिए `en-GB` जब केवल `en` कॉन्फ़िगर किया गया हो), तो Nextra का स्टॉक प्रॉक्सी लूप में रीडायरेक्ट कर सकता है। [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) डेमो, सौंपने से पहले अमान्य कुकीज़ और पाथ को डिफ़ॉल्ट साइट लोकले पर रीसेट करने के लिए `nextra/locales` को रैप करता है।
 
 यह `output: 'export'` स्थिर निर्यात के साथ काम नहीं करता है। [नेक्स्ट्रा i18n डॉक्स](https://nextra.site/docs/guide/i18n) देखें।
 

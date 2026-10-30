@@ -54,6 +54,8 @@ O Starlight fornece strings de UI integradas para muitos idiomas (rótulos de na
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n em um site existente
 
+A configuração inicial utiliza o prompt em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website#run-the-agent-prompt). A lista de verificação abaixo é o mesmo trabalho feito manualmente.
+
 - `locales` na configuração do Starlight, incluindo uma entrada `root` quando o inglês não deve ter prefixo (`label` e o `lang` obrigatório).
 - `defaultLocale: 'root'` quando o idioma padrão é essa localidade raiz. Omita `defaultLocale` somente se o padrão do Starlight já corresponder.
 - As páginas em inglês permanecem em `src/content/docs/`; `translate-docs` grava em `src/content/docs/<locale>/`.
@@ -67,7 +69,7 @@ O Starlight fornece strings de UI integradas para muitos idiomas (rótulos de na
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## Astro simples (sites de marketing e aplicativos)
 
-Para sites estáticos de marketing ou aplicativos Astro (não Starlight), combine [roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. A implementação de referência é [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): inglês em `/`, localidades de destino em `/{locale}/`.
+Para sites estáticos de marketing ou aplicativos Astro (não Starlight), combine [Roteamento i18n integrado do Astro](https://docs.astro.build/en/guides/internationalization/) com ai-i18n-tools. A configuração inicial utiliza o prompt em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website#run-the-agent-prompt). A implementação de referência é [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website): Inglês em `/`, locales de destino em `/{locale}/`.
 
 A maioria das equipes usa um **híbrido** de dois pipelines na mesma página:
 

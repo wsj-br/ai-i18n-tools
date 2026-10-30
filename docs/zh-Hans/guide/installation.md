@@ -3,7 +3,7 @@
 
 本页介绍如何安装 CLI 并让基本的 `ai-i18n-tools` 命令能够正常工作。已经安装好了？请转到[快速入门](/zh-Hans/guide/quick-start)。
 
-发布的软件包仅支持 ESM。在 Node.js 或捆绑器中，请使用 `import` 或 `import()`；不要使用 `require('ai-i18n-tools')`。该软件包声明了 `engines.node` `>=22.16.0`；不支持更早的 Node.js 版本。npm tarball 仅在 `docs/` 下包含英文文件；`translated-docs/` 下特定于区域设置的副本位于 [GitHub 仓库](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) 中。
+发布的包仅支持 ESM。在 Node.js 或您的打包工具中使用 `import` 或 `import()`；请勿使用 `require('ai-i18n-tools')`。该包声明了 `engines.node` `>=22.16.0`；不支持旧版 Node.js。npm tarball 包含 `docs/ai-i18n-tools-context.md` 处的消费者上下文和完整的 `skills/` 树，而非完整的文档网站；`translated-docs/` 下的特定语言环境副本位于 [GitHub 仓库](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs) 中。
 
 ```bash
 npm install ai-i18n-tools
@@ -32,9 +32,9 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 安装程序会检测系统、下载匹配的可执行文件、检查 `SHA256SUMS.txt`、将命令安装为 `ai-i18n-tools`（在 Windows 上为 `ai-i18n-tools.exe`），并将安装目录添加到 `PATH`。默认目录是 `~/.local/bin`。如果仍然找不到该命令，请打开一个新的终端。设置 `AI_I18N_VERSION`（例如 `v1.11.0`）以固定某个版本，或设置 `AI_I18N_INSTALL_DIR` 以选择其他目录。
 
-二进制文件未经公证或 Authenticode 签名。macOS 可能会要求您批准未签名的程序。Windows SmartScreen 可能会显示警告。在校验和匹配后，macOS 安装程序会清除隔离标志。
+这些二进制文件未经公证或 Authenticode 签名。macOS 可能会要求您批准未签名的程序。Windows SmartScreen 可能会显示警告。macOS 安装程序在校验和匹配后会清除隔离标志。
 
-每个版本还附带了 `SHA256SUMS.txt`、`install.sh`、`install.ps1` 和 `ai-i18n-tools-python-examples.zip`（这四个 Python 示例）。npm tarball 和可执行文件不包含这些示例。它们也保留在仓库中。
+每个版本还附带 `SHA256SUMS.txt` 和 `ai-i18n-tools-python-examples.zip`（四个 Python 示例）。从添加该内容的版本开始，同一页面包含 `ai-i18n-tools-skill.zip`，即每个编码代理技能目录。在该 zip 文件发布之前的版本不包含它，并且第一个 zip 文件仅包含 `ai-i18n-tools/`。`install.sh` 和 `install.ps1` 保留在仓库根目录中，上述命令将从那里下载它们。npm tarball 和可执行文件不包含 Python 示例或技能 zip 文件。示例保留在仓库中。技能目录在 npm tarball 中。请参阅 [编码代理技能](/zh-Hans/guide/coding-agent-skill#download-the-skill-directory)。
 
 <details>
 <summary>手动安装 <code>ai-i18n-tools</code> 可执行文件的说明</summary>
@@ -88,9 +88,10 @@ if ([string]::IsNullOrEmpty($userPath)) {
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
 ai-i18n-tools suggest-models --apply
-ai-i18n-tools extract
-ai-i18n-tools translate-ui
+ai-i18n-tools sync
 ```
+
+仅将 `init` 用于新配置：它会覆盖选定的配置文件。对于现有项目，请改为编辑配置。`sync` 处理所有已配置/已启用的翻译管道，包括 UI 提取。
 
 演练：[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。命令参考：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
@@ -117,7 +118,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="using-the-cli"></a>
 ### 使用 CLI
 
-在您的项目中将 `ai-i18n-tools` 安装为依赖项或开发依赖项（请参阅本页顶部）。该软件包声明了一个 `bin` 条目，您的包管理器会将其链接到 `node_modules/.bin/ai-i18n-tools`。该填充程序（位于已安装软件包内的 `bin/ai-i18n-tools.mjs`）会加载已编译的 CLI。
+将 `ai-i18n-tools` 作为项目的依赖项或开发依赖项安装（请参阅本页顶部）。如果应用程序代码导入 `ai-i18n-tools/runtime`，请确保它在生产运行时/构建环境中可用；全局 CLI 或独立二进制文件无法满足该导入。该包声明了一个 `bin` 入口，您的包管理器会将其链接到 `node_modules/.bin/ai-i18n-tools`。该 shim（已安装包内的 `bin/ai-i18n-tools.mjs`）会加载编译后的 CLI。
 
 要在交互式 shell 中输入不带前缀的 `ai-i18n-tools` 命令，请配置以下选项之一。如果不进行设置，即使在本地安装后，shell 也无法找到该二进制文件。
 
@@ -168,6 +169,19 @@ package.json 脚本 — 当 npm 或 pnpm 运行脚本时，它会将 `node_modul
 替代方案 — 如果您不想调整 `PATH`：`npx ai-i18n-tools …` (npm) 或 `pnpm exec ai-i18n-tools …` (pnpm)。对于无需安装、一次性运行且没有 `package.json` 条目的情况：`npx ai-i18n-tools <cmd>` 或 `pnpm dlx ai-i18n-tools <cmd>`。
 
 <a id="coding-agent-skill"></a>
+### 编码代理技能
+
+安装 npm 包或独立可执行文件不会将技能注册到代理。安装方法、本机目录以及没有技能文件夹的代理，请参阅 [编码代理技能](/zh-Hans/guide/coding-agent-skill)。
+
+获取所有技能目录，每个目录都是一个包含 `SKILL.md` 的文件夹，无需克隆此仓库：
+
+1. Node.js 22.20 或更高版本：`npx skills add wsj-br/ai-i18n-tools --all -y` 会将这些目录安装到代理的技能文件夹中。
+2. 包已安装：将 `node_modules/ai-i18n-tools/skills/.` 复制到该文件夹中。
+3. 没有 Node.js：从 `ai-i18n-tools --version` 中的版本的 npm tarball 中提取 `package/skills/`。从添加该内容的版本开始，该 GitHub Release 上的 `ai-i18n-tools-skill.zip` 包含相同的目录。在该 zip 文件发布之前的版本不包含它。第一个 zip 文件仅包含 `ai-i18n-tools/`。
+
+命令和代理文件夹请参阅 [编码代理技能](/zh-Hans/guide/coding-agent-skill#download-the-skill-directory)。
+
+<a id="cloned-monorepo"></a>
 ### 克隆的 monorepo
 
 在从 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 的完整克隆中开发软件包或运行工作区示例时：

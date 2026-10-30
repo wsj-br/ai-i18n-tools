@@ -50,7 +50,7 @@ Alinee `targetLocales` con `defineI18n().languages` en `lib/i18n.ts` exactamente
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n en un sitio existente
 
-Una aplicación Fumadocs solo en inglés necesita una ruta de configuración regional y `defineI18n` antes de que `translate-docs` pueda escribir archivos hermanos. La [solicitud del agente](#agent-prompt) recorre un sitio existente. Lista de verificación:
+Una aplicación Fumadocs solo en inglés necesita una ruta de configuración regional y `defineI18n` antes de que `translate-docs` pueda escribir archivos hermanos. La configuración inicial utiliza la indicación en [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website#run-the-agent-prompt). La [indicación del agente](#agent-prompt) en esta página es el seguimiento que conecta el catálogo de la interfaz de usuario. Lista de verificación:
 
 - `defineI18n` en `lib/i18n.ts` con `languages`, `defaultLanguage` y `parser: "dot"` o `"dir"`.
 - Rutas `app/[lang]/` y `createI18nMiddleware` de `proxy.ts` (el archivo del ejemplo).
@@ -86,7 +86,7 @@ Consulte `ai-i18n-tools.config.dir.example.json` en [examples/fumadocs-docs](htt
 <a id="sidebar-metajson"></a>
 ## Barra lateral (`meta.json`)
 
-Fumadocs utiliza archivos JSON `meta.json` para la estructura y los títulos de la barra lateral. Cuando `docsOutput.style` es `"fumadocs"`, **`translate-docs`** recopila `meta.json` bajo `docsRoot` (o `docs[].fumadocsMetaGlob`), traduce los valores de cadena para las claves enumeradas en `docs[].fumadocsMetaTranslatableKeys` (predeterminado: `title`, `description`) y escribe las salidas de configuración regional:
+Fumadocs utiliza archivos JSON `meta.json` para la estructura y los títulos de la barra lateral. Cuando `docsOutput.style` es `"fumadocs"`, `translate-docs` recopila `meta.json` bajo `docsRoot` (o `docs[].fumadocsMetaGlob`), traduce los valores de cadena para las claves listadas en `docs[].fumadocsMetaTranslatableKeys` (predeterminado: `title`, `description`) y escribe las salidas de configuración regional:
 
 | Analizador | Configuración regional de origen | Salida |
 |--------|--------------------------|--------|
@@ -98,7 +98,7 @@ Fumadocs utiliza archivos JSON `meta.json` para la estructura y los títulos de 
 <a id="ui-catalog"></a>
 ## Catálogo de interfaz de usuario
 
-La interfaz de diseño de Fumadocs (marcador de posición de búsqueda, nombres de visualización de configuración regional y otras anulaciones de `defineTranslations` / `i18n.translations()` en `lib/layout.shared.ts`) no se extrae de markdown. Configure **`docsOutput.fumadocsUiCatalog`** para que **`translate-docs`** inicialice el catálogo de configuración regional de origen desde `sourcePath` y traduzca JSON por configuración regional:
+La interfaz de usuario de Fumadocs (marcador de posición de búsqueda, nombres de visualización de la configuración regional y otras anulaciones de `defineTranslations` / `i18n.translations()` en `lib/layout.shared.ts`) no se extrae de markdown. Configure `docsOutput.fumadocsUiCatalog` para que `translate-docs` inicialice el catálogo de la configuración regional de origen desde `sourcePath` y traduzca el JSON por configuración regional:
 
 ```json
 {
@@ -123,8 +123,8 @@ La interfaz de diseño de Fumadocs (marcador de posición de búsqueda, nombres 
 }
 ```
 
-- **`catalogPath`** — JSON plano en inglés. El bootstrap lee solo el objeto `en` de `.add({ … })` en `sourcePath`. Los literales de cadena en ese objeto se convierten en claves de catálogo (`displayName`, `Search(search trigger)`). `.add()` solo acepta claves registradas por los preajustes de la interfaz de usuario de Fumadocs, por lo que un título de navegación como `site.title` no puede residir allí. El ejemplo mantiene `site.title` en el JSON y lee `catalog["site.title"]` para `nav.title`. Las claves ya presentes en el archivo pero ausentes del objeto `en` permanecen: la fusión es `{ ...existing, ...extracted }`. Vuelva a ejecutar `sync` cuando cambien los literales en inglés.
-- **`outputPathTemplate`** (opcional) — salidas por configuración regional; predeterminado: `ui.{locale}.json` junto a `catalogPath`.
+- `catalogPath` — JSON plano en inglés. El arranque lee solo el objeto `en` de `.add({ … })` en `sourcePath`. Los literales de cadena en ese objeto se convierten en claves de catálogo (`displayName`, `Search(search trigger)`). `.add()` solo acepta claves que los preajustes de la interfaz de usuario de Fumadocs registraron, por lo que un título de navegación como `site.title` no puede estar allí. El ejemplo mantiene `site.title` en el JSON y lee `catalog["site.title"]` para `nav.title`. Las claves que ya están en el archivo pero ausentes del objeto `en` permanecen: la fusión es `{ ...existing, ...extracted }`. Vuelva a ejecutar `sync` cuando cambien los literales en inglés.
+- `outputPathTemplate` (opcional) — salidas por configuración regional; predeterminado: `ui.{locale}.json` junto a `catalogPath`.
 
 Una clave traducida no hace nada hasta que la aplicación la lee. `i18n.translations().get(lang)` devuelve solo las claves registradas con `.extend()` (los preajustes de la interfaz de usuario de Fumadocs). Extienda el catálogo de configuración regional en `.add()` para que esas claves se apliquen, y coloque `displayName` nativo **después** de la extensión para que una traducción del nombre en inglés no lo reemplace:
 
@@ -236,7 +236,7 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 `rewriteFumadocsLinks` se habilita de forma predeterminada cuando `style` es `"fumadocs"`.
 
 | Autor en la configuración regional de origen | Después del normalizador |
-|----------------------------------|--------------------------|
+|--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
 | `[Guide](/es/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
@@ -244,16 +244,16 @@ Habilite el normalizador incorporado para que `translate-docs` corrija los enlac
 
 **Reglas de autoría**
 
-- Enlaces de documentos entre páginas: use **rutas de sitio neutrales en cuanto al locale** (`/docs/…`) en MDX en inglés, o `content/docs/…` / rutas relativas `.mdx` y deje que el normalizador las reescriba durante `sync`.
-- Archivos de repositorio fuera del árbol de contenido: use **URLs completas**.
-- No **edite manualmente** los enlaces en copias con sufijo de locale (`*.pt.mdx`) o árboles `content/{locale}/` — regenere con `sync` / `translate-docs`.
+- Enlaces de documentos entre páginas: use **rutas de sitio neutrales a la configuración regional** (`/docs/…`) en MDX en inglés, o rutas `content/docs/…` / relativas `.mdx` y deje que el normalizador las reescriba durante `sync`.
+- Archivos del repositorio fuera del árbol de contenido: use **URL completas**.
+- **No** edite manualmente los enlaces en copias con sufijo de configuración regional (`*.pt.mdx`) o árboles `content/{locale}/` — regenere con `sync` / `translate-docs`.
 
 Consulte también [Documentos — reescritura de enlaces](/es/guide/documents/link-rewriting) y [Configuración — `docsOutput`](/es/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## Códigos de locale
 
-Mantenga `targetLocales` en `ai-i18n-tools.config.json` alineado con `defineI18n().languages` en su aplicación Fumadocs **exactamente**. El ejemplo de punto utiliza códigos cortos (`pt`, `zh`); las configuraciones de directorio pueden utilizar carpetas BCP-47 (`pt-BR`, `zh-Hans`). No hay normalización forzada — los códigos no coincidentes producen rutas de salida incorrectas o páginas que faltan.
+Mantenga `targetLocales` en `ai-i18n-tools.config.json` alineado con `defineI18n().languages` en su aplicación Fumadocs **exactamente**. El ejemplo de punto utiliza códigos cortos (`pt`, `zh`); las configuraciones de directorio pueden usar carpetas BCP-47 (`pt-BR`, `zh-Hans`). No hay normalización forzada — los códigos no coincidentes producen rutas de salida incorrectas o páginas faltantes.
 
 <a id="multiple-collections"></a>
 ## Colecciones múltiples

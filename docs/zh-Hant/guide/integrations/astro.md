@@ -54,6 +54,8 @@ Starlight 內建了許多地區設定的 UI 字串（導覽標籤、搜尋預留
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在現有網站中啟用 i18n
 
+首次設定會使用 [新增 i18n 到網站或文件網站](/zh-Hant/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。下方的檢查清單是相同的手動操作。
+
 - 在 Starlight 設定中設定 `locales`，當英文應為無前綴時 (`label` 及必要的 `lang`)，包含一個 `root` 項目。
 - 當預設語言是該根語系時，設定 `defaultLocale: 'root'`。僅在 Starlight 的預設值已相符時，才省略 `defaultLocale`。
 - 英文頁面保留在 `src/content/docs/` 中；`translate-docs` 會寫入 `src/content/docs/<locale>/`。
@@ -67,7 +69,7 @@ Starlight 內建了許多地區設定的 UI 字串（導覽標籤、搜尋預留
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## 純 Astro（行銷和應用程式網站）
 
-對於靜態 Astro 行銷或應用程式網站（非 Starlight），請將 [Astro 內建的 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合使用。參考實作是 [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)：英文位於 `/`，目標語系位於 `/{locale}/`。
+對於靜態的 Astro 行銷或應用程式網站（非 Starlight），請將 [Astro 內建的 i18n 路由](https://docs.astro.build/en/guides/internationalization/) 與 ai-i18n-tools 結合。首次設定會使用 [新增 i18n 到網站或文件網站](/zh-Hant/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。參考實作是 [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)：英文位於 `/`，目標語系位於 `/{locale}/`。
 
 大多數團隊在同一頁面上使用兩種管道的**混合**：
 

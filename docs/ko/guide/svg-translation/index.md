@@ -30,7 +30,7 @@ SVG 번역은 `translate-docs` 및 `translate-json` (`cacheDir`)과 동일한 SQ
 <a id="design-for-i18n-from-the-start"></a>
 ## 처음부터 i18n을 고려한 설계
 
-SVG는 레이블이 처음부터 실제 텍스트 요소일 때 가장 쉽게 번역할 수 있습니다.
+SVG는 레이블이 처음부터 실제 텍스트 요소일 때 번역하기 가장 쉽습니다:
 
 - 사람이 읽을 수 있는 텍스트를 `<text>`, `<title>` 및 `<desc>`에 넣습니다.
 - 디자인 도구에서 레이블을 경로로 변환하지 마십시오. 경로 데이터는 번역기에게 불투명합니다.

@@ -54,6 +54,8 @@ Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲ
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
+初回セットアップは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。以下のチェックリストは、手作業による同じ作業です。
+
 - Starlight の設定で `locales` を指定します。英語をプレフィックスなしにする (`label` と必須の `lang`) 場合は、`root` エントリを含めます。
 - デフォルト言語がそのルートロケールである場合は `defaultLocale: 'root'` を設定します。Starlight のデフォルトがすでに一致している場合にのみ `defaultLocale` を省略します。
 - 英語のページは `src/content/docs/` に残ります。`translate-docs` は `src/content/docs/<locale>/` を書き込みます。
@@ -67,7 +69,7 @@ Starlightは多くのロケール向けに組み込みのUI文字列（ナビゲ
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## プレーンなAstro (マーケティングおよびアプリサイト)
 
-静的なAstroマーケティングサイトまたはアプリサイト（Starlightではない）の場合、[Astro組み込みのi18nルーティング](https://docs.astro.build/en/guides/internationalization/)とai-i18n-toolsを組み合わせます。参照実装は[examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)です。英語は`/`、ターゲットロケールは`/{locale}/`です。
+静的なAstroマーケティングサイトまたはアプリサイト（Starlightではない）の場合、[Astro組み込みのi18nルーティング](https://docs.astro.build/en/guides/internationalization/)とai-i18n-toolsを組み合わせます。初回セットアップは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。リファレンス実装は[examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)です。英語は`/`、ターゲットロケールは`/{locale}/`にあります。
 
 ほとんどのチームは、同じページで2つのパイプラインの**ハイブリッド**を使用します。
 

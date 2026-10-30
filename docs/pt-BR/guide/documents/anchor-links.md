@@ -34,14 +34,14 @@ Aponte seus **links de âncora** markdown para esses IDs estáveis, por exemplo,
 
 Quando você não estiver no Docusaurus, ou precisar de âncoras HTML em vez de sufixos `{#…}` / `{/* #… */}`:
 
-1. Execute `ai-i18n-tools write-heading-ids` no seu `.md` / `.mdx` de origem antes da `translate-docs` (mesmo `docs[]` / `contentPaths` de sempre). Ele insere âncoras HTML explícitas na linha anterior a cada título para que os valores de `id` sejam compartilhados por todas as cópias traduzidas, e copia esses mesmos IDs em inglês para os arquivos traduzidos existentes. Quando a contagem de segmentos coincide, o segmento correspondente em cache também é atualizado, para que uma `sync --force-update` posterior mantenha o ID corrigido. Execute-o novamente após renomear os títulos para que os IDs de âncora desatualizados sejam atualizados e correspondam ao título atual.
-2. Aponte seus **links de âncora** em markdown para esses IDs estáveis, por exemplo, `[label](other.md#section-id)`, onde `section-id` corresponde à âncora que a ferramenta escreveu — não a um palpite baseado apenas nas palavras em inglês.
+1. Execute `ai-i18n-tools write-heading-ids` em seu `.md` / `.mdx` de origem antes da `translate-docs` (mesmo `docs[]` / `contentPaths` de sempre). Ele insere âncoras HTML explícitas na linha antes de cada título para que os `id` sejam compartilhados por cada cópia traduzida, e ele copia esses mesmos IDs em inglês para os arquivos traduzidos existentes. Quando as contagens de segmentos se alinham, o segmento em cache correspondente também é atualizado, para que uma `sync --force-update` posterior mantenha o ID reparado. Execute-o novamente após renomear os títulos para que os IDs de âncora obsoletos sejam atualizados para corresponder ao título atual. Uma renomeação deixa uma única âncora: `<a id>` extras empilhadas acima desse título são removidas, e os links de markdown no repositório que visavam um ID removido são redirecionados. Uma `<a id>` que não está diretamente acima de um título é mantida no lugar.
+2. Aponte seus **links de âncora** de markdown para esses IDs estáveis, por exemplo, `[label](other.md#section-id)`, onde `section-id` corresponde à âncora que a ferramenta escreveu — não um palpite apenas a partir de palavras em inglês.
 
 <a id="example"></a>
 ## Exemplo
 
 <a id="docusaurus------suffix"></a>
-### Sufixo Docusaurus `` / ``
+### Sufixo de `{#…}` / `{/* #… */}` do Docusaurus
 
 `docs/overview.md`:
 

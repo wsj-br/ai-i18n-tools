@@ -282,7 +282,7 @@ These markers are never sent to the translator. `mark-html` does not add them.
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-The source locale keeps the original URL. For a bare `data-i18n-locale-src`, absolute URLs, protocol-relative URLs, `data:` URLs, and `#` fragments are left alone; query strings and fragments stay in place. A valued marker uses its template for every non-source locale and replaces only `{locale}`. If the localised image 404s, the runtime restores the original `src` once. You ship `chart_pt-BR.png` yourself; the script does not create it.
+The source locale keeps the original URL. For a bare `data-i18n-locale-src`, absolute URLs, protocol-relative URLs, `data:` URLs, and `#` fragments are left alone; query strings and fragments stay in place. A valued marker uses its template for every non-source locale and replaces only `{locale}`. If the localised image 404s, the runtime restores the original `src` once. You provide `chart_pt-BR.png` yourself; the script does not create it.
 
 `data-i18n-locale-href` is for this catalog model. A link to `about.pt-BR.html` belongs to the [HTML pages](/guide/documents/html-pages) pipeline.
 

@@ -71,7 +71,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-對於這些設定，請使用 `ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。接著請遵循[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) 的說明。
+然後遵循[將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。
+
+Django 應用程式、使用 Flask-Babel 目錄的 Flask，或已呼叫 `gettext` 的應用程式會保留這些呼叫。改為使用 `ui-python-django`、`ui-python-flask` 或 `ui-python-gettext` 建立骨架，然後遵循[將 i18n 加入 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext)。
 
 <a id="a-website-or-documentation-site"></a>
 ### 網站或文件站台
@@ -92,7 +94,7 @@ ai-i18n-tools suggest-models --apply
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-您的框架必須先啟用其自身的 i18n 路由功能。然後依照 [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website)。
+然後遵循[將 i18n 加入網站或文件網站](/zh-Hant/guide/add-i18n-to-website)。它的代理提示會啟用框架的 i18n 路由。在審閱該工作後，您會執行 `sync`。
 
 <a id="a-readme-or-markdown-docs"></a>
 ### README 或 Markdown 文件
@@ -123,11 +125,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 當您的專案準備就緒時：
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync` 會依序執行您的設定所啟用的每個步驟。`status` 會顯示每個語系的翻譯內容。首次在工具無法看見文字的專案上執行時，會無錯誤地完成，但不會寫入任何有用的內容，因此如果 `status` 未顯示任何字串，請返回您所選路徑的指南。
+`doctor` 會檢查設定、路徑、提供者和環境是否已準備就緒。除非您傳遞 `--local`，否則它也會與提供者驗證模型 ID。`sync` 會依序執行您的設定所啟用的每個步驟。`status` 會顯示每個地區設定已翻譯的內容。工具無法看到文字的專案首次執行時，會無錯誤地完成且不會寫入任何有用的內容，因此如果 `status` 沒有顯示任何字串，請返回您路徑的指南。
 
 `suggest-models` 會根據已發佈的基準測試，對作用中提供者的聊天模型進行排名。`suggest-models --apply` 會取代 `translationModels`，並保留 `uiModels` 和 `localeModels` 不變。儀表板的 **模型** 標籤頁上也有相同的排名。關於排名如何運作，以及為何清單中包含多個模型，請參閱：[AI 模型](/zh-Hant/guide/ai-models)。指令參考：[suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
@@ -158,7 +161,7 @@ ai-i18n-tools status
 
 建議使用 `sync`，而非串連個別的翻譯指令碼。只有在需要單獨執行某個步驟時，才使用單一步驟的指令碼。
 
-若要讓 CLI 輸出和儀表板以另一種語言顯示，請傳遞 `-L <code>` 或設定 `AI_I18N_LANG`：請參閱 [工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
+若要以另一種語言顯示 CLI 輸出和儀表板，請傳遞 `-L <code>` 或設定 `AI_I18N_LANG`：請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。
 
 <a id="combined-sync"></a>
 

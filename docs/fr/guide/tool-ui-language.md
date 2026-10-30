@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # Langue de l'interface utilisateur de l'outil
 
-L'`ai-i18n-tools` localise sa propre interface utilisateur (texte d'aide de la CLI, messages de journal/récapitulatifs/erreurs à fort trafic et tableau de bord de traduction) indépendamment des fichiers `sourceLocale` / `targetLocales` de votre projet. Aucune configuration n'est requise : par défaut, l'outil suit les paramètres régionaux de votre système d'exploitation.
+Le `ai-i18n-tools` localise sa propre interface utilisateur — le texte d'aide de la CLI, les messages de journal, de résumé et d'erreur fréquents, et le Tableau de bord de traduction — indépendamment du `sourceLocale` / `targetLocales` de votre projet. Aucune configuration n'est requise : par défaut, l'outil suit la locale de votre SE.
 
 <a id="locale-resolution"></a>
 ## Résolution des paramètres régionaux
@@ -26,7 +26,7 @@ Anglais (Royaume-Uni, source), allemand, espagnol, français, hindi, japonais, c
 <a id="translation-dashboard"></a>
 ## Tableau de bord de traduction
 
-Le tableau de bord de traduction lit les paramètres régionaux résolus, le sens de la mise en page et le bundle de traduction à partir de `GET /api/ui-i18n` et les applique au chargement (il définit `<html lang>` / `dir` et localise le balisage statique via les attributs `data-i18n*`).
+Le Tableau de bord de traduction lit la locale résolue, le sens de la mise en page et le bundle de traduction depuis `GET /api/ui-i18n` et les applique au chargement (il définit `<html lang>` / `dir` et localise le balisage statique via les attributs `data-i18n*`).
 
 <a id="related"></a>
 ## Liens connexes

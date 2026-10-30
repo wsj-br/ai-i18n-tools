@@ -1,7 +1,7 @@
 <a id="glossary"></a>
 # Glossar
 
-Das Glossar stellt eine konsistente Produktterminologie über alle Übersetzungen hinweg sicher. Benutzer können die Übersetzung eines Begriffs in einer oder mehreren Sprachen definieren, wodurch das KI-Modell diese vordefinierte Übersetzung verwenden kann, anstatt die beste Übersetzung zu erraten. Es kann auch verwendet werden, um bestimmte Begriffe, wie z. B. Produktnamen, bei der Übersetzung in andere Sprachen unverändert zu lassen.
+Das Glossar gewährleistet eine konsistente Produktterminologie über alle Übersetzungen hinweg. Benutzer können die Übersetzung eines Begriffs in einer oder mehreren Sprachen definieren, wodurch das KI-Modell diese vordefinierte Übersetzung verwenden kann, anstatt selbst eine auszuwählen. Es kann auch verwendet werden, um bestimmte Begriffe, wie Produktnamen, bei der Übersetzung in andere Sprachen unverändert beizubehalten.
 
 Zwei Arten von Vorgaben werden an das Modell gesendet:
 

@@ -13,9 +13,9 @@ Le réécriveur qui s'exécute dépend de `docsOutput.style` :
 | Disposition | Réécriveur intégré | Ce qu'il corrige |
 | --- | --- | --- |
 | `"flat"` (par défaut si pas de `pathTemplate` personnalisé) | Réécriveur de liens plats (`rewriteRelativeLinks`, activé par défaut) | Liens relatifs inter-pages (`guide.md` → `guide.de.md`) et préfixes de profondeur pour les URL d'actifs non-Markdown |
-| `"vitepress"` | Normalisateur de liens VitePress (`rewriteVitepressLinks`, activé par défaut) | Chemins `docs/guide/…` de style README → routes du site (`/guide/…`) |
-| `"nextra"` | Normaliseur de liens Nextra (`rewriteNextraLinks`, activé par défaut) | Chemins `content/en/…` et `.mdx` relatifs → routes indépendantes de la locale (`/guide/…`) |
-| `"fumadocs"` | Normaliseur de liens Fumadocs (`rewriteFumadocsLinks`, activé par défaut) | Chemins `content/docs/…` et `.mdx` relatifs → routes indépendantes de la locale (`/docs/…`) |
+| `"vitepress"` | Normaliseur de liens VitePress (`rewriteVitepressLinks`, activé par défaut) | Chemins de style README `docs/guide/…` → routes du site (`/guide/…`) |
+| `"nextra"` | Normaliseur de liens Nextra (`rewriteNextraLinks`, activé par défaut) | Chemins `content/en/…` et chemins relatifs `.mdx` → routes indépendantes de la locale (`/guide/…`) |
+| `"fumadocs"` | Normaliseur de liens Fumadocs (`rewriteFumadocsLinks`, activé par défaut) | Chemins `content/docs/…` et chemins relatifs `.mdx` → routes indépendantes de la locale (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Aucun | Les URL source passent inchangées jusqu'à `postProcessing` |
 
 Un `pathTemplate` personnalisé désactive le réécriveur plat, sauf si vous définissez `rewriteRelativeLinks: true` explicitement. Voir [Dispositions de sortie](/fr/guide/documents/output-layouts) et [Liens d'ancrage](/fr/guide/documents/anchor-links) pour la gestion des `#anchor` inter-pages.
@@ -64,7 +64,7 @@ Les chaînes `replace` prennent en charge les variables de modèle étendues par
 
 | Espace réservé | Valeur |
 | --- | --- |
-| `${translatedLocale}` | Paramètres régionaux cibles (BCP-47 normalisé) |
+| `${translatedLocale}` | Locale cible (BCP-47 normalisé) |
 | `${sourceLocale}` | Paramètres régionaux source |
 | `${sourceFullPath}` | Chemin de fichier source absolu (POSIX `/`) |
 | `${translatedFullPath}` | Chemin de sortie traduit absolu |
@@ -79,7 +79,7 @@ Les chaînes `replace` prennent en charge les variables de modèle étendues par
 <a id="per-locale-asset-folder"></a>
 ### Dossier d'actifs par paramètres régionaux
 
-Stockez les actifs dans un sous-répertoire codé par paramètres régionaux dès le premier jour et échangez le segment avec une règle générique :
+Stockez les ressources dans un sous-répertoire codé par la locale dès le début et échangez le segment avec une règle générique :
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ Préférez les chemins relatifs colocalisés (`../assets/name.png`) dans le mark
 
 Vous n'avez généralement **pas** besoin de `regexAdjustments` lorsque :
 
-- Les liens entre pages sont de simples chemins markdown relatifs et `docsOutput.style = "flat"` (le réécriveur intégré ajoute des suffixes de paramètres régionaux)
-- Les actifs se trouvent à côté des fichiers source et le préfixe de profondeur par fichier du réécriveur plat les résout correctement
-- L'anglais et chaque copie traduite utilisent la **même** URL (images partagées à la racine du site, actifs colocalisés, routes de site VitePress après normalisation)
-- Les liens internes de VitePress utilisent les routes du site ou les chemins `docs/guide/…` avec `rewriteVitepressLinks: true`
+- Les liens entre pages sont de simples chemins Markdown relatifs et `docsOutput.style = "flat"` (le réécriveur intégré ajoute des suffixes de locale)
+- Les ressources se trouvent à côté des fichiers source et le préfixe de profondeur par fichier du réécriveur plat les résout correctement
+- L'anglais et chaque copie traduite utilisent la **même** URL (images partagées à la racine du site, ressources colocalisées, routes du site VitePress après le normaliseur)
+- Les liens internes à VitePress utilisent les routes du site ou les chemins `docs/guide/…` avec `rewriteVitepressLinks: true`
 - Les liens internes à la page de Nextra et Fumadocs utilisent des routes indépendantes de la locale (`/guide/…`, `/docs/…`) ou des chemins de racine de contenu avec `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>

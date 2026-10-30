@@ -46,4 +46,4 @@ Ces deux variables remplacent `baseUrl` pour un fournisseur configuré. Tous les
 | `NO_COLOR`              | Lorsque `1`, désactiver les couleurs ANSI dans la sortie du journal.              |
 | `I18N_LOG_SESSION_MAX`  | Nombre maximal de lignes conservées par session de journal (par défaut `5000`).           |
 
-Au démarrage, la CLI charge également automatiquement un fichier `.env` depuis le répertoire de travail actuel (via `process.loadEnvFile` de Node), de sorte que les clés d'API du fournisseur soient récupérées dans les shells non interactifs qui ne sourcent pas `.envrc` / `direnv`. Les variables déjà présentes dans l'environnement ne sont jamais remplacées, de sorte que les valeurs réelles de CI/production l'emportent toujours.
+Au démarrage, la CLI charge également automatiquement un fichier `.env` depuis le répertoire de travail actuel (via `process.loadEnvFile` de Node), de sorte que les clés API du fournisseur sont chargées dans les shells non interactifs qui ne chargent pas `.envrc` via `direnv`. Les variables déjà présentes dans l'environnement ne sont jamais écrasées, de sorte que les valeurs réelles de CI/production ont la priorité.

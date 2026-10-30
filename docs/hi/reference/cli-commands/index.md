@@ -13,6 +13,7 @@
 |---------|---------|
 | [`version`](setup#version) | सीएलआई संस्करण और बिल्ड टाइमस्टैम्प प्रिंट करें। |
 | [`init`](setup#init) | एक स्टार्टर कॉन्फ़िग लिखें; `-t` एक स्कैफ़ोल्ड टेम्पलेट का चयन करता है। |
+| [`doctor`](setup#doctor) | जाँचें कि कॉन्फ़िगरेशन, पाथ, प्रोवाइडर और परिवेश अनुवाद के लिए तैयार हैं। |
 | [`help`](setup#help) | किसी उप-कमांड के लिए सहायता प्रदर्शित करें। |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | बासी/अनाथ/अनकॉन्फ़िगर-स्थानिक कैश पंक्तियों को हटाएँ और मार्कडाउन समस्याओं को फिर से भरें। |
 | [`clean-temp`](maintenance#clean-temp) | `*.log`, `*.tmp` और कैश बैकअप ढूँढें और हटाएँ। |
-| [`purge-locale`](maintenance#purge-locale) | लोकेल के लिए कैश पंक्तियों और जेनरेट किए गए आर्टिफैक्ट्स को हटाएँ। |
+| [`purge-locale`](maintenance#purge-locale) | लोकले(ओं) के लिए कैश रो और जनरेट किए गए आर्टिफैक्ट हटाएँ। |
 
 <a id="dashboard--glossarytools"></a>
 ### [डैशबोर्ड और शब्दावली](tools)
@@ -91,6 +92,7 @@
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

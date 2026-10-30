@@ -70,7 +70,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 각 프로바이더 블록은 자체 `translationModels`, 선택적 `uiModels` 및 `localeModels`, `maxTokens`, `temperature`, `requestTimeout`(초) 또는 `requestTimeoutMs`을 정의할 수 있습니다. 프로바이더의 타임아웃은 최상위 `requestTimeout` / `requestTimeoutMs`을 재정의합니다. 레거시 최상위 `openrouter` 블록은 여전히 허용되며 로드 시 `providers.openrouter`으로 자동 마이그레이션됩니다.
 
-공급자가 `usage.cost`를 생략할 경우 선택적 `pricing` 및 `modelPricing`이 100만 토큰당 USD(`inputPerMTokens` 및 `outputPerMTokens`)를 설정합니다. `pricing`은(는) 공급자 전체 기본값이며, `modelPricing` 항목은 특정 모델 ID에 대해 이를 재정의합니다. OpenRouter 및 Cheaper Inference는 이미 호출당 비용을 반환하므로 해당 공급자에서는 두 항목 모두 설정하지 마세요. 공급자가 보고한 비용은 반환된 그대로 유지됩니다. 해당 금액은 번역 요약, [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [Usage & costs](/ko/guide/translation-dashboard/usage)에 포함됩니다.
+선택 사항인 `pricing` 및 `modelPricing`는 제공자가 `usage.cost`를 생략할 때 100만 토큰당 USD(`inputPerMTokens` 및 `outputPerMTokens`)를 설정합니다. `pricing`는 제공자 전체의 기본값이며, `modelPricing` 항목은 하나의 모델 ID에 대해 이를 재정의합니다. OpenRouter 및 Cheaper Inference는 이미 호출당 비용을 반환하므로, 해당 제공자에서는 둘 다 설정하지 않은 상태로 두십시오. 제공자가 보고한 비용은 반환된 대로 유지됩니다. 해당 금액은 번역 요약, [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)에 포함됩니다.
 
 샘플 요금을 포함하여 동일한 문서에서 4개의 제공자를 사용하는 실행 가능한 예제: [`examples/multi-provider`](/ko/examples#multi-provider).
 

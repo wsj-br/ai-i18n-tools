@@ -40,7 +40,7 @@ Une feuille+locale est traduite lorsque la locale est absente de la feuille (man
 
 **Options clés :** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]` : fichiers/répertoires/globs à scanner (par défaut : le `sourceRoots` du bloc). `-l` / `--locale` : locales cibles séparées par des virgules à remplir (par défaut : le `targetLocales` configuré du bloc). `--ui-block` : index basé sur zéro, description ou chemin `stringsJson` (par défaut : bloc 0). `-j` parallélise les locales.
+`[paths...]` : fichiers/répertoires/globs à analyser (par défaut : le `sourceRoots` du bloc). `-l` / `--locale` : locales cibles séparées par des virgules à remplir (par défaut : les `targetLocales` configurées du bloc). `--ui-block` : index basé sur zéro, description ou chemin `stringsJson` (par défaut : bloc 0). `-j` parallélise les locales.
 
 **Voir aussi :** [migrate-intlayer](#migrate-intlayer), [Migration depuis Intlayer](/fr/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ Traduit uniquement les chaînes d'interface utilisateur (`strings.json` → JSON
 
 **Options clés :** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale` : paramètres régionaux cibles séparés par des virgules (par défaut : configuration `targetLocales` moins `sourceLocale`). `--force` : retraduire toutes les entrées par paramètre régional (ignorer les traductions existantes). `--dry-run` : pas d’écritures, pas d’appels d’API. `-j` parallélise les **paramètres régionaux** ; dans chaque paramètre régional, la configuration `uiBatchConcurrency` (par défaut **2**) parallélise les lots LLM (blocs de 50 chaînes, puis groupes pluriels). Il n’y a pas d’indicateur CLI pour `uiBatchConcurrency`.
+`-l` / `--locale` : locales cibles séparées par des virgules (par défaut : `targetLocales` de la configuration moins `sourceLocale`). `--force` : retraduit toutes les entrées par locale (ignore les traductions existantes). `--dry-run` : pas d'écritures, pas d'appels API. `-j` parallélise les **locales** ; au sein de chaque locale, la configuration `uiBatchConcurrency` (par défaut **2**) parallélise les lots LLM (morceaux de 50 chaînes, puis groupes de pluriels). Il n'y a pas d'option CLI pour `uiBatchConcurrency`.
 
 ---
 
@@ -97,7 +97,7 @@ Extrait, puis traduit les chaînes d’interface utilisateur (nécessite `featur
 
 **Synopsis :** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Exécute d'abord `extract` (nécessite `features.translateUIStrings`) pour que chaque catalogue sélectionné corresponde à la source, puis procède à une révision par LLM des chaînes d'interface utilisateur de la locale source (orthographe, grammaire). `--ui-block` limite l'extraction et la révision à un seul bloc. Les suggestions de terminologie proviennent uniquement du CSV `glossary.userGlossary` (même portée que `translate-ui` — les catalogues d'interface utilisateur ne sont pas réinjectés, afin d'éviter qu'un texte incorrect ne soit renforcé comme glossaire). Utilise le fournisseur LLM actif (sa variable d'environnement de clé API).
+Exécute `extract` en premier (nécessite `features.translateUIStrings`) afin que chaque catalogue sélectionné corresponde à la source, puis effectue une révision LLM des chaînes d'interface utilisateur de la locale source (orthographe, grammaire). `--ui-block` limite l'extraction et la révision à un seul bloc. Les suggestions terminologiques proviennent uniquement du CSV `glossary.userGlossary` (même portée que `translate-ui` — les catalogues d'interface utilisateur ne sont pas réintégrés, de sorte que les mauvaises copies ne sont pas renforcées en tant que glossaire). Utilise le fournisseur LLM actif (sa variable d'environnement de clé API).
 
 Renvoie le code **1** en cas d'échec (feature flag manquant, échec de l'extraction, catalogue manquant ou invalide, clé API manquante, ou lorsque tous les lots échouent) ; renvoie le code **0** lorsque l'exécution se termine avec succès (les résultats sont fournis à titre indicatif). Écrit `proofread-ui-results_<timestamp>.log` sous `cacheDir` sous forme de rapport lisible (résumé, problèmes, lignes non examinées et lignes validées pour chaque chaîne) ; le terminal affiche uniquement les totaux du résumé et les problèmes (aucune ligne `[ok]` par chaîne). Si un lot échoue, ou si une réponse du modèle est plus courte que le lot et ne contient pas de `index` utilisable pour chaque emplacement, ces chaînes sont considérées comme non examinées. Leurs problèmes sont ignorés afin d'éviter qu'un tableau trop court ne soit appliqué aux mauvaises chaînes. Affiche le nom du fichier journal sur la dernière ligne. Avec `--json`, la sortie lisible est dirigée vers stderr. Les liens utilisent `path:line`, comme le bouton de lien des chaînes dans l'interface du tableau de bord.
 

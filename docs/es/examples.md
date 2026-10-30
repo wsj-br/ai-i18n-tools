@@ -42,10 +42,11 @@ Si, en cambio, clonó el repositorio **completo** de [ai-i18n-tools](https://git
 ## ¿Qué ejemplo coincide con mi proyecto?
 
 - Una aplicación JS/TS: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (la más pequeña) o [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). Guía: [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js).
-- Una aplicación Python: python-streamlit, python-flask, python-fastapi, o python-gettext. Guía: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python).
-- Un sitio web o sitio de documentación: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, o plain-html-docs. Guía: [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website).
+- Una aplicación Python: python-streamlit, python-flask o python-fastapi. Guía: [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python).
+- Una aplicación Django o GNU gettext: python-gettext (una herramienta de línea de comandos gettext; no hay un directorio de ejemplo de Django). Guía: [Añadir i18n a una aplicación Django / Python gettext](/es/guide/add-i18n-to-django-gettext).
+- Un sitio web o sitio de documentación: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html o plain-html-docs. Guía: [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website).
 - Un README de repositorio junto a una aplicación: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) o [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (el ejemplo de nextjs también tiene un sitio de documentación). Guía: [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme).
-- Algo más: multi-provider, test-markdown, y intlayer-migration.
+- Algo más: multi-provider, test-markdown e intlayer-migration.
 
 <a id="list-of-examples"></a>
 ## Lista de ejemplos

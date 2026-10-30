@@ -15,7 +15,7 @@ Elegir la estructura de directorios adecuada antes de que existan capturas de pa
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### Markdown con `docsOutput.style = "flat"` (README, USER-GUIDE)
 
-Almacena las capturas de pantalla en un subdirectorio codificado por configuración regional desde el primer día:
+Almacenar capturas de pantalla en un subdirectorio con código de configuración regional desde el principio:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ Establezca `docs[].docsOutput.docsRoot` en la raíz de los archivos escritos en 
 
 El reescritor de enlaces plano **no** se ejecuta para `doc-system` (a diferencia de `"flat"`). `postProcessing.regexAdjustments` recibe la URL original del markdown fuente —típicamente una ruta absoluta o relativa a la raíz del sitio, como `/img/screenshots/en-GB/foo.png`.
 
-El diseño de **carpeta por configuración regional** se aplica cuando las capturas de pantalla residen en un árbol de URL estático compartido: utilice una carpeta codificada por configuración regional desde el primer día y una regla genérica de `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (consulte [Configuración — sistema de documentación](/es/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
+El diseño de **carpeta por configuración regional** se aplica cuando las capturas de pantalla residen en un árbol de URL estático compartido: use una carpeta con código de configuración regional desde el principio y una regla genérica `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (consulte [Configuración — sistema de documentación](/es/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 Las **capturas de pantalla intercaladas** se aplican cuando los documentos traducidos de cada configuración regional almacenan los activos junto al markdown (sin reescritura de URL). Su script de captura de pantalla debe escribir PNG en rutas derivadas de `{outputDir}`, `{locale}` y `{localeSubpath}`; el preajuste de Docusaurus a continuación es el diseño de referencia.
 
@@ -78,7 +78,7 @@ Cuando agregue i18n más tarde, el script de captura de pantalla adoptará la di
 
 Equivalente a `docsOutput.style = "doc-system"` con `localeSubpath: ""` — las páginas traducidas se ubican directamente bajo `{outputDir}/{locale}/`.
 
-Almacene las capturas de pantalla bajo una ruta codificada por idioma desde el primer día:
+Almacenar capturas de pantalla en una ruta con código de configuración regional desde el principio:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

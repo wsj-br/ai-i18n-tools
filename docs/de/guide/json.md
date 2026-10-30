@@ -60,7 +60,7 @@ Beispiel (mehrere Quelldateien, Ordner mit Sprachcodes in Kleinschreibung):
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | Verhalten |
 |-------------|-----------|

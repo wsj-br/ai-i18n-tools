@@ -48,7 +48,7 @@ Verbinden Sie die Nextra-[Internationalisierung](https://nextra.site/docs/guide/
 <a id="enable-i18n-in-an-existing-site"></a>
 ### i18n auf einer bestehenden Site aktivieren
 
-Eine rein englische Nextra 4-Site benötigt einen Locale-Ordner, einen Routenparameter und eine Next.js i18n-Konfiguration, bevor `translate-docs` etwas schreiben kann. Der [Wörterbuch-Prompt](#agent-prompt-dictionary-and-routes) erledigt dies in einem Durchgang. Checkliste:
+Eine Nextra 4-Website, die nur auf Englisch ist, benötigt einen Locale-Ordner, einen Routenparameter und die Next.js i18n-Konfiguration, bevor `translate-docs` einen Ort zum Schreiben hat. Die Ersteinrichtung verwendet die Eingabeaufforderung unter [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website#run-the-agent-prompt). Die [Wörterbuch-Eingabeaufforderung](#agent-prompt-dictionary-and-routes) ist die detaillierte Nachbereitung für dieselben Routen und dasselbe Wörterbuch. Checkliste:
 
 - Verschieben Sie MDX nach `content/en/` (Englisch ist ein Locale-Ordner, nicht das Inhalts-Root).
 - `i18n.locales` und `defaultLocale` in `next.config`.
@@ -60,7 +60,7 @@ Eine rein englische Nextra 4-Site benötigt einen Locale-Ordner, einen Routenpar
 <a id="theme-strings"></a>
 ## Theme-Strings
 
-Nextra Theme Chrome (`editLink`, Suchplatzhalter, Fußzeile usw.) wird nicht aus Markdown extrahiert. Erstellen Sie englische Zeichenfolgen in einem TypeScript-Wörterbuchmodul (z. B. `app/_dictionaries/en.ts`) und übersetzen Sie es innerhalb von **`translate-docs`**:
+Das Nextra-Theme-Chrome (`editLink`, Suchplatzhalter, Fußzeile usw.) wird nicht aus Markdown extrahiert. Erstellen Sie englische Zeichenfolgen in einem TypeScript-Wörterbuchmodul (zum Beispiel `app/_dictionaries/en.ts`) und übersetzen Sie sie in `translate-docs`:
 
 ```json
 {
@@ -88,7 +88,7 @@ Verwenden Sie **nicht** `json[]` für Nextra-Theme-Wörterbuchzeichenfolgen – 
 <a id="sidebar-labels-_metats"></a>
 ## Seitenleistenbeschriftungen (`_meta.ts`)
 
-Nextra 3+ verwendet TypeScript `_meta.ts` / `_meta.tsx`-Dateien für die Seitenleistenstruktur und -titel. Wenn `docsOutput.style` `"nextra"` ist, sammelt **`translate-docs`** automatisch `_meta.ts`, `_meta.tsx` und `_meta.js` unter `docsRoot`, übersetzt Zeichenliterale in der `export default { … }`-Meta-Map und schreibt gespiegelte Dateien unter `content/{locale}/**`.
+Nextra 3+ verwendet TypeScript-Dateien `_meta.ts` / `_meta.tsx` für die Sidebar-Struktur und Titel. Wenn `docsOutput.style` `"nextra"` ist, sammelt `translate-docs` automatisch `_meta.ts`, `_meta.tsx` und `_meta.js` unter `docsRoot`, übersetzt Zeichenfolgenliterale in der `export default { … }`-Meta-Map und schreibt gespiegelte Dateien unter `content/{locale}/**`.
 
 **Empfohlenes Muster:** Englische Literale inline in `content/en/**/_meta.ts` beibehalten (wie bei [swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site)):
 
@@ -297,17 +297,17 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 
 `rewriteNextraLinks` ist standardmäßig aktiviert, wenn `style` `"nextra"` ist.
 
-| Autor in der Quell-Locale | Nach dem Normalisierer |
-|--------------------------|------------------|
+| In der Quell-Locale erstellen | Nach dem Normalisierer |
+|--------------------------|------------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/de/guide/getting-started)` |
 | `[Guide](/de/guide/getting-started.mdx)` | `[Guide](/de/guide/getting-started)` |
 | `[Demo](https://github.com/org/repo)` | unverändert (vollständige URL) |
 
 **Regeln für die Erstellung**
 
-- Dokumentenlinks über mehrere Seiten hinweg: Verwenden Sie **lokal-neutrale Site-Routen** (`/guide/…`) in englischem MDX oder `content/en/…` / relative `.mdx`-Pfade und lassen Sie den Normalisierer diese während `sync` umschreiben.
+- Dokumentationslinks über mehrere Seiten hinweg: Verwenden Sie **Locale-neutrale Website-Routen** (`/guide/…`) in englischem MDX oder `content/en/…` / relative `.mdx`-Pfade und lassen Sie den Normalisierer sie während `sync` umschreiben.
 - Repo-Dateien außerhalb des Inhaltsbaums: Verwenden Sie **vollständige URLs**.
-- Bearbeiten Sie Links in `content/<locale>/` **nicht** manuell – generieren Sie sie mit `sync` / `translate-docs` neu.
+- Bearbeiten Sie Links in `content/<locale>/` **nicht** manuell — generieren Sie sie mit `sync` / `translate-docs` neu.
 
 <a id="optional-locale-proxy"></a>
 ## Optionaler Locale-Proxy
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**Site-Locale-Codes vs. `sourceLocale`:** Nextra und Next.js verwenden kurze Routen-Codes (`en`, `pt-BR`, `zh-Hans`) in `next.config`, `content/{locale}/` und dem `NEXT_LOCALE`-Cookie. `sourceLocale` in `ai-i18n-tools.config.json` kann ein BCP-47-Tag wie `en-GB` für die Übersetzungsqualität sein – dieses Tag ist **keine** Site-Route. Wenn das Browser-Cookie oder `Accept-Language` zu einem Tag außerhalb von `i18n.locales` aufgelöst wird (z. B. `en-GB`, wenn nur `en` konfiguriert ist), kann der Standard-Proxy von Nextra in einer Schleife umleiten. Die Demo [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) umschließt `nextra/locales`, um ungültige Cookies und Pfade auf das Standard-Site-Locale zurückzusetzen, bevor sie delegiert.
+**Website-Locale-Codes vs. `sourceLocale`:** Nextra und Next.js verwenden kurze Routencodes (`en`, `pt-BR`, `zh-Hans`) in `next.config`, `content/{locale}/` und dem `NEXT_LOCALE`-Cookie. `sourceLocale` in `ai-i18n-tools.config.json` kann ein BCP-47-Tag sein, wie zum Beispiel `en-GB` für die Übersetzungsqualität — dieser Tag ist **keine** Website-Route. Wenn das Browser-Cookie oder `Accept-Language` zu einem Tag außerhalb von `i18n.locales` auflöst (zum Beispiel `en-GB`, wenn nur `en` konfiguriert ist), kann Nextras Standard-Proxy in einer Schleife weiterleiten. Die Demo [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) umschließt `nextra/locales`, um ungültige Cookies und Pfade auf die Standard-Website-Locale zurückzusetzen, bevor sie delegiert.
 
 Dies funktioniert nicht mit `output: 'export'` statischen Exporten. Siehe [Nextra i18n docs](https://nextra.site/docs/guide/i18n).
 

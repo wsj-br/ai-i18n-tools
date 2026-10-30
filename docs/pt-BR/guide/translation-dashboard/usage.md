@@ -1,7 +1,7 @@
 <a id="usage--costs"></a>
 # Uso e custos
 
-A aba **Uso e custos** resume as chamadas de API de modelo faturadas que este projeto fez — incluindo retentativas que foram posteriormente descartadas — com contagens de tokens e um único custo em USD.
+A aba **Uso e custos** resume as chamadas de API de modelo faturadas que este projeto fez — incluindo tentativas que foram posteriormente descartadas — com contagens de tokens e um custo único em USD.
 
 Os mesmos agregados estão disponíveis na linha de comando como `ai-i18n-tools usage`.
 

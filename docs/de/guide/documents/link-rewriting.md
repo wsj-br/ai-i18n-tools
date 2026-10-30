@@ -13,9 +13,9 @@ Welcher Umschreiber ausgeführt wird, hängt von `docsOutput.style` ab:
 | Layout | Integrierter Umschreiber | Was er behebt |
 | --- | --- | --- |
 | `"flat"` (Standard, wenn kein benutzerdefiniertes `pathTemplate`) | Flacher Link-Umschreiber (`rewriteRelativeLinks`, standardmäßig aktiviert) | Seitenübergreifende relative Links (`guide.md` → `guide.de.md`) und Tiefenpräfixe für Nicht-Markdown-Asset-URLs |
-| `"vitepress"` | VitePress Link-Normalisierer (`rewriteVitepressLinks`, standardmäßig aktiviert) | README-ähnliche `docs/guide/…`-Pfade → Website-Routen (`/guide/…`) |
-| `"nextra"` | Nextra-Link-Normalisierer (`rewriteNextraLinks`, standardmäßig aktiviert) | `content/en/…` und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/guide/…`) |
-| `"fumadocs"` | Fumadocs-Link-Normalisierer (`rewriteFumadocsLinks`, standardmäßig aktiviert) | `content/docs/…` und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/docs/…`) |
+| `"vitepress"` | VitePress-Link-Normalisierer (`rewriteVitepressLinks`, standardmäßig aktiviert) | README-ähnliche `docs/guide/…`-Pfade → Website-Routen (`/guide/…`) |
+| `"nextra"` | Nextra-Link-Normalisierer (`rewriteNextraLinks`, standardmäßig aktiviert) | `content/en/…`- und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/guide/…`) |
+| `"fumadocs"` | Fumadocs-Link-Normalisierer (`rewriteFumadocsLinks`, standardmäßig aktiviert) | `content/docs/…`- und relative `.mdx`-Pfade → gebietsschema-neutrale Routen (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Keine | Quell-URLs werden bis `postProcessing` unverändert durchgereicht |
 
 Benutzerdefiniertes `pathTemplate` deaktiviert den flachen Umschreiber, es sei denn, Sie legen `rewriteRelativeLinks: true` explizit fest. Siehe [Ausgabe-Layouts](/de/guide/documents/output-layouts) und [Anker-Links](/de/guide/documents/anchor-links) für die seitenübergreifende `#anchor`-Behandlung.
@@ -64,7 +64,7 @@ Siehe [Der flache Link-Umschreiber und der zweistufige Ablauf](/de/guide/images-
 
 | Platzhalter | Wert |
 | --- | --- |
-| `${translatedLocale}` | Ziel-Gebietsschema (normalisiert BCP-47) |
+| `${translatedLocale}` | Zielgebietsschema (normalisiertes BCP-47) |
 | `${sourceLocale}` | Quell-Gebietsschema |
 | `${sourceFullPath}` | Absoluter Quell-Dateipfad (POSIX `/`) |
 | `${translatedFullPath}` | Absoluter übersetzter Ausgabepfad |
@@ -79,7 +79,7 @@ Siehe [Der flache Link-Umschreiber und der zweistufige Ablauf](/de/guide/images-
 <a id="per-locale-asset-folder"></a>
 ### Asset-Ordner pro Gebietsschema
 
-Speichern Sie Assets von Anfang an in einem nach Gebietsschema kodierten Unterverzeichnis und tauschen Sie das Segment mit einer generischen Regel aus:
+Speichern Sie Assets von Anfang an in einem gebietsschema-kodierten Unterverzeichnis und tauschen Sie das Segment mit einer generischen Regel aus:
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ Bevorzugen Sie kollokierte relative Pfade (`../assets/name.png`) in der Quell-Ma
 
 Sie benötigen `regexAdjustments` normalerweise **nicht**, wenn:
 
-- Cross-Seiten-Links sind einfache relative Markdown-Pfade und `docsOutput.style = "flat"` (der integrierte Rewriter fügt Lokalisierungssuffixe hinzu)
-- Assets liegen neben den Quelldateien und der flache Rewriter mit Dateitiefe-Präfix löst sie korrekt auf
-- Englisch und jede übersetzte Kopie verwenden die **gleiche** URL (gemeinsame Bilder im Stammverzeichnis der Website, gemeinsam genutzte Assets, VitePress-Webrouten nach Normalisierung)
-- VitePress-Links innerhalb der Website verwenden Webrouten oder `docs/guide/…`-Pfade mit `rewriteVitepressLinks: true`
+- Seitenübergreifende Links sind einfache relative Markdown-Pfade und `docsOutput.style = "flat"` (integrierter Umschreiber fügt Gebietsschema-Suffixe hinzu)
+- Assets befinden sich neben den Quelldateien, und der dateibezogene Tiefenpräfix des Flat-Rewriters löst sie korrekt auf
+- Englisch und jede übersetzte Kopie verwenden die **gleiche** URL (gemeinsame Bilder im Website-Stammverzeichnis, gemeinsam abgelegte Assets, VitePress-Website-Routen nach dem Normalisierer)
+- VitePress-interne Links verwenden Website-Routen oder `docs/guide/…`-Pfade mit `rewriteVitepressLinks: true`
 - Nextra- und Fumadocs-interne Links verwenden gebietsschema-neutrale Routen (`/guide/…`, `/docs/…`) oder Inhaltsstammverzeichnispfade mit `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 
 <a id="full-config-example"></a>

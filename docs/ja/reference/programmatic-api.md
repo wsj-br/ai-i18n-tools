@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # プログラムAPI
 
-すべてのパブリック型およびクラスはパッケージルートからエクスポートされます。例：CLIを使わずにNode.jsでUI翻訳ステップを実行する場合：
+すべての公開型とクラスは、パッケージルートからエクスポートされます。例: CLIなしでNode.jsからtranslate-uiステップを実行する場合:
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `resolveDocumentationOutputPath` | 翻訳済みドキュメントの出力ファイルパスを解決します。 |
 | `Glossary` / `GlossaryMatcher` | 翻訳用語集を読み込んで適用します。これにはオプションの用語 `Context` メモが含まれます。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | キャッシュ無効化のための `glossary.contextFiles` およびフィンガープリントのガイダンスを読み込みます。 |
-| `runTranslateUI` | プログラムによる翻訳UIのエントリポイントです。 |
+| `runTranslateUI` | プログラムによるtranslate-uiのエントリポイント。 |
 | `writeInitConfigFile` | スターター設定 JSON (`template`、`cwd`、必須の `providerKey`、およびオプションの `{ withReadme }`) を作成します。`{ readmeBlockAdded, hasReadmeBlock }` を返します。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P`が使用する組み込みプリセットごとのスターター`translationModels`。 |
 | `PROVIDER_PRESETS` | 組み込みプロバイダープリセットマップ（`baseUrl`、`apiKeyEnv`）。 |

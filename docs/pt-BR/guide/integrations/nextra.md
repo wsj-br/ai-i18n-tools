@@ -48,7 +48,7 @@ Conecte a [internacionalização](https://nextra.site/docs/guide/i18n) do Nextra
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n em um site existente
 
-Um site Nextra 4 somente em inglês precisa de uma pasta de localidade, um parâmetro de rota e uma configuração de i18n do Next.js para que `translate-docs` tenha onde gravar. O [prompt de dicionário](#agent-prompt-dictionary-and-routes) faz isso em uma única passagem. Lista de verificação:
+Um site Nextra 4 somente em inglês precisa de uma pasta de localidade, um parâmetro de rota e a configuração i18n do Next.js antes que `translate-docs` tenha onde escrever. A configuração inicial usa o prompt em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website#run-the-agent-prompt). O [prompt de dicionário](#agent-prompt-dictionary-and-routes) é o acompanhamento detalhado para as mesmas rotas e dicionário. Lista de verificação:
 
 - Mova o MDX para `content/en/` (o inglês é uma pasta de localidade, não a raiz do conteúdo).
 - `i18n.locales` e `defaultLocale` em `next.config`.
@@ -60,7 +60,7 @@ Um site Nextra 4 somente em inglês precisa de uma pasta de localidade, um parâ
 <a id="theme-strings"></a>
 ## Strings do tema
 
-O "chrome" do tema Nextra (`editLink`, placeholder de pesquisa, rodapé e assim por diante) não é extraído do markdown. Crie strings em inglês em um módulo de dicionário TypeScript (por exemplo, `app/_dictionaries/en.ts`) e traduza-o dentro de **`translate-docs`**:
+Os elementos da interface do tema Nextra (`editLink`, espaço reservado para pesquisa, rodapé e assim por diante) não são extraídos do markdown. Crie strings em inglês em um módulo de dicionário TypeScript (por exemplo, `app/_dictionaries/en.ts`) e traduza-o dentro de `translate-docs`:
 
 ```json
 {
@@ -88,7 +88,7 @@ A ferramenta grava `app/_dictionaries/{locale}.ts` (modelo padrão: `{dir}/{loca
 <a id="sidebar-labels-_metats"></a>
 ## Rótulos da barra lateral (`_meta.ts`)
 
-Nextra 3+ usa arquivos TypeScript `_meta.ts` / `_meta.tsx` para estrutura e títulos da barra lateral. Quando `docsOutput.style` é `"nextra"`, **`translate-docs`** coleta automaticamente `_meta.ts`, `_meta.tsx` e `_meta.js` em `docsRoot`, traduz literais de string no mapa meta `export default { … }` e grava arquivos espelhados em `content/{locale}/**`.
+Nextra 3+ usa arquivos TypeScript `_meta.ts` / `_meta.tsx` para a estrutura e títulos da barra lateral. Quando `docsOutput.style` é `"nextra"`, `translate-docs` coleta automaticamente `_meta.ts`, `_meta.tsx` e `_meta.js` em `docsRoot`, traduz literais de string no mapa de metadados `export default { … }` e grava arquivos espelhados em `content/{locale}/**`.
 
 **Padrão recomendado:** mantenha literais em inglês em linha em `content/en/**/_meta.ts` (o mesmo que [swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site)):
 
@@ -297,7 +297,7 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 
 `rewriteNextraLinks` é ativado por padrão quando `style` é `"nextra"`.
 
-| Autor no local de origem | Após o normalizador |
+| Autor na localidade de origem | Após o normalizador |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/pt-BR/guide/getting-started)` |
 | `[Guide](/pt-BR/guide/getting-started.mdx)` | `[Guide](/pt-BR/guide/getting-started)` |
@@ -306,7 +306,7 @@ Habilite o normalizador integrado para que `translate-docs` corrija os links em 
 **Regras de autoria**
 
 - Links de documentos entre páginas: use **rotas de site neutras em relação à localidade** (`/guide/…`) em MDX em inglês, ou caminhos `content/en/…` / `.mdx` relativos e deixe o normalizador reescrevê-los durante `sync`.
-- Arquivos de repositório fora da árvore de conteúdo: use **URLs completas**.
+- Arquivos do repositório fora da árvore de conteúdo: use **URLs completas**.
 - **Não** edite links manualmente em `content/<locale>/` — regenere com `sync` / `translate-docs`.
 
 <a id="optional-locale-proxy"></a>

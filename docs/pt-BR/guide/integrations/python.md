@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Seletor para aplicações Python. A extração, os catálogos e os formatos de chamada estão em [Aplicações Python](/pt-BR/guide/ui-strings/python). O passo a passo para uma aplicação existente de localidade única está em [Adicionar i18n a uma aplicação Python](/pt-BR/guide/add-i18n-to-python), com um [prompt do `i18n.py`](/pt-BR/guide/add-i18n-to-python#run-the-agent-prompt) e um [prompt do Django / gettext](/pt-BR/guide/add-i18n-to-python#agent-prompt-django-gettext).
+Seletor para aplicações Python. Extração, catálogos e formatos de chamada residem em [aplicações Python](/pt-BR/guide/ui-strings/python). O passo a passo para uma aplicação existente de localidade única é [Adicionar i18n a uma aplicação Python](/pt-BR/guide/add-i18n-to-python), com um [prompt de agente](/pt-BR/guide/add-i18n-to-python#run-the-agent-prompt). Django, catálogos Flask-Babel e aplicações que já usam gettext têm seu próprio guia e prompt: [Adicionar i18n a uma aplicação Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide e PyWebView chamam o auxiliar `i18n.py` gerado (Python 3.10 ou mais recente). O Django mantém o gettext do Django. Quatro cópias executáveis são fornecidas no repositório: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` e `examples/python-gettext`. Pyramid, Django, Tkinter, Qt e PyWebView não possuem um diretório de exemplo separado.
 
@@ -29,7 +29,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide e PyWebView chamam o a
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` grava a localidade no estado da sessão e na string de consulta. Dê a cada widget uma `key` fixa. Detalhes: [Locale — Streamlit](/pt-BR/guide/ui-strings/python#streamlit).
+Chame `set_locale` antes de `st.set_page_config` e qualquer outro `t()`. Desenhe o menu na aplicação para que o rótulo possa ser traduzido. `streamlit_language_selector()` escreve a localidade no estado da sessão e na string de consulta quando o widget é desenhado, o que é tarde demais para um título de página traduzido, e seu rótulo permanece em inglês. Receita: [Adicionar um seletor de idioma](/pt-BR/guide/add-i18n-to-python#step-4-add-a-language-switch). Dê a cada widget um `key` fixo. Detalhes: [Localidade — Streamlit](/pt-BR/guide/ui-strings/python#streamlit).
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ O exemplo [python-flask](/pt-BR/examples#python-flask) usa JSON simples. `init -
 <a id="django"></a>
 ### Django
 
-Mantenha `gettext`, `ngettext` e `{% blocktrans %}`. `init -t ui-python-django` corresponde ao diretório `locale/` do Django e ao domínio `django`, e mantém o runtime do Django no lugar. Detalhes: [Locale — Django](/pt-BR/guide/ui-strings/python#django).
+Mantenha `gettext`, `ngettext` e `{% blocktrans %}`. `init -t ui-python-django` corresponde ao diretório `locale/` do Django e ao domínio `django`, e mantém o tempo de execução do Django no lugar. Guia: [Adicionar i18n a uma aplicação Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext). Detalhes: [Localidade — Django](/pt-BR/guide/ui-strings/python#django).
 
 <a id="existing-gettext"></a>
 ### gettext existente
 
-Deixe `_()`, `gettext()` e `ngettext()` no lugar. Aponte `ui.gettext` para a árvore de catálogo atual e execute `extract`, depois `translate-ui`. O exemplo [python-gettext](/pt-BR/examples#python-gettext) é apenas gettext (`flatOutput: false`). `init -t ui-python-gettext` também grava JSON simples. Detalhes: [Locale — Existing gettext](/pt-BR/guide/ui-strings/python#gettext).
+Deixe `_()`, `gettext()` e `ngettext()` no lugar. Aponte `ui.gettext` para a árvore de catálogo atual e execute `extract`, depois `translate-ui`. O exemplo [python-gettext](/pt-BR/examples#python-gettext) é apenas gettext (`flatOutput: false`). `init -t ui-python-gettext` também escreve JSON plano. Guia: [Adicionar i18n a uma aplicação Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext). Detalhes: [Localidade — gettext existente](/pt-BR/guide/ui-strings/python#gettext).
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt e PyWebView

@@ -12,7 +12,7 @@
 | --- | --- |
 | 含有寫死原始碼字串的 JS/TS，尚未使用 `t()` | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) |
 | React / Next.js / Node，原始碼中已有 `t()` | [串接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python 應用程式](/zh-Hant/guide/ui-strings/python)。初始化：`ui-python`、`ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。輔助工具：`i18n.py`。若要將語系加入現有的應用程式，請參閱 [將 i18n 加入 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)。 |
+| Python (`t()`、`_()`、gettext、Jinja、Django) | [Python 應用程式](/zh-Hant/guide/ui-strings/python)。初始化：`ui-python`、`ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。輔助工具：`i18n.py`。若要將地區設定新增至現有應用程式，請參閱[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)，或在應用程式使用 gettext 時參閱[將 i18n 新增至 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext)。 |
 | 純 HTML (標記中沒有 `t()`) | [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html) |
 | Astro 行銷網站 (混合) | [Astro 網站](/zh-Hant/guide/ui-strings/astro-website) |
 | `t()` 規則、插值、複數 | [t() 呼叫與複數](/zh-Hant/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-讀取 `strings.json`，將每個目標語系的批次傳送至作用中 LLM 供應商的模型，並將扁平 JSON 檔案 (`de.json`、`fr.json` 等) 寫入 `ui.flatOutputDir`。模型選取會使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels` (請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。在單一語系內，最多可同時執行 `uiBatchConcurrency` 個批次 (預設為 **2**；請參閱 [設定 — uiBatchConcurrency](/zh-Hant/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然只會平行處理目標語系。
+讀取 `strings.json`，將批次傳送至每個目標地區設定的活動 LLM 提供者上的模型，將平面 JSON 檔案（例如 `de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱[AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。在一個地區設定中，最多同時執行 `uiBatchConcurrency` 個批次（預設為 **2**；請參閱[組態 — uiBatchConcurrency](/zh-Hant/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然只平行處理目標地區設定。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻譯資料庫 (`strings.json`)
 
 對於每個條目，`translate-ui` 會儲存來自作用中提供者的 **模型 ID**，該提供者已成功翻譯選用 `models` 物件中的每個地區設定 (與 `translated` 具有相同的地區設定金鑰)。在翻譯儀表板中編輯的字串，會以該地區設定的 `models` 中的標記值 `user-edited` 標記。`ui.flatOutputDir` 下的每個地區設定平面檔案仍僅包含 **來源字串 → 翻譯**；它們不包含 `models` (因此執行階段套件保持不變)。
 
-> **注意：** 對 UI 字串的儀表板編輯位於 `strings.json` 中，而非 SQLite 文件快取。執行普通的 `sync` 或 `translate-ui`（無特殊旗標）以從目錄重寫平面語系檔案 —— `--force-update` **不會**轉送至 UI 步驟。避免在手動編輯後對 UI 指令使用 `--force`：它會重新翻譯每個項目，並可能覆寫您的 `user-edited` 列。儲存的翻譯未通過語系書寫系統檢查的目錄列（例如 `hi` 的羅馬拼音印地語）將被視為缺失，並在不使用 `--force` 的情況下重新翻譯。
+> **注意：** 儀表板對 UI 字串的編輯儲存在 `strings.json` 中，而非 SQLite 文件快取。執行純粹的 `sync` 或 `translate-ui` (不帶任何特殊旗標) 以從目錄重寫平面語系檔案 — `--force-update` **不會**轉發到 UI 步驟。在手動編輯後，請避免在 UI 命令上使用 `--force`：它會重新翻譯每個條目，並可能覆寫您的 `user-edited` 列。目錄列中，其儲存的翻譯若未能通過語系書寫系統檢查 (例如，針對 `hi` 的羅馬化印地語)，將被視為遺失，並在沒有 `--force` 的情況下重新翻譯。
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## 第 4 步：在您的應用程式中使用輸出
@@ -90,7 +90,7 @@ ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### 每個地區模型覆蓋
 
-有些模型在翻譯特定語言時，表現得比其他模型更好。例如，qwen 和 z-ai 模型在處理亞洲語言方面通常表現良好。新增 `providers.<active>.localeModels` 項目，為每個 BCP-47 語言環境提供優先模型清單。對於該語言環境，系統會先嘗試這些清單，然後才使用 `uiModels` 和 `translationModels`。語言環境標籤的比對不區分大小寫 (`zh-cn` 和 `ZH-CN` 是相等的)。如果沒有相符的項目，工具會使用預設的 `uiModels` 和 `translationModels` 順序。同樣的 `localeModels` 機制也適用於文件、JSON 和 SVG 的翻譯。
+有些模型在翻譯某些語言方面比其他模型更好。例如，qwen 和 z-ai 模型在亞洲語言方面表現良好。新增 `providers.<active>.localeModels` 條目，為每個 BCP-47 地區設定提供優先模型清單。這些清單會先於該地區設定的 `uiModels` 和 `translationModels` 進行嘗試。地區設定標籤不區分大小寫（`zh-cn` 和 `ZH-CN` 是等效的）。如果沒有匹配的條目，該工具將使用預設的 `uiModels` 和 `translationModels` 順序。相同的 `localeModels` 機制適用於文件、JSON 和 SVG 翻譯。
 
 <a id="exporting-to-xliff-20"></a>
 ### 匯出至 XLIFF 2.0

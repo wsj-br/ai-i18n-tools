@@ -8,9 +8,9 @@ Para `docsOutput.style = "flat"` (y a menos que se establezca `rewriteRelativeLi
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Flujo en dos pasos cuando `docsOutput.style = "flat"`
 
-1. **URL de origen** — ruta de la imagen en Markdown traducido (después del reensamblaje del segmento)
+1. **URL de origen** — ruta de imagen en markdown traducido (después del reensamblaje de segmentos)
 2. **Reescritor de enlaces planos** — antepone un prefijo de profundidad (`../`, `../../docs/`, …)
-3. **`regexAdjustments`** — intercambia el segmento de la carpeta de configuración regional (`en-GB` → `${translatedLocale}`)
+3. `regexAdjustments` — intercambia el segmento de la carpeta de configuración regional (`en-GB` → `${translatedLocale}`)
 4. **URL de salida** — ruta final escrita en el archivo traducido
 
 Ejemplo con `outputDir: "translated-docs/"` y el origen `README.md` en la raíz del repositorio:
@@ -25,12 +25,12 @@ Para cualquier estilo que no sea `flat` (incluidos `"nested"`, `"doc-system"` y 
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### Normalizador de enlaces de VitePress (`style: "vitepress"`)
 
-Cuando `docsOutput.rewriteVitepressLinks` es `true` (valor predeterminado cuando `style` es `"vitepress"`), se ejecuta un normalizador independiente después del reensamblaje del segmento (en lugar del reescritor plano). Está dirigido a sitios de VitePress/sistemas de documentación donde el inglés se encuentra en la raíz del contenido y las configuraciones regionales se encuentran en carpetas hermanas (`docs/de/guide/…`).
+Cuando `docsOutput.rewriteVitepressLinks` es `true` (predeterminado cuando `style` es `"vitepress"`), se ejecuta un normalizador independiente después del reensamblaje de segmentos (en lugar del reescritor plano). Se dirige a sitios de VitePress / sistemas de documentación donde el inglés reside en la raíz del contenido y las configuraciones regionales se encuentran en carpetas hermanas (`docs/de/guide/…`).
 
-1. **Href de origen** — enlace en Markdown traducido (después del reensamblaje del segmento)
+1. **href de origen** — enlace en markdown traducido (después del reensamblaje de segmentos)
 2. **Normalizador de enlaces de VitePress** — reescribe las rutas de los documentos a las rutas del sitio (`/guide/…`)
-3. **`regexAdjustments`** — intercambio opcional de la carpeta de configuración regional para capturas de pantalla (`screenshots/en-GB/` → `screenshots/de/`, …)
-4. **Href de salida** — URL final escrita en el archivo traducido
+3. `regexAdjustments` — intercambio opcional de carpeta de configuración regional para capturas de pantalla (`screenshots/en-GB/` → `screenshots/de/`, …)
+4. **href de salida** — URL final escrita en el archivo traducido
 
 Reescrituras típicas:
 
@@ -42,19 +42,19 @@ Reescrituras típicas:
 
 Para los proyectos que sincronizan `README.md` → `docs/index.md`, use URL completas de GitHub en `README.md` para `LICENSE`, `examples/` y otros archivos fuera del árbol de VitePress. Consulte [Integración de VitePress — README como página principal de la documentación](/es/guide/integrations/vitepress#readme-and-the-docs-homepage).
 
-El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `regexAdjustments`. Consulta [Integración de VitePress — Convenciones de enlaces](/es/guide/integrations/vitepress#link-conventions).
+El reescritor plano y el normalizador de VitePress son mutuamente excluyentes por bloque `docs[]`; solo uno se ejecuta antes de `regexAdjustments`. Consulte [Integración de VitePress — Convenciones de enlaces](/es/guide/integrations/vitepress#link-conventions).
 
 Las carpetas de capturas de pantalla por configuración regional siguen utilizando la misma regla `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` cuando es necesario; consulte [Carpeta por configuración regional](/es/guide/images-and-screenshots/per-locale-folder).
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### Normalizador de enlaces de Nextra (`style: "nextra"`)
 
-Cuando `docsOutput.rewriteNextraLinks` es `true` (predeterminado cuando `style` es `"nextra"`), un normalizador separado se ejecuta después del reensamblaje del segmento. Reescribe `content/en/…` y las rutas relativas de `.mdx` a rutas neutrales para la configuración regional (`/guide/…`). Consulta [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
+Cuando `docsOutput.rewriteNextraLinks` es `true` (predeterminado cuando `style` es `"nextra"`), se ejecuta un normalizador independiente después del reensamblaje de segmentos. Reescribe las rutas `content/en/…` y las rutas relativas `.mdx` a rutas neutrales a la configuración regional (`/guide/…`). Consulte [Integración de Nextra — Convenciones de enlaces](/es/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Normalizador de enlaces de Fumadocs (`style: "fumadocs"`)
 
-Cuando `docsOutput.rewriteFumadocsLinks` es `true` (predeterminado cuando `style` es `"fumadocs"`), un normalizador separado se ejecuta después del reensamblaje del segmento. Reescribe `content/docs/…` y las rutas relativas de `.mdx` a rutas neutrales para la configuración regional (`/docs/…`). Consulta [Integración de Fumadocs — Convenciones de enlaces](/es/guide/integrations/fumadocs#link-conventions).
+Cuando `docsOutput.rewriteFumadocsLinks` es `true` (predeterminado cuando `style` es `"fumadocs"`), se ejecuta un normalizador independiente después del reensamblaje de segmentos. Reescribe las rutas `content/docs/…` y las rutas relativas `.mdx` a rutas neutrales a la configuración regional (`/docs/…`). Consulte [Integración de Fumadocs — Convenciones de enlaces](/es/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Prefijo de profundidad por archivo con `flatPreserveRelativeDir`

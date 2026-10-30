@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Ordner pro Gebietsschema (URL-Umschreibung)
 
-Wird für README/USER-GUIDE mit `docsOutput.style = "flat"` und für Doc-System-Sites (`docsOutput.style = "doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"`) sowie für `"vitepress"` / andere Doc-System-Voreinstellungen verwendet, die Screenshots von einer gemeinsam genutzten statischen URL-Struktur bereitstellen. Details zur Link-Umschreibung für VitePress: [Link rewriting — VitePress](/de/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+Verwenden für README/BENUTZERHANDBUCH mit `docsOutput.style = "flat"`, und für Dokumentations-Websites (`docsOutput.style = "doc-system"` oder Aliase `"docusaurus"` / `"astro-starlight"`) und für `"vitepress"` / andere Voreinstellungen für Dokumentationssysteme, die Screenshots von einem gemeinsamen statischen URL-Baum bereitstellen. Details zur Link-Umschreibung für VitePress: [Link-Umschreibung — VitePress](/de/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Verzeichnisstruktur

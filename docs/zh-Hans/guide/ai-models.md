@@ -49,13 +49,13 @@ ai-i18n-tools dashboard
 
 | 信号 | 贡献内容 | 来源 |
 | --- | --- | --- |
-| ChrF | 您项目所用语言的翻译质量 | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena 分数 | 来自一对一比较的总体偏好 | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | 您项目语言的翻译质量 | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | 来自一对一比较的总体偏好 | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | 每 100 万个令牌的美元价格 | 输入和输出价格 | 提供商发布费率时的产品目录，否则为 [models.dev](https://models.dev/) (MIT) |
 
 ChrF 使用 languagebench 为您的 `sourceLocale` 和 `targetLocales` 提供的翻译分数。区域设置会映射到一个 languagebench 语言代码：主要子标签，以及诸如 `pt-BR` 到 `pt` 和 `zh-Hant` 到 `zh` 的别名。一个能很好地翻译这些语言的模型，其排名会高于一个仅在总体上得分较高的模型。嵌入、图像、语音和其他非聊天模型会被跳过，已过期的 ID 也是如此。
 
-“质量”是默认方案，其对 ChrF 和 Arena Score 的权重高于价格。“价格”方案则反之，但会保留上述的质量下限。可选权重请参阅 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion-optional)。
+默认配置文件“质量”优先考虑 ChrF 和 Arena Score，而非价格。“价格”则反转了这种侧重，并保持了上述的质量底线。可选权重为 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion-optional)。
 
 `suggest-models --refresh` 会重新下载数据集。之后请重新加载 **模型** 选项卡。
 
@@ -69,7 +69,7 @@ ChrF 使用 languagebench 为您的 `sourceLocale` 和 `targetLocales` 提供的
 
 `translationModels` 是一个有序列表。CLI 会尝试第一个模型。如果请求失败、响应无法解析或文本的书写系统错误，它会尝试该批次的下一个 ID。
 
-单个 ID 是一个单点故障。模型可能会超时、返回此工具拒绝的文本，或将一种语言翻译得很好而另一种翻译得很差。一个常见的例子是罗马化的印地语，其中 `hi` 期望使用天城文。对于使用原生文字的区域设置，罗马化的输出会被拒绝。应保持罗马化的区域设置需要一个显式的 `-Latn` 子标签，例如 `hi-Latn`。
+一个 ID 是一个单点故障。模型可能会超时、返回此工具拒绝的文本，或者一种语言翻译得好而另一种翻译得差。一个常见情况是罗马化印地语，其中 `hi` 期望天城文。原生脚本区域设置会拒绝罗马化输出。应保持罗马化的区域设置需要一个显式的 `-Latn` 子标签，例如 `hi-Latn`。
 
 这就是为什么候选列表中包含多个 ID，并且最强的排在最前面。列表中的顺序就是翻译尝试的顺序。
 

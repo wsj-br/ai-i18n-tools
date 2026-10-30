@@ -3,14 +3,14 @@
 
 तब उपयोग करें जब एक ही छवि सभी लोकेशंस में साझा की जाती है (प्रति-लोकेल भिन्नता नहीं)।
 
-- **`docsOutput.style = "flat"`** — फ़्लैट लिंक रीराइटर प्रति आउटपुट फ़ाइल के लिए गहराई उपसर्ग की गणना करता है, इसलिए स्रोत फ़ाइल के बगल में एक सापेक्ष संपत्ति (जैसे `docs/figure.png` को `figure.png` के रूप में `docs/page.md` से संदर्भित किया गया है) हर अनुवादित आउटपुट में सही ढंग से हल हो जाती है — किसी `postProcessing.regexAdjustments` नियम की आवश्यकता नहीं है। जब स्रोत फ़ाइलें उपनिर्देशिकाओं में रहती हैं, तो `flatPreserveRelativeDir: true` सक्षम करें ताकि आउटपुट पथ स्रोत ट्री को संरक्षित करें (देखें [प्रति-फ़ाइल गहराई उपसर्ग](/hi/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir))।
-- **`docsOutput.style = "vitepress"`** (और लिंक नॉर्मलाइज़र के साथ अन्य डॉक-सिस्टम प्रीसेट) — साइट-रूट निरपेक्ष पथ जैसे `/translation-dashboard.png` अपरिवर्तित रहते हैं जब URL हर लोकेल में समान होता है — किसी `regexAdjustments` नियम की आवश्यकता नहीं होती है।
+- `docsOutput.style = "flat"` — फ्लैट लिंक रीराइटर प्रत्येक आउटपुट फ़ाइल के लिए डेप्थ प्रीफ़िक्स की गणना करता है, ताकि स्रोत फ़ाइल के बगल में एक सापेक्ष एसेट (जैसे `docs/page.md` से `figure.png` के रूप में संदर्भित `docs/figure.png`) प्रत्येक अनुवादित आउटपुट में सही ढंग से हल हो जाए — किसी `postProcessing.regexAdjustments` नियम की आवश्यकता नहीं है। जब स्रोत फ़ाइलें सबडायरेक्टरी में हों, तो `flatPreserveRelativeDir: true` सक्षम करें ताकि आउटपुट पाथ स्रोत ट्री को बनाए रखें ([प्रति-फ़ाइल डेप्थ प्रीफ़िक्स](/hi/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir) देखें)।
+- `docsOutput.style = "vitepress"` (और लिंक नॉर्मलाइज़र वाले अन्य डॉक-सिस्टम प्रीसेट) — साइट-रूट एब्सोल्यूट पाथ जैसे `/translation-dashboard.png` अपरिवर्तित रहते हैं जब URL प्रत्येक लोकले में समान हो — किसी `regexAdjustments` नियम की आवश्यकता नहीं है।
 
 **फ़्लैट उदाहरण:** एक प्रोजेक्ट `docs/guide/quick-start.md` को `translated-docs/docs/guide/quick-start.<locale>.md` में अनुवाद करता है। यह `flatPreserveRelativeDir: true` मानता है ताकि `docs/guide/quick-start.md` `translated-docs/docs/guide/quick-start.<locale>.md` (`translated-docs/quick-start.<locale>.md` नहीं) में आउटपुट हो। एक सहोदर छवि `docs/translation-dashboard.png` को `quick-start.md` से `../translation-dashboard.png` के रूप में संदर्भित किया गया है। रीराइटर आउटपुट फ़ाइल की निर्देशिका से स्रोत निर्देशिका (`../../docs/`) तक प्रति-फ़ाइल उपसर्ग की गणना करता है, जिससे `../../docs/translation-dashboard.png` उत्पन्न होता है। `translated-docs/docs/guide/` से, वह `docs/translation-dashboard.png` पर सही ढंग से हल हो जाता है।
 
-एक `postProcessing` नियम की अभी भी आवश्यकता है जब:
-- संपत्ति को **`docsOutput.style = "flat"`** में एक निरपेक्ष URL के माध्यम से संदर्भित किया जाता है (जैसे `/img/figure.png`) — फ़्लैट रीराइटर केवल सापेक्ष पथों को संभालता है
-- आप अन्य कारणों से संपत्ति URL को बदलना चाहते हैं (जैसे CDN पर स्विच करना)
+एक `postProcessing` नियम की अभी भी आवश्यकता होती है जब:
+- एसेट को `docsOutput.style = "flat"` में एक एब्सोल्यूट URL के माध्यम से संदर्भित किया जाता है (जैसे `/img/figure.png`) — फ्लैट रीराइटर केवल सापेक्ष पाथ को संभालता है
+- आप अन्य कारणों से एसेट URL बदलना चाहते हैं (जैसे CDN पर स्विच करना)
 
 <a id="implementation-example"></a>
 ### कार्यान्वयन उदाहरण

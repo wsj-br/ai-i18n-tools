@@ -15,7 +15,7 @@
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### `docsOutput.style = "flat"`를 사용한 Markdown (README, USER-GUIDE)
 
-첫날부터 로케일 코드가 포함된 하위 디렉토리에 스크린샷을 저장하세요:
+스크린샷을 처음부터 로케일 코드가 지정된 하위 디렉터리 아래에 저장:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 플랫 링크 리라이터는 `doc-system`에 대해 **작동하지 않습니다** (`"flat"`와는 다르게). `postProcessing.regexAdjustments`는 소스 마크다운에서 원래 URL을 봅니다 — 일반적으로 `/img/screenshots/en-GB/foo.png`와 같은 절대 경로 또는 사이트 루트 경로입니다.
 
-**로캘별 폴더** 레이아웃은 스크린샷이 공유 정적 URL 트리에 있을 때 적용됩니다. 처음부터 로캘 코드가 있는 폴더와 하나의 일반 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용하세요([구성 — 문서 시스템](/ko/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) 참조).
+**로케일별 폴더** 레이아웃은 스크린샷이 공유 정적 URL 트리에 있는 경우 적용됩니다. 처음부터 로케일 코드가 지정된 폴더를 사용하고, 하나의 일반적인 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` 규칙을 사용하세요 ([구성 — 문서 시스템](/ko/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) 참조).
 
 **동일 위치 스크린샷**은 각 로케일의 번역된 문서가 마크다운 옆에 자산을 저장할 때 적용됩니다(URL 재작성 없음). 스크린샷 스크립트는 `{outputDir}`, `{locale}`, `{localeSubpath}`에서 파생된 경로에 PNG를 작성해야 합니다. 아래 Docusaurus 사전 설정은 참조 레이아웃입니다.
 
@@ -78,7 +78,7 @@ images/screenshots/en-GB/settings.png
 
 `docsOutput.style = "doc-system"`에 `localeSubpath: ""`을 설정한 것과 동일하며, 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 위치합니다.
 
-처음부터 로케일 코드가 포함된 경로 아래에 스크린샷을 저장하세요:
+스크린샷을 처음부터 로케일 코드가 지정된 경로 아래에 저장:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

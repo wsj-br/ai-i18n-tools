@@ -8,9 +8,9 @@
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"` 時的兩步驟流程
 
-1. **來源 URL** — 翻譯後 markdown 中的圖片路徑（在段落重組後）
-2. **扁平連結重寫器** — 前置深度前綴（`../`、`../../docs/`、…）
-3. **`regexAdjustments`** — 替換語系資料夾段落（`en-GB` → `${translatedLocale}`）
+1. **來源 URL** — 翻譯後的 Markdown 中的圖片路徑（區段重新組裝後）
+2. **平面連結重寫器** — 在前面加上深度前綴 (`../`, `../../docs/`, …)
+3. `regexAdjustments` — 交換語系資料夾區段 (`en-GB` → `${translatedLocale}`)
 4. **輸出 URL** — 寫入翻譯檔案的最終路徑
 
 在儲存庫根目錄中，使用 `outputDir: "translated-docs/"` 和來源 `README.md` 的範例：
@@ -25,11 +25,11 @@
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress 連結正規化器 (`style: "vitepress"`)
 
-當 `docsOutput.rewriteVitepressLinks` 為 `true` 時（當 `style` 為 `"vitepress"` 時的預設值），在區段重新組裝後會執行一個單獨的正規化器（而不是平面重寫器）。它針對 VitePress / 文件系統網站，其中英文內容位於內容根目錄，而地區設定則位於同級資料夾中（`docs/de/guide/…`）。
+當 `docsOutput.rewriteVitepressLinks` 為 `true` 時（當 `style` 為 `"vitepress"` 時的預設值），一個獨立的正規化器會在區段重新組裝後執行（而不是平面重寫器）。它針對 VitePress / 文件系統網站，其中英文內容位於內容根目錄，而其他語系則位於同級資料夾中 (`docs/de/guide/…`)。
 
-1. **來源 href** — 翻譯後 markdown 中的連結（在段落重組後）
-2. **VitePress 連結正規化器** — 將文件路徑重寫為網站路由（`/guide/…`）
-3. **`regexAdjustments`** — 截圖的可選語系資料夾替換（`screenshots/en-GB/` → `screenshots/de/`、…）
+1. **來源 href** — 翻譯後的 Markdown 中的連結（區段重新組裝後）
+2. **VitePress 連結正規化器** — 將文件路徑重寫為網站路由 (`/guide/…`)
+3. `regexAdjustments` — 螢幕截圖的選用語系資料夾交換 (`screenshots/en-GB/` → `screenshots/de/`, …)
 4. **輸出 href** — 寫入翻譯檔案的最終 URL
 
 典型的重寫：
@@ -42,19 +42,19 @@
 
 對於同步 `README.md` → `docs/index.md` 的專案，請在 `README.md` 中為 `LICENSE`、`examples/` 以及 VitePress 目錄樹外的其他檔案使用完整的 GitHub URL。請參閱 [VitePress 整合 — 以 README 作為文件首頁](/zh-Hant/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 
-扁平化重寫器與 VitePress 正規化工具在每個 `docs[]` 區塊中互斥 — 在 `regexAdjustments` 之前僅會執行其中一個。請參閱 [VitePress 整合 — 連結慣例](/zh-Hant/guide/integrations/vitepress#link-conventions)。
+平面重寫器和 VitePress 正規化器在每個 `docs[]` 區塊中是互斥的 — 只有一個會在 `regexAdjustments` 之前執行。請參閱 [VitePress 整合 — 連結慣例](/zh-Hant/guide/integrations/vitepress#link-conventions)。
 
 各語系的截圖資料夾在需要時仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 規則；請參閱[各語系資料夾](/zh-Hant/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra 連結正規化器 (`style: "nextra"`)
 
-當 `docsOutput.rewriteNextraLinks` 為 `true`（預設為 `style` 是 `"nextra"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/en/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
+當 `docsOutput.rewriteNextraLinks` 為 `true` 時（當 `style` 為 `"nextra"` 時的預設值），一個獨立的正規化器會在區段重新組裝後執行。它會將 `content/en/…` 和相對的 `.mdx` 路徑重寫為語系中立的路由 (`/guide/…`)。請參閱 [Nextra 整合 — 連結慣例](/zh-Hant/guide/integrations/nextra#link-conventions)。
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs 連結正規化器 (`style: "fumadocs"`)
 
-當 `docsOutput.rewriteFumadocsLinks` 為 `true`（預設為 `style` 是 `"fumadocs"` 時），在區段重組後會執行一個獨立的正規化工具。它會將 `content/docs/…` 與相對 `.mdx` 路徑重寫為與語系無關的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/zh-Hant/guide/integrations/fumadocs#link-conventions)。
+當 `docsOutput.rewriteFumadocsLinks` 為 `true` 時（當 `style` 為 `"fumadocs"` 時的預設值），一個獨立的正規化器會在區段重新組裝後執行。它會將 `content/docs/…` 和相對的 `.mdx` 路徑重寫為語系中立的路由 (`/docs/…`)。請參閱 [Fumadocs 整合 — 連結慣例](/zh-Hant/guide/integrations/fumadocs#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 針對檔案的深度前綴（使用 `flatPreserveRelativeDir`）

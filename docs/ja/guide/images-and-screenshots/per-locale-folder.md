@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # ロケールごとのフォルダー (URL書き換え)
 
-`docsOutput.style = "flat"` を使用する README/USER-GUIDE、および共有の静的 URL ツリーからスクリーンショットを提供するドキュメントシステムサイト（`docsOutput.style = "doc-system"` またはエイリアス `"docusaurus"` / `"astro-starlight"`）、ならびに `"vitepress"` / その他のドキュメントシステムプリセット向けに使用します。VitePress のリンク書き換えの詳細については、[Link rewriting — VitePress](/ja/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress) を参照してください。
+`docsOutput.style = "flat"`を使用するREADME/ユーザーガイド、ドキュメントシステムサイト (`docsOutput.style = "doc-system"` またはエイリアス `"docusaurus"` / `"astro-starlight"`)、および共有の静的URLツリーからスクリーンショットを提供する`"vitepress"` / その他のドキュメントシステムプリセットに利用します。VitePressのリンク書き換えの詳細: [リンク書き換え — VitePress](/ja/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress)。
 
 <a id="directory-layout"></a>
 ### ディレクトリ構成

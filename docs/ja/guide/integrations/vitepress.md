@@ -48,7 +48,7 @@ VitePressの[国際化](https://vitepress.dev/guide/i18n)を設定します。�
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
-英語のみのVitePress設定では、翻訳されたページが表示される前にこれらの要素が必要です。[エージェントプロンプト](#wire-configmts-to-generated-theme-json-one-off)では、テーマカタログに関する部分を扱います。
+翻訳されたページが表示される前に、英語のみのVitePress設定にはこれらの要素が必要です。初回設定では、[ウェブサイトまたはドキュメントサイトにi18nを追加](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。[テーマカタログプロンプト](#wire-configmts-to-generated-theme-json-one-off)は、最初の`sync`の後、ナビゲーション文字列がまだ設定ファイルにインラインで記述されている場合の次のステップです。
 
 - 英語用の`locales.root`（`label`、`lang`、`themeConfig`）。
 - ターゲットロケールごとに1つの`locales[code]`エントリ：`label`、`lang`、`link: '/${code}/'`、およびロケールごとの`title` / `description`。
@@ -58,7 +58,7 @@ VitePressの[国際化](https://vitepress.dev/guide/i18n)を設定します。�
 <a id="theme-strings"></a>
 ## テーマ文字列
 
-VitePressのナビゲーション、サイドバー、フッター、検索プレースホルダー、およびその他の`themeConfig`ラベルは、markdownからは抽出されません。**`docsOutput.vitepressThemeCatalog`** を設定して、**`translate-docs`** がソースロケールのカタログを`.vitepress/config.mts`からブートストラップし（文字列がインラインの場合）、ロケールのテーマJSONファイルを翻訳するようにします。
+VitePressのナビゲーション、サイドバー、フッター、検索プレースホルダー、およびその他の`themeConfig`ラベルは、Markdownから抽出されません。`translate-docs`が`.vitepress/config.mts`から（文字列がインラインの場合に）ソースロケールカタログをブートストラップし、ロケールテーマのJSONファイルを翻訳するように`docsOutput.vitepressThemeCatalog`を設定します。
 
 ```json
 {
@@ -82,8 +82,8 @@ VitePressのナビゲーション、サイドバー、フッター、検索プ�
 }
 ```
 
-- **`catalogPath`** — 英語のネストされたJSON。`config.mts`からのブートストラップは、それらの英語の文字列が設定ファイル内にまだインラインで記述されている間のみ適用されます。`themeConfigFor`がカタログを読み取った後、`mergeThemeCatalogs`は既存のファイルを保持し、`theme.en.json`が信頼できる情報源（source of truth）となります。文言が変更された場合は、そのファイルを編集します（または、1回の`sync`のために英語を`config.mts`に戻します）。キーの名前を変更するとセグメントハッシュ（`path`、NULバイト、その後に値）が変更されるため、次回の`sync`では、その文字列がターゲットロケールごとに1回再翻訳されます。
-- **`outputPathTemplate`**（オプション） — ロケールごとの出力。デフォルト：`catalogPath`と同じディレクトリに`theme.{locale}.json`という名前で出力されます。
+- `catalogPath` — 英語のネストされたJSON。`config.mts`からのブートストラップは、これらの英語文字列がまだ設定ファイルにインラインで記述されている場合にのみ適用されます。`themeConfigFor`がカタログを読み取った後、`mergeThemeCatalogs`は既存のファイルを保持し、`theme.en.json`が信頼できる情報源となります。文言が変更された場合はそのファイルを編集します（または、1つの`sync`のために英語を`config.mts`に戻します）。キーの名前を変更するとセグメントハッシュ（`path`、NULLバイト、その後に値）が変更されるため、次回の`sync`は、その文字列をターゲットロケールごとに1回再翻訳します。
+- `outputPathTemplate`（オプション） — ロケールごとの出力。デフォルト：`catalogPath`と同じディレクトリに`theme.{locale}.json`。
 
 `init -t ui-vitepress` はまた、それらのファイルがまだ存在しない場合、スターターの `docs/.vitepress/config.mts` と `docs/.vitepress/i18n/theme.en.json` をスキャフォールディングします。設定は `loadTheme()` 経由でカタログを読み込み、`themeConfigFor()` で標準的な VitePress の i18n ラベル（`langMenuLabel` を含む）を接続します。
 
@@ -219,13 +219,13 @@ inline on purpose.
 
 下流のプロジェクトでは、`README.md` をビルドスクリプトまたは手動同期で VitePress サイトの `docs/index.md` としてコピーすることがあります。このパターンは GitHub とドキュメントサイトで1つのファイルを共有しますが、リンクのルールが異なります:
 
-| リンクタイプ | GitHub で機能 | VitePress で機能 |
+| リンクの種類 | GitHubで動作 | VitePressで動作 |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | はい | いいえ — サイトルートを使用するか、同期中にノーマライザーに書き換えさせる |
+| `docs/guide/foo.md` | はい | いいえ — サイトルートを使用するか、同期中にノーマライザーに書き換えさせます |
 | `./LICENSE`, `examples/demo/` | はい（リポジトリ相対） | いいえ — **完全なURL** を使用 |
 | `/guide/foo` | いいえ | はい |
 
-**同期された README → index の推奨事項:** `README.md` では、VitePress コンテンツツリー外のもの (`LICENSE`, `examples/`, 設定ファイル、エージェントコンテキストファイル) および `translated-docs/` 配下の翻訳された README コピーには **完全なURL** を使用してください。サイト内ドキュメントリンクには `docs/guide/…` パス（または `docs/` 配下の英語ドキュメントのサイトルート）を使用してください。同期スクリプトまたは `rewriteVitepressLinks` ノーマライザーがそれらを `/guide/…` ルートに変換できます。
+**同期されたREADME → indexに関する推奨事項:** `README.md`では、VitePressコンテンツツリー外のあらゆるもの（`LICENSE`、`examples/`、設定ファイル、エージェントコンテキストファイル）および`translated-docs/`配下の翻訳されたREADMEコピーには、**完全なURL**を使用してください。サイト内ドキュメントリンクには`docs/guide/…`パス（または`docs/`配下の英語ドキュメントにおけるサイトルート）を使用してください。同期スクリプトまたは`rewriteVitepressLinks`ノーマライザーがそれらを`/guide/…`ルートに変換できます。
 
 **このリポジトリ**は`README.md`と`docs/index.md`を**独立したファイル**として保持します。READMEは簡潔なGitHub/npmランディングページであり、`docs/index.md`は`/guide/`および`/reference/`へリンクするドキュメントサイトのエントリポイントです。詳細なガイドは`docs/`以下にあります。READMEに長いリファレンス資料を重複させないでください。共通の事実が変更された場合は、それぞれの対象読者に合わせて更新してください。
 
@@ -242,7 +242,7 @@ inline on purpose.
 
 VitePressはコンテンツルートから英語ページを提供し、ロケールコピーは`docs/<locale>/…`から提供しますが、**ページ内のリンクはサイトルートを使用する必要があります** (`/guide/quick-start`, `/reference/configuration`) — `docs/guide/quick-start.md`や`../guide/quick-start.md`のようなリポジトリ相対パスは使用しません。これらのREADMEスタイルのパスはGitHubでは機能しますが、VitePress内では壊れます（開発環境およびGitHub Pagesで404になります）。
 
-組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳ファイルのリンクを自動的に修正します:
+組み込みのノーマライザーを有効にして、`translate-docs`がすべての翻訳済みファイル内のリンクを自動的に修正するようにします：
 
 ```json
 "docsOutput": {
@@ -254,9 +254,9 @@ VitePressはコンテンツルートから英語ページを提供し、ロケ�
 
 `style`が`"vitepress"`の場合、`rewriteVitepressLinks`はデフォルトで有効になります。
 
-| ソースロケールでのオーサリング | ノーマライザー適用後（ソースロケールのルート出力） | ノーマライザー適用後（翻訳された`docs/<locale>/`の出力） |
+| ソースロケールでの作成者 | ノーマライザー後（ソースロケールルート出力） | ノーマライザー後（翻訳された`docs/<locale>/`出力） |
 |--------------------------|----------------------------------------|------------------------------------------------------|
-| `[JSON](/ja/guide/json)` | `[JSON](/ja/guide/json)` | `[JSON](/pt-BR/guide/json)`（ロケールのプレフィックスはフォルダーと一致） |
+| `[JSON](/ja/guide/json)` | `[JSON](/ja/guide/json)` | `[JSON](/pt-BR/guide/json)`（ロケールプレフィックスがフォルダーと一致） |
 | 本文または`hero.actions[].link`内の`[Quick start](/ja/guide/quick-start)` | 変更なし（`/guide/quick-start`） | `/pt-BR/guide/quick-start` |
 | ロケールインデックス上の`[Home](./README.md)` | `/` | `/pt-BR/` |
 | `hero.image.src: /ai-i18n-tools_logo.svg` | 変更なし | 変更なし (共有 `docs/public/` アセット) |
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-**`link`** とともに **`activeMatch`** にプレフィックスを付けることで、ロケールルート上でナビゲーションのハイライトが機能するようにします（`/guide/`ではなく`/pt-BR/guide/`）。外部URLおよび共有の公開アセットはそのまま維持されます。
+`activeMatch`を`link`と並行してプレフィックスとして追加し、ロケールルート（`/guide/`ではなく`/pt-BR/guide/`）でナビゲーションのハイライトが機能するようにします。外部URLと共有パブリックアセットは変更されません。
 
 VitePressプロジェクトの**devDependency**として`ai-i18n-tools`を追加し（`examples/vitepress-docs/package.json`を参照）、`config.mts`が`prefixVitepressThemeConfigLinks`をインポートできるようにします。メインのai-i18n-toolsドキュメントサイトは、モノレポのチェックアウトをドッグフーディングしているため、`src/processors/…`から直接インポートします。スタンドアロンのコピー（degit）ではnpmパッケージを使用する必要があります。
 

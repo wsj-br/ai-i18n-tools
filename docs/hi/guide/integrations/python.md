@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-पायथन एप्लिकेशन के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन एप्लिकेशन](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), जिसमें एक [`i18n.py` प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) और एक [Django / gettext प्रॉम्प्ट](/hi/guide/add-i18n-to-python#agent-prompt-django-gettext) शामिल है।
+पायथन अनुप्रयोगों के लिए चयनकर्ता। एक्सट्रैक्शन, कैटलॉग और कॉल शेप [पायथन अनुप्रयोगों](/hi/guide/ui-strings/python) में रहते हैं। मौजूदा एकल-स्थानिक ऐप के लिए चरण-दर-चरण प्रक्रिया है [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), एक [एजेंट प्रॉम्प्ट](/hi/guide/add-i18n-to-python#run-the-agent-prompt) के साथ। Django, Flask-Babel कैटलॉग और वे ऐप जो पहले से gettext का उपयोग करते हैं, उनके पास अपनी स्वयं की वॉकथ्रू और प्रॉम्प्ट है: [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)।
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView जनरेट किए गए `i18n.py` हेल्पर (Python 3.10 या नया) को कॉल करते हैं। Django, Django के gettext को बनाए रखता है। रिपॉजिटरी में चार रन करने योग्य प्रतियां शामिल हैं: `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi`, और `examples/python-gettext`। Pyramid, Django, Tkinter, Qt, और PyWebView के लिए कोई अलग उदाहरण निर्देशिका नहीं है।
 
@@ -29,7 +29,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView ज�
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` लोकेल को सेशन स्टेट और क्वेरी स्ट्रिंग में लिखता है। प्रत्येक विजेट को एक निश्चित `key` दें। विवरण: [Locale — Streamlit](/hi/guide/ui-strings/python#streamlit)।
+`st.set_page_config` और किसी भी अन्य `t()` से पहले `set_locale` को कॉल करें। ऐप में मेनू बनाएं ताकि लेबल का अनुवाद किया जा सके। जब विजेट खींचा जाता है तो `streamlit_language_selector()` सत्र स्थिति और क्वेरी स्ट्रिंग में स्थान लिखता है, जो अनुवादित पृष्ठ शीर्षक के लिए बहुत देर हो चुकी है, और इसका लेबल अंग्रेजी में रहता है। रेसिपी: [भाषा स्विच जोड़ें](/hi/guide/add-i18n-to-python#step-4-add-a-language-switch)। हर विजेट को एक निश्चित `key` दें। विवरण: [स्थानिक — Streamlit](/hi/guide/ui-strings/python#streamlit)।
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide, और PyWebView ज�
 <a id="django"></a>
 ### Django
 
-`gettext`, `ngettext`, और `{% blocktrans %}` को बनाए रखें। `init -t ui-python-django`, Django की `locale/` डायरेक्टरी और `django` डोमेन से मेल खाता है, और Django के रनटाइम को यथावत छोड़ देता है। विवरण: [Locale — Django](/hi/guide/ui-strings/python#django)।
+`gettext`, `ngettext` और `{% blocktrans %}` को रखें। `init -t ui-python-django` Django की `locale/` डायरेक्टरी और `django` डोमेन से मेल खाता है, और Django के रनटाइम को यथावत रखता है। वॉकथ्रू: [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)। विवरण: [स्थानिक — Django](/hi/guide/ui-strings/python#django)।
 
 <a id="existing-gettext"></a>
 ### मौजूदा gettext
 
-`_()`, `gettext()`, और `ngettext()` को यथावत रहने दें। `ui.gettext` को वर्तमान कैटलॉग ट्री पर इंगित करें और `extract` चलाएं, फिर `translate-ui` चलाएं। [python-gettext](/hi/examples#python-gettext) उदाहरण केवल gettext (`flatOutput: false`) है। `init -t ui-python-gettext` भी फ्लैट JSON लिखता है। विवरण: [Locale — Existing gettext](/hi/guide/ui-strings/python#gettext)।
+`_()`, `gettext()` और `ngettext()` को यथावत रहने दें। `ui.gettext` को वर्तमान कैटलॉग ट्री पर इंगित करें और `extract` चलाएं, फिर `translate-ui`। [python-gettext](/hi/examples#python-gettext) उदाहरण केवल gettext है (`flatOutput: false`)। `init -t ui-python-gettext` फ्लैट JSON भी लिखता है। वॉकथ्रू: [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)। विवरण: [स्थानिक — मौजूदा gettext](/hi/guide/ui-strings/python#gettext)।
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt, और PyWebView

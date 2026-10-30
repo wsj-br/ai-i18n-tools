@@ -34,14 +34,14 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 當您不在 Docusaurus 上，或者您需要 HTML 錨點而不是 `{#…}` / `{/* #… */}` 後綴時：
 
-1. 在 `translate-docs` 之前，對您的來源 `.md` / `.mdx` 執行 `ai-i18n-tools write-heading-ids`（與平常相同的 `docs[]` / `contentPaths`）。它會在每個標題前的那一列插入明確的 HTML 錨點，讓每個翻譯副本共用 `id` 值，並將這些相同的英文 id 複製到現有的翻譯檔案中。當區段計數相符時，也會更新相符的快取區段，以便後續的 `sync --force-update` 保留修復後的 id。重新命名標題後請重新執行，以便重新整理過時的錨點 id 來符合目前的標題。
-2. 將您的 markdown **錨點連結**指向這些穩定的 id，例如 `[label](other.md#section-id)`，其中 `section-id` 符合工具寫入的錨點 — 而不是僅憑英文單字猜測。
+1. 執行 `ai-i18n-tools write-heading-ids` 於您的來源 `.md` / `.mdx`，在 `translate-docs` 之前（與往常一樣的 `docs[]` / `contentPaths`）。它會在每個標題前一行插入明確的 HTML 錨點，以便每個翻譯副本都能共享 `id` 值，並且它會將這些相同的英文 ID 複製到現有的翻譯檔案中。當區段計數一致時，相符的快取區段也會更新，因此後續的 `sync --force-update` 會保留修復後的 ID。在重新命名標題後重新執行它，以便過時的錨點 ID 能夠重新整理以符合目前的標題。重新命名會留下一個單一錨點：堆疊在該標題上方的額外 `<a id>` 行會被移除，並且儲存庫中的 Markdown 連結，如果它們指向已移除的 ID，將會被重新指向。不直接位於標題上方的 `<a id>` 會保留在原位。
+2. 將您的 Markdown **錨點連結** 指向那些穩定的 ID，例如 `[label](other.md#section-id)`，其中 `section-id` 與工具寫入的錨點相符，而不是僅憑英文單字猜測。
 
 <a id="example"></a>
 ## 範例
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `` / `` 後綴
+### Docusaurus `{#…}` / `{/* #… */}` 後綴
 
 `docs/overview.md`:
 

@@ -12,7 +12,7 @@ Este pipeline atende projetos JS/TS (React, componentes cliente e servidor do Ne
 | --- | --- |
 | JS/TS com strings de origem codificadas diretamente, ainda sem `t()` | [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` já no código-fonte | [Conectar o i18next](/pt-BR/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Aplicações Python](/pt-BR/guide/ui-strings/python). Inicialização: `ui-python`, `ui-python-gettext`, `ui-python-flask` ou `ui-python-django`. Auxiliar: `i18n.py`. Para adicionar locales a uma aplicação existente, consulte [Adicionar i18n a uma aplicação Python](/pt-BR/guide/add-i18n-to-python). |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Aplicações Python](/pt-BR/guide/ui-strings/python). Inicialização: `ui-python`, `ui-python-gettext`, `ui-python-flask`, ou `ui-python-django`. Auxiliar: `i18n.py`. Para adicionar localidades a um aplicativo existente, consulte [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), ou [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext) quando o aplicativo usa gettext. |
 | HTML puro (sem `t()` na marcação) | [Aplicativos HTML puros](/pt-BR/guide/ui-strings/plain-html) |
 | Site de marketing Astro (híbrido) | [Site Astro](/pt-BR/guide/ui-strings/astro-website) |
 | Regras de `t()`, interpolação, plurais | [Chamadas t() e plurais](/pt-BR/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ O scanner é configurável: adicione nomes de funções personalizadas via `ui.u
 ai-i18n-tools translate-ui
 ```
 
-Lê `strings.json`, envia lotes para os modelos no provedor de LLM ativo para cada localidade de destino e grava arquivos JSON simples (`de.json`, `fr.json`, etc.) em `ui.flatOutputDir`. A seleção de modelo usa a cadeia da IU: `localeModels(locale)` → `uiModels` → `translationModels` (consulte [Modelos de IA](/pt-BR/guide/ai-models#model-fallback-chain)). Em uma localidade, até `uiBatchConcurrency` lotes são executados simultaneamente (padrão: **2**; consulte [Configuração — uiBatchConcurrency](/pt-BR/reference/configuration#uibatchconcurrency-optional)). `-j` ainda paraleliza apenas as localidades de destino.
+Lê `strings.json`, envia lotes para os modelos no provedor LLM ativo para cada localidade de destino, escreve arquivos JSON planos (`de.json`, `fr.json`, etc.) em `ui.flatOutputDir`. A seleção do modelo usa a cadeia da interface do usuário: `localeModels(locale)` → `uiModels` → `translationModels` (consulte [Modelos de IA](/pt-BR/guide/ai-models#model-fallback-chain)). Dentro de uma localidade, até `uiBatchConcurrency` lotes são executados de uma vez (padrão **2**; consulte [Configuração — uiBatchConcurrency](/pt-BR/reference/configuration#uibatchconcurrency-optional)). `-j` ainda apenas paraleliza as localidades de destino.
 
 <a id="translations-database-stringsjson"></a>
 ### Banco de dados de traduções (`strings.json`)
 
 Para cada entrada, `translate-ui` armazena o **ID do modelo do provedor ativo** que traduziu com sucesso cada localidade em um objeto `models` opcional (mesmas chaves de localidade que `translated`). As strings editadas no Painel de Tradução são marcadas com o valor sentinela `user-edited` em `models` para essa localidade. Os arquivos planos por localidade em `ui.flatOutputDir` permanecem **string de origem → tradução** apenas; eles não incluem `models` (para que os pacotes de tempo de execução permaneçam inalterados).
 
-> **Nota:** As edições do painel para strings da interface do usuário ficam em `strings.json`, não no cache de documentação do SQLite. Execute `sync` ou `translate-ui` simples (sem sinalizador especial) para reescrever arquivos de localidade simples do catálogo — `--force-update` **não** é encaminhado para a etapa da interface do usuário. Evite `--force` em comandos da interface do usuário após edições manuais: ele retraduz cada entrada e pode sobrescrever suas linhas `user-edited`. As linhas do catálogo cuja tradução armazenada falha na verificação do sistema de escrita da localidade (por exemplo, hindi romanizado para `hi`) são tratadas como ausentes e retraduzidas sem `--force`.
+> **Nota:** As edições do painel para strings da interface do usuário residem em `strings.json`, não no cache de documentação SQLite. Execute `sync` ou `translate-ui` simples (sem flag especial) para reescrever arquivos de localidade planos do catálogo — `--force-update` **não** é encaminhado para a etapa da interface do usuário. Evite `--force` em comandos da interface do usuário após edições manuais: ele retraduz cada entrada e pode sobrescrever suas linhas `user-edited`. As linhas do catálogo cuja tradução armazenada falha na verificação do sistema de escrita da localidade (por exemplo, hindi romanizado para `hi`) são tratadas como ausentes e retraduzidas sem `--force`.
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## Etapa 4: Use a saída no seu app
@@ -90,7 +90,7 @@ Para cada entrada, `translate-ui` armazena o **ID do modelo do provedor ativo** 
 <a id="per-locale-model-overrides"></a>
 ### Substituições de modelo por localidade
 
-Alguns modelos traduzem determinados idiomas melhor do que outros. Por exemplo, os modelos qwen e z-ai costumam ter um bom desempenho com idiomas asiáticos. Adicione entradas `providers.<active>.localeModels` para fornecer uma lista de modelos priorizados para cada localidade BCP-47. Essas listas são testadas antes de `uiModels` e `translationModels` para essa localidade. As tags de localidade correspondem sem diferenciar maiúsculas de minúsculas (`zh-cn` e `ZH-CN` são equivalentes). Sem uma entrada correspondente, a ferramenta usa a ordem padrão de `uiModels` e `translationModels`. O mesmo mecanismo `localeModels` se aplica à tradução de documentos, JSON e SVG.
+Alguns modelos traduzem certas línguas melhor do que outros. Por exemplo, os modelos qwen e z-ai tendem a se sair bem com idiomas asiáticos. Adicione entradas `providers.<active>.localeModels` para fornecer uma lista de modelos priorizada para cada localidade BCP-47. Essas listas são testadas antes de `uiModels` e `translationModels` para essa localidade. As tags de localidade correspondem sem distinção entre maiúsculas e minúsculas (`zh-cn` e `ZH-CN` são equivalentes). Sem uma entrada correspondente, a ferramenta usa a ordem padrão `uiModels` e `translationModels`. O mesmo mecanismo `localeModels` se aplica à tradução de documentos, JSON e SVG.
 
 <a id="exporting-to-xliff-20"></a>
 ### Exportando para XLIFF 2.0

@@ -139,9 +139,9 @@ HTML 擷取器會翻譯：
 | `{llocale}` | 小寫語言區域 |
 | `{LOCALE}` | 大寫語言區域 |
 
-`img/trulli.jpg` 會變成 `img/trulli-pt-BR.jpg`。使用 `onlyIfExists: true`（預設值）時，只有在本地化檔案存在時才會使用該 URL；否則會保留原始的共用資產。只有在其他建置或 CDN 步驟保證這些檔案存在時，才設定 `onlyIfExists: false`。
+`img/trulli.jpg` 變成 `img/trulli-pt-BR.jpg`。在 `onlyIfExists: true`（預設值）的情況下，該 URL 僅在本地化檔案存在時才使用；否則會保留原始的共用資產。僅當另一個建置或 CDN 步驟保證這些檔案存在時，才設定 `onlyIfExists: false`。
 
-`include` 會比對 URL 路徑，例如 `img/**`。使用 `assetRoot` 來設定檔案系統目錄，以便檢查本地化候選項——特別是根相對 URL，例如 `/img/trulli.jpg`。
+`include` 符合 URL 路徑，例如 `img/**`。使用 `assetRoot` 來設定檔案系統目錄，用於檢查本地化候選項目——特別是根相對 URL，例如 `/img/trulli.jpg`。
 
 相同的本地化規則適用於 `srcset`、`poster`、`<source src>`、圖示 `<link href>`，以及 `og:image` / `twitter:image`。管線會重寫參考，但不會建立、翻譯或複製資產檔案。CSS `url()` 值不會被重寫。
 
@@ -213,7 +213,7 @@ HTML 擷取器會翻譯：
 | 輸出為 `site/pt-BR/site/index.html` | 將 `docsOutput.docsRoot` 設定為 `"site"`，以剝離來源前綴。 |
 | 連結仍指向英文頁面 | 使用相對 `.html` / `.htm` 連結，並將目標頁面包含在同一個 `docs[]` 區塊中。 |
 | 從地區設定頁面無法正確載入圖片路徑 | 保持相對路徑，以便套用深度重寫；請記住，CSS `url()` 不會被重寫。 |
-| 未選取本地化圖片 | 檢查 `localizedAssets.include`、檔案名稱 `pattern`，以及當 `onlyIfExists` 為 true 時候選項是否存在。 |
+| 未選取本地化圖片 | 檢查 `localizedAssets.include`、檔案名稱 `pattern`，以及當 `onlyIfExists` 為 true 時候選項目是否存在。 |
 | 語言清單為空或未變更 | 將兩個標記註解保持在正確的順序，並置於 `script`、`style`、`pre` 和 `code` 之外。 |
 | 下拉選單無法導覽 | 將 `data-lang-select` 新增至 `<select>` 並載入 `html-runtime/lang-select.js`。 |
 | Hreflang URL 使用了錯誤的主機 | 將 `hreflang.siteUrl` 設定為最終公開來源。 |

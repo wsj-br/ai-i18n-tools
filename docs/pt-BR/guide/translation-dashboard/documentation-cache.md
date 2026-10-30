@@ -25,7 +25,7 @@ Clique em **Aplicar** após alterar os filtros. **Limpar** redefine todos os cam
 1. Clique no ícone de edição em uma linha.
 2. Altere o texto traduzido no modal e salve.
 
-Se o novo texto falhar na verificação do sistema de escrita do local (por exemplo, hindi romanizado para `hi`), o painel avisará e pedirá para você confirmar. A confirmação armazena o texto de qualquer forma. Um `sync --check-cache` posterior ainda revalida essa linha e pode retraduzi-la.
+Se o novo texto falhar na verificação do sistema de escrita da localidade (por exemplo, hindi romanizado para `hi`), o painel avisa e solicita que você confirme. A confirmação armazena o texto mesmo assim. Uma `sync --check-cache` posterior ainda revalida aquela linha e pode retraduzi-la.
 
 O cache armazena o `user-edited` do modelo para essa linha. Execute `sync --force-update` ou `translate-docs --force-update` para que as saídas de markdown em disco correspondam ao cache.
 

@@ -139,11 +139,11 @@ Andere relative `href`-, `src`-, `srcset`- und `poster`-URLs werden mit einem Ti
 | `{llocale}` | Locale in Kleinbuchstaben |
 | `{LOCALE}` | Locale in Großbuchstaben |
 
-`img/trulli.jpg` wird zu `img/trulli-pt-BR.jpg`. Bei `onlyIfExists: true` (der Standardeinstellung) wird diese URL nur verwendet, wenn die lokalisierte Datei vorhanden ist; andernfalls wird das ursprüngliche gemeinsame Asset beibehalten. Setzen Sie `onlyIfExists: false` nur, wenn ein anderer Build- oder CDN-Schritt diese Dateien garantiert.
+`img/trulli.jpg` wird zu `img/trulli-pt-BR.jpg`. Bei `onlyIfExists: true` (Standardeinstellung) wird diese URL nur verwendet, wenn die lokalisierte Datei existiert; andernfalls wird das ursprüngliche gemeinsam genutzte Asset beibehalten. Setzen Sie `onlyIfExists: false` nur, wenn ein anderer Build- oder CDN-Schritt diese Dateien garantiert.
 
-`include` gleicht URL-Pfade wie `img/**` ab. Verwenden Sie `assetRoot`, um das Dateisystemverzeichnis festzulegen, gegen das lokalisierte Kandidaten – insbesondere root-relative URLs wie `/img/trulli.jpg` – geprüft werden.
+`include` stimmt mit URL-Pfaden wie `img/**` überein. Verwenden Sie `assetRoot`, um das Dateisystemverzeichnis festzulegen, gegen das lokalisierte Kandidaten – insbesondere root-relative URLs wie `/img/trulli.jpg` – geprüft werden.
 
-Dieselben Lokalisierungsregeln gelten für `srcset`, `poster`, `<source src>`, das Icon `<link href>` und `og:image` / `twitter:image`. Die Pipeline schreibt Referenzen um, erstellt, übersetzt oder kopiert jedoch keine Asset-Dateien. CSS-`url()`-Werte werden nicht umgeschrieben.
+Dieselben Lokalisierungsregeln gelten für `srcset`, `poster`, `<source src>`, Icon `<link href>` und `og:image` / `twitter:image`. Die Pipeline schreibt Referenzen um, erstellt, übersetzt oder kopiert jedoch keine Asset-Dateien. CSS `url()`-Werte werden nicht umgeschrieben.
 
 <a id="language-list-and-hreflang"></a>
 ## Sprachliste und hreflang
@@ -213,7 +213,7 @@ Satzübersetzungen bleiben im Cache. Der Datei-Tracking-Hash umfasst auch die Lo
 | Ausgabe ist `site/pt-BR/site/index.html` | Setzen Sie `docsOutput.docsRoot` auf `"site"`, damit das Quellpräfix entfernt wird. |
 | Link zeigt immer noch auf die englische Seite | Verwenden Sie einen relativen `.html` / `.htm`-Link und fügen Sie die Zielseite in denselben `docs[]`-Block ein. |
 | Bildpfad ist von einer Locale-Seite aus defekt | Halten Sie ihn relativ, damit die Tiefenumschreibung greifen kann; denken Sie daran, dass CSS-`url()` nicht umgeschrieben wird. |
-| Lokalisiertes Bild wird nicht ausgewählt | Prüfen Sie `localizedAssets.include`, den Dateinamen `pattern` und ob der Kandidat existiert, wenn `onlyIfExists` wahr ist. |
+| Lokalisiertes Bild wird nicht ausgewählt | Überprüfen Sie `localizedAssets.include`, den Dateinamen `pattern` und ob der Kandidat existiert, wenn `onlyIfExists` wahr ist. |
 | Sprachliste ist leer oder unverändert | Belassen Sie beide Marker-Kommentare in der richtigen Reihenfolge und außerhalb von `script`, `style`, `pre` und `code`. |
 | Dropdown-Menü navigiert nicht | Fügen Sie `data-lang-select` zu `<select>` hinzu und laden Sie `html-runtime/lang-select.js`. |
 | Hreflang-URLs verwenden den falschen Host | Legen Sie `hreflang.siteUrl` auf den endgültigen öffentlichen Ursprung fest. |

@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev`은 앱을 [http://localhost:3093](http://localhost:3093)에서 실행합니다. 번역하기 전에 로캘을 `es` 또는 `zh-Hans`로 전환하면 문자열이 영어로 폴백됩니다. `pnpm translate` 후에는 채워진 번역이 나타납니다. 영어 문자열을 수정한 후 `pnpm translate`를 다시 실행하면 해당 리프만 새로고침되는 것을 볼 수 있습니다.
+`pnpm dev`는 `http://localhost:3093`에서 앱을 실행합니다. 번역하기 전에 로케일을 `es` 또는 `zh-Hans`(으)로 전환하면 문자열이 영어로 대체됩니다. `pnpm translate` 후에 채워진 번역이 나타납니다. 영어 문자열을 편집하고 `pnpm translate`를 다시 실행하면 해당 리프만 새로 고쳐지는 것을 볼 수 있습니다.
 
 전체 가이드: [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md).
 

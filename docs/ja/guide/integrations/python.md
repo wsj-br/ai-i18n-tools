@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Pythonアプリケーションの選択ガイドです。抽出、カタログ、呼び出し形式については[Pythonアプリケーション](/ja/guide/ui-strings/python)で説明しています。既存の単一ロケールアプリへの導入手順は[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)にあり、[`i18n.py`プロンプト](/ja/guide/add-i18n-to-python#run-the-agent-prompt)と[Django / gettextプロンプト](/ja/guide/add-i18n-to-python#agent-prompt-django-gettext)が含まれています。
+Pythonアプリケーション用のセレクター。抽出、カタログ、および呼び出し形状は[Pythonアプリケーション](/ja/guide/ui-strings/python)にあります。既存の単一ロケールアプリのステップバイステップは、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)で、[エージェントプロンプト](/ja/guide/add-i18n-to-python#run-the-agent-prompt)付きです。Django、Flask-Babelカタログ、およびすでにgettextを使用しているアプリには、独自のウォークスルーとプロンプトがあります：[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWebView は、生成された `i18n.py` ヘルパー（Python 3.10 以降）を呼び出します。Django は Django 標準の gettext を使用します。リポジトリには、`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi`、および `examples/python-gettext` の 4 つの実行可能なコピーが同梱されています。Pyramid、Django、Tkinter、Qt、および PyWebView には個別のサンプルディレクトリはありません。
 
@@ -29,7 +29,7 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWe
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` はロケールをセッション状態とクエリ文字列に書き込みます。すべてのウィジェットに固定の `key` を指定してください。詳細は [Locale — Streamlit](/ja/guide/ui-strings/python#streamlit) を参照してください。
+`st.set_page_config`と他のすべての`t()`の前に`set_locale`を呼び出します。ラベルが翻訳できるように、アプリ内でメニューを描画します。`streamlit_language_selector()`は、ウィジェットが描画されるときにロケールをセッション状態とクエリ文字列に書き込みますが、これは翻訳されたページタイトルには遅すぎ、そのラベルは英語のままです。レシピ：[言語切り替えを追加する](/ja/guide/add-i18n-to-python#step-4-add-a-language-switch)。すべてのウィジェットに固定の`key`を与えます。詳細：[ロケール — Streamlit](/ja/guide/ui-strings/python#streamlit)。
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide、および PyWe
 <a id="django"></a>
 ### Django
 
-`gettext`、`ngettext`、および `{% blocktrans %}` はそのまま維持してください。`init -t ui-python-django` は Django の `locale/` ディレクトリおよび `django` ドメインと一致し、Django のランタイムをそのまま利用します。詳細: [Locale — Django](/ja/guide/ui-strings/python#django)。
+`gettext`、`ngettext`、および`{% blocktrans %}`を保持します。`init -t ui-python-django`はDjangoの`locale/`ディレクトリと`django`ドメインに一致し、Djangoのランタイムをそのまま残します。ウォークスルー：[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。詳細：[ロケール — Django](/ja/guide/ui-strings/python#django)。
 
 <a id="existing-gettext"></a>
 ### 既存の gettext
 
-`_()`、`gettext()`、および `ngettext()` はそのまま維持してください。`ui.gettext` を現在のカタログツリーに向け、`extract` を実行してから `translate-ui` を実行します。[python-gettext](/ja/examples#python-gettext) の例は gettext 専用 (`flatOutput: false`) です。`init -t ui-python-gettext` もフラットな JSON を書き出します。詳細: [Locale — Existing gettext](/ja/guide/ui-strings/python#gettext)。
+`_()`、`gettext()`、および`ngettext()`はそのままにします。`ui.gettext`を現在のカタログツリーに向け、`extract`を実行し、次に`translate-ui`を実行します。[python-gettext](/ja/examples#python-gettext)の例はgettextのみです (`flatOutput: false`)。`init -t ui-python-gettext`はフラットなJSONも書き込みます。ウォークスルー：[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。詳細：[ロケール — 既存のgettext](/ja/guide/ui-strings/python#gettext)。
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter、Qt、PyWebView

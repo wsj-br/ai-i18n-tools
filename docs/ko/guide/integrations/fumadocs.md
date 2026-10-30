@@ -50,7 +50,7 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 기존 사이트에서 i18n 활성화하기
 
-영어 전용 Fumadocs 앱에서 `translate-docs`이(가) 형제 파일을 쓰려면 로케일 경로와 `defineI18n`이(가) 필요합니다. [에이전트 프롬프트](#agent-prompt)는 기존 사이트를 안내합니다. 체크리스트:
+영어 전용 Fumadocs 앱은 `translate-docs`가 형제 파일을 작성하기 전에 로케일 경로와 `defineI18n`가 필요합니다. 첫 설정은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#run-the-agent-prompt)의 프롬프트를 사용합니다. 이 페이지의 [에이전트 프롬프트](#agent-prompt)는 UI 카탈로그를 연결하는 후속 작업입니다. 체크리스트:
 
 - `languages`, `defaultLanguage`, `parser: "dot"` 또는 `"dir"`와(과) 함께 `lib/i18n.ts`에 `defineI18n`을(를) 설정합니다.
 - `proxy.ts`(예제 파일)에서 경로를 `app/[lang]/`하고 `createI18nMiddleware`합니다.
@@ -86,7 +86,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="sidebar-metajson"></a>
 ## 사이드바(`meta.json`)
 
-Fumadocs는 사이드바 구조 및 제목을 위한 JSON `meta.json` 파일을 사용합니다. `docsOutput.style`이 `"fumadocs"`인 경우 **`translate-docs`** 은 `docsRoot`(또는 `docs[].fumadocsMetaGlob`) 아래에서 `meta.json`을 수집하고 `docs[].fumadocsMetaTranslatableKeys`(기본값: `title`, `description`)에 나열된 키에 대한 문자열 값을 번역한 다음 로케일 출력을 작성합니다:
+Fumadocs는 사이드바 구조와 제목을 위해 JSON `meta.json` 파일을 사용합니다. `docsOutput.style`가 `"fumadocs"`일 때, `translate-docs`는 `docsRoot`(또는 `docs[].fumadocsMetaGlob`) 아래의 `meta.json`를 수집하고, `docs[].fumadocsMetaTranslatableKeys`에 나열된 키(기본값: `title`, `description`)에 대한 문자열 값을 번역하며, 로케일 출력을 작성합니다:
 
 | 파서 | 소스 로케일 | 출력 |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ Fumadocs는 사이드바 구조 및 제목을 위한 JSON `meta.json` 파일을 
 <a id="ui-catalog"></a>
 ## UI 카탈로그
 
-Fumadocs 레이아웃 크롬(검색 플레이스홀더, 로케일 표시 이름 및 `lib/layout.shared.ts`의 기타 `defineTranslations` / `i18n.translations()` 재정의)은 마크다운에서 추출되지 않습니다. **`translate-docs`** 이(가) `sourcePath`에서 소스 로케일 카탈로그를 부트스트랩하고 로케일별 JSON을 번역하도록 **`docsOutput.fumadocsUiCatalog`** 을(를) 구성하세요.
+Fumadocs 레이아웃 크롬(검색 플레이스홀더, 로케일 표시 이름 및 `lib/layout.shared.ts`의 기타 `defineTranslations` / `i18n.translations()` 재정의)은 마크다운에서 추출되지 않습니다. `docsOutput.fumadocsUiCatalog`를 구성하여 `translate-docs`가 `sourcePath`에서 소스 로케일 카탈로그를 부트스트랩하고 로케일별 JSON을 번역하도록 하세요:
 
 ```json
 {
@@ -123,8 +123,8 @@ Fumadocs 레이아웃 크롬(검색 플레이스홀더, 로케일 표시 이름 
 }
 ```
 
-- **`catalogPath`** — 영어 플랫 JSON. 부트스트랩은 `sourcePath`에 있는 `.add({ … })`의 `en` 객체만 읽습니다. 해당 객체의 문자열 리터럴은 카탈로그 키(`displayName`, `Search(search trigger)`)가 됩니다. `.add()`은(는) Fumadocs UI 프리셋이 등록한 키만 허용하므로, `site.title`과 같은 탐색 제목은 거기에 있을 수 없습니다. 예제에서는 `site.title`을(를) JSON에 유지하고 `nav.title`을(를) 위해 `catalog["site.title"]`을(를) 읽습니다. 파일에 이미 있지만 `en` 객체에는 없는 키는 유지됩니다. 병합은 `{ ...existing, ...extracted }`입니다. 영어 리터럴이 변경되면 `sync`을(를) 다시 실행하세요.
-- **`outputPathTemplate`**(선택 사항) — 로케일별 출력, 기본값: `catalogPath` 옆의 `ui.{locale}.json`.
+- `catalogPath` — 영어 플랫 JSON. 부트스트랩은 `sourcePath`에 있는 `.add({ … })`의 `en` 객체만 읽습니다. 해당 객체의 문자열 리터럴은 카탈로그 키(`displayName`, `Search(search trigger)`)가 됩니다. `.add()`는 Fumadocs UI 프리셋에 등록된 키만 허용하므로, `site.title`와 같은 탐색 제목은 그곳에 있을 수 없습니다. 예시에서는 JSON에 `site.title`을 유지하고 `nav.title`에 대해 `catalog["site.title"]`를 읽습니다. 파일에 이미 있지만 `en` 객체에 없는 키는 유지됩니다: 병합은 `{ ...existing, ...extracted }`입니다. 영어 리터럴이 변경되면 `sync`를 다시 실행하세요.
+- `outputPathTemplate` (선택 사항) — 로케일별 출력; 기본값: `catalogPath` 옆의 `ui.{locale}.json`.
 
 번역된 키는 앱이 읽을 때까지 아무 작업도 수행하지 않습니다. `i18n.translations().get(lang)`은(는) `.extend()`(Fumadocs UI 프리셋)에 등록된 키만 반환합니다. 해당 키가 적용되도록 로케일 카탈로그를 `.add()`에 전개하고, 영어 이름의 번역이 이를 대체하지 않도록 전개 **뒤에** 네이티브 `displayName`을(를) 배치하세요.
 
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-started`)를 통해 로케일 접두사가 붙은 경로를 제공합니다. 활성 로케일 접두사가 자동으로 적용되도록 **페이지 내 링크는 로케일 중립적이어야 합니다**(`/docs/getting-started`).
 
-내장 노멀라이저를 활성화하여 `translate-docs`가 모든 번역 파일의 링크를 자동으로 수정하도록 하세요:
+내장된 정규화 도구를 활성화하여 `translate-docs`가 모든 번역된 파일의 링크를 자동으로 수정하도록 하세요:
 
 ```json
 "docsOutput": {
@@ -235,7 +235,7 @@ Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-star
 
 `rewriteFumadocsLinks`는 `style`이 `"fumadocs"`일 때 기본적으로 활성화됩니다.
 
-| 소스 로케일에서 작성 | 정규화기 이후 |
+| 소스 로케일에서 작성 | 정규화 도구 적용 후 |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
@@ -244,16 +244,16 @@ Fumadocs는 Next.js 미들웨어(`/docs/getting-started`, `/pt/docs/getting-star
 
 **작성 규칙**
 
-- 페이지 간 문서 링크: 영어 MDX에서 **로케일 중립 사이트 경로**(`/docs/…`)를 사용하거나, `content/docs/…` / 상대 `.mdx` 경로를 사용하고 `sync` 중에 정규화 도구가 다시 작성하도록 합니다.
-- 콘텐츠 트리 외부의 저장소 파일: **전체 URL**을 사용합니다.
-- 로케일 접미사가 붙은 복사본(`*.pt.mdx`) 또는 `content/{locale}/` 트리에서 링크를 수동으로 편집**하지 마십시오**. `sync` / `translate-docs`로 다시 생성하십시오.
+- 페이지 간 문서 링크: 영어 MDX에서 **로케일 중립 사이트 경로** (`/docs/…`)를 사용하거나, `content/docs/…` / 상대 `.mdx` 경로를 사용하고 `sync` 동안 정규화 도구가 다시 작성하도록 하세요.
+- 콘텐츠 트리 외부의 저장소 파일: **전체 URL**을 사용하세요.
+- 로케일 접미사가 붙은 사본(`*.pt.mdx`) 또는 `content/{locale}/` 트리에서 링크를 수동으로 편집**하지 마세요** — `sync` / `translate-docs`로 다시 생성하세요.
 
 참조: [문서 — 링크 재작성](/ko/guide/documents/link-rewriting) 및 [구성 — `docsOutput`](/ko/reference/configuration#docsoutput).
 
 <a id="locale-codes"></a>
 ## 로케일 코드
 
-Fumadocs 앱 **정확히** `ai-i18n-tools.config.json`의 `targetLocales`를 `defineI18n().languages`와 일치시켜야 합니다. 점 예제는 짧은 코드(`pt`, `zh`)를 사용합니다. 디렉토리 구성은 BCP-47 폴더(`pt-BR`, `zh-Hans`)를 사용할 수 있습니다. 강제 정규화는 없으므로 코드가 일치하지 않으면 잘못된 출력 경로 또는 페이지가 누락됩니다.
+Fumadocs 앱에서 `ai-i18n-tools.config.json`의 `targetLocales`를 `defineI18n().languages`와 **정확히** 일치시키세요. 점 예시는 짧은 코드(`pt`, `zh`)를 사용합니다. 디렉터리 구성은 BCP-47 폴더(`pt-BR`, `zh-Hans`)를 사용할 수 있습니다. 강제 정규화는 없습니다 — 코드가 일치하지 않으면 잘못된 출력 경로가 생성되거나 페이지가 누락됩니다.
 
 <a id="multiple-collections"></a>
 ## 여러 컬렉션

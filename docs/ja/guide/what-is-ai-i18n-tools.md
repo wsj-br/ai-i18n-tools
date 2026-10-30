@@ -22,7 +22,8 @@
 | 対象 | ここから開始 |
 | --- | --- |
 | ソース内にプレーンテキストがあるジェイエス／ティーエスアプリ（React、Next.js、Node、コマンドラインインターフェイス） | [ジェイエス／ティーエスアプリに国際化を追加する](/ja/guide/add-i18n-to-js) |
-| パイソンアプリ（Streamlit、FastAPI、Flask、Django、gettext、デスクトップ） | [パイソンアプリに国際化を追加する](/ja/guide/add-i18n-to-python) |
+| Pythonアプリ (Streamlit、FastAPI、Flask、デスクトップ、スクリプト) | [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python) |
+| Djangoアプリ、Flask-Babelカタログ、またはGNU gettextを既に利用しているアプリ | [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext) |
 | ウェブサイトまたはドキュメントサイト（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、プレーンHTML） | [ウェブサイトまたはドキュメントサイトに国際化を追加する](/ja/guide/add-i18n-to-website) |
 | リポジトリのREADMEとその他のマークダウン形式ファイル（通常はアプリの隣） | [READMEとマークダウン形式のドキュメントに国際化を追加する](/ja/guide/add-i18n-to-readme) |
 | スタンドアロンのネストされたJSONロケールファイル | [JSON](/ja/guide/json) |

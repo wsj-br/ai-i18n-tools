@@ -46,4 +46,4 @@
 | `NO_COLOR`             | 當 `1` 時，停用日誌輸出中的 ANSI 顏色。              |
 | `I18N_LOG_SESSION_MAX` | 每個日誌會話保留的最大行數（預設值 `5000`）。           |
 
-啟動時，CLI 也會從目前工作目錄自動載入 `.env` 檔案（透過 Node 的 `process.loadEnvFile`），因此在未載入 `.envrc` / `direnv` 的非互動式 shell 中會讀取提供者 API 金鑰。環境中已存在的變數永遠不會被覆寫，因此實際的 CI/生產環境值仍然會生效。
+啟動時，CLI 也會從目前工作目錄自動載入一個 `.env` 檔案（透過 Node 的 `process.loadEnvFile`），以便在不透過 `direnv` 載入 `.envrc` 的非互動式 shell 中載入供應商 API 金鑰。環境中已存在的變數永不被覆寫，因此實際的 CI/生產值會優先。

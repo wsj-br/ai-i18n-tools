@@ -49,13 +49,13 @@ ai-i18n-tools dashboard
 
 | シグナル | 貢献内容 | ソース |
 | --- | --- | --- |
-| ChrF | プロジェクトの言語に対する翻訳品質 | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arenaスコア | 直接比較による総合的な優先度 | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | プロジェクトの言語における翻訳品質 | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| アリーナスコア | 直接比較による全体的な好み | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | 100万トークンあたりのUSD | 入出力価格 | プロバイダーが料金を公開している場合はそのカタログ、それ以外は[models.dev](https://models.dev/) (MIT) |
 
 ChrFは、プロジェクトの`sourceLocale`と`targetLocales`に対するlanguagebenchの翻訳スコアを使用します。ロケールはlanguagebenchの言語コード(プライマリサブタグ)にマッピングされ、`pt-BR`から`pt`、`zh-Hant`から`zh`などのエイリアスがあります。これらの言語をうまく翻訳するモデルは、一般的にスコアが高いだけのモデルよりも上位にランク付けされます。埋め込み、画像、音声、その他の非チャットモデルはスキップされ、有効期限が切れたIDも同様です。
 
-デフォルトのプロファイルである「品質」は、価格よりもChrFとArenaスコアを重視します。「価格」はその重点を逆転させますが、上記の品質下限は維持します。オプションの重みについては[`modelSuggestion`](/ja/reference/configuration#modelsuggestion-optional)を参照してください。
+デフォルトプロファイルである品質は、ChrFとアリーナスコアを価格よりも重視します。価格は、その重点を反転させ、上記で説明した品質の最低基準を維持します。オプションの重みは[`modelSuggestion`](/ja/reference/configuration#modelsuggestion-optional)です。
 
 `suggest-models --refresh`はデータセットを再ダウンロードします。その後、**「モデル」** タブをリロードしてください。
 
@@ -69,7 +69,7 @@ ChrFは、プロジェクトの`sourceLocale`と`targetLocales`に対するlangu
 
 `translationModels`は順序付きリストです。CLIは最初のモデルを試します。リクエストが失敗した場合、解析できないレスポンスを受け取った場合、またはテキストが間違った書記体系である場合、そのバッチに対して次のIDを試します。
 
-1つのIDだけでは単一障害点になります。モデルはタイムアウトしたり、このツールが拒否するテキストを返したり、ある言語はうまく翻訳できても別の言語はうまく翻訳できなかったりすることがあります。よくあるケースは、`hi`がデーヴァナーガリーを期待しているのに、ローマ字化されたヒンディー語が使われる場合です。ローマ字化された出力は、ネイティブスクリプトのロケールでは拒否されます。ローマ字化されたままであるべきロケールには、`hi-Latn`のような明示的な`-Latn`サブタグが必要です。
+1つのIDは単一障害点です。モデルはタイムアウトしたり、このツールが拒否するテキストを返したり、ある言語はうまく翻訳し、別の言語はうまく翻訳できない場合があります。よくあるケースは、`hi`がデーヴァナーガリー文字を期待しているのに、ローマ字化されたヒンディー語が使われる場合です。ネイティブスクリプトのロケールでは、ローマ字化された出力は拒否されます。ローマ字化されたままであるべきロケールには、たとえば`hi-Latn`のような明示的な`-Latn`サブタグが必要です。
 
 そのため、ショートリストには最も強力なものから順に複数のIDが含まれています。リスト内の順序が、翻訳が試行される順序です。
 

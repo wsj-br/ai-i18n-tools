@@ -1,7 +1,7 @@
 <a id="usage--costs"></a>
 # Utilisation et coûts
 
-L'onglet **Utilisation et coûts** résume les appels d'API de modèle facturés effectués par ce projet — y compris les tentatives ultérieurement abandonnées — avec le nombre de jetons et un coût unique en USD.
+L'onglet **Utilisation et coûts** récapitule les appels d'API de modèle facturés effectués par ce projet — y compris les tentatives qui ont été ultérieurement ignorées — avec le nombre de jetons et un coût unique en USD.
 
 Les mêmes agrégats sont disponibles en ligne de commande sous la forme `ai-i18n-tools usage`.
 

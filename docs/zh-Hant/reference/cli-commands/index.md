@@ -13,6 +13,7 @@
 |---------|---------|
 | [`version`](setup#version) | 印出 CLI 版本與建置時間戳記。 |
 | [`init`](setup#init) | 寫入入門設定；`-t` 選擇骨架範本。 |
+| [`doctor`](setup#doctor) | 確認配置、路徑、提供者和環境已準備好進行翻譯。 |
 | [`help`](setup#help) | 顯示子命令的說明。 |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | 清理過時/孤立/未設定語系的快取列並重新填充 Markdown 問題。 |
 | [`clean-temp`](maintenance#clean-temp) | 尋找並刪除 `*.log`、`*.tmp` 與快取備份。 |
-| [`purge-locale`](maintenance#purge-locale) | 移除指定地區設定的快取列與產生的產物。 |
+| [`purge-locale`](maintenance#purge-locale) | 移除快取列和針對地區設定產生的構件。 |
 
 <a id="dashboard--glossarytools"></a>
 ### [儀表板與詞彙表](tools)
@@ -91,6 +92,7 @@
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

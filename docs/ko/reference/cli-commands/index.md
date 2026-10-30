@@ -13,6 +13,7 @@
 |---------|---------|
 | [`version`](setup#version) | CLI 버전과 빌드 타임스탬프를 출력합니다. |
 | [`init`](setup#init) | 시작 구성을 작성합니다; `-t`은 스캐폴드 템플릿을 선택합니다. |
+| [`doctor`](setup#doctor) | 구성, 경로, 공급자 및 환경이 번역할 준비가 되었는지 확인합니다. |
 | [`help`](setup#help) | 하위 명령에 대한 도움말을 표시합니다. |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | 오래되거나 고아 또는 구성되지 않은 로케일 캐시 행을 정리하고 마크다운 이슈를 다시 채웁니다. |
 | [`clean-temp`](maintenance#clean-temp) | `*.log`, `*.tmp` 및 캐시 백업을 찾아 삭제합니다. |
-| [`purge-locale`](maintenance#purge-locale) | 로케일에 대한 캐시 행과 생성된 아티팩트를 제거합니다. |
+| [`purge-locale`](maintenance#purge-locale) | 로케일(들)에 대한 캐시 행 및 생성된 아티팩트를 제거합니다. |
 
 <a id="dashboard--glossarytools"></a>
 ### [대시보드 및 용어집](tools)
@@ -91,6 +92,7 @@
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

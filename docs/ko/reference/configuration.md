@@ -45,7 +45,7 @@
 <a id="concurrency-optional"></a>
 ### `concurrency` (선택 사항)
 
-동시에 번역되는 최대 **대상 로캘** 수 (`translate-ui`, `translate-docs`, `translate-svg`, 및 `sync` 내 해당 단계). 생략 시 CLI는 UI 번역에 **4**, 문서 번역에 **3**를 사용합니다 (내장 기본값). 실행 시 `-j` / `--concurrency`로 재정의할 수 있습니다.
+동시에 번역되는 최대 대상 로케일 수 (`translate-ui`, `translate-docs`, `translate-svg` 및 `sync` 내의 일치하는 단계). 생략하면 CLI는 UI 번역에 **4**를, 문서 번역에 **3**를 사용합니다(내장 기본값). 실행 시마다 `-j` / `--concurrency`로 재정의할 수 있습니다.
 
 ---
 
@@ -114,13 +114,13 @@
 각 `providers.<name>` 블록은 다음을 허용합니다:
 
 - `translationModels`
-  선호하는 모델 ID의 정렬된 목록(일반적인 업스트림 ID, `provider/` 접두사 없음; OpenRouter ID는 고유한 `vendor/model` 형식을 유지). 첫 번째 항목이 먼저 시도되며, 이후 항목은 오류 발생 시 대체 항목으로 사용됩니다. 이는 더 구체적인 계층이 적용되지 않을 때 모든 파이프라인에 대한 전역 기본 체인입니다.
+  선호하는 모델 ID의 정렬된 목록(일반적인 업스트림 ID, `provider/` 접두사 없음; OpenRouter ID는 고유한 `vendor/model` 형식을 유지합니다). 첫 번째 항목이 먼저 시도되고, 이후 항목은 오류 발생 시 대체 항목으로 사용됩니다. 이는 더 구체적인 계층이 적용되지 않을 때 모든 파이프라인에 대한 전역 기본 체인입니다.
 - `uiModels` (선택 사항)
-  `translate-ui`, 복수 생성(단계 0 및 통과 B), `proofread-ui`에 대한 정렬된 UI 전용 모델 목록입니다. 대상 로케일에 대한 일치하는 `localeModels` 항목 다음에, `translationModels` 이전에 시도됩니다.
+  `translate-ui`, 복수 생성(단계 0 및 통과 B) 및 `proofread-ui`를 위한 정렬된 UI 전용 모델 목록입니다. 대상 로케일에 대한 일치하는 `localeModels` 항목 다음에, `translationModels` 이전에 시도됩니다.
 - `localeModels` (선택 사항)
-  **모든** 번역 파이프라인에 대한 로케일별 재정의입니다. `{ "locale": "<BCP-47>", "models": ["…"] }` 객체 배열입니다. 로케일 태그는 대소문자를 구분하지 않고 일치합니다(`pt-br` = `pt-BR`). 각 로케일의 목록은 해당 로케일에 대해서만 먼저 시도된 다음, 파이프라인별 계층(UI의 경우 `uiModels`) 및 `translationModels`이 시도됩니다. 중복된 정규화된 로케일 키는 구성 로드 시 거부됩니다.
+  **모든** 번역 파이프라인에 대한 로케일별 재정의입니다. `{ "locale": "<BCP-47>", "models": ["…"] }` 객체의 배열입니다. 로케일 태그는 대소문자를 구분하지 않고 일치합니다(`pt-br` = `pt-BR`). 각 로케일의 목록은 해당 로케일에 대해서만 먼저 시도된 다음, 파이프라인별 계층(UI의 경우 `uiModels`) 및 `translationModels`이 시도됩니다. 중복된 정규화된 로케일 키는 구성 로드 시 거부됩니다.
 - `baseUrl`
-  OpenAI 호환 기본 URL입니다. 사전 설정된 기본 URL을 재정의합니다. 사전 설정되지 않은 공급자에게 필요합니다.
+  OpenAI 호환 기본 URL. 사전 설정된 기본 URL을 재정의합니다. 사전 설정되지 않은 공급자에게 필요합니다.
 - `apiKeyEnv`
   API 키를 포함하는 환경 변수입니다. 사전 설정된 환경 변수를 재정의합니다.
 - `headers`
@@ -130,15 +130,24 @@
 - `temperature`
   샘플링 온도입니다. 기본값: `0.2`.
 - `requestTimeout`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs` 설정을 재정의합니다. 이 공급자와 최상위 구성 모두에서 제한 시간을 설정하지 않은 경우, 기본값은 `45`초입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(초). 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성이 시간 초과를 설정하지 않으면 기본값은 `45`초입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `requestTimeoutMs`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초)입니다. 최상위 `requestTimeout` / `requestTimeoutMs` 설정을 재정의합니다. 이 공급자와 최상위 구성 모두에서 제한 시간을 설정하지 않은 경우, 기본값은 `45000`(45초)입니다. 동일한 객체에 `requestTimeout`과 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초). 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성이 시간 초과를 설정하지 않으면 기본값은 `45000`(45초)입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `pricing` (선택 사항)
-  공급자 전체 1,000,000 토큰당 USD 비용: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`가 없는 경우(OpenRouter 및 Cheaper Inference 외 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 이 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다. 일치하는 `modelPricing` 항목이 있으면 이 기본값을 재정의합니다. 공급자가 보고한 비용은 절대 대체되지 않습니다. 구성된 요율이 일치하지 않는 경우, 도구는 해당 모델 ID에 대한 models.dev 정가(100만 토큰당 입력 및 출력 USD)를 사용합니다. 비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [Usage & costs](/ko/guide/translation-dashboard/usage)를 통해 추정할 수 있습니다. 해당 소스가 적용되지 않는 경우, 비용은 알 수 없음(`—`)으로 유지되며 절대 `$0.00`되지 않습니다.
+  공급자 전체 100만 토큰당 USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`가 없는 경우(OpenRouter 및 Cheaper Inference를 제외한 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 이 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다.
+
+비용 출처는 다음 순서로 결정됩니다:
+
+1. 일치하는 `modelPricing` 항목 (이 공급자 기본값을 재정의합니다);
+  2. 공급자가 보고한 비용 (절대 대체되지 않습니다);
+  3. 이 `pricing` 요율;
+  4. 해당 모델 ID에 대한 models.dev 정가 (입력 및 출력 100만 토큰당 USD).
+
+비용 없이 저장된 행은 나중에 [`usage`](/ko/reference/cli-commands/workflows#usage) 및 [사용량 및 비용](/ko/guide/translation-dashboard/usage)을 통해 추정할 수 있습니다. 이러한 출처 중 어느 것도 적용되지 않으면 비용은 알 수 없음(`—`)으로 유지되며, `$0.00`가 되지 않습니다.
 - `modelPricing` (선택 사항)
-  모델별 1,000,000 토큰당 USD 비용: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대해 `pricing`를 재정의합니다. 공급자가 `usage.cost`을 생략했을 때 호출 시점에 적용되며 호출과 함께 저장됩니다.
-- `zeroDataRetention` (선택 사항, `providers.cheaperinference` 전용)
-  `true`인 경우, 채팅 요청은 `"zdr": true` 및 `list-models`, `check-models`, `suggest-models`을(를) 전송하고 `GET /v1/models?zdr=true`을(를) 로드합니다. 생략하면 비활성화됩니다. [제로 데이터 보존](/ko/guide/providers-and-models#cheaperinference-zero-data-retention)을(를) 참조하세요.
+  모델당 100만 토큰당 USD: `{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`. 해당 모델 ID에 대한 `pricing`를 재정의합니다. 공급자가 `usage.cost`를 생략했을 때 호출 시 적용되며, 호출과 함께 저장됩니다.
+- `zeroDataRetention` (선택 사항, `providers.cheaperinference`만 해당)
+  `true`일 때, 채팅 요청은 `"zdr": true` 및 `list-models`, `check-models`를 보내고, `suggest-models`은 `GET /v1/models?zdr=true`를 로드합니다. 생략하면 비활성화됩니다. [데이터 보존 없음](/ko/guide/providers-and-models#cheaperinference-zero-data-retention)을 참조하십시오.
 
 내장 제공자 사전 설정(키 — 기본 URL — API 키 환경 변수):
 
@@ -246,7 +255,12 @@
 | `translateJson` | 3 | `json[]` 아래의 임의의 중첩된 JSON (`translate-json`). |
 | `translateSVG` | — | `.svg` 파일 번역 (최상위 `svg` 블록 필요). |
 
-각 플래그는 키를 생략하면 기본값으로 `true`이(가) 적용됩니다. 번역할 대상이 없는 상태에서 `true`을(를) 생략하면 해당 단계는 건너뜁니다. 건너뛰는 경우는 다음과 같습니다. `sourceRoots`이(가) 있는 UI 블록이 없는 경우, `contentPaths` 또는 `docusaurusCatalogDir`이(가) 있는 문서 블록이 없는 경우, `json[]`에 `contentPaths`이(가) 없는 경우, 또는 `svg`이(가) 설정되지 않은 경우입니다. 해당 파이프라인에 처리할 작업이 없는데 플래그를 `true`(으)로 지정하면 구성 오류입니다. `false`을(를) 지정하면 소스가 존재하더라도 `sync`에 대해 해당 파이프라인이 꺼집니다. `--no-ui`, `--no-docs`, `--no-json`, `--no-svg`은(는) 한 번의 실행 동안 해당 단계를 건너뜁니다.
+키가 생략되면 각 플래그는 기본적으로 `true`입니다. 동작은 다음과 같습니다:
+
+- 번역할 내용이 없는 생략된 `true`는 건너뛰어집니다: UI 블록에 `sourceRoots`이 없거나, 문서 블록에 `contentPaths` 또는 `docusaurusCatalogDir`이 없거나, `json[]`에 `contentPaths`가 없거나, `svg`가 설정되지 않은 경우.
+- 해당 파이프라인에 작업이 없을 때 플래그를 `true`로 작성하는 것은 구성 오류입니다.
+- `false`를 작성하면 소스가 존재하더라도 `sync`에 대한 해당 파이프라인이 꺼집니다.
+- `--no-ui`, `--no-docs`, `--no-json`, `--no-svg`는 한 번의 실행에 대해 단계를 건너뜁니다.
 
 `features.translateSVG`이(가) true이고 최상위 `svg` 블록이 구성된 경우 `translate-svg`을(를) 사용하여 SVG 파일을 **번역**합니다. 플래그가 켜져 있고 `svg`이(가) 설정되어 있으면(단, `--no-svg`인 경우 제외) `sync` 명령이 해당 단계를 실행합니다.
 
@@ -387,21 +401,21 @@ Docusaurus 레이아웃의 소스 문서 루트(예: `"docs"`). 생략 시 기�
 - `docsOutput.flatPreserveRelativeDir`
 `docsOutput.style = "flat"`인 경우, 동일한 기본 이름을 가진 파일이 충돌하지 않도록 소스 하위 디렉터리를 유지합니다. 기본값은 `false`입니다.
 - `docsOutput.rewriteRelativeLinks`
-번역 후 상대 링크를 재작성합니다(`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동 활성화).
+번역 후 상대 링크를 다시 작성합니다 (`docsOutput.style = "flat"`이고 사용자 지정 `pathTemplate`가 없을 때 자동 활성화됨).
 - `docsOutput.linkRewriteDocsRoot`
-플랫 링크 재작성 접두사를 계산할 때 사용되는 리포지토리 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않은 한, 일반적으로 `"."`로 둡니다.
+플랫 링크 다시 쓰기 접두사를 계산할 때 사용되는 저장소 루트입니다. 번역된 문서가 다른 프로젝트 루트 아래에 있지 않는 한 일반적으로 `"."`로 둡니다.
 - `docsOutput.rewriteVitepressLinks`
-`true`인 경우, 번역 후 VitePress 링크 노멀라이저를 실행합니다. `docsOutput.style`이 `"vitepress"`일 때 활성화가 기본값입니다. 로케일 폴더가 `docsRoot` 아래의 소스 로케일 파일 옆에 있는 모든 `doc-system` 레이아웃과 함께 사용합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 재작성합니다. VitePress 트리 외부의 리포지토리 파일에 대한 링크(`LICENSE`, `examples/`)의 경우, 소스 로케일 파일에 전체 URL을 사용하세요. [VitePress 통합 — 문서를 홈페이지로 사용하는 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하세요.
+`true`일 때, 번역 후 VitePress 링크 정규화 도구를 실행합니다. `docsOutput.style`이(가) `"vitepress"`일 때 기본적으로 활성화됩니다. `docsRoot` 아래의 원본 로케일 파일 옆에 로케일 폴더가 있는 모든 `doc-system` 레이아웃과 함께 사용하세요. 원본 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. README 스타일 `docs/guide/…` 경로를 사이트 경로(`/guide/…`) 및 로케일 상대 `../guide/…` 링크로 다시 작성합니다. VitePress 트리 외부의 저장소 파일(`LICENSE`, `examples/`)에 대한 링크의 경우, 원본 로케일 파일에 전체 URL을 사용하세요 — [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하세요.
 - `docsOutput.rewriteNextraLinks`
-`true`인 경우, 번역 후 Nextra 링크 노멀라이저를 실행합니다. `docsOutput.style`가 `"nextra"`일 때 활성화가 기본값입니다. Next.js `i18n`를 위해 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립적인 사이트 경로(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
+`true`일 때, 번역 후 Nextra 링크 정규화 도구를 실행합니다. `docsOutput.style`이(가) `"nextra"`일 때 기본적으로 활성화됩니다. Next.js `i18n`의 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 사이트 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 - `docsOutput.fumadocsParser`
-`"dot"`(기본값) 또는 `"dir"`입니다. Dot은 소스 로케일 파일 옆에 `stem.{locale}.mdx`을 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하세요.
+`"dot"` (기본값) 또는 `"dir"`. Dot은 원본 로케일 파일 옆에 `stem.{locale}.mdx`을(를) 작성하고, dir은 Nextra처럼 로케일 폴더를 작성합니다. 원본 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. [Fumadocs 통합 — 페이지 레이아웃](/ko/guide/integrations/fumadocs#page-layout)을 참조하세요.
 - `docsOutput.rewriteFumadocsLinks`
-`true`인 경우, 번역 후 Fumadocs 링크 노멀라이저를 실행합니다. `docsOutput.style`이 `"fumadocs"`일 때 활성화가 기본값입니다. 콘텐츠 경로와 상대 `.mdx` 링크를 `/docs/…` 경로로 재작성합니다.
+`true`일 때, 번역 후 Fumadocs 링크 정규화 도구를 실행합니다. `docsOutput.style`이(가) `"fumadocs"`일 때 기본적으로 활성화됩니다. 콘텐츠 경로 및 상대 `.mdx` 링크를 `/docs/…` 경로로 다시 작성합니다.
 - `docsOutput.fumadocsUiCatalog`
-선택 사항. `translate-docs` 내에서 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역. 필드: `sourcePath`(예: `lib/layout.shared.ts`), `catalogPath`(생성된 영어 JSON), 선택적 `outputPathTemplate`(기본값: `catalogPath` 옆의 `ui.{locale}.json`).
+선택 사항입니다. `translate-docs` 내의 Fumadocs UI 재정의 카탈로그 부트스트랩 + 번역. 필드: `sourcePath` (예: `lib/layout.shared.ts`), `catalogPath` (생성된 영어 JSON), 선택 사항인 `outputPathTemplate` (기본값: `catalogPath` 옆의 `ui.{locale}.json`).
 - `docs[].fumadocsMetaGlob`
-`docsOutput.style`이 `"fumadocs"`일 때 `meta.json` 수집을 위한 선택적 glob입니다. 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
+`docsOutput.style`이(가) `"fumadocs"`일 때 `meta.json` 컬렉션을 위한 선택적 glob(들). 기본값: `docsOutput.docsRoot` 아래의 재귀적 `meta.json`.
 - `docs[].fumadocsMetaTranslatableKeys`
 Fumadocs `meta.json`에서 문자열 값이 번역되는 속성 이름입니다(기본값: `title`, `description`).
 - `docsOutput.localizedAssets`
@@ -525,7 +539,7 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 - `quality` — 기본 ChrF `0.45`, 아레나 `0.35`, 가격 `0.20`, 품질 하한선 `0.7`
 - `price` — 기본 ChrF `0.35`, 아레나 `0.20`, 가격 `0.45`, 품질 하한선 `0.6`
 
-각 프로필 객체에는 `chrf`, `arena`, 그리고 `price`가 필요합니다. 각 값은 유한하며 최소 `0` 이상이고, 적어도 하나는 `0`보다 큽니다. 이 값들은 합계가 1이 되도록 정규화되므로, `45`, `35`, 그리고 `20`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며, `(0, 1]` 범위 내에 있고, 후보 풀에서 가장 좋은 ChrF의 비율입니다. 하한선 미만의 모델은 ChrF 측정값이 없는 모든 모델을 포함하여, 하한선을 통과한 모델 뒤에 정렬됩니다.
+각 프로필 객체는 `chrf`, `arena`, `price`를 필요로 합니다. 각 값은 유한하며 최소 `0`이고, 적어도 하나는 `0`보다 큽니다. 이 값들은 합계가 1이 되도록 정규화되므로, `45`, `35`, `20`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며, `(0, 1]` 범위에 있고, 후보 풀에서 최고의 ChrF의 비율입니다. 하한선 미만의 모델(ChrF 측정값이 없는 모든 모델 포함)은 하한선을 넘는 모델 뒤에 정렬됩니다.
 
 ```json
 "modelSuggestion": {

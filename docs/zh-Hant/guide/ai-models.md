@@ -47,15 +47,15 @@ ai-i18n-tools dashboard
 
 此候選清單是根據供應商的即時聊天目錄所做的基準排名。首次執行時會下載三個公開資料集，可能需要一些時間。之後的執行會重複使用位於 `<cacheDir>/benchmark-scores.json` (通常是 `.translation-cache/benchmark-scores.json`) 的 7 天快取。
 
-| 指標 | 貢獻內容 | 來源 |
+| 指標 | 其作用 | 來源 |
 | --- | --- | --- |
-| ChrF | 您專案語言的翻譯品質 | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena 分數 | 來自一對一比較的整體偏好 | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | 專案語言的翻譯品質 | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | 來自一對一比較中的整體偏好 | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | 每百萬個權杖的美元價格 | 輸入和輸出價格 | 供應商發布費率時的目錄，否則為 [models.dev](https://models.dev/) (MIT) |
 
 ChrF 使用 languagebench 為您的 `sourceLocale` 和 `targetLocales` 提供的翻譯分數。地區設定會對應到一個 languagebench 語言代碼：主要子標籤，並帶有別名，例如 `pt-BR` 對應 `pt` 以及 `zh-Hant` 對應 `zh`。一個能良好翻譯這些語言的模型，其排名會高於一個僅在一般情況下得分良好的模型。嵌入、圖像、語音和其他非聊天模型會被跳過，已過期的 ID 也會被跳過。
 
-「品質」(預設設定檔) 將 ChrF 和 Arena Score 的權重設得比價格高。「價格」設定檔則反轉此重點，並保留上述的品質底線。可選權重為 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion-optional)。
+「品質」這個預設設定檔，將 ChrF 和 Arena Score 的權重設定高於價格。「價格」則顛倒了這種側重，並維持了上述的品質下限。選用權重為 [`modelSuggestion`](/zh-Hant/reference/configuration#modelsuggestion-optional)。
 
 `suggest-models --refresh` 會重新下載資料集。之後請重新載入 **模型** 分頁。
 
@@ -69,7 +69,7 @@ ChrF 使用 languagebench 為您的 `sourceLocale` 和 `targetLocales` 提供的
 
 `translationModels` 是一個有序清單。CLI 會嘗試第一個模型。若請求失敗、回應無法剖析，或文字的書寫系統錯誤，它會為該批次嘗試下一個 ID。
 
-單一 ID 是個單點故障。模型可能會逾時、傳回此工具拒絕的文字，或將一種語言翻譯得很好而另一種卻很差。一個常見的案例是羅馬化的印地語，而 `hi` 預期的是梵文。對於使用原生字集的地區設定，羅馬化的輸出會被拒絕。應保持羅馬化的地區設定需要明確的 `-Latn` 子標籤，例如 `hi-Latn`。
+單一 ID 構成單點故障。模型可能會逾時、傳回此工具拒絕的文字，或將一種語言翻譯得好，另一種翻譯得差。常見情況是羅馬化印地語，其中 `hi` 預期天城文。羅馬化輸出會被原生文字地區設定拒絕。應保持羅馬化的地區設定需要明確的 `-Latn` 子標籤，例如 `hi-Latn`。
 
 這就是為什麼候選清單包含數個 ID，最強的排在最前面。清單中的順序就是翻譯時嘗試的順序。
 

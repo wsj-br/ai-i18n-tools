@@ -68,7 +68,7 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 `docs[].docsOutput.docsRoot`을 `sourceLocale`으로 작성된 파일의 루트로 설정하세요(예: 소스가 영어인 경우 `"docs"`, `"src/content/docs"` 또는 `"content/en"`). `sourceLocale`는 모든 언어가 될 수 있습니다. `docsOutput.style = "doc-system"`인 경우, `localeSubpath`을 명시적으로 설정해야 합니다(사전 설정을 위해 아래의 별칭을 사용하세요). 번역된 페이지가 `{outputDir}/{locale}/` 바로 아래에 있는 경우(Starlight 스타일) `localeSubpath: ""`을 사용하세요.
 
-`docusaurusCatalogDir`의 Docusaurus 셸 JSON 및 doc-system 프리셋 하의 기타 JSON 산출물은 마크다운과 동일한 폴더 레이아웃을 따릅니다. `style: "flat"`인 경우, `jsonPathTemplate`를 설정하지 않는 한 JSON 라벨 파일은 여전히 중첩 형태를 사용합니다.
+Docusaurus 셸 JSON은 `docusaurusCatalogDir` 및 문서 시스템 프리셋 아래의 다른 JSON 아티팩트와 함께 마크다운과 동일한 폴더 레이아웃을 따릅니다. `style: "flat"`을(를) 사용하면 `jsonPathTemplate`을(를) 설정하지 않는 한 JSON 레이블 파일은 여전히 중첩된 형태를 사용합니다.
 
 <a id="doc-system-aliases"></a>
 ## Doc-system 별칭
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight는 여러 로케일의 UI 문자열을 제공하며, 필요 시 선택적 사용자 지정 UI 재정의는 별도의 `docs[]` 블록에서 `src/content/i18n/en.json`과 `jsonPathTemplate: "{outputDir}/{locale}.json"`을 사용합니다.
 
-VitePress 내비게이션/사이드바/푸터 문자열은 마크다운에 없습니다 — `docsOutput.vitepressThemeCatalog`를 구성하고 **`translate-docs`** 내에서 번역하세요. [VitePress 통합](/ko/guide/integrations/vitepress)을 참조하세요.
+VitePress 탐색/사이드바/바닥글 문자열은 마크다운에 없습니다. `docsOutput.vitepressThemeCatalog`을(를) 구성하고 `translate-docs` 내에서 번역합니다. [VitePress 통합](/ko/guide/integrations/vitepress)을(를) 참조하세요.
 
-Nextra 테마 사전(`.ts`)과 `_meta.ts` 사이드바 라벨은 마크다운에 없습니다 — `style: "nextra"`일 때 `docs[].nextraDictionaryPath`와 자동 `_meta` 수집을 사용하며, 모두 **`translate-docs`** 내에서 진행됩니다. [Nextra 통합](/ko/guide/integrations/nextra)을 참조하세요.
+Nextra 테마 사전(`.ts`) 및 `_meta.ts` 사이드바 레이블은 마크다운에 없습니다. `style: "nextra"`일 때 `docs[].nextraDictionaryPath` 및 자동 `_meta` 수집을 모두 `translate-docs` 내에서 사용합니다. [Nextra 통합](/ko/guide/integrations/nextra)을(를) 참조하세요.
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra 테마 사전(`.ts`)과 `_meta.ts` 사이드바 라벨은 마크다운에
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — Nextra 방식의 로케일 폴더; `localeSubpath`가 비어 있는 동일한 `doc-system` 엔진을 사용합니다.
+- `"dir"` — Nextra 스타일 로케일 폴더; 빈 `localeSubpath`과(와) 함께 동일한 `doc-system` 엔진을 사용합니다.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs UI 오버라이드(`lib/layout.shared.ts`)와 `meta.json` 사이드바 라벨은 마크다운에 없습니다 — `style: "fumadocs"`일 때 `docsOutput.fumadocsUiCatalog`와 자동 `meta.json` 수집을 사용하며, 모두 **`translate-docs`** 내에서 진행됩니다. [Fumadocs 통합](/ko/guide/integrations/fumadocs)을 참조하세요.
+Fumadocs UI 재정의(`lib/layout.shared.ts`) 및 `meta.json` 사이드바 레이블은 마크다운에 없습니다. `style: "fumadocs"`일 때 `docsOutput.fumadocsUiCatalog` 및 자동 `meta.json` 수집을 모두 `translate-docs` 내에서 사용합니다. [Fumadocs 통합](/ko/guide/integrations/fumadocs)을(를) 참조하세요.
 
 내장된 상대 링크 수정 외에 링크 및 애셋 URL 재작성에 대한 자세한 내용은 [링크 재작성](/ko/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`)을 참조하세요.
 

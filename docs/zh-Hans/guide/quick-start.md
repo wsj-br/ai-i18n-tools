@@ -71,7 +71,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-对于这些设置，请使用 `ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。然后遵循[向 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)指南。
+然后按照 [将 i18n 添加到 Python 应用](/zh-Hans/guide/add-i18n-to-python)。
+
+Django 应用、使用 Flask-Babel 目录的 Flask 应用，或已调用 `gettext` 的应用会保留这些调用。而是使用 `ui-python-django`、`ui-python-flask` 或 `ui-python-gettext` 进行脚手架搭建，然后按照 [将 i18n 添加到 Django / Python gettext 应用](/zh-Hans/guide/add-i18n-to-django-gettext)。
 
 <a id="a-website-or-documentation-site"></a>
 ### 网站或文档站点
@@ -92,7 +94,7 @@ ai-i18n-tools suggest-models --apply
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-您的框架必须先启用其自身的 i18n 路由功能。然后，请遵循 [为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website) 的步骤。
+然后按照 [将 i18n 添加到网站或文档站点](/zh-Hans/guide/add-i18n-to-website)。它的代理提示会启用框架的 i18n 路由。审阅该工作后，运行 `sync`。
 
 <a id="a-readme-or-markdown-docs"></a>
 ### README 或 Markdown 文档
@@ -123,11 +125,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 当您的项目准备就绪时：
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync` 会按顺序运行您的配置中启用的每个步骤。`status` 显示每个区域设置下已翻译的内容。对于工具无法看到文本的项目，首次运行会无错误地完成，但不会写入任何有用的内容，因此如果 `status` 未显示任何字符串，请返回适合您路径的指南。
+`doctor` 会检查配置、路径、提供程序和环境是否已准备就绪。除非您传递 `--local`，否则它还会验证提供程序中的模型 ID。`sync` 会按顺序运行配置启用的每个步骤。`status` 会显示每个区域设置中已翻译的内容。如果工具无法在项目中看到文本，则首次运行会无错误完成，但不会写入任何有用的内容，因此如果 `status` 未显示任何字符串，请返回到您路径的指南。
 
 `suggest-models` 根据已发布的基准测试对活动提供商的聊天模型进行排名。`suggest-models --apply` 会替换 `translationModels`，但保留 `uiModels` 和 `localeModels` 不变。相同的排名位于仪表板的 **模型** 选项卡上。有关排名工作原理以及列表为何包含多个模型的信息，请参阅：[AI 模型](/zh-Hans/guide/ai-models)。命令参考：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
@@ -158,7 +161,7 @@ ai-i18n-tools status
 
 首选 `sync`，而不是链接各个翻译脚本。仅当需要单独执行一个步骤时，才使用单步脚本。
 
-要让 CLI 输出和仪表板以其他语言显示，请传递 `-L <code>` 或设置 `AI_I18N_LANG`：请参阅[工具界面语言](/zh-Hans/guide/tool-ui-language)。
+要以其他语言显示 CLI 输出和仪表板，请传递 `-L <code>` 或设置 `AI_I18N_LANG`：请参阅 [工具 UI 语言](/zh-Hans/guide/tool-ui-language)。
 
 <a id="combined-sync"></a>
 

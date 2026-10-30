@@ -565,12 +565,6 @@
       "pt-BR": "⚠️ Tradução interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
       "zh-Hant": "⚠️ 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
-    "locations": [
-      {
-        "file": "src/cli/doc-translate.ts",
-        "line": 3509
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -581,7 +575,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/doc-translate.ts",
+        "line": 3509
+      }
+    ]
   },
   "97139627": {
     "source": "(none)",
@@ -3362,12 +3362,6 @@
       "pt-BR": "⚠️ Modo de simulação: nenhuma alteração será feita",
       "zh-Hant": "⚠️ 試執行模式：不會進行任何變更"
     },
-    "locations": [
-      {
-        "file": "src/cli/doc-translate.ts",
-        "line": 3647
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -3378,7 +3372,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/doc-translate.ts",
+        "line": 3647
+      }
+    ]
   },
   "4f62837d": {
     "source": "Locale concurrency:",
@@ -8771,12 +8771,6 @@
       "pt-BR": "IDs de modelo para benchmark, separados por vírgulas (padrão: todos os IDs de modelo configurados de translationModels, uiModels e localeModels)",
       "zh-Hant": "要進行基準測試的模型 ID，以逗號分隔 (預設：來自 translationModels、uiModels 和 localeModels 的所有已設定模型 ID)"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 753
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -8787,7 +8781,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 753
+      }
+    ]
   },
   "d5c0befb": {
     "source": "Inline sample text to translate (overrides --file and the default)",
@@ -10709,12 +10709,6 @@
       "pt-BR": "Locales de destino para preencher, separados por vírgulas (padrão: os targetLocales configurados do bloco)",
       "zh-Hant": "要填入的目標地區設定，以逗號分隔 (預設：區塊的已設定 targetLocales)"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 1309
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -10725,7 +10719,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 1309
+      }
+    ]
   },
   "c9c95c18": {
     "source": "UI block to use: zero-based index, description, or strings.json path (default: block 0)",
@@ -12387,12 +12387,6 @@
       "pt-BR": "💡 Todos os arquivos foram ignorados (o cache corresponde à saída). Use --force-update para reprocessar arquivos (usando o cache de tradução) ou --force para retraduzir arquivos",
       "zh-Hant": "💡 所有檔案均已跳過 (快取符合輸出)。使用 --force-update 重新處理檔案 (使用翻譯快取) 或使用 --force 重新翻譯檔案"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 2046
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -12403,7 +12397,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 2046
+      }
+    ]
   },
   "69b8ff23": {
     "source": "❌ [translate-docs] {{error}}",
@@ -14084,12 +14084,6 @@
       "pt-BR": "Locales de destino para as etapas translate-ui, translate-svg e translate-docs, separados por vírgulas (opcional; padrões da configuração / ui-languages.json)",
       "zh-Hant": "用於 translate-ui、translate-svg 和 translate-docs 步驟的目標地區設定，以逗號分隔 (選用；預設來自 config / ui-languages.json)"
     },
-    "locations": [
-      {
-        "file": "src/cli/index.ts",
-        "line": 2610
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -14100,7 +14094,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 2610
+      }
+    ]
   },
   "67a44c00": {
     "source": "Only translate files under this path (docs/SVG); project-relative or absolute",
@@ -18388,12 +18388,6 @@
       "pt-BR": "Catálogo sem retenção de dados (GET /models?zdr=true).",
       "zh-Hant": "零資料保留目錄 (GET /models?zdr=true)。"
     },
-    "locations": [
-      {
-        "file": "src/cli/list-models.ts",
-        "line": 84
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -18404,7 +18398,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/list-models.ts",
+        "line": 84
+      }
+    ]
   },
   "8cf0e18a": {
     "source": "No models returned by the provider.",
@@ -20865,16 +20865,6 @@
       "pt-BR": "⚠️ Tradução JSON interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
       "zh-Hant": "⚠️ JSON 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
-    "locations": [
-      {
-        "file": "src/cli/translate-json-run.ts",
-        "line": 373
-      },
-      {
-        "file": "src/cli/translate-json-run.ts",
-        "line": 381
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -20885,7 +20875,17 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-json-run.ts",
+        "line": 373
+      },
+      {
+        "file": "src/cli/translate-json-run.ts",
+        "line": 381
+      }
+    ]
   },
   "30ce5c36": {
     "source": "📊 Summary:",
@@ -21296,12 +21296,6 @@
       "pt-BR": "⚠️ Tradução SVG interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
       "zh-Hant": "⚠️ SVG 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
-    "locations": [
-      {
-        "file": "src/cli/translate-svg.ts",
-        "line": 96
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -21312,7 +21306,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-svg.ts",
+        "line": 96
+      }
+    ]
   },
   "c1163c83": {
     "source": "🌐 Translating {{fileCount}} SVG file(s) to {{localeCount}} locale(s)",
@@ -21630,12 +21630,6 @@
       "pt-BR": "⚠️ Tradução da UI interrompida — resumo parcial (tokens e custo refletem o trabalho da API concluído antes da interrupção).",
       "zh-Hant": "⚠️ UI 翻譯中斷 — 部分摘要 (權杖和費用反映中斷前已完成的 API 工作)。"
     },
-    "locations": [
-      {
-        "file": "src/cli/translate-ui-strings.ts",
-        "line": 374
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -21646,7 +21640,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-ui-strings.ts",
+        "line": 374
+      }
+    ]
   },
   "be995cd8": {
     "source": "wrote Gettext catalog {{locale}} → {{path}}",
@@ -21890,12 +21890,6 @@
       "pt-BR": "Diretório de saída:",
       "zh-Hant": "輸出目錄："
     },
-    "locations": [
-      {
-        "file": "src/cli/translate-ui-strings.ts",
-        "line": 620
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -21906,7 +21900,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/cli/translate-ui-strings.ts",
+        "line": 620
+      }
+    ]
   },
   "31c1b29a": {
     "source": "Parallel translations:",
@@ -26483,12 +26483,6 @@
       "pt-BR": "Carregando estatísticas…",
       "zh-Hant": "正在載入統計資料…"
     },
-    "locations": [
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 2576
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -26499,7 +26493,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 2576
+      }
+    ]
   },
   "823ad5a9": {
     "source": "Statistics loaded.",
@@ -26988,12 +26988,6 @@
       "pt-BR": "Carregando uso…",
       "zh-Hant": "正在載入使用量…"
     },
-    "locations": [
-      {
-        "file": "src/dashboard-app/app.js",
-        "line": 3019
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -27004,7 +26998,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3019
+      }
+    ]
   },
   "e355b050": {
     "source": "Delete all usage data ({{calls}} call row(s) and {{totals}} monthly total(s))? This cannot be undone.",
@@ -28950,12 +28950,6 @@
       "pt-BR": "Falhas de tradução - priorize pela ordem de nova tentativa, inspecione o segmento de origem e registre os links de origem.",
       "zh-Hant": "翻譯失敗 - 依重試順序優先處理、檢查來源區段並記錄來源連結。"
     },
-    "locations": [
-      {
-        "file": "src/dashboard-app/index.html",
-        "line": 216
-      }
-    ],
     "models": {
       "fr": "gemini-2.5-flash",
       "es": "gemini-2.5-flash",
@@ -28966,7 +28960,13 @@
       "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
-    }
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 216
+      }
+    ]
   },
   "1e9b9f7e": {
     "source": "If you see old entries, run",

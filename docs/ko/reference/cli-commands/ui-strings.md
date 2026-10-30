@@ -40,7 +40,7 @@ Intlayer `*.content.ts` 사전 내에서 누락되거나 오래된 로케일 리
 
 **주요 옵션:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]`: 스캔할 파일/디렉터리/glob (기본값: 블록의 `sourceRoots`). `-l` / `--locale`: 채울 대상 로케일(쉼표로 구분) (기본값: 블록에 구성된 `targetLocales`). `--ui-block`: 0부터 시작하는 인덱스, 설명 또는 `stringsJson` 경로 (기본값: 블록 0). `-j`는 로케일을 병렬화합니다.
+`[paths...]`: 스캔할 파일/디렉터리/글롭 (기본값: 블록의 `sourceRoots`). `-l` / `--locale`: 채울 쉼표로 구분된 대상 로케일 (기본값: 블록에 구성된 `targetLocales`). `--ui-block`: 0부터 시작하는 인덱스, 설명 또는 `stringsJson` 경로 (기본값: 블록 0). `-j`는 로케일을 병렬화합니다.
 
 **참고 항목:** [migrate-intlayer](#migrate-intlayer), [Intlayer에서 마이그레이션](/ko/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ UI 문자열만 번역합니다(`strings.json` → 로케일 JSON). `features.tr
 
 **주요 옵션:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: 쉼표로 구분된 대상 로케일 (기본값: config `targetLocales`에서 `sourceLocale` 제외). `--force`: 로케일별로 모든 항목 재번역 (기존 번역 무시). `--dry-run`: 쓰기 및 API 호출 없음. `-j`은(는) **locales**를 병렬 처리합니다; 각 로케일 내에서 config `uiBatchConcurrency`(기본값 **2**)은(는) LLM 배치(50개 문자열 청크, 그 다음 복수형 그룹)를 병렬 처리합니다. `uiBatchConcurrency`에 대한 CLI 플래그는 없습니다.
+`-l` / `--locale`: 쉼표로 구분된 대상 로케일 (기본값: 구성 `targetLocales`에서 `sourceLocale` 제외). `--force`: 로케일별로 모든 항목을 다시 번역합니다 (기존 번역 무시). `--dry-run`: 쓰기 없음, API 호출 없음. `-j`는 **로케일**을 병렬 처리하며, 각 로케일 내에서 구성 `uiBatchConcurrency` (기본값 **2**)는 LLM 배치(50개 문자열 청크, 그 다음 복수 그룹)를 병렬 처리합니다. `uiBatchConcurrency`에 대한 CLI 플래그는 없습니다.
 
 ---
 
@@ -97,7 +97,7 @@ UI 문자열을 추출한 다음 번역합니다(`features.translateUIStrings` �
 
 **개요:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-각 선택된 카탈로그가 소스와 일치하도록 먼저 `extract`을(를) 실행하고(`features.translateUIStrings` 필요), 그 다음 소스 로캘 UI 문자열(맞춤법, 문법)에 대한 LLM 검토를 수행합니다. `--ui-block`은(는) 추출 및 검토를 하나의 블록으로 제한합니다. 용어 힌트는 `glossary.userGlossary` CSV에서만 가져옵니다(`translate-ui`와(과) 동일한 범위 — UI 카탈로그는 다시 전달되지 않으므로 잘못된 문구가 용어집으로 강화되지 않음). 활성 LLM 공급자(해당 API 키 환경 변수)를 사용합니다.
+`extract`을(를) 먼저 실행하여 (`features.translateUIStrings` 필요) 선택된 각 카탈로그가 소스와 일치하도록 한 다음, 소스 로케일 UI 문자열에 대한 LLM 검토(철자, 문법)를 수행합니다. `--ui-block`는 추출 및 검토를 하나의 블록으로 제한합니다. 용어 힌트는 `glossary.userGlossary` CSV에서만 제공됩니다 (`translate-ui`와 동일한 범위 — UI 카탈로그는 다시 피드백되지 않으므로 잘못된 복사본이 용어로 강화되지 않습니다). 활성 LLM 공급자(해당 API 키 환경 변수)를 사용합니다.
 
 실패 시(기능 플래그 누락, 추출 실패, 카탈로그 누락 또는 유효하지 않음, API 키 누락, 모든 배치 실패) **1**로 종료하고, 실행이 성공적으로 완료되면(결과는 권고 사항) **0**으로 종료합니다. `cacheDir` 아래에 `proofread-ui-results_<timestamp>.log`을(를) 사람이 읽을 수 있는 보고서(요약, 문제, 검토되지 않은 행, 문자열별 정상 행)로 작성합니다. 터미널에는 요약 개수와 문제만 출력되며(문자열당 `[ok]` 줄은 출력되지 않음), 실패한 배치나 배치보다 짧고 각 슬롯에 사용 가능한 `index`이(가) 없는 모델 응답의 경우 해당 문자열은 검토되지 않은 것으로 처리됩니다. 짧은 배열이 잘못된 문자열에 적용되는 것을 방지하기 위해 해당 문제는 삭제됩니다. 마지막 줄에 로그 파일 이름을 출력합니다. `--json`을(를) 사용하면 사용자 친화적 형식의 출력이 stderr로 전송됩니다. 링크는 대시보드 UI 문자열 링크 버튼과 마찬가지로 `path:line`을(를) 사용합니다.
 

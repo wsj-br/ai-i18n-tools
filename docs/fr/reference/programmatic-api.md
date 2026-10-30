@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # API programmatique
 
-Tous les types et classes publics sont exportés depuis la racine du package. Exemple : exécuter l'étape de traduction d'interface depuis Node.js sans l'interface en ligne de commande :
+Tous les types et classes publics sont exportés depuis la racine du paquet. Exemple : exécuter l'étape translate-ui depuis Node.js sans la CLI :
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ Exportations clés (couramment utilisées — voir `src/index.ts` pour la surfac
 | `resolveDocumentationOutputPath` | Résoudre le chemin du fichier de sortie pour un document traduit. |
 | `Glossary` / `GlossaryMatcher` | Charger et appliquer les glossaires de traduction, y compris les notes de `Context` de terme facultatives. |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | Charger les `glossary.contextFiles` et les directives d'empreinte pour l'invalidation du cache. |
-| `runTranslateUI` | Point d'entrée programmatique pour l'interface de traduction. |
+| `runTranslateUI` | Point d'entrée programmatique de translate-ui. |
 | `writeInitConfigFile` | Écrit un fichier JSON de configuration de démarrage (`template`, `cwd`, un `providerKey` requis, et un `{ withReadme }` facultatif). Renvoie `{ readmeBlockAdded, hasReadmeBlock }`. |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `translationModels` de démarrage par préréglage intégré utilisé par `init -P`. |
 | `PROVIDER_PRESETS` | Mappage prédéfini du fournisseur intégré (`baseUrl`, `apiKeyEnv`). |

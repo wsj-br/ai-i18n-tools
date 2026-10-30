@@ -22,7 +22,8 @@
 | 你有 | 从这里开始 |
 | --- | --- |
 | 源代码中包含纯文本的 JS/TS 应用（React、Next.js、Node、CLI） | [为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) |
-| Python 应用（Streamlit、FastAPI、Flask、Django、gettext、桌面） | [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) |
+| Python 应用（Streamlit、FastAPI、Flask、桌面应用、脚本） | [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) |
+| Django 应用、Flask-Babel 目录或已使用 GNU gettext 的应用 | [为 Django / Python gettext 应用添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext) |
 | 网站或文档站点（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、纯 HTML） | [为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website) |
 | 仓库自述文件和其他 Markdown 文件，通常与应用放在一起 | [为你的自述文件和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme) |
 | 独立的嵌套 JSON 区域设置文件 | [JSON](/zh-Hans/guide/json) |

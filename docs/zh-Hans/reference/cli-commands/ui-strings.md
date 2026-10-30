@@ -40,7 +40,7 @@
 
 **关键选项：** `-l` / `--locale`、`--ui-block`、`--dry-run`、`-j` / `--concurrency`
 
-`[paths...]`：要扫描的文件/目录/glob 模式（默认值：块的 `sourceRoots`）。`-l` / `--locale`：要填充的目标区域设置，以逗号分隔（默认值：块配置的 `targetLocales`）。`--ui-block`：从零开始的索引、描述或 `stringsJson` 路径（默认值：块 0）。`-j` 可并行处理区域设置。
+`[paths...]`：要扫描的文件/目录/全局模式（默认值：块的 `sourceRoots`）。`-l` / `--locale`：逗号分隔的目标语言环境以填充（默认值：块配置的 `targetLocales`）。`--ui-block`：从零开始的索引、描述或 `stringsJson` 路径（默认值：块 0）。`-j` 并行处理语言环境。
 
 **另请参阅：** [migrate-intlayer](#migrate-intlayer)、[从 Intlayer 迁移](/zh-Hans/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@
 
 **关键选项：** `-l` / `--locale`，`--force`，`--dry-run`，`-j` / `--concurrency`
 
-`-l` / `--locale`：逗号分隔的目标区域设置（默认：配置 `targetLocales` 减去 `sourceLocale`）。`--force`：重新翻译每个区域设置的所有条目（忽略现有翻译）。`--dry-run`：不写入，不进行 API 调用。`-j` 并行处理 **区域设置**；在每个区域设置内，配置 `uiBatchConcurrency`（默认 **2**）并行处理 LLM 批次（50 个字符串组成的块，然后是复数组）。`uiBatchConcurrency` 没有 CLI 标志。
+`-l` / `--locale`：逗号分隔的目标语言环境（默认值：配置 `targetLocales` 减去 `sourceLocale`）。`--force`：重新翻译每个语言环境的所有条目（忽略现有翻译）。`--dry-run`：不写入，不进行 API 调用。`-j` 并行处理 **语言环境**；在每个语言环境内，配置 `uiBatchConcurrency`（默认 **2**）并行处理 LLM 批次（50 个字符串的块，然后是复数组）。没有针对 `uiBatchConcurrency` 的 CLI 标志。
 
 ---
 
@@ -97,7 +97,7 @@
 
 **概要：** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-首先运行 `extract`（需要 `features.translateUIStrings`），以便每个选定的目录与源文本匹配，然后由 LLM 审查源语言区域的 UI 字符串（拼写、语法）。`--ui-block` 将提取和审查限制为单个块。术语提示仅来自 `glossary.userGlossary` CSV（与 `translate-ui` 范围相同——UI 目录不会回传，因此错误文案不会被强化为术语表）。使用当前激活的 LLM 提供商（及其 API 密钥环境变量）。
+首先运行 `extract`（需要 `features.translateUIStrings`），以便每个选定的目录都与源匹配，然后对源语言环境 UI 字符串进行 LLM 审查（拼写、语法）。`--ui-block` 将提取和审查限制为一个块。术语提示仅来自 `glossary.userGlossary` CSV（与 `translate-ui` 范围相同 — UI 目录不会反馈，因此不良文案不会作为词汇表被强化）。使用活动的 LLM 提供商（其 API 密钥环境变量）。
 
 失败时退出并返回 **1**（缺少功能开关、提取失败、目录缺失或无效、缺少 API 密钥，或所有批次均失败）；运行成功完成时退出并返回 **0**（发现的问题仅供参考）。将 `proofread-ui-results_<timestamp>.log` 写入 `cacheDir` 下，作为人类可读的报告（包含摘要、问题、未审查行以及每个字符串的 OK 行）；终端仅打印摘要计数和问题（不打印每个字符串的 `[ok]` 行）。如果批次失败，或者模型响应短于批次长度且每个槽位没有可用的 `index`，则将这些字符串计为未审查。它们的问题将被丢弃，以免将过短的数组应用到错误的字符串上。在最后一行打印日志文件名。启用 `--json` 时，人类可读样式的输出将发送到 stderr。链接使用 `path:line`，类似于仪表板 UI 字符串链接按钮。
 

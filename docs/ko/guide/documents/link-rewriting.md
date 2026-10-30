@@ -13,9 +13,9 @@
 | 레이아웃 | 내장 재작성기 | 수정 내용 |
 | --- | --- | --- |
 | `"flat"` (사용자 지정 `pathTemplate`이 없을 때 기본값) | 플랫 링크 재작성기 (`rewriteRelativeLinks`, 기본적으로 켜짐) | 페이지 간 상대 링크 (`guide.md` → `guide.de.md`) 및 비마크다운 자산 URL의 깊이 접두사 |
-| `"vitepress"` | VitePress 링크 정규화기 (`rewriteVitepressLinks`, 기본적으로 켜짐) | README 스타일 `docs/guide/…` 경로 → 사이트 경로 (`/guide/…`) |
-| `"nextra"` | Nextra 링크 정규화 도구(`rewriteNextraLinks`, 기본적으로 켜짐) | `content/en/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로(`/guide/…`) |
-| `"fumadocs"` | Fumadocs 링크 정규화 도구(`rewriteFumadocsLinks`, 기본적으로 켜짐) | `content/docs/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로(`/docs/…`) |
+| `"vitepress"` | VitePress 링크 정규화 도구 (`rewriteVitepressLinks`, 기본적으로 켜짐) | README 스타일 `docs/guide/…` 경로 → 사이트 경로 (`/guide/…`) |
+| `"nextra"` | Nextra 링크 정규화 도구 (`rewriteNextraLinks`, 기본적으로 켜짐) | `content/en/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로 (`/guide/…`) |
+| `"fumadocs"` | Fumadocs 링크 정규화 도구 (`rewriteFumadocsLinks`, 기본적으로 켜짐) | `content/docs/…` 및 상대 `.mdx` 경로 → 로케일 중립 경로 (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | 없음 | `postProcessing`까지 소스 URL은 변경되지 않고 통과 |
 
 사용자 지정 `pathTemplate`는 `rewriteRelativeLinks: true`을 명시적으로 설정하지 않는 한 플랫 재작성기를 비활성화합니다. 페이지 간 `#anchor` 처리에 대해서는 [출력 레이아웃](/ko/guide/documents/output-layouts) 및 [앵커 링크](/ko/guide/documents/anchor-links)를 참조하세요.
@@ -79,7 +79,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 <a id="per-locale-asset-folder"></a>
 ### 로케일별 자산 폴더
 
-처음부터 로케일 코드가 지정된 하위 디렉터리에 자산을 저장하고 하나의 일반 규칙으로 세그먼트를 교체합니다.
+에셋을 처음부터 로케일 코드가 지정된 하위 디렉터리 아래에 저장하고, 해당 세그먼트를 하나의 일반 규칙으로 교체합니다:
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 ###는 일반적으로 **필요하지 않습니다** `regexAdjustments`를 사용할 때:
 
-- 페이지 간 링크가 간단한 상대 마크다운 경로이고 `docsOutput.style = "flat"`인 경우 (내장된 재작성기가 로케일 접미사를 추가함)
-- 자산이 소스 파일 옆에 있고 플랫 재작성기의 파일별 깊이 접두사가 올바르게 해결하는 경우
-- 영어 및 모든 번역된 사본이 **동일한** URL을 사용하는 경우 (사이트 루트의 공유 이미지, 공동 배치된 자산, 정규화기 후 VitePress 사이트 경로)
-- VitePress 인-사이트 링크가 사이트 경로 또는 `docs/guide/…` 경로와 `rewriteVitepressLinks: true`를 사용하는 경우
+- 페이지 간 링크는 간단한 상대 마크다운 경로이며 `docsOutput.style = "flat"` (내장된 재작성기가 로케일 접미사를 추가함)
+- 에셋은 소스 파일 옆에 있으며 플랫 재작성기의 파일별 깊이 접두사가 이를 올바르게 해결합니다.
+- 영어 및 모든 번역본은 **동일한** URL을 사용합니다 (사이트 루트의 공유 이미지, 함께 배치된 에셋, 정규화 도구 이후의 VitePress 사이트 경로)
+- VitePress 사이트 내 링크는 사이트 경로 또는 `docs/guide/…` 경로를 `rewriteVitepressLinks: true`와 함께 사용합니다.
 - Nextra 및 Fumadocs 페이지 내 링크는 로케일 중립 경로(`/guide/…`, `/docs/…`) 또는 `rewriteNextraLinks` / `rewriteFumadocsLinks: true`가 있는 콘텐츠 루트 경로를 사용합니다.
 
 <a id="full-config-example"></a>

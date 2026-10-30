@@ -30,7 +30,7 @@ Use `translate-svg` quando:
 <a id="design-for-i18n-from-the-start"></a>
 ## Projete para i18n desde o início
 
-SVGs são mais fáceis de traduzir quando os rótulos são elementos de texto reais desde o primeiro dia:
+SVGs são mais fáceis de traduzir quando os rótulos são elementos de texto reais desde o início:
 
 - Coloque texto legível por humanos em `<text>`, `<title>` e `<desc>`.
 - Evite converter rótulos em caminhos em sua ferramenta de design — os dados de caminho são opacos para o tradutor.

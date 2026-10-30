@@ -3,7 +3,7 @@
 
 1つのHTMLファイルのままで動作するインタラクティブページには、このパスを使用します。`extract`は`data-i18n*`マーカーを`strings.json`に読み込み、`translate-ui`はロケールごとに1つのフラットなJSONバンドルを書き出し、ブラウザースクリプトが文字列を適用します。同じスクリプトで画像ファイル名にサフィックスを付け、現在のページへのリンクを維持できます。
 
-ロケールごとに翻訳済みのHTMLファイルを1つ出力する必要がある静的サイト（ランタイムなし、ページ間リンクの書き換えあり）には、代わりに[HTMLページ](/ja/guide/documents/html-pages)を使用します。1つのファイルは1つのパスに属します。
+静的サイトで、ロケールごとに翻訳されたHTMLファイルを1つ出力する場合（ランタイムなし、ページ間リンクは書き換え済み）は、代わりに[HTMLページ](/ja/guide/documents/html-pages)を使用してください。各ファイルは1つのパイプラインにのみ属します。
 
 <a id="quick-start"></a>
 ## クイックスタート
@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-ソースロケールは元のURLを保持します。ベアの`data-i18n-locale-src`の場合、絶対URL、プロトコル相対URL、`data:` URL、および`#`フラグメントはそのまま残され、クエリ文字列とフラグメントも元の位置に留まります。値付きマーカーは、ソース以外のすべてのロケールに対してそのテンプレートを使用し、`{locale}`のみを置換します。ローカライズされた画像が404を返す場合、ランタイムは元の`src`を一度だけ復元します。`chart_pt-BR.png`は自分で出荷します。スクリプトはそれを作成しません。
+ソースロケールは元のURLを保持します。ベアな`data-i18n-locale-src`の場合、絶対URL、プロトコル相対URL、`data:` URL、および`#`フラグメントはそのまま残され、クエリ文字列とフラグメントはそのまま維持されます。値を持つマーカーは、ソース以外のすべてのロケールに対してそのテンプレートを使用し、`{locale}`のみを置換します。ローカライズされた画像が404エラーになった場合、ランタイムは元の`src`を一度復元します。`chart_pt-BR.png`はご自身で提供してください。スクリプトはそれを作成しません。
 
 `data-i18n-locale-href` はこのカタログモデル用です。`about.pt-BR.html` へのリンクは [HTML ページ](/ja/guide/documents/html-pages) パイプラインに属します。
 
@@ -365,7 +365,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 
 ランタイムの `normalizeI18nText` は [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) の `normalizeI18nText` と一致します。つまり、前後の空白をトリミングし、連続する空白を1つにまとめます。ソース言語のテキストがカタログキーであるため、翻訳が見つからない場合はそのソーステキストにフォールバックします。
 
-実行可能なデモは [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) です。`pnpm dev` は [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) でこれを配信します。
+実行可能なデモは[ `examples/plain-html` ](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)です。`pnpm dev`がそれを`http://localhost:3090/?locale=pt-BR`で配信します。
 
 <a id="runtime-source"></a>
 ## ランタイムソース

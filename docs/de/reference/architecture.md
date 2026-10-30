@@ -33,7 +33,7 @@ Jede Pipeline folgt demselben Kernzyklus: **Segmente extrahieren → Syntax sch�
 | | `src/glossary/` | Laden von Glossaren, Terminhinweise und optionale Projektkontextdateien für Prompts |
 | | `src/utils/` | Logger, Hashing, Ignore-Parser, Tabellen mit Anzeigebreite, `.env`-Loader |
 | **Ihre App-Laufzeit** | `src/runtime/` | i18next-Helfer und Anzeige-Dienstprogramme – exportiert als `'ai-i18n-tools/runtime'` ([Laufzeit-Helfer](/de/guide/runtime-helpers)) |
-| **Tool-UI** *(Dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Lokalisiert die CLI und das Übersetzungs-Dashboard dieses Pakets – getrennt von Ihrem Projektinhalt ([Selbstlokalisierung](#self-localization-tool-ui)) |
+| **Tool-UI** *(Dogfooding)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | Lokalisiert die eigene CLI und das Übersetzungs-Dashboard dieses Pakets — getrennt von Ihrem Projektinhalt ([Selbstlokalisierung](#self-localisation-tool-ui)) |
 
 Alles, was für die programmatische Nutzung vorgesehen ist, wird aus `src/index.ts` re-exportiert ([Programmatische API](/de/reference/programmatic-api)).
 
@@ -125,7 +125,7 @@ i18next lädt diese als Ressourcenbündel und sucht Übersetzungen über den Que
 - Ein JSON-Array von Zeichenfolgen senden und ein JSON-Array von Übersetzungen zurückfordern.
 - Glossar-Hinweise einbeziehen, falls verfügbar.
 
-`LlmClient.translateUIBatch` probiert jedes Modell der Reihe nach aus und greift bei Analyse-, Netzwerk- oder falschen Skriptfehlern auf das nächste zurück (einschließlich Fallback auf romanisierte/lateinische Schrift für native Schrift-Locales). Die CLI erstellt diese Liste pro Ziel-Locale aus `localeModels`, optional `uiModels` und `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)).
+`LlmClient.translateUIBatch` versucht jedes Modell der Reihe nach und greift bei Analyse-, Netzwerk- oder Skriptfehlern zurück (einschließlich romanisiertem/lateinischem Fallback für Lokalisierungen mit nativer Schrift). Die CLI erstellt diese Liste pro Ziellokalisierung aus `localeModels`, optional `uiModels` und `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)).
 
 ---
 
@@ -203,7 +203,18 @@ Der gemeinsame Attribut-/Schlüsselschutz für Astro-Templates und MDX JSX wird 
 
 SQLite-Datenbank (über `node:sqlite`) speichert Datensätze, die über `(source_hash, locale)` mit `translated_text`, `model`, `filepath`, `last_hit_at` und verwandten Feldern verknüpft sind. Der Hash ist die ersten 16 Hex-Zeichen des SHA-256-Hashs des normalisierten Inhalts (Leerzeichen zusammengefasst).
 
-Bei jedem Durchlauf werden Segmente nach Hash × Gebietsschema gesucht. Nur Cache-Fehler gehen an das LLM. Nach der Übersetzung wird `last_hit_at` für Segmentzeilen im aktuellen Übersetzungsbereich zurückgesetzt, die nicht getroffen wurden. Erfolgreiche Cache-Treffer während der Dokumentübersetzung löschen veraltete `translation_failures`-Zeilen für dieses Segment. `cleanup` führt zuerst `sync --force-update` aus, entfernt dann veraltete Segmentzeilen (null `last_hit_at` / leerer Dateipfad), bereinigt `file_tracking`-Schlüssel, wenn der aufgelöste Quellpfad auf der Festplatte fehlt (`doc-block:…`, `json-block:…`, `svg-files:…` usw.), entfernt Übersetzungszeilen, deren Metadaten-Dateipfad auf eine fehlende Datei verweist, bereinigt verwaiste `translation_failures`-Zeilen, bereinigt verwaiste `markdown_source_issues`-Zeilen, deren aufgelöster Quellpfad auf der Festplatte fehlt, und löscht Cache-Zeilen für Gebietsschemata, die in der Konfiguration fehlen (`sourceLocale`, Stamm `targetLocales` und alle pro Block `docs[]` / `json[]` `targetLocales`; nur SQLite – verwenden Sie `purge-locale`, um generierte Dateien zu löschen); es sichert `cache.db` nicht, es sei denn, `--backup <path>` wird übergeben, wodurch zuerst ein Backup in diesen Pfad geschrieben wird.
+Bei jedem Durchlauf werden Segmente nach Hash × Locale nachgeschlagen. Nur Cache-Fehler gehen an das LLM. Nach der Übersetzung wird `last_hit_at` für Segmentzeilen im aktuellen Übersetzungsbereich, die nicht getroffen wurden, zurückgesetzt. Erfolgreiche Cache-Treffer während der Dokumentübersetzung löschen veraltete `translation_failures`-Zeilen für dieses Segment.
+
+`cleanup` führt zuerst `sync --force-update` aus, dann:
+
+- entfernt veraltete Segmentzeilen (null `last_hit_at` / leerer Dateipfad);
+- bereinigt `file_tracking`-Schlüssel, wenn der aufgelöste Quellpfad auf der Festplatte fehlt (`doc-block:…`, `json-block:…`, `svg-files:…` usw.);
+- entfernt Übersetzungszeilen, deren Metadaten-Dateipfad auf eine fehlende Datei verweist;
+- bereinigt verwaiste `translation_failures`-Zeilen;
+- bereinigt verwaiste `markdown_source_issues`-Zeilen, deren aufgelöster Quellpfad auf der Festplatte fehlt;
+- löscht Cache-Zeilen für Lokalisierungen, die in der Konfiguration fehlen (`sourceLocale`, Stamm-`targetLocales` und alle pro-Block `docs[]` / `json[]` `targetLocales`; nur SQLite — verwenden Sie `purge-locale`, um generierte Dateien zu löschen).
+
+Es sichert `cache.db` nicht, es sei denn, `--backup <path>` wird übergeben, was zuerst ein Backup in diesen Pfad schreibt.
 
 Abgerechnete Modellaufrufe (akzeptierte Übersetzungen und verworfene Wiederholungen) werden in `api_calls` gespeichert. Nach einem Befehl, der Aufrufe aufgezeichnet hat, werden Detailzeilen, die älter als sieben UTC-Kalendertage sind, in monatliche `api_totals` überführt. `usage` und die Dashboardansicht Nutzung und Kosten führen beide Tabellen zusammen. Siehe [Nutzung und Kosten](/de/guide/translation-dashboard/usage).
 
@@ -289,14 +300,14 @@ Anbieterunabhängiger Chat-Client, der auf dem Vercel AI SDK (`ai` + `@ai-sdk/op
 `Logger` unterstützt die Stufen `debug`, `info`, `warn`, `error` mit ANSI-Farbgebung. Der ausführliche Modus (`-v`) aktiviert `debug`. Wenn `logFilePath` gesetzt ist, werden Log-Zeilen zusätzlich in diese Datei geschrieben.
 
 <a id="self-localisation-tool-ui"></a>
-### Selbstreferenzielle Lokalisierung (Tool-UI)
+### Selbstlokalisierung (Tool-UI)
 
-Das Tool lokalisiert seine eigene Benutzeroberfläche – CLI-Hilfe, häufig verwendete Protokoll-/Zusammenfassungs-/Fehlermeldungen und das Translation Dashboard – separat von den Inhalten, die es für Sie übersetzt.
+Das Tool lokalisiert seine eigene Benutzeroberfläche — CLI-Hilfe, häufige Protokoll-/Zusammenfassungs-/Fehlermeldungen und das Übersetzungs-Dashboard — getrennt von den Inhalten, die es für Sie übersetzt.
 
-- **Gebietsschema-Auflösung** (`resolveUiLocale` in `src/core/ui-locale.ts`): wählt das UI-Gebietsschema aus `-L` / `--ui-lang` > `AI_I18N_LANG` > Konfiguration `uiLanguage` > Host-Betriebssystem-Gebietsschema (`Intl.DateTimeFormat().resolvedOptions().locale`). Der Kandidat wird normalisiert und exakt oder durch die nächstgelegene Variante mit dem ausgelieferten Bundle-Set abgeglichen (z. B. `pt-PT` → `pt-BR`, `en-US` → `en-GB`), wobei auf das Quell-Gebietsschema zurückgegriffen wird (`en-GB`). Die CLI löst einmal auf, bevor die Hilfe erstellt wird (Pre-Parse-Argv-Scan) und erneut nach dem Laden der Konfiguration, sodass `uiLanguage` angewendet wird (das Flag und die Umgebungsvariable haben weiterhin Vorrang).
-- **Laufzeit** (`src/i18n/index.ts`): ein minimales `t(source, vars)` mit <code v-pre>{{name}}</code>-Interpolation, das durch den englischen Quellstring gegen flache, pro-Gebietsschema-Bundles in `src/i18n/locales/<code>.json` (kopiert nach `dist/i18n/locales` beim Build) geschlüsselt ist. Fehlende Schlüssel oder Bundles geben den Quelltext zurück. Dies ist dasselbe Schlüssel-als-Standard-Modell wie bei UI-Strings — es gibt keine Hash-Suche.
-- **Dashboard**: der Server stellt `GET /api/ui-i18n` bereit, das `{ locale, dir, bundle }` für das aufgelöste UI-Gebietsschema liefert; das Frontend setzt `<html lang>` / `dir` und lokalisiert statisches Markup über `data-i18n*`-Attribute.
-- **Dogfooding**: die Bundles werden von `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) produziert, das den CLI- und Dashboard-`ui`-Block in `ai-i18n-tools.config.json` extrahiert und übersetzt. Katalogschlüssel stammen aus `t()`-Aufrufen über `src/cli/` und `src/i18n/` sowie den Dashboard-`data-i18n*`-Markierungen in `src/dashboard-app/index.html`.
+- **Gebietsschema-Auflösung** (`resolveUiLocale` in `src/core/ui-locale.ts`): wählt das UI-Gebietsschema aus `-L` / `--ui-lang` > `AI_I18N_LANG` > Konfigurations-`uiLanguage` > Host-Betriebssystem-Gebietsschema (`Intl.DateTimeFormat().resolvedOptions().locale`). Der Kandidat wird normalisiert und exakt oder nach der nächstgelegenen Variante mit dem ausgelieferten Bundle-Set abgeglichen (z. B. `pt-PT` → `pt-BR`, `en-US` → `en-GB`), wobei auf das Quellgebietsschema (`en-GB`) zurückgegriffen wird. Die CLI löst einmal auf, bevor die Hilfe erstellt wird (Pre-Parse-Argv-Scan), und erneut nach dem Laden der Konfiguration, damit `uiLanguage` angewendet wird (das Flag und die Umgebungsvariable haben weiterhin Vorrang).
+- **Laufzeit** (`src/i18n/index.ts`): ein minimales `t(source, vars)` mit <code v-pre>{{name}}</code>-Interpolation, indiziert durch die englische Quellzeichenfolge gegen flache pro-Gebietsschema-Bundles in `src/i18n/locales/<code>.json` (beim Build nach `dist/i18n/locales` kopiert). Fehlende Schlüssel oder Bundles geben den Quelltext zurück. Dies ist dasselbe Schlüssel-als-Standard-Modell wie bei UI-Strings — es gibt keinen Hash-Lookup.
+- **Dashboard**: der Server stellt `GET /api/ui-i18n` bereit, das `{ locale, dir, bundle }` für das aufgelöste UI-Gebietsschema zurückgibt; das Frontend setzt `<html lang>` / `dir` und lokalisiert statisches Markup über `data-i18n*`-Attribute.
+- **Dogfooding**: die Bundles werden von `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) erstellt, das den `ui`-Block der CLI und des Dashboards in `ai-i18n-tools.config.json` extrahiert und übersetzt. Katalogschlüssel stammen von `t()`-Aufrufen über `src/cli/` und `src/i18n/` sowie den `data-i18n*`-Markierungen des Dashboards in `src/dashboard-app/index.html`.
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

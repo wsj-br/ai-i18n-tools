@@ -3,8 +3,8 @@
 
 번역 대시보드는 프로젝트의 번역 데이터를 검사하고 편집하기 위한 로컬 웹 UI입니다. 다음 세 가지 저장소에서 데이터를 읽습니다.
 
-- SQLite 캐시(`cacheDir`) — 문서 세그먼트 번역, 실패 기록, 마크다운 문제 스캔, 청구된 API 호출 사용량
-- **`strings.json`** — UI 문자열 카탈로그(일반 문자열 및 복수형 그룹)
+- SQLite 캐시 (`cacheDir`) — 문서 세그먼트 번역, 실패 기록, 마크다운 문제 스캔, 청구된 API 호출 사용량
+- `strings.json` — UI 문자열 카탈로그 (일반 문자열 및 복수형 그룹)
 - **사용자 용어집 CSV** (`glossary.userGlossary`) — `translate-ui` 및 `proofread-ui`에 대한 용어 힌트
 
 번역 실행 후 이를 사용하여 문제를 찾거나, 잘못된 출력을 재정의하거나, 캐시 적용 범위를 검토할 수 있습니다. 수동으로 SQLite 또는 JSON을 파고들 필요가 없습니다.
@@ -48,7 +48,7 @@ ai-i18n-tools dashboard
 | UI 문자열 또는 복수형 | 일반 `sync` 또는 `translate-ui` | `--force` (`user-edited` 행을 덮어씁니다) |
 | 용어집 행 | 다음 `translate-ui` 또는 `proofread-ui` | — |
 
-**문서(SQLite 캐시)** — 수동 편집은 캐시에서 모델 `user-edited`로 태그가 지정됩니다. 로캘 문자 체계 검사에 실패한 편집(예: `hi`에 대한 로마자 힌디어)은 경고를 표시하지만, 확인을 선택하면 텍스트가 그대로 저장됩니다. 변경되지 않은 소스에 대해 `translate-docs` 또는 `sync`을 다시 실행하면 캐시된 번역이 재사용됩니다(LLM 호출 없음). 캐시에서 디스크상의 마크다운을 새로 고치려면 `sync --force-update` 또는 `translate-docs --force-update`를 실행하세요. 모든 파일을 다시 작성하지 않고(확인된 잘못된 문자 체계 편집 포함) 네이티브 문자 로캘을 다시 검증하려면 `--check-cache`를 사용하세요. 캐시를 우회하고 LLM에서 다시 번역하려는 경우(수동 수정 사항 덮어쓰기)에만 `--force`를 사용하세요.
+**문서 (SQLite 캐시)** — 수동 편집은 캐시에서 모델 `user-edited`으로 태그됩니다. 로케일 쓰기 시스템 검사(예: `hi`에 대한 로마자 힌디어)에 실패한 편집은 경고를 표시하지만, 확인하면 텍스트가 저장됩니다. 변경되지 않은 소스에서 `translate-docs` 또는 `sync`을 다시 실행하면 캐시된 번역을 재사용합니다 (LLM 호출 없음). 캐시에서 디스크의 마크다운을 새로 고치려면 `sync --force-update` 또는 `translate-docs --force-update`를 실행하십시오. 모든 파일을 다시 작성하지 않고(확인된 잘못된 스크립트 편집 포함) 기본 스크립트 로케일을 다시 검증하려면 `--check-cache`을 사용하십시오. 캐시를 우회하고 LLM에서 다시 번역하려면(수동 수정 덮어쓰기) `--force`만 사용하십시오.
 
 **UI 문자열(`strings.json`)** — 수동 편집은 `models[locale]`에서 `user-edited`로 태그됩니다. `translate-ui` 또는 `sync`를 다시 실행하면 이미 번역이 있는 항목은 건너뜁니다. UI 명령에서 `--force`를 사용하여 수동 수정을 다시 번역하고 덮어씁니다.
 

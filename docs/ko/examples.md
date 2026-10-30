@@ -41,11 +41,12 @@ Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
 <a id="which-example-matches-my-project"></a>
 ## 어떤 예제가 제 프로젝트에 맞을까요?
 
-- JS/TS 앱: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (가장 작은) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). 가이드: [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js).
-- Python 앱: python-streamlit, python-flask, python-fastapi, 또는 python-gettext. 가이드: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).
-- 웹사이트 또는 문서 사이트: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, 또는 plain-html-docs. 가이드: [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website).
-- 앱 옆의 리포지토리 README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 예제에는 문서 사이트도 있습니다). 가이드: [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme).
-- 기타: multi-provider, test-markdown, 및 intlayer-migration.
+- JS/TS 앱: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (가장 작음) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). 가이드: [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js).
+- Python 앱: python-streamlit, python-flask 또는 python-fastapi. 가이드: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).
+- Django 또는 GNU gettext 앱: python-gettext (gettext 명령줄 도구; Django 예제 디렉터리는 없음). 가이드: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext).
+- 웹사이트 또는 문서 사이트: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html 또는 plain-html-docs. 가이드: [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website).
+- 앱 옆의 저장소 README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 예제에는 문서 사이트도 포함되어 있음). 가이드: [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme).
+- 기타: multi-provider, test-markdown 및 intlayer-migration.
 
 <a id="list-of-examples"></a>
 ## 예시 목록
@@ -80,7 +81,7 @@ Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 사전 `.ts` 셸, 하나의 `t()` 서버 컴포넌트(`pt-BR`, `zh-Hans`) 포함 | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI 카탈로그 (`pt`, `zh`, 점 파서) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | 순수 HTML + `data-i18n*` 마커; 정적 로케일 JSON (대시보드 스타일 UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
-| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | 일반 HTML 문서: 로케일당 단일 페이지, 지역화된 이미지, hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
+| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | 문서로서의 일반 HTML: 로케일당 한 페이지, 현지화된 이미지, hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM 공급자 선택 또는 벤치마크 (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | 마크다운 / CJK 번역 회귀 테스트 (데바나가리, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, 재설정 + AI 에이전트 보고서) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |

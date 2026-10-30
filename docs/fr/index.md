@@ -68,11 +68,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Application Python
 
-Enveloppez le texte destiné à l'utilisateur et chargez les messages traduits avec un assistant généré, ou conservez gettext natif. Exécutez la CLI de traduction à partir d'un exécutable autonome sans installation Node.js séparée.
+Encapsulez le texte destiné à l'utilisateur et chargez les messages traduits avec un utilitaire généré. Vous utilisez déjà Django ou GNU gettext ? Conservez vos appels gettext et laissez l'outil remplir les fichiers `.po`. Exécutez la CLI de traduction à partir d'un exécutable autonome sans installation Node.js séparée.
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python)
+[Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) · [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">
@@ -120,9 +120,9 @@ Vous ne savez pas quel chemin choisir ? [Ajouter l'i18n à votre projet](/fr/gui
 
 <div class="home-steps">
 
-1. **Préparez votre projet.** Choisissez vos langues, un fournisseur de traduction et les modèles à essayer. Pour les applications, marquez le texte visible par l'utilisateur et configurez l'environnement d'exécution de traduction. Pour les sites, activez le routage linguistique de votre framework. Les guides incluent des invites pour agent de codage lorsque des modifications de la source sont nécessaires.
+1. **Préparez votre projet.** Choisissez vos langues, un fournisseur de traduction et les modèles à essayer. Pour les applications, marquez le texte destiné à l'utilisateur et configurez l'environnement d'exécution de la traduction. Pour les sites, activez le routage linguistique de votre framework. Les guides incluent des invites d'agent de codage là où des modifications du code source sont nécessaires.
 2. **Traduisez dans des fichiers que vous pouvez utiliser.** Une fois la configuration prête, exécutez `sync`. Il extrait les chaînes d'application prises en charge, traduit le contenu que vous avez activé et écrit des fichiers de paramètres régionaux ou des pages localisées.
-3. **Chargez, vérifiez et continuez.** Connectez la sortie à votre application ou site, configurez le changement de langue et vérifiez une langue cible. Réexécutez après des modifications de la source pour traduire le texte nouveau ou modifié.
+3. **Chargez, vérifiez et continuez.** Connectez la sortie à votre application ou site, configurez le changement de langue et vérifiez une langue cible. Réexécutez après des modifications du code source pour traduire le texte nouveau ou modifié.
 
 </div>
 
@@ -159,7 +159,7 @@ t("Save changes");
 
 :::
 
-La phrase source reste lisible dans votre code. Votre application charge les fichiers de paramètres régionaux générés au runtime. Vous voulez voir le câblage complet ? [Explorez l'exemple Next.js fonctionnel](/fr/examples#nextjs-app). Les sites web suivent un chemin différent : [générez des pages localisées](/fr/guide/add-i18n-to-website) au lieu d'envelopper chaque paragraphe.
+La phrase source reste lisible dans votre code. Votre application charge les fichiers de paramètres régionaux générés à l'exécution. Vous voulez voir le câblage complet ? [Explorez l'exemple Next.js fonctionnel](/fr/examples#nextjs-app). Les sites web suivent un chemin différent : [générez des pages localisées](/fr/guide/add-i18n-to-website) au lieu d'encapsuler chaque paragraphe.
 
 <a id="built-for-the-next-update-too"></a>
 ## Conçu également pour la prochaine mise à jour
@@ -286,7 +286,7 @@ Découvrez comment une application Streamlit encapsule ses messages et utilise d
 <a id="docs-in-more-languages"></a>
 ### Documentation dans d'autres langues
 
-Découvrez les pages VitePress traduites ainsi que la navigation localisée et les étiquettes de thème.
+Visualisez les pages VitePress traduites ainsi que la navigation et les étiquettes de thème localisées.
 
 [Explorer l'exemple VitePress](/fr/examples#vitepress-docs)
 

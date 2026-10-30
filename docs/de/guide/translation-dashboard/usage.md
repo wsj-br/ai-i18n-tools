@@ -1,7 +1,7 @@
 <a id="usage--costs"></a>
 # Nutzung und Kosten
 
-Der Tab **Nutzung und Kosten** fasst die abgerechneten Modell-API-Aufrufe dieses Projekts zusammen – einschließlich später verworfener Wiederholungsversuche – mit Tokenanzahlen und den Gesamtkosten in USD.
+Der Tab **Nutzung & Kosten** fasst die abgerechneten Modell-API-Aufrufe zusammen, die dieses Projekt getätigt hat – einschließlich Wiederholungsversuchen, die später verworfen wurden – mit Token-Anzahlen und einem einzigen USD-Betrag.
 
 Dieselbe Aggregation ist in der Befehlszeile als `ai-i18n-tools usage` verfügbar.
 

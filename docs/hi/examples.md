@@ -41,11 +41,12 @@ Windows पर, `.venv\Scripts\activate` को सक्रिय करें�
 <a id="which-example-matches-my-project"></a>
 ## कौन सा उदाहरण मेरे प्रोजेक्ट से मेल खाता है?
 
-- एक JS/TS ऐप: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (सबसे छोटा) या [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)। गाइड: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js)।
-- एक Python ऐप: python-streamlit, python-flask, python-fastapi, या python-gettext। गाइड: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)।
-- एक वेबसाइट या डॉक्स साइट: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, या plain-html-docs। गाइड: [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website)।
-- एक ऐप के बगल में एक रिपॉजिटरी README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) या [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs उदाहरण में एक डॉक्स साइट भी है)। गाइड: [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
-- कुछ और: multi-provider, test-markdown, और intlayer-migration।
+- एक JS/TS ऐप: [कंसोल-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (सबसे छोटा) या [नेक्स्टजेएस-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). गाइड: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js).
+- एक Python ऐप: python-streamlit, python-flask, या python-fastapi. गाइड: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python).
+- एक Django या GNU gettext ऐप: python-gettext (एक gettext कमांड-लाइन टूल; कोई Django उदाहरण डायरेक्टरी नहीं है). गाइड: [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext).
+- एक वेबसाइट या डॉक्स साइट: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, या plain-html-docs. गाइड: [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website).
+- एक ऐप के बगल में एक रिपॉजिटरी README: [कंसोल-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) या [नेक्स्टजेएस-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (नेक्स्टजेएस उदाहरण में एक डॉक्स साइट भी है). गाइड: [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme).
+- कुछ और: multi-provider, test-markdown, और intlayer-migration.
 
 <a id="list-of-examples"></a>
 ## उदाहरणों की सूची
@@ -80,7 +81,7 @@ Windows पर, `.venv\Scripts\activate` को सक्रिय करें�
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / डिक्शनरी `.ts` शेल, और एक `t()` सर्वर कंपोनेंट (`pt-BR`, `zh-Hans`) | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI कैटलॉग (`pt`, `zh`, डॉट पार्सर) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | सादा HTML + `data-i18n*` मार्कर; स्थिर लोकेल JSON (डैशबोर्ड-शैली UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
-| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | दस्तावेज़ों के रूप में सादा HTML: प्रति लोकेल एक पृष्ठ, स्थानीयकृत छवियाँ, hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
+| [**प्लेन-एचटीएमएल-डॉक्स**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | दस्तावेज़ों के रूप में प्लेन HTML: प्रति लोकेल एक पृष्ठ, स्थानीयकृत छवियाँ, hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | एक LLM प्रदाता चुनें या बेंचमार्क करें (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | रिग्रेशन-टेस्ट मार्कडाउन / CJK अनुवाद (देवनागरी, MDX) | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | इंटलेयर `.content.ts` → `t()` (`migrate-intlayer`, रीसेट + AI-एजेंट रिपोर्ट) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |

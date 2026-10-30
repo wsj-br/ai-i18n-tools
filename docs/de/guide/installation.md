@@ -3,7 +3,7 @@
 
 Diese Seite installiert die CLI und sorgt dafür, dass der reine Befehl `ai-i18n-tools` funktioniert. Bereits installiert? Gehen Sie zu [Schnellstart](/de/guide/quick-start).
 
-Das veröffentlichte Paket ist nur ESM. Verwenden Sie `import` oder `import()` in Node.js oder Ihrem Bundler; verwenden Sie nicht `require('ai-i18n-tools')`. Das Paket deklariert `engines.node` `>=22.16.0`; ältere Node.js-Versionen werden nicht unterstützt. Das npm-Tarball enthält nur englische Dateien unter `docs/`; sprachspezifische Kopien unter `translated-docs/` befinden sich im [GitHub-Repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
+Das veröffentlichte Paket ist nur ESM. Verwenden Sie `import` oder `import()` in Node.js oder Ihrem Bundler; verwenden Sie nicht `require('ai-i18n-tools')`. Das Paket deklariert `engines.node` `>=22.16.0`; ältere Node.js-Versionen werden nicht unterstützt. Das npm-Tarball enthält den Consumer-Kontext unter `docs/ai-i18n-tools-context.md` und den vollständigen `skills/`-Baum, nicht die vollständige Dokumentationsseite; lokalspezifische Kopien unter `translated-docs/` befinden sich im [GitHub-Repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/translated-docs).
 
 ```bash
 npm install ai-i18n-tools
@@ -32,9 +32,9 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 Das Installationsprogramm erkennt das System, lädt die passende ausführbare Datei herunter, prüft `SHA256SUMS.txt`, installiert den Befehl als `ai-i18n-tools` (`ai-i18n-tools.exe` unter Windows) und fügt das Installationsverzeichnis zu `PATH` hinzu. Das Standardverzeichnis ist `~/.local/bin`. Öffnen Sie ein neues Terminal, falls der Befehl noch nicht gefunden wird. Setzen Sie `AI_I18N_VERSION` (zum Beispiel `v1.11.0`), um eine Version festzulegen, oder `AI_I18N_INSTALL_DIR`, um ein anderes Verzeichnis zu wählen.
 
-Die Binärdateien sind nicht notariell beglaubigt oder Authenticode-signiert. macOS fragt Sie möglicherweise, ob Sie ein unsigniertes Programm genehmigen möchten. Windows SmartScreen zeigt möglicherweise eine Warnung an. Das macOS-Installationsprogramm löscht das Quarantäne-Flag, nachdem die Prüfsumme übereinstimmt.
+Die Binärdateien sind nicht notariell beglaubigt oder Authenticode-signiert. macOS fordert Sie möglicherweise auf, ein unsigniertes Programm zu genehmigen. Windows SmartScreen zeigt möglicherweise eine Warnung an. Der macOS-Installer löscht das Quarantäne-Flag, nachdem die Prüfsumme übereinstimmt.
 
-Jede Version enthält auch `SHA256SUMS.txt`, `install.sh`, `install.ps1` und `ai-i18n-tools-python-examples.zip` (die vier Python-Beispiele). Das npm-Tarball und die ausführbare Datei enthalten diese Beispiele nicht. Sie bleiben ebenfalls im Repository.
+Jede Veröffentlichung enthält auch `SHA256SUMS.txt` und `ai-i18n-tools-python-examples.zip` (die vier Python-Beispiele). Ab der Veröffentlichung, die es hinzufügt, enthält dieselbe Seite `ai-i18n-tools-skill.zip`, jedes Coding-Agent-Skill-Verzeichnis. Veröffentlichungen, die vor diesem Zip veröffentlicht wurden, enthalten es nicht, und das erste Zip enthält nur `ai-i18n-tools/`. `install.sh` und `install.ps1` bleiben im Repository-Root, und die oben genannten Befehle laden sie von dort herunter. Das npm-Tarball und die ausführbare Datei enthalten die Python-Beispiele oder das Skill-Zip nicht. Die Beispiele bleiben im Repository. Die Skill-Verzeichnisse befinden sich im npm-Tarball. Siehe [Coding-Agent-Skill](/de/guide/coding-agent-skill#download-the-skill-directory).
 
 <details>
 <summary>Manuelle Anweisungen zur Installation der ausführbaren Datei <code>ai-i18n-tools</code></summary>
@@ -88,9 +88,10 @@ Legen Sie den API-Schlüssel für den aktiven Anbieter auf die gleiche Weise fes
 ```bash
 ai-i18n-tools init -t ui-python -P cheaperinference
 ai-i18n-tools suggest-models --apply
-ai-i18n-tools extract
-ai-i18n-tools translate-ui
+ai-i18n-tools sync
 ```
+
+Verwenden Sie `init` nur für eine neue Konfiguration: Es überschreibt die ausgewählte Konfigurationsdatei. Für bestehende Projekte bearbeiten Sie stattdessen die Konfiguration. `sync` verarbeitet alle konfigurierten/aktivierten Übersetzungs-Pipelines, einschließlich der UI-Extraktion.
 
 Anleitung: [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python). Befehlsreferenz: [suggest-models](/de/reference/cli-commands/models#suggest-models).
 
@@ -117,7 +118,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 <a id="using-the-cli"></a>
 ### Verwendung der CLI
 
-Installieren Sie `ai-i18n-tools` als Abhängigkeit oder Entwicklungsabhängigkeit in Ihrem Projekt (siehe oben auf dieser Seite). Das Paket deklariert einen `bin`-Eintrag, den Ihr Paketmanager mit `node_modules/.bin/ai-i18n-tools` verknüpft. Dieser Shim (`bin/ai-i18n-tools.mjs` innerhalb des installierten Pakets) lädt die kompilierte CLI.
+Installieren Sie `ai-i18n-tools` als Abhängigkeit oder devDependency in Ihrem Projekt (siehe Anfang dieser Seite). Wenn Anwendungscode `ai-i18n-tools/runtime` importiert, halten Sie es in der Produktionslaufzeit-/Build-Umgebung verfügbar; eine globale CLI oder eine eigenständige Binärdatei kann diesen Import nicht erfüllen. Das Paket deklariert einen `bin`-Eintrag, den Ihr Paketmanager mit `node_modules/.bin/ai-i18n-tools` verknüpft. Dieser Shim (`bin/ai-i18n-tools.mjs` innerhalb des installierten Pakets) lädt die kompilierte CLI.
 
 Um den reinen Befehl `ai-i18n-tools` in einer interaktiven Shell einzugeben, konfigurieren Sie eine der folgenden Optionen. Ohne Einrichtung kann die Shell die Binärdatei auch nach einer lokalen Installation nicht finden.
 
@@ -168,6 +169,19 @@ Führen Sie dann z. B. `pnpm run i18n:sync` aus. Die vollständige empfohlene Sa
 Alternativen – falls Sie `PATH` nicht anpassen möchten: `npx ai-i18n-tools …` (npm) oder `pnpm exec ai-i18n-tools …` (pnpm). Für eine einmalige Ausführung ohne Installation und ohne `package.json`-Eintrag: `npx ai-i18n-tools <cmd>` oder `pnpm dlx ai-i18n-tools <cmd>`.
 
 <a id="coding-agent-skill"></a>
+### Coding-Agent-Skill
+
+Die Installation des npm-Pakets oder der eigenständigen ausführbaren Datei registriert den Skill nicht bei einem Agenten. Die Installationsmethoden, nativen Kataloge und Agenten, die keinen Skill-Ordner haben, finden Sie unter [Coding-Agent-Skill](/de/guide/coding-agent-skill).
+
+Beziehen Sie jedes Skill-Verzeichnis, jedes ein Ordner, der `SKILL.md` enthält, ohne dieses Repository zu klonen:
+
+1. Node.js 22.20 oder neuer: `npx skills add wsj-br/ai-i18n-tools --all -y` installiert diese Verzeichnisse in den Skill-Ordner des Agenten.
+2. Paket bereits installiert: Kopieren Sie `node_modules/ai-i18n-tools/skills/.` in diesen Ordner.
+3. Kein Node.js: Extrahieren Sie `package/skills/` aus dem npm-Tarball für die Version in `ai-i18n-tools --version`. Ab der Veröffentlichung, die es hinzufügt, enthält `ai-i18n-tools-skill.zip` auf diesem GitHub Release dieselben Verzeichnisse. Veröffentlichungen, die vor dem Zip veröffentlicht wurden, enthalten es nicht. Das erste Zip enthält nur `ai-i18n-tools/`.
+
+Befehle und die Agenten-Ordner finden Sie unter [Coding-Agent-Skill](/de/guide/coding-agent-skill#download-the-skill-directory).
+
+<a id="cloned-monorepo"></a>
 ### Geklontes Monorepo
 
 Beim Entwickeln des Pakets oder Ausführen von Workspace-Beispielen aus einem vollständigen Klon von [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools):

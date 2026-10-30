@@ -15,7 +15,7 @@ Die Wahl des richtigen Verzeichnislayouts, bevor überhaupt Screenshots existier
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### Markdown mit `docsOutput.style = "flat"` (README, USER-GUIDE)
 
-Speichern Sie Screenshots von Anfang an in einem sprachkodierten Unterverzeichnis:
+Screenshots von Anfang an in einem sprachcodierten Unterverzeichnis speichern:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ Setzen Sie `docs[].docsOutput.docsRoot` auf das Stammverzeichnis der in `sourceL
 
 Der flache Link-Umschreiber wird **nicht** für `doc-system` ausgeführt (im Gegensatz zu `"flat"`). `postProcessing.regexAdjustments` erhält die ursprüngliche URL aus dem Quell-Markdown – typischerweise ein absoluter Pfad oder ein Pfad ab Stammverzeichnis der Seite wie `/img/screenshots/en-GB/foo.png`.
 
-Das **Layout für sprachgebietsspezifische Ordner** wird angewendet, wenn Screenshots in einer gemeinsam genutzten statischen URL-Struktur liegen: Verwenden Sie von Anfang an einen sprachgebietscodierten Ordner und eine generische `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`-Regel (siehe [Konfiguration – Dokumentsystem](/de/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
+Das **Pro-Gebietsschema-Ordner**-Layout gilt, wenn Screenshots in einem gemeinsamen statischen URL-Baum liegen: Verwenden Sie von Anfang an einen sprachcodierten Ordner und eine generische `screenshots/[^/]+/` → `screenshots/${translatedLocale}/`-Regel (siehe [Konfiguration – Dokumentsystem](/de/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 **Kollokierte Screenshots** werden angewendet, wenn die übersetzten Dokumente jedes Gebietsschemas Assets neben dem Markdown speichern (keine URL-Umschreibung). Ihr Screenshot-Skript muss PNGs in Pfade schreiben, die von `{outputDir}`, `{locale}` und `{localeSubpath}` abgeleitet sind – das unten stehende Docusaurus-Preset ist das Referenzlayout.
 
@@ -78,7 +78,7 @@ Wenn Sie später i18n hinzufügen, übernimmt das Screenshot-Skript die `getScre
 
 Entspricht `docsOutput.style = "doc-system"` mit `localeSubpath: ""` – übersetzte Seiten liegen direkt unter `{outputDir}/{locale}/`.
 
-Speichern Sie Screenshots von Anfang an unter einem sprachcodierten Pfad:
+Screenshots von Anfang an unter einem sprachcodierten Pfad speichern:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

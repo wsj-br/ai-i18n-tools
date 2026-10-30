@@ -13,9 +13,9 @@
 | レイアウト | 組み込みのリライター | 修正内容 |
 | --- | --- | --- |
 | `"flat"` (カスタム `pathTemplate` がない場合のデフォルト) | フラットリンクのリライター (`rewriteRelativeLinks`、デフォルトでオン) | ページ間の相対リンク (`guide.md` → `guide.de.md`) およびマークダウン以外のアセット URL の深さプレフィックス |
-| `"vitepress"` | VitePress リンク正規化機能 (`rewriteVitepressLinks`、デフォルトでオン) | README スタイルの `docs/guide/…` パス → サイトルート (`/guide/…`) |
-| `"nextra"` | Nextra リンク正規化機能 (`rewriteNextraLinks`、デフォルトでオン) | `content/en/…` および相対 `.mdx` パス → ロケールに依存しないルート (`/guide/…`) |
-| `"fumadocs"` | Fumadocs リンク正規化機能 (`rewriteFumadocsLinks`、デフォルトでオン) | `content/docs/…` および相対 `.mdx` パス → ロケールに依存しないルート (`/docs/…`) |
+| `"vitepress"` | VitePressリンク正規化ツール (`rewriteVitepressLinks`、デフォルトでオン) | README形式の`docs/guide/…`パス → サイトルート (`/guide/…`) |
+| `"nextra"` | Nextraリンク正規化ツール (`rewriteNextraLinks`、デフォルトでオン) | `content/en/…`および相対`.mdx`パス → ロケールに依存しないルート (`/guide/…`) |
+| `"fumadocs"` | Fumadocsリンク正規化ツール (`rewriteFumadocsLinks`、デフォルトでオン) | `content/docs/…`および相対`.mdx`パス → ロケールに依存しないルート (`/docs/…`) |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | なし | ソース URL は `postProcessing` まで変更されずに渡されます |
 
 カスタム `pathTemplate` は、`rewriteRelativeLinks: true` を明示的に設定しない限り、フラットリライターを無効にします。ページ間の `#anchor` の処理については、「[出力レイアウト](/ja/guide/documents/output-layouts)」と「[アンカーリンク](/ja/guide/documents/anchor-links)」を参照してください。
@@ -64,7 +64,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 | プレースホルダー | 値 |
 | --- | --- |
-| `${translatedLocale}` | ターゲットロケール (正規化された BCP-47) |
+| `${translatedLocale}` | ターゲットロケール (正規化されたBCP-47) |
 | `${sourceLocale}` | ソースロケール |
 | `${sourceFullPath}` | 絶対ソースファイルパス (POSIX `/`) |
 | `${translatedFullPath}` | 絶対翻訳出力パス |
@@ -79,7 +79,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 <a id="per-locale-asset-folder"></a>
 ### ロケールごとのアセットフォルダー
 
-最初からロケールコード付きのサブディレクトリにアセットを保存し、1つの汎用ルールでセグメントを交換します。
+最初からアセットをロケールコード化されたサブディレクトリに保存し、そのセグメントを1つの汎用ルールで置き換えます。
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ Docusaurus、Starlight、または共有静的ツリーからスクリーンシ�
 
 通常、次の場合には `regexAdjustments` は**不要**です。
 
-- ページ間のリンクが単純な相対マークダウンパスであり、`docsOutput.style = "flat"` (組み込みのリライターがロケールサフィックスを追加します)
-- アセットがソースファイルの横にあり、フラットリライターのファイルごとの深さプレフィックスがそれらを正しく解決します
-- 英語とすべての翻訳されたコピーが**同じ** URL を使用している (サイトルートの共有画像、併置されたアセット、正規化後の VitePress サイトルート)
-- VitePress のサイト内リンクがサイトルートまたは `docs/guide/…` パスを `rewriteVitepressLinks: true` とともに使用している
+- ページ間リンクは、シンプルな相対Markdownパスと`docsOutput.style = "flat"`です (組み込みのリライターがロケールサフィックスを追加します)
+- アセットはソースファイルの隣に配置され、フラットリライターのファイルごとの深度プレフィックスによって正しく解決されます
+- 英語およびすべての翻訳版は、**同じ**URLを使用します (サイトルートの共有画像、併置されたアセット、正規化ツール適用後のVitePressサイトルート)
+- VitePressサイト内リンクは、サイトルートまたは`docs/guide/…`パスを`rewriteVitepressLinks: true`とともに使用します
 - Nextra および Fumadocs のページ内リンクでは、ロケールに依存しないルート (`/guide/…`、`/docs/…`) または `rewriteNextraLinks` / `rewriteFumadocsLinks: true` を使用したコンテンツルートパスを使用します。
 
 <a id="full-config-example"></a>

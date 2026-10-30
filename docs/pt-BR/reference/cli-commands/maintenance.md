@@ -6,7 +6,15 @@
 
 **Sinopse:** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-Limpa a tabela `markdown_source_issues` inteira e, em seguida, executa `sync --force-update` (extração, IU, SVG, documentos e `translate-json` quando ativado) para que os problemas de markdown sejam repopulados para os documentos configurados atualmente; em seguida, remove linhas de segmento obsoletas (`last_hit_at` nulo / caminho de arquivo vazio); descarta linhas `file_tracking` cujo caminho de origem resolvido está ausente no disco; remove linhas de tradução cujos metadados `filepath` apontam para um arquivo ausente; remove linhas `translation_failures` órfãs; e descarta linhas de cache para localidades ausentes da configuração (`sourceLocale`, raiz `targetLocales` e qualquer `docs[]` / `json[]` `targetLocales` por bloco). Somente cache para localidades desativadas — documentos gerados, arquivos de IU simples e entradas `strings.json` são deixados intactos (use [`purge-locale`](#purge-locale) para removê-los). Registra as contagens de remoção após a sincronização (segmentos obsoletos, `file_tracking` órfãos, traduções órfãs, falhas órfãs, localidades não configuradas) mais a contagem de limpeza de problemas de markdown antecipada.
+Limpa a tabela `markdown_source_issues` inteira, então executa `sync --force-update` (extração, UI, SVG, documentos e `translate-json` quando ativado) para que os problemas de markdown sejam repopulados para os documentos atualmente configurados. Em seguida:
+
+- remove linhas de segmento obsoletas (`last_hit_at` nulo / caminho de arquivo vazio);
+- descarta linhas `file_tracking` cujo caminho de origem resolvido está faltando no disco;
+- remove linhas de tradução cujos metadados `filepath` apontam para um arquivo ausente;
+- poda linhas `translation_failures` órfãs;
+- descarta linhas de cache para localidades ausentes da configuração (`sourceLocale`, raiz `targetLocales` e qualquer `docs[]` / `json[]` `targetLocales` por bloco).
+
+Somente cache para localidades desativadas — documentos gerados, arquivos de UI planos e entradas `strings.json` são deixados intactos (use [`purge-locale`](#purge-locale) para remover esses). Registra contagens de poda após a sincronização (segmentos obsoletos, `file_tracking` órfãos, traduções órfãs, falhas órfãs, localidades não configuradas) mais a contagem de limpeza inicial de problemas de markdown.
 
 **Opções principais:** `--dry-run`, `--backup`
 
@@ -30,8 +38,8 @@ Nenhuma configuração. Percorre uma árvore de diretórios (padrão: diretório
 
 **Sinopse:** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-Exclui todas as linhas em cache para os locais fornecidos de `translations`, `file_tracking` e `translation_failures`, e os artefatos gerados para esse local: documentos traduzidos (saídas `.md` / `.mdx` / `.astro` resolvidas de `docs[]`, incluindo saídas órfãs cuja origem foi removida — encontradas varrendo a árvore de saída de cada bloco, exceto quando um `pathTemplate` personalizado é configurado), o arquivo de UI plano por local (`<flatOutputDir>/<locale>.json`) e as entradas do local em `strings.json`.
+Exclui todas as linhas em cache para a(s) localidade(s) fornecida(s) de `translations`, `file_tracking` e `translation_failures`, e os artefatos gerados para essa localidade: documentos traduzidos (saídas `.md` / `.mdx` / `.astro` resolvidas de `docs[]`, incluindo saídas órfãs cuja origem foi removida — encontradas varrendo a árvore de saída de cada bloco, exceto quando um `pathTemplate` personalizado é configurado), o arquivo de UI plano por localidade (`<flatOutputDir>/<locale>.json`) e as entradas da localidade em `strings.json`.
 
-Os locais são passados via `-l` / `--locale` repetíveis (normalizados para BCP-47). Imprime contagens por local (linhas de cache, documentos, entradas `strings.json`, arquivo plano); avisa (não gera erro) para locais sem nada para limpar. Solicita confirmação, a menos que `-y` / `--yes` / `-f` / `--force`. `--dry-run`: relata contagens e os arquivos que seriam removidos, não exclui nada. `--keep-files`: limpa apenas o cache SQLite, deixando os arquivos gerados e `strings.json` intocados. Nenhum backup SQLite é feito, a menos que `--backup <path>` seja passado, o que grava um backup nesse caminho antes da exclusão.
+Localidades são passadas via `-l` / `--locale` repetível (normalizado para BCP-47). Imprime contagens por localidade (linhas de cache, documentos, entradas `strings.json`, arquivo plano); avisa (não gera erro) para localidades sem nada para purgar. Solicita confirmação, a menos que `-y` / `--yes` / `-f` / `--force`. `--dry-run`: relata contagens e os arquivos que seriam removidos, não exclui nada. `--keep-files`: purga apenas o cache SQLite, deixando arquivos gerados e `strings.json` intocados. Nenhum backup SQLite é feito, a menos que `--backup <path>` seja passado, o que escreve um backup para esse caminho antes da exclusão.
 
 **Opções principais:** `-l` / `--locale`, `--dry-run`, `-y` / `--yes`, `-f` / `--force`, `--keep-files`, `--backup`

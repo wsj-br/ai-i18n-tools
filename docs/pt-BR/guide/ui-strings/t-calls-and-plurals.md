@@ -50,8 +50,8 @@ Se o seu projeto usa um utilitário de interpolação personalizado (por exemplo
 
 **Você não escreve formas plurais manualmente.** No código-fonte, escreva a mensagem uma vez e passe duas coisas no segundo argumento:
 
-1. **`plurals: true`** — informa ao extrator e ao `translate-ui` que esta chamada é um grupo plural cardinal.
-2. **`count`** — o número que o i18next usa em tempo de execução para escolher a forma correta.
+1. `plurals: true` — informa ao extrator e `translate-ui` que esta chamada é um grupo plural cardinal.
+2. `count` — o número que o i18next usa em tempo de execução para escolher a forma correta.
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ Quando você executa `translate-ui`, o **ai-i18n-tools chama um LLM** para gerar
 
 **Validação:** Se a mensagem contiver **dois ou mais** placeholders <code v-pre>{{…}}</code> distintos, **um deles deve ser** <code v-pre>{{count}}</code> (o eixo plural). Caso contrário, `extract` **falha** com uma mensagem clara de arquivo/linha.
 
-Depois que o LLM retorna as formas CLDR, `translate-ui` também verifica cada forma em relação ao **literal original do desenvolvedor**: cada placeholder de origem deve aparecer em todas as categorias (incluindo `one`), as formas não devem inventar novos tokens <code v-pre>{{…}}</code> / `%d` / `{n}`, e as fontes apenas de substantivos (sem <code v-pre>{{count}}</code> e sem dígitos, por exemplo, rótulos de unidades como `Minutes`) devem permanecer apenas de substantivos. Incompatibilidades descartam a resposta desse modelo e tentam o próximo modelo na lista de fallback.
+Depois que o LLM retorna as formas CLDR, `translate-ui` também verifica cada forma em relação ao **literal original do desenvolvedor**: todo placeholder de origem deve aparecer em todas as categorias (incluindo `one`), as formas não devem inventar novos tokens <code v-pre>{{…}}</code> / `%d` / `{n}`, e fontes apenas de substantivos (sem <code v-pre>{{count}}</code> e sem dígitos, por exemplo, rótulos de unidade como `Minutes`) devem permanecer apenas de substantivos. Incompatibilidades descartam a resposta desse modelo e tentam o próximo modelo na lista de fallback.
 
 **Duas contagens independentes** (por exemplo, seções e páginas) não podem compartilhar uma mensagem plural — use **duas** chamadas `t()` (cada uma com `plurals: true` e seu próprio `count`) e concatene na UI.
 

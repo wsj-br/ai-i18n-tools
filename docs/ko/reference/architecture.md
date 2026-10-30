@@ -33,7 +33,7 @@
 | | `src/glossary/` | 프롬프트용 용어집 로딩, 용어 힌트 및 선택적 프로젝트 컨텍스트 파일 |
 | | `src/utils/` | 로거, 해싱, 무시 파서, 표시 너비 테이블, `.env` 로더 |
 | **앱 런타임** | `src/runtime/` | i18next 도우미 및 표시 유틸리티 — `'ai-i18n-tools/runtime'`로 내보내짐([런타임 도우미](/ko/guide/runtime-helpers)) |
-| **도구 UI** *(자체 사용)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | 이 패키지의 자체 CLI 및 번역 대시보드를 현지화합니다. 프로젝트 콘텐츠와는 별개입니다([자체 현지화](#self-localization-tool-ui)) |
+| **도구 UI** *(도그푸딩)* | `src/i18n/`, `src/dashboard-app/`, `src/server/` | 이 패키지 자체의 CLI 및 번역 대시보드를 현지화합니다. — 프로젝트 콘텐츠와는 별개로 ([자체 현지화](#self-localisation-tool-ui)) |
 
 프로그래밍 방식으로 사용하기 위한 모든 것은 `src/index.ts`에서 다시 내보내집니다([프로그래밍 API](/ko/reference/programmatic-api)).
 
@@ -125,7 +125,7 @@ i18next는 이를 리소스 번들로 로드하고 원본 문자열을 키로 �
 - 문자열의 JSON 배열을 전송하고 그에 대한 번역의 JSON 배열을 반환하도록 요청합니다.
 - 사용 가능한 경우 용어집 힌트를 포함합니다.
 
-`LlmClient.translateUIBatch`는 구문 분석, 네트워크 또는 잘못된 스크립트 오류(네이티브 스크립트 로케일에 대한 로마자/라틴어 대체 포함) 발생 시 대체하면서 순서대로 각 모델을 시도합니다. CLI는 대상 로케일별로 `localeModels`, 선택적 `uiModels`, `translationModels`에서 해당 목록을 빌드합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조).
+`LlmClient.translateUIBatch`는 각 모델을 순서대로 시도하며, 구문 분석, 네트워크 또는 잘못된 스크립트 오류 발생 시 대체합니다(원어 스크립트 로케일에 대한 로마자/라틴어 대체 포함). CLI는 대상 로케일별로 `localeModels`, 선택적 `uiModels`, 그리고 `translationModels`에서 해당 목록을 빌드합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조).
 
 ---
 
@@ -203,7 +203,18 @@ Astro 템플릿 및 MDX JSX에 대한 공유 속성/키 보호는 `src/processor
 
 SQLite 데이터베이스(`node:sqlite`를 통해)는 정규화된 콘텐츠의 SHA-256 해시 값 중 앞 16자리 16진수 문자를 사용하여 `(source_hash, locale)`를 키로 하고 `translated_text`, `model`, `filepath`, `last_hit_at` 및 관련 필드를 포함하는 행을 저장합니다. 공백은 압축됩니다.
 
-실행할 때마다 해시 × 로케일을 기준으로 세그먼트를 조회합니다. 캐시 미스만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위에서 적중되지 않은 세그먼트 행에 대해 `last_hit_at`가 재설정됩니다. 문서 번역 중 캐시 적중에 성공하면 해당 세그먼트의 오래된 `translation_failures` 행이 지워집니다. `cleanup`는 먼저 `sync --force-update`를 실행한 다음, 오래된 세그먼트 행(null `last_hit_at` / 빈 파일 경로)을 제거하고, 확인된 소스 경로가 디스크에 없을 때 `file_tracking` 키를 정리하며(`doc-block:…`, `json-block:…`, `svg-files:…` 등), 메타데이터 파일 경로가 누락된 파일을 가리키는 번역 행을 제거하고, 고아가 된 `translation_failures` 행을 정리하며, 확인된 소스 경로가 디스크에 없는 고아가 된 `markdown_source_issues` 행을 정리하고, 설정에 없는 로케일의 캐시 행을 삭제합니다(`sourceLocale`, 루트 `targetLocales`, 블록별 `docs[]` / `json[]` `targetLocales`; SQLite 전용 — 생성된 파일을 삭제하려면 `purge-locale` 사용); `--backup <path>`가 전달되지 않는 한 `cache.db`를 백업하지 않으며, 전달될 경우 먼저 해당 경로에 백업을 기록합니다.
+각 실행 시, 세그먼트는 해시 × 로케일로 조회됩니다. 캐시 미스만 LLM으로 전달됩니다. 번역 후, 현재 번역 범위 내에서 적중되지 않은 세그먼트 행에 대해 `last_hit_at`가 재설정됩니다. 문서 번역 중 성공적인 캐시 적중은 해당 세그먼트에 대한 오래된 `translation_failures` 행을 지웁니다.
+
+`cleanup`는 먼저 `sync --force-update`을(를) 실행한 다음 다음을 수행합니다.
+
+- 오래된 세그먼트 행을 제거합니다(null `last_hit_at` / 빈 파일 경로).
+- 해결된 소스 경로가 디스크에 없을 때 `file_tracking` 키를 정리합니다(`doc-block:…`, `json-block:…`, `svg-files:…` 등).
+- 메타데이터 파일 경로가 없는 파일을 가리키는 번역 행을 제거합니다.
+- 고아 `translation_failures` 행을 정리합니다.
+- 해결된 소스 경로가 디스크에 없는 고아 `markdown_source_issues` 행을 정리합니다.
+- 구성에 없는 로케일에 대한 캐시 행을 삭제합니다(`sourceLocale`, 루트 `targetLocales`, 그리고 블록별 `docs[]` / `json[]` `targetLocales`; SQLite 전용 — 생성된 파일을 삭제하려면 `purge-locale`을(를) 사용하세요).
+
+`cache.db`은(는) `--backup <path>`이(가) 전달되어야만 백업되며, 이때 먼저 해당 경로에 백업이 작성됩니다.
 
 청구된 모델 호출(수락된 번역 및 폐기된 재시도)은 `api_calls`에 저장됩니다. 호출을 기록하는 명령을 실행한 후, UTC 기준 7일이 지난 세부 정보 행은 월별 `api_totals`로 집계됩니다. `usage` 및 대시보드의 사용량 및 비용 보기는 두 테이블을 결합합니다. [사용량 및 비용](/ko/guide/translation-dashboard/usage)을 참조하세요.
 
@@ -289,14 +300,14 @@ Vercel AI SDK( `ai` + `@ai-sdk/openai-compatible` )를 기반으로 구축된 �
 `Logger`는 ANSI 색상 출력과 함께 `debug`, `info`, `warn`, `error` 수준을 지원합니다. 자세한 모드(`-v`)는 `debug`을 활성화합니다. `logFilePath`이 설정된 경우 로그 라인은 해당 파일에도 기록됩니다.
 
 <a id="self-localisation-tool-ui"></a>
-### 자체 지역화(도구 UI)
+### 자체 현지화 (도구 UI)
 
-도구는 사용자가 번역한 콘텐츠와 별개로 자체 UI — CLI 도움말, 고交通 로그/요약/오류 메시지 및 번역 대시보드를 지역화합니다.
+이 도구는 CLI 도움말, 트래픽이 많은 로그/요약/오류 메시지, 번역 대시보드 등 자체 UI를 사용자가 번역하는 콘텐츠와 별도로 현지화합니다.
 
-- **로캘 확인**(`src/core/ui-locale.ts`의 `resolveUiLocale`): `-L` / `--ui-lang` > `AI_I18N_LANG` > config `uiLanguage` > 호스트 OS 로캘(`Intl.DateTimeFormat().resolvedOptions().locale`) 순서로 UI 로캘을 선택합니다. 후보 로캘은 정규화된 후 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`)과 대조되며, 일치하지 않으면 소스 로캘(`en-GB`)로 대체됩니다. CLI는 도움말이 빌드되기 전(argv 스캔 사전 구문 분석)에 한 번 확인하고, 구성 로드 후 `uiLanguage`가 적용되도록 다시 확인합니다(플래그 및 환경 변수가 여전히 우선합니다).
-- **런타임**(`src/i18n/index.ts`): <code v-pre>{{name}}</code> 보간을 사용하는 최소한의 `t(source, vars)`입니다. `src/i18n/locales/<code>.json`의 플랫 로캘별 번들에 대해 영어 소스 문자열을 키로 사용하며(빌드 시 `dist/i18n/locales`에 복사됨), 누락된 키나 번들은 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일한 기본값 키 모델이며 해시 조회가 없습니다.
-- **대시보드**: 서버는 확인된 UI 로캘에 대해 `{ locale, dir, bundle }`을(를) 반환하는 `GET /api/ui-i18n`을(를) 노출합니다. 프런트엔드는 `<html lang>` / `dir`을(를) 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 현지화합니다.
-- **도그푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`에 있는 대시보드의 `data-i18n*` 마커에서 가져옵니다.
+- **로케일 해결** (`resolveUiLocale` in `src/core/ui-locale.ts`): UI 로케일을 `-L` / `--ui-lang` > `AI_I18N_LANG` > 구성 `uiLanguage` > 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`)에서 선택합니다. 후보는 정규화되어 제공된 번들 세트와 정확히 일치하거나 가장 가까운 변형으로 매칭되며(예: `pt-PT` → `pt-BR`, `en-US` → `en-GB`), 소스 로케일(`en-GB`)로 폴백합니다. CLI는 도움말이 빌드되기 전(사전 파싱 argv 스캔)에 한 번 해결하고, 구성 로드 후 다시 해결하여 `uiLanguage`가 적용됩니다(플래그와 환경 변수가 여전히 우선).
+- **런타임** (`src/i18n/index.ts`): `t(source, vars)` 최소 버전으로 <code v-pre>{{name}}</code> 보간을 지원하며, 영어 소스 문자열을 키로 사용하여 `src/i18n/locales/<code>.json`의 평면 로케일별 번들(빌드 시 `dist/i18n/locales`에 복사��)과 대조합니다. 누락된 키나 번들은 소스 텍스트를 반환합니다. 이는 UI 문자열과 동일한 키-기본값 모델입니다. 해시 조회는 없습니다.
+- **대시보드**: 서버는 해결된 UI 로케일에 대해 `{ locale, dir, bundle }`을 반환하는 `GET /api/ui-i18n`을 노출합니다. 프론트엔드는 `<html lang>` / `dir`을 설정하고 `data-i18n*` 속성을 통해 정적 마크업을 지역화합니다.
+- **도그푸딩**: 번들은 `pnpm i18n:self`(`sync-ui --ui-block src/i18n/strings.json`)에 의해 생성되며, 이는 `ai-i18n-tools.config.json`에서 CLI 및 대시보드 `ui` 블록을 추출하고 번역합니다. 카탈로그 키는 `src/cli/` 및 `src/i18n/` 전반의 `t()` 호출과 `src/dashboard-app/index.html`의 대시보드 `data-i18n*` 마커에서 비롯됩니다.
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

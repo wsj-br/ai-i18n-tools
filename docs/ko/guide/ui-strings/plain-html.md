@@ -3,7 +3,7 @@
 
 단일 HTML 파일로 유지되는 인터랙티브 페이지에 이 경로를 사용하십시오. `extract`은(는) `data-i18n*` 마커를 `strings.json`(으)로 읽어들이고, `translate-ui`은(는) 로캘별로 하나의 플랫 JSON 번들을 생성하며, 브라우저 스크립트가 문자열을 적용합니다. 이 스크립트를 사용하면 이미지 파일 이름에 접미사를 추가하고 현재 페이지의 링크를 유지할 수도 있습니다.
 
-로캘별로 번역된 HTML 파일을 하나씩 생성해야 하는 정적 사이트(런타임 없음, 페이지 간 링크 재작성)에는 대신 [HTML 페이지](/ko/guide/documents/html-pages)를 사용하십시오. 하나의 파일은 하나의 경로에 속합니다.
+로케일당 하나의 번역된 HTML 파일을 생성해야 하는 정적 사이트(런타임 없음, 교차 페이지 링크 재작성됨)의 경우, 대신 [HTML 페이지](/ko/guide/documents/html-pages)를 사용하세요. 각 파일은 하나의 파이프라인에만 속합니다.
 
 <a id="quick-start"></a>
 ## 빠른 시작
@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-소스 로캘은 원본 URL을 유지합니다. 베어 `data-i18n-locale-src`의 경우 절대 URL, 프로토콜 상대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지되며 쿼리 문자열과 프래그먼트도 제자리에 유지됩니다. 값이 지정된 마커는 소스가 아닌 모든 로캘에 대해 해당 템플릿을 사용하고 `{locale}`만 대체합니다. 지역화된 이미지가 404 오류를 반환하면 런타임이 원본 `src`을(를) 한 번 복원합니다. `chart_pt-BR.png`은(는) 사용자가 직접 제공해야 하며 스크립트에서 생성하지 않습니다.
+소스 로케일은 원본 URL을 유지합니다. bare `data-i18n-locale-src`의 경우, 절대 URL, 프로토콜 상대 URL, `data:` URL 및 `#` 프래그먼트는 그대로 유지되며, 쿼리 문자열과 프래그먼트는 제자리에 있습니다. 값 있는 마커는 모든 비소스 로케일에 대해 해당 템플릿을 사용하고 `{locale}`만 대체합니다. 지역화된 이미지가 404 오류를 반환하면, 런타임은 원본 `src`를 한 번 복원합니다. `chart_pt-BR.png`는 직접 배포해야 하며, 스크립트는 이를 생성하지 않습니다.
 
 `data-i18n-locale-href`은 이 카탈로그 모델용입니다. `about.pt-BR.html`에 대한 링크는 [HTML 페이지](/ko/guide/documents/html-pages) 파이프라인에 속합니다.
 
@@ -365,7 +365,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 
 런타임의 `normalizeI18nText`은(는) [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts)의 `normalizeI18nText`과(와) 일치합니다. 즉, 공백을 자르고 축소합니다. 소스 언어 텍스트가 카탈로그 키이므로 번역이 누락된 경우 해당 소스 텍스트로 대체됩니다.
 
-실행 가능한 데모는 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)입니다. `pnpm dev`이(가) [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR)에서 이를 제공합니다.
+실행 가능한 데모는 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)입니다. `pnpm dev`가 `http://localhost:3090/?locale=pt-BR`에서 이를 제공합니다.
 
 <a id="runtime-source"></a>
 ## 런타임 소스

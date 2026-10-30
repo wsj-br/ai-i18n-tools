@@ -70,7 +70,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 各プロバイダーブロックは独自の `translationModels`、オプションの `uiModels` および `localeModels`、`maxTokens`、`temperature`、`requestTimeout` (秒) または `requestTimeoutMs` を定義できます。プロバイダーのタイムアウトはトップレベルの `requestTimeout` / `requestTimeoutMs` を上書きします。従来のトップレベルの `openrouter` ブロックも引き続き受け付けられ、ロード時に `providers.openrouter` へ自動移行されます。
 
-オプションの `pricing` および `modelPricing` は、プロバイダーが `usage.cost` を省略した場合に 100 万トークンあたりの米ドル（`inputPerMTokens` および `outputPerMTokens`）を設定します。`pricing` はプロバイダー全体のデフォルトであり、`modelPricing` エントリは 1 つのモデル ID に対してそれを上書きします。OpenRouter および Cheaper Inference はすでに呼び出しごとのコストを返すため、これらのプロバイダーでは両方を設定しないでください。プロバイダーから報告されたコストは、返されたまま保持されます。この金額は、翻訳の概要、[`usage`](/ja/reference/cli-commands/workflows#usage)、および [Usage & costs](/ja/guide/translation-dashboard/usage) に含まれます。
+オプションの`pricing`と`modelPricing`は、プロバイダーが`usage.cost`を省略する場合に、100万トークンあたりのUSD（`inputPerMTokens`と`outputPerMTokens`）を設定します。`pricing`はプロバイダー全体のデフォルトです。`modelPricing`エントリは、1つのモデルIDに対してこれを上書きします。OpenRouterとCheaper Inferenceはすでに呼び出しごとのコストを返すため、これらのプロバイダーでは両方とも設定しないでください。プロバイダーが報告したコストは、返されたとおりに保持されます。この金額は、翻訳の概要、[`usage`](/ja/reference/cli-commands/workflows#usage)、および[使用量とコスト](/ja/guide/translation-dashboard/usage)に含まれます。
 
 同じドキュメントに対して4つのプロバイダーを使用する実行可能な例（サンプルレートを含む）：[`examples/multi-provider`](/ja/examples#multi-provider)。
 

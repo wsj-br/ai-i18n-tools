@@ -6,7 +6,15 @@
 
 **概要：** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-清除整個 `markdown_source_issues` 資料表，然後執行 `sync --force-update`（提取、UI、SVG、文件，以及啟用時的 `translate-json`），讓目前設定的文件重新填入 markdown 問題；接著移除過時的段落列（null `last_hit_at` / 空檔案路徑）；捨棄已解析原始路徑在磁碟上遺失的 `file_tracking` 列；移除其 `filepath` 中繼資料指向遺失檔案的翻譯列；修剪孤立的 `translation_failures` 列；並捨棄設定中不存在之地區設定的快取列（`sourceLocale`、根 `targetLocales`，以及任何每區塊的 `docs[]` / `json[]` `targetLocales`）。對於已淘汰的地區設定僅限快取 — 產生的文件、平面 UI 檔案和 `strings.json` 項目保持不變（使用 [`purge-locale`](#purge-locale) 來移除它們）。在同步後記錄修剪計數（過時的段落、孤立的 `file_tracking`、孤立的翻譯、孤立的失敗、未設定的地區設定）以及預先的 markdown 問題清除計數。
+清除整個 `markdown_source_issues` 表格，然後執行 `sync --force-update`（提取、UI、SVG、文件，以及啟用時的 `translate-json`），以便 Markdown 問題重新填充目前配置的文件。然後它會：
+
+- 移除過時的區段列（空 `last_hit_at` / 空檔案路徑）；
+- 刪除其解析後的來源路徑在磁碟上遺失的 `file_tracking` 列；
+- 移除其 `filepath` 中繼資料指向遺失檔案的翻譯列；
+- 修剪孤立的 `translation_failures` 列；
+- 刪除配置中不存在的地區設定的快取列（`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`）。
+
+僅針對已停用的地區設定進行快取 — 已產生的文件、平面 UI 檔案和 `strings.json` 條目會保留不動（使用 [`purge-locale`](#purge-locale) 來移除這些）。在同步後記錄修剪計數（過時區段、孤立的 `file_tracking`、孤立翻譯、孤立失敗、未配置的地區設定），加上預先的 Markdown 問題清除計數。
 
 **關鍵選項：** `--dry-run`、`--backup`
 
@@ -30,8 +38,8 @@
 
 **概要：** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-從 `translations`、`file_tracking` 與 `translation_failures` 刪除指定語系的所有快取列，以及該語系的產生成品：翻譯文件（從 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 輸出，包含來源已移除的孤立輸出——透過掃描各區塊的輸出樹來發現，除非設定了自訂 `pathTemplate`）、各語系的平面 UI 檔案（`<flatOutputDir>/<locale>.json`），以及該語系在 `strings.json` 中的項目。
+從 `translations`、`file_tracking` 和 `translation_failures` 中刪除指定地區設定的所有快取列，以及該地區設定的已產生構件：翻譯文件（從 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 輸出，包括來源已移除的孤立輸出 — 透過掃描每個區塊的輸出樹找到，除非配置了自訂 `pathTemplate`），每個地區設定的平面 UI 檔案 (`<flatOutputDir>/<locale>.json`)，以及該地區設定在 `strings.json` 中的條目。
 
-語系透過可重複的 `-l` / `--locale` 傳入（正規化為 BCP-47）。印出各語系計數（快取列、文件、`strings.json` 項目、平面檔案）；對無可清除內容的語系發出警告（不視為錯誤）。除非 `-y` / `--yes` / `-f` / `--force`，否則提示確認。`--dry-run`：回報計數與將被移除的檔案，不刪除任何內容。`--keep-files`：僅清除 SQLite 快取，保留產生的檔案與 `strings.json` 不變。除非傳入 `--backup <path>`，否則不會建立 SQLite 備份；該旗標會在刪除前將備份寫入該路徑。
+地區設定透過可重複的 `-l` / `--locale` 傳遞（正規化為 BCP-47）。輸出每個地區設定的計數（快取列、文件、`strings.json` 條目、平面檔案）；對於沒有任何內容可清除的地區設定發出警告（而非錯誤）。除非 `-y` / `--yes` / `-f` / `--force`，否則會提示確認。`--dry-run`：報告計數和將被移除的檔案，不刪除任何內容。`--keep-files`：僅清除 SQLite 快取，保留已產生的檔案和 `strings.json` 不變。除非傳遞 `--backup <path>`，否則不會建立 SQLite 備份，該參數會在刪除前將備份寫入該路徑。
 
 **關鍵選項：** `-l` / `--locale`、`--dry-run`、`-y` / `--yes`、`-f` / `--force`、`--keep-files`、`--backup`

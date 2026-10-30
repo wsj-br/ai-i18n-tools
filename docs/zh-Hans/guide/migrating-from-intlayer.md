@@ -1,7 +1,7 @@
 <a id="migrating-from-intlayer-to-source-string-calls"></a>
-# 从 Intlayer 迁移到 source-strings 调用
+# 从 Intlayer 迁移到源字符串调用
 
-[Intlayer](https://intlayer.org/) 对于通过类型化内容字典或翻译管理系统来管理翻译的应用程序而言是理想之选。`ai-i18n-tools` 针对的是不同的工作流：使用源字符串调用（例如 `t('English source')`）的代码。`t()` 中的字符串是用 `sourceLocale` 编写的，它可以是任何语言。这些示例中的英语只是一个例子。通过将源字符串直接保留在代码中，这种方法简化了维护并降低了复杂性。当此模型符合您的需求时，`migrate-intlayer` 会导入您现有的字典并自动重写兼容的调用点。它会保持其余调用点不变，并生成一份包含具体替换说明的报告，让您可以分阶段完成迁移，或者将报告交给 AI 编码代理来为您完成迁移。
+[Intlayer](https://intlayer.org/) 非常适合通过类型化内容字典或翻译管理系统管理翻译的应用程序。`ai-i18n-tools` 针对不同的工作流程：使用源字符串调用的代码，例如 `t('English source')`。在 `t()` 内部的字符串是用 `sourceLocale` 编写的，可以是任何语言。这些示例中的英语仅为示例。通过将该源字符串直接保留在代码中，这种方法简化了维护并降低了复杂性。当此模型符合您的需求时，`migrate-intlayer` 会导入您现有的字典并自动重写兼容的调用点。它会使剩余的调用点保持不变，并生成一份包含具体替换说明的报告，使您能够分阶段完成迁移，或者将报告交给 AI 编码代理来为您完成迁移。
 
 已在使用 i18next JSON 翻译文件？您无需使用此迁移命令；请改用 [JSON 管道](/zh-Hans/guide/json#i18next-namespace-files)。
 

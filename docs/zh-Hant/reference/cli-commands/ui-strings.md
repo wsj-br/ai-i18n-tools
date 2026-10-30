@@ -40,7 +40,7 @@
 
 **主要選項：** `-l` / `--locale`、`--ui-block`、`--dry-run`、`-j` / `--concurrency`
 
-`[paths...]`：要掃描的檔案/目錄/glob 模式 (預設：區塊的 `sourceRoots`)。`-l` / `--locale`：要填入的目標語系，以逗號分隔 (預設：區塊設定的 `targetLocales`)。`--ui-block`：從零開始的索引、描述或 `stringsJson` 路徑 (預設：區塊 0)。`-j` 會平行處理語系。
+`[paths...]`：要掃描的檔案/目錄/萬用字元模式（預設：區塊的 `sourceRoots`）。`-l` / `--locale`：要填入的逗號分隔目標語言環境（預設：區塊已配置的 `targetLocales`）。`--ui-block`：從零開始的索引、描述或 `stringsJson` 路徑（預設：區塊 0）。`-j` 平行處理語言環境。
 
 **另請參閱：** [migrate-intlayer](#migrate-intlayer)、[從 Intlayer 遷移](/zh-Hant/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@
 
 **關鍵選項：** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`：以逗號分隔的目標語言地區（預設：設定 `targetLocales` 減去 `sourceLocale`）。`--force`：重新翻譯每個語言地區的所有項目（忽略現有翻譯）。`--dry-run`：不寫入、不呼叫 API。`-j` 並行處理 **locales**；在每個語言地區內，設定 `uiBatchConcurrency`（預設 **2**）並行處理 LLM 批次（每 50 個字串為一區塊，接著是複數群組）。沒有用於 `uiBatchConcurrency` 的 CLI 旗標。
+`-l` / `--locale`：逗號分隔的目標語言環境（預設：配置 `targetLocales` 減去 `sourceLocale`）。`--force`：重新翻譯每個語言環境的所有條目（忽略現有翻譯）。`--dry-run`：不寫入，不進行 API 呼叫。`-j` 平行處理 **語言環境**；在每個語言環境內，配置 `uiBatchConcurrency`（預設 **2**）平行處理 LLM 批次（50 個字串的區塊，然後是複數群組）。沒有針對 `uiBatchConcurrency` 的 CLI 旗標。
 
 ---
 
@@ -97,7 +97,7 @@
 
 **概要：** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-先執行 `extract`（需要 `features.translateUIStrings`），使每個選取的目錄符合來源，然後由 LLM 審查來源語系的 UI 字串（拼字、文法）。`--ui-block` 會將擷取與審查限制為單一區塊。術語提示僅來自 `glossary.userGlossary` CSV（與 `translate-ui` 範圍相同——UI 目錄不會回饋輸入，因此不佳的文案不會被強化為術語表）。使用作用中的 LLM 提供者（其 API 金鑰環境變數）。
+首先執行 `extract`（需要 `features.translateUIStrings`），以便每個選定的目錄與來源匹配，然後對來源語言環境的 UI 字串進行 LLM 審查（拼寫、語法）。`--ui-block` 將提取和審查限制為一個區塊。術語提示僅來自 `glossary.userGlossary` CSV（與 `translate-ui` 範圍相同 — UI 目錄不會回饋，因此不良文案不會被強化為詞彙表）。使用活動 LLM 供應商（其 API 密鑰環境變數）。
 
 失敗時以 **1** 結束 (缺少功能旗標、擷取失敗、缺少/無效的目錄、缺少 API 金鑰，或所有批次皆失敗時)；執行成功完成時以 **0** 結束 (發現僅供參考)。將 `proofread-ui-results_<timestamp>.log` 寫入 `cacheDir` 下，作為人類可讀的報告 (摘要、問題、未審查的列，以及每個字串的 OK 列)；終端機僅列印摘要計數和問題 (每個字串沒有 `[ok]` 行)。失敗的批次，或是短於批次長度且在每個位置沒有可用 `index` 的模型回應，會將這些字串計為未審查。系統會捨棄其問題，以免將過短的陣列套用到錯誤的字串。在最後一行印出記錄檔名稱。使用 `--json` 時，人類風格的輸出會傳送至 stderr。連結會使用 `path:line`，類似儀表板 UI 字串的連結按鈕。
 

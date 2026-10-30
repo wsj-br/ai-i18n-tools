@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # 编程 API
 
-所有公共类型和类都从包根目录导出。示例：在 Node.js 中运行 translate-UI 步骤，而不使用 CLI：
+所有公共类型和类都从包根目录导出。示例：从 Node.js 运行 translate-ui 步骤，无需 CLI：
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `resolveDocumentationOutputPath` | 解析已翻译文档的输出文件路径。 |
 | `Glossary` / `GlossaryMatcher` | 加载并应用翻译术语表，包括可选的术语 `Context` 说明。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 加载 `glossary.contextFiles` 和用于缓存失效的指纹指引。 |
-| `runTranslateUI` | 程序化翻译 UI 入口点。 |
+| `runTranslateUI` | 编程方式的 translate-ui 入口点。 |
 | `writeInitConfigFile` | 写入一个初始配置文件 JSON（`template`、`cwd`、一个必需的 `providerKey` 和一个可选的 `{ withReadme }`）。返回 `{ readmeBlockAdded, hasReadmeBlock }`。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | `init -P` 所用各内置预设的初始 `translationModels`。 |
 | `PROVIDER_PRESETS` | 内置提供程序预设映射（`baseUrl`、`apiKeyEnv`）。 |

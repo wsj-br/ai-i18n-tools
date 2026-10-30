@@ -3,7 +3,7 @@
 
 Use este caminho para uma página interativa que permanece em um único arquivo HTML. `extract` lê os marcadores `data-i18n*` para `strings.json`, `translate-ui` grava um pacote JSON plano por localidade, e um script de navegador aplica as strings. O mesmo script pode adicionar sufixos aos nomes de arquivos de imagem e manter os links na página atual.
 
-Para um site estático que deve emitir um arquivo HTML traduzido por localidade (sem tempo de execução, com links entre páginas reescritos), use [páginas HTML](/pt-BR/guide/documents/html-pages) em vez disso. Um arquivo pertence a um único caminho.
+Para um site estático que deve gerar um arquivo HTML traduzido por localidade (sem tempo de execução, links entre páginas reescritos), use [páginas HTML](/pt-BR/guide/documents/html-pages) em vez disso. Cada arquivo pertence a apenas um pipeline.
 
 <a id="quick-start"></a>
 ## Início rápido
@@ -283,7 +283,7 @@ Esses marcadores nunca são enviados ao tradutor. `mark-html` não os adiciona.
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-A localidade de origem mantém a URL original. Para um `data-i18n-locale-src` simples, URLs absolutas, URLs relativas ao protocolo, URLs `data:` e fragmentos `#` são deixados como estão; strings de consulta e fragmentos permanecem no lugar. Um marcador com valor usa seu template para cada localidade que não seja a de origem e substitui apenas `{locale}`. Se a imagem localizada retornar 404, o runtime restaura o `src` original uma vez. Você mesmo disponibiliza o `chart_pt-BR.png`; o script não o cria.
+A localidade de origem mantém o URL original. Para um `data-i18n-locale-src` puro, URLs absolutos, URLs relativos ao protocolo, URLs `data:` e fragmentos `#` são deixados como estão; strings de consulta e fragmentos permanecem no lugar. Um marcador valorizado usa seu modelo para cada localidade não-fonte e substitui apenas `{locale}`. Se a imagem localizada retornar 404, o tempo de execução restaura o `src` original uma vez. Você distribui `chart_pt-BR.png` por conta própria; o script não o cria.
 
 `data-i18n-locale-href` é para este modelo de catálogo. Um link para `about.pt-BR.html` pertence ao pipeline de [páginas HTML](/pt-BR/guide/documents/html-pages).
 
@@ -365,7 +365,7 @@ Não faça redirecionamento automático por `navigator.language` além disso. O 
 
 O `normalizeI18nText` no runtime corresponde a `normalizeI18nText` em [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): aparar e, em seguida, agrupar espaços em branco. Como o texto no idioma de origem é a chave do catálogo, uma tradução ausente recorre a esse texto de origem.
 
-A demonstração executável é [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` a serve em [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR).
+A demonstração executável é [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` a serve em `http://localhost:3090/?locale=pt-BR`.
 
 <a id="runtime-source"></a>
 ## Fonte do tempo de execução

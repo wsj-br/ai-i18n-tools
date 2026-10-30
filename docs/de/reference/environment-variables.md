@@ -46,4 +46,4 @@ Diese beiden Variablen überschreiben `baseUrl` für einen konfigurierten Anbiet
 | `NO_COLOR`              | Wenn `1`, werden ANSI-Farben in der Protokollaufgabe deaktiviert.              |
 | `I18N_LOG_SESSION_MAX`  | Maximale Anzahl an Zeilen pro Protokollsitzung (Standard `5000`).           |
 
-Beim Start lädt die CLI auch automatisch eine `.env`-Datei aus dem aktuellen Arbeitsverzeichnis (über Node's `process.loadEnvFile`), sodass API-Schlüssel von Anbietern in nicht interaktiven Shells aufgenommen werden, die `.envrc` / `direnv` nicht ausführen. Variablen, die bereits in der Umgebung vorhanden sind, werden nie überschrieben, sodass reale CI/Produktionswerte immer Vorrang haben.
+Beim Start lädt die CLI auch automatisch eine `.env`-Datei aus dem aktuellen Arbeitsverzeichnis (über Nodes `process.loadEnvFile`), sodass Anbieter-API-Schlüssel in nicht-interaktiven Shells geladen werden, die `.envrc` nicht über `direnv` laden. Bereits in der Umgebung vorhandene Variablen werden niemals überschrieben, sodass echte CI-/Produktionswerte Vorrang haben.

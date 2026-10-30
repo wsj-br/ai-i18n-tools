@@ -139,11 +139,11 @@ Les autres URL relatives `href`, `src`, `srcset` et `poster` sont préfixées pa
 | `{llocale}` | Locale en minuscules |
 | `{LOCALE}` | Locale en majuscules |
 
-`img/trulli.jpg` devient `img/trulli-pt-BR.jpg`. Avec `onlyIfExists: true` (valeur par défaut), cette URL n'est utilisée que si le fichier localisé existe ; sinon, la ressource partagée d'origine est conservée. Définissez `onlyIfExists: false` uniquement lorsqu'une autre étape de build ou de CDN garantit ces fichiers.
+`img/trulli.jpg` devient `img/trulli-pt-BR.jpg`. Avec `onlyIfExists: true` (par défaut), cette URL n'est utilisée que si le fichier localisé existe ; sinon, l'actif partagé d'origine est conservé. Définissez `onlyIfExists: false` uniquement lorsqu'une autre étape de build ou de CDN garantit ces fichiers.
 
-`include` correspond aux chemins d'URL tels que `img/**`. Utilisez `assetRoot` pour définir le répertoire du système de fichiers par rapport auquel les candidats localisés — en particulier les URL relatives à la racine telles que `/img/trulli.jpg` — sont vérifiés.
+`include` correspond à des chemins d'URL tels que `img/**`. Utilisez `assetRoot` pour définir le répertoire du système de fichiers par rapport auquel les candidats localisés — en particulier les URL relatives à la racine telles que `/img/trulli.jpg` — sont vérifiés.
 
-Les mêmes règles de localisation s'appliquent à `srcset`, `poster`, `<source src>`, l'icône `<link href>`, et `og:image` / `twitter:image`. Le pipeline réécrit les références mais ne crée, ne traduit ni ne copie les fichiers de ressources. Les valeurs CSS `url()` ne sont pas réécrites.
+Les mêmes règles de localisation s'appliquent à `srcset`, `poster`, `<source src>`, l'icône `<link href>`, et `og:image` / `twitter:image`. Le pipeline réécrit les références mais ne crée, ne traduit ni ne copie les fichiers d'actifs. Les valeurs CSS `url()` ne sont pas réécrites.
 
 <a id="language-list-and-hreflang"></a>
 ## Liste des langues et hreflang

@@ -70,7 +70,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每个提供程序块可以定义自己的 `translationModels`、可选的 `uiModels` 和 `localeModels`、`maxTokens`、`temperature`，以及 `requestTimeout`（秒）或 `requestTimeoutMs`。提供程序上的超时会覆盖顶级的 `requestTimeout` / `requestTimeoutMs`。仍然接受旧版的顶级 `openrouter` 块，并在加载时自动迁移到 `providers.openrouter`。
 
-当提供商省略 `usage.cost` 时，可选的 `pricing` 和 `modelPricing` 可设置每百万 token 的美元价格（`inputPerMTokens` 和 `outputPerMTokens`）。`pricing` 是提供商范围内的默认值；`modelPricing` 条目会覆盖特定模型 ID 的默认值。OpenRouter 和 Cheaper Inference 已经返回了单次调用的成本，因此在这些提供商上请勿设置两者。提供商报告的成本将按原样保留。该金额包含在翻译摘要、[`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [Usage & costs](/zh-Hans/guide/translation-dashboard/usage) 中。
+可选的 `pricing` 和 `modelPricing` 设置每百万令牌的美元成本（`inputPerMTokens` 和 `outputPerMTokens`），当提供商省略 `usage.cost` 时。`pricing` 是提供商范围内的默认值；一个 `modelPricing` 条目会覆盖单个模型 ID 的设置。OpenRouter 和 Cheaper Inference 已返回每次调用的成本，因此请在这些提供商上将两者都留空。提供商报告的成本将按原样保留。该金额包含在翻译摘要中，[`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [使用情况和成本](/zh-Hans/guide/translation-dashboard/usage)。
 
 针对同一文档使用四个提供商的可运行示例，包含示例费率：[`examples/multi-provider`](/zh-Hans/examples#multi-provider)。
 

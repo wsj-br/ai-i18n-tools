@@ -49,13 +49,13 @@ La liste restreinte est un classement de benchmark du catalogue de chat en direc
 
 | Signal | Ce qu'il apporte | Source |
 | --- | --- | --- |
-| ChrF | Qualité de la traduction pour les langues de votre projet | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Score Arena | Préférence globale issue de comparaisons directes | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | Qualité de traduction pour les langues de votre projet | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | Préférence globale issue de comparaisons directes | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | USD par million de jetons | Prix d'entrée et de sortie | Le catalogue du fournisseur lorsqu'il publie les tarifs, sinon [models.dev](https://models.dev/) (MIT) |
 
 ChrF utilise les scores de traduction de languagebench pour vos `sourceLocale` et `targetLocales`. Les paramètres régionaux correspondent à un code de langue languagebench : la sous-étiquette principale, avec des alias tels que `pt-BR` pour `pt` et `zh-Hant` pour `zh`. Un modèle qui traduit bien ces langues surclasse celui qui n'obtient de bons scores qu'en général. Les modèles d'embeddings, d'image, de parole et autres modèles non-chat sont ignorés, tout comme les ID ayant dépassé leur date d'expiration.
 
-Qualité, le profil par défaut, accorde plus d'importance au score ChrF et à l'Arena Score qu'au prix. Prix inverse cette priorité et conserve le seuil de qualité décrit ci-dessus. Les pondérations facultatives sont [`modelSuggestion`](/fr/reference/configuration#modelsuggestion-optional).
+Qualité, le profil par défaut, privilégie ChrF et Arena Score par rapport au prix. Le prix inverse cette priorité et maintient le seuil de qualité décrit ci-dessus. Les pondérations facultatives sont [`modelSuggestion`](/fr/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` retélécharge les jeux de données. Rechargez ensuite l'onglet **Modèles**.
 
@@ -69,7 +69,7 @@ Tous les indicateurs, y compris `--json`, `--list` et la formule de score : [su
 
 `translationModels` est une liste ordonnée. L'interface en ligne de commande essaie le premier modèle. En cas d'échec d'une requête, d'une réponse qu'elle ne peut pas analyser ou d'un texte dans le mauvais système d'écriture, elle essaie l'ID suivant pour ce lot.
 
-Un seul ID constitue un point de défaillance unique. Un modèle peut expirer, renvoyer un texte que cet outil rejette, ou bien traduire une langue et en traduire mal une autre. Un cas courant est l'hindi romanisé, alors que `hi` attend l'écriture devanagari. Le résultat romanisé est rejeté pour les paramètres régionaux à script natif. Un paramètre régional qui doit rester romanisé nécessite une sous-étiquette `-Latn` explicite, telle que `hi-Latn`.
+Un seul identifiant est un point de défaillance unique. Un modèle peut expirer, renvoyer du texte que cet outil rejette, ou traduire correctement une langue et mal une autre. Un cas courant est l'hindi romanisé où `hi` attend le devanagari. La sortie romanisée est rejetée pour les paramètres régionaux à script natif. Un paramètre régional qui doit rester romanisé nécessite un sous-tag `-Latn` explicite, tel que `hi-Latn`.
 
 C'est pourquoi la liste restreinte contient plusieurs ID, les plus performants en premier. L'ordre de la liste correspond à l'ordre dans lequel la traduction est tentée.
 

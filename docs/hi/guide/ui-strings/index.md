@@ -12,7 +12,7 @@
 | --- | --- |
 | हार्डकोडेड स्रोत स्ट्रिंग्स के साथ JS/TS, अभी तक कोई `t()` नहीं | [JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` पहले से ही स्रोत में है | [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python एप्लिकेशन्स](/hi/guide/ui-strings/python)। Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, या `ui-python-django`। हेल्पर: `i18n.py`। किसी मौजूदा ऐप में लोकेल जोड़ने के लिए, [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) देखें। |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python अनुप्रयोग](/hi/guide/ui-strings/python)। आरंभ करें: `ui-python`, `ui-python-gettext`, `ui-python-flask`, या `ui-python-django`। सहायक: `i18n.py`। किसी मौजूदा ऐप में लोकेल जोड़ने के लिए, [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) देखें, या जब ऐप gettext का उपयोग करता है तो [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) देखें। |
 | Plain HTML (मार्कअप में कोई `t()` नहीं) | [Plain HTML ऐप्स](/hi/guide/ui-strings/plain-html) |
 | Astro मार्केटिंग साइट (हाइब्रिड) | [Astro वेबसाइट](/hi/guide/ui-strings/astro-website) |
 | `t()` नियम, इंटरपोलेशन, बहुवचन | [t() कॉल और बहुवचन](/hi/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json` को पढ़ता है, हर टारगेट लोकेल के लिए सक्रिय LLM प्रोवाइडर पर मॉडल को बैच भेजता है, और `ui.flatOutputDir` में फ़्लैट JSON फ़ाइलें (`de.json`, `fr.json`, आदि) लिखता है। मॉडल का चयन UI चेन का उपयोग करता है: `localeModels(locale)` → `uiModels` → `translationModels` ([AI मॉडल](/hi/guide/ai-models#model-fallback-chain) देखें)। एक लोकेल के अंदर, एक बार में `uiBatchConcurrency` तक बैच चलते हैं (डिफ़ॉल्ट **2**; [कॉन्फ़िगरेशन — uiBatchConcurrency](/hi/reference/configuration#uibatchconcurrency-optional) देखें)। `-j` अभी भी सिर्फ़ टारगेट लोकेल को पैरेललाइज़ करता है।
+`strings.json` पढ़ता है, प्रत्येक लक्ष्य लोकेल के लिए सक्रिय LLM प्रदाता पर मॉडल को बैच भेजता है, `ui.flatOutputDir` में फ्लैट JSON फ़ाइलें (`de.json`, `fr.json`, आदि) लिखता है। मॉडल चयन UI श्रृंखला का उपयोग करता है: `localeModels(locale)` → `uiModels` → `translationModels` ([AI मॉडल](/hi/guide/ai-models#model-fallback-chain) देखें)। एक लोकेल के भीतर, एक साथ `uiBatchConcurrency` बैच तक चलते हैं (डिफ़ॉल्ट **2**; [कॉन्फ़िगरेशन — uiBatchConcurrency](/hi/reference/configuration#uibatchconcurrency-optional) देखें)। `-j` अभी भी केवल लक्ष्य लोकेल को समानांतर करता है।
 
 <a id="translations-database-stringsjson"></a>
 ### अनुवाद डेटाबेस (`strings.json`)
 
 प्रत्येक प्रविष्टि के लिए, `translate-ui` एक वैकल्पिक `models` ऑब्जेक्ट (`translated` के समान लोकेल कुंजी) में प्रत्येक लोकेल का सफलतापूर्वक अनुवाद करने वाले **सक्रिय प्रदाता से मॉडल आईडी** को संग्रहीत करता है। अनुवाद डैशबोर्ड में संपादित स्ट्रिंग को उस लोकेल के लिए `models` में प्रहरी मान `user-edited` के साथ चिह्नित किया जाता है। `ui.flatOutputDir` के तहत प्रति-लोकेल फ्लैट फ़ाइलें केवल **स्रोत स्ट्रिंग → अनुवाद** रहती हैं; उनमें `models` शामिल नहीं है (इसलिए रनटाइम बंडल अपरिवर्तित रहते हैं)।
 
-> **नोट:** UI स्ट्रिंग में डैशबोर्ड संपादन `strings.json` में रहते हैं, SQLite दस्तावेज़ कैश में नहीं। कैटलॉग से फ़्लैट स्थान-भाषा फ़ाइलों को फिर से लिखने के लिए सादा `sync` या `translate-ui` (कोई विशेष फ़्लैग नहीं) चलाएँ — `--force-update` UI चरण पर **अग्रेषित नहीं** किया जाता है। मैन्युअल संपादन के बाद UI कमांड पर `--force` से बचें: यह प्रत्येक प्रविष्टि का फिर से अनुवाद करता है और आपकी `user-edited` पंक्तियों को अधिलेखित कर सकता है। कैटलॉग पंक्तियाँ जिनकी संग्रहीत अनुवाद स्थान-भाषा लेखन-प्रणाली जाँच में विफल रहता है (उदाहरण के लिए `hi` के लिए रोमनकृत हिंदी) को अनुपलब्ध माना जाता है और `--force` के बिना फिर से अनुवादित किया जाता है।
+> **ध्यान दें:** UI स्ट्रिंग में डैशबोर्ड संपादन `strings.json` में रहते हैं, न कि SQLite दस्तावेज़ कैश में। कैटलॉग से फ्लैट लोकेल फ़ाइलों को फिर से लिखने के लिए सादा `sync` या `translate-ui` (कोई विशेष फ़्लैग नहीं) चलाएँ — `--force-update` UI चरण पर **अग्रेषित नहीं** किया जाता है। मैन्युअल संपादन के बाद UI कमांड पर `--force` से बचें: यह हर प्रविष्टि का फिर से अनुवाद करता है और आपकी `user-edited` पंक्तियों को अधिलेखित कर सकता है। कैटलॉग पंक्तियाँ जिनकी संग्रहीत अनुवाद लोकेल लेखन-प्रणाली जाँच में विफल रहता है (उदाहरण के लिए `hi` के लिए रोमनकृत हिंदी) को गुम माना जाता है और `--force` के बिना फिर से अनुवादित किया जाता है।
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## चरण 4: अपने ऐप में आउटपुट का उपयोग करें
@@ -90,7 +90,7 @@ ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### प्रति-स्थानीय मॉडल ओवरराइड
 
-कुछ मॉडल कुछ भाषाओं का दूसरों से बेहतर अनुवाद करते हैं। उदाहरण के लिए, qwen और z-ai मॉडल एशियाई भाषाओं के साथ अच्छा प्रदर्शन करते हैं। प्रत्येक BCP-47 लोकेल के लिए एक प्राथमिकता-प्राप्त मॉडल सूची देने के लिए `providers.<active>.localeModels` प्रविष्टियाँ जोड़ें। उन सूचियों को उस लोकेल के लिए `uiModels` और `translationModels` से पहले आज़माया जाता है। लोकेल टैग केस-संवेदी नहीं होते हैं (`zh-cn` और `ZH-CN` समान हैं)। कोई मिलान प्रविष्टि न होने पर, टूल डिफ़ॉल्ट `uiModels` और `translationModels` क्रम का उपयोग करता है। वही `localeModels` तंत्र दस्तावेज़, JSON और SVG अनुवाद पर लागू होता है।
+कुछ मॉडल कुछ भाषाओं का दूसरों की तुलना में बेहतर अनुवाद करते हैं। उदाहरण के लिए, qwen और z-ai मॉडल एशियाई भाषाओं के साथ अच्छा प्रदर्शन करते हैं। प्रत्येक BCP-47 लोकेल के लिए एक प्राथमिकता वाली मॉडल सूची देने के लिए `providers.<active>.localeModels` प्रविष्टियाँ जोड़ें। उन सूचियों को उस लोकेल के लिए `uiModels` और `translationModels` से पहले आज़माया जाता है। लोकेल टैग केस-संवेदी नहीं होते हैं (`zh-cn` और `ZH-CN` समान हैं)। कोई मिलान प्रविष्टि न होने पर, उपकरण डिफ़ॉल्ट `uiModels` और `translationModels` क्रम का उपयोग करता है। वही `localeModels` तंत्र दस्तावेज़, JSON और SVG अनुवाद पर लागू होता है।
 
 <a id="exporting-to-xliff-20"></a>
 ### XLIFF 2.0 में निर्यात करना

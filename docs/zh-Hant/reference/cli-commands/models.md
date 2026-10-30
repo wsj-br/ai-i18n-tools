@@ -34,9 +34,13 @@
 
 候選項目來自供應商的 `GET /models` 列表。當 `providers.cheaperinference.zeroDataRetention` 為 true 時，該請求為 `GET /v1/models?zdr=true`。已過期的行和非聊天行（嵌入、語音、圖像、視訊、內容審核、重新排名器）將被排除。如果該目錄請求失敗，該命令將以 1 結束。
 
-`--quality` 為預設值。它將 ChrF 與 Arena 分數的權重置於價格之上。`--price` 將價格權重置於這些分數之上，同時維持品質底線，確保未經測量的廉價模型不會直接跳到清單前列。同時傳入兩個旗標會導致錯誤。若兩者皆未傳入，則預設為品質優先。配置中可選的 `modelSuggestion` 權重可取代任一設定檔。請參閱 [Configuration](/zh-Hant/reference/configuration#modelsuggestion-optional)。相同的權重也用於 [dashboard Models tab](/zh-Hant/guide/translation-dashboard/models)。
+`--quality` 是預設值。它將 ChrF 和 Arena 分數的權重置於價格之上。`--price` 將價格的權重置於這些分數之上，同時仍保持品質下限，因此未經測量的廉價模型不會躍居列表前列。同時傳遞這兩個旗標會導致錯誤。兩者皆不傳遞則表示品質。設定中的可選 `modelSuggestion` 權重會取代任一設定檔。請參閱 [設定](/zh-Hant/reference/configuration#modelsuggestion-optional)。相同的權重也用於 [儀表板的模型分頁](/zh-Hant/guide/translation-dashboard/models)。
 
-ChrF 是 languagebench `translation_from` 與 `translation_to` 列的平均值，其指標為 `chrf`，並限制於本專案的 `sourceLocale` 與 `targetLocales`。地區設定會對應至 languagebench 語言代碼（主要子標籤，包含少數別名，例如 `pt-BR` 對應 `pt`，以及 `zh-Hant` 對應 `zh` 與 `yue`）。空集合將使用 `en`。Arena 指的是 LMArena 整體 Arena 分數，而非 Elo。排名價格為每 100 萬個 token `(3 × input + output) / 4` 美元。價格來源依序為：非零的目錄費率、models.dev 輸入與輸出費率，最後是 languagebench 的單一成本數據。目錄價格為 `0` 表示未定價，而非免費。未知的價格在品質設定檔中視為中性，在價格設定檔中則視為最差。缺失 ChrF 的模型排序將低於品質底線。用於缺失 ChrF 或 Arena 的 `0.35` 與 `0.45` 替代值僅影響索引計算；表格中會顯示 `—`。
+ChrF 是 languagebench `translation_from` 和 `translation_to` 列的平均值，其指標為 `chrf`，僅限於此專案的 `sourceLocale` 和 `targetLocales`。語系會對應至 languagebench 語言代碼 (主要子標籤，帶有一些別名，例如 `pt-BR` 對應至 `pt`，`zh-Hant` 對應至 `zh`，以及 `yue`)。空集合使用 `en`。Arena 是 LMArena 的整體 Arena 分數，而非 Elo。
+
+排名價格為每百萬個權杖 `(3 × input + output) / 4` 美元。其來源依此順序解析：非零的目錄費率，然後是 models.dev 的輸入和輸出費率，最後是 languagebench 的單一成本數字。目錄價格為 `0` 表示未定價，而非免費。未知價格在品質設定檔中保持中立，在價格設定檔中則表現最差。
+
+遺失的 ChrF 會排序在品質下限之下。用於遺失 ChrF 或 Arena 的 `0.35` 和 `0.45` 替代值僅影響索引；表格則會改為印出 `—`。
 
 達到門檻的列優先顯示，接著是較高的指數，然後是較低的混合價格。`--top`（預設為 `8`，一個至少為 1 的整數）在下方篩選器之後，共同限制表格、`--json` 片段和 `--apply`。
 
@@ -54,7 +58,7 @@ ChrF 是 languagebench `translation_from` 與 `translation_to` 列的平均值�
 
 `--apply` 會將當前配置複製到同級的 `ai-i18n-tools.config.{timestamp}.backup.json` (或當 `-c` 命名另一個檔案時為 `{name}.{timestamp}.backup.json`)，然後用這些 ID 替換 `providers.<active>.translationModels`。命名衝突會在 `.backup.json` 之前加上 `-2`、`-3` 等。如果複製失敗，配置檔案將保持不變。`uiModels` 和 `localeModels` 保持不變。分數不會寫入配置檔案。儀表板的 **更新配置** 按鈕會寫入相同的備份。
 
-基準測試數據會快取在 `<cacheDir>/benchmark-scores.json`（通常為 `.translation-cache/benchmark-scores.json`）中，為期 7 天。原始資料集會在執行階段下載，並不會隨套件一同發布。`--refresh` 會重新下載 languagebench、Arena 以及 models.dev。若來源在 `--refresh` 期間失敗，則不會從先前的快取中填入資料。若沒有 `--refresh`，失敗的下載會重複使用已快取的片段。如果 languagebench 或 Arena 其中之一失敗，該指令會使用另一個來源進行排名，並說明哪個來源失敗。如果兩者皆失敗，則會以代碼 1 結束。models.dev 失敗時會保留目錄價格。儀表板沒有重新整理控制項；請從 CLI 執行 `--refresh`，然後重新載入「模型」(Models) 分頁。
+基準測試資料會快取在 `<cacheDir>/benchmark-scores.json` (通常是 `.translation-cache/benchmark-scores.json`) 七天。原始資料集會在執行時下載，不隨套件提供。`--refresh` 會重新下載 languagebench、Arena 和 models.dev。在 `--refresh` 期間失敗的來源不會從先前的快取中填入。如果沒有 `--refresh`，失敗的下載會重複使用快取的片段。如果 languagebench 或 Arena 其中之一失敗，該命令會使用另一個進行排名，並說明哪個來源失敗。如果兩者都失敗，則會以 1 結束。models.dev 失敗會保留目錄價格。儀表板沒有重新整理控制項；請從 CLI 執行 `--refresh`，然後重新載入「模型」分頁。
 
 頁尾標註了 languagebench (CC BY-SA 4.0)、LMArena Arena Score (CC BY 4.0) 以及 models.dev (MIT)。
 

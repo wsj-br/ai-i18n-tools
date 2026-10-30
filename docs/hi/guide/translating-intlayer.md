@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` ऐप को [http://localhost:3093](http://localhost:3093) पर चलाता है। अनुवाद करने से पहले लोकले को `es` या `zh-Hans` पर स्विच करें और स्ट्रिंग अंग्रेज़ी में वापस आ जाती हैं; `pnpm translate` के बाद भरे हुए अनुवाद दिखाई देते हैं। एक अंग्रेज़ी स्ट्रिंग को संपादित करें और केवल उस लीफ को रीफ़्रेश होते देखने के लिए `pnpm translate` को फिर से चलाएँ।
+`pnpm dev` `http://localhost:3093` पर ऐप चलाता है। अनुवाद करने से पहले लोकेल को `es` या `zh-Hans` पर स्विच करें और स्ट्रिंग अंग्रेज़ी में वापस आ जाती हैं; `pnpm translate` के बाद भरे हुए अनुवाद दिखाई देते हैं। एक अंग्रेज़ी स्ट्रिंग संपादित करें और केवल उस लीफ को रीफ़्रेश होते देखने के लिए `pnpm translate` को फिर से चलाएँ।
 
 पूर्ण विवरण: [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md).
 

@@ -104,7 +104,7 @@ getTextDirection('en-GB') // 'ltr'
 // Applied automatically via i18n.on('languageChanged', applyDirection) — see Wire i18next
 ```
 
-`applyDirection` sets `document.documentElement.dir` (browser) or is a no-op (Node.js). Pass an optional `element` argument to target a specific element. Wire it in your i18n bootstrap — [Wire i18next](/guide/ui-strings/i18next-runtime).
+`applyDirection` sets `document.documentElement.dir` (browser) or is a no-op (Node.js). Pass an optional `element` argument to target a specific element. Connect it in your i18n bootstrap — [Wire i18next](/guide/ui-strings/i18next-runtime).
 
 For strings that may contain `→` arrows, flip them for RTL layouts:
 

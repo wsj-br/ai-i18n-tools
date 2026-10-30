@@ -50,8 +50,8 @@ Wenn Ihr Projekt ein benutzerdefiniertes Interpolations-Dienstprogramm verwendet
 
 **Sie schreiben Pluralformen nicht von Hand.** Im Quellcode schreiben Sie die Nachricht einmal und übergeben zwei Dinge im zweiten Argument:
 
-1. **`plurals: true`** – teilt dem Extraktionsskript und `translate-ui` mit, dass dieser Aufruf eine kardinale Pluralgruppe ist.
-2. **`count`** – die Zahl, die i18next zur Laufzeit verwendet, um die richtige Form auszuwählen.
+1. `plurals: true` — weist extract und `translate-ui` an, dass dieser Aufruf eine Kardinalpluralgruppe ist.
+2. `count` — die Zahl, die i18next zur Laufzeit verwendet, um die richtige Form auszuwählen.
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ Wenn Sie `translate-ui` ausführen, **ruft ai-i18n-tools ein LLM auf**, um jede 
 
 **Validierung:** Wenn die Nachricht **zwei oder mehr** unterschiedliche <code v-pre>{{…}}</code> Platzhalter enthält, **muss einer von ihnen** <code v-pre>{{count}}</code> sein (die plurale Achse). Andernfalls schlägt `extract` **fehl** mit einer klaren Datei-/Zeilenmeldung.
 
-Nachdem das LLM CLDR-Formen zurückgegeben hat, prüft `translate-ui` auch jede Form gegen das **ursprüngliche Entwickler-Literal**: Jeder Quellplatzhalter muss in jeder Kategorie (einschließlich `one`) erscheinen, Formen dürfen keine neuen <code v-pre>{{…}}</code> / `%d` / `{n}`-Tokens erfinden, und nur-Substantiv-Quellen (kein <code v-pre>{{count}}</code> und keine Ziffern, z. B. Einheitenbezeichnungen wie `Minutes`) müssen nur-Substantiv bleiben. Bei Nichtübereinstimmungen wird die Antwort dieses Modells verworfen und das nächste Modell in der Fallback-Liste erneut versucht.
+Nachdem das LLM CLDR-Formen zurückgibt, `translate-ui` prüft außerdem jede Form gegen das **ursprüngliche Entwickler-Literal**: Jeder Quell-Platzhalter muss in jeder Kategorie erscheinen (einschließlich `one`), Formen dürfen keine neuen <code v-pre>{{…}}</code> / `%d` / `{n}`-Tokens erfinden, und rein nominale Quellen (kein <code v-pre>{{count}}</code> und keine Ziffern, z.B. Einheitenbezeichnungen wie `Minutes`) müssen rein nominal bleiben. Fehlpaarungen verwerfen die Antwort dieses Modells und versuchen es mit dem nächsten Modell in der Fallback-Liste erneut.
 
 **Zwei unabhängige Zählungen** (z. B. Abschnitte und Seiten) können keine gemeinsame Pluralnachricht haben – verwenden Sie **zwei** `t()`-Aufrufe (jeder mit `plurals: true` und seinem eigenen `count`) und verketten Sie sie in der Benutzeroberfläche.
 

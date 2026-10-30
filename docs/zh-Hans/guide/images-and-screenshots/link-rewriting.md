@@ -8,10 +8,10 @@
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"` 时的两步流程
 
-1. **源 URL** — 翻译后 markdown 中的图片路径（片段重组后）
-2. **扁平链接重写器** — 添加深度前缀（`../`、`../../docs/`、…）
-3. **`regexAdjustments`** — 替换区域设置文件夹片段（`en-GB` → `${translatedLocale}`）
-4. **输出 URL** — 写入翻译文件的最终路径
+1. **Source URL** — 在翻译后的 Markdown 中（片段重新组合后）的图片路径
+2. **Flat link rewriter** — 添加深度前缀（`../`、`../../docs/` 等）
+3. `regexAdjustments` — 替换区域设置文件夹段（`en-GB` → `${translatedLocale}`）
+4. **Output URL** — 写入翻译后文件的最终路径
 
 在仓库根目录中，使用 `outputDir: "translated-docs/"` 和源 `README.md` 的示例：
 
@@ -25,11 +25,11 @@
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress 链接规范化器 (`style: "vitepress"`)
 
-当 `docsOutput.rewriteVitepressLinks` 为 `true` 时（当 `style` 为 `"vitepress"` 时的默认值），在段重组后会运行一个单独的规范化器（而不是平面重写器）。它针对 VitePress / 文档系统站点，其中英文内容位于内容根目录，而本地化内容位于同级文件夹中（`docs/de/guide/…`）。
+当 `docsOutput.rewriteVitepressLinks` 为 `true` 时（当 `style` 为 `"vitepress"` 时的默认值），一个单独的规范化器会在段落重组后运行（而不是扁平重写器）。它针对 VitePress / 文档系统站点，其中英文内容位于内容根目录，而区域设置位于同级文件夹中 (`docs/de/guide/…`)。
 
-1. **源 href** — 翻译后 markdown 中的链接（片段重组后）
-2. **VitePress 链接规范化器** — 将文档路径重写为站点路由（`/guide/…`）
-3. **`regexAdjustments`** — 可选的截图区域设置文件夹替换（`screenshots/en-GB/` → `screenshots/de/`、…）
+1. **源 href** — 翻译后的 Markdown 中的链接（在片段重新组合后）
+2. **VitePress 链接规范化器** — 将文档路径重写为站点路由 (`/guide/…`)
+3. `regexAdjustments` — 屏幕截图的可选区域设置文件夹替换 (`screenshots/en-GB/` → `screenshots/de/`，…)
 4. **输出 href** — 写入翻译文件的最终 URL
 
 典型重写：
@@ -42,19 +42,19 @@
 
 对于同步 `README.md` → `docs/index.md` 的项目，请在 `README.md` 中为 `LICENSE`、`examples/` 以及 VitePress 目录树之外的其他文件使用完整的 GitHub URL。请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 
-扁平重写器和 VitePress 规范化器在每个 `docs[]` 块中互斥——在 `regexAdjustments` 之前仅运行其中一个。请参阅 [VitePress 集成 — 链接约定](/zh-Hans/guide/integrations/vitepress#link-conventions)。
+扁平重写器和 VitePress 规范化器在每个 `docs[]` 块中是互斥的 — 在 `regexAdjustments` 之前只有一个运行。请参阅 [VitePress 集成 — 链接约定](/zh-Hans/guide/integrations/vitepress#link-conventions)。
 
 各区域设置的截图文件夹在需要时仍使用相同的 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 规则；请参阅[各区域设置文件夹](/zh-Hans/guide/images-and-screenshots/per-locale-folder)。
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra 链接规范化器 (`style: "nextra"`)
 
-当 `docsOutput.rewriteNextraLinks` 为 `true` 时（当 `style` 为 `"nextra"` 时的默认值），在片段重组后会运行一个单独的规范化器。它将 `content/en/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
+当 `docsOutput.rewriteNextraLinks` 为 `true` 时（当 `style` 为 `"nextra"` 时的默认值），一个单独的规范化器会在段落重组后运行。它将 `content/en/…` 和相对 `.mdx` 路径重写为区域设置中立的路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs 链接规范化器 (`style: "fumadocs"`)
 
-当 `docsOutput.rewriteFumadocsLinks` 为 `true` 时（当 `style` 为 `"fumadocs"` 时的默认值），在片段重组后会运行一个单独的规范化器。它将 `content/docs/…` 和相对 `.mdx` 路径重写为与区域设置无关的路由 (`/docs/…`)。请参阅 [Fumadocs 集成 — 链接约定](/zh-Hans/guide/integrations/fumadocs#link-conventions)。
+当 `docsOutput.rewriteFumadocsLinks` 为 `true` 时（当 `style` 为 `"fumadocs"` 时的默认值），一个单独的规范化器会在段落重组后运行。它将 `content/docs/…` 和相对 `.mdx` 路径重写为区域设置中立的路由 (`/docs/…`)。请参阅 [Fumadocs 集成 — 链接约定](/zh-Hans/guide/integrations/fumadocs#link-conventions)。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### 使用 `flatPreserveRelativeDir` 进行逐文件深度前缀

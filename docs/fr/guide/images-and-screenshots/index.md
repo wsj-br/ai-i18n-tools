@@ -15,7 +15,7 @@ Le choix de la structure de répertoire avant même la création des captures d'
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### Markdown avec `docsOutput.style = "flat"` (README, GUIDE-UTILISATEUR)
 
-Stockez les captures d'écran dans un sous-répertoire codé par langue dès le départ :
+Stocker les captures d'écran dans un sous-répertoire codé par locale dès le début :
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ Définissez `docs[].docsOutput.docsRoot` sur la racine des fichiers écrits en `
 
 Le réécritureur de liens plat ne s'exécute **pas** pour `doc-system` (contrairement à `"flat"`). `postProcessing.regexAdjustments` voit l'URL d'origine du markdown source — généralement un chemin absolu ou racine du site comme `/img/screenshots/en-GB/foo.png`.
 
-La mise en page **Dossier par locale** s'applique lorsque les captures d'écran se trouvent dans une arborescence d'URL statique partagée : utilisez un dossier codé par locale dès le premier jour et une règle générique `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (voir [Configuration — système de documentation](/fr/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
+La disposition des **dossiers par locale** s'applique lorsque les captures d'écran résident dans une arborescence d'URL statique partagée : utilisez un dossier codé par locale dès le début et une règle générique `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (voir [Config — doc-system](/fr/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 Les **captures d'écran colocalisées** s'appliquent lorsque les documents traduits de chaque paramètre régional stockent les ressources à côté du markdown (pas de réécriture d'URL). Votre script de capture d'écran doit écrire les fichiers PNG dans des chemins dérivés de `{outputDir}`, `{locale}` et `{localeSubpath}` — le préréglage Docusaurus ci-dessous est la mise en page de référence.
 
@@ -78,7 +78,7 @@ Lorsque vous ajoutez l'i18n plus tard, le script de capture d'écran adopte la d
 
 Équivalent à `docsOutput.style = "doc-system"` avec `localeSubpath: ""` — les pages traduites se trouvent directement sous `{outputDir}/{locale}/`.
 
-Stockez les captures d'écran sous un chemin codé par langue dès le départ :
+Stocker les captures d'écran dans un chemin d'accès codé par locale dès le début :
 
 ```
 public/img/screenshots/en-GB/screenshot.png

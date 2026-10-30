@@ -13,6 +13,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 |---------|---------|
 | [`version`](setup#version) | Druckt die CLI-Version und den Build-Timestamp. |
 | [`init`](setup#init) | Erstellt eine Starter-Konfiguration; `-t` wählt eine Scaffold-Vorlage aus. |
+| [`doctor`](setup#doctor) | Stellen Sie sicher, dass Konfiguration, Pfade, Provider und die Umgebung zur Übersetzung bereit sind. |
 | [`help`](setup#help) | Hilfe für einen Unterbefehl anzeigen. |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | Veraltete/verwaiste/nicht konfigurierte Cache-Zeilen für Gebietsschemas bereinigen und Markdown-Probleme neu füllen. |
 | [`clean-temp`](maintenance#clean-temp) | Sucht und löscht `*.log`, `*.tmp` und Cache-Backups. |
-| [`purge-locale`](maintenance#purge-locale) | Entfernt Cache-Zeilen und generierte Artefakte für Gebietsschema(s). |
+| [`purge-locale`](maintenance#purge-locale) | Entfernen Sie Cache-Zeilen und generierte Artefakte für Gebietsschema(s). |
 
 <a id="dashboard--glossarytools"></a>
 ### [Dashboard & Glossar](tools)
@@ -91,6 +92,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

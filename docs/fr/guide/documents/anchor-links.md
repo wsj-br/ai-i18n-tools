@@ -34,14 +34,14 @@ Pointez vos **liens d'ancrage** markdown vers ces identifiants stables, par exem
 
 Lorsque vous n'êtes pas sur Docusaurus, ou que vous avez besoin d'ancres HTML au lieu de suffixes `{#…}` / `{/* #… */}` :
 
-1. Exécutez `ai-i18n-tools write-heading-ids` sur votre `.md` / `.mdx` source avant `translate-docs` (mêmes `docs[]` / `contentPaths` que d'habitude). Il insère des ancres HTML explicites sur la ligne précédant chaque titre afin que les valeurs `id` soient partagées par chaque copie traduite, et il copie ces mêmes identifiants anglais dans les fichiers traduits existants. Lorsque le nombre de segments correspond, le segment mis en cache correspondant est également mis à jour, de sorte qu'un `sync --force-update` ultérieur conserve l'identifiant corrigé. Réexécutez-le après avoir renommé les titres afin que les anciens identifiants d'ancre soient actualisés pour correspondre au titre actuel.
-2. Faites pointer vos **liens d'ancrage** Markdown vers ces identifiants stables, par ex. `[label](other.md#section-id)`, où `section-id` correspond à l'ancre générée par l'outil, et non à une supposition basée uniquement sur les mots anglais.
+1. Exécutez `ai-i18n-tools write-heading-ids` sur vos fichiers source `.md` / `.mdx` avant `translate-docs` (les mêmes `docs[]` / `contentPaths` que d'habitude). Il insère des ancres HTML explicites sur la ligne précédant chaque titre afin que les valeurs `id` soient partagées par chaque copie traduite, et il copie ces mêmes identifiants anglais sur les fichiers traduits existants. Lorsque les nombres de segments correspondent, le segment mis en cache correspondant est également mis à jour, de sorte qu'un `sync --force-update` ultérieur conserve l'identifiant réparé. Réexécutez-le après avoir renommé les titres afin que les identifiants d'ancrage obsolètes soient actualisés pour correspondre au titre actuel. Un renommage ne laisse qu'une seule ancre : les lignes `<a id>` supplémentaires empilées au-dessus de ce titre sont supprimées, et les liens Markdown internes au dépôt qui ciblaient un identifiant supprimé sont reciblés. Un `<a id>` qui n'est pas directement au-dessus d'un titre est laissé en place.
+2. Pointez vos **liens d'ancrage** Markdown vers ces identifiants stables, par exemple `[label](other.md#section-id)`, où `section-id` correspond à l'ancre que l'outil a écrite — et non une supposition basée uniquement sur des mots anglais.
 
 <a id="example"></a>
 ## Exemple
 
 <a id="docusaurus------suffix"></a>
-### Suffixe Docusaurus `` / ``
+### Suffixe Docusaurus `{#…}` / `{/* #… */}`
 
 `docs/overview.md`:
 

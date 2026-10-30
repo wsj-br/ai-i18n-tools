@@ -47,15 +47,15 @@ ai-i18n-tools dashboard
 
 Die Shortlist ist eine Benchmark-Rangliste des Live-Chat-Katalogs des Anbieters. Beim ersten Durchlauf werden drei öffentliche Datensätze heruntergeladen, was eine Weile dauern kann. Spätere Durchläufe verwenden den 7-Tage-Cache unter `<cacheDir>/benchmark-scores.json` (normalerweise `.translation-cache/benchmark-scores.json`) wieder.
 
-| Signal | Was es beiträgt | Quelle |
+| Signal | Beitrag | Quelle |
 | --- | --- | --- |
-| ChrF | Übersetzungsqualität für die Sprachen Ihres Projekts | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena Score | Allgemeine Präferenz aus direkten Vergleichen | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | Übersetzungsqualität für die Sprachen Ihres Projekts | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | Gesamtpräferenz aus Kopf-an-Kopf-Vergleichen | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | USD pro 1 Mio. Token | Eingabe- und Ausgabepreis | Katalog des Anbieters, wenn er Preise veröffentlicht, andernfalls [models.dev](https://models.dev/) (MIT) |
 
 ChrF verwendet die Übersetzungs-Scores von languagebench für Ihre `sourceLocale` und `targetLocales`. Locales werden einem languagebench-Sprachcode zugeordnet: dem primären Subtag, mit Aliasen wie `pt-BR` für `pt` und `zh-Hant` für `zh`. Ein Modell, das diese Sprachen gut übersetzt, rangiert höher als eines, das nur allgemein gut abschneidet. Embedding-, Bild-, Sprach- und andere Nicht-Chat-Modelle werden übersprungen, ebenso wie IDs, deren Ablaufdatum überschritten ist.
 
-Qualität, das Standardprofil, gewichtet ChrF und Arena Score höher als den Preis. Preis kehrt diese Gewichtung um und hält das oben beschriebene Qualitätsniveau ein. Optionale Gewichtungen sind [`modelSuggestion`](/de/reference/configuration#modelsuggestion-optional).
+„Qualität“, das Standardprofil, gewichtet ChrF und Arena Score höher als den Preis. „Preis“ kehrt diesen Schwerpunkt um und behält die oben beschriebene Qualitätsuntergrenze bei. Optionale Gewichtungen sind [`modelSuggestion`](/de/reference/configuration#modelsuggestion-optional).
 
 `suggest-models --refresh` lädt die Datensätze erneut herunter. Laden Sie danach den Tab **Modelle** neu.
 
@@ -69,7 +69,7 @@ Jedes Flag, einschließlich `--json`, `--list` und die Bewertungsformel: [Modell
 
 `translationModels` ist eine geordnete Liste. Die CLI versucht das erste Modell. Bei einer fehlgeschlagenen Anfrage, einer Antwort, die sie nicht parsen kann, oder Text in einem falschen Schriftsystem, versucht sie die nächste ID für diesen Batch.
 
-Eine ID ist ein Single Point of Failure. Ein Modell kann eine Zeitüberschreitung haben, Text zurückgeben, den dieses Tool ablehnt, oder eine Sprache gut und eine andere schlecht übersetzen. Ein häufiger Fall ist romanisiertes Hindi, wo `hi` Devanagari erwartet. Romanisierte Ausgabe wird für Locales mit nativer Schrift abgelehnt. Ein Locale, das romanisiert bleiben soll, benötigt einen expliziten `-Latn`-Subtag, wie z.B. `hi-Latn`.
+Eine ID ist ein Single Point of Failure. Ein Modell kann ein Timeout haben, Text zurückgeben, den dieses Tool ablehnt, oder eine Sprache gut und eine andere schlecht übersetzen. Ein häufiger Fall ist romanisiertes Hindi, wo `hi` Devanagari erwartet. Romanisierte Ausgabe wird für Gebietsschemas mit nativer Schrift abgelehnt. Ein Gebietsschema, das romanisiert bleiben soll, benötigt einen expliziten `-Latn`-Untertag, wie zum Beispiel `hi-Latn`.
 
 Deshalb enthält die Shortlist mehrere IDs, die stärkste zuerst. Die Reihenfolge in der Liste ist die Reihenfolge, in der die Übersetzung versucht wird.
 

@@ -68,7 +68,7 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 `docs[].docsOutput.docsRoot` को `sourceLocale` में लिखी गई फ़ाइलों के रूट पर सेट करें (उदाहरण के लिए `"docs"`, `"src/content/docs"`, या `"content/en"` जब अंग्रेज़ी स्रोत हो)। `sourceLocale` कोई भी भाषा हो सकती है। जब `docsOutput.style = "doc-system"` हो, तो आपको `localeSubpath` को स्पष्ट रूप से सेट करना होगा (प्रीसेट के लिए नीचे एक उपनाम का उपयोग करें)। `localeSubpath: ""` का उपयोग तब करें जब अनुवादित पृष्ठ सीधे `{outputDir}/{locale}/` के अंतर्गत हों (स्टारलाइट-शैली)।
 
-`docusaurusCatalogDir` से Docusaurus शेल JSON और doc-system प्रीसेट के अंतर्गत अन्य JSON आर्टिफैक्ट्स मार्कडाउन के समान फ़ोल्डर लेआउट का पालन करते हैं। `style: "flat"` के साथ, JSON लेबल फ़ाइलें अभी भी नेस्टेड आकार का उपयोग करती हैं जब तक कि आप `jsonPathTemplate` सेट नहीं करते।
+Docusaurus शेल JSON `docusaurusCatalogDir` से और डॉक-सिस्टम प्रीसेट के तहत अन्य JSON आर्टिफैक्ट मार्कडाउन के समान फ़ोल्डर लेआउट का पालन करते हैं। `style: "flat"` के साथ, JSON लेबल फ़ाइलें अभी भी नेस्टेड आकार का उपयोग करती हैं जब तक आप `jsonPathTemplate` सेट नहीं करते।
 
 <a id="doc-system-aliases"></a>
 ## डॉक-सिस्टम उपनाम
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 स्टारलाइट कई लोकेल के लिए UI स्ट्रिंग्स भेजता है; वैकल्पिक कस्टम UI ओवरराइड्स आवश्यकता पड़ने पर एक अलग `docs[]` ब्लॉक में `jsonPathTemplate: "{outputDir}/{locale}.json"` के साथ `src/content/i18n/en.json` का उपयोग करते हैं।
 
-VitePress नेविगेशन/साइडबार/फ़ुटर स्ट्रिंग्स मार्कडाउन में नहीं हैं — `docsOutput.vitepressThemeCatalog` को कॉन्फ़िगर करें और **`translate-docs`** के अंदर अनुवाद करें। [VitePress एकीकरण](/hi/guide/integrations/vitepress) देखें।
+VitePress नेविगेशन/साइडबार/फ़ुटर स्ट्रिंग मार्कडाउन में नहीं हैं — `docsOutput.vitepressThemeCatalog` कॉन्फ़िगर करें और `translate-docs` के अंदर अनुवाद करें। [VitePress इंटीग्रेशन](/hi/guide/integrations/vitepress) देखें।
 
-Nextra थीम डिक्शनरी (`.ts`) और `_meta.ts` साइडबार लेबल मार्कडाउन में नहीं हैं — `docs[].nextraDictionaryPath` और स्वचालित `_meta` संग्रह का उपयोग करें जब `style: "nextra"`, सभी **`translate-docs`** के अंदर। [Nextra एकीकरण](/hi/guide/integrations/nextra) देखें।
+Nextra थीम डिक्शनरी (`.ts`) और `_meta.ts` साइडबार लेबल मार्कडाउन में नहीं हैं — `docs[].nextraDictionaryPath` और स्वचालित `_meta` संग्रह का उपयोग करें जब `style: "nextra"` हो, सभी `translate-docs` के अंदर। [Nextra इंटीग्रेशन](/hi/guide/integrations/nextra) देखें।
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra थीम डिक्शनरी (`.ts`) और `_meta.ts` साइड
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — नेक्स्ट्रा-शैली के लोकेल फ़ोल्डर; खाली `localeSubpath` के साथ समान `doc-system` इंजन का उपयोग करता है।
+- `"dir"` — Nextra-शैली के लोकल फ़ोल्डर; खाली `localeSubpath` के साथ वही `doc-system` इंजन का उपयोग करता है।
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-फ्यूमाडॉक्स यूआई ओवरराइड (`lib/layout.shared.ts`) और `meta.json` साइडबार लेबल मार्कडाउन में नहीं हैं — `docsOutput.fumadocsUiCatalog` और स्वचालित `meta.json` संग्रह का उपयोग करें जब `style: "fumadocs"`, सभी **`translate-docs`** के अंदर हों। [फ्यूमाडॉक्स एकीकरण](/hi/guide/integrations/fumadocs) देखें।
+Fumadocs UI ओवरराइड (`lib/layout.shared.ts`) और `meta.json` साइडबार लेबल मार्कडाउन में नहीं हैं — `docsOutput.fumadocsUiCatalog` और स्वचालित `meta.json` संग्रह का उपयोग करें जब `style: "fumadocs"` हो, सभी `translate-docs` के अंदर। [Fumadocs इंटीग्रेशन](/hi/guide/integrations/fumadocs) देखें।
 
 बिल्ट-इन रिलेटिव-लिंक फिक्स से परे लिंक और एसेट यूआरएल रीराइटिंग के लिए, [लिंक रीराइटिंग](/hi/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`) देखें।
 

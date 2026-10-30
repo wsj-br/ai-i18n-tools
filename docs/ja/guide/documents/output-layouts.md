@@ -68,7 +68,7 @@ docs/sub/page.md    →  translated-docs/docs/sub/page.de.md
 
 `docs[].docsOutput.docsRoot` を `sourceLocale` で書かれたファイルのルートに設定します（例えば、英語がソースの場合、`"docs"`、`"src/content/docs"`、または `"content/en"`）。`sourceLocale` は任意の言語にできます。`docsOutput.style = "doc-system"` の場合、`localeSubpath` を明示的に設定する必要があります（プリセットには以下のエイリアスを使用してください）。翻訳されたページが `{outputDir}/{locale}/` の直下にある場合（Starlightスタイル）は、`localeSubpath: ""` を使用します。
 
-`docusaurusCatalogDir` からのDocusaurusシェルJSONおよびdoc-systemプリセット下のその他のJSONアーティファクトは、Markdownと同じフォルダレイアウトに従います。`style: "flat"` の場合、`jsonPathTemplate` を設定しない限り、JSONラベルファイルはネストされた形状を引き続き使用します。
+DocusaurusのシェルJSONは`docusaurusCatalogDir`から、およびドキュメントシステムプリセットの下にあるその他のJSONアーティファクトは、Markdownと同じフォルダーレイアウトに従います。`style: "flat"`を使用すると、`jsonPathTemplate`を設定しない限り、JSONラベルファイルはネストされた形式を維持します。
 
 <a id="doc-system-aliases"></a>
 ## ドキュメントシステムエイリアス
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlightは多数のロケール向けUI文字列を提供しています。必要に応じて、カスタムUIの上書きには、別個の `docs[]` ブロック内で `src/content/i18n/en.json` と `jsonPathTemplate: "{outputDir}/{locale}.json"` を使用します。
 
-VitePress の nav/sidebar/footer 文字列はマークダウンではない — `docsOutput.vitepressThemeCatalog` を設定し **`translate-docs`** ないで翻訳。[VitePress 統合](/ja/guide/integrations/vitepress) を参照。
+VitePressのナビゲーション/サイドバー/フッター文字列はMarkdownにはありません。`docsOutput.vitepressThemeCatalog`を設定し、`translate-docs`内で翻訳します。[VitePress連携](/ja/guide/integrations/vitepress)を参照してください。
 
-Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマークダウンではない — `docs[].nextraDictionaryPath` を使用し、`style: "nextra"` の場合は自動 `_meta` コレクションをすべて **`translate-docs`** ないで使用。[Nextra 統合](/ja/guide/integrations/nextra) を参照。
+Nextraテーマ辞書 (`.ts`) および`_meta.ts`サイドバーラベルはMarkdownにはありません。`style: "nextra"`の場合に`docs[].nextraDictionaryPath`と自動`_meta`収集を、すべて`translate-docs`内で使用します。[Nextra連携](/ja/guide/integrations/nextra)を参照してください。
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ Nextra テーマ辞書（`.ts`）と `_meta.ts` サイドバーラベルはマ�
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — Nextraスタイルのロケールフォルダ; 空の `localeSubpath` で同じ `doc-system` エンジンを使用します。
+- `"dir"` — Nextraスタイルのロケールフォルダー。空の`localeSubpath`で同じ`doc-system`エンジンを使用します。
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Fumadocs UI オーバーライド（`lib/layout.shared.ts`）と `meta.json` サイドバーラベルはマークダウンではない — `docsOutput.fumadocsUiCatalog` を使用し、`style: "fumadocs"` の場合は自動 `meta.json` コレクションをすべて **`translate-docs`** ないで使用。[Fumadocs 統合](/ja/guide/integrations/fumadocs) を参照。
+Fumadocs UIのオーバーライド (`lib/layout.shared.ts`) および`meta.json`サイドバーラベルはMarkdownにはありません。`style: "fumadocs"`の場合に`docsOutput.fumadocsUiCatalog`と自動`meta.json`収集を、すべて`translate-docs`内で使用します。[Fumadocs連携](/ja/guide/integrations/fumadocs)を参照してください。
 
 組み込みの相対リンク修正以外のリンクとアセットURLの書き換えについては、[リンクの書き換え](/ja/guide/documents/link-rewriting)（`docsOutput.postProcessing.regexAdjustments`）を参照してください。
 

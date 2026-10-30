@@ -6,7 +6,15 @@
 
 **概要：** `ai-i18n-tools cleanup [--dry-run] [--backup <path>]`
 
-清空整个 `markdown_source_issues` 表，然后运行 `sync --force-update`（提取、UI、SVG、文档，以及启用时的 `translate-json`），以便为当前配置的文档重新填充 markdown 问题；随后移除过时的段行（`last_hit_at` 为 null / 文件路径为空）；丢弃已解析源路径在磁盘上缺失的 `file_tracking` 行；移除其 `filepath` 元数据指向缺失文件的翻译行；清理孤立的 `translation_failures` 行；并丢弃配置中不存在的区域设置的缓存行（`sourceLocale`、根 `targetLocales`，以及任何按块的 `docs[]` / `json[]` `targetLocales`）。对于已停用的区域设置仅清理缓存——生成的文档、扁平 UI 文件和 `strings.json` 条目保持不变（使用 [`purge-locale`](#purge-locale) 来移除这些内容）。同步后记录清理计数（过时段、孤立 `file_tracking`、孤立翻译、孤立失败、未配置的区域设置）以及预先执行的 markdown 问题清空计数。
+清空整个 `markdown_source_issues` 表，然后运行 `sync --force-update`（提取、UI、SVG、文档，以及在启用时运行的 `translate-json`），以便为当前配置的文档重新填充 Markdown 问题。接着它会：
+
+- 移除过时的段行（`last_hit_at` 为空 / 文件路径为空）；
+- 删除其解析的源路径在磁盘上缺失的 `file_tracking` 行；
+- 移除其 `filepath` 元数据指向缺失文件的翻译行；
+- 清理孤立的 `translation_failures` 行；
+- 删除配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales`，以及任何每个块的 `docs[]` / `json[]` `targetLocales`）。
+
+仅针对已停用语言环境的缓存——生成的文档、平面 UI 文件和 `strings.json` 条目保持不变（使用 [`purge-locale`](#purge-locale) 来移除这些）。同步后记录清理计数（过时段、孤立的 `file_tracking`、孤立的翻译、孤立的失败、未配置的语言环境），加上预先的 Markdown 问题清除计数。
 
 **关键选项：** `--dry-run`, `--backup`
 
@@ -30,8 +38,8 @@
 
 **概要：** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-从 `translations`、`file_tracking` 和 `translation_failures` 中删除给定区域设置的所有缓存行，以及该区域设置的生成工件：翻译文档（从 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 输出，包括源已被移除的孤立输出——通过扫描每个块的输出树找到，除非配置了自定义 `pathTemplate`）、每个区域设置的扁平 UI 文件 (`<flatOutputDir>/<locale>.json`)，以及该区域设置在 `strings.json` 中的条目。
+从 `translations`、`file_tracking` 和 `translation_failures` 中删除给定语言环境的所有缓存行，以及该语言环境的生成工件：翻译文档（从 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 输出，包括源已删除的孤立输出——通过扫描每个块的输出树找到，除非配置了自定义 `pathTemplate`），每个语言环境的平面 UI 文件（`<flatOutputDir>/<locale>.json`），以及该语言环境在 `strings.json` 中的条目。
 
-区域设置通过可重复的 `-l` / `--locale` 传递（标准化为 BCP-47）。打印每个区域设置的计数（缓存行、文档、`strings.json` 条目、扁平文件）；对于没有可清除内容的区域设置发出警告（不报错）。除非 `-y` / `--yes` / `-f` / `--force`，否则提示确认。`--dry-run`：报告计数和将要移除的文件，不删除任何内容。`--keep-files`：仅清除 SQLite 缓存，保留生成的文件和 `strings.json` 不变。除非传递了 `--backup <path>`，否则不进行 SQLite 备份，该参数会在删除前将备份写入该路径。
+语言环境通过可重复的 `-l` / `--locale` 传递（标准化为 BCP-47）。打印每个语言环境的计数（缓存行、文档、`strings.json` 条目、平面文件）；对没有可清除内容的语言环境发出警告（不报错）。除非 `-y` / `--yes` / `-f` / `--force`，否则会提示确认。`--dry-run`：报告计数和将要删除的文件，不执行删除。`--keep-files`：仅清除 SQLite 缓存，不触及生成的文件和 `strings.json`。除非传递 `--backup <path>`，否则不创建 SQLite 备份，传递后会在删除前将备份写入该路径。
 
 **关键选项：** `-l` / `--locale`, `--dry-run`, `-y` / `--yes`, `-f` / `--force`, `--keep-files`, `--backup`

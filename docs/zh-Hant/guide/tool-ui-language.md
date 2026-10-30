@@ -1,7 +1,7 @@
 <a id="tool-ui-language"></a>
 # 工具介面語言
 
-`ai-i18n-tools` 會獨立於您專案的 `sourceLocale` / `targetLocales`，對其自身的使用者介面進行在地化 —— 包含 CLI 說明文字、高頻率的日誌/摘要/錯誤訊息，以及翻譯儀表板。無需任何設定：預設情況下，此工具會遵循您作業系統的地區設定。
+`ai-i18n-tools` 會將其使用者介面（CLI 說明文字、高流量日誌/摘要/錯誤訊息以及翻譯儀表板）本地化，獨立於您專案的 `sourceLocale` / `targetLocales`。無需設定：該工具預設會遵循您的作業系統地區設定。
 
 <a id="locale-resolution"></a>
 ## 語言環境解析
@@ -26,7 +26,7 @@ UI 語言環境會從以下來源解析，按優先級由高至低排列：
 <a id="translation-dashboard"></a>
 ## 翻譯儀表板
 
-翻譯儀表板會從 `GET /api/ui-i18n` 讀取已解析的語言環境、版面方向和翻譯套件，並在載入時套用（它會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性來本地化靜態標記）。
+翻譯儀表板會從 `GET /api/ui-i18n` 讀取已解析的地區設定、版面配置方向和翻譯套件，並在載入時套用它們（它會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性本地化靜態標記）。
 
 <a id="related"></a>
 ## 相關內容

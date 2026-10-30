@@ -3,7 +3,7 @@
 
 इस पथ का उपयोग एक इंटरैक्टिव पृष्ठ के लिए करें जो एक ही HTML फ़ाइल में रहता है। `extract` `data-i18n*` मार्करों को `strings.json` में पढ़ता है, `translate-ui` प्रत्येक लोकेल के लिए एक फ्लैट JSON बंडल लिखता है, और एक ब्राउज़र स्क्रिप्ट स्ट्रिंग्स को लागू करती है। वही स्क्रिप्ट छवि फ़ाइल नामों में प्रत्यय (suffix) जोड़ सकती है और वर्तमान पृष्ठ पर लिंक रख सकती है।
 
-एक स्टैटिक साइट के लिए जिसे प्रत्येक लोकेल के लिए एक अनुवादित HTML फ़ाइल उत्सर्जित करनी चाहिए (कोई रनटाइम नहीं, पुनर्लेखित क्रॉस-पेज लिंक), इसके बजाय [HTML पृष्ठ](/hi/guide/documents/html-pages) का उपयोग करें। एक फ़ाइल एक पथ से संबंधित होती है।
+एक स्टैटिक साइट के लिए जिसे प्रति लोकले एक अनुवादित HTML फ़ाइल (कोई रनटाइम नहीं, फिर से लिखे गए क्रॉस-पेज लिंक) उत्सर्जित करनी चाहिए, इसके बजाय [HTML पेज](/hi/guide/documents/html-pages) का उपयोग करें। प्रत्येक फ़ाइल केवल एक पाइपलाइन से संबंधित होती है।
 
 <a id="quick-start"></a>
 ## त्वरित शुरुआत
@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-स्रोत लोकेल मूल URL को बनाए रखता है। एक बेयर `data-i18n-locale-src` के लिए, पूर्ण URL, प्रोटोकॉल-सापेक्ष URL, `data:` URL, और `#` फ्रैगमेंट को छोड़ दिया जाता है; क्वेरी स्ट्रिंग और फ्रैगमेंट अपने स्थान पर बने रहते हैं। एक मानयुक्त मार्कर प्रत्येक गैर-स्रोत लोकेल के लिए अपने टेम्पलेट का उपयोग करता है और केवल `{locale}` को बदलता है। यदि स्थानीयकृत छवि 404 देती है, तो रनटाइम मूल `src` को एक बार पुनर्स्थापित करता है। आप `chart_pt-BR.png` को स्वयं शिप करते हैं; स्क्रिप्ट इसे नहीं बनाती है।
+स्रोत लोकले मूल URL को रखता है। एक नंगे `data-i18n-locale-src` के लिए, एब्सोल्यूट URL, प्रोटोकॉल-रिलेटिव URL, `data:` URL, और `#` फ़्रैगमेंट को वैसे ही छोड़ दिया जाता है; क्वेरी स्ट्रिंग और फ़्रैगमेंट अपनी जगह पर रहते हैं। एक मूल्यवान मार्कर हर गैर-स्रोत लोकले के लिए अपने टेम्पलेट का उपयोग करता है और केवल `{locale}` को बदलता है। यदि स्थानीयकृत इमेज 404 त्रुटि देती है, तो रनटाइम मूल `src` को एक बार पुनर्स्थापित करता है। आप `chart_pt-BR.png` को स्वयं शिप करते हैं; स्क्रिप्ट इसे नहीं बनाती है।
 
 `data-i18n-locale-href` इस कैटलॉग मॉडल के लिए है। `about.pt-BR.html` का लिंक [HTML पृष्ठों](/hi/guide/documents/html-pages) की पाइपलाइन से संबंधित है।
 
@@ -365,7 +365,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 
 रनटाइम में `normalizeI18nText`, [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) में `normalizeI18nText` से मेल खाता है: ट्रिम करें, फिर व्हाइटस्पेस को कोलैप्स करें। क्योंकि स्रोत-भाषा का टेक्स्ट कैटलॉग कुंजी है, एक गुम अनुवाद उस स्रोत टेक्स्ट पर वापस आ जाता है।
 
-चलाने योग्य डेमो [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) है। `pnpm dev` इसे [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) पर सर्व करता है।
+चलाने योग्य डेमो [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/) है। `pnpm dev` इसे `http://localhost:3090/?locale=pt-BR` पर परोसता है।
 
 <a id="runtime-source"></a>
 ## रनटाइम स्रोत

@@ -21,7 +21,7 @@
 
 **개요:** `ai-i18n-tools write-heading-ids [options]`
 
-최소 하나의 `docs[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에 `.md` / `.mdx`를 수집합니다(`.translate-ignore`를 준수). 기본적으로 각 플랫 ATX `#` 제목 바로 앞에 HTML 앵커 라인 `<a id="slug"></a>`를 삽입합니다(펜스 코드 블록 내부의 제목은 건너뜁니다). 모든 형태의 기존 제목 ID(HTML 앵커 라인, 클래식 `{#id}` 접미사, MDX `{/* #id */}` 주석)는 선택한 스타일로 대체되며, 슬러그는 항상 현재 제목 텍스트에서 파생됩니다. `--slug-style mdx-comment`를 사용하면 대신 제목 라인에 Docusaurus MDX 주석 접미사를 작성하고(동일한 github 스타일 슬러그 알고리즘 사용) 앞에 오는 HTML 앵커가 있을 경우 제거합니다. `--remove`는 이러한 모든 제목 ID 형태를 제거하고 그 자리에 아무것도 작성하지 않습니다.
+하나 이상의 `docs[]` 블록이 필요합니다. 각 블록의 `contentPaths` 아래에 `.md` / `.mdx`를 수집합니다(`.translate-ignore`를 준수합니다). 기본적으로 각 플랫 ATX `#` 헤딩 바로 앞에 HTML 앵커 라인 `<a id="slug"></a>`를 삽입합니다(펜스드 코드 블록 내부의 헤딩은 건너뜁니다). 모든 형태의 기존 헤딩 ID(HTML 앵커 라인, 기존 `{#id}` 접미사, MDX `{/* #id */}` 주석)는 선택된 스타일로 대체됩니다. 슬러그는 항상 현재 헤딩 텍스트에서 파생됩니다. 여러 HTML 앵커가 하나의 헤딩 위에 쌓여 있을 때, 현재 헤딩 텍스트에 대한 앵커만 유지되며, 제거된 ID를 가리키던 저장소 내 마크다운 링크는 남아 있는 ID로 업데이트됩니다. 헤딩 바로 위에 있지 않은 `<a id>`는 그대로 유지됩니다. `--slug-style mdx-comment`를 사용하면 대신 헤딩 라인에 Docusaurus MDX 주석 접미사를 작성하고(동일한 GitHub 스타일 슬러그 알고리즘), 선행 HTML 앵커 블록이 있는 경우 삭제합니다. `--remove`는 해당 헤딩 ID 형식을 모두 제거하고 그 자리에 아무것도 작성하지 않습니다.
 
 소스 파일을 업데이트한 후, 명령어는 각 로캘의 기존 번역된 마크다운도 순회합니다(`translate-docs`과 동일한 `docsOutput` 경로 매핑). 이 명령어는 **소스 로캘** 제목 ID를 문서 순서에 따라 일치하는 ATX 제목에 복사하고(번역된 제목은 절대 슬러그화하지 않음), 제목 중간의 `{#id}` / `{/* #id */}`(또는 불필요한 HTML `<a id>`)을 Docusaurus / 선택한 스타일이 예상하는 형식으로 다시 이동시킵니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다. 누락된 번역 파일은 건너뜁니다. `--remove`는 잘못 배치된 줄 중간 토큰을 포함하여 해당 번역 파일에서도 제목 ID를 제거합니다.
 
@@ -42,7 +42,7 @@
 
 각 `docs[]` 블록의 `contentPaths` 아래에 있는 마크다운/MDX를 스캔합니다(`translate-docs`와 동일한 검색, `.translate-ignore` 적용): 구분자 쌍, 닫히지 않은 인라인 코드, 그리고 `**`/`__`가 `[text](url)` 링크를 감쌀 때 `STRONG_OUTSIDE_LINK`.
 
-문제가 있을 경우 `relativePath:line: [ISSUE_CODE] message` 라인을 stderr로 출력하고 종료 코드는 **1**입니다. `--json`: stdout에 JSON 보고서를 출력합니다. `--no-cache`가 아닌 경우 `cacheDir`에 `markdown_source_issues`를 작성합니다. `-v`는 stderr 라인에 소스 해시를 추가합니다.
+`relativePath:line: [ISSUE_CODE] message` 줄을 stderr로 출력합니다. 문제가 발견되면 코드 **1**로 종료합니다. `--json`: stdout으로 JSON 보고서를 출력합니다. `--no-cache`가 아닌 경우 `cacheDir`에 `markdown_source_issues`를 작성합니다. `-v`는 stderr 줄에 소스 해시를 추가합니다.
 
 **주요 옵션:** `-p` / `--path`, `-f` / `--file`, `--json`, `--no-cache`
 

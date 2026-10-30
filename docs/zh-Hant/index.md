@@ -62,11 +62,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Python 應用程式
 
-使用產生的輔助程式包裝使用者可見的文字並載入翻譯後的訊息，或保留原生的 gettext。從獨立的可執行檔執行翻譯 CLI，無需另外安裝 Node.js。
+將使用者可見文字包裝起來，並透過產生的輔助工具載入翻譯訊息。已經在使用 Django 或 GNU gettext 了嗎？保留您的 gettext 呼叫，讓工具填入 `.po` 檔案。從獨立的可執行檔執行翻譯 CLI，無需另外安裝 Node.js。
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)
+[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) · [為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">
@@ -80,7 +80,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <a id="website-or-documentation"></a>
 ### 網站或文件
 
-發佈本地化頁面，並將其連接至您網站的語言路由。遵循特定於框架的步驟，以設定導覽、主題標籤和語言選單。
+發佈本地化頁面，並將它們連接到您網站的語言路由。遵循框架特定的步驟，以設定導覽、主題標籤和語言選單。
 
 VitePress · Starlight · Docusaurus · Astro
 
@@ -114,9 +114,9 @@ GitHub · GitLab · Bitbucket
 
 <div class="home-steps">
 
-1. **準備您的專案。** 挑選您的語言、翻譯供應商以及要嘗試的模型。若是應用程式，請標記面向使用者的文字並設定翻譯執行階段。若是網站，請啟用您框架的語言路由。指南中包含在需要變更原始碼時可用的編碼代理提示。
-2. **翻譯成您可使用的檔案。** 設定就緒後，執行 `sync`。它會擷取支援的應用程式字串，翻譯您啟用的內容，並寫入語系檔案或本地化頁面。
-3. **載入、檢查並繼續。** 將輸出連接到您的應用程式或網站，連接語言切換功能，並檢查目標語言。在原始碼變更後重新執行，以翻譯新增或變更的文字。
+1. **準備您的專案。** 選擇您的語言、翻譯供應商以及要嘗試的模型。對於應用程式，標記使用者可見文字並設定翻譯執行階段。對於網站，啟用您框架的語言路由。指南中包含需要修改原始碼時的程式碼代理提示。
+2. **翻譯成可用的檔案。** 設定完成後，執行 `sync`。它會提取支援的應用程式字串、翻譯您啟用的內容，並寫入地區設定檔案或本地化頁面。
+3. **載入、檢查並繼續。** 將輸出連接到您的應用程式或網站，設定語言切換，並檢查目標語言。原始碼變更後重新執行，以翻譯新增或變更的文字。
 
 </div>
 
@@ -153,7 +153,7 @@ t("Save changes");
 
 :::
 
-原始句子在您的程式碼中保持可讀性。您的應用程式會在執行階段載入產生的語系檔案。想看看完整的接線方式嗎？[探索可運作的 Next.js 範例](/zh-Hant/examples#nextjs-app)。網站遵循不同的路徑：[產生本地化頁面](/zh-Hant/guide/add-i18n-to-website)，而非包裝每個段落。
+原始碼中的句子保持可讀性。您的應用程式會在執行階段載入產生的地區設定檔案。想要查看完整的連接方式嗎？[探索運作中的 Next.js 範例](/zh-Hant/examples#nextjs-app)。網站則遵循不同的路徑：[產生本地化頁面](/zh-Hant/guide/add-i18n-to-website)，而不是包裝每個段落。
 
 <a id="built-for-the-next-update-too"></a>
 ## 也為下一次更新而建置
@@ -280,7 +280,7 @@ t("Save changes");
 <a id="docs-in-more-languages"></a>
 ### 更多語言的文件
 
-查看已翻譯的 VitePress 頁面，以及本地化的導覽和主題標籤。
+查看翻譯後的 VitePress 頁面，以及本地化的導覽和主題標籤。
 
 [探索 VitePress 範例](/zh-Hant/examples#vitepress-docs)
 

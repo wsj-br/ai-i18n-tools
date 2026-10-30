@@ -46,4 +46,4 @@ Estas dos variables sustituyen a `baseUrl` para un proveedor configurado. Cualqu
 | `NO_COLOR`              | Cuando vale `1`, desactiva los colores ANSI en la salida del registro.             |
 | `I18N_LOG_SESSION_MAX`  | Número máximo de líneas guardadas por sesión de registro (por defecto `5000`).           |
 
-Al inicio, la CLI también carga automáticamente un archivo `.env` desde el directorio de trabajo actual (a través de `process.loadEnvFile` de Node), por lo que las claves API del proveedor se capturan en shells no interactivos que no cargan `.envrc` / `direnv`. Las variables que ya están presentes en el entorno nunca se anulan, por lo que los valores reales de CI/producción siguen teniendo prioridad.
+Al iniciar, la CLI también carga automáticamente un archivo `.env` del directorio de trabajo actual (a través de `process.loadEnvFile` de Node), de modo que las claves de API del proveedor se cargan en shells no interactivos que no cargan `.envrc` a través de `direnv`. Las variables ya presentes en el entorno nunca se sobrescriben, por lo que los valores reales de CI/producción tienen prioridad.

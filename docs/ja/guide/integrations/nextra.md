@@ -48,7 +48,7 @@ Nextra の [国際化](https://nextra.site/docs/guide/i18n) を設定します�
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
-英語のみのNextra 4サイトでは、`translate-docs` が書き込み先を持つ前に、ロケールフォルダー、ルートパラメーター、Next.jsのi18n設定が必要です。[辞書プロンプト](#agent-prompt-dictionary-and-routes)はこれを1回のパスで実行します。チェックリスト:
+英語のみのNextra 4サイトでは、`translate-docs`が書き込み先を持つ前に、ロケールフォルダー、ルートパラメーター、およびNext.jsのi18n設定が必要です。初回セットアップでは、[ウェブサイトまたはドキュメントサイトにi18nを追加](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。[辞書プロンプト](#agent-prompt-dictionary-and-routes)は、同じルートと辞書に対する詳細なフォローアップです。チェックリスト：
 
 - MDXを `content/en/` に移動します (英語はコンテンツのルートではなく、ロケールフォルダーです)。
 - `next.config` 内の `i18n.locales` と `defaultLocale`。
@@ -60,7 +60,7 @@ Nextra の [国際化](https://nextra.site/docs/guide/i18n) を設定します�
 <a id="theme-strings"></a>
 ## テーマ文字列
 
-Nextra テーマのクローム (`editLink`、検索プレースホルダー、フッターなど) はマークダウンから抽出されません。英語の文字列を TypeScript 辞書モジュール (例: `app/_dictionaries/en.ts`) で作成し、**`translate-docs`** 内で翻訳します。
+Nextraテーマのクローム (`editLink`、検索プレースホルダー、フッターなど) はMarkdownから抽出されません。英語の文字列をTypeScript辞書モジュール (例: `app/_dictionaries/en.ts`) で作成し、`translate-docs`内で翻訳します：
 
 ```json
 {
@@ -88,7 +88,7 @@ Nextra テーマ辞書文字列には **Nextra テーマ辞書文字列には `j
 <a id="sidebar-labels-_metats"></a>
 ## サイドバーラベル (`_meta.ts`)
 
-Nextra 3 以降では、サイドバーの構造とタイトルに TypeScript `_meta.ts` / `_meta.tsx` ファイルを使用します。`docsOutput.style` が `"nextra"` の場合、**`translate-docs`** は `docsRoot` の下の `_meta.ts`、`_meta.tsx`、および `_meta.js` を自動的に収集し、`export default { … }` メタマップ内の文字列リテラルを翻訳し、`content/{locale}/**` の下にミラーリングされたファイルを書き込みます。
+Nextra 3以降は、サイドバーの構造とタイトルにTypeScriptの`_meta.ts` / `_meta.tsx`ファイルを使用します。`docsOutput.style`が`"nextra"`の場合、`translate-docs`は自動的に`docsRoot`の下にある`_meta.ts`、`_meta.tsx`、および`_meta.js`を収集し、`export default { … }`メタマップ内の文字列リテラルを翻訳し、`content/{locale}/**`の下にミラーリングされたファイルを書き込みます。
 
 **推奨パターン:** 英語のリテラルを `content/en/**/_meta.ts` にインラインで保持します ([swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site) と同じ)。
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-started`) を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールに依存しないようにするべきです** (`/guide/getting-started`)。そうすることで、Next.js がアクティブなロケールを自動的にプレフィックスできます。
 
-組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳ファイルのリンクを自動的に修正します:
+組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳済みファイル内のリンクを自動的に修正します：
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-st
 
 `style` が `"nextra"` の場合、`rewriteNextraLinks` はデフォルトで有効になります。
 
-| ソースロケールでのオーサリング | ノーマライザー適用後 |
+| ソースロケールで作成 | ノーマライザー後 |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/ja/guide/getting-started)` |
 | `[Guide](/ja/guide/getting-started.mdx)` | `[Guide](/ja/guide/getting-started)` |
@@ -305,9 +305,9 @@ Nextra は、Next.js `i18n` (`/guide/getting-started`、`/pt-BR/guide/getting-st
 
 **執筆ルール**
 
-- ページ間のドキュメントリンク: 英語の MDX では **ロケールに依存しないサイトルート** (`/guide/…`) を使用するか、`content/en/…` / 相対 `.mdx` パスを使用し、`sync` の間に正規化ツールで書き換えさせます。
-- コンテンツツリー外のリポジトリファイル: **完全な URL** を使用します。
-- `content/<locale>/` のリンクは手動で編集**しないでください** — `sync` / `translate-docs` で再生成してください。
+- ページ間のドキュメントリンク：英語のMDXでは**ロケールに依存しないサイトルート** (`/guide/…`) を使用するか、または`content/en/…` / 相対`.mdx`パスを使用し、`sync`中にノーマライザーにそれらを書き換えさせます。
+- コンテンツツリー外のリポジトリファイル：**完全なURL**を使用します。
+- `content/<locale>/`内のリンクを手動で編集**しないでください** — `sync` / `translate-docs`で再生成してください。
 
 <a id="optional-locale-proxy"></a>
 ## オプションのロケールプロキシ
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**サイトロケールコードと `sourceLocale`:** Nextra と Next.js は、`next.config`、`content/{locale}/`、および `NEXT_LOCALE` クッキーで短いルートコード (`en`、`pt-BR`、`zh-Hans`) を使用します。`ai-i18n-tools.config.json` の `sourceLocale` は、翻訳品質のために `en-GB` のような BCP-47 タグにすることができます — そのタグはサイトルート**ではありません**。ブラウザのクッキーまたは `Accept-Language` が `i18n.locales` 外のタグ (たとえば、`en` のみが設定されている場合の `en-GB`) に解決される場合、Nextra の標準プロキシはループでリダイレクトする可能性があります。[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) デモは、無効なクッキーとパスをデフォルトのサイトロケールにリセットしてから委任するために `nextra/locales` をラップします。
+**サイトロケールコードと`sourceLocale`：** NextraとNext.jsは、`next.config`、`content/{locale}/`、および`NEXT_LOCALE`クッキーで短いルートコード (`en`、`pt-BR`、`zh-Hans`) を使用します。`ai-i18n-tools.config.json`内の`sourceLocale`は、翻訳品質のために`en-GB`のようなBCP-47タグである場合があります — そのタグはサイトルート**ではありません**。ブラウザのクッキーまたは`Accept-Language`が`i18n.locales`外のタグに解決される場合 (例えば、`en`のみが設定されている場合に`en-GB`)、Nextraの標準プロキシはループでリダイレクトする可能性があります。[examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/)デモは、委任する前に`nextra/locales`をラップして、無効なクッキーとパスをデフォルトのサイトロケールにリセットします。
 
 これは `output: 'export'` 静的エクスポートでは機能しません。[Nextra i18n ドキュメント](https://nextra.site/docs/guide/i18n) を参照してください。
 

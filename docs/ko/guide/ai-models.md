@@ -49,13 +49,13 @@ ai-i18n-tools dashboard
 
 | 신호 | 기여 내용 | 출처 |
 | --- | --- | --- |
-| ChrF | 프로젝트 언어에 대한 번역 품질 | [languagebench](https://languagebench.github.io/) (CC BY-SA 4.0) |
-| Arena Score | 일대일 비교를 통한 전반적인 선호도 | [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC BY 4.0) |
+| ChrF | 프로젝트 언어의 번역 품질 | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
+| Arena Score | 일대일 비교를 통한 전반적인 선호도 | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
 | 1백만 토큰당 USD | 입력 및 출력 가격 | 공급자가 요금을 게시하는 경우 해당 카탈로그, 그렇지 않은 경우 [models.dev](https://models.dev/) (MIT) |
 
 ChrF는 `sourceLocale` 및 `targetLocales`에 대한 languagebench의 번역 점수를 사용합니다. 로캘은 languagebench 언어 코드에 매핑됩니다. 기본 하위 태그이며 `pt-BR`를 `pt`으로, `zh-Hant`를 `zh`으로 매핑하는 등의 별칭이 있습니다. 해당 언어를 잘 번역하는 모델이 전반적으로만 점수가 좋은 모델보다 순위가 높습니다. 임베딩, 이미지, 음성 및 기타 비채팅 모델은 건너뛰며, 만료일이 지난 ID도 마찬가지입니다.
 
-기본 프로필인 Quality는 가격보다 ChrF와 Arena 점수에 가중치를 둡니다. Price는 그 강조점을 반대로 하고 위에서 설명한 품질 하한을 유지합니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)입니다.
+기본 프로필인 품질은 가격보다 ChrF 및 Arena 점수에 더 높은 가중치를 부여합니다. 가격은 그 강조를 뒤집고 위에서 설명한 품질 최저치를 유지합니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)에서 확인할 수 있습니다.
 
 `suggest-models --refresh`는 데이터 세트를 다시 다운로드합니다. 그 후에 **모델** 탭을 다시 로드하세요.
 
@@ -69,7 +69,7 @@ ChrF는 `sourceLocale` 및 `targetLocales`에 대한 languagebench의 번역 점
 
 `translationModels`는 순서가 있는 목록입니다. CLI는 첫 번째 모델을 시도합니다. 요청이 실패하거나, 구문 분석할 수 없는 응답을 받거나, 또는 잘못된 쓰기 시스템의 텍스트가 있는 경우, 해당 배치의 다음 ID를 시도합니다.
 
-ID가 하나이면 단일 장애점이 됩니다. 모델은 시간 초과되거나, 이 도구가 거부하는 텍스트를 반환하거나, 한 언어는 잘 번역하고 다른 언어는 제대로 번역하지 못할 수 있습니다. 일반적인 경우는 `hi`가 데바나가리 문자를 예상하는데 로마자화된 힌디어가 사용되는 경우입니다. 로마자화된 출력은 고유 스크립트 로캘에서 거부됩니다. 로마자화된 상태로 유지되어야 하는 로캘에는 `hi-Latn`와 같은 명시적인 `-Latn` 하위 태그가 필요합니다.
+하나의 ID는 단일 실패 지점입니다. 모델은 시간 초과되거나, 이 도구가 거부하는 텍스트를 반환하거나, 한 언어는 잘 번역하고 다른 언어는 제대로 번역하지 못할 수 있습니다. 일반적인 경우는 `hi`이(가) 데바나가리어를 예상하는 로마자화된 힌디어입니다. 로마자화된 출력은 기본 스크립트 로케일에서는 거부됩니다. 로마자화를 유지해야 하는 로케일에는 `hi-Latn`와 같은 명시적인 `-Latn` 하위 태그가 필요합니다.
 
 이것이 최종 후보 목록에 가장 강력한 ID부터 순서대로 여러 ID가 포함된 이유입니다. 목록의 순서는 번역이 시도되는 순서입니다.
 

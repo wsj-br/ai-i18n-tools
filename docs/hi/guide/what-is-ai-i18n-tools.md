@@ -22,7 +22,8 @@
 | आपके पास है | यहाँ से शुरू करें |
 | --- | --- |
 | स्रोत में सादे टेक्स्ट वाला एक JS/TS ऐप (React, Next.js, Node, CLI) | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) |
-| एक Python ऐप (Streamlit, FastAPI, Flask, Django, gettext, डेस्कटॉप) | [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) |
+| एक पायथन ऐप (स्ट्रीमलेट, फास्टएपीआई, फ्लास्क, डेस्कटॉप, स्क्रिप्ट) | [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) |
+| एक जैंगो ऐप, फ्लास्क-बैबेल कैटलॉग, या एक ऐसा ऐप जो पहले से जीएनयू गेटटेक्स्ट का उपयोग करता है | [जैंगो / पायथन गेटटेक्स्ट ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) |
 | एक वेबसाइट या दस्तावेज़ साइट (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, सादा HTML) | [एक वेबसाइट या दस्तावेज़ साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) |
 | एक रिपॉजिटरी README और अन्य Markdown फ़ाइलें, आमतौर पर एक ऐप के बगल में | [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme) |
 | स्टैंडअलोन नेस्टेड JSON लोकल फ़ाइलें | [JSON](/hi/guide/json) |

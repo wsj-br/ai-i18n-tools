@@ -12,7 +12,7 @@ Diese Pipeline dient JS/TS-Projekten (React, Next.js Client- und Serverkomponent
 | --- | --- |
 | JS/TS mit hartcodierten Quelltexten, noch kein `t()` | [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` bereits im Quellcode | [i18next einbinden](/de/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python-Anwendungen](/de/guide/ui-strings/python). Initialisierung: `ui-python`, `ui-python-gettext`, `ui-python-flask` oder `ui-python-django`. Hilfsprogramm: `i18n.py`. Um einer bestehenden Anwendung Locales hinzuzufügen, siehe [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python). |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python-Anwendungen](/de/guide/ui-strings/python). Initialisierung: `ui-python`, `ui-python-gettext`, `ui-python-flask` oder `ui-python-django`. Hilfsprogramm: `i18n.py`. Um Lokalisierungen zu einer bestehenden Anwendung hinzuzufügen, siehe [i18n zu einer Python-Anwendung hinzufügen](/de/guide/add-i18n-to-python), oder [i18n zu einer Django-/Python-gettext-Anwendung hinzufügen](/de/guide/add-i18n-to-django-gettext) wenn die Anwendung gettext verwendet. |
 | Reines HTML (kein `t()` im Markup) | [Reine HTML-Apps](/de/guide/ui-strings/plain-html) |
 | Astro Marketing-Website (hybrid) | [Astro-Website](/de/guide/ui-strings/astro-website) |
 | `t()`-Regeln, Interpolation, Plurale | [t()-Aufrufe & Plurale](/de/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ Der Scanner ist konfigurierbar: Fügen Sie benutzerdefinierte Funktionsnamen üb
 ai-i18n-tools translate-ui
 ```
 
-Liest `strings.json`, sendet Batches für jedes Ziel-Gebietsschema an die Modelle des aktiven LLM-Anbieters und schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) in `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)). Innerhalb eines Gebietsschemas können bis zu `uiBatchConcurrency` Batches gleichzeitig ausgeführt werden (Standard: **2**; siehe [Konfiguration – uiBatchConcurrency](/de/reference/configuration#uibatchconcurrency-optional)). `-j` parallelisiert weiterhin nur Ziel-Gebietsschemas.
+Liest `strings.json`, sendet Batches an die Modelle des aktiven LLM-Anbieters für jede Ziellokalisierung, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)). Innerhalb einer Lokalisierung laufen bis zu `uiBatchConcurrency` Batches gleichzeitig (Standard **2**; siehe [Konfiguration — uiBatchConcurrency](/de/reference/configuration#uibatchconcurrency-optional)). `-j` parallelisiert weiterhin nur Ziellokalisierungen.
 
 <a id="translations-database-stringsjson"></a>
 ### Übersetzungsdatenbank (`strings.json`)
 
 Für jeden Eintrag speichert `translate-ui` die **Modell-ID des aktiven Anbieters**, der jede Sprache erfolgreich übersetzt hat, in einem optionalen `models`-Objekt (dieselben Sprachschlüssel wie `translated`). Im Übersetzungs-Dashboard bearbeitete Zeichenfolgen werden mit dem Sentinel-Wert `user-edited` in `models` für diese Sprache markiert. Die sprachspezifischen Flatfiles unter `ui.flatOutputDir` bleiben nur **Quellzeichenfolge → Übersetzung**; sie enthalten keine `models` (sodass Laufzeit-Bundles unverändert bleiben).
 
-> **Hinweis:** Dashboard-Bearbeitungen an UI-Strings befinden sich in `strings.json`, nicht im SQLite-Dokumentations-Cache. Führen Sie einfaches `sync` oder `translate-ui` (ohne spezielles Flag) aus, um flache Gebietsschema-Dateien aus dem Katalog neu zu schreiben – `--force-update` wird **nicht** an den UI-Schritt weitergeleitet. Vermeiden Sie `--force` bei UI-Befehlen nach manuellen Bearbeitungen: Es übersetzt jeden Eintrag neu und kann Ihre `user-edited`-Zeilen überschreiben. Katalogzeilen, deren gespeicherte Übersetzung die Überprüfung des Schreibsystems des Gebietsschemas nicht besteht (z. B. romanisiertes Hindi für `hi`), werden als fehlend behandelt und ohne `--force` neu übersetzt.
+> **Hinweis:** Dashboard-Bearbeitungen an UI-Strings befinden sich in `strings.json`, nicht im SQLite-Dokumentations-Cache. Führen Sie `sync` oder `translate-ui` (ohne spezielles Flag) aus, um flache Lokalisierungsdateien aus dem Katalog neu zu schreiben — `--force-update` wird **nicht** an den UI-Schritt weitergeleitet. Vermeiden Sie `--force` bei UI-Befehlen nach manuellen Bearbeitungen: Es übersetzt jeden Eintrag neu und kann Ihre `user-edited`-Zeilen überschreiben. Katalogzeilen, deren gespeicherte Übersetzung die Überprüfung des Schreibsystems der Lokalisierung nicht besteht (zum Beispiel romanisiertes Hindi für `hi`), werden als fehlend behandelt und ohne `--force` neu übersetzt.
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## Schritt 4: Die Ausgabe in Ihrer App verwenden
@@ -90,7 +90,7 @@ Für jeden Eintrag speichert `translate-ui` die **Modell-ID des aktiven Anbieter
 <a id="per-locale-model-overrides"></a>
 ### Modellüberschreibungen pro Gebietsschema
 
-Einige Modelle übersetzen bestimmte Sprachen besser als andere. Zum Beispiel eignen sich qwen- und z-ai-Modelle tendenziell gut für asiatische Sprachen. Fügen Sie `providers.<active>.localeModels`-Einträge hinzu, um eine priorisierte Modellliste für jedes BCP-47-Gebietsschema bereitzustellen. Diese Listen werden vor `uiModels` und `translationModels` für dieses Gebietsschema verwendet. Gebietsschema-Tags stimmen groß-/kleinschreibungsunabhängig überein (`zh-cn` und `ZH-CN` sind äquivalent). Wenn kein passender Eintrag vorhanden ist, verwendet das Tool die Standardreihenfolge von `uiModels` und `translationModels`. Derselbe `localeModels`-Mechanismus gilt für die Dokument-, JSON- und SVG-Übersetzung.
+Einige Modelle übersetzen bestimmte Sprachen besser als andere. Zum Beispiel eignen sich qwen- und z-ai-Modelle oft gut für asiatische Sprachen. Fügen Sie `providers.<active>.localeModels`-Einträge hinzu, um eine priorisierte Modellliste für jede BCP-47-Lokalisierung anzugeben. Diese Listen werden vor `uiModels` und `translationModels` für diese Lokalisierung versucht. Lokalisierungs-Tags stimmen unabhängig von der Groß-/Kleinschreibung überein (`zh-cn` und `ZH-CN` sind äquivalent). Ohne passenden Eintrag verwendet das Tool die Standardreihenfolge von `uiModels` und `translationModels`. Derselbe `localeModels`-Mechanismus gilt für die Dokument-, JSON- und SVG-Übersetzung.
 
 <a id="exporting-to-xliff-20"></a>
 ### Exportieren nach XLIFF 2.0

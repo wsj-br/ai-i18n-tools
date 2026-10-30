@@ -13,9 +13,9 @@ Qual reescrevedor é executado depende de `docsOutput.style`:
 | Layout | Reescrevedor integrado | O que ele corrige |
 | --- | --- | --- |
 | `"flat"` (padrão quando não há `pathTemplate` personalizado) | Reescrevedor de link plano (`rewriteRelativeLinks`, ativado por padrão) | Links relativos entre páginas (`guide.md` → `guide.de.md`) e prefixos de profundidade para URLs de ativos não-markdown |
-| `"vitepress"` | Normalizador de link VitePress (`rewriteVitepressLinks`, ativado por padrão) | Caminhos `docs/guide/…` estilo README → rotas do site (`/guide/…`) |
-| `"nextra"` | Normalizador de links Nextra (`rewriteNextraLinks`, ativado por padrão) | Caminhos `content/en/…` e `.mdx` relativos → rotas neutras em relação ao idioma (`/guide/…`) |
-| `"fumadocs"` | Normalizador de links Fumadocs (`rewriteFumadocsLinks`, ativado por padrão) | Caminhos `content/docs/…` e `.mdx` relativos → rotas neutras em relação ao idioma (`/docs/…`) |
+| `"vitepress"` | Normalizador de links do VitePress (`rewriteVitepressLinks`, ativado por padrão) | Caminhos `docs/guide/…` estilo README → rotas do site (`/guide/…`) |
+| `"nextra"` | Normalizador de links do Nextra (`rewriteNextraLinks`, ativado por padrão) | Caminhos `content/en/…` e `.mdx` relativos → rotas neutras de localidade (`/guide/…`) |
+| `"fumadocs"` | Normalizador de links do Fumadocs (`rewriteFumadocsLinks`, ativado por padrão) | Caminhos `content/docs/…` e `.mdx` relativos → rotas neutras de localidade (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | Nenhum | URLs de origem passam inalteradas até `postProcessing` |
 
 `pathTemplate` personalizado desabilita o reescrevedor plano, a menos que você defina `rewriteRelativeLinks: true` explicitamente. Consulte [Layouts de saída](/pt-BR/guide/documents/output-layouts) e [Links de âncora](/pt-BR/guide/documents/anchor-links) para tratamento de `#anchor` entre páginas.
@@ -79,7 +79,7 @@ As strings `replace` suportam variáveis de modelo expandidas por arquivo e loca
 <a id="per-locale-asset-folder"></a>
 ### Pasta de ativos por localidade
 
-Armazene os ativos em um subdiretório codificado por localidade desde o primeiro dia e troque o segmento por uma regra genérica:
+Armazene os ativos em um subdiretório com código de localidade desde o início e troque o segmento por uma regra genérica:
 
 ```json
 "postProcessing": {
@@ -123,7 +123,7 @@ Você geralmente **não** precisa de `regexAdjustments` quando:
 
 - Links entre páginas são caminhos markdown relativos simples e `docsOutput.style = "flat"` (o reescritor integrado adiciona sufixos de localidade)
 - Ativos ficam ao lado dos arquivos de origem e o prefixo de profundidade por arquivo do reescritor plano os resolve corretamente
-- Inglês e todas as cópias traduzidas usam a **mesma** URL (imagens compartilhadas na raiz do site, ativos colocados, rotas do site VitePress após o normalizador)
+- O inglês e cada cópia traduzida usam a **mesma** URL (imagens compartilhadas na raiz do site, ativos colocalizados, rotas do site do VitePress após o normalizador)
 - Links internos do VitePress usam rotas do site ou caminhos `docs/guide/…` com `rewriteVitepressLinks: true`
 - Os links internos do Nextra e Fumadocs usam rotas neutras em relação ao idioma (`/guide/…`, `/docs/…`) ou caminhos de raiz de conteúdo com `rewriteNextraLinks` / `rewriteFumadocsLinks: true`
 

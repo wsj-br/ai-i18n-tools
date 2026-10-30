@@ -8,10 +8,10 @@
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### जब `docsOutput.style = "flat"` हो तो दो-चरणीय प्रवाह
 
-1. **स्रोत यूआरएल** — अनुवादित मार्कडाउन में छवि पथ (खंड पुनर्संयोजन के बाद)
-2. **फ़्लैट लिंक रीराइटर** — एक गहराई उपसर्ग जोड़ता है (`../`, `../../docs/`, …)
-3. **`regexAdjustments`** — लोकेल फ़ोल्डर खंड को स्वैप करता है (`en-GB` → `${translatedLocale}`)
-4. **आउटपुट यूआरएल** — अनुवादित फ़ाइल में लिखा गया अंतिम पथ
+1. **स्रोत URL** — अनुवादित मार्कडाउन में इमेज पाथ (सेगमेंट रीअसेंबली के बाद)
+2. **फ़्लैट लिंक रीराइटर** — एक डेप्थ प्रीफ़िक्स जोड़ता है (`../`, `../../docs/`, …)
+3. `regexAdjustments` — लोकल फ़ोल्डर सेगमेंट को स्वैप करता है (`en-GB` → `${translatedLocale}`)
+4. **आउटपुट URL** — अनुवादित फ़ाइल में लिखा गया अंतिम पाथ
 
 `outputDir: "translated-docs/"` और रेपो रूट पर स्रोत `README.md` के साथ उदाहरण:
 
@@ -25,12 +25,12 @@
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### वाइटप्रेस लिंक नॉर्मलाइज़र (`style: "vitepress"`)
 
-जब `docsOutput.rewriteVitepressLinks` `true` होता है (जब `style` `"vitepress"` होता है तो डिफ़ॉल्ट), एक अलग नॉर्मलाइज़र खंड पुनर्संयोजन के बाद चलता है (फ़्लैट रीराइटर के बजाय)। यह वाइटप्रेस / डॉक-सिस्टम साइटों को लक्षित करता है जहाँ अंग्रेजी सामग्री रूट पर रहती है और लोकेल सिबलिंग फ़ोल्डरों में बैठते हैं (`docs/de/guide/…`)।
+जब `docsOutput.rewriteVitepressLinks` `true` हो (डिफ़ॉल्ट जब `style` `"vitepress"` हो), तो सेगमेंट रीअसेंबली के बाद एक अलग नॉर्मलाइज़र चलता है (फ़्लैट रीराइटर के बजाय)। यह वाइटप्रेस / डॉक-सिस्टम साइटों को लक्षित करता है जहाँ अंग्रेज़ी कंटेंट रूट पर रहती है और लोकल सिबलिंग फ़ोल्डरों (`docs/de/guide/…`) में होते हैं।
 
-1. **स्रोत href** — अनुवादित मार्कडाउन में लिंक (खंड पुनर्संयोजन के बाद)
-2. **वाइटप्रेस लिंक नॉर्मलाइज़र** — डॉक पाथ को साइट रूट में रीराइट करता है (`/guide/…`)
-3. **`regexAdjustments`** — स्क्रीनशॉट के लिए वैकल्पिक लोकेल-फ़ोल्डर स्वैप (`screenshots/en-GB/` → `screenshots/de/`, …)
-4. **आउटपुट href** — अनुवादित फ़ाइल में लिखा गया अंतिम यूआरएल
+1. **स्रोत href** — अनुवादित मार्कडाउन में लिंक (सेगमेंट रीअसेंबली के बाद)
+2. **वाइटप्रेस लिंक नॉर्मलाइज़र** — डॉक पाथ को साइट रूट में फिर से लिखता है (`/guide/…`)
+3. `regexAdjustments` — स्क्रीनशॉट के लिए वैकल्पिक लोकल-फ़ोल्डर स्वैप (`screenshots/en-GB/` → `screenshots/de/`, …)
+4. **आउटपुट href** — अनुवादित फ़ाइल में लिखा गया अंतिम URL
 
 विशिष्ट रीराइट्स:
 
@@ -42,19 +42,19 @@
 
 उन प्रोजेक्ट्स के लिए जो `README.md` → `docs/index.md` को सिंक करते हैं, `LICENSE`, `examples/`, और VitePress ट्री के बाहर की अन्य फ़ाइलों के लिए `README.md` में पूर्ण GitHub URLs का उपयोग करें। [VitePress एकीकरण — डॉक्स होमपेज के रूप में README](/hi/guide/integrations/vitepress#readme-and-the-docs-homepage) देखें।
 
-फ़्लैट रीराइटर और वाइटप्रेस नॉर्मलाइज़र प्रति `docs[]` ब्लॉक परस्पर अनन्य हैं — `regexAdjustments` से पहले केवल एक चलता है। [वाइटप्रेस एकीकरण — लिंक कन्वेंशन](/hi/guide/integrations/vitepress#link-conventions) देखें।
+फ़्लैट रीराइटर और वाइटप्रेस नॉर्मलाइज़र प्रति `docs[]` ब्लॉक परस्पर अनन्य हैं — `regexAdjustments` से पहले केवल एक चलता है। [वाइटप्रेस इंटीग्रेशन — लिंक कन्वेंशन](/hi/guide/integrations/vitepress#link-conventions) देखें।
 
 प्रति-लोकेल स्क्रीनशॉट फ़ोल्डर अभी भी आवश्यकता पड़ने पर वही `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` नियम का उपयोग करते हैं; [प्रति-लोकेल फ़ोल्डर](/hi/guide/images-and-screenshots/per-locale-folder) देखें।
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### नेक्सट्रा लिंक नॉर्मलाइज़र (`style: "nextra"`)
 
-जब `docsOutput.rewriteNextraLinks` `true` होता है (जब `style` `"nextra"` होता है तो डिफ़ॉल्ट), एक अलग नॉर्मलाइज़र खंड पुनर्संयोजन के बाद चलता है। यह `content/en/…` और सापेक्ष `.mdx` पाथ को लोकेल-न्यूट्रल रूट में रीराइट करता है (`/guide/…`)। [नेक्सट्रा एकीकरण — लिंक कन्वेंशन](/hi/guide/integrations/nextra#link-conventions) देखें।
+जब `docsOutput.rewriteNextraLinks` `true` हो (डिफ़ॉल्ट जब `style` `"nextra"` हो), तो सेगमेंट रीअसेंबली के बाद एक अलग नॉर्मलाइज़र चलता है। यह `content/en/…` और संबंधित `.mdx` पाथ को लोकल-न्यूट्रल रूट (`/guide/…`) में फिर से लिखता है। [नेक्सट्रा इंटीग्रेशन — लिंक कन्वेंशन](/hi/guide/integrations/nextra#link-conventions) देखें।
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
-### फुमाडॉक्स लिंक नॉर्मलाइज़र (`style: "fumadocs"`)
+### फ़्यूमाडॉक्स लिंक नॉर्मलाइज़र (`style: "fumadocs"`)
 
-जब `docsOutput.rewriteFumadocsLinks` `true` होता है (जब `style` `"fumadocs"` होता है तो डिफ़ॉल्ट), तो सेगमेंट रीअसेंबली के बाद एक अलग नॉर्मलाइज़र चलता है। यह `content/docs/…` और सापेक्ष `.mdx` पाथ को लोकेल-न्यूट्रल रूट (`/docs/…`) में फिर से लिखता है। [फुमाडॉक्स इंटीग्रेशन — लिंक कन्वेंशन्स](/hi/guide/integrations/fumadocs#link-conventions) देखें।
+जब `docsOutput.rewriteFumadocsLinks` `true` हो (डिफ़ॉल्ट जब `style` `"fumadocs"` हो), तो सेगमेंट रीअसेंबली के बाद एक अलग नॉर्मलाइज़र चलता है। यह `content/docs/…` और संबंधित `.mdx` पाथ को लोकल-न्यूट्रल रूट (`/docs/…`) में फिर से लिखता है। [फ़्यूमाडॉक्स इंटीग्रेशन — लिंक कन्वेंशन](/hi/guide/integrations/fumadocs#link-conventions) देखें।
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir` के साथ प्रति-फ़ाइल डेप्थ प्रीफ़िक्स

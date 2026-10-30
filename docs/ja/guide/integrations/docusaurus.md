@@ -51,6 +51,8 @@ Docusaurusの[i18n](https://docusaurus.io/docs/i18n/introduction)を接続しま
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
+初回セットアップは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。以下のチェックリストは、手作業による同じ作業です。
+
 - URLパスをロケールコードと異なるものにする必要がある場合は、`docusaurus.config.js`に`i18n`ブロックを追加し、`defaultLocale`、`locales`、`localeConfigs[locale].path`を含めます。
 - `docusaurus write-translations`を実行して`i18n/<defaultLocale>/`を作成し、そのフォルダーを`docusaurusCatalogDir`で指定して`sync`を実行します。
 - `src/pages`と`src/components`内のカスタムReactはマークダウンではありません。`write-translations`がユーザー向けのコピーを`code.json`に収集できるように、`@docusaurus/Translate`の`<Translate>`または`translate()`でマークします。メッセージは静的文字列である必要があります。`write-translations`は`i18n/<locale>/code.json`を書き込みます。`docusaurusCatalogDir`が設定されている場合、`translate-docs`はそのJSONを残りのシェルカタログと一緒に翻訳します。ai-i18n-toolsは、それらのJSXツリーで`t()`をスキャンしません。

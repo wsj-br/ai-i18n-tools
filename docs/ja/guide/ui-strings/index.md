@@ -12,7 +12,7 @@
 | --- | --- |
 | ハードコードされたソース文字列があり、まだ `t()` がない JS/TS | [JS/TS アプリに i18n を追加する](/ja/guide/add-i18n-to-js) |
 | ソースにすでに `t()` がある React / Next.js / Node | [i18next を接続する](/ja/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Python アプリケーション](/ja/guide/ui-strings/python)。初期化: `ui-python`, `ui-python-gettext`, `ui-python-flask`, または `ui-python-django`。ヘルパー: `i18n.py`。既存のアプリにロケールを追加するには、[Python アプリへの i18n の追加](/ja/guide/add-i18n-to-python) を参照してください。 |
+| Python (`t()`、`_()`、gettext、Jinja、Django) | [Pythonアプリケーション](/ja/guide/ui-strings/python)。初期化: `ui-python`、`ui-python-gettext`、`ui-python-flask`、または`ui-python-django`。ヘルパー: `i18n.py`。既存のアプリにロケールを追加するには、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)を参照してください。アプリがgettextを使用している場合は、[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)を参照してください。 |
 | プレーンHTML (マークアップに`t()`なし) | [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html) |
 | Astroマーケティングサイト (ハイブリッド) | [Astroウェブサイト](/ja/guide/ui-strings/astro-website) |
 | `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/ja/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json` を読み込み、各ターゲットロケールに対してアクティブな LLM プロバイダー上のモデルにバッチを送信し、`ui.flatOutputDir` にフラットな JSON ファイル (`de.json`、`fr.json` など) を書き込みます。モデルの選択では UI チェーン `localeModels(locale)` → `uiModels` → `translationModels` が使用されます ([AI モデル](/ja/guide/ai-models#model-fallback-chain) を参照)。1 つのロケール内では、最大 `uiBatchConcurrency` 個のバッチが同時に実行されます (デフォルトは **2**、[設定 — uiBatchConcurrency](/ja/reference/configuration#uibatchconcurrency-optional) を参照)。`-j` は、依然としてターゲットロケールのみを並列化します。
+`strings.json`を読み取り、アクティブなLLMプロバイダー上のモデルに各ターゲットロケールごとにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデルの選択には、UIチェーン: `localeModels(locale)` → `uiModels` → `translationModels`が使用されます（[AIモデル](/ja/guide/ai-models#model-fallback-chain)を参照）。1つのロケール内で、最大`uiBatchConcurrency`個のバッチが同時に実行されます（デフォルトは**2**。 [設定 — uiBatchConcurrency](/ja/reference/configuration#uibatchconcurrency-optional)を参照）。`-j`は依然としてターゲットロケールのみを並列化します。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻訳データベース (`strings.json`)
 
 各エントリについて、`translate-ui`は、オプションの`models`オブジェクト (`translated`と同じロケールキー) 内で、各ロケールを正常に翻訳した**アクティブプロバイダーからのモデルID**を格納します。翻訳ダッシュボードで編集された文字列は、そのロケールの`models`で、番兵値`user-edited`でマークされます。`ui.flatOutputDir`の下にあるロケールごとのフラットファイルは、**ソース文字列 → 翻訳**のみのままであり、`models`は含まれません (そのため、ランタイムバンドルは変更されません)。
 
-> **注意:** UI 文字列に対するダッシュボードの編集は、SQLite ドキュメントキャッシュではなく `strings.json` に保存されます。カタログからフラットなロケールファイルを再作成するには、通常の `sync` または `translate-ui` (特別なフラグなし) を実行してください — `--force-update` は UI ステップに **転送されません**。手動編集後に UI コマンドで `--force` を使用することは避けてください: すべてのエントリが再翻訳され、`user-edited` の行が上書きされる可能性があります。保存された翻訳がロケールの書記体系チェックに失敗したカタログ行 (例: `hi` のローマ字化されたヒンディー語) は、欠落しているものとして扱われ、`--force` なしで再翻訳されます。
+> **注:** UI文字列に対するダッシュボードでの編集は、SQLiteドキュメントキャッシュではなく、`strings.json`に保存されます。カタログからフラットなロケールファイルを書き換えるには、通常の`sync`または`translate-ui`（特別なフラグなし）を実行してください — `--force-update`はUIステップに**転送されません**。手動編集後にUIコマンドで`--force`を使用することは避けてください。これはすべてのエントリを再翻訳し、`user-edited`の行を上書きする可能性があります。保存された翻訳がロケールの記述システムチェック（例: `hi`のローマ字表記ヒンディー語）に失敗したカタログ行は、欠落しているものとして扱われ、`--force`なしで再翻訳されます。
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## ステップ 4: アプリで出力を使用する
@@ -90,7 +90,7 @@ ai-i18n-tools translate-ui
 <a id="per-locale-model-overrides"></a>
 ### ロケールごとのモデルオーバーライド
 
-モデルによっては、特定の言語の翻訳が得意な場合があります。たとえば、qwen モデルや z-ai モデルは、アジア言語で優れた性能を発揮する傾向があります。各 BCP-47 ロケールに優先順位付けされたモデルリストを指定するには、`providers.<active>.localeModels` エントリを追加します。これらのリストは、そのロケールに対して `uiModels` と `translationModels` の前に試行されます。ロケールタグは、大文字と小文字を区別せずに照合されます（`zh-cn` と `ZH-CN` は同等です）。一致するエントリがない場合、ツールはデフォルトの `uiModels` と `translationModels` の順序を使用します。同じ `localeModels` のメカニズムが、ドキュメント、JSON、SVG の翻訳にも適用されます。
+モデルによっては、特定の言語の翻訳が得意なものがあります。例えば、qwenモデルやz-aiモデルはアジア言語の翻訳に優れています。各BCP-47ロケールに優先順位付けされたモデルリストを提供するために、`providers.<active>.localeModels`エントリを追加します。これらのリストは、そのロケールに対して`uiModels`と`translationModels`よりも先に試行されます。ロケールタグは、大文字と小文字を区別せずに一致します（`zh-cn`と`ZH-CN`は同等です）。一致するエントリがない場合、ツールはデフォルトの`uiModels`と`translationModels`の順序を使用します。同じ`localeModels`のメカニズムは、ドキュメント、JSON、SVGの翻訳にも適用されます。
 
 <a id="exporting-to-xliff-20"></a>
 ### XLIFF 2.0 へのエクスポート

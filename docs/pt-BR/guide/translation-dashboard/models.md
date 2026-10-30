@@ -3,7 +3,7 @@
 
 A guia **Modelos** classifica os modelos de chat do provedor ativo para que você possa escolher `translationModels` sem precisar copiar os IDs manualmente. Ela usa a mesma classificação do [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models). O tutorial, incluindo o motivo pelo qual a lista contém mais de um modelo, está em [Modelos de IA](/pt-BR/guide/ai-models).
 
-Escolha **Qualidade** ou **Preço**. Qualidade prioriza o languagebench ChrF e o Arena Score. Preço prioriza uma taxa em USD mais baixa, mantendo um nível mínimo de qualidade. Quando a configuração possui mais de um provedor, um menu **Provedor** aparece; o padrão é o provedor com o qual o painel foi iniciado (`provider`, ou `-P` / `--provider` no comando `dashboard`). Alterar o provedor ou a prioridade recarrega a tabela. Pesos opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
+Escolha **Qualidade** ou **Preço**. Qualidade favorece languagebench ChrF e Arena Score. Preço favorece uma taxa de USD mais baixa e ainda mantém um piso de qualidade. Quando a configuração tem mais de um provedor, um menu **Provedor** aparece; o padrão é o provedor com o qual o painel foi iniciado (`provider`, ou `-P` / `--provider` no comando `dashboard`). Alterar o provedor ou a prioridade recarrega a tabela. Pesos opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
 
 As colunas da tabela são controles de reordenação, uma caixa de seleção, classificação, ID do modelo, índice (a pontuação ponderada vezes 100), ChrF medido, Pontuação Arena medida e preço de entrada/saída em USD por 1M de tokens. Uma medição ausente é um travessão. O número da classificação é a posição do modelo na classificação completa, antes dos filtros abaixo. Arraste a alça de uma linha, ou use seus botões para cima e para baixo, para mudar sua posição nesta tabela. **Atualizar** carrega a ordem de classificação novamente.
 
@@ -17,7 +17,7 @@ O primeiro carregamento baixa o languagebench, o Arena e o models.dev quando o c
 
 ::: info Fontes de Benchmark Externas
   As pontuações são calculadas a partir de fontes de dados externas:
-  - [languagebench ChrF](https://languagebench.github.io/) licenciado sob CC-BY-SA-4.0,
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) licenciado sob CC-BY-4.0, e
-  - [models.dev](https://models.dev/) preços licenciados sob MIT.
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) licenciado sob CC-BY-SA-4.0,
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) licenciado sob CC-BY-4.0, e
+  - preços de [models.dev](https://models.dev/) licenciados sob MIT.
 :::

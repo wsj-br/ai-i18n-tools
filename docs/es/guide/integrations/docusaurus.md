@@ -51,6 +51,8 @@ Conecte la internacionalización de Docusaurus [internacionalización](https://d
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n en un sitio existente
 
+La configuración inicial utiliza la indicación en [Añadir i18n a un sitio web o sitio de documentación](/es/guide/add-i18n-to-website#run-the-agent-prompt). La lista de verificación a continuación es el mismo trabajo manual.
+
 - Agregue el bloque `i18n` en `docusaurus.config.js`: `defaultLocale`, `locales` y `localeConfigs[locale].path` cuando la ruta URL deba diferir del código de idioma.
 - Ejecute `docusaurus write-translations` para que `i18n/<defaultLocale>/` exista, luego apunte `docusaurusCatalogDir` a esa carpeta y ejecute `sync`.
 - El React personalizado en `src/pages` y `src/components` no es markdown. Marque el texto visible para el usuario con `<Translate>` o `translate()` de `@docusaurus/Translate` para que `write-translations` pueda recopilarlo en `code.json`. El mensaje debe ser una cadena estática. `write-translations` escribe `i18n/<locale>/code.json`; con `docusaurusCatalogDir` configurado, `translate-docs` traduce ese JSON con el resto del catálogo de shell. ai-i18n-tools no escanea esos árboles JSX en busca de `t()`.

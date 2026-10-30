@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` exécute l'application sur [http://localhost:3093](http://localhost:3093). Changez la locale en `es` ou `zh-Hans` avant de traduire et les chaînes reviendront à l'anglais ; après `pnpm translate`, les traductions remplies apparaissent. Modifiez une chaîne anglaise et réexécutez `pnpm translate` pour voir uniquement cette feuille se rafraîchir.
+`pnpm dev` exécute l'application sur `http://localhost:3093`. Basculez les paramètres régionaux sur `es` ou `zh-Hans` avant de traduire, et les chaînes reviendront à l'anglais ; après `pnpm translate`, les traductions remplies apparaissent. Modifiez une chaîne anglaise et réexécutez `pnpm translate` pour voir uniquement cette feuille se rafraîchir.
 
 Guide complet : [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md).
 

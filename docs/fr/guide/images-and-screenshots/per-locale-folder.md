@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Dossier par locale (réécriture d'URL)
 
-À utiliser pour les fichiers README/GUIDE-UTILISATEUR avec `docsOutput.style = "flat"`, et pour les sites de systèmes de documentation (`docsOutput.style = "doc-system"` ou les alias `"docusaurus"` / `"astro-starlight"`) et pour les préréglages `"vitepress"` / autres systèmes de documentation qui servent des captures d'écran à partir d'une arborescence d'URL statique partagée. Détails de la réécriture de liens pour VitePress : [Réécriture de liens — VitePress](/fr/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+À utiliser pour les fichiers README/guides de l'utilisateur avec `docsOutput.style = "flat"`, et pour les sites de documentation (`docsOutput.style = "doc-system"` ou les alias `"docusaurus"` / `"astro-starlight"`), ainsi que pour `"vitepress"` / d'autres préréglages de systèmes de documentation qui fournissent des captures d'écran à partir d'une arborescence d'URL statique partagée. Détails sur la réécriture de liens pour VitePress : [Réécriture de liens — VitePress](/fr/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Organisation des répertoires

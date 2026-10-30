@@ -13,9 +13,9 @@
 | लेआउट | निर्मित रewriter | यह क्या ठीक करता है |
 | --- | --- | --- |
 | `"flat"` (डिफ़ॉल्ट जब कोई कस्टम `pathTemplate` नहीं है) | फ्लैट लिंक रewriter (`rewriteRelativeLinks`, डिफ़ॉल्ट रूप से चालू) | क्रॉस-पेज सापेक्ष लिंक (`guide.md` → `guide.de.md`) और गैर-मार्कडाउन एसेट यूआरएल के लिए गहराई पूर्वसर्ग |
-| `"vitepress"` | VitePress लिंक सामान्यकर्ता (`rewriteVitepressLinks`, डिफ़ॉल्ट रूप से चालू) | README-शैली `docs/guide/…` पथ → साइट मार्ग (`/guide/…`) |
-| `"nextra"` | Nextra लिंक सामान्यकर्ता (`rewriteNextraLinks`, डिफ़ॉल्ट रूप से चालू) | `content/en/…` और सापेक्ष `.mdx` पथ → स्थानीयकृत-तटस्थ मार्ग (`/guide/…`) |
-| `"fumadocs"` | Fumadocs लिंक सामान्यकर्ता (`rewriteFumadocsLinks`, डिफ़ॉल्ट रूप से चालू) | `content/docs/…` और सापेक्ष `.mdx` पथ → स्थानीयकृत-तटस्थ मार्ग (`/docs/…`) |
+| `"vitepress"` | VitePress लिंक नॉर्मलाइज़र (`rewriteVitepressLinks`, डिफ़ॉल्ट रूप से चालू) | README-शैली `docs/guide/…` पाथ → साइट रूट (`/guide/…`) |
+| `"nextra"` | Nextra लिंक नॉर्मलाइज़र (`rewriteNextraLinks`, डिफ़ॉल्ट रूप से चालू) | `content/en/…` और रिलेटिव `.mdx` पाथ → लोकैल-न्यूट्रल रूट (`/guide/…`) |
+| `"fumadocs"` | Fumadocs लिंक नॉर्मलाइज़र (`rewriteFumadocsLinks`, डिफ़ॉल्ट रूप से चालू) | `content/docs/…` और रिलेटिव `.mdx` पाथ → लोकैल-न्यूट्रल रूट (`/docs/…`) |
 | `"doc-system"`, `"docusaurus"`, `"astro-starlight"` | कोई नहीं | स्रोत यूआरएल `postProcessing` तक अपरिवर्तित पारित होते हैं |
 
 कस्टम `pathTemplate` फ्लैट रewriter को अक्षम करता है जब तक कि आप `rewriteRelativeLinks: true` को स्पष्ट रूप से निर्धारित न करें। क्रॉस-पेज `#anchor` हैंडलिंग के लिए [आउटपुट लेआउट](/hi/guide/documents/output-layouts) और [एंकर लिंक](/hi/guide/documents/anchor-links) देखें।
@@ -64,7 +64,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 | प्लेसहोल्डर | मान |
 | --- | --- |
-| `${translatedLocale}` | लक्ष्य लोकेल (सामान्यीकृत BCP-47) |
+| `${translatedLocale}` | लक्ष्य लोकैल (नॉर्मलाइज़्ड BCP-47) |
 | `${sourceLocale}` | स्रोत लोकेल |
 | `${sourceFullPath}` | पूर्ण स्रोत फ़ाइल पथ (POSIX `/`) |
 | `${translatedFullPath}` | पूर्ण अनुवादित आउटपुट पथ |
@@ -79,7 +79,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 <a id="per-locale-asset-folder"></a>
 ### प्रति-लोकेल एसेट फ़ोल्डर
 
-पहले दिन से लोकेल-कोडेड सबडायरेक्टरी के तहत एसेट स्टोर करें और सेगमेंट को एक सामान्य नियम के साथ स्वैप करें:
+एसेट को शुरू से ही लोकैल-कोडेड सबडायरेक्टरी के तहत स्टोर करें और सेगमेंट को एक सामान्य नियम से बदलें:
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ Docusaurus, Starlight, या अन्य `doc-system` साइटों क�
 
 आपको आमतौर पर `regexAdjustments` की आवश्यकता **नहीं** होती है जब:
 
-- क्रॉस-पेज लिंक सरल सापेक्ष मार्कडाउन पथ और `docsOutput.style = "flat"` होते हैं (अंतर्निहित रीराइटर लोकेल प्रत्यय जोड़ता है)
-- एसेट स्रोत फ़ाइलों के बगल में स्थित होते हैं और फ़्लैट रीराइटर का प्रति-फ़ाइल गहराई उपसर्ग उन्हें सही ढंग से हल करता है
-- अंग्रेजी और प्रत्येक अनुवादित प्रतिलिपि **एक ही** URL का उपयोग करती है (साइट रूट पर साझा छवियां, सह-स्थित एसेट, सामान्यीकरण के बाद VitePress साइट मार्ग)
-- VitePress इन-साइट लिंक साइट मार्गों या `docs/guide/…` पथों का उपयोग `rewriteVitepressLinks: true` के साथ करते हैं
+- क्रॉस-पेज लिंक सरल रिलेटिव मार्कडाउन पाथ और `docsOutput.style = "flat"` हैं (बिल्ट-इन रीराइटर लोकैल सफिक्स जोड़ता है)
+- एसेट सोर्स फ़ाइलों के बगल में स्थित हैं और फ़्लैट रीराइटर का प्रति-फ़ाइल डेप्थ प्रीफ़िक्स उन्हें सही ढंग से रिज़ॉल्व करता है
+- अंग्रेज़ी और हर अनुवादित कॉपी **एक ही** URL का उपयोग करती हैं (साइट रूट पर साझा इमेज, कोलोकेटेड एसेट, नॉर्मलाइज़र के बाद VitePress साइट रूट)
+- VitePress इन-साइट लिंक साइट रूट या `docs/guide/…` पाथ का उपयोग `rewriteVitepressLinks: true` के साथ करते हैं
 - Nextra और Fumadocs इन-पेज लिंक लोकेल-न्यूट्रल मार्गों (`/guide/…`, `/docs/…`) या `rewriteNextraLinks` / `rewriteFumadocsLinks: true` के साथ सामग्री-रूट पथों का उपयोग करते हैं
 
 <a id="full-config-example"></a>

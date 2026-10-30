@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Sélecteur pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [Applications Python](/fr/guide/ui-strings/python). Le guide pas à pas pour une application existante à locale unique est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), avec une [invite `i18n.py`](/fr/guide/add-i18n-to-python#run-the-agent-prompt) et une [invite Django / gettext](/fr/guide/add-i18n-to-python#agent-prompt-django-gettext).
+Internationalisation pour les applications Python. L'extraction, les catalogues et les formes d'appel se trouvent dans [Applications Python](/fr/guide/ui-strings/python). Le guide pas à pas pour une application existante à locale unique est [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), avec une [invite d'agent](/fr/guide/add-i18n-to-python#run-the-agent-prompt). Les catalogues Django, Flask-Babel et les applications qui utilisent déjà gettext ont leur propre guide et leur propre invite : [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext).
 
 Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent l'assistant `i18n.py` généré (Python 3.10 ou version ultérieure). Django conserve le gettext de Django. Quatre copies exécutables sont fournies dans le dépôt : `examples/python-streamlit`, `examples/python-flask`, `examples/python-fastapi` et `examples/python-gettext`. Pyramid, Django, Tkinter, Qt et PyWebView ne possèdent pas de répertoire d'exemples distinct.
 
@@ -29,7 +29,7 @@ Streamlit, FastAPI, Flask, Pyramid, Tkinter, PyQt, PySide et PyWebView appellent
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` écrit la locale dans l'état de session et la chaîne de requête. Donnez à chaque widget une `key` fixe. Détails : [Locale — Streamlit](/fr/guide/ui-strings/python#streamlit).
+Appelez `set_locale` avant `st.set_page_config` et tout autre `t()`. Dessinez le menu dans l'application afin que l'étiquette puisse être traduite. `streamlit_language_selector()` écrit la locale dans l'état de session et la chaîne de requête lorsque le widget est dessiné, ce qui est trop tard pour un titre de page traduit, et son étiquette reste en anglais. Recette : [Ajouter un sélecteur de langue](/fr/guide/add-i18n-to-python#step-4-add-a-language-switch). Donnez à chaque widget un `key` fixe. Détails : [Locale — Streamlit](/fr/guide/ui-strings/python#streamlit).
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ L'exemple [python-flask](/fr/examples#python-flask) utilise du JSON plat. `init 
 <a id="django"></a>
 ### Django
 
-Conservez `gettext`, `ngettext` et `{% blocktrans %}`. `init -t ui-python-django` correspond au répertoire `locale/` de Django et au domaine `django`, et laisse l'exécution de Django en place. Détails : [Locale — Django](/fr/guide/ui-strings/python#django).
+Conservez `gettext`, `ngettext` et `{% blocktrans %}`. `init -t ui-python-django` correspond au répertoire `locale/` de Django et au domaine `django`, et laisse le runtime de Django en place. Guide : [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext). Détails : [Locale — Django](/fr/guide/ui-strings/python#django).
 
 <a id="existing-gettext"></a>
 ### gettext existant
 
-Laissez `_()`, `gettext()` et `ngettext()` en place. Pointez `ui.gettext` vers l'arborescence de catalogue actuelle et exécutez `extract`, puis `translate-ui`. L'exemple [python-gettext](/fr/examples#python-gettext) est uniquement gettext (`flatOutput: false`). `init -t ui-python-gettext` écrit également du JSON plat. Détails : [Locale — Existing gettext](/fr/guide/ui-strings/python#gettext).
+Laissez `_()`, `gettext()` et `ngettext()` en place. Pointez `ui.gettext` vers l'arborescence de catalogues actuelle et exécutez `extract`, puis `translate-ui`. L'exemple [python-gettext](/fr/examples#python-gettext) est uniquement gettext (`flatOutput: false`). `init -t ui-python-gettext` écrit également du JSON plat. Guide : [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext). Détails : [Locale — gettext existant](/fr/guide/ui-strings/python#gettext).
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter, Qt et PyWebView

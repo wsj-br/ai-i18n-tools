@@ -3,9 +3,9 @@
 
 Das Übersetzungs-Dashboard ist eine lokale Web-Benutzeroberfläche zum Prüfen und Bearbeiten der Übersetzungsdaten Ihres Projekts. Es liest aus drei Speichern:
 
-- SQLite-Cache (`cacheDir`) – Übersetzungen von Dokumentationssegmenten, Fehlerprotokolle, Markdown-Problemscans, abgerechnete API-Aufrufe
-- **`strings.json`** – UI-Stringkatalog (einfache Strings und Pluralgruppen)
-- **Benutzerglossar-CSV** (`glossary.userGlossary`) – Terminologiehinweise für `translate-ui` und `proofread-ui`
+- SQLite-Cache (`cacheDir`) — Übersetzungen von Dokumentationssegmenten, Fehleraufzeichnungen, Scans von Markdown-Problemen, abgerechnete API-Aufrufnutzung
+- `strings.json` — UI-Stringkatalog (einfache Strings und Pluralgruppen)
+- **Benutzerglossar-CSV** (`glossary.userGlossary`) — Terminologiehinweise für `translate-ui` und `proofread-ui`
 
 Verwenden Sie es nach einem Übersetzungslauf, um Probleme zu finden, fehlerhafte Ausgaben zu überschreiben oder die Cache-Abdeckung zu überprüfen – ohne manuell SQLite oder JSON durchsuchen zu müssen.
 
@@ -48,7 +48,7 @@ Die Dashboard-Benutzeroberfläche verwendet dieselbe Gebietsschema-Auflösung wi
 | UI-String oder Plural | einfaches `sync` oder `translate-ui` | `--force` (überschreibt `user-edited`-Zeilen) |
 | Glossar-Zeile | nächstes `translate-ui` oder `proofread-ui` | — |
 
-**Dokumentation (SQLite-Cache)** – Manuelle Bearbeitungen werden im Cache mit dem Modell `user-edited` markiert. Bearbeitungen, die die Prüfung des Schriftsystems für das Gebietsschema nicht bestehen (z. B. romanisiertes Hindi für `hi`), zeigen eine Warnung an; die Bestätigung speichert den Text trotzdem. Wenn Sie `translate-docs` oder `sync` für eine unveränderte Quelle erneut ausführen, wird die zwischengespeicherte Übersetzung wiederverwendet (kein LLM-Aufruf). Führen Sie `sync --force-update` oder `translate-docs --force-update` aus, um das Markdown auf der Festplatte aus dem Cache zu aktualisieren. Verwenden Sie `--check-cache`, um Gebietsschemas mit nativem Skript neu zu validieren, ohne jede Datei neu zu schreiben (einschließlich bestätigter Bearbeitungen mit falschem Skript). Verwenden Sie `--force` nur, wenn Sie den Cache umgehen und eine Neuübersetzung vom LLM wünschen (manuelle Korrekturen werden überschrieben).
+**Dokumentation (SQLite-Cache)** — Manuelle Bearbeitungen werden im Cache mit dem Modell `user-edited` markiert. Bearbeitungen, die die Überprüfung des Schreibsystems des Gebietsschemas nicht bestehen (z. B. romanisiertes Hindi für `hi`), zeigen eine Warnung an; das Bestätigen speichert den Text trotzdem. Ein erneutes Ausführen von `translate-docs` oder `sync` bei unveränderter Quelle verwendet die zwischengespeicherte Übersetzung wieder (kein LLM-Aufruf). Führen Sie `sync --force-update` oder `translate-docs --force-update` aus, um Markdown auf der Festplatte aus dem Cache zu aktualisieren. Verwenden Sie `--check-cache`, um Gebietsschemas mit nativer Schrift erneut zu validieren, ohne jede Datei neu zu schreiben (einschließlich bestätigter Bearbeitungen mit falscher Schrift). Verwenden Sie `--force` nur, wenn Sie den Cache umgehen und vom LLM neu übersetzen möchten (manuelle Korrekturen überschreiben).
 
 **UI-Strings (`strings.json`)** – Manuelle Bearbeitungen werden in `models[locale]` mit `user-edited` markiert. Wenn Sie `translate-ui` oder `sync` erneut ausführen, werden Einträge übersprungen, die bereits eine Übersetzung haben. Verwenden Sie `--force` für UI-Befehle, um manuelle Korrekturen neu zu übersetzen und zu überschreiben.
 

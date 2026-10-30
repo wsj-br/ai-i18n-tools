@@ -10,7 +10,7 @@ You have an app, a website, a documentation site, or a repository README in one 
 | --- | --- |
 | Pick the languages, a provider, and the models to try | Extracts text, translates it, validates the result, and writes catalogs or pages |
 | Make user-facing text visible to the tool: `t()` calls in app code, your framework's own i18n for a site, or a language-list marker in a README | Caches translations and reuses them on every rerun |
-| Wire the result into the app, the site's routing, or the README's language row | Shows progress and lets you review translations in the dashboard |
+| Connect the result to the app, the site's routing, or the README's language row | Shows progress and lets you review translations in the dashboard |
 
 The tool does not rewrite your source. Coding-agent prompts are provided for the wrapping step. It does not install i18next or your site framework's i18n, and it does not build your language switcher, although runtime helpers are provided for that.
 

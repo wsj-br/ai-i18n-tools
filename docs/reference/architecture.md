@@ -70,7 +70,7 @@ For `.html` / `.htm` sources (when listed in `ui.uiExtractor.extensions`), `extr
 
 Plain Astro SSG sites can skip i18next: load flat `{locale}.json` at build time and resolve `t('source text')` by source-text key. The source language is `sourceLocale` and can be any language (see `examples/astro-website/src/i18n/t.ts` and [UI strings — Astro website](/guide/ui-strings/astro-website)).
 
-Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation). The drop-in script is `ai-i18n-tools/html-runtime/i18n.js`.
+Plain HTML apps follow the same catalog model with marker attributes instead of `t()` calls — see [Marking HTML for translation](/guide/ui-strings/plain-html#marking-html-for-translation). The ready-to-use script is `ai-i18n-tools/html-runtime/i18n.js`.
 
 Static HTML that should become one file per locale is a documents pipeline (`HtmlTemplateExtractor` inside `translate-docs`), not this catalog. See [HTML pages](/guide/documents/html-pages).
 

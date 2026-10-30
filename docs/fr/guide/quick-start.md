@@ -71,7 +71,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-Utilisez `ui-python-gettext`, `ui-python-flask` ou `ui-python-django` pour ces configurations. Suivez ensuite [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python).
+Suivez ensuite [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python).
+
+Une application Django, Flask avec des catalogues Flask-Babel, ou une application qui appelle déjà `gettext` conserve ces appels. Générez avec `ui-python-django`, `ui-python-flask` ou `ui-python-gettext` à la place, puis suivez [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext).
 
 <a id="a-website-or-documentation-site"></a>
 ### Un site web ou un site de documentation
@@ -92,7 +94,7 @@ Choisissez le modèle pour votre framework :
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-Votre framework doit d'abord avoir son propre routage i18n activé. Suivez ensuite [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website).
+Suivez ensuite [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website). Son invite d'agent active le routage i18n du framework. Vous exécutez `sync` après avoir examiné ce travail.
 
 <a id="a-readme-or-markdown-docs"></a>
 ### Un README ou de la documentation Markdown
@@ -123,11 +125,12 @@ La liste complète des modèles, avec chaque option `init`, se trouve dans la [r
 Lorsque votre projet est prêt :
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync` exécute chaque étape activée par votre configuration, dans l'ordre. `status` affiche ce qui est traduit par locale. Une première exécution sur un projet dont l'outil ne peut pas voir le texte se termine sans erreur et n'écrit rien d'utile, donc si `status` n'affiche aucune chaîne, revenez au guide correspondant à votre chemin.
+`doctor` vérifie que la configuration, les chemins, les fournisseurs et l'environnement sont prêts. Il vérifie également les identifiants de modèle avec le fournisseur, sauf si vous passez `--local`. `sync` exécute chaque étape activée par votre configuration, dans l'ordre. `status` affiche ce qui est traduit par locale. Une première exécution sur un projet où l'outil ne peut pas voir de texte se termine sans erreur et n'écrit rien d'utile, donc si `status` n'affiche aucune chaîne, revenez au guide correspondant à votre chemin.
 
 `suggest-models` classe les modèles de chat du fournisseur actif à partir de benchmarks publiés. `suggest-models --apply` remplace `translationModels` et ne modifie pas `uiModels` et `localeModels`. Le même classement se trouve dans l'onglet **Modèles** du tableau de bord. Fonctionnement du classement et pourquoi la liste contient plusieurs modèles : [Modèles d'IA](/fr/guide/ai-models). Référence de la commande : [suggest-models](/fr/reference/cli-commands/models#suggest-models).
 
@@ -158,7 +161,7 @@ Avec le package installé localement, les scripts résolvent `ai-i18n-tools` dep
 
 Préférez `sync` à l'enchaînement des scripts de traduction individuels. N'utilisez les scripts à étape unique que si vous avez besoin d'une seule étape de manière isolée.
 
-Pour que la sortie de la CLI et le tableau de bord soient dans une autre langue, passez `-L <code>` ou définissez `AI_I18N_LANG` : consultez [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
+Pour afficher la sortie de la CLI et le tableau de bord dans une autre langue, passez `-L <code>` ou définissez `AI_I18N_LANG` : voir [Langue de l'interface utilisateur de l'outil](/fr/guide/tool-ui-language).
 
 <a id="combined-sync"></a>
 

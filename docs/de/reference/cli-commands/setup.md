@@ -57,6 +57,28 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ---
 
 <a id="doctor"></a>
+### `doctor`
+
+**Zusammenfassung:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+
+Überprüfen Sie, ob das Projekt zur Übersetzung bereit ist. Der Bericht umfasst Konfigurationssyntax und -schema, Geschäftsregeln, die installierte Version, Quell- und Ausgabepfade, UI-Katalogdateien, Cache-Statistiken, konfigurierte Provider, festgelegte unterstützte Umgebungsvariablen und Modell-IDs.
+
+Standardmäßig prüft `doctor` auch konfigurierte Modell-IDs anhand des Katalogs des aktiven Providers und vergleicht die installierte Version mit dem neuesten GitHub-Release. `--local` überspringt beide Netzwerkaufrufe. Ein neueres Release oder eine fehlgeschlagene GitHub-Anfrage ist eine Warnung. Eine fehlende oder abgelaufene Modell-ID führt zum Fehlschlagen des Befehls. `--strict` beendet den Vorgang mit einem Fehler, wenn eine Prüfung eine Warnung ausgibt.
+
+API-Schlüsselwerte werden niemals ausgegeben. Ein gesetzter Schlüssel wird als `NAME (set)` angezeigt.
+
+Fehlende Eingabepfade führen zu einem Fehler. Fehlende Ausgabeverzeichnisse sind ein Hinweis, da sie beim ersten Übersetzungsdurchlauf erstellt werden. `doctor` schreibt die Konfiguration nicht neu, erstellt keine Verzeichnisse und sendet keinen Quelltext an ein Modell.
+
+**Wichtige Optionen:** `--local`, `--strict`, `--json`
+
+```bash
+ai-i18n-tools doctor
+ai-i18n-tools doctor --local
+```
+
+---
+
+<a id="help"></a>
 ### `help`
 
 **Synopsis:** `ai-i18n-tools help [command]`

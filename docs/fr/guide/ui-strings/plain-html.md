@@ -3,7 +3,7 @@
 
 Utilisez cette approche pour une page interactive qui reste dans un seul fichier HTML. `extract` lit les marqueurs `data-i18n*` dans `strings.json`, `translate-ui` écrit un bundle JSON plat par locale, et un script de navigateur applique les chaînes. Le même script peut ajouter un suffixe aux noms de fichiers image et conserver les liens sur la page actuelle.
 
-Pour un site statique qui doit générer un fichier HTML traduit par locale (sans environnement d'exécution, avec des liens inter-pages réécrits), utilisez plutôt les [pages HTML](/fr/guide/documents/html-pages). Un fichier est associé à une seule approche.
+Pour un site statique qui doit émettre un fichier HTML traduit par locale (pas d'exécution, liens inter-pages réécrits), utilisez plutôt les [pages HTML](/fr/guide/documents/html-pages). Chaque fichier appartient à un seul pipeline.
 
 <a id="quick-start"></a>
 ## Démarrage rapide
@@ -283,7 +283,7 @@ Ces marqueurs ne sont jamais envoyés au traducteur. `mark-html` ne les ajoute p
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-La locale source conserve l'URL d'origine. Pour un `data-i18n-locale-src` nu, les URL absolues, les URL relatives au protocole, les URL `data:` et les fragments `#` sont laissés intacts ; les chaînes de requête et les fragments restent en place. Un marqueur valué utilise son modèle pour chaque locale autre que la locale source et remplace uniquement `{locale}`. Si l'image localisée génère une erreur 404, l'environnement d'exécution restaure l'`src` d'origine une seule fois. Vous devez fournir vous-même `chart_pt-BR.png` ; le script ne le crée pas.
+La locale source conserve l'URL d'origine. Pour un `data-i18n-locale-src` nu, les URL absolues, les URL relatives au protocole, les URL `data:` et les fragments `#` sont laissés tels quels ; les chaînes de requête et les fragments restent en place. Un marqueur valorisé utilise son modèle pour chaque locale non-source et ne remplace que `{locale}`. Si l'image localisée renvoie une erreur 404, l'exécution restaure l'`src` d'origine une fois. Vous livrez `chart_pt-BR.png` vous-même ; le script ne le crée pas.
 
 `data-i18n-locale-href` est destiné à ce modèle de catalogue. Un lien vers `about.pt-BR.html` appartient au pipeline des [pages HTML](/fr/guide/documents/html-pages).
 
@@ -365,7 +365,7 @@ N'ajoutez pas de redirection automatique par `navigator.language` par-dessus. L'
 
 `normalizeI18nText` dans le runtime correspond à `normalizeI18nText` dans [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) : rogner, puis réduire les espaces. Étant donné que le texte en langue source est la clé du catalogue, une traduction manquante utilise par défaut ce texte source.
 
-La démonstration exécutable est [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` la sert à l'adresse [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR).
+La démo exécutable est [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` la sert à `http://localhost:3090/?locale=pt-BR`.
 
 <a id="runtime-source"></a>
 ## Source du runtime

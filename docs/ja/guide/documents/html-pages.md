@@ -139,11 +139,11 @@ HTML エクストラクターは以下を翻訳します:
 | `{llocale}` | 小文字のロケール |
 | `{LOCALE}` | 大文字のロケール |
 
-`img/trulli.jpg`は`img/trulli-pt-BR.jpg`になります。`onlyIfExists: true`（デフォルト）の場合、そのURLはローカライズされたファイルが存在する場合にのみ使用され、それ以外の場合は元の共有アセットが保持されます。`onlyIfExists: false`は、別のビルドまたはCDNステップでそれらのファイルが保証されている場合にのみ設定してください。
+`img/trulli.jpg` は `img/trulli-pt-BR.jpg` になります。`onlyIfExists: true` (デフォルト) の場合、その URL はローカライズされたファイルが存在する場合にのみ使用され、そうでない場合は元の共有アセットが保持されます。別のビルドまたは CDN ステップがそれらのファイルを保証する場合にのみ、`onlyIfExists: false` を設定してください。
 
-`include`は`img/**`などのURLパスに一致します。`assetRoot`を使用して、ローカライズされた候補（特に`/img/trulli.jpg`などのルート相対URL）がチェックされるファイルシステムディレクトリを設定します。
+`include` は `img/**` のような URL パスに一致します。`assetRoot` を使用して、ローカライズされた候補、特に `/img/trulli.jpg` のようなルート相対 URL がチェックされるファイルシステムディレクトリを設定します。
 
-同じローカライズルールが`srcset`、`poster`、`<source src>`、アイコン`<link href>`、および`og:image` / `twitter:image`に適用されます。パイプラインは参照を書き換えますが、アセットファイルの作成、翻訳、またはコピーは行いません。CSSの`url()`値は書き換えられません。
+同じローカライズルールが `srcset`、`poster`、`<source src>`、アイコン `<link href>`、および `og:image` / `twitter:image` に適用されます。パイプラインは参照を書き換えますが、アセットファイルを作成、翻訳、またはコピーすることはありません。CSS の `url()` の値は書き換えられません。
 
 <a id="language-list-and-hreflang"></a>
 ## 言語リストとhreflang
@@ -213,7 +213,7 @@ HTML エクストラクターは以下を翻訳します:
 | 出力が`site/pt-BR/site/index.html`である | ソースプレフィックスが削除されるように、`docsOutput.docsRoot`を`"site"`に設定します。 |
 | リンクが引き続き英語のページを指している | 相対`.html` / `.htm`リンクを使用し、ターゲットページを同じ`docs[]`ブロックに含めます。 |
 | ロケールページから画像パスが壊れている | 深度の書き換えが適用されるように相対パスを維持します。CSSの`url()`は書き換えられないことに注意してください。 |
-| ローカライズされた画像が選択されない | `localizedAssets.include`、ファイル名`pattern`、および`onlyIfExists`がtrueの場合に候補が存在するかどうかを確認します。 |
+| ローカライズされた画像が選択されていません | `localizedAssets.include`、ファイル名 `pattern`、および `onlyIfExists` が true の場合に候補が存在するかどうかを確認してください。 |
 | 言語リストが空または変更されていない | 両方のマーカーコメントを正しい順序で、`script`、`style`、`pre`、および`code`の外側に配置します。 |
 | ドロップダウンが遷移しない | `data-lang-select` を `<select>` に追加し、`html-runtime/lang-select.js` を読み込みます。 |
 | hreflang URL が誤ったホストを使用している | `hreflang.siteUrl` を最終的なパブリックオリジンに設定します。 |

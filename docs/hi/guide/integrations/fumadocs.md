@@ -50,7 +50,7 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 <a id="enable-i18n-in-an-existing-site"></a>
 ### किसी मौजूदा साइट में i18n सक्षम करें
 
-एक अंग्रेजी-मात्र फुमाडॉक्स ऐप को `translate-docs` के सिबलिंग फ़ाइलें लिखने से पहले एक लोकल रूट और `defineI18n` की आवश्यकता होती है। [एजेंट प्रॉम्प्ट](#agent-prompt) एक मौजूदा साइट के माध्यम से चलता है। चेकलिस्ट:
+एक अंग्रेज़ी-मात्र Fumadocs ऐप को एक स्थानीय मार्ग (locale route) और `defineI18n` की आवश्यकता होती है, इससे पहले कि `translate-docs` सिबलिंग फ़ाइलें लिख सके। पहली बार सेटअप [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website#run-the-agent-prompt) पर दिए गए प्रॉम्प्ट का उपयोग करता है। इस पृष्ठ पर [एजेंट प्रॉम्प्ट](#agent-prompt) वह अनुवर्ती कार्रवाई है जो UI कैटलॉग को जोड़ती है। चेकलिस्ट:
 
 - `languages`, `defaultLanguage`, और `parser: "dot"` या `"dir"` के साथ `lib/i18n.ts` में `defineI18n`।
 - `proxy.ts` (उदाहरण की फ़ाइल) से `app/[lang]/` रूट और `createI18nMiddleware`।
@@ -86,7 +86,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="sidebar-metajson"></a>
 ## साइडबार (`meta.json`)
 
-फुमाडॉक्स साइडबार संरचना और शीर्षकों के लिए JSON `meta.json` फ़ाइलों का उपयोग करता है। जब `docsOutput.style` `"fumadocs"` होता है, तो **`translate-docs`** `docsRoot` (या `docs[].fumadocsMetaGlob`) के तहत `meta.json` एकत्र करता है, `docs[].fumadocsMetaTranslatableKeys` (डिफ़ॉल्ट: `title`, `description`) में सूचीबद्ध कुंजियों के लिए स्ट्रिंग मानों का अनुवाद करता है, और लोकेल आउटपुट लिखता है:
+Fumadocs साइडबार संरचना और शीर्षकों के लिए JSON `meta.json` फ़ाइलों का उपयोग करता है। जब `docsOutput.style` `"fumadocs"` होता है, तो `translate-docs`, `docsRoot` (या `docs[].fumadocsMetaGlob`) के तहत `meta.json` एकत्र करता है, `docs[].fumadocsMetaTranslatableKeys` में सूचीबद्ध कुंजियों (keys) के लिए स्ट्रिंग मानों का अनुवाद करता है (डिफ़ॉल्ट: `title`, `description`), और स्थानीय आउटपुट लिखता है:
 
 | पार्सर | स्रोत लोकल | आउटपुट |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="ui-catalog"></a>
 ## UI कैटलॉग
 
-फुमाडॉक्स लेआउट क्रोम (खोज प्लेसहोल्डर, लोकल डिस्प्ले नाम, और `lib/layout.shared.ts` में अन्य `defineTranslations` / `i18n.translations()` ओवरराइड) मार्कडाउन से निकाला नहीं जाता है। **`docsOutput.fumadocsUiCatalog`** को कॉन्फ़िगर करें ताकि **`translate-docs`** `sourcePath` से स्रोत-लोकल कैटलॉग को बूटस्ट्रैप करे और प्रति-लोकल JSON का अनुवाद करे:
+Fumadocs लेआउट क्रोम (खोज प्लेसहोल्डर, स्थानीय प्रदर्शन नाम, और `lib/layout.shared.ts` में अन्य `defineTranslations` / `i18n.translations()` ओवरराइड) मार्कडाउन से नहीं निकाला जाता है। `docsOutput.fumadocsUiCatalog` को कॉन्फ़िगर करें ताकि `translate-docs`, `sourcePath` से स्रोत-स्थानीय कैटलॉग को बूटस्ट्रैप करे और प्रति-स्थानीय JSON का अनुवाद करे:
 
 ```json
 {
@@ -123,8 +123,8 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 }
 ```
 
-- **`catalogPath`** — अंग्रेजी फ्लैट JSON। बूटस्ट्रैप `sourcePath` में `.add({ … })` के केवल `en` ऑब्जेक्ट को पढ़ता है। उस ऑब्जेक्ट में स्ट्रिंग लिटरल कैटलॉग कुंजी बन जाते हैं (`displayName`, `Search(search trigger)`)। `.add()` केवल उन कुंजियों को स्वीकार करता है जिन्हें फुमाडॉक्स UI प्रीसेट ने पंजीकृत किया है, इसलिए `site.title` जैसा नेविगेशन शीर्षक वहां नहीं रह सकता है। उदाहरण JSON में `site.title` रखता है और `nav.title` के लिए `catalog["site.title"]` पढ़ता है। फ़ाइल में पहले से मौजूद लेकिन `en` ऑब्जेक्ट से अनुपस्थित कुंजियाँ बनी रहती हैं: मर्ज `{ ...existing, ...extracted }` है। जब अंग्रेजी लिटरल बदलते हैं तो `sync` को फिर से चलाएँ।
-- **`outputPathTemplate`** (वैकल्पिक) — प्रति-लोकल आउटपुट; डिफ़ॉल्ट: `catalogPath` के बगल में `ui.{locale}.json`।
+- `catalogPath` — अंग्रेज़ी फ़्लैट JSON। बूटस्ट्रैप `sourcePath` में `.add({ … })` के केवल `en` ऑब्जेक्ट को पढ़ता है। उस ऑब्जेक्ट में स्ट्रिंग लिटरल कैटलॉग कुंजियाँ (`displayName`, `Search(search trigger)`) बन जाते हैं। `.add()` केवल उन कुंजियों को स्वीकार करता है जिन्हें Fumadocs UI प्रीसेट ने पंजीकृत किया है, इसलिए `site.title` जैसा नेविगेशन शीर्षक वहाँ नहीं रह सकता। उदाहरण JSON में `site.title` रखता है और `nav.title` के लिए `catalog["site.title"]` पढ़ता है। फ़ाइल में पहले से मौजूद लेकिन `en` ऑब्जेक्ट में अनुपस्थित कुंजियाँ बनी रहती हैं: विलय `{ ...existing, ...extracted }` है। जब अंग्रेज़ी लिटरल बदलते हैं तो `sync` को फिर से चलाएँ।
+- `outputPathTemplate` (वैकल्पिक) — प्रति-स्थानीय आउटपुट; डिफ़ॉल्ट: `catalogPath` के बगल में `ui.{locale}.json`।
 
 एक अनुवादित कुंजी तब तक कुछ नहीं करती जब तक ऐप उसे पढ़ नहीं लेता। `i18n.translations().get(lang)` केवल `.extend()` (फुमाडॉक्स UI प्रीसेट) के साथ पंजीकृत कुंजियों को लौटाता है। लोकल कैटलॉग को `.add()` में फैलाएँ ताकि वे कुंजियाँ लागू हों, और मूल `displayName` को स्प्रेड के **बाद** रखें ताकि अंग्रेजी नाम का अनुवाद उसे प्रतिस्थापित न करे:
 
@@ -223,7 +223,7 @@ or `dir`.
 
 फ्यूमाडॉक्स Next.js मिडलवेयर (`/docs/getting-started`, `/pt/docs/getting-started`) के माध्यम से लोकेल-प्रीफिक्स्ड रूट प्रदान करता है। **इन-पेज लिंक लोकेल-न्यूट्रल रहने चाहिए** (`/docs/getting-started`) ताकि सक्रिय लोकेल प्रीफिक्स स्वचालित रूप से लागू हो।
 
-बिल्ट-इन नॉर्मलाइज़र को सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक कर दे:
+अंतर्निहित नॉर्मलाइज़र सक्षम करें ताकि `translate-docs` हर अनुवादित फ़ाइल में लिंक को स्वचालित रूप से ठीक कर दे:
 
 ```json
 "docsOutput": {
@@ -235,7 +235,7 @@ or `dir`.
 
 जब `style` `"fumadocs"` हो तो `rewriteFumadocsLinks` डिफ़ॉल्ट रूप से सक्षम होता है।
 
-| स्रोत लोकल में लेखक | नॉर्मलाइज़र के बाद |
+| स्रोत स्थानीय में लेखक | नॉर्मलाइज़र के बाद |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
@@ -244,16 +244,16 @@ or `dir`.
 
 **लेखन नियम**
 
-- क्रॉस-पेज डॉक लिंक: अंग्रेजी MDX में **लोकेल-न्यूट्रल साइट रूट** (`/docs/…`) का उपयोग करें, या `content/docs/…` / रिलेटिव `.mdx` पाथ का उपयोग करें और नॉर्मलाइज़र को `sync` के दौरान उन्हें फिर से लिखने दें।
-- सामग्री ट्री के बाहर रेपो फ़ाइलें: **पूरे URL** का उपयोग करें।
-- लोकेल-सफिक्स वाली प्रतियों (`*.pt.mdx`) या `content/{locale}/` ट्री में लिंक को मैन्युअल रूप से संपादित **न करें** — `sync` / `translate-docs` के साथ फिर से जनरेट करें।
+- क्रॉस-पेज डॉक लिंक: अंग्रेज़ी MDX में **स्थानीय-तटस्थ साइट मार्गों** (`/docs/…`) का उपयोग करें, या `content/docs/…` / सापेक्ष `.mdx` पथों का उपयोग करें और नॉर्मलाइज़र को `sync` के दौरान उन्हें फिर से लिखने दें।
+- सामग्री ट्री के बाहर रेपो फ़ाइलें: **पूर्ण URL** का उपयोग करें।
+- स्थानीय-प्रत्यय वाली प्रतियों (`*.pt.mdx`) या `content/{locale}/` ट्री में लिंक को मैन्युअल रूप से संपादित **न करें** — `sync` / `translate-docs` के साथ पुनर्जीवित करें।
 
 यह भी देखें [दस्तावेज़ — लिंक पुनर्लेखन](/hi/guide/documents/link-rewriting) और [कॉन्फ़िगरेशन — `docsOutput`](/hi/reference/configuration#docsoutput)।
 
 <a id="locale-codes"></a>
 ## लोकेल कोड
 
-अपने फ्यूमाडॉक्स ऐप में `ai-i18n-tools.config.json` में `targetLocales` को `defineI18n().languages` के साथ **ठीक से** संरेखित रखें। डॉट उदाहरण छोटे कोड (`pt`, `zh`) का उपयोग करता है; dir कॉन्फ़िग BCP-47 फ़ोल्डर (`pt-BR`, `zh-Hans`) का उपयोग कर सकते हैं। कोई जबरन सामान्यीकरण नहीं है — बेमेल कोड गलत आउटपुट पाथ या गायब पेज उत्पन्न करते हैं।
+अपने Fumadocs ऐप में `ai-i18n-tools.config.json` में `targetLocales` को `defineI18n().languages` के साथ **ठीक से** संरेखित रखें। डॉट उदाहरण शॉर्ट कोड (`pt`, `zh`) का उपयोग करता है; dir कॉन्फ़िग BCP-47 फ़ोल्डरों (`pt-BR`, `zh-Hans`) का उपयोग कर सकते हैं। कोई जबरन सामान्यीकरण नहीं है — बेमेल कोड गलत आउटपुट पथ या गुम पृष्ठ उत्पन्न करते हैं।
 
 <a id="multiple-collections"></a>
 ## एकाधिक संग्रह

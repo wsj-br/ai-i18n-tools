@@ -3,7 +3,7 @@
 
 `ai-i18n-tools` 會從 Python、Jinja、Django 和 Qt `.ui` 檔案中擷取 UI 字串，然後寫入以來源語言字串為鍵的扁平 JSON、GNU gettext 目錄，或兩者皆是。`sourceLocale` 可以是任何語言。執行階段協助程式是標準程式庫 `i18n.py` (Python 3.10 或更新版本)。Streamlit、Tkinter、PyQt、PySide、PyWebView、Flask、Pyramid 和 FastAPI 會呼叫該協助程式。Django 則使用其自己的 gettext。
 
-將地區設定新增至現有的單一語言應用程式：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，包括 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#run-the-agent-prompt) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函數清單：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
+將語言環境新增至現有的單一語言應用程式：[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)，及其[代理程式提示](/zh-Hant/guide/add-i18n-to-python#run-the-agent-prompt)。對於 Django、Flask-Babel 目錄，或已使用 gettext 的應用程式：[將 i18n 新增至 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext)，及其[代理程式提示](/zh-Hant/guide/add-i18n-to-django-gettext#run-the-agent-prompt)。框架選擇器：[Python 整合](/zh-Hant/guide/integrations/python)。函數清單：[Python 執行階段 (`i18n.py`)](/zh-Hant/reference/programmatic-api#python-runtime)。
 
 可執行的副本位於 `examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext` 中。它們是 Python 專案。前三個使用虛擬環境 (virtualenv) 和 `pip install -r requirements.txt`。`python-gettext` 僅使用標準函式庫。它們不是 npm 套件。發行封存檔 `ai-i18n-tools-python-examples.zip` 包含相同的四個目錄。npm tarball 和獨立執行檔則不包含。
 
@@ -61,7 +61,7 @@ _("Hello, %s!" % name)
 _("Hello, {name}!".format(name=name))
 ```
 
-`migrate-python-i18n` 在您傳入 `--write` 之前屬於試執行 (dry run)。它會寫入 `migrate-python-i18n-report.md`。諸如 `{value=}` 之類的偵錯欄位和巢狀格式規格會被回報並保留在原處。
+`migrate-python-i18n` 是預演，直到您傳遞 `--write` 為止。它會寫入 `migrate-python-i18n-report.md`。諸如 `{value=}` 和巢狀格式規範等偵錯欄位會被報告並保留在原位。`--write` 會將 f-string 和 `.format()` 呼叫轉換為 `t(...)`，這是一個僅存在於產生的 `i18n.py` 中的函數。在 gettext 或 Django 應用程式中，使用預演來尋找不安全的呼叫並使用 `%(name)s` 手動修復它們。
 
 `{% trans %}` 和 `{% blocktrans %}` 會變成 gettext `%(name)s` 預留位置。Jinja 會去除並摺疊空白字元。Django 會保留內部空白字元，除非標籤指定了 `trimmed`。
 
@@ -75,14 +75,24 @@ Gettext 檔案使用 `msgctxt` 作為內容，並使用 `msgid` / `msgid_plural`
 `t(..., plurals=True)` 若具有英文來源地區設定和明確的複數來源，將會跳過模型並儲存來自來源字串的 `one` / `other`。
 
 <a id="things-to-know"></a>
+## 須知
+
+- `t()` 會查詢來源語言句子。`strings.json` 中的 ID 並非查詢鍵。遺失語言環境檔案或遺失鍵會傳回該句子。
+- 輔助程式會將每個載入的 JSON 檔案保留在記憶體中，直到程序結束，包括在首次查詢時檔案遺失時的空映射。在 `translate-ui` 之後重新啟動應用程式。
+- 在該次執行的第一個 `t()` 之前呼叫 `set_locale`。`?lang=` 在應用程式讀取並呼叫 `set_locale` 之前不會執行任何操作。
+- `t()` 在匯入時執行一次，並保留來源語言，直到該模組再次匯入。在建置小工具時呼叫 `t()`。
+- 預留位置為 `{name}`、`{name:.2%}`、`{name:,.2f}` 和 `{name!r}`。諸如 `{row.rate}` 之類的點狀欄位會被拒絕。傳遞 `rate=row.rate`。
+- 緊接在 printf 類型字母 (`%d`、`%a`、`%s` 等) 後面的文字百分比符號會被視為舊式格式。使用關鍵字引數時，失敗的 `%` 格式化會傳回範本並跳過 `{name}` 替換。請將文字百分比符號與這些字母分開，如同 `% do CDI` 或 `% a.a.` 等原始文字。
+
+<a id="locale-in-each-framework"></a>
 ## 各框架中的地區設定
 
 `set_locale` 會傳回 `ContextVar` 權杖。請在 `finally` 中重設它，包含 FastAPI 和 Flask 中介軟體，以確保並行請求不會洩漏地區設定。
 
-- <a id="streamlit"></a>**Streamlit。** `streamlit_language_selector(sidebar=True, key="lang_selector")` 會寫入 `st.session_state.locale` 和 `st.query_params["lang"]`。請為每個小工具 (widget) 提供固定的 `key`。請參閱 `examples/python-streamlit`。
-- <a id="fastapi"></a>**FastAPI。** 在中介軟體 (middleware) 中讀取 `?lang=` 或 `Accept-Language`，呼叫 `set_locale`，並在 `finally` 中執行 `reset_locale`。路由會呼叫 `t()` 和 `_()`。請參閱 `examples/python-fastapi`。
-- <a id="flask"></a>**Flask 與 Pyramid。** 從請求中設定地區設定，並將 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入至模板內容中。請參閱 `examples/python-flask`。
-- <a id="gettext"></a>**現有的 gettext。** 保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的 `locales/` 樹狀目錄，然後執行 `extract` 與 `translate-ui`。請參閱 `examples/python-gettext`。
+- <a id="streamlit"></a>**Streamlit.** 在該次執行的第一個 `t()` 之前呼叫 `set_locale`，包括 `st.set_page_config(page_title=…)`。`streamlit_language_selector(sidebar=True, key="lang_selector")` 會寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，並在繪製小工具時呼叫 `set_locale`，因此其上方的翻譯標題會保留該次執行的先前語言。其標籤是固定的英文。需要翻譯標題的頁面應遵循[新增語言切換](/zh-Hant/guide/add-i18n-to-python#step-4-add-a-language-switch)。為每個小工具提供固定的 `key`。請參閱 `examples/python-streamlit`。
+- <a id="fastapi"></a>**FastAPI.** 在中介軟體中讀取 `?lang=` 或 `Accept-Language`，呼叫 `set_locale`，並在 `finally` 中呼叫 `reset_locale`。路由呼叫 `t()` 和 `_()`。請參閱 `examples/python-fastapi`。
+- <a id="flask"></a>**Flask 和 Pyramid.** 從請求設定語言環境，並將 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入範本內容。請參閱 `examples/python-flask`。
+- <a id="gettext"></a>**現有的 gettext.** 保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的 `locales/` 樹狀結構，然後執行 `extract` 和 `translate-ui`。請參閱 `examples/python-gettext`。
 - <a id="django"></a>**Django。** 使用 `gettext`、`ngettext` 和 `{% blocktrans %}`。初始化模板 `ui-python-django` 以符合 Django 的 `locale/` 目錄與 `django` 網域。
 - <a id="tkinter"></a>**Tkinter。** 在建立每個小工具時呼叫 `t()` 或 `_()`，然後在 `set_locale` 之後重建可見文字。
 - <a id="pyqt"></a>**PyQt / PySide。** `self.tr("...")` 會被提取。除非有 `notr="true"`，否則 `.ui` 檔案會提供 `<string>` 元素。`comment` 屬性會成為 gettext 內容。

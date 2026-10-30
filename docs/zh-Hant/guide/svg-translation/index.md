@@ -30,7 +30,7 @@ SVG 翻譯使用與 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 <a id="design-for-i18n-from-the-start"></a>
 ## 從一開始就進行 i18n 設計
 
-當標籤從一開始就是真實文字元素時，SVG 最容易翻譯：
+當標籤從一開始就是真正的文字元素時，SVG 最容易翻譯：
 
 - 將人類可讀的內容放入 `<text>`、`<title>` 和 `<desc>` 中。
 - 避免在設計工具中將標籤轉換為路徑 — 路徑資料對翻譯器來說是不透明的。

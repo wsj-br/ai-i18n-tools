@@ -50,7 +50,7 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在現有網站中啟用 i18n
 
-僅限英文的 Fumadocs 應用程式需要一個語系路由和 `defineI18n`，`translate-docs` 才能寫入同層級檔案。[代理提示](#agent-prompt) 會逐步引導您完成現有網站的設定。檢查清單：
+僅限英文的 Fumadocs 應用程式需要一個地區設定路由和 `defineI18n`，然後 `translate-docs` 才能寫入同級檔案。首次設定會使用 [在網站或文件網站中新增 i18n](/zh-Hant/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。此頁面上的 [代理程式提示](#agent-prompt) 是連接 UI 目錄的後續步驟。清單：
 
 - 在 `lib/i18n.ts` 中設定 `defineI18n`，並使用 `languages`、`defaultLanguage` 以及 `parser: "dot"` 或 `"dir"`。
 - 從 `proxy.ts`（範例檔案）中 `app/[lang]/` 路由和 `createI18nMiddleware`。
@@ -86,7 +86,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="sidebar-metajson"></a>
 ## 側邊欄（`meta.json`）
 
-Fumadocs 使用 JSON `meta.json` 檔案來定義側邊欄結構與標題。當 `docsOutput.style` 為 `"fumadocs"` 時，**`translate-docs`** 會將 `meta.json` 收集至 `docsRoot`（或 `docs[].fumadocsMetaGlob`）之下，翻譯 `docs[].fumadocsMetaTranslatableKeys` 中所列鍵值的字串（預設：`title`、`description`），並寫入各地區代碼的輸出：
+Fumadocs 使用 JSON `meta.json` 檔案來定義側邊欄結構和標題。當 `docsOutput.style` 為 `"fumadocs"` 時，`translate-docs` 會在 `docsRoot` (或 `docs[].fumadocsMetaGlob`) 下收集 `meta.json`，翻譯 `docs[].fumadocsMetaTranslatableKeys` 中列出的鍵的字串值 (預設值：`title`、`description`)，並寫入地區設定輸出：
 
 | 解析器 | 來源語系 | 輸出 |
 |--------|----------------|--------|
@@ -98,7 +98,7 @@ Fumadocs 使用 JSON `meta.json` 檔案來定義側邊欄結構與標題。當 `
 <a id="ui-catalog"></a>
 ## UI 目錄
 
-Fumadocs 版面配置框架（搜尋預留位置、語系顯示名稱，以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆寫）不會從 markdown 中擷取。請設定 **`docsOutput.fumadocsUiCatalog`**，以便 **`translate-docs`** 從 `sourcePath` 啟動來源語系目錄，並翻譯各語系的 JSON：
+Fumadocs 版面配置介面元素 (搜尋預留位置、地區設定顯示名稱，以及 `lib/layout.shared.ts` 中的其他 `defineTranslations` / `i18n.translations()` 覆寫) 不會從 Markdown 中提取。設定 `docsOutput.fumadocsUiCatalog`，以便 `translate-docs` 從 `sourcePath` 啟動來源地區設定目錄並翻譯每個地區設定的 JSON：
 
 ```json
 {
@@ -123,8 +123,8 @@ Fumadocs 版面配置框架（搜尋預留位置、語系顯示名稱，以及 `
 }
 ```
 
-- **`catalogPath`** — 英文的扁平化 JSON。啟動程序只會讀取 `sourcePath` 中 `.add({ … })` 的 `en` 物件。該物件中的字串常值會成為目錄鍵值（`displayName`、`Search(search trigger)`）。`.add()` 只接受 Fumadocs UI 預設集註冊的鍵值，因此像 `site.title` 這樣的導覽標題不能放在那裡。範例將 `site.title` 保留在 JSON 中，並為 `nav.title` 讀取 `catalog["site.title"]`。檔案中已有但 `en` 物件中沒有的鍵值會被保留：合併方式為 `{ ...existing, ...extracted }`。當英文字串常值變更時，請重新執行 `sync`。
-- **`outputPathTemplate`** (選用) — 各語系的輸出；預設：`ui.{locale}.json` 位於 `catalogPath` 旁。
+- `catalogPath` — 英文平面 JSON。啟動程序只會讀取 `sourcePath` 中 `.add({ … })` 的 `en` 物件。該物件中的字串常值會成為目錄鍵 (`displayName`、`Search(search trigger)`)。`.add()` 只接受 Fumadocs UI 預設集註冊的鍵，因此像 `site.title` 這樣的導覽標題不能放在那裡。範例將 `site.title` 保留在 JSON 中，並讀取 `catalog["site.title"]` 以取得 `nav.title`。檔案中已存在但 `en` 物件中不存在的鍵會保留：合併為 `{ ...existing, ...extracted }`。當英文常值變更時，請重新執行 `sync`。
+- `outputPathTemplate` (選用) — 每個地區設定的輸出；預設值：`ui.{locale}.json` 位於 `catalogPath` 旁邊。
 
 在應用程式讀取已翻譯的鍵值前，它不會有任何作用。`i18n.translations().get(lang)` 只會傳回向 `.extend()` (Fumadocs UI 預設集) 註冊的鍵值。將語系目錄展開至 `.add()` 中，這樣這些鍵值才會生效，並將原生的 `displayName` 放在展開運算 **之後**，這樣英文名稱的翻譯才不會取代它：
 
@@ -223,7 +223,7 @@ or `dir`.
 
 Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-started`、`/pt/docs/getting-started`）。**頁內連結應保持語言中立**（`/docs/getting-started`），以便自動套用當前語言前綴。
 
-啟用內建正規化器，讓 `translate-docs` 自動修正每個翻譯檔案中的連結：
+啟用內建正規化器，以便 `translate-docs` 自動修正每個翻譯檔案中的連結：
 
 ```json
 "docsOutput": {
@@ -235,7 +235,7 @@ Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-st
 
 當 `style` 為 `"fumadocs"` 時，`rewriteFumadocsLinks` 預設為啟用。
 
-| 在來源語系中編寫 | 經過正規化器後 |
+| 在來源地區設定中撰寫 | 正規化器之後 |
 |--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
@@ -244,16 +244,16 @@ Fumadocs 透過 Next.js 中介軟體提供語言前綴路由（`/docs/getting-st
 
 **撰寫規則**
 
-- 跨頁面文件連結：在英文 MDX 中使用**語言中立的網站路由**（`/docs/…`），或使用 `content/docs/…` / 相對 `.mdx` 路徑，讓正規化器在 `sync` 期間改寫它們。
-- 內容樹之外的儲存庫檔案：使用**完整 URL**。
-- 請**勿**手動編輯帶語言後綴副本（`*.pt.mdx`）或 `content/{locale}/` 樹中的連結 — 請使用 `sync` / `translate-docs` 重新產生。
+- 跨頁文件連結：在英文 MDX 中使用 **地區設定中立的網站路由** (`/docs/…`)，或 `content/docs/…` / 相對 `.mdx` 路徑，並讓正規化器在 `sync` 期間重寫它們。
+- 內容樹外部的儲存庫檔案：使用 **完整 URL**。
+- 請**勿**手動編輯帶有地區設定後綴的副本 (`*.pt.mdx`) 或 `content/{locale}/` 樹中的連結 — 請使用 `sync` / `translate-docs` 重新產生。
 
 另請參閱 [文件 — 連結改寫](/zh-Hant/guide/documents/link-rewriting) 與 [設定 — `docsOutput`](/zh-Hant/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## 地區設定代碼
 
-請將 `ai-i18n-tools.config.json` 中的 `targetLocales` 與您 Fumadocs 應用程式中的 `defineI18n().languages` 保持**完全**一致。dot 範例使用短代碼（`pt`、`zh`）；目錄設定可使用 BCP-47 資料夾（`pt-BR`、`zh-Hans`）。系統不會強制標準化 — 不相符的代碼會導致輸出路徑錯誤或頁面遺失。
+讓您的 Fumadocs 應用程式中 `ai-i18n-tools.config.json` 的 `targetLocales` 與 `defineI18n().languages` **完全**一致。點範例使用短代碼 (`pt`、`zh`)；目錄設定可以使用 BCP-47 資料夾 (`pt-BR`、`zh-Hans`)。沒有強制正規化 — 不匹配的代碼會產生錯誤的輸出路徑或遺失的頁面。
 
 <a id="multiple-collections"></a>
 ## 多重集合

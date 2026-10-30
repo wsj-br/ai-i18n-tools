@@ -3,7 +3,7 @@
 
 “**模型**”选项卡会对当前提供商的聊天模型进行排名，以便您选择 `translationModels`，而无需手动复制 ID。它使用的排名与 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 中的排名相同。相关演练（包括该列表为何包含多个模型的原因）请参阅 [AI 模型](/zh-Hans/guide/ai-models)。
 
-选择 **质量** 或 **价格**。质量优先考虑 languagebench ChrF 和竞技场评分 (Arena Score)。价格优先考虑较低的美元费率，同时保持一定的质量底线。当配置中有多个提供商时，会出现 **提供商** 菜单；默认值为启动仪表板时所用的提供商（`provider`，或 `dashboard` 命令上的 `-P` / `--provider`）。更改提供商或优先级会重新加载表格。可选权重位于 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion-optional) 中。
+选择 **质量** 或 **价格**。质量优先考虑 languagebench ChrF 和 Arena Score。价格优先考虑较低的美元汇率，同时仍保持最低质量标准。当配置包含多个提供商时，会出现一个 **提供商** 菜单；默认值是启动仪表板时使用的提供商 (`provider`，或在 `dashboard` 命令上使用 `-P` / `--provider`)。更改提供商或优先级会重新加载表格。可选权重位于 [`modelSuggestion`](/zh-Hans/reference/configuration#modelsuggestion-optional) 中。
 
 表格列包括重新排序控件、复选框、排名、模型 ID、指数（加权分数乘以 100）、测量的 ChrF、测量的 Arena 分数以及每 100 万个 token 的输入/输出价格（美元）。缺失的测量值显示为破折号。排名数字是模型在完整排名中的位置，在应用下面的筛选器之前。拖动行的句柄，或使用其上下按钮，以更改其在此表中的位置。**更新**会再次加载排名顺序。
 
@@ -17,7 +17,7 @@
 
 ::: info 外部基准来源
   分数是根据外部数据源计算的：
-  - [languagebench ChrF](https://languagebench.github.io/) 根据 CC-BY-SA-4.0 许可，
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) 根据 CC-BY-4.0 许可，以及
-  - [models.dev](https://models.dev/) 的价格根据 MIT 许可。
+  - [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench)，根据 CC-BY-SA-4.0 许可，
+  - [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset)，根据 CC-BY-4.0 许可，以及
+  - [models.dev](https://models.dev/) 的价格，根据 MIT 许可。
 :::

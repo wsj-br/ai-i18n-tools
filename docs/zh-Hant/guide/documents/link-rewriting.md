@@ -13,9 +13,9 @@
 | 版面配置 | 內建重寫器 | 修正內容 |
 | --- | --- | --- |
 | `"flat"` (沒有自訂 `pathTemplate` 時的預設值) | 平面連結重寫器 (`rewriteRelativeLinks`，預設啟用) | 跨頁相對連結 (`guide.md` → `guide.de.md`) 和非 Markdown 資產 URL 的深度前綴 |
-| `"vitepress"` | VitePress 連結正規化器 (`rewriteVitepressLinks`，預設啟用) | README 樣式 `docs/guide/…` 路徑 → 網站路由 (`/guide/…`) |
-| `"nextra"` | Nextra 連結正規化器（`rewriteNextraLinks`，預設開啟） | `content/en/…` 與相對 `.mdx` 路徑 → 語系中性路由（`/guide/…`） |
-| `"fumadocs"` | Fumadocs 連結正規化器（`rewriteFumadocsLinks`，預設開啟） | `content/docs/…` 與相對 `.mdx` 路徑 → 語系中性路由（`/docs/…`） |
+| `"vitepress"` | VitePress 連結正規化器 (`rewriteVitepressLinks`，預設啟用) | README 風格的 `docs/guide/…` 路徑 → 網站路由 (`/guide/…`) |
+| `"nextra"` | Nextra 連結正規化器 (`rewriteNextraLinks`，預設啟用) | `content/en/…` 和相對的 `.mdx` 路徑 → 語系中立路由 (`/guide/…`) |
+| `"fumadocs"` | Fumadocs 連結正規化器 (`rewriteFumadocsLinks`，預設啟用) | `content/docs/…` 和相對的 `.mdx` 路徑 → 語系中立路由 (`/docs/…`) |
 | `"doc-system"`、`"docusaurus"`、`"astro-starlight"` | 無 | 來源 URL 會直接傳遞，直到 `postProcessing` |
 
 自訂 `pathTemplate` 會停用平面重寫器，除非您明確設定 `rewriteRelativeLinks: true`。請參閱[輸出版面配置](/zh-Hant/guide/documents/output-layouts)和[錨點連結](/zh-Hant/guide/documents/anchor-links)以了解跨頁 `#anchor` 處理。
@@ -62,9 +62,9 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 `replace` 字串支援按檔案和地區設定展開的範本變數：
 
-| 預留位置 | 值 |
+| 佔位符 | 值 |
 | --- | --- |
-| `${translatedLocale}` | 目標地區設定（標準化 BCP-47） |
+| `${translatedLocale}` | 目標語系 (正規化的 BCP-47) |
 | `${sourceLocale}` | 來源地區設定 |
 | `${sourceFullPath}` | 絕對來源檔案路徑 (POSIX `/`) |
 | `${translatedFullPath}` | 絕對翻譯輸出路徑 |
@@ -79,7 +79,7 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 <a id="per-locale-asset-folder"></a>
 ### 按地區設定的資產資料夾
 
-從一開始就將資產儲存在按地區設定編碼的子目錄下，並使用一個通用規則替換該區段：
+從一開始就將資產儲存在語系編碼的子目錄下，並使用一個通用規則替換該區段：
 
 ```json
 "postProcessing": {
@@ -121,10 +121,10 @@ source URL  →  [flat link rewriter]  →  [regexAdjustments]  →  output URL
 
 在以下情況下，您通常**不需要** `regexAdjustments`：
 
-- 跨頁面連結是簡單的相對 Markdown 路徑和 `docsOutput.style = "flat"`（內建重寫器會新增地區設定後綴）
-- 資產位於來源檔案旁邊，並且扁平重寫器的每個檔案深度前綴正確解析它們
-- 英文和每個翻譯副本使用**相同**的 URL（網站根目錄下的共享圖片、共置資產、正規化後的 VitePress 網站路由）
-- VitePress 站內連結使用網站路由或帶有 `rewriteVitepressLinks: true` 的 `docs/guide/…` 路徑
+- 跨頁面連結是簡單的相對 Markdown 路徑和 `docsOutput.style = "flat"` (內建的重寫器會新增語系後綴)
+- 資產與原始檔並存，且平面重寫器的每個檔案深度前綴會正確解析它們
+- 英文和每個翻譯版本都使用**相同的** URL (網站根目錄下的共用圖片、並置資產、正規化器處理後的 VitePress 網站路由)
+- VitePress 站內連結使用網站路由或搭配 `rewriteVitepressLinks: true` 的 `docs/guide/…` 路徑
 - Nextra 與 Fumadocs 的頁內連結使用語系中性路由（`/guide/…`、`/docs/…`）或帶有 `rewriteNextraLinks` / `rewriteFumadocsLinks: true` 的內容根路徑
 
 <a id="full-config-example"></a>

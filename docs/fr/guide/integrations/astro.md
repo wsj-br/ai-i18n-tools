@@ -54,6 +54,8 @@ Les `label` de la barre latérale explicites, le `title` du site et les `social[
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Activer l'i18n dans un site existant
 
+La configuration initiale s'appuie sur l'invite de [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website#run-the-agent-prompt). La liste de contrôle ci-dessous correspond au même travail effectué manuellement.
+
 - `locales` dans la configuration Starlight, y compris une entrée `root` lorsque l'anglais ne doit pas être préfixé (`label` et `lang` requis).
 - `defaultLocale: 'root'` lorsque la langue par défaut est cette locale racine. N'omettez `defaultLocale` que si la valeur par défaut de Starlight correspond déjà.
 - Les pages anglaises restent dans `src/content/docs/` ; `translate-docs` écrit `src/content/docs/<locale>/`.
@@ -67,7 +69,7 @@ Les `label` de la barre latérale explicites, le `title` du site et les `social[
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## Astro simple (sites marketing et d'applications)
 
-Pour les sites marketing ou d'applications Astro statiques (pas Starlight), combinez le [routage i18n intégré d'Astro](https://docs.astro.build/en/guides/internationalization/) avec ai-i18n-tools. L'implémentation de référence est [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) : anglais à `/`, locales cibles à `/{locale}/`.
+Pour les sites marketing ou d'applications Astro statiques (pas Starlight), associez le [routage i18n intégré d'Astro](https://docs.astro.build/en/guides/internationalization/) à ai-i18n-tools. La configuration initiale s'appuie sur l'invite de [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website#run-the-agent-prompt). L'implémentation de référence est [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website) : l'anglais à `/`, les locales cibles à `/{locale}/`.
 
 La plupart des équipes utilisent un **hybride** de deux pipelines sur la même page :
 

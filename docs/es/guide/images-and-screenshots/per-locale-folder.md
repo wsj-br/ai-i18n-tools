@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Carpeta por configuración regional (reescritura de URL)
 
-Úselo para README/USER-GUIDE con `docsOutput.style = "flat"`, y para sitios de sistemas de documentación (`docsOutput.style = "doc-system"` o alias `"docusaurus"` / `"astro-starlight"`) y para `"vitepress"` / otros ajustes preestablecidos de sistemas de documentación que sirven capturas de pantalla desde un árbol de URL estático compartido. Detalles de reescritura de enlaces para VitePress: [Reescritura de enlaces — VitePress](/es/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+Usar para LÉAME/GUÍA DE USUARIO con `docsOutput.style = "flat"`, y para sitios de sistemas de documentación (`docsOutput.style = "doc-system"` o alias `"docusaurus"` / `"astro-starlight"`) y para `"vitepress"` / otros preajustes de sistemas de documentación que sirven capturas de pantalla desde un árbol de URL estático compartido. Detalles de reescritura de enlaces para VitePress: [Reescritura de enlaces — VitePress](/es/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Estructura de directorios

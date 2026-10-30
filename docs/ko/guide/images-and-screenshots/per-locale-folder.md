@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # 로케일별 폴더 (URL 재작성)
 
-`docsOutput.style = "flat"`가 포함된 README/USER-GUIDE, 그리고 공유 정적 URL 트리에서 스크린샷을 제공하는 문서 시스템 사이트(`docsOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`) 및 `"vitepress"` / 기타 문서 시스템 프리셋에 사용하세요. VitePress의 링크 재작성 세부 정보: [Link rewriting — VitePress](/ko/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+`docsOutput.style = "flat"`와 함께 README/사용자 가이드에 사용하고, 문서 시스템 사이트(`docsOutput.style = "doc-system"` 또는 별칭 `"docusaurus"` / `"astro-starlight"`) 및 공유 정적 URL 트리에서 스크린샷을 제공하는 `"vitepress"` / 기타 문서 시스템 사전 설정에 사용합니다. VitePress의 링크 재작성 세부 정보: [링크 재작성 — VitePress](/ko/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### 디렉터리 구조

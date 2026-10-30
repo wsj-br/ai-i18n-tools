@@ -21,7 +21,7 @@
 
 **概要：** `ai-i18n-tools write-heading-ids [options]`
 
-至少需要一个 `docs[]` 块。在每个块的 `contentPaths` 下收集 `.md` / `.mdx`（遵循 `.translate-ignore`）。默认情况下，在每个扁平 ATX `#` 标题之前紧邻插入 HTML 锚点行 `<a id="slug"></a>`（跳过围栏代码块内的标题）。任何形式的现有标题 ID（HTML 锚点行、经典 `{#id}` 后缀、MDX `{/* #id */}` 注释）都会被替换为所选样式；slug 始终从当前标题文本派生。使用 `--slug-style mdx-comment` 时，改为在标题行上写入 Docusaurus MDX 注释后缀（使用相同的 github 风格 slug 算法），并在存在前置 HTML 锚点时将其移除。`--remove` 会移除所有这些标题 ID 形式，且不写入任何替代内容。
+需要至少一个 `docs[]` 块。收集每个块的 `contentPaths` 下的 `.md` / `.mdx`（遵循 `.translate-ignore`）。默认情况下，在每个扁平的 ATX `#` 标题之前立即插入一个 HTML 锚点行 `<a id="slug"></a>`（跳过围栏代码块内的标题）。任何形式的现有标题 ID（HTML 锚点行、经典 `{#id}` 后缀、MDX `{/* #id */}` 注释）都将替换为所选样式；slug 始终从当前标题文本派生。当多个 HTML 锚点堆叠在一个标题上方时，只保留当前标题文本的锚点，并且指向已删除 ID 的仓库内 Markdown 链接将更新为保留的 ID。不直接位于标题上方的 `<a id>` 将保留在原位。使用 `--slug-style mdx-comment`，改为在标题行上写入 Docusaurus MDX 注释后缀（与 GitHub 风格的 slug 算法相同），并在存在时删除前面的 HTML 锚点块。`--remove` 会剥离所有这些标题 ID 形式，并且不写入任何内容来代替它们。
 
 更新源文件后，该命令还会遍历每个语言区域现有的已翻译标记文档（`docsOutput` 路径映射与 `translate-docs` 相同）。它会按文档顺序将 **源语言区域** 标题标识符复制到匹配的井号式标题上——它绝不会根据已翻译标题生成别名——并将标题中间的 `{#id}` / `{/* #id */}`（或零散的超文本标记语言 `<a id>`）移回 Docusaurus / 所选样式期望的形式。源语言是 `sourceLocale`，可以是任何语言。缺失的已翻译文件会被跳过。`--remove` 也会从这些已翻译文件中移除标题标识符，包括放错位置的行中间标记。
 
@@ -42,7 +42,7 @@
 
 扫描每个 `docs[]` 块下 `contentPaths` 中的 markdown/MDX（发现方式与 `translate-docs` 相同，遵循 `.translate-ignore`）：分隔符配对、未闭合的行内代码，以及当 `**`/`__` 包裹 `[text](url)` 链接时的 `STRONG_OUTSIDE_LINK`。
 
-将 `relativePath:line: [ISSUE_CODE] message` 行打印到 stderr；如果存在任何问题，退出码为 **1**。`--json`：在 stdout 上输出 JSON 报告。除非 `--no-cache`，否则在 `cacheDir` 中写入 `markdown_source_issues`。`-v` 在 stderr 行中添加源哈希。
+将 `relativePath:line: [ISSUE_CODE] message` 行打印到 stderr；如果发现任何问题，则以代码 **1** 退出。`--json`：在 stdout 上输出 JSON 报告。除非 `--no-cache`，否则将 `markdown_source_issues` 写入 `cacheDir`。`-v` 将源哈希添加到 stderr 行。
 
 **主要选项：** `-p` / `--path`、`-f` / `--file`、`--json`、`--no-cache`
 

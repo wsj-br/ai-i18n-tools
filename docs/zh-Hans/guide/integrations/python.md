@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-适用于 Python 应用程序的选择器。提取、目录和调用形式位于 [Python 应用程序](/zh-Hans/guide/ui-strings/python) 中。为现有单区域设置应用添加 i18n 的分步指南是 [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)，其中包含 [`i18n.py` 提示](/zh-Hans/guide/add-i18n-to-python#run-the-agent-prompt) 和 [Django / gettext 提示](/zh-Hans/guide/add-i18n-to-python#agent-prompt-django-gettext)。
+Python 应用程序的选择器。提取、目录和调用形状位于 [Python 应用程序](/zh-Hans/guide/ui-strings/python) 中。现有单语言环境应用程序的分步指南是 [为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)，其中包含一个 [代理提示](/zh-Hans/guide/add-i18n-to-python#run-the-agent-prompt)。Django、Flask-Babel 目录以及已使用 gettext 的应用程序有其自己的演练和提示：[为 Django / Python gettext 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 和 PyWebView 调用生成的 `i18n.py` 辅助程序（Python 3.10 或更高版本）。Django 保留 Django 的 gettext。存储库中附带了四个可运行的副本：`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 和 `examples/python-gettext`。Pyramid、Django、Tkinter、Qt 和 PyWebView 没有单独的示例目录。
 
@@ -29,7 +29,7 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 和 PyWebView �
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` 将语言环境写入会话状态和查询字符串中。为每个小部件提供一个固定的 `key`。详情：[Locale — Streamlit](/zh-Hans/guide/ui-strings/python#streamlit)。
+在 `st.set_page_config` 和任何其他 `t()` 之前调用 `set_locale`。在应用程序中绘制菜单，以便标签可以被翻译。当小组件绘制时，`streamlit_language_selector()` 将语言环境写入会话状态和查询字符串，这对于翻译后的页面标题来说太晚了，并且其标签保持英文。秘诀：[添加语言切换](/zh-Hans/guide/add-i18n-to-python#step-4-add-a-language-switch)。为每个小组件提供一个固定的 `key`。详情：[语言环境 — Streamlit](/zh-Hans/guide/ui-strings/python#streamlit)。
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 和 PyWebView �
 <a id="django"></a>
 ### Django
 
-保留 `gettext`、`ngettext` 和 `{% blocktrans %}`。`init -t ui-python-django` 与 Django 的 `locale/` 目录和 `django` 域匹配，并保持 Django 的运行时原样。详情：[区域设置 — Django](/zh-Hans/guide/ui-strings/python#django)。
+保留 `gettext`、`ngettext` 和 `{% blocktrans %}`。`init -t ui-python-django` 匹配 Django 的 `locale/` 目录和 `django` 域，并保留 Django 的运行时。演练：[为 Django / Python gettext 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)。详情：[语言环境 — Django](/zh-Hans/guide/ui-strings/python#django)。
 
 <a id="existing-gettext"></a>
 ### 现有的 gettext
 
-保留 `_()`、`gettext()` 和 `ngettext()`。将 `ui.gettext` 指向当前的目录树并运行 `extract`，然后运行 `translate-ui`。[python-gettext](/zh-Hans/examples#python-gettext) 示例仅限 gettext (`flatOutput: false`)。`init -t ui-python-gettext` 也写入扁平 JSON。详情：[区域设置 — 现有 gettext](/zh-Hans/guide/ui-strings/python#gettext)。
+保留 `_()`、`gettext()` 和 `ngettext()`。将 `ui.gettext` 指向当前目录树并运行 `extract`，然后运行 `translate-ui`。[python-gettext](/zh-Hans/examples#python-gettext) 示例仅支持 gettext (`flatOutput: false`)。`init -t ui-python-gettext` 也写入扁平 JSON。演练：[为 Django / Python gettext 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)。详情：[语言环境 — 现有 gettext](/zh-Hans/guide/ui-strings/python#gettext)。
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter、Qt 和 PyWebView

@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # 依地區設定的資料夾 (URL 重寫)
 
-用於帶有 `docsOutput.style = "flat"` 的 README/USER-GUIDE，以及用於文件系統網站（`docsOutput.style = "doc-system"` 或別名 `"docusaurus"` / `"astro-starlight"`），和用於從共享靜態 URL 樹提供螢幕截圖的 `"vitepress"` / 其他文件系統預設。VitePress 的連結重寫詳情：[連結重寫 — VitePress](/zh-Hant/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress)。
+用於搭配 `docsOutput.style = "flat"` 的 README/使用者指南，以及文件系統網站 (`docsOutput.style = "doc-system"` 或別名 `"docusaurus"` / `"astro-starlight"`)，以及 `"vitepress"` / 其他從共用靜態 URL 樹提供螢幕截圖的文件系統預設集。VitePress 的連結重寫詳情：[連結重寫 — VitePress](/zh-Hant/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress)。
 
 <a id="directory-layout"></a>
 ### 目錄佈局

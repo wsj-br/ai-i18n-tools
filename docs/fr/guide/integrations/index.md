@@ -8,7 +8,7 @@ Les intégrations de documentation utilisent le pipeline [Documents](/fr/guide/d
 <a id="which-guide-to-read"></a>
 ## Quel guide lire
 
-Le tableau de sélection, avec les modèles d'initialisation et les invites d'agent par framework, se trouve dans [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website#initialise-the-project). Frameworks Python : [Python](/fr/guide/integrations/python).
+Le tableau de sélection, avec un modèle d'initialisation par framework, se trouve dans [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website#initialise-the-project). L'invite de procédure guidée sur cette page active l'i18n du framework. Les pages d'intégration ci-dessous conservent les détails du catalogue shell. Frameworks Python : [Python](/fr/guide/integrations/python).
 
 <a id="shared-concepts"></a>
 ## Concepts partagés

@@ -15,7 +15,7 @@ Escolher o layout de diretório correto antes que qualquer captura de tela exist
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### Markdown com `docsOutput.style = "flat"` (README, USER-GUIDE)
 
-Armazene capturas de tela em um subdiretório codificado por localidade desde o início:
+Armazenar capturas de tela em um subdiretório com código de localidade desde o início:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ Defina `docs[].docsOutput.docsRoot` como a raiz dos arquivos escritos em `source
 
 O reescritor de links planos **não** é executado para `doc-system` (ao contrário de `"flat"`). `postProcessing.regexAdjustments` vê a URL original do Markdown de origem — normalmente um caminho absoluto ou relativo à raiz do site, como `/img/screenshots/en-GB/foo.png`.
 
-O layout de **pasta por localidade** se aplica quando as capturas de tela estão em uma árvore de URLs estática e compartilhada: use uma pasta com código de localidade desde o primeiro dia e uma regra `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` genérica (consulte [Configuração — doc-system](/pt-BR/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
+O layout de **pasta por localidade** se aplica quando as capturas de tela residem em uma árvore de URL estática compartilhada: use uma pasta com código de localidade desde o início e uma regra genérica `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` (consulte [Config — doc-system](/pt-BR/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)).
 
 As **capturas de tela colocalizadas** se aplicam quando os documentos traduzidos de cada localidade armazenam ativos ao lado do markdown (sem reescrita de URL). Seu script de captura de tela deve gravar PNGs em caminhos derivados de `{outputDir}`, `{locale}` e `{localeSubpath}` — o preset Docusaurus abaixo é o layout de referência.
 
@@ -78,7 +78,7 @@ Quando você adicionar i18n posteriormente, o script de captura de tela adota a 
 
 Equivalente a `docsOutput.style = "doc-system"` com `localeSubpath: ""` — páginas traduzidas ficam diretamente sob `{outputDir}/{locale}/`.
 
-Armazene capturas de tela em um caminho codificado por localidade desde o início:
+Armazenar capturas de tela em um caminho com código de localidade desde o início:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

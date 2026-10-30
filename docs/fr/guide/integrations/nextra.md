@@ -48,7 +48,7 @@ Connectez l'[internationalisation](https://nextra.site/docs/guide/i18n) Nextra :
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Activer l'i18n dans un site existant
 
-Un site Nextra 4 uniquement en anglais nécessite un dossier de locale, un paramètre de route et une configuration i18n de Next.js avant que `translate-docs` n'ait un endroit où écrire. L'[invite du dictionnaire](#agent-prompt-dictionary-and-routes) le fait en une seule passe. Liste de contrôle :
+Un site Nextra 4 en anglais seulement nécessite un dossier de locale, un paramètre de route et une configuration i18n de Next.js avant que `translate-docs` ait un endroit où écrire. La première configuration utilise l'invite sur [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website#run-the-agent-prompt). L'[invite du dictionnaire](#agent-prompt-dictionary-and-routes) est le suivi détaillé pour les mêmes routes et le même dictionnaire. Liste de contrôle :
 
 - Déplacez le MDX vers `content/en/` (l'anglais est un dossier de locale, pas la racine du contenu).
 - `i18n.locales` et `defaultLocale` dans `next.config`.
@@ -60,7 +60,7 @@ Un site Nextra 4 uniquement en anglais nécessite un dossier de locale, un param
 <a id="theme-strings"></a>
 ## Chaînes de thème
 
-Le chrome du thème Nextra (`editLink`, l'espace réservé à la recherche, le pied de page, etc.) n'est pas extrait du markdown. Rédigez les chaînes anglaises dans un module de dictionnaire TypeScript (par exemple `app/_dictionaries/en.ts`) et traduisez-le dans **`translate-docs`** :
+L'interface utilisateur du thème Nextra (`editLink`, texte d'espace réservé de recherche, pied de page, etc.) n'est pas extraite du Markdown. Rédigez les chaînes de caractères anglaises dans un module de dictionnaire TypeScript (par exemple `app/_dictionaries/en.ts`) et traduisez-les à l'intérieur de `translate-docs` :
 
 ```json
 {
@@ -88,7 +88,7 @@ L'outil écrit `app/_dictionaries/{locale}.ts` (modèle par défaut : `{dir}/{lo
 <a id="sidebar-labels-_metats"></a>
 ## Étiquettes de la barre latérale (`_meta.ts`)
 
-Nextra 3+ utilise des fichiers TypeScript `_meta.ts` / `_meta.tsx` pour la structure et les titres de la barre latérale. Lorsque `docsOutput.style` est `"nextra"`, **`translate-docs`** collecte automatiquement `_meta.ts`, `_meta.tsx` et `_meta.js` sous `docsRoot`, traduit les littéraux de chaîne dans la carte méta `export default { … }` et écrit des fichiers en miroir sous `content/{locale}/**`.
+Nextra 3+ utilise les fichiers TypeScript `_meta.ts` / `_meta.tsx` pour la structure et les titres de la barre latérale. Lorsque `docsOutput.style` est `"nextra"`, `translate-docs` collecte automatiquement `_meta.ts`, `_meta.tsx` et `_meta.js` sous `docsRoot`, traduit les littéraux de chaîne dans la carte méta `export default { … }`, et écrit des fichiers miroir sous `content/{locale}/**`.
 
 **Modèle recommandé :** conservez les littéraux anglais en ligne dans `content/en/**/_meta.ts` (comme pour [swr-site](https://github.com/shuding/nextra/tree/main/examples/swr-site)) :
 
@@ -285,7 +285,7 @@ plural or server-concurrency case you did not convert.
 
 Nextra sert des routes préfixées par le locale via Next.js `i18n` (`/guide/getting-started`, `/pt-BR/guide/getting-started`). **Les liens internes à la page doivent rester neutres par rapport au locale** (`/guide/getting-started`) afin que Next.js puisse préfixer automatiquement le locale actif.
 
-Activez le normaliseur intégré pour que `translate-docs` corrige automatiquement les liens dans chaque fichier traduit :
+Activez le normaliseur intégré afin que `translate-docs` corrige automatiquement les liens dans chaque fichier traduit :
 
 ```json
 "docsOutput": {
@@ -297,7 +297,7 @@ Activez le normaliseur intégré pour que `translate-docs` corrige automatiqueme
 
 `rewriteNextraLinks` est activé par défaut lorsque `style` est `"nextra"`.
 
-| Auteur dans la locale source | Après normalisation |
+| Rédiger dans la locale source | Après normalisation |
 |--------------------------|------------------|
 | `[Guide](content/en/guide/getting-started.mdx)` | `[Guide](/fr/guide/getting-started)` |
 | `[Guide](/fr/guide/getting-started.mdx)` | `[Guide](/fr/guide/getting-started)` |
@@ -305,8 +305,8 @@ Activez le normaliseur intégré pour que `translate-docs` corrige automatiqueme
 
 **Règles de rédaction**
 
-- Liens de documentation inter-pages : utilisez des **routes de site neutres par rapport au locale** (`/guide/…`) dans MDX anglais, ou des chemins `content/en/…` / `.mdx` relatifs et laissez le normalisateur les réécrire pendant `sync`.
-- Fichiers de dépôt en dehors de l'arborescence de contenu : utilisez des **URL complètes**.
+- Liens de documentation entre pages : utilisez des **routes de site indépendantes de la locale** (`/guide/…`) dans le MDX anglais, ou des chemins `content/en/…` / `.mdx` relatifs et laissez le normaliseur les réécrire pendant `sync`.
+- Fichiers du dépôt en dehors de l'arborescence de contenu : utilisez des **URL complètes**.
 - Ne modifiez **pas** manuellement les liens dans `content/<locale>/` — régénérez avec `sync` / `translate-docs`.
 
 <a id="optional-locale-proxy"></a>
@@ -324,7 +324,7 @@ export const config = {
 }
 ```
 
-**Codes de locale de site vs `sourceLocale` :** Nextra et Next.js utilisent des codes de route courts (`en`, `pt-BR`, `zh-Hans`) dans `next.config`, `content/{locale}/` et le cookie `NEXT_LOCALE`. `sourceLocale` dans `ai-i18n-tools.config.json` peut être une balise BCP-47 telle que `en-GB` pour la qualité de la traduction — cette balise n'est **pas** une route de site. Si le cookie du navigateur ou `Accept-Language` se résout en une balise en dehors de `i18n.locales` (par exemple `en-GB` lorsque seul `en` est configuré), le proxy standard de Nextra peut rediriger en boucle. La démo [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) enveloppe `nextra/locales` pour réinitialiser les cookies et chemins invalides au locale de site par défaut avant de déléguer.
+**Codes de locale du site vs `sourceLocale` :** Nextra et Next.js utilisent des codes de route courts (`en`, `pt-BR`, `zh-Hans`) dans `next.config`, `content/{locale}/` et le cookie `NEXT_LOCALE`. `sourceLocale` dans `ai-i18n-tools.config.json` peut être une balise BCP-47 telle que `en-GB` pour la qualité de la traduction — cette balise n'est **pas** une route de site. Si le cookie du navigateur ou `Accept-Language` se résout en une balise en dehors de `i18n.locales` (par exemple `en-GB` alors que seul `en` est configuré), le proxy standard de Nextra peut rediriger en boucle. La démo [examples/nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/) enveloppe `nextra/locales` pour réinitialiser les cookies et chemins invalides vers la locale de site par défaut avant de déléguer.
 
 Cela ne fonctionne pas avec les exportations statiques `output: 'export'`. Voir [Nextra i18n docs](https://nextra.site/docs/guide/i18n).
 

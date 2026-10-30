@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # प्रति-स्थानिक फ़ोल्डर (URL पुनर्लेखन)
 
-`docsOutput.style = "flat"` के साथ README/USER-GUIDE के लिए, और डॉक-सिस्टम साइटों (`docsOutput.style = "doc-system"` या उपनाम `"docusaurus"` / `"astro-starlight"`) के लिए और `"vitepress"` / अन्य डॉक-सिस्टम प्रीसेट के लिए उपयोग करें जो एक साझा स्थिर URL ट्री से स्क्रीनशॉट प्रदान करते हैं। VitePress के लिए लिंक-पुनर्लेखन विवरण: [लिंक पुनर्लेखन — VitePress](/hi/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress)।
+इसका उपयोग `docsOutput.style = "flat"` के साथ README/उपयोगकर्ता-मार्गदर्शिका के लिए, और दस्तावेज़-प्रणाली साइटों (`docsOutput.style = "doc-system"` या उपनाम `"docusaurus"` / `"astro-starlight"`) के लिए, और `"vitepress"` / अन्य दस्तावेज़-प्रणाली प्रीसेट के लिए करें जो एक साझा स्थिर URL ट्री से स्क्रीनशॉट प्रदान करते हैं। VitePress के लिए लिंक-पुनर्लेखन विवरण: [लिंक पुनर्लेखन — VitePress](/hi/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress)।
 
 <a id="directory-layout"></a>
 ### निर्देशिका लेआउट

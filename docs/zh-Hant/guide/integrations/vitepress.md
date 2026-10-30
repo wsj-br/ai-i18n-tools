@@ -48,7 +48,7 @@ docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在現有網站中啟用 i18n
 
-僅限英文的 VitePress 設定需要具備這些部分，翻譯後的頁面才能顯示。[代理提示](#wire-configmts-to-generated-theme-json-one-off) 涵蓋了主題目錄的部分。
+僅限英文的 VitePress 配置需要這些部分，翻譯頁面才能顯示。首次設定使用 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。[主題目錄提示](#wire-configmts-to-generated-theme-json-one-off) 是第一次 `sync` 之後的後續步驟，此時導覽字串仍內嵌在配置中。
 
 - 用於英文的 `locales.root` (`label`、`lang` 和 `themeConfig`)。
 - 每個目標語系一個 `locales[code]` 項目：`label`、`lang`、`link: '/${code}/'`，以及每個語系的 `title` / `description`。
@@ -58,7 +58,7 @@ docs/guide/quick-start.md  →  docs/de/guide/quick-start.md
 <a id="theme-strings"></a>
 ## 主題字串
 
-VitePress 導覽列、側邊欄、頁尾、搜尋預留位置和其他 `themeConfig` 標籤不會從 markdown 中擷取。設定 **`docsOutput.vitepressThemeCatalog`** 以便 **`translate-docs`** 從 `.vitepress/config.mts` 啟動來源語系目錄（當字串為內嵌時）並翻譯語系主題 JSON 檔案：
+VitePress 導覽、側邊欄、頁尾、搜尋預留位置及其他 `themeConfig` 標籤不會從 Markdown 中擷取。配置 `docsOutput.vitepressThemeCatalog`，以便 `translate-docs` 從 `.vitepress/config.mts` (當字串內嵌時) 啟動來源語言環境目錄，並翻譯語言環境主題 JSON 檔案：
 
 ```json
 {
@@ -82,8 +82,8 @@ VitePress 導覽列、側邊欄、頁尾、搜尋預留位置和其他 `themeCon
 }
 ```
 
-- **`catalogPath`** — 英文巢狀 JSON。來自 `config.mts` 的啟動僅在那些英文字串仍內嵌於設定中時適用。在 `themeConfigFor` 讀取目錄後，`mergeThemeCatalogs` 會保留現有檔案，而 `theme.en.json` 則是真實來源。當措辭變更時請編輯該檔案（或將英文放回 `config.mts` 中進行一次 `sync`）。重新命名鍵會變更區段雜湊值（`path`、一個 NUL 位元組，然後是值），因此下一次 `sync` 會為每個目標語系重新翻譯該字串一次。
-- **`outputPathTemplate`** (選用) — 每個語系的輸出；預設：與 `catalogPath` 相同的目錄，附帶 `theme.{locale}.json`。
+- `catalogPath` — 英文巢狀 JSON。從 `config.mts` 啟動僅在這些英文字串仍內嵌於配置中時適用。在 `themeConfigFor` 讀取目錄後，`mergeThemeCatalogs` 會保留現有檔案，而 `theme.en.json` 則是事實的來源。當措辭變更時編輯該檔案 (或將英文放回 `config.mts` 以進行一次 `sync`)。重新命名金鑰會變更區段雜湊 (`path`、一個 NUL 位元組，然後是值)，因此下一個 `sync` 會針對每個目標語言環境重新翻譯該字串一次。
+- `outputPathTemplate` (選用) — 每個語言環境的輸出；預設值：與 `catalogPath` 相同的目錄，帶有 `theme.{locale}.json`。
 
 `init -t ui-vitepress` 也會在這些檔案尚不存在時建立初始 `docs/.vitepress/config.mts` 與 `docs/.vitepress/i18n/theme.en.json`。設定檔透過 `loadTheme()` 載入目錄，並在 `themeConfigFor()` 中設定標準 VitePress i18n 標籤（包含 `langMenuLabel`）。
 
@@ -219,13 +219,13 @@ inline on purpose.
 
 下游專案有時會透過建置腳本或手動同步，將 `README.md` 複製到 VitePress 網站作為 `docs/index.md`。此模式在 GitHub 與文件網站之間共用同一個檔案，但連結規則不同：
 
-| 連結類型 | 在 GitHub 上可用 | 在 VitePress 上可用 |
+| 連結類型 | 在 GitHub 上運作 | 在 VitePress 上運作 |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | 是 | 否 — 請使用網站路由或讓正規化器在同步時改寫 |
+| `docs/guide/foo.md` | 是 | 否 — 使用網站路由或讓正規化器在同步期間重寫 |
 | `./LICENSE`, `examples/demo/` | 是（相對於儲存庫） | 否 — 請使用**完整網址** |
 | `/guide/foo` | 否 | 是 |
 
-**同步 README → index 的建議：** 在 `README.md` 中，對 VitePress 內容樹之外的任何項目（`LICENSE`、`examples/`、設定檔、代理上下文檔案）以及 `translated-docs/` 下的翻譯 README 副本，請使用**完整網址**。對站內文件連結，請使用 `docs/guide/…` 路徑（或英文文件中 `docs/` 下的網站路由）；同步腳本或 `rewriteVitepressLinks` 正規化器可將其轉換為 `/guide/…` 路由。
+**同步 README → index 的建議：** 在 `README.md` 中，對於 VitePress 內容樹之外的任何內容 (`LICENSE`、`examples/`、配置檔案、代理程式內容檔案) 以及 `translated-docs/` 下的翻譯 README 副本，請使用 **完整 URL**。對於站內文件連結，請使用 `docs/guide/…` 路徑 (或 `docs/` 下英文文件中的網站路由)；同步指令碼或 `rewriteVitepressLinks` 正規化器可以將這些轉換為 `/guide/…` 路由。
 
 **此儲存庫**將 `README.md` 與 `docs/index.md` 保留為**獨立檔案**：README 是簡潔的 GitHub/npm 到達頁面；`docs/index.md` 是文件網站的入口點，連結至 `/guide/` 與 `/reference/`。詳細指南位於 `docs/` 之下 — 請勿在 README 中重複冗長的參考資料。當共同事實變更時，請根據其受眾更新各個檔案。
 
@@ -242,7 +242,7 @@ inline on purpose.
 
 VitePress 從內容根目錄提供英文頁面，並從 `docs/<locale>/…` 提供各語系副本，但**頁面內連結必須使用站點路由**（`/guide/quick-start`、`/reference/configuration`）— 而非如 `docs/guide/quick-start.md` 或 `../guide/quick-start.md` 的存放庫相對路徑。這些 README 風格的路徑在 GitHub 中可用，但在 VitePress 內會失效（在開發環境與 GitHub Pages 上出現 404）。
 
-啟用內建正規化器，讓 `translate-docs` 自動修正每個翻譯檔案中的連結：
+啟用內建的標準化工具，讓 `translate-docs` 自動修正每個翻譯檔案中的連結：
 
 ```json
 "docsOutput": {
@@ -254,9 +254,9 @@ VitePress 從內容根目錄提供英文頁面，並從 `docs/<locale>/…` 提�
 
 當 `style` 為 `"vitepress"` 時，`rewriteVitepressLinks` 預設為啟用。
 
-| 在來源語系中編寫 | 經過正規化程式後 (來源語系根目錄輸出) | 經過正規化程式後 (已翻譯的 `docs/<locale>/` 輸出) |
+| 在來源語言環境中撰寫 | 正規化器之後 (來源語言環境根輸出) | 正規化器之後 (翻譯的 `docs/<locale>/` 輸出) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
-| `[JSON](/zh-Hant/guide/json)` | `[JSON](/zh-Hant/guide/json)` | `[JSON](/pt-BR/guide/json)` (語系前綴與資料夾相符) |
+| `[JSON](/zh-Hant/guide/json)` | `[JSON](/zh-Hant/guide/json)` | `[JSON](/pt-BR/guide/json)` (語言環境前綴符合資料夾) |
 | 內文中的 `[Quick start](/zh-Hant/guide/quick-start)` 或 `hero.actions[].link` | 不變（`/guide/quick-start`） | `/pt-BR/guide/quick-start` |
 | 地區索引上的 `[Home](./README.md)` | `/` | `/pt-BR/` |
 | `hero.image.src: /ai-i18n-tools_logo.svg` | 不變 | 不變（共享 `docs/public/` 資源） |
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-在 **`link`** 旁加上 **`activeMatch`** 前綴，以便導覽列高亮能在語系路由上運作（是 `/pt-BR/guide/` 而非 `/guide/`）。外部 URL 與共享的公開資源保持不變。
+將 `activeMatch` 與 `link` 一起作為前綴，以便導覽反白顯示在語言環境路由上運作 (`/pt-BR/guide/` 而非 `/guide/`)。外部 URL 和共用公共資產保持不變。
 
 在 VitePress 專案中將 `ai-i18n-tools` 新增為 **devDependency**（請參閱 `examples/vitepress-docs/package.json`），以便 `config.mts` 可以匯入 `prefixVitepressThemeConfigLinks`。主要的 ai-i18n-tools 文件網站直接從 `src/processors/…` 匯入，因為它使用 monorepo checkout 進行 dogfooding；獨立副本（degit）應使用 npm 套件。
 

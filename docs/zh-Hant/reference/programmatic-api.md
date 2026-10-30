@@ -1,7 +1,7 @@
 <a id="programmatic-api"></a>
 # 程式化 API
 
-所有公開的類型和類別都從套件根目錄導出。範例：從 Node.js 中執行 translate-UI 步驟，而不使用 CLI：
+所有公開類型和類別都從套件根目錄匯出。範例：從 Node.js 執行 translate-ui 步驟而不使用 CLI：
 
 ```ts
 import { loadI18nConfigFromFile, runTranslateUI } from 'ai-i18n-tools';
@@ -55,7 +55,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `resolveDocumentationOutputPath` | 解析已翻譯文件的輸出檔案路徑。 |
 | `Glossary` / `GlossaryMatcher` | 載入並套用翻譯詞彙表，包括可選術語 `Context` 註解。 |
 | `loadTranslationContext` / `computeGuidanceFingerprint` | 載入 `glossary.contextFiles` 和快取失效的指紋指引。 |
-| `runTranslateUI` | 程式化翻譯 UI 的進入點。 |
+| `runTranslateUI` | 程式化 translate-ui 進入點。 |
 | `writeInitConfigFile` | 寫入入門設定檔 JSON（`template`、`cwd`、一個必要的 `providerKey`，以及選用的 `{ withReadme }`）。傳回 `{ readmeBlockAdded, hasReadmeBlock }`。 |
 | `DEFAULT_INIT_MODELS_BY_PROVIDER` | 每個內建預設的起始 `translationModels`，由 `init -P` 使用。 |
 | `PROVIDER_PRESETS` | 內建提供者預設映射（`baseUrl`、`apiKeyEnv`）。 |

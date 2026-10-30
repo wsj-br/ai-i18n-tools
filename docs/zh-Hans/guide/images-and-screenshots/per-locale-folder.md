@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # 每个区域设置的文件夹（URL 重写）
 
-用于带有 `docsOutput.style = "flat"` 的 README/USER-GUIDE，以及用于从共享静态 URL 树提供截图的文档系统站点（`docsOutput.style = "doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"`）和 `"vitepress"` / 其他文档系统预设。VitePress 的链接重写详情：[链接重写 — VitePress](/zh-Hans/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress)。
+适用于带有 `docsOutput.style = "flat"` 的 README/用户指南，以及文档系统站点（`docsOutput.style = "doc-system"` 或别名 `"docusaurus"` / `"astro-starlight"`），以及 `"vitepress"` / 其他文档系统预设，这些预设从共享静态 URL 树提供屏幕截图。VitePress 的链接重写详情：[链接重写 — VitePress](/zh-Hans/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress)。
 
 <a id="directory-layout"></a>
 ### 目录布局

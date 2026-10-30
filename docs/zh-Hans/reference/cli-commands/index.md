@@ -13,6 +13,7 @@
 |---------|---------|
 | [`version`](setup#version) | 打印 CLI 版本和构建时间戳。 |
 | [`init`](setup#init) | 编写初始配置；`-t` 选择脚手架模板。 |
+| [`doctor`](setup#doctor) | 检查配置、路径、提供程序和环境是否已准备好进行翻译。 |
 | [`help`](setup#help) | 显示子命令的帮助信息。 |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | 清理过期/孤立/未配置区域设置的缓存行，并重新填充 markdown 问题。 |
 | [`clean-temp`](maintenance#clean-temp) | 查找并删除 `*.log`、`*.tmp` 和缓存备份。 |
-| [`purge-locale`](maintenance#purge-locale) | 移除指定区域设置的缓存行和生成的产物。 |
+| [`purge-locale`](maintenance#purge-locale) | 移除指定区域设置的缓存行和生成的工件。 |
 
 <a id="dashboard--glossarytools"></a>
 ### [仪表板与术语表](tools)
@@ -91,6 +92,7 @@
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

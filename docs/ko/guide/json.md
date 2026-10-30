@@ -60,7 +60,7 @@ ai-i18n-tools init -t ui-json-bundles -P ollama
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | 동작 |
 |-------------|-----------|

@@ -12,7 +12,7 @@ Ce pipeline prend en charge les projets JS/TS (composants client et serveur Reac
 | --- | --- |
 | JS/TS avec des chaînes de caractères codées en dur, pas encore de `t()` | [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` déjà dans le code source | [Connecter i18next](/fr/guide/ui-strings/i18next-runtime) |
-| Python (`t()`, `_()`, gettext, Jinja, Django) | [Applications Python](/fr/guide/ui-strings/python). Initialisation : `ui-python`, `ui-python-gettext`, `ui-python-flask` ou `ui-python-django`. Assistant : `i18n.py`. Pour ajouter des locales à une application existante, consultez [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python). |
+| Python (`t()`, `_()`, gettext, Jinja, Django) | [Applications Python](/fr/guide/ui-strings/python). Initialisation : `ui-python`, `ui-python-gettext`, `ui-python-flask`, ou `ui-python-django`. Assistant : `i18n.py`. Pour ajouter des locales à une application existante, voir [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python), ou [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext) lorsque l'application utilise gettext. |
 | HTML simple (pas de `t()` dans le balisage) | [Applications HTML simples](/fr/guide/ui-strings/plain-html) |
 | Site marketing Astro (hybride) | [Site web Astro](/fr/guide/ui-strings/astro-website) |
 | Règles `t()`, interpolation, pluriels | [Appels t() et pluriels](/fr/guide/ui-strings/t-calls-and-plurals) |
@@ -65,14 +65,14 @@ Le scanner est configurable : ajoutez des noms de fonctions personnalisés via `
 ai-i18n-tools translate-ui
 ```
 
-Lit `strings.json`, envoie des lots aux modèles sur le fournisseur LLM actif pour chaque locale cible et écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) dans `ui.flatOutputDir`. La sélection du modèle utilise la chaîne d'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)). Au sein d'une locale, jusqu'à `uiBatchConcurrency` lots s'exécutent en même temps (valeur par défaut : **2** ; voir [Configuration — uiBatchConcurrency](/fr/reference/configuration#uibatchconcurrency-optional)). `-j` ne parallélise toujours que les locales cibles.
+Lit `strings.json`, envoie des lots aux modèles sur le fournisseur LLM actif pour chaque locale cible, écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) dans `ui.flatOutputDir`. La sélection du modèle utilise la chaîne d'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)). Au sein d'une locale, jusqu'à `uiBatchConcurrency` lots s'exécutent simultanément (par défaut **2** ; voir [Configuration — uiBatchConcurrency](/fr/reference/configuration#uibatchconcurrency-optional)). `-j` ne parallélise toujours que les locales cibles.
 
 <a id="translations-database-stringsjson"></a>
 ### Base de données des traductions (`strings.json`)
 
 Pour chaque entrée, `translate-ui` stocke l'**ID du modèle du fournisseur actif** qui a traduit avec succès chaque locale dans un objet `models` facultatif (mêmes clés de locale que `translated`). Les chaînes éditées dans le tableau de bord de traduction sont marquées avec la valeur sentinelle `user-edited` dans `models` pour cette locale. Les fichiers plats par locale sous `ui.flatOutputDir` restent uniquement **chaîne source → traduction** ; ils n'incluent pas `models` (ainsi les bundles d'exécution restent inchangés).
 
-> **Remarque :** Les modifications du tableau de bord apportées aux chaînes d'interface utilisateur se trouvent dans `strings.json`, et non dans le cache de documentation SQLite. Exécutez `sync` ou `translate-ui` (sans indicateur spécial) pour réécrire les fichiers de locale plats à partir du catalogue — `--force-update` n'est **pas** transmis à l'étape de l'interface utilisateur. Évitez `--force` sur les commandes d'interface utilisateur après des modifications manuelles : cela retraduit chaque entrée et peut écraser vos lignes `user-edited`. Les lignes de catalogue dont la traduction stockée échoue à la vérification du système d'écriture de la locale (par exemple, l'hindi romanisé pour `hi`) sont traitées comme manquantes et retraduites sans `--force`.
+> **Remarque :** Les modifications du tableau de bord aux chaînes d'interface utilisateur résident dans `strings.json`, et non dans le cache de documentation SQLite. Exécutez simplement `sync` ou `translate-ui` (sans drapeau spécial) pour réécrire les fichiers de locale plats à partir du catalogue — `--force-update` n'est **pas** transmis à l'étape de l'interface utilisateur. Évitez `--force` sur les commandes d'interface utilisateur après des modifications manuelles : cela re-traduit chaque entrée et peut écraser vos lignes `user-edited`. Les lignes du catalogue dont la traduction stockée échoue à la vérification du système d'écriture de la locale (par exemple, l'hindi romanisé pour `hi`) sont traitées comme manquantes et re-traduites sans `--force`.
 
 <a id="step-4-use-the-output-in-your-app"></a>
 ## Étape 4 : Utiliser la sortie dans votre application
@@ -90,7 +90,7 @@ Pour chaque entrée, `translate-ui` stocke l'**ID du modèle du fournisseur acti
 <a id="per-locale-model-overrides"></a>
 ### Substitutions de modèle par locale
 
-Certains modèles traduisent mieux certaines langues que d'autres. Par exemple, les modèles qwen et z-ai ont tendance à bien fonctionner avec les langues asiatiques. Ajoutez des entrées `providers.<active>.localeModels` pour fournir une liste de modèles prioritaire pour chaque locale BCP-47. Ces listes sont essayées avant `uiModels` et `translationModels` pour cette locale. Les balises de locale correspondent sans distinction de casse (`zh-cn` et `ZH-CN` sont équivalentes). S'il n'y a pas d'entrée correspondante, l'outil utilise l'ordre par défaut de `uiModels` et `translationModels`. Le même mécanisme de `localeModels` s'applique à la traduction de documents, JSON et SVG.
+Certains modèles traduisent mieux certaines langues que d'autres. Par exemple, les modèles qwen et z-ai ont tendance à bien fonctionner avec les langues asiatiques. Ajoutez des entrées `providers.<active>.localeModels` pour fournir une liste de modèles priorisée pour chaque locale BCP-47. Ces listes sont essayées avant `uiModels` et `translationModels` pour cette locale. Les balises de locale correspondent sans tenir compte de la casse (`zh-cn` et `ZH-CN` sont équivalentes). Sans entrée correspondante, l'outil utilise l'ordre par défaut `uiModels` et `translationModels`. Le même mécanisme `localeModels` s'applique à la traduction de documents, JSON et SVG.
 
 <a id="exporting-to-xliff-20"></a>
 ### Exportation vers XLIFF 2.0

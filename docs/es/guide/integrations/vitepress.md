@@ -48,7 +48,7 @@ Conecte la [internacionalización](https://vitepress.dev/guide/i18n) de VitePres
 <a id="enable-i18n-in-an-existing-site"></a>
 ### Habilitar i18n en un sitio existente
 
-Una configuración de VitePress solo en inglés necesita estas partes antes de que aparezcan las páginas traducidas. La [solicitud del agente](#wire-configmts-to-generated-theme-json-one-off) cubre la mitad del catálogo de temas.
+Una configuración de VitePress solo en inglés necesita estas piezas antes de que aparezcan las páginas traducidas. La configuración inicial utiliza la indicación en [Añadir i18n a un sitio web o de documentación](/es/guide/add-i18n-to-website#run-the-agent-prompt). La [indicación del catálogo del tema](#wire-configmts-to-generated-theme-json-one-off) es el seguimiento después del primer `sync`, cuando las cadenas de navegación aún están en línea en la configuración.
 
 - `locales.root` para inglés (`label`, `lang` y `themeConfig`).
 - Una entrada de `locales[code]` por cada configuración regional de destino: `label`, `lang`, `link: '/${code}/'` y `title` / `description` por configuración regional.
@@ -58,7 +58,7 @@ Una configuración de VitePress solo en inglés necesita estas partes antes de q
 <a id="theme-strings"></a>
 ## Cadenas de tema
 
-La navegación, la barra lateral, el pie de página, el marcador de posición de búsqueda y otras etiquetas `themeConfig` de VitePress no se extraen de markdown. Configure **`docsOutput.vitepressThemeCatalog`** para que **`translate-docs`** inicialice el catálogo de la configuración regional de origen desde `.vitepress/config.mts` (cuando las cadenas están en línea) y traduzca los archivos JSON del tema de la configuración regional:
+Las etiquetas de navegación, barra lateral, pie de página, marcador de posición de búsqueda y otras etiquetas `themeConfig` de VitePress no se extraen de markdown. Configure `docsOutput.vitepressThemeCatalog` para que `translate-docs` inicialice el catálogo de la configuración regional de origen desde `.vitepress/config.mts` (cuando las cadenas están en línea) y traduzca los archivos JSON del tema de la configuración regional:
 
 ```json
 {
@@ -82,8 +82,8 @@ La navegación, la barra lateral, el pie de página, el marcador de posición de
 }
 ```
 
-- **`catalogPath`** — JSON anidado en inglés. La inicialización desde `config.mts` se aplica solo mientras esas cadenas en inglés sigan en línea en la configuración. Después de que `themeConfigFor` lea el catálogo, `mergeThemeCatalogs` mantiene el archivo existente y `theme.en.json` es la fuente de la verdad. Edite ese archivo cuando cambie la redacción (o vuelva a poner el inglés en `config.mts` para un `sync`). Cambiar el nombre de una clave cambia el hash del segmento (`path`, un byte NUL y luego el valor), por lo que el siguiente `sync` vuelve a traducir esa cadena una vez para cada configuración regional de destino.
-- **`outputPathTemplate`** (opcional) — salidas por configuración regional; predeterminado: el mismo directorio que `catalogPath` con `theme.{locale}.json`.
+- `catalogPath` — JSON anidado en inglés. La inicialización desde `config.mts` se aplica solo mientras esas cadenas en inglés aún están en línea en la configuración. Después de que `themeConfigFor` lee el catálogo, `mergeThemeCatalogs` mantiene el archivo existente y `theme.en.json` es la fuente de la verdad. Edite ese archivo cuando cambie la redacción (o vuelva a poner el inglés en `config.mts` para un `sync`). Cambiar el nombre de una clave cambia el hash del segmento (`path`, un byte NUL y luego el valor), por lo que el siguiente `sync` vuelve a traducir esa cadena una vez para cada configuración regional de destino.
+- `outputPathTemplate` (opcional) — salidas por configuración regional; predeterminado: el mismo directorio que `catalogPath` con `theme.{locale}.json`.
 
 `init -t ui-vitepress` también genera `docs/.vitepress/config.mts` y `docs/.vitepress/i18n/theme.en.json` iniciales cuando esos archivos aún no existen. La configuración carga el catálogo a través de `loadTheme()` y conecta las etiquetas i18n estándar de VitePress (incluido `langMenuLabel`) en `themeConfigFor()`.
 
@@ -221,11 +221,11 @@ Los proyectos descendentes a veces copian `README.md` en el sitio de VitePress c
 
 | Tipo de enlace | Funciona en GitHub | Funciona en VitePress |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | Sí | No — use rutas del sitio o deje que el normalizador reescriba durante la sincronización |
+| `docs/guide/foo.md` | Sí | No — use las rutas del sitio o deje que el normalizador reescriba durante la sincronización |
 | `./LICENSE`, `examples/demo/` | Sí (relativo al repositorio) | No — use **URL completas** |
 | `/guide/foo` | No | Sí |
 
-**Recomendación para README sincronizado → índice:** En `README.md`, use **URL completas** para cualquier cosa fuera del árbol de contenido de VitePress (`LICENSE`, `examples/`, archivos de configuración, archivos de contexto del agente) y para copias traducidas de README en `translated-docs/`. Use rutas `docs/guide/…` (o rutas del sitio en documentos en inglés en `docs/`) para enlaces de documentación dentro del sitio; un script de sincronización o el normalizador `rewriteVitepressLinks` puede convertirlos a rutas `/guide/…`.
+**Recomendación para README sincronizado → índice:** En `README.md`, use **URL completas** para cualquier cosa fuera del árbol de contenido de VitePress (`LICENSE`, `examples/`, archivos de configuración, archivos de contexto del agente) y para copias traducidas de README bajo `translated-docs/`. Use rutas `docs/guide/…` (o rutas del sitio en la documentación en inglés bajo `docs/`) para enlaces de documentación dentro del sitio; un script de sincronización o el normalizador `rewriteVitepressLinks` puede convertir esos a rutas `/guide/…`.
 
 **Este repositorio** mantiene `README.md` y `docs/index.md` como **archivos independientes**: README es una página de inicio concisa de GitHub/npm; `docs/index.md` es el punto de entrada del sitio de documentación que enlaza con `/guide/` y `/reference/`. Las guías detalladas se encuentran en `docs/`; no duplique material de referencia extenso en el README. Actualice cada uno según su audiencia cuando cambien los hechos compartidos.
 
@@ -242,7 +242,7 @@ Ejemplos de enlaces para un README sincronizado en otro proyecto:
 
 VitePress sirve páginas en inglés desde la raíz del contenido y copias de la configuración regional desde `docs/<locale>/…`, pero **los enlaces dentro de la página deben usar rutas del sitio** (`/guide/quick-start`, `/reference/configuration`) — no rutas relativas al repositorio como `docs/guide/quick-start.md` o `../guide/quick-start.md`. Esas rutas de estilo README funcionan en GitHub pero se rompen dentro de VitePress (404 en desarrollo y en GitHub Pages).
 
-Habilite el normalizador incorporado para que `translate-docs` corrija los enlaces en cada archivo traducido automáticamente:
+Habilite el normalizador integrado para que `translate-docs` corrija los enlaces en cada archivo traducido automáticamente:
 
 ```json
 "docsOutput": {
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-Prefije **`activeMatch`** junto con **`link`** para que el resaltado de navegación funcione en las rutas de configuración regional (`/pt-BR/guide/` no `/guide/`). Las URL externas y los activos públicos compartidos permanecen sin cambios.
+Prefije `activeMatch` junto con `link` para que el resaltado de navegación funcione en las rutas de la configuración regional (`/pt-BR/guide/` no `/guide/`). Las URL externas y los activos públicos compartidos permanecen sin cambios.
 
 Añada `ai-i18n-tools` como **devDependency** en el proyecto VitePress (consulte `examples/vitepress-docs/package.json`) para que `config.mts` pueda importar `prefixVitepressThemeConfigLinks`. El sitio de documentación principal de ai-i18n-tools importa directamente desde `src/processors/…` porque utiliza el monorepo; las copias independientes (degit) deben usar el paquete npm.
 

@@ -32,7 +32,7 @@
 <a id="ui-strings-ssg"></a>
 ## UI 字串 (SSG)
 
-使用 `init -t ui-astro-website -P ollama` 建立 UI 擷取鷹架，然後在您也翻譯頁面 HTML 時，合併 `docs[]` 區塊 (請參閱[剖析並取代頁面](#pages-parse-and-replace))。也請翻譯儲存庫的 README：`init -t ui-astro-website -P ollama --with-readme`。請參閱[將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。在 TypeScript 模組中將文案包裝在 `t('…')` 中，並在 frontmatter 中包裝在 `.astro` 中 (以及當您偏好使用 UI 字串而非重複的語系頁面時，在範本 `{expression}` 區塊中)。頁面 HTML 不需要 `t()`：`translate-docs` 會複製它。[JS/TS 提示](/zh-Hant/guide/add-i18n-to-js#run-the-agent-prompt) 適用於那些 frontmatter 和資料檔案，但不包括 i18next 的安裝和啟動程序 — Astro 在建置期間使用 `makeT` 解析 `t`，而非使用 i18next。
+使用 `init -t ui-astro-website -P ollama` 搭建 UI 提取功能，然後在您也翻譯頁面 HTML 時合併一個 `docs[]` 區塊（請參閱 [解析並替換頁面](#pages-parse-and-replace))。也翻譯儲存庫的 README：`init -t ui-astro-website -P ollama --with-readme`。請參閱 [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。將文案包裝在 TypeScript 模組中的 `t('…')` 和 `.astro` 前置內容中（當您偏好 UI 字串而非重複的地區設定頁面時，也可包裝在範本 `{expression}` 區塊中）。頁面 HTML 不需要 `t()`：`translate-docs` 會複製它。[JS/TS 提示](/zh-Hant/guide/add-i18n-to-js#run-the-agent-prompt) 適用於這些前置內容和資料檔案，除了 i18next 的安裝和啟動之外 — Astro 會在建置時使用 `makeT` 解析 `t`，而不是使用 i18next。
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama

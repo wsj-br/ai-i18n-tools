@@ -40,7 +40,7 @@ Ein Blatt+Locale wird übersetzt, wenn das Locale im Blatt fehlt (fehlend), oder
 
 **Wichtige Optionen:** `-l` / `--locale`, `--ui-block`, `--dry-run`, `-j` / `--concurrency`
 
-`[paths...]`: zu scannende Dateien/Verzeichnisse/Globs (Standard: das `sourceRoots` des Blocks). `-l` / `--locale`: Komma-getrennte Ziel-Locales zum Füllen (Standard: das konfigurierte `targetLocales` des Blocks). `--ui-block`: nullbasierter Index, Beschreibung oder `stringsJson`-Pfad (Standard: Block 0). `-j` parallelisiert Locales.
+`[paths...]`: Dateien/Verzeichnisse/Globs zum Scannen (Standard: der `sourceRoots` des Blocks). `-l` / `--locale`: kommagetrennte Ziellokale zum Befüllen (Standard: die konfigurierten `targetLocales` des Blocks). `--ui-block`: nullbasierter Index, Beschreibung oder `stringsJson`-Pfad (Standard: Block 0). `-j` parallelisiert Lokale.
 
 **Siehe auch:** [migrate-intlayer](#migrate-intlayer), [Migration von Intlayer](/de/guide/migrating-from-intlayer)
 
@@ -79,7 +79,7 @@ Schreibt `ui-languages.json` nach `languagesManifestPath` (Standard: `{ui.flatOu
 
 **Schlüsseloptionen:** `-l` / `--locale`, `--force`, `--dry-run`, `-j` / `--concurrency`
 
-`-l` / `--locale`: durch Kommas getrennte Ziellokale (Standard: Konfiguration `targetLocales` minus `sourceLocale`). `--force`: alle Einträge pro Gebietsschema neu übersetzen (bestehende Übersetzungen ignorieren). `--dry-run`: keine Schreibvorgänge, keine API-Aufrufe. `-j` parallelisiert **Gebietsschemata**; innerhalb jedes Gebietsschemas parallelisiert die Konfiguration `uiBatchConcurrency` (Standard **2**) LLM-Batches (Blöcke von 50 Zeichenfolgen, dann Pluralgruppen). Es gibt kein CLI-Flag für `uiBatchConcurrency`.
+`-l` / `--locale`: kommagetrennte Ziellokale (Standard: Konfiguration `targetLocales` minus `sourceLocale`). `--force`: alle Einträge pro Lokale neu übersetzen (bestehende Übersetzungen ignorieren). `--dry-run`: keine Schreibvorgänge, keine API-Aufrufe. `-j` parallelisiert **Lokale**; innerhalb jeder Lokale parallelisiert die Konfiguration `uiBatchConcurrency` (Standard **2**) LLM-Batches (Blöcke von 50 Zeichenketten, dann Pluralgruppen). Es gibt kein CLI-Flag für `uiBatchConcurrency`.
 
 ---
 
@@ -97,7 +97,7 @@ Extrahieren und dann UI-Strings übersetzen (erfordert `features.translateUIStri
 
 **Synopsis:** `ai-i18n-tools proofread-ui [-l <code>] [--chunk <n>] [--dry-run] [--json] [-j <n>]`
 
-Führt zuerst `extract` aus (erfordert `features.translateUIStrings`), damit jeder ausgewählte Katalog mit der Quelle übereinstimmt, anschließend erfolgt eine LLM-Überprüfung der UI-Strings des Quell-Locales (Rechtschreibung, Grammatik). `--ui-block` beschränkt Extraktion und Überprüfung auf einen Block. Terminologiehinweise stammen ausschließlich aus der `glossary.userGlossary`-CSV (gleicher Geltungsbereich wie `translate-ui` — UI-Kataloge werden nicht zurückgespeist, sodass fehlerhafte Texte nicht im Glossar verfestigt werden). Verwendet den aktiven LLM-Provider (dessen Umgebungsvariable für den API-Schlüssel).
+Führt zuerst `extract` aus (erfordert `features.translateUIStrings`), damit jeder ausgewählte Katalog der Quelle entspricht, führt dann eine LLM-Überprüfung von UI-Zeichenketten der Quelllokale durch (Rechtschreibung, Grammatik). `--ui-block` begrenzt Extraktion und Überprüfung auf einen Block. Terminologiehinweise stammen nur aus `glossary.userGlossary` CSV (gleicher Umfang wie `translate-ui` – UI-Kataloge werden nicht zurückgeführt, sodass schlechte Texte nicht als Glossar verstärkt werden). Verwendet den aktiven LLM-Anbieter (dessen API-Schlüssel-Umgebungsvariable).
 
 Beendet mit **1** bei Fehlern (fehlendes Feature-Flag, Extraktionsfehler, fehlender/ungültiger Katalog, fehlender API-Schlüssel oder wenn alle Batches fehlschlagen); beendet mit **0**, wenn die Ausführung erfolgreich abgeschlossen wird (Ergebnisse sind informativ). Schreibt `proofread-ui-results_<timestamp>.log` unter `cacheDir` als menschenlesbaren Bericht (Zusammenfassung, Probleme, nicht überprüfte Zeilen und OK-Zeilen für jeden String); das Terminal gibt nur die Zählwerte der Zusammenfassung und Probleme aus (keine `[ok]`-Zeilen pro String). Wenn ein Batch fehlschlägt oder eine Modellantwort kürzer als der Batch ist und keinen verwendbaren `index` für jeden Slot enthält, werden die entsprechenden Strings als nicht überprüft gezählt. Die zugehörigen Probleme werden verworfen, damit ein zu kurzes Array nicht auf die falschen Strings angewendet wird. Gibt den Dateinamen des Protokolls in der letzten Zeile aus. Mit `--json` wird die menschenlesbare Ausgabe an stderr geleitet. Links verwenden `path:line`, wie die Link-Schaltfläche für Strings in der Dashboard-UI.
 

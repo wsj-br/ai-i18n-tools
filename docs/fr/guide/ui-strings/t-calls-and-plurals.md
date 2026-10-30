@@ -50,8 +50,8 @@ Si votre projet utilise un utilitaire d'interpolation personnalisé (par exemple
 
 **Vous n'écrivez pas les formes plurielles à la main.** Dans le code source, écrivez le message une fois et passez deux choses dans le deuxième argument :
 
-1. **`plurals: true`** — indique à l'extraction et à `translate-ui` que cet appel est un groupe de pluriels cardinaux.
-2. **`count`** — le nombre qu'i18next utilise au moment de l'exécution pour choisir la bonne forme.
+1. `plurals: true` — indique à extract et `translate-ui` que cet appel est un groupe de pluriel cardinal.
+2. `count` — le nombre qu'i18next utilise à l'exécution pour choisir la bonne forme.
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ Lorsque vous exécutez `translate-ui`, **ai-i18n-tools appelle un LLM** pour gé
 
 **Validation :** Si le message contient **deux ou plusieurs** espaces réservés <code v-pre>{{…}}</code> distincts, **l'un d'entre eux doit être** <code v-pre>{{count}}</code> (l'axe pluriel). Sinon, `extract` **échoue** avec un message clair de fichier/ligne.
 
-Après que le LLM a renvoyé les formes CLDR, `translate-ui` vérifie également chaque forme par rapport au **littéral original du développeur** : chaque espace réservé source doit apparaître dans chaque catégorie (y compris `one`), les formes ne doivent pas inventer de nouveaux jetons <code v-pre>{{…}}</code> / `%d` / `{n}`, et les sources uniquement nominales (pas de <code v-pre>{{count}}</code> et pas de chiffres, par exemple des étiquettes d'unité comme `Minutes`) doivent rester uniquement nominales. Les non-concordances rejettent la réponse de ce modèle et réessayent le modèle suivant dans la liste de secours.
+Une fois que le LLM a renvoyé les formes CLDR, `translate-ui` vérifie également chaque forme par rapport au **littéral développeur original** : chaque espace réservé source doit apparaître dans chaque catégorie (y compris `one`), les formes ne doivent pas inventer de nouveaux jetons <code v-pre>{{…}}</code> / `%d` / `{n}`, et les sources composées uniquement de noms (sans <code v-pre>{{count}}</code> et sans chiffres, par exemple les étiquettes d'unité comme `Minutes`) doivent rester composées uniquement de noms. Les non-correspondances rejettent la réponse de ce modèle et relancent le modèle suivant dans la liste de secours.
 
 **Deux comptes indépendants** (par exemple, sections et pages) ne peuvent pas partager un seul message pluriel — utilisez **deux** appels `t()` (chacun avec `plurals: true` et son propre `count`) et concaténez dans l'interface utilisateur.
 

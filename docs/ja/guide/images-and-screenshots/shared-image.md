@@ -3,14 +3,14 @@
 
 すべてのロケールで単一の画像が共有される場合（ロケールごとのバリアントがない場合）に使用します。
 
-- **`docsOutput.style = "flat"`** — フラットリンクリライターは出力ファイルごとに深度プレフィックスを計算するため、ソースファイルの隣にある相対アセット（例: `docs/figure.png` が `docs/page.md` から `figure.png` として参照される）は、翻訳されたすべての出力で正しく解決されます — `postProcessing.regexAdjustments` ルールは不要です。ソースファイルがサブディレクトリにある場合は、`flatPreserveRelativeDir: true` を有効にして出力パスがソースツリーを保持するようにします（[ファイルごとの深度プレフィックス](/ja/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir)を参照）。
-- **`docsOutput.style = "vitepress"`**（およびリノーマライザーを備えるその他のドキュメントシステムプリセット） — `/translation-dashboard.png` のようなサイトルート絶対パスは、URLがすべてのロケールで同一の場合、変更されずにそのまま残ります — `regexAdjustments` ルールは不要です。
+- `docsOutput.style = "flat"` — フラットリンク書き換えツールは出力ファイルごとに深さプレフィックスを計算するため、ソースファイルの隣にある相対アセット（例: `docs/page.md`から`figure.png`として参照される`docs/figure.png`）は、すべての翻訳された出力で正しく解決されます。`postProcessing.regexAdjustments`ルールは不要です。ソースファイルがサブディレクトリにある場合は、出力パスがソースツリーを保持するように`flatPreserveRelativeDir: true`を有効にします（[ファイルごとの深さプレフィックス](/ja/guide/images-and-screenshots/link-rewriting#per-file-depth-prefix-with-flatpreserverelativedir)を参照）。
+- `docsOutput.style = "vitepress"`（およびリンク正規化機能を持つ他のドキュメントシステムプリセット）— `/translation-dashboard.png`のようなサイトルート絶対パスは、URLがすべてのロケールで同一である場合、変更されません。`regexAdjustments`ルールは不要です。
 
 **フラットの例:** あるプロジェクトが `docs/guide/quick-start.md` を `translated-docs/docs/guide/quick-start.<locale>.md` に翻訳します。これは `flatPreserveRelativeDir: true` を前提としており、`docs/guide/quick-start.md` は `translated-docs/docs/guide/quick-start.<locale>.md` に出力されます（`translated-docs/quick-start.<locale>.md` ではありません）。隣接する画像 `docs/translation-dashboard.png` は `quick-start.md` から `../translation-dashboard.png` として参照されます。リライターは出力ファイルのディレクトリからソースディレクトリまでのファイルごとのプレフィックス（`../../docs/`）を計算し、`../../docs/translation-dashboard.png` を生成します。`translated-docs/docs/guide/` からは、`docs/translation-dashboard.png` に正しく解決されます。
 
-以下の場合は `postProcessing` ルールが依然として必要です:
-- アセットが **`docsOutput.style = "flat"`** で絶対URLとして参照されている場合（例: `/img/figure.png`） — フラットリライターは相対パスのみを処理します
-- その他の理由でアセットURLを変更したい場合（例: CDNへの切り替え）
+`postProcessing`ルールは、次の場合に依然として必要です。
+- アセットが`docsOutput.style = "flat"`で絶対URLを介して参照されている場合（例: `/img/figure.png`）— フラット書き換えツールは相対パスのみを処理します
+- その他の理由でアセットのURLを変更したい場合（例: CDNへの切り替え）
 
 <a id="implementation-example"></a>
 ### 実装例

@@ -9,8 +9,8 @@
 ### `docsOutput.style = "flat"`일 때의 두 단계 흐름
 
 1. **소스 URL** — 번역된 마크다운의 이미지 경로(세그먼트 재조립 후)
-2. **플랫 링크 재작성기** — 깊이 접두어를 추가(`../`, `../../docs/`, …)
-3. **`regexAdjustments`** — 로케일 폴더 세그먼트를 교체(`en-GB` → `${translatedLocale}`)
+2. **플랫 링크 재작성기** — 깊이 접두사(`../`, `../../docs/`, …)를 앞에 추가합니다
+3. `regexAdjustments` — 로케일 폴더 세그먼트(`en-GB` → `${translatedLocale}`)를 교체합니다
 4. **출력 URL** — 번역된 파일에 기록되는 최종 경로
 
 `outputDir: "translated-docs/"`이고 소스 `README.md`이 리포지토리 루트에 있는 예시:
@@ -25,12 +25,12 @@
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### VitePress 링크 정규화 도구 (`style: "vitepress"`)
 
-`docsOutput.rewriteVitepressLinks`가 `true`일 때(기본값은 `style`가 `"vitepress"`일 때), 세그먼트 재조립 후에 별도의 정규화 도구가 실행됩니다(플랫 재작성기 대신). 이는 영어가 콘텐츠 루트에 있고 로케일이 형제 폴더(예: `docs/de/guide/…`)에 있는 VitePress/문서 시스템 사이트를 대상으로 합니다.
+`docsOutput.rewriteVitepressLinks`이(가) `true`일 때(`style`이(가) `"vitepress"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다(플랫 재작성기 대신). 이는 영어가 콘텐츠 루트에 있고 로케일이 형제 폴더(`docs/de/guide/…`)에 있는 VitePress / 문서 시스템 사이트를 대상으로 합니다.
 
-1. **소스 href** — 번역된 마크다운의 링크(세그먼트 재조립 후)
-2. **VitePress 링크 정규화기** — 문서 경로를 사이트 라우트로 재작성(`/guide/…`)
-3. **`regexAdjustments`** — 스크린샷을 위한 선택적 로케일 폴더 교체(`screenshots/en-GB/` → `screenshots/de/`, …)
-4. **출력 href** — 번역된 파일에 기록되는 최종 URL
+1. **소스 href** — 번역된 마크다운의 링크 (세그먼트 재조립 후)
+2. **VitePress 링크 정규화기** — 문서 경로를 사이트 경로로 재작성 (`/guide/…`)
+3. `regexAdjustments` — 스크린샷을 위한 선택적 로케일 폴더 교체 (`screenshots/en-GB/` → `screenshots/de/`, …)
+4. **출력 href** — 번역된 파일에 기록된 최종 URL
 
 일반적인 재작성:
 
@@ -42,19 +42,19 @@
 
 `README.md` → `docs/index.md`를 동기화하는 프로젝트에서는 VitePress 트리 외부에 있는 `LICENSE`, `examples/` 및 기타 파일에 대해 `README.md`에 전체 GitHub URL을 사용하세요. [VitePress 통합 — 문서 홈페이지로서의 README](/ko/guide/integrations/vitepress#readme-and-the-docs-homepage)를 참조하세요.
 
-플랫 리라이터와 VitePress 노멀라이저는 `docs[]` 블록마다 상호 배타적이며, `regexAdjustments` 이전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/ko/guide/integrations/vitepress#link-conventions)을 참조하세요.
+플랫 재작성기와 VitePress 정규화 도구는 `docs[]` 블록당 상호 배타적이며, `regexAdjustments` 전에 하나만 실행됩니다. [VitePress 통합 — 링크 규칙](/ko/guide/integrations/vitepress#link-conventions)을 참조하세요.
 
 로케일별 스크린샷 폴더는 필요 시 여전히 동일한 `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` 규칙을 사용합니다. [로케일별 폴더](/ko/guide/images-and-screenshots/per-locale-folder)를 참조하세요.
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### Nextra 링크 정규화 도구 (`style: "nextra"`)
 
-`docsOutput.rewriteNextraLinks`이(가) `true`인 경우(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/en/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 다시 작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
+`docsOutput.rewriteNextraLinks`이(가) `true`일 때(`style`이(가) `"nextra"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이는 `content/en/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/guide/…`)로 재작성합니다. [Nextra 통합 — 링크 규칙](/ko/guide/integrations/nextra#link-conventions)을 참조하세요.
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Fumadocs 링크 정규화 도구 (`style: "fumadocs"`)
 
-`docsOutput.rewriteFumadocsLinks`이(가) `true`인 경우(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 노멀라이저가 실행됩니다. 이 노멀라이저는 `content/docs/…` 및 상대적 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 다시 작성합니다. [Fumadocs 통합 — 링크 규칙](/ko/guide/integrations/fumadocs#link-conventions)을 참조하세요.
+`docsOutput.rewriteFumadocsLinks`이(가) `true`일 때(`style`이(가) `"fumadocs"`일 때 기본값), 세그먼트 재조립 후 별도의 정규화 도구가 실행됩니다. 이는 `content/docs/…` 및 상대 `.mdx` 경로를 로케일 중립 경로(`/docs/…`)로 재작성합니다. [Fumadocs 통합 — 링크 규칙](/ko/guide/integrations/fumadocs#link-conventions)을 참조하세요.
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### `flatPreserveRelativeDir`과 함께 사용하는 파일별 깊이 접두사

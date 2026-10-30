@@ -57,6 +57,28 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ---
 
 <a id="doctor"></a>
+### `doctor`
+
+**概述:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+
+检查项目是否已准备好进行翻译。报告涵盖配置语法和架构、业务规则、已安装版本、源路径和输出路径、UI 目录文件、缓存统计信息、已配置的提供商、已设置的受支持环境变量以及模型 ID。
+
+默认情况下，`doctor` 还会根据活动提供商的目录检查已配置的模型 ID，并将已安装版本与最新的 GitHub 版本进行比较。`--local` 会跳过这两个网络调用。如果有新版本，或者 GitHub 请求失败，则会发出警告。缺少或过期的模型 ID 会导致命令失败。在任何检查发出警告时，`--strict` 都会以错误退出。
+
+API 密钥值从不打印。已设置的密钥显示为 `NAME (set)`。
+
+缺少输入路径会导致失败。缺少输出目录是一个提示，因为首次翻译运行时会创建它们。`doctor` 不会重写配置、创建目录或将源文本发送到模型。
+
+**主要选项:** `--local`、`--strict`、`--json`
+
+```bash
+ai-i18n-tools doctor
+ai-i18n-tools doctor --local
+```
+
+---
+
+<a id="help"></a>
 ### `help`
 
 **概要：** `ai-i18n-tools help [command]`

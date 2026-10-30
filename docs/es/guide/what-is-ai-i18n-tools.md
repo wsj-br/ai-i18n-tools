@@ -22,7 +22,8 @@ Los tutoriales están agrupados en [Añadir i18n a tu proyecto](/es/guide/add-i1
 | Tienes | Empieza aquí |
 | --- | --- |
 | Una aplicación JS/TS (React, Next.js, Node, CLI) con texto plano en el código fuente | [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) |
-| Una aplicación Python (Streamlit, FastAPI, Flask, Django, gettext, de escritorio) | [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) |
+| Una aplicación Python (Streamlit, FastAPI, Flask, de escritorio, scripts) | [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) |
+| Una aplicación Django, catálogos de Flask-Babel, o una aplicación que ya usa GNU gettext | [Añadir i18n a una aplicación Django / Python gettext](/es/guide/add-i18n-to-django-gettext) |
 | Un sitio web o sitio de documentación (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, HTML plano) | [Añadir i18n a un sitio web o de documentación](/es/guide/add-i18n-to-website) |
 | Un README de repositorio y otros archivos Markdown, normalmente junto a una aplicación | [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme) |
 | Archivos de localización JSON anidados independientes | [JSON](/es/guide/json) |

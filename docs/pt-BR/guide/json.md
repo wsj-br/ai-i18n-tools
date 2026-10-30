@@ -60,7 +60,7 @@ Exemplo (múltiplos arquivos de origem, pastas de localidade em minúsculas):
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | Comportamento |
 |-------------|-----------|

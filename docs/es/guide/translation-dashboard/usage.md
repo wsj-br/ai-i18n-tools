@@ -1,7 +1,7 @@
 <a id="usage--costs"></a>
 # Uso y costos
 
-La pestaña **Uso y costos** resume las llamadas a la API de modelos facturadas que ha realizado este proyecto —incluidos los reintentos que luego se descartaron— con el recuento de tokens y un único costo en USD.
+La pestaña **Uso y costos** resume las llamadas a la API del modelo facturadas que este proyecto ha realizado — incluyendo los reintentos que fueron descartados posteriormente — con recuentos de tokens y un costo único en USD.
 
 Los mismos agregados están disponibles en la línea de comandos como `ai-i18n-tools usage`.
 

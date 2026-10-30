@@ -32,7 +32,7 @@
 <a id="ui-strings-ssg"></a>
 ## UI 문자열 (SSG)
 
-`init -t ui-astro-website -P ollama`(으)로 UI 추출을 스캐폴드한 다음, 페이지 HTML도 번역할 때 `docs[]` 블록을 병합합니다([페이지 파싱 및 교체](#pages-parse-and-replace) 참조). 리포지토리 README도 번역합니다: `init -t ui-astro-website -P ollama --with-readme`. [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 참조하세요. TypeScript 모듈의 `t('…')` 및 `.astro` 프런트매터에서 사본을 래핑합니다(중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록). 페이지 HTML에는 `t()`이(가) 필요하지 않습니다. `translate-docs`이(가) 복사합니다. [JS/TS 프롬프트](/ko/guide/add-i18n-to-js#run-the-agent-prompt)는 i18next 설치 및 부트스트랩을 제외한 해당 프런트매터 및 데이터 파일에 적용됩니다. Astro는 i18next가 아닌 `makeT`을(를) 사용하여 빌드 시간에 `t`을(를) 확인합니다.
+`init -t ui-astro-website -P ollama`를 사용하여 UI 추출을 스캐폴드하고, 페이지 HTML도 번역할 때 `docs[]` 블록에 병합합니다 ([페이지 구문 분석 및 교체](#pages-parse-and-replace) 참조). 저장소 README도 번역합니다: `init -t ui-astro-website -P ollama --with-readme`. ([README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme) 참조). TypeScript 모듈 및 `.astro` 프런트매터에서 `t('…')`에 텍스트를 래핑하고 (그리고 중복된 로케일 페이지보다 UI 문자열을 선호하는 경우 템플릿 `{expression}` 블록에 래핑합니다). 페이지 HTML은 `t()`가 필요하지 않습니다. `translate-docs`가 복사합니다. [JS/TS 프롬프트](/ko/guide/add-i18n-to-js#run-the-agent-prompt)는 i18next 설치 및 부트스트랩을 제외하고 해당 프런트매터 및 데이터 파일에 적용됩니다. Astro는 i18next가 아닌 `makeT`를 사용하여 빌드 시 `t`를 해결합니다.
 
 ```bash
 ai-i18n-tools init -t ui-astro-website -P ollama

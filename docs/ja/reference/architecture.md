@@ -33,7 +33,7 @@
 | | `src/glossary/` | プロンプト用の用語集読み込み、用語ヒント、およびオプションのプロジェクトコンテキストファイル |
 | | `src/utils/` | ロガー、ハッシュ化、無視パーサー、表示幅テーブル、`.env`ローダー |
 | **アプリのランタイム** | `src/runtime/` | i18nextヘルパーと表示ユーティリティ — `'ai-i18n-tools/runtime'`としてエクスポートされます（[ランタイムヘルパー](/ja/guide/runtime-helpers)） |
-| **ツールUI** *(ドッグフーディング)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | このパッケージ自身のCLIと翻訳ダッシュボードをローカライズ — プロジェクトコンテンツとは別です（[自己ローカライズ](#self-localization-tool-ui)） |
+| **ツールUI** *（ドッグフーディング）* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | このパッケージ自身のCLIと翻訳ダッシュボードをローカライズします — プロジェクトコンテンツとは別に（[自己ローカライズ](#self-localisation-tool-ui)) |
 
 プログラムによる使用を目的としたものはすべて`src/index.ts`から再エクスポートされます（[プログラムAPI](/ja/reference/programmatic-api)）。
 
@@ -125,7 +125,7 @@ i18nextはこれらをリソースバンドルとして読み込み、ソース�
 - 文字列のJSON配列を送信し、翻訳のJSON配列を返すよう要求します。
 - 利用可能な場合は用語集のヒントを含めます。
 
-`LlmClient.translateUIBatch` は、解析、ネットワーク、または不正なスクリプトのエラー（ネイティブスクリプトのロケールに対するローマ字/ラテン文字のフォールバックを含む）でフォールバックしながら、各モデルを順番に試行します。CLI は、`localeModels`、オプションの `uiModels`、および `translationModels` からターゲットロケールごとにそのリストを構築します（[AI モデル](/ja/guide/ai-models#model-fallback-chain) を参照）。
+`LlmClient.translateUIBatch` は各モデルを順番に試行し、解析エラー、ネットワークエラー、またはスクリプトエラー（ネイティブスクリプトのロケールに対するローマ字/ラテン文字のフォールバックを含む）が発生した場合はフォールバックします。CLIは、ターゲットロケールごとに`localeModels`、オプションの`uiModels`、および`translationModels`からそのリストを構築します（[AIモデル](/ja/guide/ai-models#model-fallback-chain))を参照）。
 
 ---
 
@@ -203,7 +203,18 @@ AstroテンプレートとMDX JSXの共有属性/キー保護は`src/processors/
 
 SQLiteデータベース (`node:sqlite` 経由) は、`(source_hash, locale)` をキーとして `translated_text`、`model`、`filepath`、`last_hit_at` および関連フィールドを持つ行を格納します。ハッシュは、正規化されたコンテンツ（空白文字を圧縮）のSHA-256の最初の16文字の16進数です。
 
-各実行時に、セグメントはハッシュ × ロケールで検索されます。キャッシュミスのみがLLMに送られます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行の `last_hit_at` がリセットされます。ドキュメント翻訳中のキャッシュヒット成功は、そのセグメントの古い `translation_failures` 行をクリアします。`cleanup` は最初に `sync --force-update` を実行し、その後、古いセグメント行（null の `last_hit_at` / 空のファイルパス）を削除し、解決されたソースパスがディスク上に存在しない場合に `file_tracking` キーを整理し（`doc-block:…`, `json-block:…`, `svg-files:…` など）、メタデータのファイルパスが存在しないファイルを指している翻訳行を削除し、孤立した `translation_failures` 行を整理し、解決されたソースパスがディスク上に存在しない孤立した `markdown_source_issues` 行を整理し、設定に存在しないロケールのキャッシュ行を破棄します（`sourceLocale`、ルート `targetLocales`、およびブロックごとの `docs[]` / `json[]` `targetLocales`; SQLiteのみ — 生成されたファイルを削除するには `purge-locale` を使用してください）。`--backup <path>` が渡されない限り `cache.db` をバックアップしませんが、渡された場合は最初にそのパスへバックアップを書き込みます。
+各実行時、セグメントはハッシュとロケールで検索されます。キャッシュミスのみがLLMに送られます。翻訳後、現在の翻訳スコープ内でヒットしなかったセグメント行に対して`last_hit_at`がリセットされます。ドキュメント翻訳中のキャッシュヒットが成功すると、そのセグメントの古い`translation_failures`行がクリアされます。
+
+`cleanup` は最初に `sync --force-update` を実行し、その後：
+
+- 古いセグメント行（null `last_hit_at` / 空のファイルパス）を削除します。
+- 解決されたソースパスがディスク上に存在しない場合（`doc-block:…`、`json-block:…`、`svg-files:…`など）、`file_tracking`キーを削除します。
+- メタデータファイルパスが欠落しているファイルを指している翻訳行を削除します。
+- 孤立した`translation_failures`行を削除します。
+- 解決されたソースパスがディスク上に存在しない孤立した`markdown_source_issues`行を削除します。
+- 設定にないロケール（`sourceLocale`、ルート`targetLocales`、およびブロックごとの`docs[]` / `json[]` `targetLocales`）のキャッシュ行を削除します（SQLiteのみ — 生成されたファイルを削除するには`purge-locale`を使用します）。
+
+まずそのパスにバックアップを書き込むことになる`--backup <path>`が渡されない限り、`cache.db`をバックアップしません。
 
 課金対象のモデル呼び出し (採用された翻訳と破棄された再試行) は `api_calls` に保存されます。呼び出しを記録するコマンドの実行後、UTC暦日で7日を超えた詳細行は月次の `api_totals` にロールアップされます。`usage` とダッシュボードの「使用量とコスト」ビューでは、両方のテーブルが統合されます。[使用量とコスト](/ja/guide/translation-dashboard/usage) を参照してください。
 
@@ -289,14 +300,14 @@ Vercel AI SDK (`ai` + `@ai-sdk/openai-compatible`) 上に構築された、プ�
 `Logger`は、ANSIカラー出力で`debug`、`info`、`warn`、`error`レベルをサポートします。詳細モード（`-v`）では`debug`が有効になります。`logFilePath`が設定されている場合、ログ行はそのファイルにも書き込まれます。
 
 <a id="self-localisation-tool-ui"></a>
-### ツールの自己ローカライズ (ツール UI)
+### 自己ローカライズ（ツールUI）
 
-ツールは、コマンドラインインターフェースのヘルプ、高トラフィックログ/サマリー/エラーメッセージ、および翻訳ダッシュボードを含む自身のUIを、翻訳対象のコンテンツとは別にローカライズします。
+このツールは、CLIヘルプ、トラフィックの多いログ/サマリー/エラーメッセージ、および翻訳ダッシュボードといった自身のUIを、ユーザーのために翻訳するコンテンツとは別にローカライズします。
 
-- **ロケール解決** (`src/core/ui-locale.ts`内の`resolveUiLocale`): UIロケールを`-L` / `--ui-lang` > `AI_I18N_LANG` > 設定`uiLanguage` > ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) の順で選択します。候補は正規化され、同梱されているバンドルセットと完全一致または最も近いバリエーション (例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`) で照合され、ソースロケール (`en-GB`) にフォールバックします。CLIは、ヘルプがビルドされる前に1回 (argvのスキャン前)、そして設定が読み込まれた後にもう1回解決を行い、`uiLanguage`が適用されるようにします (フラグと環境変数が常に優先されます)。
-- **ランタイム** (`src/i18n/index.ts`): <code v-pre>{{name}}</code>補間を備えた最小限の`t(source, vars)`で、`src/i18n/locales/<code>.json`内のロケールごとのフラットなバンドルに対して英語のソース文字列をキーとして使用します (ビルド時に`dist/i18n/locales`にコピーされます)。キーまたはバンドルが見つからない場合は、ソーステキストが返されます。これはUI文字列と同じキーをデフォルトとして使用するモデルです — ハッシュルックアップはありません。
+- **ロケール解決** (`resolveUiLocale`内の`src/core/ui-locale.ts`): `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定の`uiLanguage` > ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale`) からUIロケールを選択します。候補は正規化され、出荷されたバンドルセットと完全に一致するか、最も近いバリエーション（例: `pt-PT` → `pt-BR`、`en-US` → `en-GB`）で照合され、ソースロケール（`en-GB`）にフォールバックします。CLIは、ヘルプが構築される前（argvの事前解析スキャン）に一度解決され、設定の読み込み後に再度解決されるため、`uiLanguage`が適用されます（ただし、フラグと環境変数が優先されます）。
+- **ランタイム** (`src/i18n/index.ts`): <code v-pre>{{name}}</code>補間付きの最小限の`t(source, vars)`で、`src/i18n/locales/<code>.json`内のフラットなロケールごとのバンドルに対して英語のソース文字列をキーとしています（ビルド時に`dist/i18n/locales`にコピーされます）。キーまたはバンドルが見つからない場合は、ソーステキストが返されます。これはUI文字列と同じキーをデフォルトとするモデルであり、ハッシュルックアップはありません。
 - **ダッシュボード**: サーバーは、解決されたUIロケールに対して`{ locale, dir, bundle }`を返す`GET /api/ui-i18n`を公開します。フロントエンドは`<html lang>` / `dir`を設定し、`data-i18n*`属性を介して静的マークアップをローカライズします。
-- **ドッグフーディング**: バンドルは`pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) によって生成されます。これは`ai-i18n-tools.config.json`内のCLIとダッシュボードの`ui`ブロックを抽出して翻訳します。カタログキーは、`src/cli/`と`src/i18n/`にまたがる`t()`呼び出しと、`src/dashboard-app/index.html`内のダッシュボードの`data-i18n*`マーカーから取得されます。
+- **ドッグフーディング**: バンドルは`pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) によって生成されます。これは`ai-i18n-tools.config.json`内のCLIおよびダッシュボードの`ui`ブロックを抽出し、翻訳します。カタログキーは、`src/cli/`と`src/i18n/`全体での`t()`呼び出しと、`src/dashboard-app/index.html`内のダッシュボードの`data-i18n*`マーカーから取得されます。
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

@@ -13,6 +13,7 @@ Execute `ai-i18n-tools <command> --help` para cada flag em um comando. As págin
 |---------|---------|
 | [`version`](setup#version) | Imprime a versão da CLI e o carimbo de data/hora da compilação. |
 | [`init`](setup#init) | Grava uma configuração inicial; `-t` seleciona um modelo de scaffold. |
+| [`doctor`](setup#doctor) | Verifique se a configuração, os caminhos, os provedores e o ambiente estão prontos para traduzir. |
 | [`help`](setup#help) | Exibir ajuda para um subcomando. |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@ Execute `ai-i18n-tools <command> --help` para cada flag em um comando. As págin
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | Remove linhas de cache obsoletas/órfãs/com localidade não configurada e repopula problemas de markdown. |
 | [`clean-temp`](maintenance#clean-temp) | Encontra e exclui backups de `*.log`, `*.tmp` e cache. |
-| [`purge-locale`](maintenance#purge-locale) | Remove linhas de cache e artefatos gerados para o(s) idioma(s). |
+| [`purge-locale`](maintenance#purge-locale) | Remova as linhas de cache e os artefatos gerados para a(s) localidade(s). |
 
 <a id="dashboard--glossarytools"></a>
 ### [Painel e glossário](tools)
@@ -91,6 +92,7 @@ Execute `ai-i18n-tools <command> --help` para cada flag em um comando. As págin
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

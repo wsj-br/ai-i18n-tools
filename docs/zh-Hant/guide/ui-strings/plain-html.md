@@ -3,7 +3,7 @@
 
 若互動式頁面僅維持單一 HTML 檔案，請使用此路徑。`extract` 會將 `data-i18n*` 標記讀入 `strings.json`，`translate-ui` 會為每個語言區域寫入一個扁平的 JSON 套件組合，而瀏覽器指令碼會套用這些字串。同一個指令碼可以為圖片檔名加上後綴，並將連結保留在當前頁面上。
 
-若靜態網站需要為每個語言區域輸出一個已翻譯的 HTML 檔案（無執行階段，並重寫跨頁面連結），請改用 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。一個檔案僅屬於一個路徑。
+對於應該為每個語系輸出一個翻譯的 HTML 檔案（無執行階段，重寫的跨頁面連結）的靜態網站，請改用 [HTML 頁面](/zh-Hant/guide/documents/html-pages)。每個檔案僅屬於一個管道。
 
 <a id="quick-start"></a>
 ## 快速開始
@@ -283,7 +283,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-來源地區設定會保留原始 URL。對於無值 `data-i18n-locale-src`，絕對 URL、通訊協定相對 URL、`data:` URL 和 `#` 片段會保持不變；查詢字串和片段也會維持原位。具值標記會對每個非來源地區設定使用其範本，並僅取代 `{locale}`。如果在在地化影像出現 404 錯誤，執行階段會還原原始 `src` 一次。您必須自行提供 `chart_pt-BR.png`；指令碼不會建立它。
+來源語系會保留原始 URL。對於裸露的 `data-i18n-locale-src`、絕對 URL、協定相對 URL、`data:` URL 和 `#` 片段會保持不變；查詢字串和片段會保留在原位。有值的標記會為每個非來源語系使用其範本，並且只替換 `{locale}`。如果本地化的圖片出現 404 錯誤，執行階段會恢復原始的 `src` 一次。您需要自行交付 `chart_pt-BR.png`；指令碼不會建立它。
 
 `data-i18n-locale-href` 適用於此目錄模型。指向 `about.pt-BR.html` 的連結屬於 [HTML 頁面](/zh-Hant/guide/documents/html-pages) 管線。
 
@@ -365,7 +365,7 @@ List files changed, each string left unmarked and why, and any JavaScript-insert
 
 執行階段中的 `normalizeI18nText` 會與 [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts) 中的 `normalizeI18nText` 進行比對：先修剪，然後摺疊空白字元。由於來源語言文字就是目錄索引鍵，遺失的翻譯會遞補為該來源文字。
 
-可執行的範例為 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)。`pnpm dev` 會於 [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) 提供此服務。
+可執行的示範是 [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/)。`pnpm dev` 在 `http://localhost:3090/?locale=pt-BR` 提供它。
 
 <a id="runtime-source"></a>
 ## 執行階段來源

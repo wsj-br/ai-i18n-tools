@@ -34,14 +34,14 @@ Verweisen Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs, z. B. `[label
 
 Wenn Sie nicht Docusaurus verwenden oder HTML-Anker anstelle von `{#…}` / `{/* #… */}`-Suffixen benötigen:
 
-1. Führen Sie `ai-i18n-tools write-heading-ids` für Ihre Quell-`.md` / `.mdx` vor `translate-docs` aus (die gleiche `docs[]` / `contentPaths` wie üblich). Es fügt explizite HTML-Anker in die Zeile vor jeder Überschrift ein, damit `id`-Werte von jeder übersetzten Kopie geteilt werden, und kopiert dieselben englischen IDs in bestehende übersetzte Dateien. Wenn die Segmentanzahlen übereinstimmen, wird auch das übereinstimmende zwischengespeicherte Segment aktualisiert, sodass ein späteres `sync --force-update` die reparierte ID beibehält. Führen Sie es nach dem Umbenennen von Überschriften erneut aus, damit veraltete Anker-IDs aktualisiert werden und mit dem aktuellen Titel übereinstimmen.
-2. Richten Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs aus, z. B. `[label](other.md#section-id)`, wobei `section-id` mit dem vom Tool geschriebenen Anker übereinstimmt — nicht nur mit einer Vermutung basierend auf englischen Wörtern.
+1. Führen Sie `ai-i18n-tools write-heading-ids` auf Ihren Quell-`.md` / `.mdx` vor `translate-docs` aus (mit denselben `docs[]` / `contentPaths` wie gewohnt). Es fügt explizite HTML-Anker in der Zeile vor jeder Überschrift ein, damit `id`-Werte von jeder übersetzten Kopie geteilt werden, und es kopiert dieselben englischen IDs auf bestehende übersetzte Dateien. Wenn die Segmentanzahl übereinstimmt, wird auch das passende zwischengespeicherte Segment aktualisiert, sodass ein späteres `sync --force-update` die reparierte ID beibehält. Führen Sie es erneut aus, nachdem Sie Überschriften umbenannt haben, damit veraltete Anker-IDs aktualisiert werden, um dem aktuellen Titel zu entsprechen. Eine Umbenennung hinterlässt einen einzelnen Anker: Zusätzliche `<a id>`-Zeilen, die über dieser Überschrift gestapelt sind, werden entfernt, und Markdown-Links im Repository, die auf eine entfernte ID zielten, werden neu ausgerichtet. Ein `<a id>`, das sich nicht direkt über einer Überschrift befindet, bleibt erhalten.
+2. Richten Sie Ihre Markdown-**Ankerlinks** auf diese stabilen IDs aus, z. B. `[label](other.md#section-id)`, wobei `section-id` dem Anker entspricht, den das Tool geschrieben hat – nicht einer Vermutung, die nur auf englischen Wörtern basiert.
 
 <a id="example"></a>
 ## Beispiel
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `` / ``-Suffix
+### Docusaurus `{#…}` / `{/* #… */}` Suffix
 
 `docs/overview.md`:
 

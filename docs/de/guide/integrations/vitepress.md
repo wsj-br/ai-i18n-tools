@@ -48,7 +48,7 @@ Verknüpfen Sie die VitePress-[Internationalisierung](https://vitepress.dev/guid
 <a id="enable-i18n-in-an-existing-site"></a>
 ### i18n auf einer bestehenden Site aktivieren
 
-Eine rein englische VitePress-Konfiguration benötigt diese Teile, bevor übersetzte Seiten angezeigt werden. Die [Agentenaufforderung](#wire-configmts-to-generated-theme-json-one-off) deckt die Hälfte des Theme-Katalogs ab.
+Eine rein englische VitePress-Konfiguration benötigt diese Teile, bevor übersetzte Seiten angezeigt werden. Die Ersteinrichtung verwendet die Eingabeaufforderung unter [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website#run-the-agent-prompt). Die [Theme-Katalog-Eingabeaufforderung](#wire-configmts-to-generated-theme-json-one-off) ist der Folgeschritt nach dem ersten `sync`, wenn Navigationszeichenfolgen noch direkt in der Konfiguration stehen.
 
 - `locales.root` für Englisch (`label`, `lang` und `themeConfig`).
 - Ein `locales[code]`-Eintrag pro Ziel-Locale: `label`, `lang`, `link: '/${code}/'` und pro-Locale `title` / `description`.
@@ -58,7 +58,7 @@ Eine rein englische VitePress-Konfiguration benötigt diese Teile, bevor überse
 <a id="theme-strings"></a>
 ## Theme-Strings
 
-VitePress-Navigation, Sidebar, Footer, Suchplatzhalter und andere `themeConfig`-Beschriftungen werden nicht aus Markdown extrahiert. Konfigurieren Sie **`docsOutput.vitepressThemeCatalog`** so, dass **`translate-docs`** den Quell-Locale-Katalog aus `.vitepress/config.mts` bootstrappt (wenn Zeichenfolgen inline sind) und Locale-Theme-JSON-Dateien übersetzt:
+VitePress-Navigation, Seitenleiste, Fußzeile, Suchplatzhalter und andere `themeConfig`-Bezeichnungen werden nicht aus Markdown extrahiert. Konfigurieren Sie `docsOutput.vitepressThemeCatalog` so, dass `translate-docs` den Quell-Locale-Katalog aus `.vitepress/config.mts` initialisiert (wenn Zeichenfolgen direkt eingebettet sind) und Locale-Theme-JSON-Dateien übersetzt:
 
 ```json
 {
@@ -82,8 +82,8 @@ VitePress-Navigation, Sidebar, Footer, Suchplatzhalter und andere `themeConfig`-
 }
 ```
 
-- **`catalogPath`** – Englisches verschachteltes JSON. Der Bootstrap von `config.mts` gilt nur, solange diese englischen Zeichenfolgen noch inline in der Konfiguration sind. Nachdem `themeConfigFor` den Katalog gelesen hat, behält `mergeThemeCatalogs` die bestehende Datei bei, und `theme.en.json` ist die Quelle der Wahrheit. Bearbeiten Sie diese Datei, wenn sich die Formulierung ändert (oder legen Sie das Englische für ein `sync` zurück in `config.mts`). Das Umbenennen eines Schlüssels ändert den Segment-Hash (`path`, ein NUL-Byte, dann der Wert), sodass das nächste `sync` diese Zeichenfolge einmal für jedes Ziel-Locale neu übersetzt.
-- **`outputPathTemplate`** (optional) – Ausgaben pro Locale; Standard: dasselbe Verzeichnis wie `catalogPath` mit `theme.{locale}.json`.
+- `catalogPath` – Verschachteltes englisches JSON. Die Initialisierung von `config.mts` gilt nur, solange diese englischen Zeichenfolgen noch direkt in der Konfiguration stehen. Nachdem `themeConfigFor` den Katalog gelesen hat, behält `mergeThemeCatalogs` die bestehende Datei bei, und `theme.en.json` ist die maßgebliche Quelle. Bearbeiten Sie diese Datei, wenn sich die Formulierung ändert (oder legen Sie das Englische für ein `sync` zurück in `config.mts`). Das Umbenennen eines Schlüssels ändert den Segment-Hash (`path`, ein NUL-Byte, dann der Wert), sodass das nächste `sync` diese Zeichenfolge einmal für jedes Ziel-Locale neu übersetzt.
+- `outputPathTemplate` (optional) – Pro-Locale-Ausgaben; Standard: gleiches Verzeichnis wie `catalogPath` mit `theme.{locale}.json`.
 
 `init -t ui-vitepress` erstellt auch Start-`docs/.vitepress/config.mts` und `docs/.vitepress/i18n/theme.en.json`, wenn diese Dateien noch nicht existieren. Die Konfiguration lädt den Katalog über `loadTheme()` und verbindet Standard-VitePress-i18n-Beschriftungen (einschließlich `langMenuLabel`) in `themeConfigFor()`.
 
@@ -219,13 +219,13 @@ inline on purpose.
 
 Downstream-Projekte kopieren manchmal `README.md` als `docs/index.md` in die VitePress-Site (über ein Build-Skript oder manuelle Synchronisierung). Dieses Muster teilt eine Datei zwischen GitHub und der Dokumentations-Site, aber die Linkregeln unterscheiden sich:
 
-| Linktyp | Funktioniert auf GitHub | Funktioniert auf VitePress |
+| Link-Typ | Funktioniert auf GitHub | Funktioniert auf VitePress |
 |-----------|-----------------|-------------------|
-| `docs/guide/foo.md` | Ja | Nein — verwenden Sie Site-Routen oder lassen Sie den Normalisierer während der Synchronisierung umschreiben |
+| `docs/guide/foo.md` | Ja | Nein – verwenden Sie Website-Routen oder lassen Sie den Normalisierer während der Synchronisierung umschreiben |
 | `./LICENSE`, `examples/demo/` | Ja (Repo-relativ) | Nein — verwenden Sie **vollständige URLs** |
 | `/guide/foo` | Nein | Ja |
 
-**Empfehlung für synchronisiertes README → Index:** Verwenden Sie in `README.md` **vollständige URLs** für alles außerhalb des VitePress-Inhaltsbaums (`LICENSE`, `examples/`, Konfigurationsdateien, Agent-Kontextdateien) und für übersetzte README-Kopien unter `translated-docs/`. Verwenden Sie `docs/guide/…`-Pfade (oder Site-Routen in englischen Dokumenten unter `docs/`) für In-Site-Dokumentationslinks; ein Synchronisierungsskript oder `rewriteVitepressLinks`-Normalisierer kann diese in `/guide/…`-Routen konvertieren.
+**Empfehlung für synchronisiertes README → Index:** Verwenden Sie in `README.md` **vollständige URLs** für alles außerhalb des VitePress-Inhaltsbaums (`LICENSE`, `examples/`, Konfigurationsdateien, Agentenkontextdateien) und für übersetzte README-Kopien unter `translated-docs/`. Verwenden Sie `docs/guide/…`-Pfade (oder Website-Routen in englischen Dokumenten unter `docs/`) für interne Dokumentationslinks; ein Synchronisierungsskript oder `rewriteVitepressLinks`-Normalisierer kann diese in `/guide/…`-Routen umwandeln.
 
 **Dieses Repository** hält `README.md` und `docs/index.md` als **unabhängige Dateien**: README ist eine prägnante GitHub-/npm-Landingpage; `docs/index.md` ist der Einstiegspunkt der Dokumentationsseite, der auf `/guide/` und `/reference/` verweist. Detaillierte Anleitungen finden Sie unter `docs/` – duplizieren Sie kein langes Referenzmaterial in der README. Aktualisieren Sie jede Datei entsprechend ihrer Zielgruppe, wenn sich gemeinsame Fakten ändern.
 
@@ -254,7 +254,7 @@ Aktivieren Sie den integrierten Normalisierer, damit `translate-docs` Links in j
 
 `rewriteVitepressLinks` ist standardmäßig aktiviert, wenn `style` `"vitepress"` ist.
 
-| Autor im Quell-Locale | Nach Normalisierer (Quell-Locale-Root-Ausgabe) | Nach Normalisierer (übersetzte `docs/<locale>/`-Ausgabe) |
+| Autor im Quell-Locale | Nach dem Normalisierer (Quell-Locale-Root-Ausgabe) | Nach dem Normalisierer (übersetzte `docs/<locale>/`-Ausgabe) |
 |--------------------------|----------------------------------------|------------------------------------------------------|
 | `[JSON](/de/guide/json)` | `[JSON](/de/guide/json)` | `[JSON](/pt-BR/guide/json)` (Locale-Präfix stimmt mit Ordner überein) |
 | `[Quick start](/de/guide/quick-start)` im Text oder `hero.actions[].link` | unverändert (`/guide/quick-start`) | `/pt-BR/guide/quick-start` |
@@ -295,7 +295,7 @@ themeConfig: themeConfigFor(enTheme)
 themeConfig: themeConfigFor(theme, code)
 ```
 
-Fügen Sie **`activeMatch`** neben **`link`** ein Präfix hinzu, damit die Navigationshervorhebung auf Gebietsschema-Routen funktioniert (`/pt-BR/guide/`, nicht `/guide/`). Externe URLs und gemeinsam genutzte öffentliche Assets bleiben unverändert.
+Präfix `activeMatch` neben `link`, damit die Navigationshervorhebung auf Locale-Routen funktioniert (`/pt-BR/guide/` nicht `/guide/`). Externe URLs und gemeinsam genutzte öffentliche Assets bleiben unverändert.
 
 Fügen Sie `ai-i18n-tools` als **devDependency** im VitePress-Projekt (siehe `examples/vitepress-docs/package.json`) hinzu, damit `config.mts` `prefixVitepressThemeConfigLinks` importieren kann. Die Hauptdokumentationsseite von ai-i18n-tools importiert direkt von `src/processors/…`, da sie den Monorepo-Checkout selbst nutzt; eigenständige Kopien (degit) sollten das npm-Paket verwenden.
 

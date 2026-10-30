@@ -120,7 +120,7 @@ Set `localeSubpath` to match your generator's layout between `{locale}/` and the
 ![Screenshot](/img/screenshots/en-GB/screenshot.png)
 ```
 
-Ship matching PNG files at the same path for every target locale (e.g. `static/img/screenshots/de/screenshot.png`). Prefer `screenshots/[^/]+/` over hardcoding `screenshots/en-GB/` so the rule survives a `sourceLocale` change.
+Provide matching PNG files at the same path for every target locale (e.g. `static/img/screenshots/de/screenshot.png`). Prefer `screenshots/[^/]+/` over hardcoding `screenshots/en-GB/` so the rule survives a `sourceLocale` change.
 
 <a id="preset---docsoutputstyle--docusaurus"></a>
 ### Preset - `docsOutput.style = "docusaurus"`
@@ -151,7 +151,7 @@ Same as `"doc-system"` with default `localeSubpath = "docusaurus-plugin-content-
 
 </details>
 
-Ship matching PNG files at `docs-site/static/img/screenshots/<locale>/screenshot.png`. For source-locale-agnostic configs, prefer `screenshots/[^/]+/` over `screenshots/en-GB/`.
+Provide matching PNG files at `docs-site/static/img/screenshots/<locale>/screenshot.png`. For source-locale-agnostic configs, prefer `screenshots/[^/]+/` over `screenshots/en-GB/`.
 
 Implementation example: [examples/docusaurus-docs/docs/feature-showcase.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/docs/feature-showcase.md) (`/img/screenshots/en-GB/screenshot.png`) with [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/docusaurus-docs/ai-i18n-tools.config.json).
 
@@ -180,6 +180,6 @@ Same as `"doc-system"` with `localeSubpath: ""` — translated pages sit directl
 
 </details>
 
-Ship PNGs at `public/img/screenshots/<locale>/screenshot.png`. The `${translatedLocale}` placeholder uses your config locale string (e.g. `pt-BR`). The `astro-starlight` preset lowercases locale **output paths** by default (`pt-br/`), but static asset folders under `public/img/screenshots/` should match the locale segment written into markdown URLs — keep screenshot directories aligned with `${translatedLocale}`, not necessarily with Astro route casing.
+Provide PNGs at `public/img/screenshots/<locale>/screenshot.png`. The `${translatedLocale}` placeholder uses your config locale string (e.g. `pt-BR`). The `astro-starlight` preset lowercases locale **output paths** by default (`pt-br/`), but static asset folders under `public/img/screenshots/` should match the locale segment written into markdown URLs — keep screenshot directories aligned with `${translatedLocale}`, not necessarily with Astro route casing.
 
 Implementation example: [examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/) — [feature-showcase.mdx](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/src/content/docs/feature-showcase.mdx) and [ai-i18n-tools.config.json](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/astro-docs/ai-i18n-tools.config.json) (`screenshots/[^/]+/`).

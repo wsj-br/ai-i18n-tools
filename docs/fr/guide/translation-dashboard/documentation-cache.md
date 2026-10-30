@@ -25,7 +25,7 @@ Cliquez sur **Appliquer** après avoir modifié les filtres. **Effacer** réinit
 1. Cliquez sur l'icône de modification sur une ligne.
 2. Modifiez le texte traduit dans la fenêtre modale et enregistrez.
 
-Si le nouveau texte échoue à la vérification du système d'écriture des paramètres régionaux (par exemple, le hindi romanisé pour `hi`), le tableau de bord affiche un avertissement et vous demande de confirmer. La confirmation enregistre le texte. Un `sync --check-cache` ultérieur revalide toujours cette ligne et peut la retraduire.
+Si le nouveau texte échoue à la vérification du système d'écriture de la locale (par exemple, de l'hindi romanisé pour `hi`), le tableau de bord avertit et vous demande de confirmer. La confirmation enregistre le texte quand même. Une `sync --check-cache` ultérieure revalide toujours cette ligne et peut la retraduire.
 
 Le cache stocke le `user-edited` du modèle pour cette ligne. Exécutez `sync --force-update` ou `translate-docs --force-update` pour que les sorties Markdown sur disque correspondent au cache.
 

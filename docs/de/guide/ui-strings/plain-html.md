@@ -3,7 +3,7 @@
 
 Verwenden Sie diesen Pfad für eine interaktive Seite, die in einer einzigen HTML-Datei verbleibt. `extract` liest `data-i18n*`-Marker in `strings.json` ein, `translate-ui` schreibt ein flaches JSON-Bundle pro Locale, und ein Browser-Skript wendet die Zeichenfolgen an. Dasselbe Skript kann Suffixe an Bilddateinamen anhängen und Links auf der aktuellen Seite belassen.
 
-Für eine statische Website, die pro Locale eine übersetzte HTML-Datei ausgeben soll (keine Laufzeitumgebung, neu geschriebene seitenübergreifende Links), verwenden Sie stattdessen [HTML-Seiten](/de/guide/documents/html-pages). Eine Datei gehört zu einem Pfad.
+Für eine statische Website, die pro Gebietsschema eine übersetzte HTML-Datei ausgeben soll (keine Laufzeitumgebung, neu geschriebene seitenübergreifende Links), verwenden Sie stattdessen [HTML-Seiten](/de/guide/documents/html-pages). Jede Datei gehört nur zu einer Pipeline.
 
 <a id="quick-start"></a>
 ## Schnellstart
@@ -283,7 +283,7 @@ Diese Marker werden niemals an den Übersetzer gesendet. `mark-html` fügt sie n
 <a href="about.html" data-i18n-locale-href>About</a>
 ```
 
-Die Quell-Locale behält die ursprüngliche URL. Bei einem `data-i18n-locale-src` ohne Wert werden absolute URLs, protokollrelative URLs, `data:`-URLs und `#`-Fragmente unverändert gelassen; Query-Strings und Fragmente bleiben an Ort und Stelle. Ein Marker mit Wert verwendet seine Vorlage für jede Nicht-Quell-Locale und ersetzt nur `{locale}`. Wenn das lokalisierte Bild einen 404-Fehler zurückgibt, stellt die Laufzeitumgebung das ursprüngliche `src` einmalig wieder her. Sie liefern `chart_pt-BR.png` selbst aus; das Skript erstellt es nicht.
+Das Quell-Gebietsschema behält die ursprüngliche URL bei. Bei einem reinen `data-i18n-locale-src` werden absolute URLs, protokollrelative URLs, `data:`-URLs und `#`-Fragmente unverändert gelassen; Abfragezeichenfolgen und Fragmente bleiben erhalten. Ein bewerteter Marker verwendet seine Vorlage für jedes Nicht-Quell-Gebietsschema und ersetzt nur `{locale}`. Wenn das lokalisierte Bild einen 404-Fehler zurückgibt, stellt die Laufzeitumgebung die ursprüngliche `src` einmal wieder her. Sie liefern `chart_pt-BR.png` selbst aus; das Skript erstellt es nicht.
 
 `data-i18n-locale-href` ist für dieses Katalogmodell. Ein Link zu `about.pt-BR.html` gehört zur Pipeline für [HTML-Seiten](/de/guide/documents/html-pages).
 
@@ -365,7 +365,7 @@ Richten Sie darüber hinaus keine automatische Weiterleitung per `navigator.lang
 
 `normalizeI18nText` in der Laufzeitumgebung entspricht `normalizeI18nText` in [`src/extractors/html-i18n-marks.ts`](https://github.com/wsj-br/ai-i18n-tools/blob/main/src/extractors/html-i18n-marks.ts): Leerraum trimmen, dann zusammenführen. Da der Quellsprachentext der Katalogschlüssel ist, fällt eine fehlende Übersetzung auf diesen Quelltext zurück.
 
-Die ausführbare Demo ist [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` stellt sie unter [http://localhost:3090/?locale=pt-BR](http://localhost:3090/?locale=pt-BR) bereit.
+Die ausführbare Demo ist [`examples/plain-html`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/). `pnpm dev` stellt sie unter `http://localhost:3090/?locale=pt-BR` bereit.
 
 <a id="runtime-source"></a>
 ## Laufzeitquelle

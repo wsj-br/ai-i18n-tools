@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` は [http://localhost:3093](http://localhost:3093) でアプリを実行します。翻訳する前にロケールを `es` または `zh-Hans` に切り替えると、文字列は英語にフォールバックします。`pnpm translate` の後、入力された翻訳が表示されます。英語の文字列を編集して `pnpm translate` を再実行すると、そのリーフのみが更新されるのを確認できます。
+`pnpm dev`は`http://localhost:3093`でアプリを実行します。翻訳を表示するには、ロケールを`es`または`zh-Hans`に切り替えてください。翻訳が適用されるまでは、文字列は英語にフォールバックします。`pnpm translate`の後、反映された翻訳が表示されます。英語の文字列を編集し、`pnpm translate`を再実行すると、そのリーフのみが更新されるのを確認できます。
 
 完全なウォークスルー: [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md)。
 

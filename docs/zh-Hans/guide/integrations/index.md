@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 阅读哪个指南
 
-选择器表格（其中包含每个框架的初始化模板和代理提示）位于[为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website#initialise-the-project)中。Python 框架：[Python](/zh-Hans/guide/integrations/python)。
+包含每个框架一个初始化模板的选择表位于[为网站或文档站点添加国际化支持](/zh-Hans/guide/add-i18n-to-website#initialise-the-project)中。该页面上的操作指南提示可启用框架的国际化支持。下方的集成页面保留了 shell-catalog 的详细信息。Python 框架：[Python](/zh-Hans/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共享概念

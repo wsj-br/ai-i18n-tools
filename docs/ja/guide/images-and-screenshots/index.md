@@ -15,7 +15,7 @@
 <a id="markdown-with-docsoutputstyle--flat-readme-user-guide"></a>
 ### `docsOutput.style = "flat"` を使った Markdown（README、USER-GUIDE）
 
-初日からロケールコード付きのサブディレクトリにスクリーンショットを保存してください:
+最初からロケールコード付きのサブディレクトリの下にスクリーンショットを保存する:
 
 ```
 images/screenshots/en-GB/translate.png
@@ -54,7 +54,7 @@ images/screenshots/en-GB/settings.png
 
 フラットリンクリライターは`doc-system`に対しては**実行されません**（`"flat"`とは異なります）。`postProcessing.regexAdjustments`はソースマークダウンからの元のURLを参照します — 通常は`/img/screenshots/en-GB/foo.png`のような絶対パスまたはサイトルートパスです。
 
-**ロケールごとのフォルダ** レイアウトは、スクリーンショットが共有の静的 URL ツリーに存在する場合に適用されます。最初からロケールでコード化されたフォルダと、1 つの汎用的な `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` ルールを使用します ([Config — doc-system](/ja/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system) を参照)。
+**ロケールごとのフォルダーレイアウト**は、スクリーンショットが共有の静的URLツリーに配置されている場合に適用されます。最初からロケールコード付きフォルダーを使用し、1つの汎用的な`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`ルールを適用します（[設定 — ドキュメントシステム](/ja/guide/images-and-screenshots/per-locale-folder#config---docsoutputstyle--doc-system)を参照）。
 
 **コロケーションされたスクリーンショット** は、各ロケールの翻訳されたドキュメントがマークダウンの横にアセットを保存する場合 (URL の書き換えなし) に適用されます。スクリーンショットスクリプトは、`{outputDir}`、`{locale}`、および `{localeSubpath}` から派生したパスに PNG を書き込む必要があります。以下の Docusaurus プリセットは参照レイアウトです。
 
@@ -78,7 +78,7 @@ images/screenshots/en-GB/settings.png
 
 `{outputDir}/{locale}/` の直下に翻訳済みページが配置される点で、`docsOutput.style = "doc-system"` と `localeSubpath: ""` と同等です。
 
-初日からロケールコード付きのパスの下にスクリーンショットを保存します。
+最初からロケールコード付きのパスの下にスクリーンショットを保存する:
 
 ```
 public/img/screenshots/en-GB/screenshot.png

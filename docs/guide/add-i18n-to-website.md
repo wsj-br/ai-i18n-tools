@@ -166,7 +166,7 @@ in this repository. The paths written by `init` are starters.
   matches `i18n.locales` except the default locale.
 - Add an `app/[lang]/` route, `getPageMap('/' + lang)`, and `<Layout i18n>`.
 - Add `app/_dictionaries/<source>.ts` (usually `en.ts`) with the English
-  chrome as string literals (`siteTitle`, footer, `editLink`, search
+  shell strings as string literals (`siteTitle`, footer, `editLink`, search
   placeholder, table-of-contents title, last-updated label), and
   `get-dictionary.ts` that imports `./${locale}`. Pass those fields into
   `<Layout>`, `<Navbar>`, and `<Footer>`. Keep native language names in a
@@ -294,7 +294,7 @@ ai-i18n-tools sync
 <a id="what-gets-translated"></a>
 ### What gets translated
 
-Page bodies go through the [Documents](/guide/documents/) pipeline. Framework chrome (navigation, sidebar, theme labels) is handled in the same run where the framework supports it. That is not the separate [JSON](/guide/json) pipeline. A plain HTML page that switches language in the browser is the exception: `mark-html` and `translate-ui` write flat JSON, and the browser script applies it. One HTML file per locale stays on the Documents pipeline.
+Page bodies go through the [Documents](/guide/documents/) pipeline. Framework shell strings (navigation, sidebar, theme labels) are handled in the same run where the framework supports it. That is not the separate [JSON](/guide/json) pipeline. A plain HTML page that switches language in the browser is the exception: `mark-html` and `translate-ui` write flat JSON, and the browser script applies it. One HTML file per locale stays on the Documents pipeline.
 
 | Framework | Shell and theme strings | How |
 | --- | --- | --- |

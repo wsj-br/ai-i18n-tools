@@ -60,7 +60,7 @@ Exemple (plusieurs fichiers sources, dossiers de langue en minuscules) :
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | Comportement |
 |-------------|-----------|

@@ -51,6 +51,8 @@ docs-site/docs/guide/quick-start.md
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 在現有網站中啟用 i18n
 
+首次設定會使用 [新增 i18n 到網站或文件網站](/zh-Hant/guide/add-i18n-to-website#run-the-agent-prompt) 上的提示。下方的檢查清單是相同的手動操作。
+
 - 當 URL 路徑應與語系代碼不同時，在 `docusaurus.config.js` 中新增 `i18n` 區塊：`defaultLocale`、`locales` 及 `localeConfigs[locale].path`。
 - 執行 `docusaurus write-translations` 以確保 `i18n/<defaultLocale>/` 存在，然後將 `docusaurusCatalogDir` 指向該資料夾並執行 `sync`。
 - `src/pages` 與 `src/components` 中的自訂 React 不是 markdown。請使用來自 `@docusaurus/Translate` 的 `<Translate>` 或 `translate()` 標記使用者可見的文案，以便 `write-translations` 能將其收集到 `code.json` 中。訊息必須是靜態字串。`write-translations` 會寫入 `i18n/<locale>/code.json`；設定 `docusaurusCatalogDir` 後，`translate-docs` 會將該 JSON 與其餘的 shell 訊息目錄一併翻譯。ai-i18n-tools 不會掃描那些 JSX 樹狀結構來尋找 `t()`。

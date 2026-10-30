@@ -70,7 +70,7 @@ npx ai-i18n-tools bench-models -P deepseek
 
 每個提供者區塊可定義自己的 `translationModels`、選用的 `uiModels` 和 `localeModels`、`maxTokens`、`temperature`，以及 `requestTimeout`（秒）或 `requestTimeoutMs`。提供者上的逾時會覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。舊式頂層 `openrouter` 區塊仍會被接受，並在載入時自動遷移至 `providers.openrouter`。
 
-當提供者省略 `usage.cost` 時，選用的 `pricing` 和 `modelPricing` 可設定每 1,000,000 個 token 的美元價格（`inputPerMTokens` 和 `outputPerMTokens`）。`pricing` 是全提供者的預設值；`modelPricing` 項目會覆寫特定模型 id 的設定。OpenRouter 和 Cheaper Inference 已經會回傳每次呼叫的成本，因此在這些提供者上請勿設定這兩項。提供者回傳的成本將按原樣保留。該金額會包含在翻譯摘要、[`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 以及 [使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 中。
+選用 `pricing` 和 `modelPricing` 會設定每百萬個權杖的美元費用 (`inputPerMTokens` 和 `outputPerMTokens`)，當提供者省略 `usage.cost` 時。`pricing` 是全提供者預設值；`modelPricing` 項目會覆寫單一模型 ID 的該值。OpenRouter 和 Cheaper Inference 已傳回每次呼叫的成本，因此請在這些提供者上將兩者都保持未設定。提供者報告的成本會按原樣保留。此金額包含在翻譯摘要、[`usage`](/zh-Hant/reference/cli-commands/workflows#usage) 和 [使用量與成本](/zh-Hant/guide/translation-dashboard/usage) 中。
 
 在同一份文件上使用四個供應商的可執行範例，包含範例費率：[`examples/multi-provider`](/zh-Hant/examples#multi-provider)。
 

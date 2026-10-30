@@ -3,7 +3,7 @@
 
 **모델** 탭은 활성 공급자의 채팅 모델 순위를 매겨 ID를 수동으로 복사하지 않고도 `translationModels`을(를) 선택할 수 있도록 합니다. 이는 [`suggest-models`](/ko/reference/cli-commands/models#suggest-models)와(과) 동일한 순위를 사용합니다. 목록에 두 개 이상의 모델이 포함된 이유를 포함한 단계별 안내는 [AI 모델](/ko/guide/ai-models)에 있습니다.
 
-**품질** 또는 **가격**을(를) 선택하세요. 품질은 languagebench ChrF 및 Arena 점수를 우선시합니다. 가격은 낮은 USD 요금을 우선시하면서도 품질 하한선을 유지합니다. 구성에 공급자가 둘 이상인 경우 **공급자** 메뉴가 나타납니다. 기본값은 대시보드가 시작된 공급자(`provider` 또는 `dashboard` 명령의 `-P` / `--provider`)입니다. 공급자나 우선순위를 변경하면 테이블이 다시 로드됩니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)에 있습니다.
+**품질** 또는 **가격**을 선택하세요. 품질은 languagebench ChrF 및 Arena 점수를 선호합니다. 가격은 더 낮은 USD 환율을 선호하며 여전히 품질 하한선을 유지합니다. 구성에 공급자가 두 개 이상 있을 때, **공급자** 메뉴가 나타납니다. 기본값은 대시보드가 시작된 공급자입니다 (`provider` 또는 `dashboard` 명령의 `-P` / `--provider`). 공급자 또는 우선순위를 변경하면 테이블이 다시 로드됩니다. 선택적 가중치는 [`modelSuggestion`](/ko/reference/configuration#modelsuggestion-optional)에 있습니다.
 
 테이블 열은 재정렬 컨트롤, 체크박스, 순위, 모델 ID, 인덱스 (가중 점수 곱하기 100), 측정된 ChrF, 측정된 아레나 점수, 그리고 100만 토큰당 USD 입/출력 가격입니다. 측정값이 누락된 경우 대시(—)로 표시됩니다. 순위 번호는 아래 필터가 적용되기 전 전체 순위에서 모델의 위치입니다. 행의 핸들을 끌거나 위/아래 버튼을 사용하여 이 테이블에서 위치를 변경할 수 있습니다. **업데이트**는 순위 순서를 다시 로드합니다.
 
@@ -15,9 +15,9 @@
 
 첫 로드 시 캐시가 비어 있으면 languagebench, Arena 및 models.dev를 다운로드하므로 시간이 다소 걸릴 수 있습니다. 이후 로드 시에는 `<cacheDir>/benchmark-scores.json`에 있는 7일 캐시를 재사용합니다. 탭에는 새로 고침 버튼이 없습니다. `ai-i18n-tools suggest-models --refresh`을(를) 사용하여 CLI에서 캐시를 새로 고친 다음 탭을 다시 로드하세요. 동일한 명령으로 목록을 출력하거나 적용할 수 있습니다.
 
-::: info 외부 벤치마크 출처
-  점수는 다음 외부 데이터 소스에서 계산됩니다:
-  - [languagebench ChrF](https://languagebench.github.io/) (CC-BY-SA-4.0 라이선스),
-  - [LMArena Arena Score](https://github.com/lm-arena/lm-arena) (CC-BY-4.0 라이선스), 및
-  - [models.dev](https://models.dev/)의 가격은 MIT 라이선스입니다.
+::: info 외부 벤치마크 소스
+  점수는 외부 데이터 소스에서 계산됩니다:
+  - CC-BY-SA-4.0 라이선스의 [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench),
+  - CC-BY-4.0 라이선스의 [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset), 그리고
+  - MIT 라이선스의 [models.dev](https://models.dev/) 가격.
 :::

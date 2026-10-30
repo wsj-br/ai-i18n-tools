@@ -34,14 +34,14 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 Docusaurus를 사용하지 않거나, `{#…}` / `{/* #… */}` 접미사 대신 HTML 앵커가 필요한 경우:
 
-1. `translate-docs` 전에 소스 `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을(를) 실행합니다(평소와 동일한 `docs[]` / `contentPaths` 사용). 이 도구는 각 제목 앞줄에 명시적 HTML 앵커를 삽입하여 `id` 값이 모든 번역 사본에서 공유되도록 하고, 동일한 영어 ID를 기존 번역 파일에 복사합니다. 세그먼트 수가 일치하면 일치하는 캐시된 세그먼트도 업데이트되므로, 이후 `sync --force-update` 시 수정된 ID가 유지됩니다. 제목 이름을 변경한 후 다시 실행하여 오래된 앵커 ID가 새로 고쳐져 현재 제목과 일치하도록 하십시오.
-2. 마크다운 **앵커 링크**를 해당 안정적 ID(예: `[label](other.md#section-id)`)로 지정합니다. 여기서 `section-id`은(는) 도구에서 작성한 앵커와 일치해야 하며, 단순히 영어 단어로 추측한 값이 아니어야 합니다.
+1. `translate-docs` 전에 소스 `.md` / `.mdx`에서 `ai-i18n-tools write-heading-ids`을(를) 실행합니다(평소와 동일한 `docs[]` / `contentPaths`). 이 도구는 각 제목 앞 줄에 명시적인 HTML 앵커를 삽입하여 모든 번역본에서 `id` 값이 공유되도록 하며, 기존 번역 파일에 동일한 영어 ID를 복사합니다. 세그먼트 수가 일치하면 일치하는 캐시된 세그먼트도 업데이트되므로, 나중에 `sync --force-update`을(를) 수행해도 수정된 ID가 유지됩니다. 제목 이름을 변경한 후 다시 실행하여 오래된 앵커 ID가 현재 제목과 일치하도록 새로 고칩니다. 이름 변경 시 단일 앵커만 남습니다. 해당 제목 위에 쌓인 추가 `<a id>` 줄은 제거되며, 제거된 ID를 대상으로 했던 저장소 내 마크다운 링크는 재지정됩니다. 제목 바로 위에 있지 않은 `<a id>`은(는) 그대로 유지됩니다.
+2. 마크다운 **앵커 링크**가 해당 안정적인 ID를 가리키도록 합니다. 예: `[label](other.md#section-id)`. 여기서 `section-id`은(는) 도구가 작성한 앵커와 일치해야 하며, 영어 단어만으로 추측한 것이 아닙니다.
 
 <a id="example"></a>
 ## 예시
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `` / `` 접미사
+### Docusaurus `{#…}` / `{/* #… */}` 접미사
 
 `docs/overview.md`:
 

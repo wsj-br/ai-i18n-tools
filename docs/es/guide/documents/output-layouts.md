@@ -68,7 +68,7 @@ Las rutas fuera de `docsRoot` recurren al diseño [anidado](#nested-default) (`{
 
 Establezca `docs[].docsOutput.docsRoot` en la raíz de los archivos escritos en `sourceLocale` (por ejemplo, `"docs"`, `"src/content/docs"` o `"content/en"` cuando el inglés es el idioma de origen). `sourceLocale` puede ser cualquier idioma. Cuando `docsOutput.style = "doc-system"`, debe establecer `localeSubpath` explícitamente (use un alias a continuación para los ajustes preestablecidos). Use `localeSubpath: ""` cuando las páginas traducidas se encuentren directamente bajo `{outputDir}/{locale}/` (al estilo Starlight).
 
-El JSON de shell de Docusaurus de `docusaurusCatalogDir` y otros artefactos JSON bajo los ajustes preestablecidos del sistema de documentos siguen el mismo diseño de carpeta que markdown. Con `style: "flat"`, los archivos de etiquetas JSON aún usan la forma anidada a menos que establezca `jsonPathTemplate`.
+El JSON de shell de Docusaurus de `docusaurusCatalogDir` y otros artefactos JSON bajo los preajustes del sistema de documentación siguen la misma estructura de carpetas que Markdown. Con `style: "flat"`, los archivos de etiquetas JSON siguen usando la forma anidada a menos que configure `jsonPathTemplate`.
 
 <a id="doc-system-aliases"></a>
 ## Alias del sistema de documentos
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 Starlight incluye cadenas de interfaz para muchas configuraciones regionales; las sustituciones personalizadas opcionales usan `src/content/i18n/en.json` con `jsonPathTemplate: "{outputDir}/{locale}.json"` en un bloque `docs[]` separado cuando sea necesario.
 
-Las cadenas de navegación/barra lateral/pie de página de VitePress no están en markdown; configura `docsOutput.vitepressThemeCatalog` y traduce dentro de **`translate-docs`**. Consulta la [integración de VitePress](/es/guide/integrations/vitepress).
+Las cadenas de navegación/barra lateral/pie de página de VitePress no están en Markdown; configure `docsOutput.vitepressThemeCatalog` y traduzca dentro de `translate-docs`. Consulte [integración de VitePress](/es/guide/integrations/vitepress).
 
-El diccionario de temas de Nextra (`.ts`) y las etiquetas de la barra lateral de `_meta.ts` no están en markdown; usa `docs[].nextraDictionaryPath` y la recopilación automática de `_meta` cuando `style: "nextra"`, todo dentro de **`translate-docs`**. Consulta la [integración de Nextra](/es/guide/integrations/nextra).
+El diccionario del tema Nextra (`.ts`) y las etiquetas de la barra lateral de `_meta.ts` no están en Markdown; use `docs[].nextraDictionaryPath` y la recopilación automática de `_meta` cuando `style: "nextra"`, todo dentro de `translate-docs`. Consulte [integración de Nextra](/es/guide/integrations/nextra).
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ El diccionario de temas de Nextra (`.ts`) y las etiquetas de la barra lateral de
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — carpetas de configuración regional estilo Nextra; usa el mismo motor `doc-system` con `localeSubpath` vacío.
+- `"dir"` — Carpetas de configuración regional estilo Nextra; usa el mismo motor `doc-system` con `localeSubpath` vacío.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-Las anulaciones de la interfaz de usuario de Fumadocs (`lib/layout.shared.ts`) y las etiquetas de la barra lateral de `meta.json` no están en markdown; usa `docsOutput.fumadocsUiCatalog` y la recopilación automática de `meta.json` cuando `style: "fumadocs"`, todo dentro de **`translate-docs`**. Consulta la [integración de Fumadocs](/es/guide/integrations/fumadocs).
+Las anulaciones de la interfaz de usuario de Fumadocs (`lib/layout.shared.ts`) y las etiquetas de la barra lateral de `meta.json` no están en Markdown; use `docsOutput.fumadocsUiCatalog` y la recopilación automática de `meta.json` cuando `style: "fumadocs"`, todo dentro de `translate-docs`. Consulte [integración de Fumadocs](/es/guide/integrations/fumadocs).
 
 Para la reescritura de URL de enlaces y activos más allá de las correcciones de enlaces relativos integradas, consulta [Reescritura de enlaces](/es/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 

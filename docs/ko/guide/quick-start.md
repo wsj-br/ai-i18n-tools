@@ -71,7 +71,9 @@ ai-i18n-tools init -t ui-python -P openrouter
 ai-i18n-tools suggest-models --apply
 ```
 
-해당 설정에는 `ui-python-gettext`, `ui-python-flask` 또는 `ui-python-django`를 사용하세요. 그런 다음 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 따르세요.
+그 다음 [파이썬 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 따르세요.
+
+Django 앱, Flask-Babel 카탈로그를 사용하는 Flask, 또는 이미 `gettext`를 호출하는 앱은 해당 호출을 유지합니다. 대신 `ui-python-django`, `ui-python-flask`, 또는 `ui-python-gettext`로 스캐폴딩한 다음 [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)를 따르세요.
 
 <a id="a-website-or-documentation-site"></a>
 ### 웹사이트 또는 문서 사이트
@@ -92,7 +94,7 @@ ai-i18n-tools suggest-models --apply
 ai-i18n-tools init -t ui-vitepress -P openrouter
 ```
 
-프레임워크의 자체 i18n 라우팅을 먼저 활성화해야 합니다. 그런 다음 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website)를 따르세요.
+그 다음 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website)를 따르세요. 해당 에이전트 프롬프트는 프레임워크의 i18n 라우팅을 활성화합니다. 해당 작업을 검토한 후 `sync`를 실행합니다.
 
 <a id="a-readme-or-markdown-docs"></a>
 ### README 또는 Markdown 문서
@@ -123,11 +125,12 @@ ai-i18n-tools init -t docs-markdown -P openrouter
 프로젝트가 준비되면:
 
 ```bash
+ai-i18n-tools doctor
 ai-i18n-tools sync
 ai-i18n-tools status
 ```
 
-`sync`는 구성에서 활성화한 모든 단계를 순서대로 실행합니다. `status`는 로캘별로 번역된 내용을 보여줍니다. 도구가 텍스트를 볼 수 없는 프로젝트에서 처음 실행하면 오류 없이 완료되고 유용한 내용은 아무것도 기록되지 않으므로, `status`에 문자열이 표시되지 않으면 해당 경로에 대한 가이드로 돌아가세요.
+`doctor`는 구성, 경로, 공급자 및 환경이 준비되었는지 확인합니다. `--local`를 전달하지 않는 한, 공급자와 함께 모델 ID를 확인합니다. `sync`는 구성에서 활성화된 모든 단계를 순서대로 실행합니다. `status`는 로케일별로 번역된 내용을 보여줍니다. 도구가 텍스트를 볼 수 없는 프로젝트에서 첫 실행은 오류 없이 완료되며 유용한 내용을 작성하지 않습니다. 따라서 `status`에 문자열이 표시되지 않으면 경로에 대한 가이드로 돌아가십시오.
 
 ``suggest-models``는 게시된 벤치마크를 기준으로 활성 공급자의 채팅 모델 순위를 매깁니다. ``suggest-models --apply``은 ``translationModels``를 대체하고 ``uiModels`` 및 ``localeModels``는 그대로 둡니다. 동일한 순위가 대시보드 **모델** 탭에 있습니다. 순위가 작동하는 방식과 목록에 둘 이상의 모델이 포함된 이유에 대한 설명은 [AI 모델](/ko/guide/ai-models)을 참조하세요. 명령어 참조: [suggest-models](/ko/reference/cli-commands/models#suggest-models).
 
@@ -158,7 +161,7 @@ ai-i18n-tools status
 
 개별 번역 스크립트를 연결하는 것보다 `sync`을(를) 사용하는 것이 좋습니다. 단일 단계 스크립트는 한 단계만 단독으로 필요할 때만 사용하세요.
 
-CLI 출력과 대시보드를 다른 언어로 표시하려면 `-L <code>`을(를) 전달하거나 `AI_I18N_LANG`을(를) 설정하세요. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
+CLI 출력 및 대시보드를 다른 언어로 표시하려면 `-L <code>`를 전달하거나 `AI_I18N_LANG`를 설정하세요. 자세한 내용은 [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요.
 
 <a id="combined-sync"></a>
 

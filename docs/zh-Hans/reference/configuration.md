@@ -45,7 +45,7 @@
 <a id="concurrency-optional"></a>
 ### `concurrency`（可选）
 
-同时翻译的最大**目标区域设置**（`translate-ui`、`translate-docs`、`translate-svg` 以及 `sync` 中的匹配步骤）。如果省略，CLI 会为 UI 翻译使用**4**，为文档翻译使用**3**（内置默认值）。可以通过 `-j` / `--concurrency` 为每次运行覆盖。
+同时翻译的最大目标区域设置（`translate-ui`、`translate-docs`、`translate-svg`以及`sync`内的匹配步骤）。如果省略，CLI 对 UI 翻译使用 **4**，对文档翻译使用 **3**（内置默认值）。每次运行可通过 `-j` / `--concurrency` 覆盖。
 
 ---
 
@@ -114,13 +114,13 @@
 每个 `providers.<name>` 块接受：
 
 - `translationModels`
-  首选的模型ID有序列表（纯上游ID，无`provider/`前缀；OpenRouter ID保留其原生`vendor/model`形式）。第一个优先尝试；后续条目在出错时作为备用。这是每个管道的全局默认链，当没有更具体的层级适用时。
+  首选的有序模型 ID 列表（纯上游 ID，无 `provider/` 前缀；OpenRouter ID 保留其原生 `vendor/model` 形式）。第一个优先尝试；后续条目在出错时作为回退。这是当没有更具体的层级适用时，每个管道的全局默认链。
 - `uiModels`（可选）
-  用于`translate-ui`、复数生成（步骤0和B阶段）和`proofread-ui`的有序UI专用模型列表。在目标语言环境的任何匹配`localeModels`条目之后，`translationModels`之前尝试。
+  用于 `translate-ui`、复数生成（步骤 0 和 Pass B）以及 `proofread-ui` 的有序 UI 专用模型列表。在目标区域设置匹配的 `localeModels` 条目之后、`translationModels` 之前尝试。
 - `localeModels`（可选）
-  每个语言环境覆盖**所有**翻译管道。`{ "locale": "<BCP-47>", "models": ["…"] }`对象的数组。语言环境标签不区分大小写匹配（`pt-br` = `pt-BR`）。每个语言环境的列表仅在该语言环境优先尝试，然后是管道特定层级（UI为`uiModels`）和`translationModels`。配置加载时会拒绝重复的规范化语言环境键。
+  针对 **所有**翻译管道的按区域设置覆盖。`{ "locale": "<BCP-47>", "models": ["…"] }` 对象数组。区域设置标签不区分大小写匹配（`pt-br` = `pt-BR`）。每个区域设置的列表仅针对该区域设置优先尝试，然后是管道特定层级（UI 的 `uiModels`）和 `translationModels`。重复的标准化区域设置键在配置加载时被拒绝。
 - `baseUrl`
-  OpenAI兼容的基础URL。覆盖预设的基础URL；非预设提供商必需。
+  兼容 OpenAI 的基础 URL。覆盖预设的基础 URL；对于非预设提供者是必需的。
 - `apiKeyEnv`
   包含API密钥的环境变量。覆盖预设环境变量。
 - `headers`
@@ -130,15 +130,24 @@
 - `temperature`
   采样温度。默认值：`0.2`。
 - `requestTimeout`
-  等待对此提供商的每个请求的最长时间（秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45` 秒。在同一对象上，只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待每个请求到此提供者的最大秒数。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供者和顶层配置均未设置超时时，默认为 `45` 秒。在同一对象上仅设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `requestTimeoutMs`
-  等待对此提供商的每个请求的最长时间（毫秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `45000`（45 秒）。在同一对象上，只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待每个请求到此提供者的最大毫秒数。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供者和顶层配置均未设置超时时，默认为 `45000`（45 秒）。在同一对象上仅设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `pricing`（可选）
-  提供商范围内的每百万个令牌的美元成本：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供商报告的 `usage.cost`（除 OpenRouter 和 Cheaper Inference 之外的大多数提供商）时，此费率将应用于该调用的输入和输出令牌。此金额包含在翻译摘要中，并存储在 `api_calls` 行中。匹配的 `modelPricing` 条目会覆盖此默认值。提供商报告的成本永远不会被替换。当没有配置费率匹配时，工具会使用 models.dev 中该模型 ID 的标价（每百万个令牌的输入和输出美元成本）。未存储成本的行仍可通过 [`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [使用情况和成本](/zh-Hans/guide/translation-dashboard/usage) 进行估算。如果这些来源均不适用，则成本保持未知 (`—`)，绝不会为 `$0.00`。
+  提供者范围的每百万令牌美元价格：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供者报告的 `usage.cost`（除 OpenRouter 和 Cheaper Inference 外的大多数提供者）时，此费率应用于该调用的输入和输出令牌。金额包含在翻译摘要中，并存储在 `api_calls` 行上。
+
+成本来源按以下顺序解析：
+
+1. 匹配的 `modelPricing` 条目（覆盖此提供者默认值）；
+  2. 提供者报告的成本（从不替换）；
+  3. 此 `pricing` 费率；
+  4. 该模型 ID 的 models.dev 列表价格（输入和输出每百万令牌美元价格）。
+
+存储时没有成本的记录稍后可以通过 [`usage`](/zh-Hans/reference/cli-commands/workflows#usage) 和 [使用情况和成本](/zh-Hans/guide/translation-dashboard/usage) 估算。如果这些来源都不适用，则成本保持未知（`—`），绝不会是 `$0.00`。
 - `modelPricing`（可选）
-  每百万个令牌的每模型美元成本：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆盖该模型 ID 的 `pricing`。在提供商省略 `usage.cost` 时在调用时应用，并随调用一起存储。
-- `zeroDataRetention` (可选，仅限 `providers.cheaperinference`)
-  当 `true` 时，聊天请求会发送 `"zdr": true` 和 `list-models`；`check-models` 和 `suggest-models` 会加载 `GET /v1/models?zdr=true`。省略表示关闭。请参阅[零数据保留](/zh-Hans/guide/providers-and-models#cheaperinference-zero-data-retention)。
+  每模型每百万令牌美元价格：`{ "<model-id>": { "inputPerMTokens": 2.5, "outputPerMTokens": 10 } }`。覆盖该模型 ID 的 `pricing`。在调用时应用，当提供者省略了 `usage.cost`，并与调用一起存储。
+- `zeroDataRetention`（可选，仅 `providers.cheaperinference`）
+  当 `true` 时，聊天请求发送 `"zdr": true` 和 `list-models`、`check-models` 以及 `suggest-models` 加载 `GET /v1/models?zdr=true`。省略表示关闭。请参阅 [零数据保留](/zh-Hans/guide/providers-and-models#cheaperinference-zero-data-retention)。
 
 内置提供商预设（键 — 基本 URL — API 密钥环境变量）：
 
@@ -246,7 +255,12 @@
 | `translateJson`      | 3        | `json[]`（`translate-json`）下的任意嵌套 JSON。                                                                                                           |
 | `translateSVG`       | —        | 翻译 `.svg` 文件（需要顶层的 `svg` 块）。                                                                                                       |
 
-省略键时，每个标志默认为 `true`。如果省略 `true` 且没有需要翻译的内容，则会跳过：没有 UI 区块包含 `sourceRoots`，没有文档区块包含 `contentPaths` 或 `docusaurusCatalogDir`，`json[]` 没有 `contentPaths`，或者未设置 `svg`。当该流水线没有任务时，将标志写为 `true` 属于配置错误。写入 `false` 会针对 `sync` 关闭该流水线，即使存在源文件也是如此。`--no-ui`、`--no-docs`、`--no-json` 和 `--no-svg` 会在单次运行中跳过该步骤。
+当键被省略时，每个标志默认为 `true`。行为如下：
+
+- 省略的 `true` 且没有要翻译的内容则跳过：没有 UI 块具有 `sourceRoots`，没有文档块具有 `contentPaths` 或 `docusaurusCatalogDir`，`json[]` 没有 `contentPaths`，或 `svg` 未设置。
+- 当该管道没有工作时将标志写为 `true` 是配置错误。
+- 写入 `false` 会关闭该管道对 `sync` 的处理，即使存在来源。
+- `--no-ui`、`--no-docs`、`--no-json` 和 `--no-svg` 跳过该步骤一次运行。
 
 当 `features.translateSVG` 为 true 且配置了顶级 `svg` 区块时，使用 `translate-svg` **翻译** SVG 文件。当标志开启且设置了 `svg` 时，`sync` 命令会运行该步骤（除非 `--no-svg`）。
 
@@ -387,21 +401,21 @@ Docusaurus 布局的源文档根目录（例如 `"docs"`）。省略时默认为
 - `docsOutput.flatPreserveRelativeDir`
 当 `docsOutput.style = "flat"` 时，保留源子目录，以便具有相同基本名称的文件不会冲突。默认 `false`。
 - `docsOutput.rewriteRelativeLinks`
-翻译后重写相对链接（当 `docsOutput.style = "flat"` 且没有自定义 `pathTemplate` 时自动启用）。
+翻译后重写相对链接（当`docsOutput.style = "flat"`且没有自定义`pathTemplate`时自动启用）。
 - `docsOutput.linkRewriteDocsRoot`
-计算扁平链接重写前缀时使用的仓库根目录。通常将其保留为 `"."`，除非您的翻译文档位于不同的项目根目录下。
+计算平面链接重写前缀时使用的仓库根目录。通常将其保留为`"."`，除非您的翻译文档位于不同的项目根目录下。
 - `docsOutput.rewriteVitepressLinks`
-当为 `true` 时，在翻译后运行 VitePress 链接规范化程序。当 `docsOutput.style` 为 `"vitepress"` 时，默认为启用。与任何 `doc-system` 布局一起使用，其中区域设置文件夹位于 `docsRoot` 下的源区域设置文件旁边。源语言为 `sourceLocale`，可以是任何语言。将 README 风格的 `docs/guide/…` 路径重写为站点路由 (`/guide/…`) 和区域设置相关的 `../guide/…` 链接。对于指向 VitePress 树之外的仓库文件（`LICENSE`、`examples/`）的链接，请在源区域设置文件中使用完整 URL——请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
+当`true`时，翻译后运行 VitePress 链接规范化器。当`docsOutput.style`为`"vitepress"`时，默认启用。适用于任何`doc-system`布局，其中语言环境文件夹位于`docsRoot`下的源语言环境文件旁边。源语言是`sourceLocale`，可以是任何语言。将 README 风格的`docs/guide/…`路径重写为站点路由（`/guide/…`）和语言环境相关的`../guide/…`链接。对于指向 VitePress 树外部的仓库文件（`LICENSE`、`examples/`）的链接，请在源语言环境文件中使用完整 URL — 请参阅 [VitePress 集成 — 将 README 作为文档主页](/zh-Hans/guide/integrations/vitepress#readme-and-the-docs-homepage)。
 - `docsOutput.rewriteNextraLinks`
-当为 `true` 时，在翻译后运行 Nextra 链接规范化程序。当 `docsOutput.style` 为 `"nextra"` 时，默认为启用。将 `content/en/…` 和相对 `.mdx` 路径重写为适用于 Next.js `i18n` 的区域设置中立的站点路由 (`/guide/…`)。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
+当`true`时，翻译后运行 Nextra 链接规范化器。当`docsOutput.style`为`"nextra"`时，默认启用。将`content/en/…`和相对`.mdx`路径重写为 Next.js `i18n`的语言环境无关的站点路由（`/guide/…`）。请参阅 [Nextra 集成 — 链接约定](/zh-Hans/guide/integrations/nextra#link-conventions)。
 - `docsOutput.fumadocsParser`
-`"dot"`（默认值）或 `"dir"`。Dot 将 `stem.{locale}.mdx` 写入源区域设置文件旁边；dir 则像 Nextra 一样写入区域设置文件夹。源语言为 `sourceLocale`，可以是任何语言。请参阅 [Fumadocs 集成 — 页面布局](/zh-Hans/guide/integrations/fumadocs#page-layout)。
+`"dot"`（默认）或`"dir"`。Dot 将`stem.{locale}.mdx`写入源语言环境文件旁边；dir 像 Nextra 一样写入语言环境文件夹。源语言是`sourceLocale`，可以是任何语言。请参阅 [Fumadocs 集成 — 页面布局](/zh-Hans/guide/integrations/fumadocs#page-layout)。
 - `docsOutput.rewriteFumadocsLinks`
-当为 `true` 时，在翻译后运行 Fumadocs 链接规范化程序。当 `docsOutput.style` 为 `"fumadocs"` 时，默认为启用。将内容路径和相对 `.mdx` 链接重写为 `/docs/…` 路由。
+当`true`时，翻译后运行 Fumadocs 链接规范化器。当`docsOutput.style`为`"fumadocs"`时，默认启用。将内容路径和相对`.mdx`链接重写为`/docs/…`路由。
 - `docsOutput.fumadocsUiCatalog`
-可选。在 `translate-docs` 内进行 Fumadocs UI 覆盖目录引导 + 翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英语 JSON）、可选的 `outputPathTemplate`（默认值：`catalogPath` 旁边的 `ui.{locale}.json`）。
+可选。Fumadocs UI 覆盖目录引导 + `translate-docs`内部的翻译。字段：`sourcePath`（例如 `lib/layout.shared.ts`）、`catalogPath`（生成的英文 JSON）、可选的`outputPathTemplate`（默认：`ui.{locale}.json`在`catalogPath`旁边）。
 - `docs[].fumadocsMetaGlob`
-当 `docsOutput.style` 为 `"fumadocs"` 时，用于 `meta.json` 集合的可选 glob 模式。默认值：`docsOutput.docsRoot` 下的递归 `meta.json`。
+当`docsOutput.style`为`"fumadocs"`时，用于`meta.json`收集的可选 glob 模式。默认：`docsOutput.docsRoot`下的递归`meta.json`。
 - `docs[].fumadocsMetaTranslatableKeys`
 在 Fumadocs `meta.json` 中翻译其字符串值的属性名称（默认值：`title`、`description`）。
 - `docsOutput.localizedAssets`
@@ -525,7 +539,7 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 - `quality` — 默认 ChrF `0.45`，Arena `0.35`，价格 `0.20`，质量下限 `0.7`
 - `price` — 默认 ChrF `0.35`，Arena `0.20`，价格 `0.45`，质量下限 `0.6`
 
-每个配置文件对象需要 `chrf`、`arena` 和 `price`。每个值都是有限的，并且至少为 `0`，并且至少有一个值大于 `0`。它们被归一化为总和为 1，因此 `45`、`35` 和 `20` 与质量默认值匹配。`qualityFloor` 是可选的，在 `(0, 1]` 范围内，并且是候选池中最佳 ChrF 的分数。低于下限的模型，包括任何没有 ChrF 测量的模型，排在清除下限的模型之后。
+每个配置文件对象都需要`chrf`、`arena`和`price`。每个值都是有限的且至少为`0`，并且至少有一个大于`0`。它们被归一化，总和为 1，因此`45`、`35`和`20`与质量默认值匹配。`qualityFloor`是可选的，范围在`(0, 1]`内，并且是候选池中最佳 ChrF 的分数。低于下限的模型，包括任何没有 ChrF 测量的模型，排在高于下限的模型之后。
 
 ```json
 "modelSuggestion": {

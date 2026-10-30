@@ -41,11 +41,12 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 <a id="which-example-matches-my-project"></a>
 ## どの例がプロジェクトに合致しますか？
 
-- JS/TS アプリケーションの場合：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md)（最小）または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。ガイド：[JS/TS アプリケーションに i18n を追加する](/ja/guide/add-i18n-to-js)。
-- Python アプリケーションの場合：python-streamlit、python-flask、python-fastapi、または python-gettext。ガイド：[Python アプリケーションに i18n を追加する](/ja/guide/add-i18n-to-python)。
-- ウェブサイトまたはドキュメントサイトの場合：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html、または plain-html-docs。ガイド：[ウェブサイトまたはドキュメントサイトに i18n を追加する](/ja/guide/add-i18n-to-website)。
-- アプリケーションの隣にあるリポジトリの README の場合：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)（nextjs の例にはドキュメントサイトも含まれます）。ガイド：[README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme)。
-- その他：multi-provider、test-markdown、および intlayer-migration。
+- JS/TSアプリ: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (最小) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。ガイド: [JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)。
+- Pythonアプリ: python-streamlit、python-flask、または python-fastapi。ガイド: [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)。
+- DjangoまたはGNU gettextアプリ: python-gettext (gettextコマンドラインツール。Djangoの例のディレクトリはありません)。ガイド: [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。
+- ウェブサイトまたはドキュメントサイト: docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html、または plain-html-docs。ガイド: [ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)。
+- アプリの隣にあるリポジトリのREADME: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjsの例にはドキュメントサイトも含まれています)。ガイド: [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)。
+- その他: multi-provider、test-markdown、および intlayer-migration。
 
 <a id="list-of-examples"></a>
 ## 例のリスト
@@ -80,7 +81,7 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 | [**nextra-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs/README.md) | Nextra 4 MDX + `_meta.ts` / 辞書 `.ts` シェル、さらに1つの`t()`サーバーコンポーネント（`pt-BR`、`zh-Hans`） | `npx degit wsj-br/ai-i18n-tools/examples/nextra-docs nextra-docs` | `pnpm run dev` (`:3070`) |
 | [**fumadocs-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs/README.md) | Fumadocs 4 MDX + `meta.json` / UI カタログ (`pt`, `zh`, ドットパーサー) | `npx degit wsj-br/ai-i18n-tools/examples/fumadocs-docs fumadocs-docs` | `pnpm run dev` (`:3080`) |
 | [**plain-html**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html/README.md) | プレーン HTML + `data-i18n*` マーカー; 静的ロケール JSON (ダッシュボード形式の UI) | `npx degit wsj-br/ai-i18n-tools/examples/plain-html plain-html` | `pnpm dev` (`:3090`) |
-| [**プレーンHTMLドキュメント**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | ドキュメントとしてのプレーンHTML: ロケールごとに1ページ、ローカライズされた画像、hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
+| [**plain-html-docs**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs/README.md) | ドキュメントとしてのプレーンHTML: ロケールごとに1ページ、ローカライズされた画像、hreflang | `npx degit wsj-br/ai-i18n-tools/examples/plain-html-docs plain-html-docs` | `pnpm dev` (`:3092`) |
 | [**multi-provider**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/multi-provider/README.md) | LLM プロバイダーを選択またはベンチマーク (`-P` / `--provider`) | `npx degit wsj-br/ai-i18n-tools/examples/multi-provider multi-provider` | `ai-i18n-tools translate-docs -P openai --force` |
 | [**test-markdown**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/test-markdown/README.md) | Markdown / CJK 翻訳 (デーヴァナーガリー、MDX) の回帰テスト | `npx degit wsj-br/ai-i18n-tools/examples/test-markdown test-markdown` | `pnpm build` |
 | [**intlayer-migration**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/intlayer-migration/README.md) | Intlayer `.content.ts` → `t()` (`migrate-intlayer`, リセット + AIエージェントレポート) | `npx degit wsj-br/ai-i18n-tools/examples/intlayer-migration intlayer-migration` | `pnpm reset && pnpm dev` (`:3091`) |

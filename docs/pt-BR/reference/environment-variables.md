@@ -46,4 +46,4 @@ Estas duas variáveis substituem `baseUrl` para um provedor configurado. Todos o
 | `NO_COLOR`              | Quando `1`, desativa as cores ANSI na saída de log.              |
 | `I18N_LOG_SESSION_MAX`  | Número máximo de linhas mantidas por sessão de log (padrão `5000`).           |
 
-Na inicialização, a CLI também carrega automaticamente um arquivo `.env` do diretório de trabalho atual (via `process.loadEnvFile` do Node), para que as chaves de API do provedor sejam capturadas em shells não interativos que não carregam `.envrc` / `direnv`. Variáveis já presentes no ambiente nunca são substituídas, então os valores reais de CI/produção ainda prevalecem.
+Na inicialização, a CLI também carrega automaticamente um arquivo `.env` do diretório de trabalho atual (via `process.loadEnvFile` do Node), para que as chaves de API do provedor sejam carregadas em shells não interativos que não carregam `.envrc` via `direnv`. Variáveis já presentes no ambiente nunca são sobrescritas, para que os valores reais de CI/produção tenham precedência.

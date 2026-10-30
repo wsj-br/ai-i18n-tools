@@ -3,9 +3,9 @@
 
 翻译仪表板是一个本地 Web UI，用于检查和编辑项目的翻译数据。它从三个存储中读取：
 
-- SQLite 缓存（`cacheDir`）—— 文档段落翻译、失败记录、Markdown 问题扫描、计费 API 调用用量
-- **`strings.json`** —— UI 字符串目录（普通字符串和复数组）
-- **用户术语表 CSV**（`glossary.userGlossary`）—— `translate-ui` 和 `proofread-ui` 的术语提示
+- SQLite 缓存 (`cacheDir`) — 文档片段翻译、失败记录、Markdown 问题扫描、已计费的 API 调用使用情况
+- `strings.json` — UI 字符串目录（普通字符串和复数组）
+- **用户词汇表 CSV** (`glossary.userGlossary`) — 适用于 `translate-ui` 和 `proofread-ui` 的术语提示
 
 在翻译运行后使用它来查找问题、覆盖错误输出或检查缓存覆盖率 — 无需手动深入研究 SQLite 或 JSON。
 
@@ -48,7 +48,7 @@ ai-i18n-tools dashboard
 | UI 字符串或复数 | 纯 `sync` 或 `translate-ui` | `--force`（覆盖 `user-edited` 行） |
 | 词汇表行 | 下一个 `translate-ui` 或 `proofread-ui` | — |
 
-**文档（SQLite 缓存）** — 在缓存中，手动编辑会使用模型 `user-edited` 进行标记。未通过区域设置书写系统检查的编辑（例如 `hi` 的罗马拼音）会显示警告；确认后仍会保存文本。对未更改的源文本重新运行 `translate-docs` 或 `sync` 会重用缓存的翻译（不调用 LLM）。运行 `sync --force-update` 或 `translate-docs --force-update` 可从缓存刷新磁盘上的 markdown。使用 `--check-cache` 可重新验证原生脚本的区域设置，而无需重写每个文件（包括已确认的错误脚本编辑）。仅当您想绕过缓存并从 LLM 重新翻译（覆盖手动修复）时，才使用 `--force`。
+**文档（SQLite 缓存）** — 手动编辑在缓存中以模型 `user-edited` 进行标记。未通过区域设置书写系统检查的编辑（例如，`hi` 的罗马化印地语）会显示警告；确认后仍会保存文本。在未更改的源上重新运行 `translate-docs` 或 `sync` 会重用缓存的翻译（无需 LLM 调用）。运行 `sync --force-update` 或 `translate-docs --force-update` 以从缓存刷新磁盘上的 Markdown。使用 `--check-cache` 重新验证原生脚本区域设置，而无需重写每个文件（包括已确认的错误脚本编辑）。仅当您想绕过缓存并从 LLM 重新翻译时才使用 `--force`（会覆盖手动修复）。
 
 **UI 字符串 (`strings.json`)** — 手动编辑在 `models[locale]` 中用 `user-edited` 标记。重新运行 `translate-ui` 或 `sync` 会跳过已存在翻译的条目。在 UI 命令上使用 `--force` 以重新翻译并覆盖手动修复。
 

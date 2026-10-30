@@ -37,7 +37,8 @@ JavaScript/TypeScriptアプリ、Pythonアプリ、ドキュメントサイト�
 | お持ちのもの | ここから開始 |
 | --- | --- |
 | ソースにプレーンテキストを含むJS/TSアプリ（React、Next.js、Node、CLI） | [JS/TSアプリにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-js) |
-| Pythonアプリ（Streamlit、FastAPI、Flask、Django、gettext） | [Pythonアプリにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-python) |
+| Pythonアプリ（Streamlit、FastAPI、Flask、デスクトップ、スクリプト） | [Pythonアプリにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-python) |
+| Djangoアプリ、Flask-Babelカタログ、またはGNU gettextをすでに使用しているアプリ | [Django / Python gettextアプリにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-django-gettext) |
 | ウェブサイトまたはドキュメントサイト（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、プレーンHTML） | [ウェブサイトまたはドキュメントサイトにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-website) |
 | リポジトリのREADMEおよびその他のMarkdownファイル（アプリの有無にかかわらず） | [READMEとMarkdownドキュメントにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-readme) |
 | すでに`t()`または`_()`を呼び出しているコード | [UI文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) |
@@ -94,6 +95,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 | --- | --- | --- |
 | JS/TSアプリ | `ai-i18n-tools init -P openrouter` | [JS/TSアプリにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-js) |
 | Pythonアプリ | `ai-i18n-tools init -t ui-python -P openrouter` | [Pythonアプリにi18nを追加](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-python) |
+| DjangoまたはGNU gettextアプリ | `ai-i18n-tools init -t ui-python-django -P openrouter`（または`ui-python-gettext`、`ui-python-flask`） | [Django / Python gettextアプリにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-django-gettext) |
 | ウェブサイトまたはドキュメントサイト | `ai-i18n-tools init -t ui-vitepress -P openrouter` (フレームワークのテンプレートを入れ替えます) | [ウェブサイトまたはドキュメントサイトにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-website) |
 | アプリの有無にかかわらずREADME | `ai-i18n-tools init -P openrouter` (JS/TSアプリ + README) または `init -t docs-markdown` | [READMEとMarkdownドキュメントにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-readme) |
 
@@ -101,7 +103,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 JS/TSアプリは、まずテキストを `t()` で囲む必要があります。プレーンテキストで実行すると、`sync` はエラーなしで終了し、何も有用なものを書き込みません。また、サイトのフレームワークは、`sync` の前に独自のi18nルーティングが有効になっている必要があります。
 
-ウェブサイト用テンプレート: `ui-starlight`、`ui-docusaurus`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、および `ui-plain-html` または `docs-plain-html`。READMEとMarkdownのみ: `docs-markdown`。READMEブロックを含めるには、他のテンプレートに `--with-readme` を追加します。その他のPythonテンプレート: `ui-python-gettext`、`ui-python-flask`、`ui-python-django`。ネストされたi18next JSON: `ui-json-bundles`。全リスト: [CLIセットアップリファレンス](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/setup)。
+ウェブサイト用テンプレート: `ui-starlight`、`ui-docusaurus`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`、および`ui-plain-html`または`docs-plain-html`。READMEとMarkdownのみ: `docs-markdown`。他のテンプレートに`--with-readme`を追加して、READMEブロックを含めます。Python gettextアプリ: `ui-python-django`、`ui-python-flask`、`ui-python-gettext`。ネストされたi18next JSON: `ui-json-bundles`。全リスト: [CLIセットアップリファレンス](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/setup)。
 
 `suggest-models` は、公開されているベンチマークからアクティブなプロバイダーのチャットモデルをランク付けし、`suggest-models --apply` は `translationModels` を置き換えます。同じランキングは [モデル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/translation-dashboard/models) タブにあります。ガイド: [AI モデル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ai-models)。コマンドリファレンス: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/models#suggest-models)。
 
@@ -114,11 +116,12 @@ JS/TSアプリは、まずテキストを `t()` で囲む必要があります�
 - [インストール](https://wsj-br.github.io/ai-i18n-tools/ja/guide/installation) · [クイックスタート](https://wsj-br.github.io/ai-i18n-tools/ja/guide/quick-start) · [LLM プロバイダー](https://wsj-br.github.io/ai-i18n-tools/ja/guide/providers-and-models) · [AI モデル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ai-models)
 - [UI 文字列](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/) · [プレーン HTML](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ja/guide/ui-strings/python) · [ドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/) · [HTML ページ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ja/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ja/guide/svg-translation/)
 - [Intlayer](https://intlayer.org/) — [辞書をインプレースで翻訳](https://wsj-br.github.io/ai-i18n-tools/ja/guide/translating-intlayer) · [ソース文字列の呼び出しに移行](https://wsj-br.github.io/ai-i18n-tools/ja/guide/migrating-from-intlayer)
-- [統合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro、および [Python](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/python)
-- [プロジェクトにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-your-project) — [JS/TSアプリ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-js) · [Pythonアプリ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-python) · [ウェブサイトまたはドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-website) · [READMEとMarkdownドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-readme) · [パイプラインの結合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/combining-pipelines)
+- [統合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro、および[Python](https://wsj-br.github.io/ai-i18n-tools/ja/guide/integrations/python)
+- [プロジェクトにi18nを追加する](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-your-project) — [JS/TSアプリ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-js) · [Pythonアプリ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-python) · [Django / gettextアプリ](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-django-gettext) · [ウェブサイトまたはドキュメントサイト](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-website) · [READMEとMarkdownドキュメント](https://wsj-br.github.io/ai-i18n-tools/ja/guide/add-i18n-to-readme) · [パイプラインの結合](https://wsj-br.github.io/ai-i18n-tools/ja/guide/combining-pipelines)
 - [CLIリファレンス](https://wsj-br.github.io/ai-i18n-tools/ja/reference/cli-commands/) · [設定](https://wsj-br.github.io/ai-i18n-tools/ja/reference/configuration) · [ランタイムヘルパー](https://wsj-br.github.io/ai-i18n-tools/ja/guide/runtime-helpers)
 - [例](https://wsj-br.github.io/ai-i18n-tools/ja/examples) — 実行可能なデモ (`npx degit …`)
-- [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマーリポジトリにおけるアシスタントの統合ガイド
+- [AIエージェントコンテキスト](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — コンシューマープロジェクト向けの簡潔なプロンプト / `AGENTS.md` エントリポイント
+- [ポータブルエージェントスキル](https://github.com/wsj-br/ai-i18n-tools/tree/main/skills) — 1回のインストールで、ワークフローごとにスラッシュコマンド: `npx skills add wsj-br/ai-i18n-tools --all -y` (Node.js 22.20+); [インストールガイド](https://wsj-br.github.io/ai-i18n-tools/ja/guide/coding-agent-skill)
 
 <a id="contributing"></a>
 ## コントリビュート

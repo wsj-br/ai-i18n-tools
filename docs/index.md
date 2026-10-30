@@ -44,7 +44,7 @@ One language today? Start here. That language can be any language: set it as `so
 <a id="javascript-or-typescript-app"></a>
 ### JavaScript or TypeScript app
 
-Turn plain-text buttons, labels, and messages into a multilingual UI. Set up your runtime, mark the text to translate, and wire language switching. Includes coding-agent prompts for the preparation step.
+Turn plain-text buttons, labels, and messages into a multilingual UI. Set up your runtime, mark the text to translate, and connect language switching. Includes coding-agent prompts for the preparation step.
 
 React · Next.js · Node.js · CLI
 
@@ -118,7 +118,7 @@ Not sure which path fits? [Add i18n to your project](/guide/add-i18n-to-your-pro
 
 1. **Prepare your project.** Pick your languages, a translation provider, and the models to try. For apps, mark user-facing text and set up the translation runtime. For sites, enable your framework's language routing. The guides include coding-agent prompts where source changes are needed.
 2. **Translate into files you can use.** Once setup is ready, run `sync`. It extracts supported app strings, translates the content you enabled, and writes locale files or localised pages.
-3. **Load, check, and keep going.** Connect the output to your app or site, wire language switching, and check a target language. Rerun after source changes to translate new or changed text.
+3. **Load, check, and keep going.** Connect the output to your app or site, connect language switching, and check a target language. Rerun after source changes to translate new or changed text.
 
 </div>
 

@@ -33,7 +33,7 @@
 | | `src/glossary/` | 詞彙表載入、術語提示，以及用於提示詞的選用專案情境檔案 |
 | | `src/utils/` | 記錄器、雜湊、忽略解析器、顯示寬度表格、`.env` 載入器 |
 | **您的應用程式執行階段** | `src/runtime/` | i18next 輔助程式和顯示工具 — 匯出為 `'ai-i18n-tools/runtime'` ([執行階段輔助程式](/zh-Hant/guide/runtime-helpers)) |
-| **工具 UI** *(內部測試)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此套件自己的 CLI 和翻譯儀表板 — 與您的專案內容分開 ([自我本地化](#self-localization-tool-ui)) |
+| **工具使用者介面** *(內部測試)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本套件的 CLI 和翻譯儀表板的本地化 — 與您的專案內容分開 ([自我本地化](#self-localisation-tool-ui)) |
 
 所有用於程式化用途的內容都從 `src/index.ts` 重新匯出 ([程式化 API](/zh-Hant/reference/programmatic-api))。
 
@@ -125,7 +125,7 @@ i18next 會將這些載入為資源套件，並透過來源字串 (預設值即�
 - 傳送字串的 JSON 陣列，並要求傳回翻譯的 JSON 陣列。
 - 可用時包含詞彙表提示。
 
-`LlmClient.translateUIBatch` 會依序嘗試每個模型，在發生剖析、網絡或腳本錯誤 (包括原生腳本語系的羅馬化/拉丁文備援) 時進行備援。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標語系建立該清單 (請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。
+`LlmClient.translateUIBatch` 依序嘗試每個模型，在剖析、網路或錯誤指令碼錯誤時回退 (包括針對原生指令碼地區設定的羅馬化/拉丁文回退)。CLI 會根據 `localeModels`、選用的 `uiModels` 和 `translationModels` 為每個目標地區設定建立該清單 (請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。
 
 ---
 
@@ -203,7 +203,18 @@ Astro 模板和 MDX JSX 的共享屬性/鍵保護在 `src/processors/expression-
 
 SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash, locale)`，包含 `translated_text`、`model`、`filepath`、`last_hit_at` 和相關欄位。雜湊是正規化內容（空白字元折疊）的前 16 個十六進位字元的 SHA-256。
 
-在每次執行時，區段會透過雜湊 × 語系進行查詢。只有快取未命中才會傳送至 LLM。翻譯後，目前翻譯範圍中未命中的區段列會重設 `last_hit_at`。文件翻譯期間成功的快取命中會清除該區段過時的 `translation_failures` 列。`cleanup` 會先執行 `sync --force-update`，接著移除過時的區段列（null `last_hit_at` / 空白檔案路徑），當解析後的來源路徑在磁碟上不存在時修剪 `file_tracking` 鍵（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除元資料檔案路徑指向不存在檔案的翻譯列，修剪孤立的 `translation_failures` 列，修剪解析後來源路徑在磁碟上不存在的孤立 `markdown_source_issues` 列，並捨棄設定中缺少語系的快取列（`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`；僅限 SQLite — 使用 `purge-locale` 來刪除產生的檔案）；除非傳遞了 `--backup <path>`，否則它不會備份 `cache.db`，傳遞時會先將備份寫入該路徑。
+每次執行時，區段會依雜湊 × 地區設定進行查詢。只有快取未命中才會傳送至 LLM。翻譯後，針對目前翻譯範圍中未命中的區段列，`last_hit_at` 會重設。文件翻譯期間成功的快取命中會清除該區段的過時 `translation_failures` 列。
+
+`cleanup` 會先執行 `sync --force-update`，然後：
+
+- 移除過時的區段列 (空值 `last_hit_at` / 空檔案路徑)；
+- 當解析的來源路徑在磁碟上遺失時，修剪 `file_tracking` 鍵 (例如 `doc-block:…`、`json-block:…`、`svg-files:…` 等)；
+- 移除其中繼資料檔案路徑指向遺失檔案的翻譯列；
+- 修剪孤立的 `translation_failures` 列；
+- 修剪其解析的來源路徑在磁碟上遺失的孤立 `markdown_source_issues` 列；
+- 捨棄設定中不存在的地區設定的快取列 (`sourceLocale`、根 `targetLocales`，以及任何每個區塊的 `docs[]` / `json[]` `targetLocales`)；(僅限 SQLite — 使用 `purge-locale` 刪除產生的檔案)。
+
+除非傳遞 `--backup <path>`，否則它不會備份 `cache.db`，這會先將備份寫入該路徑。
 
 計費的模型呼叫（已接受的翻譯與已捨棄的重試）會儲存在 `api_calls` 中。在執行記錄呼叫的命令後，超過七個 UTC 曆日的詳細資料列會彙總至月度 `api_totals`。`usage` 與儀表板的「使用量與成本」檢視會合併這兩個資料表。請參閱[使用量與成本](/zh-Hant/guide/translation-dashboard/usage)。
 
@@ -289,14 +300,14 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 `Logger` 支援 `debug`、`info`、`warn`、`error` 層級，並帶有 ANSI 顏色輸出。詳細模式（`-v`）啟用 `debug`。當設定了 `logFilePath` 時，記錄行也會寫入該檔案。
 
 <a id="self-localisation-tool-ui"></a>
-### 工具使用者介面自行本地化
+### 自我本地化 (工具使用者介面)
 
-此工具會將其自身的使用者介面（命令列說明、高流量記錄/摘要/錯誤訊息，以及翻譯儀表板）與您需要翻譯的內容分開進行本地化。
+此工具會將其自己的使用者介面 — CLI 說明、高流量日誌/摘要/錯誤訊息，以及翻譯儀表板 — 與其為您翻譯的內容分開進行本地化。
 
-- **語系解析** (`resolveUiLocale` in `src/core/ui-locale.ts`): 依序從 `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定檔 `uiLanguage` > 主機作業系統語系 (`Intl.DateTimeFormat().resolvedOptions().locale`) 挑選 UI 語系。候選語系會經過正規化，並與隨附的套件組合進行完全相符或最接近變體的比對 (例如 `pt-PT` → `pt-BR`、`en-US` → `en-GB`)，若無相符項則退回至來源語系 (`en-GB`)。CLI 會在說明建置前解析一次 (預先剖析 argv 掃描)，並在設定檔載入後再解析一次，以便套用 `uiLanguage` (旗標與環境變數仍優先)。
-- **執行階段** (`src/i18n/index.ts`): 一個最小化的 `t(source, vars)`，具有 <code v-pre>{{name}}</code> 內插功能，以英文來源字串為鍵，對應 `src/i18n/locales/<code>.json` 中各語系的單層套件組合 (在建置時複製到 `dist/i18n/locales`)。遺失的鍵或套件組合會傳回來源文字。這與 UI 字串使用相同的「以鍵為預設值」模型 — 沒有雜湊查詢。
-- **儀表板**: 伺服器會公開 `GET /api/ui-i18n`，為已解析的 UI 語系傳回 `{ locale, dir, bundle }`；前端會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性將靜態標記在地化。
-- **內部測試**: 套件組合由 `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) 產生，它會擷取並翻譯 `ai-i18n-tools.config.json` 中的 CLI 與儀表板 `ui` 區塊。目錄鍵來自遍佈於 `src/cli/` 與 `src/i18n/` 的 `t()` 呼叫，以及 `src/dashboard-app/index.html` 中儀表板的 `data-i18n*` 標記。
+- **地區設定解析** (`resolveUiLocale` 於 `src/core/ui-locale.ts`)：從 `-L` / `--ui-lang` > `AI_I18N_LANG` > 設定 `uiLanguage` > 主機作業系統地區設定 (`Intl.DateTimeFormat().resolvedOptions().locale`) 中選取 UI 地區設定。候選項目會正規化，並與隨附的套件集完全比對或依最接近的變體比對 (例如 `pt-PT` → `pt-BR`、`en-US` → `en-GB`)，回退至來源地區設定 (`en-GB`)。CLI 會在建置說明之前 (預先剖析 argv 掃描) 解析一次，並在載入設定後再次解析，以便 `uiLanguage` 適用 (旗標和環境變數仍然優先)。
+- **執行階段** (`src/i18n/index.ts`)：具有 <code v-pre>{{name}}</code> 內插的最小 `t(source, vars)`，透過英文來源字串對應 `src/i18n/locales/<code>.json` 中扁平的每個地區設定套件 (在建置時複製到 `dist/i18n/locales`)。遺失的鍵或套件會傳回來源文字。這與 UI 字串的「鍵即預設值」模型相同 — 沒有雜湊查詢。
+- **儀表板**：伺服器會公開 `GET /api/ui-i18n`，傳回解析的 UI 地區設定的 `{ locale, dir, bundle }`；前端會設定 `<html lang>` / `dir`，並透過 `data-i18n*` 屬性本地化靜態標記。
+- **內部測試**：套件由 `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) 產生，它會擷取並翻譯 `ai-i18n-tools.config.json` 中的 CLI 和儀表板 `ui` 區塊。目錄鍵來自 `src/cli/` 和 `src/i18n/` 中的 `t()` 呼叫，以及 `src/dashboard-app/index.html` 中儀表板的 `data-i18n*` 標記。
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

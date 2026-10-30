@@ -34,9 +34,13 @@
 
 후보는 공급자의 `GET /models` 목록에서 가져옵니다. `providers.cheaperinference.zeroDataRetention`이 true인 경우, 해당 요청은 `GET /v1/models?zdr=true`입니다. 만료된 행과 비채팅 행(임베딩, 음성, 이미지, 비디오, 중재, 리랭커)은 제외됩니다. 해당 카탈로그 요청이 실패하면 명령은 1로 종료됩니다.
 
-`--quality`이 기본값입니다. 이 설정은 가격보다 ChrF와 Arena 점수에 더 높은 가중치를 둡니다. `--price`은 해당 점수보다 가격에 가중치를 두면서도 품질 하한선을 유지하므로, 측정되지 않은 저가형 모델이 목록 상단으로 올라오지 않습니다. 두 플래그를 모두 전달하는 것은 오류입니다. 아무것도 전달하지 않으면 품질 우선으로 설정됩니다. 구성의 선택적 `modelSuggestion` 가중치는 두 프로필 중 하나를 대체합니다. [구성](/ko/reference/configuration#modelsuggestion-optional)을 참조하세요. 동일한 가중치가 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에서도 사용됩니다.
+`--quality`이(가) 기본값입니다. 이는 ChrF 및 Arena 점수에 가격보다 더 높은 가중치를 부여합니다. `--price`은(는) 해당 점수보다 가격에 더 높은 가중치를 부여하면서도 품질 하한선을 유지하므로, 측정되지 않은 저렴한 모델이 목록 상단으로 올라가지 않습니다. 두 플래그를 모두 전달하면 오류가 발생합니다. 둘 다 전달하지 않으면 품질을 의미합니다. 구성의 선택적 `modelSuggestion` 가중치는 두 프로필 중 하나를 대체합니다. [구성](/ko/reference/configuration#modelsuggestion-optional)을 참조하십시오. 동일한 가중치는 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에서도 사용됩니다.
 
-ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation_to` 행의 평균이며, 이 프로젝트의 `sourceLocale` 및 `targetLocales`로 제한됩니다. 로캘은 languagebench 언어 코드(기본 하위 태그, `pt-BR`를 `pt`으로, `zh-Hant`을 `zh` 및 `yue`로 매핑하는 등의 몇 가지 별칭 포함)에 매핑됩니다. 빈 세트인 경우 `en`을 사용합니다. Arena는 Elo가 아닌 LMArena의 전체 Arena 점수입니다. 순위 산정 가격은 100만 토큰당 `(3 × input + output) / 4` USD입니다. 가격 출처는 0이 아닌 카탈로그 요금이며, 그다음은 models.dev 입력 및 출력 요금, 마지막으로 languagebench의 단일 비용 수치 순입니다. 카탈로그 가격이 `0`인 경우 무료가 아니라 가격이 책정되지 않은 것입니다. 알 수 없는 가격은 품질 프로필에서는 중립으로, 가격 프로필에서는 최악으로 간주됩니다. ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. ChrF 또는 Arena가 누락되었을 때 사용되는 `0.35` 및 `0.45` 대용값은 지수에만 영향을 미치며, 테이블에는 `—`가 출력됩니다.
+ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation_to` 행의 평균이며, 이 프로젝트의 `sourceLocale` 및 `targetLocales`로 제한됩니다. 로케일은 languagebench 언어 코드(기본 하위 태그이며, `pt-BR`를 `pt`으로, `zh-Hant`을 `zh`으로, 그리고 `yue`와 같은 몇 가지 별칭이 있습니다)로 매핑됩니다. 빈 세트는 `en`을 사용합니다. Arena는 LMArena 전체 Arena 점수이며, Elo가 아닙니다.
+
+순위 가격은 100만 토큰당 `(3 × input + output) / 4` USD입니다. 해당 출처는 다음 순서로 결정됩니다: 0이 아닌 카탈로그 요율, 그 다음 models.dev 입력 및 출력 요율, 그 다음 languagebench의 단일 비용 수치. `0`의 카탈로그 가격은 가격이 책정되지 않은 것이며, 무료가 아닙니다. 알 수 없는 가격은 품질 프로필에서는 중립적이며, 가격 프로필에서는 최악입니다.
+
+ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. 누락된 ChrF 또는 Arena에 사용되는 `0.35` 및 `0.45` 대체 값은 인덱스에만 영향을 미치며, 테이블에는 대신 `—`가 출력됩니다.
 
 기준치를 통과한 행이 먼저 표시되고, 그 다음 높은 인덱스, 그 다음 저렴한 혼합 가격 순입니다. `--top` (기본값 `8`, 1 이상의 정수)는 아래 필터 적용 후 테이블, `--json` 조각, 그리고 `--apply`를 함께 제한합니다.
 
@@ -54,7 +58,7 @@ ChrF는 메트릭이 `chrf`인 languagebench `translation_from` 및 `translation
 
 `--apply`는 현재 구성을 형제 `ai-i18n-tools.config.{timestamp}.backup.json`로 복사합니다(또는 `-c`이 다른 파일의 이름을 지정하는 경우 `{name}.{timestamp}.backup.json`로 복사). 그런 다음 `providers.<active>.translationModels`를 해당 ID로 바꿉니다. 이름 충돌이 발생하면 `.backup.json` 앞에 `-2`, `-3` 등이 추가됩니다. 복사에 실패하면 구성 파일은 변경되지 않은 상태로 유지됩니다. `uiModels` 및 `localeModels`는 변경되지 않은 상태로 유지됩니다. 점수는 구성 파일에 기록되지 않습니다. 대시보드의 **구성 업데이트** 버튼은 동일한 백업을 기록합니다.
 
-벤치마크 데이터는 `<cacheDir>/benchmark-scores.json`(보통 `.translation-cache/benchmark-scores.json`)에 7일 동안 캐시됩니다. 원시 데이터 세트는 런타임에 다운로드되며 패키지에 포함되어 있지 않습니다. `--refresh`는 languagebench, Arena 및 models.dev를 다시 다운로드합니다. `--refresh` 중에 실패한 소스는 이전 캐시에서 채워지지 않습니다. `--refresh`가 없으면, 다운로드 실패 시 캐시된 슬라이스를 재사용합니다. languagebench나 Arena 중 하나가 실패하면, 해당 명령은 다른 소스로 순위를 매기고 어떤 소스가 실패했는지 알립니다. 둘 다 실패하면 1을 반환하고 종료됩니다. models.dev가 실패해도 카탈로그 가격은 그대로 유지됩니다. 대시보드에는 새로 고침 제어 기능이 없으므로, CLI에서 `--refresh`를 실행한 다음 Models 탭을 새로 고침하십시오.
+벤치마크 데이터는 `<cacheDir>/benchmark-scores.json`(일반적으로 `.translation-cache/benchmark-scores.json`)에 7일 동안 캐시됩니다. 원시 데이터 세트는 런타임에 다운로드되며 패키지에 포함되어 제공되지 않습니다. `--refresh`는 languagebench, Arena 및 models.dev를 다시 다운로드합니다. `--refresh` 중에 실패한 소스는 이전 캐시에서 채워지지 않습니다. `--refresh`가 없으면 실패한 다운로드는 캐시된 슬라이스를 재사용합니다. languagebench 또는 Arena 중 하나가 실패하면, 명령은 다른 하나로 순위를 매기고 어떤 소스가 실패했는지 알려줍니다. 둘 다 실패하면 1로 종료됩니다. models.dev 실패는 카탈로그 가격을 그대로 유지합니다. 대시보드에는 새로 고침 제어가 없습니다. CLI에서 `--refresh`를 실행한 다음 모델 탭을 다시 로드하십시오.
 
 바닥글은 languagebench(CC BY-SA 4.0), LMArena Arena 점수(CC BY 4.0) 및 models.dev(MIT)의 출처를 밝힙니다.
 

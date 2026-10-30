@@ -8,7 +8,7 @@
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
 
-選擇表格 (包含每個框架的 init 範本和代理程式提示) 位於 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#initialise-the-project)。Python 框架：[Python](/zh-Hant/guide/integrations/python)。
+選擇器表格（每個框架有一個初始化範本）位於 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website#initialise-the-project) 中。該頁面上的逐步解說提示會啟用該框架的 i18n 功能。下方的整合頁面保留了 shell-catalog 的詳細資訊。Python 框架：[Python](/zh-Hant/guide/integrations/python)。
 
 <a id="shared-concepts"></a>
 ## 共用概念

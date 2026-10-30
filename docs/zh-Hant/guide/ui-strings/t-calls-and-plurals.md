@@ -50,8 +50,8 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **您不需要手動撰寫複數形式。** 在原始碼中，只需撰寫一次訊息，並在第二引數中傳遞兩樣東西：
 
-1. **`plurals: true`** — 告訴提取指令與 `translate-ui` 此呼叫是一個基數複數群組。
-2. **`count`** — i18next 在執行階段用來挑選正確形式的數字。
+1. `plurals: true` — 告知 extract 和 `translate-ui` 此呼叫為基數複數群組。
+2. `count` — i18next 在執行時用來選擇正確形式的數字。
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ t('Hello {{name}}, you have {{count}} messages', { name, count })
 
 **驗證：** 如果訊息包含 **兩個或更多** 不同的 <code v-pre>{{…}}</code> 佔位符，**其中一個必須是** <code v-pre>{{count}}</code>（複數軸）。否則 `extract` 會 **失敗** 並給出明確的檔案/行號訊息。
 
-在 LLM 傳回 CLDR 形式後，`translate-ui` 也會根據 **原始開發者字面值** 檢查每個形式：每個來源佔位符都必須出現在每個類別中（包含 `one`），形式不得發明新的 <code v-pre>{{…}}</code> / `%d` / `{n}` 權杖，且僅名詞的來源（沒有 <code v-pre>{{count}}</code> 且沒有數字，例如像 `Minutes` 這樣的單位標籤）必須保持僅名詞。若不符，則會捨棄該模型的回應，並重試後備清單中的下一個模型。
+LLM 返回 CLDR 形式後，`translate-ui` 也會根據 **原始開發者字面值** 檢查每個形式：每個來源佔位符都必須出現在每個類別中 (包括 `one`)，形式不得產生新的 <code v-pre>{{…}}</code> / `%d` / `{n}` 權杖，且僅名詞的來源 (沒有 <code v-pre>{{count}}</code> 和數字，例如像 `Minutes` 的單位標籤) 必須保持僅名詞。不匹配的情況會捨棄該模型的響應，並重試候補清單中的下一個模型。
 
 **兩個獨立的計數**（例如章節與頁面）無法共用一個複數訊息 — 請使用 **兩個** `t()` 呼叫（每個呼叫都包含 `plurals: true` 與其各自的 `count`）並在 UI 中串接。
 

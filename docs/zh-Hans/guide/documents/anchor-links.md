@@ -34,14 +34,14 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 
 当你不在 Docusaurus 上，或者你需要 HTML 锚点而不是 `{#…}` / `{/* #… */}` 后缀时：
 
-1. 在 `translate-docs` 之前，对源 `.md` / `.mdx` 运行 `ai-i18n-tools write-heading-ids`（使用与平时相同的 `docs[]` / `contentPaths`）。它会在每个标题前的行中插入显式 HTML 锚点，以便每个翻译副本共享 `id` 值，并将这些相同的英文 ID 复制到现有的翻译文件中。当分段数匹配时，相应的缓存分段也会更新，以便后续的 `sync --force-update` 保留修复后的 ID。重命名标题后请重新运行，以便刷新过时的锚点 ID 使其与当前标题匹配。
-2. 将 Markdown **锚点链接**指向这些稳定的 ID，例如 `[label](other.md#section-id)`，其中 `section-id` 需与工具写入的锚点匹配——而不是仅凭英文单词猜测。
+1. 在 `translate-docs` 之前，对源 `.md` / `.mdx` 运行 `ai-i18n-tools write-heading-ids`（与往常相同的 `docs[]` / `contentPaths`）。它会在每个标题前插入显式 HTML 锚点，以便所有翻译副本共享相同的 `id` 值，并将这些相同的英文 ID 复制到现有的翻译文件中。当段落计数对齐时，匹配的缓存段落也会更新，因此后续的 `sync --force-update` 会保留修复后的 ID。重命名标题后重新运行，以便过时的锚点 ID 刷新为与当前标题匹配。重命名会留下单个锚点：移除堆叠在该标题上方的多余 `<a id>` 行，并重新定位仓库内指向已移除 ID 的 Markdown 链接。不在标题正上方的 `<a id>` 将保留在原位。
+2. 将 Markdown **锚点链接**指向这些稳定的 ID，例如 `[label](other.md#section-id)`，其中 `section-id` 与工具写入的锚点匹配——而不是仅凭英文单词猜测。
 
 <a id="example"></a>
 ## 示例
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `` / `` 后缀
+### Docusaurus `{#…}` / `{/* #… */}` 后缀
 
 `docs/overview.md`:
 

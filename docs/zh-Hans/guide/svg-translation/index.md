@@ -30,7 +30,7 @@ SVG 翻译使用与 `translate-docs` 和 `translate-json` (`cacheDir`) 相同的
 <a id="design-for-i18n-from-the-start"></a>
 ## 从一开始就进行国际化设计
 
-从一开始就将标签作为真实的文本元素，SVG 最容易翻译：
+当标签从一开始就是真正的文本元素时，SVG 最容易翻译：
 
 - 将人类可读的文本放入 `<text>`、`<title>` 和 `<desc>` 中。
 - 避免在设计工具中将标签转换为路径——路径数据对翻译器来说是不透明的。

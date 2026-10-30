@@ -13,6 +13,7 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 |---------|---------|
 | [`version`](setup#version) | Imprime la versión de la CLI y la marca de tiempo de compilación. |
 | [`init`](setup#init) | Escribe una configuración inicial; `-t` selecciona una plantilla de andamiaje. |
+| [`doctor`](setup#doctor) | Verifique que la configuración, las rutas, los proveedores y el entorno estén listos para traducir. |
 | [`help`](setup#help) | Mostrar ayuda para un subcomando. |
 
 <a id="models--languagesmodels"></a>
@@ -75,7 +76,7 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 |---------|---------|
 | [`cleanup`](maintenance#cleanup) | Elimina las filas de caché obsoletas/huérfanas/con configuración regional no configurada y vuelve a rellenar los problemas de markdown. |
 | [`clean-temp`](maintenance#clean-temp) | Busca y elimina `*.log`, `*.tmp` y las copias de seguridad de la caché. |
-| [`purge-locale`](maintenance#purge-locale) | Elimina las filas de caché y los artefactos generados para las configuraciones regionales. |
+| [`purge-locale`](maintenance#purge-locale) | Elimine las filas de la caché y los artefactos generados para la(s) localización(es). |
 
 <a id="dashboard--glossarytools"></a>
 ### [Panel de control y glosario](tools)
@@ -91,6 +92,7 @@ Ejecute `ai-i18n-tools <command> --help` para cada indicador en un comando. Las 
 ```bash
 ai-i18n-tools version
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask] [-o path] [-P <provider>] [--with-readme] [--with-translate-ignore]
+ai-i18n-tools doctor [--local] [--strict] [--json]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
 ai-i18n-tools help [command]
 ai-i18n-tools check-models

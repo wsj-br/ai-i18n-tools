@@ -62,11 +62,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Python 应用
 
-封装面向用户的文本，并使用生成的辅助程序加载已翻译的消息，或保留原生 gettext。从独立的可执行文件运行翻译 CLI，无需单独安装 Node.js。
+封装面向用户的文本，并使用生成的辅助程序加载翻译后的消息。已经在用 Django 或 GNU gettext 了吗？保留您的 gettext 调用，让工具填充 `.po` 文件。从独立可执行文件运行翻译 CLI，无需单独安装 Node.js。
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)
+[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) · [为 Django / Python gettext 应用添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">
@@ -80,7 +80,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <a id="website-or-documentation"></a>
 ### 网站或文档
 
-发布本地化页面，并将其连接到您网站的语言路由。遵循特定于框架的步骤来配置导航、主题标签和语言菜单。
+发布本地化页面，并将其连接到您站点的语言路由。遵循框架特定的步骤，用于导航、主题标签和语言菜单。
 
 VitePress · Starlight · Docusaurus · Astro
 
@@ -114,9 +114,9 @@ GitHub · GitLab · Bitbucket
 
 <div class="home-steps">
 
-1. **准备您的项目。** 选择您的语言、翻译提供商以及要尝试的模型。对于应用，标记面向用户的文本并设置翻译运行时。对于网站，启用框架的语言路由。指南中包含了在需要更改源代码时可用的编码代理提示。
-2. **翻译成可用的文件。** 设置就绪后，运行 `sync`。它会提取支持的应用字符串，翻译您启用的内容，并写入区域设置文件或本地化页面。
-3. **加载、检查并继续。** 将输出连接到您的应用或网站，连接语言切换功能，并检查一个目标语言。在源文件更改后重新运行，以翻译新增或更改的文本。
+1. **准备您的项目。** 选择您的语言、翻译提供商以及要尝试的模型。对于应用，标记面向用户的文本并设置翻译运行时。对于站点，启用您框架的语言路由。指南中包含在需要更改源代码时的编码代理提示。
+2. **翻译成可用的文件。** 设置完成后，运行 `sync`。它会提取支持的应用字符串，翻译您启用的内容，并写入语言环境文件或本地化页面。
+3. **加载、检查并继续。** 将输出连接到您的应用或站点，连接语言切换功能，并检查目标语言。在源代码更改后重新运行，以翻译新增或更改的文本。
 
 </div>
 
@@ -153,7 +153,7 @@ t("Save changes");
 
 :::
 
-源句子在您的代码中保持可读。您的应用在运行时加载生成的区域设置文件。想看看完整的接线方式吗？[探索可运行的 Next.js 示例](/zh-Hans/examples#nextjs-app)。网站遵循不同的路径：[生成本地化页面](/zh-Hans/guide/add-i18n-to-website)，而不是包装每个段落。
+源代码中的句子在您的代码中保持可读。您的应用会在运行时加载生成的语言环境文件。想查看完整的连接方式吗？[探索可用的 Next.js 示例](/zh-Hans/examples#nextjs-app)。网站则遵循不同的路径：[生成本地化页面](/zh-Hans/guide/add-i18n-to-website)，而不是封装每个段落。
 
 <a id="built-for-the-next-update-too"></a>
 ## 也为下一次更新而构建
@@ -280,7 +280,7 @@ t("Save changes");
 <a id="docs-in-more-languages"></a>
 ### 更多语言的文档
 
-查看已翻译的 VitePress 页面以及本地化的导航和主题标签。
+查看翻译后的 VitePress 页面以及本地化的导航和主题标签。
 
 [探索 VitePress 示例](/zh-Hans/examples#vitepress-docs)
 

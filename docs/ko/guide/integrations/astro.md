@@ -54,6 +54,8 @@ Starlight는 여러 로케일에 대한 기본 제공 UI 문자열(탐색 레이
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 기존 사이트에서 i18n 활성화하기
 
+첫 설정은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#run-the-agent-prompt)의 프롬프트를 사용합니다. 아래 체크리스트는 수동으로 진행하는 것과 동일합니다.
+
 - Starlight 구성의 `locales`. 영어가 접두사 없이 사용되어야 할 경우(`label` 및 필수 `lang`) `root` 항목을 포함합니다.
 - 기본 언어가 해당 루트 로케일인 경우 `defaultLocale: 'root'`. Starlight의 기본값이 이미 일치하는 경우에만 `defaultLocale`를 생략합니다.
 - 영어 페이지는 `src/content/docs/`에 유지되고, `translate-docs`는 `src/content/docs/<locale>/`를 작성합니다.
@@ -67,7 +69,7 @@ Starlight는 여러 로케일에 대한 기본 제공 UI 문자열(탐색 레이
 <a id="plain-astro-marketing-and-app-sites"></a>
 ## 일반 Astro (마케팅 및 앱 사이트)
 
-정적 Astro 마케팅 또는 앱 사이트(Starlight 아님)의 경우 [Astro 내장 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)을 ai-i18n-tools와 결합합니다. 참조 구현은 [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)입니다. 영어는 `/`에, 대상 로케일은 `/{locale}/`에 있습니다.
+정적 Astro 마케팅 또는 앱 사이트(Starlight 제외)의 경우, [Astro 내장 i18n 라우팅](https://docs.astro.build/en/guides/internationalization/)을 ai-i18n-tools와 결합하세요. 첫 설정은 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website#run-the-agent-prompt)의 프롬프트를 사용합니다. 참조 구현은 [examples/astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website)입니다. 영어는 `/`에, 대상 로케일은 `/{locale}/`에 있습니다.
 
 대부분의 팀은 동일한 페이지에서 두 파이프라인의 **하이브리드**를 사용합니다.
 

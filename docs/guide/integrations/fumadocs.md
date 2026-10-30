@@ -98,7 +98,7 @@ Fumadocs uses JSON `meta.json` files for sidebar structure and titles. When `doc
 <a id="ui-catalog"></a>
 ## UI catalog
 
-Fumadocs layout chrome (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) is not extracted from markdown. Configure `docsOutput.fumadocsUiCatalog` so `translate-docs` bootstraps the source-locale catalog from `sourcePath` and translates per-locale JSON:
+Fumadocs layout shell strings (search placeholder, locale display names, and other `defineTranslations` / `i18n.translations()` overrides in `lib/layout.shared.ts`) are not extracted from markdown. Configure `docsOutput.fumadocsUiCatalog` so `translate-docs` bootstraps the source-locale catalog from `sourcePath` and translates per-locale JSON:
 
 ```json
 {

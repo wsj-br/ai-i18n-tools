@@ -79,7 +79,7 @@ For each entry, `translate-ui` stores the **model id from the active provider** 
 
 `translate-ui` only writes files. The app has to load them.
 
-- JS/TS: wire i18next with the runtime helpers, load the locale file the user picks, and add a language switcher. See [Wire i18next](/guide/ui-strings/i18next-runtime) and [Language switcher and RTL](/guide/ui-strings/language-switcher).
+- JS/TS: set up i18next with the runtime helpers, load the locale file the user picks, and add a language switcher. See [Wire i18next](/guide/ui-strings/i18next-runtime) and [Language switcher and RTL](/guide/ui-strings/language-switcher).
 - Python: use the generated `i18n.py` or your gettext catalogs. See [Python applications](/guide/ui-strings/python).
 - Plain HTML: load the runtime script next to the page. See [Plain HTML apps](/guide/ui-strings/plain-html).
 - Astro: see [Astro website](/guide/ui-strings/astro-website).

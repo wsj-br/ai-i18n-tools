@@ -66,11 +66,11 @@ React · Next.js · Node.js · CLI
 <a id="python-app"></a>
 ### Aplicativo Python
 
-Encapsule o texto voltado para o usuário e carregue mensagens traduzidas com um auxiliar gerado, ou mantenha o gettext nativo. Execute a CLI de tradução a partir de um executável autônomo sem uma instalação separada do Node.js.
+Encapsule o texto voltado para o usuário e carregue mensagens traduzidas com um auxiliar gerado. Já usa Django ou GNU gettext? Mantenha suas chamadas gettext e deixe a ferramenta preencher os arquivos `.po`. Execute a CLI de tradução a partir de um executável autônomo, sem uma instalação separada do Node.js.
 
 Streamlit · FastAPI · Flask · Django · CLI
 
-[Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python)
+[Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python) · [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext)
 
 </article>
 <article class="home-card">
@@ -84,7 +84,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <a id="website-or-documentation"></a>
 ### Site ou documentação
 
-Publique páginas localizadas e conecte-as às rotas de idioma do seu site. Siga as etapas específicas do framework para navegação, rótulos de tema e o menu de idiomas.
+Publique páginas localizadas e conecte-as às rotas de idioma do seu site. Siga as etapas específicas do framework para navegação, rótulos de tema e o menu de idioma.
 
 VitePress · Starlight · Docusaurus · Astro
 
@@ -118,9 +118,9 @@ Não tem certeza de qual caminho seguir? O guia [Adicionar i18n ao seu projeto](
 
 <div class="home-steps">
 
-1. **Prepare seu projeto.** Escolha seus idiomas, um provedor de tradução e os modelos a serem testados. Para apps, marque o texto voltado para o usuário e configure o ambiente de execução de tradução. Para sites, ative o roteamento de idiomas do seu framework. Os guias incluem prompts de agente de codificação onde são necessárias alterações no código-fonte.
-2. **Traduza para arquivos que você possa usar.** Quando a configuração estiver pronta, execute `sync`. Ele extrai as strings compatíveis do app, traduz o conteúdo que você ativou e grava arquivos de localidade ou páginas localizadas.
-3. **Carregue, verifique e continue.** Conecte a saída ao seu app ou site, configure a troca de idiomas e verifique um idioma de destino. Execute novamente após alterações no código-fonte para traduzir textos novos ou alterados.
+1. **Prepare seu projeto.** Escolha seus idiomas, um provedor de tradução e os modelos a serem testados. Para aplicativos, marque o texto voltado para o usuário e configure o tempo de execução da tradução. Para sites, habilite o roteamento de idioma do seu framework. Os guias incluem prompts de agente de codificação onde são necessárias alterações no código-fonte.
+2. **Traduza para arquivos que você pode usar.** Assim que a configuração estiver pronta, execute `sync`. Ele extrai strings de aplicativo suportadas, traduz o conteúdo que você habilitou e escreve arquivos de localidade ou páginas localizadas.
+3. **Carregue, verifique e continue.** Conecte a saída ao seu aplicativo ou site, configure a troca de idioma e verifique um idioma de destino. Execute novamente após alterações no código-fonte para traduzir textos novos ou alterados.
 
 </div>
 
@@ -157,7 +157,7 @@ t("Save changes");
 
 :::
 
-A frase de origem permanece legível no seu código. Seu app carrega os arquivos de localidade gerados em tempo de execução. Quer ver a implementação completa? [Explore o exemplo funcional em Next.js](/pt-BR/examples#nextjs-app). Sites seguem um caminho diferente: [gerar páginas localizadas](/pt-BR/guide/add-i18n-to-website) em vez de envolver cada parágrafo.
+A frase original permanece legível em seu código. Seu aplicativo carrega os arquivos de localidade gerados em tempo de execução. Quer ver a configuração completa? [Explore o exemplo funcional do Next.js](/pt-BR/examples#nextjs-app). Sites seguem um caminho diferente: [gerar páginas localizadas](/pt-BR/guide/add-i18n-to-website) em vez de encapsular cada parágrafo.
 
 <a id="built-for-the-next-update-too"></a>
 ## Desenvolvido também para a próxima atualização
@@ -284,7 +284,7 @@ Veja como um aplicativo Streamlit encapsula suas mensagens e usa JSON traduzido 
 <a id="docs-in-more-languages"></a>
 ### Documentos em mais idiomas
 
-Veja páginas VitePress traduzidas juntamente com a navegação localizada e rótulos de tema.
+Veja páginas VitePress traduzidas juntamente com navegação e rótulos de tema localizados.
 
 [Explorar o exemplo do VitePress](/pt-BR/examples#vitepress-docs)
 

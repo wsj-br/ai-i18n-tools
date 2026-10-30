@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` startet die App auf [http://localhost:3093](http://localhost:3093). Wechseln Sie das Gebietsschema vor der Übersetzung zu `es` oder `zh-Hans`, und die Zeichenketten fallen auf Englisch zurück; nach `pnpm translate` erscheinen die ausgefüllten Übersetzungen. Bearbeiten Sie eine englische Zeichenkette und führen Sie `pnpm translate` erneut aus, um nur diese Blattaktualisierung zu sehen.
+`pnpm dev` führt die App auf `http://localhost:3093` aus. Stellen Sie das Gebietsschema vor der Übersetzung auf `es` oder `zh-Hans` um, und die Zeichenfolgen fallen auf Englisch zurück; nach `pnpm translate` erscheinen die ausgefüllten Übersetzungen. Bearbeiten Sie eine englische Zeichenfolge und führen Sie `pnpm translate` erneut aus, um nur diese Blattaktualisierung zu sehen.
 
 Ausführliche Anleitung: [examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md).
 

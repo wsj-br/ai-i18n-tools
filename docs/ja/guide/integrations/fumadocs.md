@@ -50,7 +50,7 @@ content/docs/guide/getting-started.mdx    →  content/docs/guide/getting-starte
 <a id="enable-i18n-in-an-existing-site"></a>
 ### 既存のサイトで i18n を有効にする
 
-英語のみの Fumadocs アプリで `translate-docs` が兄弟ファイルを書き込めるようにするには、ロケールルートと `defineI18n` が必要です。[エージェントプロンプト](#agent-prompt) は、既存のサイトを順を追って説明します。チェックリスト:
+英語のみのFumadocsアプリでは、`translate-docs`が兄弟ファイルを書き込む前に、ロケールルートと`defineI18n`が必要です。初回セットアップでは、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website#run-the-agent-prompt)のプロンプトを使用します。このページの[エージェントプロンプト](#agent-prompt)は、UIカタログを接続するためのフォローアップです。チェックリスト：
 
 - `lib/i18n.ts` 内で `defineI18n` を `languages`、`defaultLanguage`、および `parser: "dot"` または `"dir"` と共に設定します。
 - `proxy.ts` (サンプルファイル) からのルートを `app/[lang]/` し、`createI18nMiddleware` します。
@@ -86,7 +86,7 @@ content/docs/en/guide/foo.mdx       →  content/docs/zh-Hans/guide/foo.mdx
 <a id="sidebar-metajson"></a>
 ## サイドバー (`meta.json`)
 
-Fumadocsは、サイドバーの構造とタイトルにJSON `meta.json`ファイルを使用します。`docsOutput.style`が`"fumadocs"`の場合、**`translate-docs`** は`docsRoot`（または`docs[].fumadocsMetaGlob`）の下の`meta.json`を収集し、`docs[].fumadocsMetaTranslatableKeys`にリストされているキー（デフォルト：`title`、`description`）の文字列値を翻訳して、ロケール出力を書き込みます。
+Fumadocsは、サイドバーの構造とタイトルにJSON `meta.json`ファイルを使用します。`docsOutput.style`が`"fumadocs"`の場合、`translate-docs`は`docsRoot`（または`docs[].fumadocsMetaGlob`）の下に`meta.json`を収集し、`docs[].fumadocsMetaTranslatableKeys`にリストされているキーの文字列値を翻訳し（デフォルト：`title`、`description`）、ロケール出力を書き込みます：
 
 | パーサー | ソースロケール | 出力 |
 |---|---|---|
@@ -98,7 +98,7 @@ Fumadocsは、サイドバーの構造とタイトルにJSON `meta.json`ファ�
 <a id="ui-catalog"></a>
 ## UIカタログ
 
-Fumadocs のレイアウトクローム (検索プレースホルダー、ロケール表示名、および `lib/layout.shared.ts` 内のその他の `defineTranslations` / `i18n.translations()` のオーバーライド) は markdown から抽出されません。**`translate-docs`** が `sourcePath` からソースロケールカタログをブートストラップし、ロケールごとの JSON を翻訳するように **`docsOutput.fumadocsUiCatalog`** を設定します:
+Fumadocsのレイアウトクローム（検索プレースホルダー、ロケール表示名、および`lib/layout.shared.ts`内のその他の`defineTranslations` / `i18n.translations()`オーバーライド）はMarkdownからは抽出されません。`docsOutput.fumadocsUiCatalog`を構成して、`translate-docs`が`sourcePath`からソースロケールカタログをブートストラップし、ロケールごとのJSONを翻訳するようにします：
 
 ```json
 {
@@ -123,8 +123,8 @@ Fumadocs のレイアウトクローム (検索プレースホルダー、ロケ
 }
 ```
 
-- **`catalogPath`** — 英語のフラットな JSON。ブートストラップは `sourcePath` 内の `.add({ … })` の `en` オブジェクトのみを読み取ります。そのオブジェクト内の文字列リテラルはカタログキー (`displayName`、`Search(search trigger)`) になります。`.add()` は Fumadocs UI プリセットが登録したキーのみを受け入れるため、`site.title` のようなナビゲーションタイトルはそこには配置できません。この例では、`site.title` を JSON 内に保持し、`nav.title` のために `catalog["site.title"]` を読み取ります。ファイルに既に存在するが `en` オブジェクトにはないキーは残ります。マージは `{ ...existing, ...extracted }` です。英語のリテラルが変更された場合は `sync` を再実行してください。
-- **`outputPathTemplate`** (任意) — ロケールごとの出力。デフォルト: `catalogPath` の隣に `ui.{locale}.json`。
+- `catalogPath` — 英語のフラットJSON。ブートストラップは、`sourcePath`内の`.add({ … })`の`en`オブジェクトのみを読み取ります。そのオブジェクト内の文字列リテラルは、カタログキー（`displayName`、`Search(search trigger)`）になります。`.add()`はFumadocs UIプリセットが登録したキーのみを受け入れるため、`site.title`のようなナビゲーションタイトルはそこには配置できません。この例では、JSONに`site.title`を保持し、`nav.title`のために`catalog["site.title"]`を読み取ります。ファイル内に既に存在し、`en`オブジェクトにないキーはそのまま残ります。マージは`{ ...existing, ...extracted }`です。英語のリテラルが変更されたら、`sync`を再実行してください。
+- `outputPathTemplate`（オプション） — ロケールごとの出力。デフォルト：`catalogPath`の隣の`ui.{locale}.json`。
 
 翻訳されたキーは、アプリがそれを読み取るまで何もしません。`i18n.translations().get(lang)` は `.extend()` (Fumadocs UI プリセット) に登録されたキーのみを返します。それらのキーが適用されるように、ロケールカタログを `.add()` にスプレッドし、英語名の翻訳がそれを置き換えないように、スプレッドの **後** にネイティブの `displayName` を配置します:
 
@@ -223,7 +223,7 @@ Fumadocs UI 文字列には `json[]` を**使用しないでください**。こ
 
 Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/getting-started`）を介してロケールプレフィックス付きルートを提供します。**ページ内リンクはロケールニュートラルであるべきです**（`/docs/getting-started`）。そうすることで、アクティブなロケールプレフィックスが自動的に適用されます。
 
-組み込みのノーマライザーを有効にすると、`translate-docs`がすべての翻訳ファイルのリンクを自動的に修正します:
+組み込みのノーマライザーを有効にして、`translate-docs`がすべての翻訳済みファイル内のリンクを自動的に修正するようにします：
 
 ```json
 "docsOutput": {
@@ -235,8 +235,8 @@ Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/ge
 
 `rewriteFumadocsLinks`は、`style`が`"fumadocs"`の場合にデフォルトで有効になります。
 
-| ソースロケールでのオーサリング | ノーマライザー適用後 |
-|---|---|
+| ソースロケールでの作成 | ノーマライザー後 |
+|--------------------------|------------------|
 | `[Guide](content/docs/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
 | `[Home](content/docs/index.mdx)` | `[Home](/docs)` |
 | `[Guide](/ja/guide/getting-started.mdx)` | `[Guide](/docs/guide/getting-started)` |
@@ -244,16 +244,16 @@ Fumadocsは、Next.jsミドルウェア（`/docs/getting-started`、`/pt/docs/ge
 
 **執筆ルール**
 
-- ページ間のドキュメントリンク: 英語のMDXでは**ロケールニュートラルなサイトルート**（`/docs/…`）を使用するか、`content/docs/…` / 相対`.mdx`パスを使用して、`sync`中に正規化ツールで書き換えさせます。
-- コンテンツツリー外のリポジトリファイル: **完全なURL**を使用します。
-- ロケールサフィックス付きコピー（`*.pt.mdx`）や`content/{locale}/`ツリー内のリンクを手動で編集**しないでください**。`sync` / `translate-docs`で再生成してください。
+- ページ間のドキュメントリンク: 英語のMDXでは、**ロケールに依存しないサイトルート** (`/docs/…`) を使用するか、`content/docs/…` / 相対 `.mdx` パスを使用し、ノーマライザーが `sync` の間にそれらを書き換えるようにします。
+- コンテンツツリー外のリポジトリファイル: **完全なURL** を使用します。
+- ロケールサフィックス付きのコピー (`*.pt.mdx`) や `content/{locale}/` ツリーでは、手動でリンクを編集**しない**でください — `sync` / `translate-docs` で再生成してください。
 
 こちらも参照してください: [Documents — link rewriting](/ja/guide/documents/link-rewriting) および [Configuration — `docsOutput`](/ja/reference/configuration#docsoutput)。
 
 <a id="locale-codes"></a>
 ## ロケールコード
 
-Fumadocs アプリの `ai-i18n-tools.config.json` の `targetLocales` を、`defineI18n().languages` と**完全に**一致させてください。ドットの例では短いコード (`pt`、`zh`) を使用していますが、ディレクトリ設定では BCP-47 フォルダー (`pt-BR`、`zh-Hans`) を使用できます。強制的な正規化はありません。コードが一致しないと、誤った出力パスやページが見つからない原因となります。
+Fumadocsアプリ内の`defineI18n().languages`と、`ai-i18n-tools.config.json`内の`targetLocales`を**正確に**一致させてください。ドットの例ではショートコード（`pt`、`zh`）を使用し、ディレクトリ設定ではBCP-47フォルダ（`pt-BR`、`zh-Hans`）を使用する場合があります。強制的な正規化はありません。コードが一致しないと、出力パスが間違ったり、ページが見つからなくなったりします。
 
 <a id="multiple-collections"></a>
 ## 複数のコレクション

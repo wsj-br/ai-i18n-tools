@@ -1,7 +1,7 @@
 <a id="python"></a>
 # Python
 
-Python 應用程式選擇器。擷取、目錄和呼叫形式可在 [Python 應用程式](/zh-Hant/guide/ui-strings/python) 中找到。為現有的單一語系應用程式新增功能的逐步說明請見 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，其中包含 [`i18n.py` 提示](/zh-Hant/guide/add-i18n-to-python#run-the-agent-prompt) 和 [Django / gettext 提示](/zh-Hant/guide/add-i18n-to-python#agent-prompt-django-gettext)。
+Python 應用程式的選擇器。提取、目錄和呼叫形狀位於 [Python 應用程式](/zh-Hant/guide/ui-strings/python) 中。針對現有單一語系應用程式的逐步說明是 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)，並附有 [代理程式提示](/zh-Hant/guide/add-i18n-to-python#run-the-agent-prompt)。Django、Flask-Babel 目錄以及已使用 gettext 的應用程式有其自己的逐步說明和提示：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。
 
 Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView 會呼叫產生的 `i18n.py` 輔助程式（Python 3.10 或更新版本）。Django 則保留 Django 的 gettext。儲存庫中隨附四個可執行的副本：`examples/python-streamlit`、`examples/python-flask`、`examples/python-fastapi` 與 `examples/python-gettext`。Pyramid、Django、Tkinter、Qt 與 PyWebView 沒有獨立的範例目錄。
 
@@ -29,7 +29,7 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView �
 <a id="streamlit"></a>
 ### Streamlit
 
-`streamlit_language_selector()` 會將語言環境寫入工作階段狀態與查詢字串中。請為每個小工具提供固定的 `key`。詳細資訊：[Locale — Streamlit](/zh-Hant/guide/ui-strings/python#streamlit)。
+在 `st.set_page_config` 和任何其他 `t()` 之前呼叫 `set_locale`。在應用程式中繪製選單，以便翻譯標籤。當小工具繪製時，`streamlit_language_selector()` 會將語系寫入工作階段狀態和查詢字串，這對於翻譯頁面標題來說為時已晚，而且其標籤會保持英文。秘訣：[新增語言切換](/zh-Hant/guide/add-i18n-to-python#step-4-add-a-language-switch)。為每個小工具提供固定的 `key`。詳細資訊：[語系 — Streamlit](/zh-Hant/guide/ui-strings/python#streamlit)。
 
 <a id="fastapi"></a>
 ### FastAPI
@@ -44,12 +44,12 @@ Streamlit、FastAPI、Flask、Pyramid、Tkinter、PyQt、PySide 與 PyWebView �
 <a id="django"></a>
 ### Django
 
-保留 `gettext`、`ngettext` 和 `{% blocktrans %}`。`init -t ui-python-django` 會對應 Django 的 `locale/` 目錄與 `django` 網域，並保留 Django 的執行階段。詳細資訊：[Locale — Django](/zh-Hant/guide/ui-strings/python#django)。
+保留 `gettext`、`ngettext` 和 `{% blocktrans %}`。`init -t ui-python-django` 符合 Django 的 `locale/` 目錄和 `django` 網域，並保留 Django 的執行階段。逐步說明：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。詳細資訊：[語系 — Django](/zh-Hant/guide/ui-strings/python#django)。
 
 <a id="existing-gettext"></a>
 ### 現有的 gettext
 
-保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的目錄樹並執行 `extract`，然後執行 `translate-ui`。[python-gettext](/zh-Hant/examples#python-gettext) 範例僅使用 gettext (`flatOutput: false`)。`init -t ui-python-gettext` 也會寫入扁平化 JSON。詳細資訊：[Locale — Existing gettext](/zh-Hant/guide/ui-strings/python#gettext)。
+保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的目錄樹並執行 `extract`，然後執行 `translate-ui`。[python-gettext](/zh-Hant/examples#python-gettext) 範例僅限 gettext (`flatOutput: false`)。`init -t ui-python-gettext` 也會寫入平面 JSON。逐步說明：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。詳細資訊：[語系 — 現有 gettext](/zh-Hant/guide/ui-strings/python#gettext)。
 
 <a id="tkinter-qt-and-pywebview"></a>
 ### Tkinter、Qt 和 PyWebView

@@ -34,13 +34,13 @@ Rank the active provider's chat models and print the top ones (default 8). The t
 
 Candidates come from the provider's `GET /models` list. When `providers.cheaperinference.zeroDataRetention` is true, that request is `GET /v1/models?zdr=true`. Expired rows and non-chat rows (embeddings, speech, image, video, moderation, rerankers) are left out. If that catalog request fails, the command exits 1.
 
-`--quality` is the default. It weights ChrF and Arena Score above price. `--price` weights price above those scores and still keeps a quality floor, so an unmeasured cheap model does not jump the list. Passing both flags is an error. Passing neither means quality. Optional `modelSuggestion` weights in config replace either profile. See [Configuration](/reference/configuration#modelsuggestion-optional). The same weights are used by the [dashboard Models tab](/guide/translation-dashboard/models).
+`--quality` is the default. It weights ChrF and Arena Score above price. `--price` weights price above those scores and still keeps a quality floor, so an unmeasured cheap model does not rank higher than it should. Passing both flags is an error. Passing neither means quality. Optional `modelSuggestion` weights in config replace either profile. See [Configuration](/reference/configuration#modelsuggestion-optional). The same weights are used by the [dashboard Models tab](/guide/translation-dashboard/models).
 
 ChrF is the mean of languagebench `translation_from` and `translation_to` rows whose metric is `chrf`, limited to this project's `sourceLocale` and `targetLocales`. Locales map to a languagebench language code (the primary subtag, with a few aliases such as `pt-BR` to `pt` and `zh-Hant` to `zh` and `yue`). An empty set uses `en`. Arena is the LMArena overall Arena Score, not Elo.
 
 The ranking price is `(3 × input + output) / 4` USD per 1M tokens. Its source is resolved in this order: a non-zero catalog rate, then models.dev input and output rates, then languagebench's single cost figure. A catalog price of `0` is unpriced, not free. An unknown price is neutral on the quality profile and worst on the price profile.
 
-A missing ChrF sorts below the quality floor. The `0.35` and `0.45` stand-ins used for a missing ChrF or Arena affect only the index; the table prints `—` instead.
+A missing ChrF sorts below the quality floor. The placeholder values `0.35` and `0.45` used when ChrF or Arena is missing affect only the index; the table prints `—` instead.
 
 Rows that clear the floor come first, then higher index, then a cheaper blended price. `--top` (default `8`, an integer of at least 1) limits the table, the `--json` fragment, and `--apply` together, after the filters below.
 

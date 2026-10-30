@@ -22,7 +22,8 @@
 | 您有 | 從這裡開始 |
 | --- | --- |
 | 原始碼中帶有純文字的 JS/TS 應用程式 (React、Next.js、Node、CLI) | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) |
-| 一個 Python 應用程式 (Streamlit、FastAPI、Flask、Django、gettext、桌面) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) |
+| 一個 Python 應用程式 (Streamlit、FastAPI、Flask、桌面應用程式、指令碼) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) |
+| 一個 Django 應用程式、Flask-Babel 目錄，或已使用 GNU gettext 的應用程式 | [為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext) |
 | 一個網站或文件網站 (VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、純 HTML) | [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website) |
 | 一個儲存庫 README 和其他 Markdown 檔案，通常與應用程式放在一起 | [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme) |
 | 獨立的巢狀 JSON 語系檔案 | [JSON](/zh-Hant/guide/json) |

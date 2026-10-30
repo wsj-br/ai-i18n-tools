@@ -1,7 +1,7 @@
 <a id="per-locale-folder-url-rewriting"></a>
 # Pasta por localidade (reescrita de URL)
 
-Use para README/USER-GUIDE com `docsOutput.style = "flat"`, e para sites de sistema de documentação (`docsOutput.style = "doc-system"` ou aliases `"docusaurus"` / `"astro-starlight"`) e para `"vitepress"` / outros presets de sistema de documentação que servem capturas de tela de uma árvore de URL estática compartilhada. Detalhes de reescrita de link para VitePress: [Reescrita de link — VitePress](/pt-BR/guide/images-and-screenshots/link-rewriting#vitepress-link-normalizer-style-vitepress).
+Usar para README/GUIA DO USUÁRIO com `docsOutput.style = "flat"`, e para sites de sistema de documentação (`docsOutput.style = "doc-system"` ou aliases `"docusaurus"` / `"astro-starlight"`) e para `"vitepress"` / outras predefinições de sistema de documentação que servem capturas de tela de uma árvore de URL estática compartilhada. Detalhes de reescrita de link para VitePress: [Reescrita de link — VitePress](/pt-BR/guide/images-and-screenshots/link-rewriting#vitepress-link-normaliser-style-vitepress).
 
 <a id="directory-layout"></a>
 ### Estrutura de diretórios

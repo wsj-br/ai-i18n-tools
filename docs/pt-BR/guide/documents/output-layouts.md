@@ -68,7 +68,7 @@ Caminhos fora de `docsRoot` recorrem ao layout [aninhado](#nested-default) (`{ou
 
 Defina `docs[].docsOutput.docsRoot` como a raiz dos arquivos escritos em `sourceLocale` (por exemplo, `"docs"`, `"src/content/docs"` ou `"content/en"` quando o inglês é o idioma de origem). `sourceLocale` pode ser qualquer idioma. Quando `docsOutput.style = "doc-system"`, você deve definir `localeSubpath` explicitamente (use um alias abaixo para predefinições). Use `localeSubpath: ""` quando as páginas traduzidas estiverem localizadas diretamente em `{outputDir}/{locale}/` (estilo Starlight).
 
-O JSON shell do Docusaurus de `docusaurusCatalogDir` e outros artefatos JSON em predefinições do sistema de documentos seguem o mesmo layout de pasta que o markdown. Com `style: "flat"`, os arquivos de rótulo JSON ainda usam o formato aninhado, a menos que você defina `jsonPathTemplate`.
+O JSON de shell do Docusaurus de `docusaurusCatalogDir` e outros artefatos JSON sob predefinições do sistema de documentação seguem o mesmo layout de pasta que o markdown. Com `style: "flat"`, os arquivos JSON de rótulos ainda usam a estrutura aninhada, a menos que você defina `jsonPathTemplate`.
 
 <a id="doc-system-aliases"></a>
 ## Aliases do sistema de documentos
@@ -112,9 +112,9 @@ i18n/en/sidebar.json  →  i18n/de/sidebar.json
 
 O Starlight fornece strings de interface em vários idiomas; substituições personalizadas opcionais usam `src/content/i18n/en.json` com `jsonPathTemplate: "{outputDir}/{locale}.json"` em um bloco `docs[]` separado quando necessário.
 
-As strings de navegação/barra lateral/rodapé do VitePress não estão em markdown — configure `docsOutput.vitepressThemeCatalog` e traduza dentro de **`translate-docs`**. Consulte [integração com VitePress](/pt-BR/guide/integrations/vitepress).
+As strings de navegação/barra lateral/rodapé do VitePress não estão em markdown — configure `docsOutput.vitepressThemeCatalog` e traduza dentro de `translate-docs`. Consulte [integração do VitePress](/pt-BR/guide/integrations/vitepress).
 
-O dicionário de tema Nextra (`.ts`) e os rótulos da barra lateral `_meta.ts` não estão em markdown — use `docs[].nextraDictionaryPath` e a coleta automática de `_meta` quando `style: "nextra"`, tudo dentro de **`translate-docs`**. Consulte [integração com Nextra](/pt-BR/guide/integrations/nextra).
+O dicionário de tema do Nextra (`.ts`) e os rótulos da barra lateral de `_meta.ts` não estão em markdown — use `docs[].nextraDictionaryPath` e a coleta automática de `_meta` quando `style: "nextra"`, tudo dentro de `translate-docs`. Consulte [integração do Nextra](/pt-BR/guide/integrations/nextra).
 
 <a id="fumadocs"></a>
 ## `fumadocs`
@@ -127,13 +127,13 @@ O dicionário de tema Nextra (`.ts`) e os rótulos da barra lateral `_meta.ts` n
 content/docs/guide/getting-started.mdx  →  content/docs/guide/getting-started.pt.mdx
 ```
 
-- **`"dir"`** — pastas de localidade estilo Nextra; usa o mesmo motor `doc-system` com `localeSubpath` vazio.
+- `"dir"` — pastas de localidade no estilo Nextra; usa o mesmo motor `doc-system` com `localeSubpath` vazio.
 
 ```text
 content/docs/en/guide/getting-started.mdx  →  content/docs/pt-BR/guide/getting-started.mdx
 ```
 
-As substituições da interface do usuário do Fumadocs (`lib/layout.shared.ts`) e os rótulos da barra lateral `meta.json` não estão em markdown — use `docsOutput.fumadocsUiCatalog` e a coleta automática de `meta.json` quando `style: "fumadocs"`, tudo dentro de **`translate-docs`**. Consulte [integração com Fumadocs](/pt-BR/guide/integrations/fumadocs).
+As substituições de UI do Fumadocs (`lib/layout.shared.ts`) e os rótulos da barra lateral de `meta.json` não estão em markdown — use `docsOutput.fumadocsUiCatalog` e a coleta automática de `meta.json` quando `style: "fumadocs"`, tudo dentro de `translate-docs`. Consulte [integração do Fumadocs](/pt-BR/guide/integrations/fumadocs).
 
 Para reescrita de URL de link e ativo além das correções de link relativo integradas, consulte [Reescrita de link](/pt-BR/guide/documents/link-rewriting) (`docsOutput.postProcessing.regexAdjustments`).
 

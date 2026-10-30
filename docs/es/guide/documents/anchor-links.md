@@ -34,14 +34,14 @@ Dirige tus **enlaces de anclaje** de markdown a esos ID estables, por ejemplo, `
 
 Cuando no estés en Docusaurus, o necesites anclajes HTML en lugar de sufijos `{#…}` / `{/* #… */}`:
 
-1. Ejecute `ai-i18n-tools write-heading-ids` en su `.md` / `.mdx` de origen antes de `translate-docs` (mismo `docs[]` / `contentPaths` que de costumbre). Inserta anclajes HTML explícitos en la línea anterior a cada encabezado para que los valores de `id` sean compartidos por cada copia traducida, y copia esos mismos id en inglés en los archivos traducidos existentes. Cuando los recuentos de segmentos coinciden, el segmento en caché coincidente también se actualiza, por lo que un `sync --force-update` posterior conserva el id reparado. Vuelva a ejecutarlo después de cambiar el nombre de los encabezados para que los id de anclaje obsoletos se actualicen y coincidan con el título actual.
-2. Dirija sus **enlaces de anclaje** de markdown a esos id estables, por ejemplo, `[label](other.md#section-id)`, donde `section-id` coincide con el anclaje que escribió la herramienta, no con una suposición basada solo en palabras en inglés.
+1. Ejecute `ai-i18n-tools write-heading-ids` en sus archivos fuente `.md` / `.mdx` antes de `translate-docs` (el mismo `docs[]` / `contentPaths` de siempre). Inserta anclas HTML explícitas en la línea anterior a cada encabezado para que los valores de `id` sean compartidos por cada copia traducida, y copia esos mismos IDs en inglés a los archivos traducidos existentes. Cuando los recuentos de segmentos coinciden, el segmento en caché coincidente también se actualiza, para que una `sync --force-update` posterior conserve el ID reparado. Vuelva a ejecutarlo después de renombrar los encabezados para que los IDs de ancla obsoletos se actualicen y coincidan con el título actual. Un cambio de nombre deja una única ancla: se eliminan las líneas `<a id>` adicionales apiladas encima de ese encabezado, y los enlaces de markdown en el repositorio que apuntaban a un ID eliminado se reorientan. Un `<a id>` que no esté directamente encima de un encabezado se mantiene en su lugar.
+2. Apunte sus **enlaces de ancla** de markdown a esos IDs estables, por ejemplo, `[label](other.md#section-id)`, donde `section-id` coincide con el ancla que la herramienta escribió — no una suposición basada solo en palabras en inglés.
 
 <a id="example"></a>
 ## Ejemplo
 
 <a id="docusaurus------suffix"></a>
-### Sufijo Docusaurus `` / ``
+### Sufijo de Docusaurus `{#…}` / `{/* #… */}`
 
 `docs/overview.md`:
 

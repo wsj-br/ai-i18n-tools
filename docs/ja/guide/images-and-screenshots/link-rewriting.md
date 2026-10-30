@@ -8,10 +8,10 @@
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### `docsOutput.style = "flat"`時の2段階の処理フロー
 
-1. **ソースURL** — 翻訳済みMarkdown内の画像パス（セグメント再構築後）
-2. **フラットリンクリライター** — 深度プレフィックスを付加（`../`, `../../docs/`, …）
-3. **`regexAdjustments`** — ロケールフォルダーセグメントを置換（`en-GB` → `${translatedLocale}`）
-4. **出力URL** — 翻訳済みファイルに書き込まれる最終パス
+1. **ソースURL** — 翻訳済みマークダウン内の画像パス（セグメント再構成後）
+2. **フラットリンクリライター** — 深さプレフィックスを先頭に追加（`../`、`../../docs/`、…）
+3. `regexAdjustments` — ロケールフォルダセグメントを入れ替える（`en-GB` → `${translatedLocale}`）
+4. **出力URL** — 翻訳ファイルに書き込まれる最終パス
 
 `outputDir: "translated-docs/"`かつソース`README.md`がリポジトリのルートにある場合の例：
 
@@ -23,14 +23,14 @@
 **Astro Starlight MDX:** Starlightのコンテンツはしばしば`.mdx`です。これらのファイルに対して、`translate-docs`は`postProcessing.regexAdjustments`のみを実行します — フラット、VitePress、Nextra、またはFumadocsのリンクリライターは実行されません。ロケールごとのスクリーンショットパスは引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/`ルールを使用します。[examples/astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs/)を参照してください。
 
 <a id="vitepress-link-normaliser-style-vitepress"></a>
-### VitePress リンク正規化機能 (`style: "vitepress"`)
+### VitePressリンク正規化ツール（`style: "vitepress"`）
 
-`docsOutput.rewriteVitepressLinks`が`true`（`style`が`"vitepress"`の場合のデフォルト）の場合、セグメントの再構成後に（フラットなリライターではなく）別のノーマライザーが実行されます。これは、英語がコンテンツルートにあり、ロケールが兄弟フォルダー（`docs/de/guide/…`）にあるVitePress / ドキュメントシステムサイトを対象としています。
+`docsOutput.rewriteVitepressLinks`が`true`の場合（`style`が`"vitepress"`の場合のデフォルト）、セグメント再構成後に（フラット書き換えツールの代わりに）別の正規化ツールが実行されます。これは、英語がコンテンツルートにあり、ロケールが兄弟フォルダ（`docs/de/guide/…`）にあるVitePress/ドキュメントシステムサイトを対象としています。
 
-1. **ソースhref** — 翻訳済みMarkdown内のリンク（セグメント再構築後）
-2. **VitePressリンクノーマライザー** — ドキュメントパスをサイトルートに書き換え（`/guide/…`）
-3. **`regexAdjustments`** — スクリーンショットのオプションのロケールフォルダー置換（`screenshots/en-GB/` → `screenshots/de/`, …）
-4. **出力href** — 翻訳済みファイルに書き込まれる最終URL
+1. **ソースhref** — 翻訳されたMarkdown内のリンク (セグメント再構成後)
+2. **VitePress リンク正規化ツール** — ドキュメントパスをサイトルートに書き換える (`/guide/…`)
+3. `regexAdjustments` — スクリーンショット用のオプションのロケールフォルダー入れ替え (`screenshots/en-GB/` → `screenshots/de/`、…)
+4. **出力href** — 翻訳されたファイルに書き込まれる最終URL
 
 一般的な書き換え:
 
@@ -42,19 +42,19 @@
 
 `README.md` → `docs/index.md` を同期するプロジェクトでは、VitePress ツリー外にある `LICENSE`、`examples/`、およびその他のファイルについて、`README.md` には完全な GitHub URL を使用してください。[VitePress の統合 — ドキュメントのホームページとしての README](/ja/guide/integrations/vitepress#readme-and-the-docs-homepage) を参照してください。
 
-フラットリライターとVitePressノーマライザーは、`docs[]` ブロックごとに相互排他であり、`regexAdjustments` の前に実行されるのはどちらか一方のみです。[VitePress integration — Link conventions](/ja/guide/integrations/vitepress#link-conventions) を参照してください。
+フラット書き換えツールとVitePress正規化ツールは、`docs[]`ブロックごとに相互排他的であり、`regexAdjustments`の前にいずれか一方のみが実行されます。[VitePress連携 — リンク規約](/ja/guide/integrations/vitepress#link-conventions)を参照してください。
 
 ロケールごとのスクリーンショットフォルダーは、必要に応じて引き続き同じ`screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments`ルールを使用します。[ロケールごとのフォルダー](/ja/guide/images-and-screenshots/per-locale-folder)を参照してください。
 
 <a id="nextra-link-normaliser-style-nextra"></a>
-### Nextra リンク正規化機能 (`style: "nextra"`)
+### Nextraリンク正規化ツール（`style: "nextra"`）
 
-`docsOutput.rewriteNextraLinks` が `true` の場合（`style` が `"nextra"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/en/…` と相対 `.mdx` パスをロケール中立のルート（`/guide/…`）に書き換えます。[Nextra integration — Link conventions](/ja/guide/integrations/nextra#link-conventions) を参照してください。
+`docsOutput.rewriteNextraLinks`が`true`の場合（`style`が`"nextra"`の場合のデフォルト）、セグメント再構成後に別の正規化ツールが実行されます。これは、`content/en/…`と相対的な`.mdx`パスをロケールに依存しないルート（`/guide/…`）に書き換えます。[Nextra連携 — リンク規約](/ja/guide/integrations/nextra#link-conventions)を参照してください。
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
-### Fumadocs リンク正規化機能 (`style: "fumadocs"`)
+### Fumadocsリンク正規化ツール（`style: "fumadocs"`）
 
-`docsOutput.rewriteFumadocsLinks` が `true` の場合（`style` が `"fumadocs"` の時のデフォルト）、セグメント再構築後に別のノーマライザーが実行されます。これは `content/docs/…` と相対 `.mdx` パスをロケール中立のルート（`/docs/…`）に書き換えます。[Fumadocs integration — Link conventions](/ja/guide/integrations/fumadocs#link-conventions) を参照してください。
+`docsOutput.rewriteFumadocsLinks`が`true`の場合（`style`が`"fumadocs"`の場合のデフォルト）、セグメント再構成後に別の正規化ツールが実行されます。これは、`content/docs/…`と相対的な`.mdx`パスをロケールに依存しないルート（`/docs/…`）に書き換えます。[Fumadocs連携 — リンク規約](/ja/guide/integrations/fumadocs#link-conventions)を参照してください。
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### ファイルごとの深さ接頭辞と`flatPreserveRelativeDir`

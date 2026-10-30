@@ -33,7 +33,7 @@
 | | `src/glossary/` | 术语表加载、术语提示以及用于提示词的可选项目上下文文件 |
 | | `src/utils/` | 记录器、哈希、忽略解析器、显示宽度表、`.env` 加载器 |
 | **您的应用运行时** | `src/runtime/` | i18next 助手和显示实用程序 — 导出为 `'ai-i18n-tools/runtime'` ([运行时助手](/zh-Hans/guide/runtime-helpers)) |
-| **工具 UI** *(内部测试)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此包自己的 CLI 和翻译仪表板 — 与您的项目内容分开 ([自本地化](#self-localization-tool-ui)) |
+| **工具UI** *(内部测试)* | `src/i18n/`、`src/dashboard-app/`、`src/server/` | 本地化此包自身的命令行界面和翻译仪表盘 — 与您的项目内容分开（[自我本地化](#self-localisation-tool-ui)） |
 
 所有用于编程用途的内容都从 `src/index.ts` 重新导出 ([编程 API](/zh-Hans/reference/programmatic-api))。
 
@@ -125,7 +125,7 @@ i18next 将这些加载为资源包，并通过源字符串（键即默认模型
 - 发送一个字符串 JSON 数组，并请求返回一个翻译 JSON 数组。
 - 在可用时包含词汇表提示。
 
-`LlmClient.translateUIBatch` 会按顺序尝试每个模型，在遇到解析、网络或脚本错误时回退（包括针对原生脚本区域设置的罗马化/拉丁语回退）。CLI 会根据每个目标区域设置，从 `localeModels`、可选的 `uiModels` 和 `translationModels` 构建该列表（请参阅 [AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain))。
+`LlmClient.translateUIBatch` 依次尝试每个模型，在解析、网络或脚本错误（包括针对本地脚本语言环境的罗马化/拉丁语回退）时回退。命令行界面根据每个目标语言环境从 `localeModels`、可选的 `uiModels` 和 `translationModels` 构建该列表（请参阅[AI 模型](/zh-Hans/guide/ai-models#model-fallback-chain)）。
 
 ---
 
@@ -203,7 +203,18 @@ Astro 模板和 MDX JSX 的共享属性/键保护在 `src/processors/expression-
 
 SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, locale)` 加上 `translated_text`、`model`、`filepath`、`last_hit_at` 和相关字段组成。哈希值是规范化内容（折叠空格后）的前 16 个十六进制字符的 SHA-256。
 
-每次运行时，都会按哈希 × 语言环境查找片段。只有缓存未命中才会发送给 LLM。翻译后，当前翻译范围内未命中的片段行的 `last_hit_at` 会被重置。文档翻译期间成功的缓存命中会清除该片段过期的 `translation_failures` 行。`cleanup` 首先运行 `sync --force-update`，然后移除过期的片段行（空 `last_hit_at` / 空文件路径），当解析的源路径在磁盘上缺失时修剪 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等），移除其元数据文件路径指向缺失文件的翻译行，修剪孤立的 `translation_failures` 行，修剪其解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行，并丢弃配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales` 以及任何按块划分的 `docs[]` / `json[]` `targetLocales`；仅限 SQLite —— 使用 `purge-locale` 删除生成的文件）；除非传递了 `--backup <path>`，否则它不会备份 `cache.db`，该参数会首先将备份写入该路径。
+每次运行时，都会根据哈希值 × 语言环境查找段。只有缓存未命中才会发送到 LLM。翻译完成后，将为当前翻译范围中未命中的段行重置 `last_hit_at`。文档翻译期间成功的缓存命中会清除该段的陈旧 `translation_failures` 行。
+
+`cleanup` 首先运行 `sync --force-update`，然后：
+
+- 移除陈旧的段行（null `last_hit_at` / 空文件路径）；
+- 当解析的源路径在磁盘上缺失时，清理 `file_tracking` 键（`doc-block:…`、`json-block:…`、`svg-files:…` 等）；
+- 移除元数据文件路径指向缺失文件的翻译行；
+- 清理孤立的 `translation_failures` 行；
+- 清理解析的源路径在磁盘上缺失的孤立 `markdown_source_issues` 行；
+- 删除配置中不存在的语言环境的缓存行（`sourceLocale`、根 `targetLocales` 以及任何每个块的 `docs[]` / `json[]` `targetLocales`；仅限 SQLite — 使用 `purge-locale` 删除生成的文件）。
+
+它不会备份 `cache.db`，除非传入 `--backup <path>`，这会首先将备份写入该路径。
 
 计费的模型调用（已接受的翻译和已丢弃的重试）存储在 `api_calls` 中。在执行记录调用的命令后，超过 7 个 UTC 日历日的明细行将汇总到月度 `api_totals` 中。`usage` 和仪表板的“使用量与成本”视图会合并这两个表。请参阅[使用量与成本](/zh-Hans/guide/translation-dashboard/usage)。
 
@@ -289,14 +300,14 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 `Logger` 支持 `debug`、`info`、`warn`、`error` 级别，并带有 ANSI 颜色输出。详细模式（`-v`）启用 `debug`。当设置了 `logFilePath` 时，日志行也会写入该文件。
 
 <a id="self-localisation-tool-ui"></a>
-### 工具 UI 自我本地化
+### 自我本地化（工具UI）
 
-该工具会将其自身的 UI（CLI 帮助、高流量日志/摘要/错误消息以及翻译仪表板）与其为您翻译的内容分开进行本地化。
+该工具将其自身的 UI — 命令行界面帮助、高流量日志/摘要/错误消息以及翻译仪表盘 — 与其为您翻译的内容分开进行本地化。
 
-- **区域设置解析**（`src/core/ui-locale.ts` 中的 `resolveUiLocale`）：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统区域设置（`Intl.DateTimeFormat().resolvedOptions().locale`）中选择 UI 区域设置。候选区域设置会被规范化，并与附带的捆绑包集进行精确匹配或最接近的变体匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），然后回退到源区域设置（`en-GB`）。CLI 会在帮助构建前解析一次（预解析 argv 扫描），并在配置加载后再次解析，以便应用 `uiLanguage`（标志和环境变量仍然优先）。
-- **运行时**（`src/i18n/index.ts`）：一个带有 <code v-pre>{{name}}</code> 插值的最小化 `t(source, vars)`，以英语源字符串为键，对应 `src/i18n/locales/<code>.json` 中每个区域设置的扁平捆绑包（在构建时复制到 `dist/i18n/locales`）。缺失的键或捆绑包会返回源文本。这与 UI 字符串的“以键为默认值”模型相同——没有哈希查找。
-- **仪表盘**：服务器公开 `GET /api/ui-i18n`，为已解析的 UI 区域设置返回 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性本地化静态标记。
-- **自测**：捆绑包由 `pnpm i18n:self`（`sync-ui --ui-block src/i18n/strings.json`）生成，它会提取并翻译 `ai-i18n-tools.config.json` 中的 CLI 和仪表盘 `ui` 块。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用，以及 `src/dashboard-app/index.html` 中仪表盘的 `data-i18n*` 标记。
+- **语言环境解析** (`resolveUiLocale` 在 `src/core/ui-locale.ts` 中)：从 `-L` / `--ui-lang` > `AI_I18N_LANG` > 配置 `uiLanguage` > 主机操作系统语言环境 (`Intl.DateTimeFormat().resolvedOptions().locale`) 中选择 UI 语言环境。候选语言环境会被规范化，并与随附的捆绑包集精确匹配或通过最接近的变体匹配（例如 `pt-PT` → `pt-BR`，`en-US` → `en-GB`），如果失败则回退到源语言环境 (`en-GB`)。命令行界面在构建帮助之前（预解析 argv 扫描）解析一次，并在配置加载后再次解析，以便 `uiLanguage` 生效（标志和环境变量仍然优先）。
+- **运行时** (`src/i18n/index.ts`)：一个最小的 `t(source, vars)`，带有 <code v-pre>{{name}}</code> 插值，通过英文源字符串与 `src/i18n/locales/<code>.json` 中扁平的每个语言环境捆绑包（在构建时复制到 `dist/i18n/locales`）进行键控。缺失的键或捆绑包返回源文本。这与 UI 字符串的“键即默认值”模型相同 — 没有哈希查找。
+- **仪表盘**：服务器公开 `GET /api/ui-i18n`，为解析的 UI 语言环境返回 `{ locale, dir, bundle }`；前端设置 `<html lang>` / `dir` 并通过 `data-i18n*` 属性本地化静态标记。
+- **内部测试**：捆绑包由 `pnpm i18n:self` (`sync-ui --ui-block src/i18n/strings.json`) 生成，它提取并翻译 `ai-i18n-tools.config.json` 中的命令行界面和仪表盘 `ui` 块。目录键来自 `src/cli/` 和 `src/i18n/` 中的 `t()` 调用，以及仪表盘在 `src/dashboard-app/index.html` 中的 `data-i18n*` 标记。
 
 ---
 
@@ -441,7 +452,7 @@ src/
 │   ├── ui-language-display.ts      getUILanguageLabel, getUILanguageLabelNative
 │   └── i18next-helpers.ts          RTL detection, i18next setup factories
 │
-├── i18n/                           Self-localization runtime for the tool's own UI
+├── i18n/                           Self-localisation runtime for the tool's own UI
 │   ├── index.ts                    t(source, vars) + bundle/manifest loaders (keyed by English source string)
 │   └── locales/                    Shipped UI bundles (de.json, es.json, …; generated by `pnpm i18n:self`)
 │

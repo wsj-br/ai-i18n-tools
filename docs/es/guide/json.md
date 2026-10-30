@@ -60,7 +60,7 @@ Ejemplo (múltiples archivos de origen, carpetas de configuración regional en m
 }
 ```
 
-**`keyPolicy`**
+`keyPolicy`
 
 | `mode`      | Comportamiento |
 |-------------|-----------|

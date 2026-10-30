@@ -19,20 +19,21 @@ Los tutoriales indican qué ediciones de código fuente te corresponden. Se incl
 
 Cada tutorial sigue el mismo orden. La página que elijas completa los detalles.
 
-1. Instala la CLI y configura la clave API de tu proveedor. Ollama no necesita clave. [Instalación](/es/guide/installation) y [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key).
-2. Ejecuta `init` con la plantilla que nombra esa página. Esto escribe `ai-i18n-tools.config.json`.
-3. Prepara el proyecto para que la herramienta pueda ver el texto.
-4. Ejecuta `ai-i18n-tools sync`, luego `ai-i18n-tools status`.
+1. Instale la CLI y configure la clave API de su proveedor. Ollama no necesita clave. [Instalación](/es/guide/installation) y [Proveedor y clave API](/es/guide/quick-start#provider-and-api-key).
+2. Ejecute `init` con la plantilla que nombra esa página. Esto escribe `ai-i18n-tools.config.json`.
+3. Prepare el proyecto para que la herramienta pueda ver el texto. Use la instrucción del agente de esa página o los pasos manuales en la misma página.
+4. Ejecute `ai-i18n-tools sync`, luego `ai-i18n-tools status`.
 5. Carga la salida, comprueba un idioma de destino y vuelve a ejecutar `sync` cuando el código fuente cambie. La caché solo envía texto nuevo o modificado al modelo.
 
 <a id="pages-in-this-section"></a>
 ## Páginas de esta sección
 
-| Tienes | Página | Lo que cubre esa página |
+| Usted tiene | Página | Lo que cubre esa página |
 | --- | --- | --- |
-| Una aplicación JS/TS (React, Next.js, Node, CLI) cuyos botones y mensajes aún son texto sin formato | [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) | Instala i18next, añade el bootstrap, envuelve los literales en `t()`, luego `extract` y `translate-ui` |
-| Una aplicación Python (Streamlit, FastAPI, Flask, Django, gettext) | [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) | Envuelve `t()` o `_()`, o mantén GNU gettext. La CLI puede ejecutarse desde un ejecutable independiente sin necesidad de instalar Node.js |
-| Un sitio de documentación o marketing (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, HTML plano) | [Añadir i18n a un sitio web o de documentación](/es/guide/add-i18n-to-website) | Habilita las rutas de idioma propias del framework, luego traduce las páginas y las etiquetas del tema |
+| Una aplicación JS/TS (React, Next.js, Node, CLI) cuyos botones y mensajes aún son texto sin formato | [Añadir i18n a una aplicación JS/TS](/es/guide/add-i18n-to-js) | Instale i18next, añada el bootstrap, envuelva los literales en `t()` y añada un selector de idioma, luego `extract` y `translate-ui` |
+| Una aplicación Python (Streamlit, FastAPI, Flask, de escritorio, scripts) | [Añadir i18n a una aplicación Python](/es/guide/add-i18n-to-python) | Coloque el asistente `i18n.py`, envuelva `t()` o `_()`, añada un selector de idioma. La CLI puede ejecutarse desde un ejecutable independiente sin necesidad de instalar Node.js |
+| Una aplicación Django, Flask con catálogos Flask-Babel, o cualquier aplicación que ya use GNU gettext | [Añadir i18n a una aplicación Django / Python gettext](/es/guide/add-i18n-to-django-gettext) | Conserve los archivos `gettext`, `{% blocktranslate %}` y `.po`. La herramienta rellena y compila los catálogos |
+| Un sitio de documentación o marketing (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, HTML plano) | [Añadir i18n a un sitio web o de documentación](/es/guide/add-i18n-to-website) | Habilite la i18n del framework con la instrucción del agente de la página, luego `sync` para traducir páginas y etiquetas de tema |
 | Un README de repositorio y otros archivos Markdown, normalmente junto a una aplicación | [Añadir i18n a tu README y documentos Markdown](/es/guide/add-i18n-to-readme) | Un archivo por idioma (`translated-docs/README.de.md`) y una fila de idioma en el README. `init --with-readme` añade ese bloque a cualquier plantilla |
 | Más de uno de los anteriores en un solo repositorio | [Combinar pipelines](/es/guide/combining-pipelines) | Una configuración y un `sync`. El par habitual son las cadenas de la interfaz de usuario de la aplicación más el README |
 | Diccionarios de Intlayer, y quieres mantener Intlayer | [Traducir Intlayer in situ](/es/guide/translating-intlayer) | `translate-intlayer` rellena las hojas faltantes y obsoletas dentro de `*.content.ts` |

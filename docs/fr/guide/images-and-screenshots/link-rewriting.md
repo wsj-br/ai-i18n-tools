@@ -8,9 +8,9 @@ Pour `docsOutput.style = "flat"` (et sauf si `rewriteRelativeLinks: false` ou un
 <a id="two-step-flow-when-docsoutputstyle--flat"></a>
 ### Flux en deux étapes lorsque `docsOutput.style = "flat"`
 
-1. **URL source** — chemin d'image en Markdown traduit (après le réassemblage du segment)
-2. **Réécriveur de liens plat** — ajoute un préfixe de profondeur (`../`, `../../docs/`,…)
-3. **`regexAdjustments`** — échange le segment de dossier de paramètres régionaux (`en-GB` → `${translatedLocale}`)
+1. **URL source** — chemin d'image dans le markdown traduit (après le réassemblage des segments)
+2. **Réécriveur de liens plats** — ajoute un préfixe de profondeur (`../`, `../../docs/`, …)
+3. `regexAdjustments` — échange le segment du dossier de locale (`en-GB` → `${translatedLocale}`)
 4. **URL de sortie** — chemin final écrit dans le fichier traduit
 
 Exemple avec `outputDir: "translated-docs/"` et une source `README.md` située à la racine du dépôt :
@@ -25,11 +25,11 @@ Pour tout style non-`flat` (y compris `"nested"`, `"doc-system"` et les prérég
 <a id="vitepress-link-normaliser-style-vitepress"></a>
 ### Normaliseur de liens VitePress (`style: "vitepress"`)
 
-Lorsque `docsOutput.rewriteVitepressLinks` est `true` (par défaut lorsque `style` est `"vitepress"`), un normaliseur distinct s'exécute après le réassemblage du segment (au lieu du réécriveur plat). Il cible les sites VitePress / doc-system où l'anglais se trouve à la racine du contenu et les locales se trouvent dans des dossiers frères (`docs/de/guide/…`).
+Lorsque `docsOutput.rewriteVitepressLinks` est `true` (par défaut lorsque `style` est `"vitepress"`), un normaliseur distinct s'exécute après le réassemblage des segments (au lieu du réécriveur plat). Il cible les sites VitePress / systèmes de documentation où l'anglais se trouve à la racine du contenu et les locales sont dans des dossiers frères (`docs/de/guide/…`).
 
-1. **Href source** — lien en Markdown traduit (après le réassemblage du segment)
-2. **Normalisateur de liens VitePress** — réécrit les chemins de documents vers les routes du site (`/guide/…`)
-3. **`regexAdjustments`** — échange facultatif de dossier de paramètres régionaux pour les captures d'écran (`screenshots/en-GB/` → `screenshots/de/`,…)
+1. **Href source** — lien dans le markdown traduit (après le réassemblage des segments)
+2. **Normaliseur de liens VitePress** — réécrit les chemins de documentation en routes de site (`/guide/…`)
+3. `regexAdjustments` — échange facultatif du dossier de locale pour les captures d'écran (`screenshots/en-GB/` → `screenshots/de/`, …)
 4. **Href de sortie** — URL finale écrite dans le fichier traduit
 
 Réécritures typiques :
@@ -42,19 +42,19 @@ Réécritures typiques :
 
 Pour les projets qui synchronisent `README.md` → `docs/index.md`, utilisez des URL GitHub complètes dans `README.md` pour `LICENSE`, `examples/` et les autres fichiers en dehors de l'arborescence VitePress. Consultez [Intégration VitePress — README comme page d'accueil de la documentation](/fr/guide/integrations/vitepress#readme-and-the-docs-homepage).
 
-Le réécriveur plat et le normaliseur VitePress s'excluent mutuellement par bloc `docs[]` — un seul s'exécute avant `regexAdjustments`. Voir [Intégration VitePress — Conventions de liens](/fr/guide/integrations/vitepress#link-conventions).
+Le réécriveur plat et le normaliseur VitePress sont mutuellement exclusifs par bloc `docs[]` — un seul s'exécute avant `regexAdjustments`. Voir [Intégration VitePress — Conventions de liens](/fr/guide/integrations/vitepress#link-conventions).
 
 Les dossiers de captures d'écran par paramètres régionaux utilisent toujours la même règle `screenshots/[^/]+/` → `screenshots/${translatedLocale}/` `regexAdjustments` si nécessaire ; voir [Dossier par paramètres régionaux](/fr/guide/images-and-screenshots/per-locale-folder).
 
 <a id="nextra-link-normaliser-style-nextra"></a>
 ### Normaliseur de liens Nextra (`style: "nextra"`)
 
-Lorsque `docsOutput.rewriteNextraLinks` est `true` (par défaut lorsque `style` est `"nextra"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/en/…` et les chemins relatifs `.mdx` vers des routes neutres en termes de locale (`/guide/…`). Voir [Intégration Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
+Lorsque `docsOutput.rewriteNextraLinks` est `true` (par défaut lorsque `style` est `"nextra"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/en/…` et les chemins relatifs `.mdx` en routes neutres de locale (`/guide/…`). Voir [Intégration Nextra — Conventions de liens](/fr/guide/integrations/nextra#link-conventions).
 
 <a id="fumadocs-link-normaliser-style-fumadocs"></a>
 ### Normaliseur de liens Fumadocs (`style: "fumadocs"`)
 
-Lorsque `docsOutput.rewriteFumadocsLinks` est `true` (par défaut lorsque `style` est `"fumadocs"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/docs/…` et les chemins relatifs `.mdx` vers des routes neutres en termes de locale (`/docs/…`). Voir [Intégration Fumadocs — Conventions de liens](/fr/guide/integrations/fumadocs#link-conventions).
+Lorsque `docsOutput.rewriteFumadocsLinks` est `true` (par défaut lorsque `style` est `"fumadocs"`), un normaliseur distinct s'exécute après le réassemblage des segments. Il réécrit les chemins `content/docs/…` et les chemins relatifs `.mdx` en routes neutres de locale (`/docs/…`). Voir [Intégration Fumadocs — Conventions de liens](/fr/guide/integrations/fumadocs#link-conventions).
 
 <a id="per-file-depth-prefix-with-flatpreserverelativedir"></a>
 ### Préfixe de profondeur par fichier avec `flatPreserveRelativeDir`

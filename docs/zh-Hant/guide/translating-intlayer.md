@@ -70,7 +70,7 @@ pnpm translate:dry
 pnpm translate
 ```
 
-`pnpm dev` 會在 [http://localhost:3093](http://localhost:3093) 上執行應用程式。在翻譯前，將語系切換為 `es` 或 `zh-Hans`，字串會回復為英文；在 `pnpm translate` 之後，填入的翻譯便會出現。編輯一個英文字串並重新執行 `pnpm translate`，即可看到只有該葉節點重新整理。
+`pnpm dev` 會在 `http://localhost:3093` 上執行應用程式。在翻譯之前，將地區設定切換為 `es` 或 `zh-Hans`，字串會回退為英文；在 `pnpm translate` 之後，已填入的翻譯就會顯示。編輯一個英文字串並重新執行 `pnpm translate`，即可看到只有該「葉」重新整理。
 
 完整逐步教學：[examples/intlayer-translate/README.md](https://github.com/wsj-br/ai-i18n-tools/blob/main/examples/intlayer-translate/README.md)。
 

@@ -19,20 +19,21 @@
 
 हर वॉकथ्रू एक ही क्रम का पालन करता है। आप जो पृष्ठ चुनते हैं वह विवरण भरता है।
 
-1. CLI स्थापित करें और अपने प्रदाता की API कुंजी सेट करें। Ollama को किसी कुंजी की आवश्यकता नहीं है। [स्थापना](/hi/guide/installation) और [प्रदाता और API कुंजी](/hi/guide/quick-start#provider-and-api-key)।
-2. उस पृष्ठ के नाम वाले टेम्पलेट के साथ `init` चलाएँ। यह `ai-i18n-tools.config.json` लिखता है।
-3. प्रोजेक्ट को तैयार करें ताकि टूल टेक्स्ट देख सके।
+1. CLI इंस्टॉल करें और अपने प्रोवाइडर की API कुंजी सेट करें। Ollama को किसी कुंजी की आवश्यकता नहीं है। [इंस्टॉलेशन](/hi/guide/installation) और [प्रोवाइडर और API कुंजी](/hi/guide/quick-start#provider-and-api-key)।
+2. `init` को उस टेम्पलेट के साथ चलाएँ जिसका नाम उस पेज पर दिया गया है। यह `ai-i18n-tools.config.json` लिखता है।
+3. प्रोजेक्ट को तैयार करें ताकि टूल टेक्स्ट देख सके। उस पेज के एजेंट प्रॉम्प्ट का उपयोग करें, या उसी पेज पर दिए गए मैन्युअल चरणों का पालन करें।
 4. `ai-i18n-tools sync` चलाएँ, फिर `ai-i18n-tools status`।
 5. आउटपुट लोड करें, एक लक्ष्य भाषा की जाँच करें, और जब स्रोत बदलता है तो `sync` को फिर से चलाएँ। कैश केवल नया या बदला हुआ टेक्स्ट मॉडल को भेजता है।
 
 <a id="pages-in-this-section"></a>
 ## इस अनुभाग में पृष्ठ
 
-| आपके पास है | पृष्ठ | वह पृष्ठ क्या कवर करता है |
+| आपके पास है | पेज | वह पेज क्या कवर करता है |
 | --- | --- | --- |
-| एक JS/TS ऐप (React, Next.js, Node, CLI) जिसके बटन और संदेश अभी भी सादे टेक्स्ट में हैं | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) | i18next स्थापित करें, बूटस्ट्रैप जोड़ें, `t()` में लिटरल को रैप करें, फिर `extract` और `translate-ui` |
-| एक Python ऐप (Streamlit, FastAPI, Flask, Django, gettext) | [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) | `t()` या `_()` को रैप करें, या GNU gettext रखें। CLI बिना Node.js इंस्टॉलेशन के एक स्टैंडअलोन निष्पादन योग्य से चल सकता है |
-| एक दस्तावेज़ीकरण या मार्केटिंग साइट (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, plain HTML) | [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) | फ्रेमवर्क के अपने भाषा मार्गों को सक्षम करें, फिर पृष्ठों और थीम लेबल का अनुवाद करें |
+| एक JS/TS ऐप (React, Next.js, Node, CLI) जिसके बटन और मैसेज अभी भी सादे टेक्स्ट में हैं | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) | i18next इंस्टॉल करें, बूटस्ट्रैप जोड़ें, `t()` में लिटरल को रैप करें, और एक भाषा स्विच जोड़ें, फिर `extract` और `translate-ui` |
+| एक Python ऐप (Streamlit, FastAPI, Flask, डेस्कटॉप, स्क्रिप्ट) | [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) | `i18n.py` हेल्पर रखें, `t()` या `_()` को रैप करें, एक भाषा स्विच जोड़ें। CLI को बिना Node.js इंस्टॉल किए एक स्टैंडअलोन एक्ज़ीक्यूटेबल से चलाया जा सकता है |
+| एक Django ऐप, Flask-Babel कैटलॉग के साथ Flask, या कोई भी ऐप जो पहले से GNU gettext का उपयोग करता है | [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) | `gettext`, `{% blocktranslate %}`, और अपनी `.po` फ़ाइलें रखें। टूल कैटलॉग को भरता और कंपाइल करता है |
+| एक डॉक्यूमेंटेशन या मार्केटिंग साइट (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, सादा HTML) | [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) | पेज के एजेंट प्रॉम्प्ट के साथ फ्रेमवर्क के i18n को सक्षम करें, फिर पेज और थीम लेबल का अनुवाद करने के लिए `sync` |
 | एक रिपॉजिटरी README और अन्य Markdown फ़ाइलें, आमतौर पर एक ऐप के बगल में | [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) | प्रति भाषा एक फ़ाइल (`translated-docs/README.de.md`) और README में एक भाषा पंक्ति। `init --with-readme` उस ब्लॉक को किसी भी टेम्पलेट में जोड़ता है |
 | एक रिपॉजिटरी में उपरोक्त में से एक से अधिक | [पाइपलाइन को संयोजित करना](/hi/guide/combining-pipelines) | एक कॉन्फ़िग और एक `sync`। सामान्य जोड़ी ऐप UI स्ट्रिंग और README है |
 | Intlayer डिक्शनरी, और आप Intlayer को रखना चाहते हैं | [Intlayer को यथास्थान अनुवाद करना](/hi/guide/translating-intlayer) | `translate-intlayer` `*.content.ts` के अंदर गुम और बासी पत्तियों को भरता है |

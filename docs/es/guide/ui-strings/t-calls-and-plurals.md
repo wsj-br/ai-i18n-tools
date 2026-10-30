@@ -50,8 +50,8 @@ Si tu proyecto utiliza una utilidad de interpolación personalizada (por ejemplo
 
 **No escribas las formas plurales a mano.** En el código fuente, escribe el mensaje una vez y pasa dos cosas en el segundo argumento:
 
-1. **`plurals: true`** — le dice a extract y a `translate-ui` que esta llamada es un grupo plural cardinal.
-2. **`count`** — el número que i18next usa en tiempo de ejecución para elegir la forma correcta.
+1. `plurals: true` — indica a extract y `translate-ui` que esta llamada es un grupo plural cardinal.
+2. `count` — el número que i18next utiliza en tiempo de ejecución para elegir la forma correcta.
 
 ```tsx
 {t('{{count}} items in your cart', { plurals: true, count: n })}
@@ -65,7 +65,7 @@ Cuando ejecutas `translate-ui`, **ai-i18n-tools llama a un LLM** para generar ca
 
 **Validación:** Si el mensaje contiene **dos o más** marcadores de posición <code v-pre>{{…}}</code> distintos, **uno de ellos debe ser** <code v-pre>{{count}}</code> (el eje plural). De lo contrario, `extract` **fallará** con un mensaje claro de archivo/línea.
 
-Después de que el LLM devuelve las formas CLDR, `translate-ui` también verifica cada forma con el **literal original del desarrollador**: cada marcador de posición de origen debe aparecer en cada categoría (incluido `one`), las formas no deben inventar nuevos tokens <code v-pre>{{…}}</code> / `%d` / `{n}`, y las fuentes solo de sustantivos (sin <code v-pre>{{count}}</code> y sin dígitos, por ejemplo, etiquetas de unidad como `Minutes`) deben permanecer solo de sustantivos. Las discrepancias descartan la respuesta de ese modelo y reintentan el siguiente modelo en la lista de reserva.
+Después de que el LLM devuelve las formas CLDR, `translate-ui` también comprueba cada forma con el **literal original del desarrollador**: cada marcador de posición de origen debe aparecer en cada categoría (incluido `one`), las formas no deben inventar nuevos <code v-pre>{{…}}</code> / `%d` / `{n}` tokens, y las fuentes solo de sustantivos (sin <code v-pre>{{count}}</code> y sin dígitos, p. ej., etiquetas de unidad como `Minutes`) deben permanecer solo como sustantivos. Las discrepancias descartan la respuesta de ese modelo y reintentan con el siguiente modelo en la lista de reserva.
 
 **Dos recuentos independientes** (por ejemplo, secciones y páginas) no pueden compartir un mensaje plural; usa **dos** llamadas a `t()` (cada una con `plurals: true` y su propio `count`) y concaténalas en la interfaz de usuario.
 
