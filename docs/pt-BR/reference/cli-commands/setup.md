@@ -19,7 +19,7 @@ Escreva um arquivo de configuração inicial (inclui `provider` / `providers`, `
 
 **Opções principais:** `-P` / `--provider` (obrigatório), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` é obrigatório. Ele seleciona qual **predefinição integrada** estruturar. Deve ser um dos seguintes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` é obrigatório. Ele seleciona qual **predefinição integrada** para gerar. Deve ser um dos seguintes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **Modelos (`-t`):**
 

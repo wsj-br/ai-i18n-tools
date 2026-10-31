@@ -19,7 +19,7 @@
 
 **主要選項：** `-P` / `--provider`（必要）、`-t` / `--template`、`-o` / `--output`、`--with-readme`、`--with-translate-ignore`
 
-`-P` / `--provider` 為必填項。它選擇要建立骨架的**內建預設集**。必須為下列其中一項：`openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`。
+`-P` / `--provider` 為必填項。它用於選擇要建立骨架的 **內建預設**。必須是以下其中一項：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apikeyfan`、`cheaperinference`、`ollama`。
 
 **範本（`-t`）：**
 

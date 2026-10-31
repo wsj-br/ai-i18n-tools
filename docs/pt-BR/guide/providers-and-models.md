@@ -14,22 +14,22 @@ As chaves de provedor predefinidas precisam apenas de `translationModels` — UR
 
 <div class="provider-presets">
 
-| Provedor | URL Base | Variável de ambiente da chave de API |
-| --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
-| `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
-| `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
-| `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
-| `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
-| `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
-| `ollama` | `http://localhost:11434/v1` | (nenhum) |
+| Provedor           | Variável de ambiente da chave de API            | URL base                                                  |
+|--------------------|---------------------------------|-----------------------------------------------------------|
+| `alibaba`          | `ALIBABA_API_KEY`                       | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`                                                 |
+| `anthropic`        | `ANTHROPIC_API_KEY`        | `https://api.anthropic.com/v1`                            |
+| `apikeyfan`           | `APIKEYFAN_API_KEY`           | `https://api.apikey.fan/v1`                               |
+| `cerebras`         | `CEREBRAS_API_KEY`         | `https://api.cerebras.ai/v1`                              |
+| `cheaperinference` | `CHEAPERINFERENCE_API_KEY` | `https://api.cheaperinference.com/v1`                     |
+| `deepseek`         | `DEEPSEEK_API_KEY`         | `https://api.deepseek.com`                                |
+| `gemini`           | `GOOGLE_API_KEY`           | `https://generativelanguage.googleapis.com/v1beta/openai` |
+| `groq`             | `GROQ_API_KEY`             | `https://api.groq.com/openai/v1`                          |
+| `mistral`          | `MISTRAL_API_KEY`          | `https://api.mistral.ai/v1`                               |
+| `nvidia`           | `NVIDIA_API_KEY`           | `https://integrate.api.nvidia.com/v1`                     |
+| `ollama`           | (none)                     | `http://localhost:11434/v1`                               |
+| `openai`           | `OPENAI_API_KEY`           | `https://api.openai.com/v1`                               |
+| `openrouter`       | `OPENROUTER_API_KEY`       | `https://openrouter.ai/api/v1`                            |
+| `xai`              | `XAI_API_KEY`              | `https://api.x.ai/v1`                                     |
 
 </div>
 

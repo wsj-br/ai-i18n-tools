@@ -8,6 +8,7 @@ import {
   type ProviderModelEntry,
 } from "../api/provider-models-catalog.js";
 import {
+  findApiKeyEnvName,
   providerModelsCatalogQuery,
   resolveModelsListRequestAuth,
   resolveProviderSettings,
@@ -47,7 +48,8 @@ export async function suggestProviderModels(opts: {
   refresh?: boolean;
 }): Promise<SuggestProviderModelsResult> {
   const settings = resolveProviderSettings(opts.provider, opts.config);
-  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  const keyName = findApiKeyEnvName(settings);
+  const apiKey = keyName ? (process.env[keyName]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
     throw new Error(`${settings.apiKeyEnv ?? "API key"} is required`);
   }

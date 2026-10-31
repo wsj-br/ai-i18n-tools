@@ -153,24 +153,26 @@
 
 <div class="provider-presets">
 
-| 提供商 | 基本 URL | API 密钥环境变量 |
+| 提供商 | 基础 URL | API 密钥环境变量 |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (无) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 </div>
+
+`apifun` 预设已重命名为 `apikeyfan`。请更新现有配置中的 `provider` 和 `providers` 键；`APIFUN_API_KEY` 仍是 `APIKEYFAN_API_KEY` 的别名。
 
 旧版顶层 `openrouter` 块（包含 `baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`）仍然受支持，并在加载时自动迁移到 `providers.openrouter`（包含 `provider: "openrouter"`）；`defaultModel` / `fallbackModel` 合并到 `translationModels`。
 

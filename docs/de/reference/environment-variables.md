@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-Der Schlüssel ist erforderlich, wenn dieser Anbieter aktiv ist. Preset-URLs: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
+Der Schlüssel ist erforderlich, wenn dieser Anbieter aktiv ist. Für `apikeyfan` wird der Legacy-`APIFUN_API_KEY` akzeptiert, wenn `APIKEYFAN_API_KEY` nicht gesetzt oder leer ist. Eine benutzerdefinierte `apiKeyEnv` deaktiviert diesen Fallback. Voreingestellte URLs: [Integrierte Anbieter](/de/guide/providers-and-models#built-in-providers).
 
 <a id="provider-base-urls"></a>
 ## Provider-Basis-URLs

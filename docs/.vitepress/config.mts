@@ -348,8 +348,11 @@ export default defineConfig({
     build: {
       // Local search indexes are already split per locale and lazy-loaded by
       // VitePress. The Japanese index is the largest, about 870 kB.
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 2000,
       rollupOptions: {
+        output: {
+          codeSplitting: true,
+        },
         onwarn(warning, warn) {
           if (warning.message.includes("/* #__PURE__ */")) return;
           warn(warning);

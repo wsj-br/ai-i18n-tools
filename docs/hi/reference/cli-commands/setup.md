@@ -19,7 +19,7 @@
 
 **मुख्य विकल्प:** `-P` / `--provider` (आवश्यक), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` अनिवार्य है। यह चुनता है कि कौन सा **बिल्ट-इन प्रीसेट** स्केफ़ोल्ड करना है। इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`।
+`-P` / `--provider` आवश्यक है। यह निर्धारित करता है कि कौन सा **अंतर्निहित प्रीसेट** स्कैफ़ोल्ड करना है। यह इनमें से एक होना चाहिए: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`।
 
 **टेम्पलेट (`-t`):**
 

@@ -153,24 +153,26 @@
 
 <div class="provider-presets">
 
-| प्रदाता | आधार URL | API-कुंजी env var |
+| प्रदाता | बेस यूआरएल | एपीआई-की एनवायरनमेंट वेरिएबल |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai`     | `https://api.openai.com/v1`                               | `OPENAI_API_KEY`     |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic`  | `https://api.anthropic.com/v1`                            | `ANTHROPIC_API_KEY`  |
-| `gemini`     | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY`     |
-| `deepseek`   | `https://api.deepseek.com`                                | `DEEPSEEK_API_KEY`   |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras`   | `https://api.cerebras.ai/v1`                              | `CEREBRAS_API_KEY`   |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek`   | `https://api.deepseek.com`                                | `DEEPSEEK_API_KEY`   |
+| `gemini`     | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY`     |
 | `groq`       | `https://api.groq.com/openai/v1`                          | `GROQ_API_KEY`       |
 | `mistral`    | `https://api.mistral.ai/v1`                               | `MISTRAL_API_KEY`    |
-| `xai`        | `https://api.x.ai/v1`                                     | `XAI_API_KEY`        |
 | `nvidia`     | `https://integrate.api.nvidia.com/v1`                     | `NVIDIA_API_KEY`     |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun`     | `https://api.apikey.fun/v1`                               | `APIFUN_API_KEY`     |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama`     | `http://localhost:11434/v1`                               | (कोई नहीं)               |
+| `openai`     | `https://api.openai.com/v1`                               | `OPENAI_API_KEY`     |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai`        | `https://api.x.ai/v1`                                     | `XAI_API_KEY`        |
 
 </div>
+
+`apifun` प्रीसेट का नाम बदलकर `apikeyfan` कर दिया गया। मौजूदा कॉन्फ़िगरेशन में `provider` और `providers` कुंजियों को अपडेट करें; `APIFUN_API_KEY`, `APIKEYFAN_API_KEY` के लिए एक उपनाम बना हुआ है।
 
 एक लेगेसी शीर्ष-स्तरीय `openrouter` ब्लॉक (`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` के साथ) अभी भी स्वीकार किया जाता है और लोड होने पर `providers.openrouter` (`provider: "openrouter"` के साथ) में स्वतः माइग्रेट हो जाता है; `defaultModel` / `fallbackModel` `translationModels` में समाहित हो जाते हैं।
 

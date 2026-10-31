@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: providers - renamed `apifun` to `apikeyfan`, using `https://api.apikey.fan/v1` and `APIKEYFAN_API_KEY`. The legacy `APIFUN_API_KEY` remains supported; update the provider key and `init -P` value to `apikeyfan`.
+
 - **Changed**: docs — corrected grammar, standardised English (UK) spelling and terminology, split long run-on sentences, removed translation-breaking bold-wrapped inline code (`**\`code\`**`), and reworded idioms that translate poorly across the English documentation (for example `chrome` → `shell`/`theme strings`, `wire` → `set up`/`connect`, `dogfoods`, `greenfield`, `no-op`, `drop-in`, `surgical`, `jump the list`, `stand-ins`, `ship`, `speaks one language`). Renamed the `Self-localisation` and `romanised` heading anchors (with their in-repo links) and the VitePress/Nextra/Fumadocs link-normaliser anchors.
 - **Changed**: UI — aligned source UI strings for terminology and grammar: `prioritise` spelling, hyphenated `Zero-data-retention catalog`, `re-translate` wording, `Dry run mode:` punctuation, Unicode ellipsis in dashboard loading labels, `before the interrupt` phrasing, `Output directory:` label, consistent `Config file path` casing, and trailing `comma-separated` phrasing in flag help. Run `pnpm i18n:self` to regenerate locale bundles.
 

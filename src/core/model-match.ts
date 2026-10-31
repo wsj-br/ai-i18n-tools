@@ -16,6 +16,7 @@ const ENGINE_PREFIXES = new Set([
   "nvidia",
   "alibaba",
   "apifun",
+  "apikeyfan",
   "local",
 ]);
 

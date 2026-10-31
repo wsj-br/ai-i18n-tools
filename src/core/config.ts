@@ -119,7 +119,7 @@ export const DEFAULT_INIT_MODELS_BY_PROVIDER: Readonly<Record<string, readonly s
   xai: ["grok-4.5"],
   nvidia: ["meta/llama-3.1-8b-instruct", "openai/gpt-oss-20b"],
   alibaba: ["qwen-plus", "qwen-flash"],
-  apifun: ["gpt-4o-mini"],
+  apikeyfan: ["gpt-4o-mini"],
   cheaperinference: ["deepseek-v4.1-flash", "glm-5.3-flash"],
   ollama: ["llama3.2:3b", "mistral-nemo:12b"],
 } as const;

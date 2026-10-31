@@ -9,7 +9,11 @@ import {
   resolveAllConfiguredModelIds,
   resolveTranslationModels,
 } from "../core/config.js";
-import { resolveActiveProvider, resolveProviderSettings } from "../core/llm-providers.js";
+import {
+  findApiKeyEnvName,
+  resolveActiveProvider,
+  resolveProviderSettings,
+} from "../core/llm-providers.js";
 import { getDocumentationTargetLocaleCodes } from "../core/ui-languages.js";
 import { TranslationCache } from "../core/cache.js";
 import { createUsageRecorder } from "../core/usage-recorder.js";
@@ -96,7 +100,8 @@ export async function runBenchModels(
   }
 
   const settings = resolveProviderSettings(activeProvider, config);
-  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  const keyName = findApiKeyEnvName(settings);
+  const apiKey = keyName ? (process.env[keyName]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
     console.error(
       chalk.red(t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }))

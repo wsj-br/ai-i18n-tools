@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-当该提供商处于活动状态时，必须提供此密钥。预设 URL：[内置提供商](/zh-Hans/guide/providers-and-models#built-in-providers)。
+当该提供程序处于活动状态时，密钥是必需的。对于 `apikeyfan`，当 `APIKEYFAN_API_KEY` 未设置或为空时，旧版 `APIFUN_API_KEY` 被接受。自定义 `apiKeyEnv` 会禁用此回退。预设 URL：[内置提供程序](/zh-Hans/guide/providers-and-models#built-in-providers)。
 
 <a id="provider-base-urls"></a>
 ## 提供商基础 URL

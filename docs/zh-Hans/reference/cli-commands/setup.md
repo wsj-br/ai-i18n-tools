@@ -19,7 +19,7 @@
 
 **主要选项：** `-P` / `--provider`（必需），`-t` / `--template`，`-o` / `--output`，`--with-readme`，`--with-translate-ignore`
 
-`-P` / `--provider` 是必填项。它选择用于搭建的**内置预设**。必须是以下之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
+`-P` / `--provider` 是必需的。它用于选择要生成的 **内置预设**。必须是以下之一：`openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apikeyfan`、`cheaperinference`、`ollama`。
 
 **模板（`-t`）：**
 

@@ -155,22 +155,24 @@
 
 | プロバイダー | ベースURL | APIキー環境変数 |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | （なし） |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 </div>
+
+`apifun`プリセットは`apikeyfan`に名称変更されました。既存の構成で`provider`および`providers`キーを更新してください。`APIFUN_API_KEY`は`APIKEYFAN_API_KEY`のエイリアスとして残ります。
 
 従来のトップレベル`openrouter`ブロック（`baseUrl`、`translationModels`、`defaultModel`、`fallbackModel`、`maxTokens`、`temperature`、`requestTimeout`、`requestTimeoutMs`を含む）は引き続き受け付けられ、ロード時に`providers.openrouter`（`provider: "openrouter"`を含む）へ自動マイグレーションされます。`defaultModel` / `fallbackModel`は`translationModels`に統合されます。
 

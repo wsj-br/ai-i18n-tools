@@ -155,22 +155,24 @@ Préréglages de fournisseurs intégrés (clé — URL de base — variable d'en
 
 | Fournisseur | URL de base | Variable d'environnement de la clé API |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (aucun) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 </div>
+
+Le préréglage `apifun` a été renommé en `apikeyfan`. Mettez à jour les clés `provider` et `providers` dans les configurations existantes ; `APIFUN_API_KEY` reste un alias de `APIKEYFAN_API_KEY`.
 
 Un bloc `openrouter` de niveau supérieur hérité (avec `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) est toujours accepté et est automatiquement migré vers `providers.openrouter` (avec `provider: "openrouter"`) au chargement ; `defaultModel` / `fallbackModel` se replient dans `translationModels`.
 

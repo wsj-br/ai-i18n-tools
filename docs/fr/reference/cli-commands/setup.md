@@ -19,7 +19,7 @@ Affiche la version de la CLI et l'horodatage de la compilation (les mêmes infor
 
 **Options clés :** `-P` / `--provider` (obligatoire), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` est obligatoire. Il sélectionne le **préréglage intégré** à échafauder. Doit être l'un des suivants : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` est requis. Il sélectionne le **préréglage intégré** à générer. Doit être l'une des valeurs suivantes : `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **Modèles (`-t`) :**
 

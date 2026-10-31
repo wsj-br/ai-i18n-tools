@@ -4,6 +4,7 @@ import { t } from "../i18n/index.js";
 import { resolveAllConfiguredModelIds, resolveTranslationModels } from "../core/config.js";
 import {
   OPENROUTER_PROVIDER_KEY,
+  findApiKeyEnvName,
   providerModelsCatalogQuery,
   resolveActiveProvider,
   resolveModelsListRequestAuth,
@@ -81,7 +82,8 @@ export async function loadConfiguredModelCatalogStatus(
     return { ...empty, error: e instanceof Error ? e.message : String(e) };
   }
 
-  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  const keyName = findApiKeyEnvName(settings);
+  const apiKey = keyName ? (process.env[keyName]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
     return {
       ...empty,

@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-जब वह प्रदाता सक्रिय होता है तो कुंजी आवश्यक होती है। प्रीसेट URL: [Built-in providers](/hi/guide/providers-and-models#built-in-providers)।
+जब वह प्रदाता सक्रिय हो तो कुंजी आवश्यक है। `apikeyfan` के लिए, लेगेसी `APIFUN_API_KEY` तब स्वीकार किया जाता है जब `APIKEYFAN_API_KEY` अनसेट हो या खाली हो। एक कस्टम `apiKeyEnv` इस फ़ॉलबैक को अक्षम करता है। प्रीसेट यूआरएल: [बिल्ट-इन प्रदाता](/hi/guide/providers-and-models#built-in-providers)।
 
 <a id="provider-base-urls"></a>
 ## प्रदाता बेस URL

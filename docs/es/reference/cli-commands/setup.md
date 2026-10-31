@@ -19,7 +19,7 @@ Escriba un archivo de configuración inicial (incluye `provider` / `providers`, 
 
 **Opciones clave:** `-P` / `--provider` (obligatorio), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` es obligatorio. Selecciona el **preajuste integrado** para generar la estructura. Debe ser uno de: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` es obligatorio. Selecciona qué **preajuste integrado** generar. Debe ser uno de los siguientes: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **Plantillas (`-t`):**
 

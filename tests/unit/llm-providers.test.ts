@@ -45,6 +45,14 @@ describe("resolveActiveProvider", () => {
 });
 
 describe("resolveProviderSettings", () => {
+  it("inherits the apikeyfan endpoint and API-key env vars", () => {
+    const settings = resolveProviderSettings("apikeyfan", { providers: { apikeyfan: {} } });
+    expect(settings.baseUrl).toBe("https://api.apikey.fan/v1");
+    expect(settings.apiKeyEnv).toBe("APIKEYFAN_API_KEY");
+    expect(settings.apiKeyEnvAliases).toEqual(["APIFUN_API_KEY"]);
+    expect(isPresetProvider("apifun")).toBe(false);
+  });
+
   it("inherits Cheaper Inference baseUrl and API-key env var", () => {
     const s = resolveProviderSettings("cheaperinference", { providers: { cheaperinference: {} } });
     expect(s.baseUrl).toBe("https://api.cheaperinference.com/v1");
@@ -198,6 +206,33 @@ describe("resolveApiKey", () => {
     expect(() => resolveApiKey(s)).toThrow(new RegExp(`${KEY} is required`));
   });
 
+  it("supports the legacy apikeyfan key, preferring the primary and respecting overrides", () => {
+    const savedPrimary = process.env.APIKEYFAN_API_KEY;
+    const savedLegacy = process.env.APIFUN_API_KEY;
+    try {
+      delete process.env.APIKEYFAN_API_KEY;
+      process.env.APIFUN_API_KEY = " legacy ";
+      const settings = resolveProviderSettings("apikeyfan", { providers: { apikeyfan: {} } });
+      expect(resolveApiKey(settings)).toBe("legacy");
+      process.env.APIKEYFAN_API_KEY = "primary";
+      expect(resolveApiKey(settings)).toBe("primary");
+      process.env.APIKEYFAN_API_KEY = "   ";
+      expect(resolveApiKey(settings)).toBe("legacy");
+      const overridden = resolveProviderSettings("apikeyfan", {
+        providers: { apikeyfan: { apiKeyEnv: KEY } },
+      });
+      delete process.env[KEY];
+      expect(() => resolveApiKey(overridden)).toThrow(new RegExp(`${KEY} is required`));
+      delete process.env.APIFUN_API_KEY;
+      expect(() => resolveApiKey(settings)).toThrow(/APIKEYFAN_API_KEY is required/);
+    } finally {
+      if (savedPrimary === undefined) delete process.env.APIKEYFAN_API_KEY;
+      else process.env.APIKEYFAN_API_KEY = savedPrimary;
+      if (savedLegacy === undefined) delete process.env.APIFUN_API_KEY;
+      else process.env.APIFUN_API_KEY = savedLegacy;
+    }
+  });
+
   it("returns empty string for keyless providers", () => {
     const s = resolveProviderSettings("ollama", { providers: { ollama: {} } });
     expect(resolveApiKey(s)).toBe("");
@@ -227,7 +262,7 @@ describe("translationModelsForProvider / presets", () => {
       "xai",
       "nvidia",
       "alibaba",
-      "apifun",
+      "apikeyfan",
       "cheaperinference",
       "ollama",
     ]) {

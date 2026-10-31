@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-當該提供者處於啟用狀態時，必須提供此金鑰。預設 URL：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
+當該提供者啟用時，此金鑰為必需。對於 `apikeyfan`，當 `APIKEYFAN_API_KEY` 未設定或為空時，舊版 `APIFUN_API_KEY` 會被接受。自訂的 `apiKeyEnv` 會停用此備用機制。預設網址：[內建提供者](/zh-Hant/guide/providers-and-models#built-in-providers)。
 
 <a id="provider-base-urls"></a>
 ## 提供者基礎 URL

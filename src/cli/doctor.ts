@@ -20,6 +20,7 @@ import {
 } from "../core/docs-output-normalize.js";
 import {
   PROVIDER_PRESETS,
+  findApiKeyEnvName,
   resolveActiveProvider,
   resolveProviderSettings,
   type ResolvedProviderSettings,
@@ -166,6 +167,7 @@ function presetApiKeyNames(): string[] {
     if (preset.apiKeyEnv) {
       names.push(preset.apiKeyEnv);
     }
+    names.push(...(preset.apiKeyEnvAliases ?? []));
   }
   return names;
 }
@@ -1061,8 +1063,9 @@ async function checkProviders(
     if (isActive) {
       activeSettings = settings;
     }
-    const keyName = settings.apiKeyEnv ?? "";
-    const keySet = keyName ? Boolean(process.env[keyName]?.trim()) : false;
+    const configuredKeyName = findApiKeyEnvName(settings);
+    const keyName = configuredKeyName ?? settings.apiKeyEnv ?? "";
+    const keySet = configuredKeyName !== undefined;
     const details: string[] = [];
     if (isActive) {
       details.push(t("active"));
@@ -1104,8 +1107,7 @@ async function checkProviders(
   }
 
   const keyMissing =
-    activeSettings?.requiresApiKey === true &&
-    !(activeSettings.apiKeyEnv && process.env[activeSettings.apiKeyEnv]?.trim());
+    activeSettings?.requiresApiKey === true && !findApiKeyEnvName(activeSettings);
   if (options.local === true) {
     pass(section, t("provider catalog was not checked"), true);
     return;

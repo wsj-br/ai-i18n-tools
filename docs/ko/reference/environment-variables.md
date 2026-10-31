@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-해당 공급자가 활성화된 경우 키가 필요합니다. 사전 설정 URL: [내장 공급자](/ko/guide/providers-and-models#built-in-providers).
+해당 공급자가 활성 상태일 때 키가 필요합니다. `apikeyfan`의 경우, `APIKEYFAN_API_KEY`가 설정되지 않았거나 비어 있을 때 레거시 `APIFUN_API_KEY`은(는) 허용됩니다. 사용자 지정 `apiKeyEnv`은(는) 이 대체 기능을 비활성화합니다. 사전 설정 URL: [내장 공급자](/ko/guide/providers-and-models#built-in-providers).
 
 <a id="provider-base-urls"></a>
 ## 공급자 기본 URL

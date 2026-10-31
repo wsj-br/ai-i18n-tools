@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-La clave es obligatoria cuando ese proveedor está activo. URLs de ajustes preestablecidos: [Proveedores integrados](/es/guide/providers-and-models#built-in-providers).
+La clave es necesaria cuando ese proveedor está activo. Para `apikeyfan`, la `APIFUN_API_KEY` heredada se acepta cuando `APIKEYFAN_API_KEY` no está establecida o está vacía. Una `apiKeyEnv` personalizada deshabilita esta alternativa. URL preestablecidas: [Proveedores integrados](/es/guide/providers-and-models#built-in-providers).
 
 <a id="provider-base-urls"></a>
 ## URLs base de proveedor

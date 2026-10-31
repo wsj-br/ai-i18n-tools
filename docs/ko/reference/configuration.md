@@ -153,24 +153,26 @@
 
 <div class="provider-presets">
 
-| 제공자 | 기본 URL | API 키 환경 변수 |
+| 공급자 | 기본 URL | API 키 환경 변수 |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (없음) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 </div>
+
+`apifun` 프리셋의 이름이 `apikeyfan`(으)로 변경되었습니다. 기존 구성에서 `provider` 및 `providers` 키를 업데이트하세요. `APIFUN_API_KEY`는 `APIKEYFAN_API_KEY`의 별칭으로 유지됩니다.
 
 레거시 최상위 `openrouter` 블록(`baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs` 포함)은 여전히 허용되며, 로드 시 `providers.openrouter`(`provider: "openrouter"` 포함)로 자동 마이그레이션됩니다. `defaultModel` / `fallbackModel`는 `translationModels`로 병합됩니다.
 

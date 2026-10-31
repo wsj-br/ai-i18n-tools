@@ -153,24 +153,26 @@ Presets de proveedores integrados (clave — URL base — variable de entorno de
 
 <div class="provider-presets">
 
-| Proveedor | URL base | Variable de entorno de clave API |
+| Proveedor | URL base | Variable de entorno de clave de API |
 | --- | --- | --- |
-| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
-| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
 | `anthropic` | `https://api.anthropic.com/v1` | `ANTHROPIC_API_KEY` |
-| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
-| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `apikeyfan` | `https://api.apikey.fan/v1` | `APIKEYFAN_API_KEY` |
 | `cerebras` | `https://api.cerebras.ai/v1` | `CEREBRAS_API_KEY` |
+| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
+| `deepseek` | `https://api.deepseek.com` | `DEEPSEEK_API_KEY` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `GOOGLE_API_KEY` |
 | `groq` | `https://api.groq.com/openai/v1` | `GROQ_API_KEY` |
 | `mistral` | `https://api.mistral.ai/v1` | `MISTRAL_API_KEY` |
-| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 | `nvidia` | `https://integrate.api.nvidia.com/v1` | `NVIDIA_API_KEY` |
-| `alibaba` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | `ALIBABA_API_KEY` |
-| `apifun` | `https://api.apikey.fun/v1` | `APIFUN_API_KEY` |
-| `cheaperinference` | `https://api.cheaperinference.com/v1` | `CHEAPERINFERENCE_API_KEY` |
 | `ollama` | `http://localhost:11434/v1` | (ninguno) |
+| `openai` | `https://api.openai.com/v1` | `OPENAI_API_KEY` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `OPENROUTER_API_KEY` |
+| `xai` | `https://api.x.ai/v1` | `XAI_API_KEY` |
 
 </div>
+
+El preajuste `apifun` se renombró a `apikeyfan`. Actualice las claves `provider` y `providers` en las configuraciones existentes; `APIFUN_API_KEY` sigue siendo un alias para `APIKEYFAN_API_KEY`.
 
 Un bloque `openrouter` de nivel superior heredado (con `baseUrl`, `translationModels`, `defaultModel`, `fallbackModel`, `maxTokens`, `temperature`, `requestTimeout`, `requestTimeoutMs`) todavía se acepta y se migra automáticamente a `providers.openrouter` (con `provider: "openrouter"`) al cargar; `defaultModel` / `fallbackModel` se pliegan en `translationModels`.
 

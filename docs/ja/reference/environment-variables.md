@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-そのプロバイダーが有効な場合、キーが必要です。プリセットURL: [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)。
+そのプロバイダーが有効な場合、キーは必須です。`apikeyfan` の場合、`APIKEYFAN_API_KEY` が設定されていないか空の場合に、レガシーの `APIFUN_API_KEY` が受け入れられます。カスタムの `apiKeyEnv` は、このフォールバックを無効にします。プリセットURL: [組み込みプロバイダー](/ja/guide/providers-and-models#built-in-providers)。
 
 <a id="provider-base-urls"></a>
 ## プロバイダーのベースURL

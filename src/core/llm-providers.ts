@@ -25,6 +25,8 @@ export interface LlmProviderPreset {
   baseUrl: string;
   /** Environment variable that holds the API key (omitted for keyless providers like Ollama). */
   apiKeyEnv?: string;
+  /** Legacy environment variables accepted when the primary variable is unset. */
+  apiKeyEnvAliases?: readonly string[];
   /** When false, no API key is required (e.g. local Ollama). Defaults to true when `apiKeyEnv` is set. */
   requiresApiKey?: boolean;
 }
@@ -52,7 +54,11 @@ export const PROVIDER_PRESETS: Readonly<Record<string, LlmProviderPreset>> = {
     baseUrl: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
     apiKeyEnv: "ALIBABA_API_KEY",
   },
-  apifun: { baseUrl: "https://api.apikey.fun/v1", apiKeyEnv: "APIFUN_API_KEY" },
+  apikeyfan: {
+    baseUrl: "https://api.apikey.fan/v1",
+    apiKeyEnv: "APIKEYFAN_API_KEY",
+    apiKeyEnvAliases: ["APIFUN_API_KEY"],
+  },
   cheaperinference: {
     baseUrl: "https://api.cheaperinference.com/v1",
     apiKeyEnv: "CHEAPERINFERENCE_API_KEY",
@@ -70,6 +76,7 @@ export interface ResolvedProviderSettings {
   provider: string;
   baseUrl: string;
   apiKeyEnv?: string;
+  apiKeyEnvAliases?: readonly string[];
   requiresApiKey: boolean;
   headers: Record<string, string>;
   maxTokens: number;
@@ -192,6 +199,7 @@ export function resolveProviderSettings(
     provider: name,
     baseUrl: baseUrl.replace(/\/+$/, ""),
     apiKeyEnv,
+    apiKeyEnvAliases: apiKeyEnv === preset?.apiKeyEnv ? preset?.apiKeyEnvAliases : undefined,
     requiresApiKey,
     headers: entry.headers ?? {},
     maxTokens: entry.maxTokens ?? DEFAULT_LLM_MAX_TOKENS,
@@ -208,12 +216,20 @@ export function providerModelsCatalogQuery(
   return settings.zeroDataRetention ? { zdr: "true" } : undefined;
 }
 
+/** Return the first non-empty configured API-key environment variable, including legacy aliases. */
+export function findApiKeyEnvName(settings: ResolvedProviderSettings): string | undefined {
+  return [settings.apiKeyEnv, ...(settings.apiKeyEnvAliases ?? [])].find(
+    (name): name is string => Boolean(name && process.env[name]?.trim())
+  );
+}
+
 /**
  * Read the API key for resolved provider settings from the environment.
  * Throws when a key is required but the env var is empty/unset.
  */
 export function resolveApiKey(settings: ResolvedProviderSettings): string {
-  const fromEnv = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  const name = findApiKeyEnvName(settings);
+  const fromEnv = name ? (process.env[name]?.trim() ?? "") : "";
   if (!fromEnv && settings.requiresApiKey) {
     const envName = settings.apiKeyEnv ?? "<apiKeyEnv>";
     throw new ConfigValidationError(

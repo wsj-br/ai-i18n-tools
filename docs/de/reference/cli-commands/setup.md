@@ -19,7 +19,7 @@ Schreiben Sie eine Starter-Konfigurationsdatei (enthält `provider` / `providers
 
 **Wichtige Optionen:** `-P` / `--provider` (erforderlich), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` ist erforderlich. Es wählt aus, welches **integrierte Preset** gescaffoldet werden soll. Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` ist erforderlich. Es wählt das zu gerüstende **integrierte Preset** aus. Muss einer der folgenden Werte sein: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **Vorlagen (`-t`):**
 

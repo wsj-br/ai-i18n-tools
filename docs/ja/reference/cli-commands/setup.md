@@ -19,7 +19,7 @@ CLIのバージョンとビルドタイムスタンプを表示します（ル�
 
 **主なオプション:** `-P` / `--provider` (必須)、`-t` / `--template`、`-o` / `--output`、`--with-readme`、`--with-translate-ignore`
 
-`-P` / `--provider` は必須です。これにより、スキャフォールドする**組み込みプリセット**が選択されます。次のいずれかである必要があります: `openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apifun`、`cheaperinference`、`ollama`。
+`-P` / `--provider` は必須です。これは、どの**組み込みプリセット**をスキャフォールドするかを選択します。次のいずれかである必要があります: `openrouter`、`openai`、`anthropic`、`gemini`、`deepseek`、`cerebras`、`groq`、`mistral`、`xai`、`nvidia`、`alibaba`、`apikeyfan`、`cheaperinference`、`ollama`。
 
 **テンプレート (`-t`):**
 

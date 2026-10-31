@@ -20,6 +20,7 @@ const ENV_KEYS = [
   "XAI_API_KEY",
   "NVIDIA_API_KEY",
   "ALIBABA_API_KEY",
+  "APIKEYFAN_API_KEY",
   "APIFUN_API_KEY",
   "CHEAPERINFERENCE_API_KEY",
   "OPENROUTER_BASE_URL",
@@ -114,6 +115,28 @@ describe("runDoctor", () => {
     expect(text).not.toContain("doctor-secret-token");
     expect(fs.existsSync(path.join(root, ".translation-cache", "cache.db"))).toBe(false);
     expect(log.mock.calls.join("\n")).not.toContain("doctor-secret-token");
+  });
+
+  it("accepts and redacts the legacy apikeyfan API key during a catalog check", async () => {
+    process.env.APIFUN_API_KEY = "legacy-secret-token";
+    writeProject(
+      root,
+      uiConfig({ provider: "apikeyfan", providers: { apikeyfan: { translationModels: ["m1"] } } }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    let catalogAuth: string | undefined;
+    const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
+      if (String(url).includes("api.github.com")) {
+        return { ok: true, status: 200, text: async () => JSON.stringify({ tag_name: `v${PACKAGE_VERSION}` }) };
+      }
+      catalogAuth = new Headers(init?.headers).get("Authorization") ?? undefined;
+      return { ok: true, status: 200, text: async () => JSON.stringify({ data: [{ id: "m1" }] }) };
+    }) as typeof fetch;
+    const result = await runDoctor({ cwd: root, fetchImpl, sea: false, execPath: "node", argv1: "cli" });
+    expect(result.exitCode).toBe(0);
+    expect(catalogAuth).toBe("Bearer legacy-secret-token");
+    expect(messages(result)).toContain("APIFUN_API_KEY is set");
+    expect(JSON.stringify(result)).not.toContain("legacy-secret-token");
   });
 
   it("fails when a configured model is missing from the catalog and skips the network with --local", async () => {

@@ -19,7 +19,7 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 
 **Key options:** `-P` / `--provider` (required), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider` is required. It selects which **built-in preset** to scaffold. Must be one of: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider` is required. It selects which **built-in preset** to scaffold. Must be one of: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **Templates (`-t`):**
 

@@ -19,7 +19,7 @@ CLI 버전과 빌드 타임스탬프를 출력합니다(루트 프로그램의 `
 
 **주요 옵션:** `-P` / `--provider` (필수), `-t` / `--template`, `-o` / `--output`, `--with-readme`, `--with-translate-ignore`
 
-`-P` / `--provider`은(는) 필수입니다. 이는 스캐폴드할 **내장 프리셋**을(를) 선택합니다. 다음 중 하나여야 합니다: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apifun`, `cheaperinference`, `ollama`.
+`-P` / `--provider`은(는) 필수입니다. 이 값은 스캐폴드할 **내장 프리셋**을 선택합니다. 다음 중 하나여야 합니다: `openrouter`, `openai`, `anthropic`, `gemini`, `deepseek`, `cerebras`, `groq`, `mistral`, `xai`, `nvidia`, `alibaba`, `apikeyfan`, `cheaperinference`, `ollama`.
 
 **템플릿(`-t`):**
 

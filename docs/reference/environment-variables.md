@@ -19,10 +19,10 @@
 | `XAI_API_KEY` | `xai` |
 | `NVIDIA_API_KEY` | `nvidia` |
 | `ALIBABA_API_KEY` | `alibaba` |
-| `APIFUN_API_KEY` | `apifun` |
+| `APIKEYFAN_API_KEY` | `apikeyfan` |
 | `CHEAPERINFERENCE_API_KEY` | `cheaperinference` |
 
-The key is required when that provider is active. Preset URLs: [Built-in providers](/guide/providers-and-models#built-in-providers).
+The key is required when that provider is active. For `apikeyfan`, the legacy `APIFUN_API_KEY` is accepted when `APIKEYFAN_API_KEY` is unset or empty. A custom `apiKeyEnv` disables this fallback. Preset URLs: [Built-in providers](/guide/providers-and-models#built-in-providers).
 
 <a id="provider-base-urls"></a>
 ## Provider base URLs

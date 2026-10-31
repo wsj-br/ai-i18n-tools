@@ -3,6 +3,7 @@ import type { I18nConfig } from "../core/types.js";
 import { t } from "../i18n/index.js";
 import {
   OPENROUTER_PROVIDER_KEY,
+  findApiKeyEnvName,
   providerModelsCatalogQuery,
   resolveActiveProvider,
   resolveModelsListRequestAuth,
@@ -38,7 +39,8 @@ export async function runListModels(config: I18nConfig): Promise<RunListModelsRe
   }
 
   const settings = resolveProviderSettings(activeProvider, config);
-  const apiKey = settings.apiKeyEnv ? (process.env[settings.apiKeyEnv]?.trim() ?? "") : "";
+  const keyName = findApiKeyEnvName(settings);
+  const apiKey = keyName ? (process.env[keyName]?.trim() ?? "") : "";
   if (!apiKey && settings.requiresApiKey) {
     console.error(
       chalk.red(t("{{keyName}} is required", { keyName: settings.apiKeyEnv ?? "API key" }))
