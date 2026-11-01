@@ -6243,7 +6243,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1112
+        "line": 1111
       }
     ]
   },
@@ -6274,7 +6274,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1129
+        "line": 1128
       }
     ]
   },
@@ -6305,7 +6305,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1132
+        "line": 1131
       }
     ]
   },
@@ -6336,7 +6336,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1137
+        "line": 1136
       }
     ]
   },
@@ -6367,7 +6367,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1146
+        "line": 1145
       }
     ]
   },
@@ -6398,7 +6398,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1166
+        "line": 1165
       }
     ]
   },
@@ -6429,7 +6429,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1172
+        "line": 1171
       }
     ]
   },

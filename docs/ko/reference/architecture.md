@@ -55,7 +55,7 @@
 | 단계 | 구성 요소 | 결과 |
 | --- | --- | --- |
 | 1 | 소스 파일 (JS/TS; 선택 사항 `.astro` / `.html`) | 디스크의 파일 |
-| 2 | `UIStringExtractor` (i18next-scanner; `.astro` (`ui-string-babel.ts` 경유)) | MD5 해시로 키 지정된 세그먼트 |
+| 2 | `UIStringExtractor` (Babel, `ui-string-babel.ts` 경유) | MD5 해시로 키 지정된 세그먼트 |
 | 3 | `strings.json` | 마스터 카탈로그: `{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | 소스 문자열의 JSON 배열 → 번역 (+ 배치당 모델 ID) |
 | 5 | `de.json`, `pt-BR.json`, … | 플랫 맵: 소스 문자열 → 번역 (모델 메타데이터 없음) |
@@ -63,9 +63,9 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-`i18next-scanner`의 `Parser.parseFuncFromString`를 사용하여 JS/TS 파일에서 `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. `.astro` 소스(`ui.uiExtractor.extensions`에 나열된 경우)의 경우, `ui-string-babel.ts`는 `@babel/parser`로 프론트매터 및 템플릿 `{expression}` 블록을 파싱하고 동일한 `funcNames` 규칙을 적용합니다. 함수 이름과 파일 확장자는 `ui.uiExtractor`을 통해 구성할 수 있습니다(`ui.reactExtractor`는 지원되는 별칭입니다). `extract` **또한 비 스캐너 입력을 동일한 카탈로그로 병합합니다:** `includePackageDescription`가 활성화된 경우(기본값) 프로젝트 `package.json` `description`, 그리고 `includeUiLanguageEnglishNames`가 `true`일 때 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + `targetLocales`로 구축됨)의 각 `englishName` (소스에서 이미 찾은 문자열이 우선합니다; `languagesManifestPath`를 읽지 않습니다). `extract`는 또한 `languagesManifestPath`에서 `ui-languages.json`를 재생성합니다. 세그먼트 해시는 잘라낸 소스 문자열의 **MD5 첫 8자리 16진수 문자**이며 — 이는 `strings.json`의 키가 됩니다.
+`ui-string-babel.ts` 내의 `extractUiCallsFromFileContent`은(는) `t("literal")` 및 `i18n.t("literal")` 호출을 찾습니다. JS 및 TS 파일은 `@babel/parser`(모듈 소스, TypeScript 및 JSX)로 구문 분석됩니다. `.astro` 소스( `ui.uiExtractor.extensions`에 나열된 경우)의 경우, 동일한 함수가 프런트매터 및 템플릿 `{expression}` 블록을 구문 분석하고 동일한 `funcNames` 규칙을 적용합니다. 함수 이름과 파일 확장자는 `ui.uiExtractor`를 통해 구성할 수 있습니다(`ui.reactExtractor`은(는) 지원되는 별칭입니다). `extract`은(는) **또한 추가 입력을 동일한 카탈로그로 병합합니다:** `includePackageDescription`가 활성화된 경우(기본값) 프로젝트 `package.json` `description`과, `includeUiLanguageEnglishNames`이(가) `true`인 경우 번들로 제공되는 UI 언어 마스터 카탈로그(`sourceLocale` + `targetLocales`에서 빌드됨)의 각 `englishName`를 병합합니다(소스에서 이미 발견된 문자열이 우선권을 유지합니다; `languagesManifestPath`을(를) 읽지 않습니다). `extract`은(는) 또한 `languagesManifestPath`에서 `ui-languages.json`을(를) 재생성합니다. 세그먼트 해시는 잘라낸 소스 문자열의 **MD5 처음 8개 16진수 문자**입니다. 이는 `strings.json`의 키가 됩니다.
 
-`.html` / `.htm` 소스의 경우(`ui.uiExtractor.extensions`에 나열된 경우), `extract`은(는) 대신 파일을 `html-i18n-marks.ts`을(를) 통해 라우팅하며, 이는 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 마커 속성(`ui.uiExtractor.htmlI18nAttributes`을(를) 통해 구성 가능)을 스캔합니다. 빈 마커는 요소 자체의 `textContent` 또는 속성에서 소스 텍스트를 가져오고, 값이 있는 마커(`data-i18n="Key"`)는 해당 값을 사용합니다. `data-i18n-locale-src` 및 `data-i18n-locale-href`은(는) 브라우저 런타임을 위해 예약되어 있으며 절대 추출되지 않습니다. 동일한 모듈이 `mark-html` 명령을 구동하며, 이 명령은 빈 마커를 자동으로 삽입하고(`alt` 및 `aria-label` 포함) 로케일 URL 마커는 절대 삽입하지 않습니다. HTML 파일은 Babel / i18next-scanner 패스에 도달하지 않습니다. docs `outputDir` 아래에 생성된 로케일 HTML은 이 스캔에서 제외됩니다.
+`.html` / `.htm` 소스( `ui.uiExtractor.extensions`에 나열된 경우)의 경우, `extract`는 대신 파일을 `html-i18n-marks.ts`를 통해 라우팅하며, 이는 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 마커 속성( `ui.uiExtractor.htmlI18nAttributes`을 통해 구성 가능)을 스캔합니다. 베어 마커는 요소 자체의 `textContent` 또는 속성에서 소스 텍스트를 가져오며, 값 있는 마커( `data-i18n="Key"`)는 값을 사용합니다. `data-i18n-locale-src` 및 `data-i18n-locale-href`는 브라우저 런타임을 위해 예약되어 있으며 절대 추출되지 않습니다. 동일한 모듈이 `mark-html` 명령을 구동하며, 이 명령은 베어 마커( `alt` 및 `aria-label` 포함)를 자동으로 삽입하고 로케일 URL 마커는 절대 삽입하지 않습니다. HTML 파일은 바벨 패스에 도달하지 않습니다. 문서 `outputDir` 아래에 생성된 로케일 HTML은 이 스캔에서 제외됩니다.
 
 순수 Astro SSG 사이트는 i18next를 건너뛸 수 있습니다. 빌드 시 플랫 `{locale}.json`을 로드하고 소스 텍스트 키로 `t('source text')`을 확인합니다. 소스 언어는 `sourceLocale`이며 모든 언어가 될 수 있습니다(`examples/astro-website/src/i18n/t.ts` 및 [UI 문자열 — Astro 웹사이트](/ko/guide/ui-strings/astro-website) 참조).
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

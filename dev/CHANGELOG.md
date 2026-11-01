@@ -9,6 +9,11 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-11-01
+
+- **Removed**: dependencies — drop unused `i18next-scanner`. UI extraction already uses `@babel/parser` in `ui-string-babel.ts`, so the scanner and its install tree are no longer dependencies of the published package.
+- **Removed**: package — drop the unused optional `react` peer dependency. The runtime helpers do not import React.
+
 - **Changed**: providers - renamed `apifun` to `apikeyfan`, using `https://api.apikey.fan/v1` and `APIKEYFAN_API_KEY`. The legacy `APIFUN_API_KEY` remains supported; update the provider key and `init -P` value to `apikeyfan`.
 
 - **Changed**: docs — corrected grammar, standardised English (UK) spelling and terminology, split long run-on sentences, removed translation-breaking bold-wrapped inline code (`**\`code\`**`), and reworded idioms that translate poorly across the English documentation (for example `chrome` → `shell`/`theme strings`, `wire` → `set up`/`connect`, `dogfoods`, `greenfield`, `no-op`, `drop-in`, `surgical`, `jump the list`, `stand-ins`, `ship`, `speaks one language`). Renamed the `Self-localisation` and `romanised` heading anchors (with their in-repo links) and the VitePress/Nextra/Fumadocs link-normaliser anchors.

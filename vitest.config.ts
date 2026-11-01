@@ -12,7 +12,6 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: [
         "src/cli/**",
-        "src/types/i18next-scanner.d.ts",
         // Auto-generated sources (e.g. build-info.generated.ts). Keep this `.generated.ts`
         // convention for any future generated file so it is excluded from coverage too.
         "src/**/*.generated.ts",

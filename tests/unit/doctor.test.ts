@@ -127,12 +127,22 @@ describe("runDoctor", () => {
     let catalogAuth: string | undefined;
     const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
       if (String(url).includes("api.github.com")) {
-        return { ok: true, status: 200, text: async () => JSON.stringify({ tag_name: `v${PACKAGE_VERSION}` }) };
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({ tag_name: `v${PACKAGE_VERSION}` }),
+        };
       }
       catalogAuth = new Headers(init?.headers).get("Authorization") ?? undefined;
       return { ok: true, status: 200, text: async () => JSON.stringify({ data: [{ id: "m1" }] }) };
     }) as typeof fetch;
-    const result = await runDoctor({ cwd: root, fetchImpl, sea: false, execPath: "node", argv1: "cli" });
+    const result = await runDoctor({
+      cwd: root,
+      fetchImpl,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
     expect(result.exitCode).toBe(0);
     expect(catalogAuth).toBe("Bearer legacy-secret-token");
     expect(messages(result)).toContain("APIFUN_API_KEY is set");

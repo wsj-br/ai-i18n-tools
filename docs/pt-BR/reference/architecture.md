@@ -55,7 +55,7 @@ Tudo o que se destina ao uso programático é reexportado de `src/index.ts` ([AP
 | Etapa | Componente | Resultado |
 | --- | --- | --- |
 | 1 | Arquivos de origem (JS/TS; `.astro` / `.html` opcionais) | Arquivos em disco |
-| 2 | `UIStringExtractor` (i18next-scanner; `.astro` via `ui-string-babel.ts`) | Segmentos chaveados por hash MD5 |
+| 2 | `UIStringExtractor` (Babel via `ui-string-babel.ts`) | Segmentos indexados por hash MD5 |
 | 3 | `strings.json` | Catálogo mestre: `{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | Array JSON de strings de origem → traduções (+ ID do modelo por lote) |
 | 5 | `de.json`, `pt-BR.json`, … | Mapas planos: string de origem → tradução (sem metadados do modelo) |
@@ -63,9 +63,9 @@ Tudo o que se destina ao uso programático é reexportado de `src/index.ts` ([AP
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Usa `i18next-scanner`'s `Parser.parseFuncFromString` para encontrar chamadas `t("literal")` e `i18n.t("literal")` em arquivos JS/TS. Para fontes `.astro` (quando listadas em `ui.uiExtractor.extensions`), `ui-string-babel.ts` analisa blocos de frontmatter e template `{expression}` com `@babel/parser` e aplica as mesmas regras `funcNames`. Os nomes de funções e extensões de arquivo são configuráveis via `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas não-scanner no mesmo catálogo:** o projeto `package.json` `description` quando `includePackageDescription` está habilitado (padrão), e cada `englishName` do catálogo master ui-languages embutido (construído a partir de `sourceLocale` + `targetLocales`) quando `includeUiLanguageEnglishNames` é `true` (strings já encontradas na fonte mantêm precedência; não lê `languagesManifestPath`). `extract` também regenera `ui-languages.json` em `languagesManifestPath`. Os hashes de segmento são **MD5 dos 8 primeiros caracteres hex** da string de origem trimada — esses se tornam as chaves em `strings.json`.
+`extractUiCallsFromFileContent` em `ui-string-babel.ts` encontra chamadas de `t("literal")` e `i18n.t("literal")`. Arquivos JS e TS são analisados com `@babel/parser` (código-fonte do módulo, TypeScript e JSX). Para fontes `.astro` (quando listados em `ui.uiExtractor.extensions`), a mesma função analisa o frontmatter e os blocos de `{expression}` de template e aplica as mesmas regras de `funcNames`. Nomes de função e extensões de arquivo são configuráveis via `ui.uiExtractor` (`ui.reactExtractor` é um alias suportado). `extract` **também mescla entradas extras no mesmo catálogo:** o `package.json` `description` do projeto quando `includePackageDescription` está habilitado (padrão), e cada `englishName` do catálogo mestre de ui-languages empacotado (construído a partir de `sourceLocale` + `targetLocales`) quando `includeUiLanguageEnglishNames` é `true` (strings já encontradas na fonte mantêm precedência; não lê `languagesManifestPath`). `extract` também regenera `ui-languages.json` em `languagesManifestPath`. Os hashes de segmento são **os primeiros 8 caracteres hexadecimais MD5** da string de origem aparada — estes se tornam as chaves em `strings.json`.
 
-Para fontes `.html` / `.htm` (quando listadas em `ui.uiExtractor.extensions`), `extract` encaminha o arquivo através de `html-i18n-marks.ts`, que analisa os atributos de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` (configuráveis via `ui.uiExtractor.htmlI18nAttributes`). Um marcador simples obtém seu texto fonte do próprio `textContent` ou atributo do elemento; um marcador com valor (`data-i18n="Key"`) usa o valor. `data-i18n-locale-src` e `data-i18n-locale-href` são reservados para o ambiente de execução do navegador e nunca são extraídos. O mesmo módulo é a base do comando `mark-html`, que insere os marcadores simples automaticamente (incluindo `alt` e `aria-label`) e nunca insere os marcadores de URL de localidade. Arquivos HTML nunca chegam às etapas do Babel / i18next-scanner. O HTML de localidade gerado em uma `outputDir` de documentação é excluído desta análise.
+Para fontes `.html` / `.htm` (quando listados em `ui.uiExtractor.extensions`), `extract` em vez disso roteia o arquivo através de `html-i18n-marks.ts`, que escaneia os atributos de marcador `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` (configuráveis via `ui.uiExtractor.htmlI18nAttributes`). Um marcador simples obtém seu texto-fonte do próprio `textContent` ou atributo do elemento; um marcador com valor (`data-i18n="Key"`) usa o valor. `data-i18n-locale-src` e `data-i18n-locale-href` são reservados para o tempo de execução do navegador e nunca são extraídos. O mesmo módulo controla o comando `mark-html`, que insere os marcadores simples automaticamente (incluindo `alt` e `aria-label`) e nunca insere os marcadores de URL de localidade. Arquivos HTML nunca chegam à passagem do Babel. HTML de localidade gerado sob um `outputDir` de documentação é excluído desta varredura.
 
 Sites Astro SSG simples podem dispensar o i18next: carregue `{locale}.json` plano em tempo de build e resolva `t('source text')` pela chave do texto de origem. O idioma de origem é `sourceLocale` e pode ser qualquer idioma (consulte `examples/astro-website/src/i18n/t.ts` e [Strings de UI — site do Astro](/pt-BR/guide/ui-strings/astro-website)).
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

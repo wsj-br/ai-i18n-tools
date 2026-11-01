@@ -55,7 +55,7 @@
 | 步驟 | 元件 | 結果 |
 | --- | --- | --- |
 | 1 | 原始檔案 (JS/TS；選用 `.astro` / `.html`) | 磁碟上的檔案 |
-| 2 | `UIStringExtractor` (i18next-scanner；透過 `ui-string-babel.ts` 的 `.astro`) | 以 MD5 雜湊為鍵的區段 |
+| 2 | `UIStringExtractor` (透過 `ui-string-babel.ts` 的 Babel) | 以 MD5 雜湊鍵控的片段 |
 | 3 | `strings.json` | 主要目錄：`{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | 原始字串的 JSON 陣列 → 翻譯 (+ 每批次的模型 ID) |
 | 5 | `de.json`、`pt-BR.json`、… | 平面對應：原始字串 → 翻譯 (無模型中繼資料) |
@@ -63,9 +63,9 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 來尋找 JS/TS 檔案中的 `t("literal")` 與 `i18n.t("literal")` 呼叫。對於 `.astro` 原始碼（當列於 `ui.uiExtractor.extensions` 時），`ui-string-babel.ts` 會剖析 frontmatter 與範本 `{expression}` 區塊（使用 `@babel/parser`），並套用相同的 `funcNames` 規則。函式名稱與副檔名可透過 `ui.uiExtractor` 設定（`ui.reactExtractor` 為支援的別名）。`extract` **也會將非掃描器的輸入合併至同一目錄：** 當啟用 `includePackageDescription` 時（預設）的專案 `package.json` `description`，以及當 `includeUiLanguageEnglishNames` 為 `true` 時，來自內建 ui-languages 主目錄（由 `sourceLocale` + `targetLocales` 建置）的每個 `englishName`（已在原始碼中找到的字串優先保留；不會讀取 `languagesManifestPath`）。`extract` 亦會在 `languagesManifestPath` 重新產生 `ui-languages.json`。區段雜湊為已修剪原始字串之 **MD5 前 8 個十六進位字元** — 這些會成為 `strings.json` 中的索引鍵。
+`extractUiCallsFromFileContent` 在 `ui-string-babel.ts` 中尋找 `t("literal")` 和 `i18n.t("literal")` 呼叫。JS 和 TS 檔案使用 `@babel/parser` 解析（模組原始碼、TypeScript 和 JSX）。對於 `.astro` 來源（當列於 `ui.uiExtractor.extensions` 中時），相同的函數會解析前置內容和範本 `{expression}` 區塊，並套用相同的 `funcNames` 規則。函數名稱和檔案副檔名可透過 `ui.uiExtractor` 設定（`ui.reactExtractor` 是支援的別名）。`extract` **也會將額外輸入合併到相同的目錄中：** 當 `includePackageDescription` 啟用時（預設），專案的 `package.json` `description`；以及當 `includeUiLanguageEnglishNames` 為 `true` 時，來自捆綁的 ui-languages 主目錄（建立自 `sourceLocale` + `targetLocales`）的每個 `englishName`（已在原始碼中找到的字串保持優先；不讀取 `languagesManifestPath`）。`extract` 也會在 `languagesManifestPath` 重新產生 `ui-languages.json`。片段雜湊是修剪過的原始字串的 **MD5 前 8 個十六進位字元** — 這些成為 `strings.json` 中的鍵。
 
-對於 `.html` / `.htm` 來源（當列於 `ui.uiExtractor.extensions` 中時），`extract` 會改為將檔案路由至 `html-i18n-marks.ts`，該模組會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 標記屬性（可透過 `ui.uiExtractor.htmlI18nAttributes` 設定）。裸標記會從元素自身的 `textContent` 或屬性取得其來源文字；帶值標記（`data-i18n="Key"`）則使用該值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 保留供瀏覽器執行階段使用，絕不會被擷取。同一模組也驅動 `mark-html` 命令，該命令會自動插入裸標記（包含 `alt` 和 `aria-label`），且絕不插入地區設定 URL 標記。HTML 檔案絕不會進入 Babel / i18next-scanner 處理階段。在文件 `outputDir` 下產生的地區設定 HTML 會從此次掃描中排除。
+對於 `.html` / `.htm` 來源 (當列於 `ui.uiExtractor.extensions` 中時)，`extract` 會改為透過 `html-i18n-marks.ts` 路由檔案，後者會掃描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 標記屬性 (可透過 `ui.uiExtractor.htmlI18nAttributes` 配置)。裸標記會從元素本身的 `textContent` 或屬性中取得其原始文字；帶值標記 (`data-i18n="Key"`) 則使用該值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 保留給瀏覽器執行階段，永不提取。相同的模組驅動著 `mark-html` 命令，該命令會自動插入裸標記 (包括 `alt` 和 `aria-label`)，且永不插入地區設定 URL 標記。HTML 檔案永不進入 Babel 處理階段。文件 `outputDir` 下產生的地區設定 HTML 會從此掃描中排除。
 
 純 Astro SSG 網站可以略過 i18next：在建置時載入扁平的 `{locale}.json`，並透過來源文字索引鍵來解析 `t('source text')`。來源語言是 `sourceLocale`，且可以是任何語言 (請參閱 `examples/astro-website/src/i18n/t.ts` 和 [UI 字串 — Astro 網站](/zh-Hant/guide/ui-strings/astro-website))。
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

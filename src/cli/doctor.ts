@@ -1106,8 +1106,7 @@ async function checkProviders(
     }
   }
 
-  const keyMissing =
-    activeSettings?.requiresApiKey === true && !findApiKeyEnvName(activeSettings);
+  const keyMissing = activeSettings?.requiresApiKey === true && !findApiKeyEnvName(activeSettings);
   if (options.local === true) {
     pass(section, t("provider catalog was not checked"), true);
     return;

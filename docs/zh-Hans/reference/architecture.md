@@ -55,7 +55,7 @@
 | 步骤 | 组件 | 结果 |
 | --- | --- | --- |
 | 1 | 源文件 (JS/TS; 可选 `.astro` / `.html`) | 磁盘上的文件 |
-| 2 | `UIStringExtractor` (i18next-scanner; 通过 `ui-string-babel.ts` 的 `.astro`) | 以 MD5 哈希为键的段 |
+| 2 | `UIStringExtractor` (Babel via `ui-string-babel.ts`) | 分段以MD5哈希为键 |
 | 3 | `strings.json` | 主目录：`{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | 源字符串的 JSON 数组 → 翻译（+ 每批模型 ID） |
 | 5 | `de.json`、`pt-BR.json`、… | 平面映射：源字符串 → 翻译（无模型元数据） |
@@ -63,9 +63,9 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-使用 `i18next-scanner` 的 `Parser.parseFuncFromString` 在 JS/TS 文件中查找 `t("literal")` 和 `i18n.t("literal")` 调用。对于 `.astro` 源（当在 `ui.uiExtractor.extensions` 中列出时），`ui-string-babel.ts` 使用 `@babel/parser` 解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名和文件扩展名可通过 `ui.uiExtractor` 配置（`ui.reactExtractor` 是受支持的别名）。`extract` **还会将非扫描器输入合并到同一目录中：** 当启用 `includePackageDescription`（默认）时的项目 `package.json` `description`，以及当 `includeUiLanguageEnglishNames` 为 `true` 时来自捆绑的 ui-languages 主目录（由 `sourceLocale` + `targetLocales` 构建）的每个 `englishName`（已在源中找到的字符串保持优先级；不读取 `languagesManifestPath`）。`extract` 还会在 `languagesManifestPath` 处重新生成 `ui-languages.json`。段哈希是修剪后的源字符串的 **MD5 前 8 个十六进制字符** —— 它们成为 `strings.json` 中的键。
+`extractUiCallsFromFileContent` 在 `ui-string-babel.ts` 中查找 `t("literal")` 和 `i18n.t("literal")` 调用。JS 和 TS 文件使用 `@babel/parser` 解析（模块源、TypeScript 和 JSX）。对于 `.astro` 源文件（当列在 `ui.uiExtractor.extensions` 中时），同一函数会解析 frontmatter 和模板 `{expression}` 块，并应用相同的 `funcNames` 规则。函数名和文件扩展名可通过 `ui.uiExtractor` 配置（`ui.reactExtractor` 是一个受支持的别名）。`extract` **还会将额外输入合并到同一目录中：** 当 `includePackageDescription` 启用时（默认），项目 `package.json` `description`；以及当 `includeUiLanguageEnglishNames` 为 `true` 时，来自捆绑的 UI 语言主目录（基于 `sourceLocale` + `targetLocales` 构建）的每个 `englishName`（源中已有的字符串保持优先；不读取 `languagesManifestPath`）。`extract` 还会重新生成 `ui-languages.json` 在 `languagesManifestPath` 处。段哈希是修剪后的源字符串的 **MD5 前 8 个十六进制字符** — 这些将成为 `strings.json` 中的键。
 
-对于 `.html` / `.htm` 源文件（当在 `ui.uiExtractor.extensions` 中列出时），`extract` 会将文件转而路由至 `html-i18n-marks.ts`，由其扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素自身的 `textContent` 或属性中获取源文本；有值标记（`data-i18n="Key"`）则使用该值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 为浏览器运行时保留，永远不会被提取。同一模块还驱动 `mark-html` 命令，该命令会自动插入裸标记（包括 `alt` 和 `aria-label`），且从不插入语言环境 URL 标记。HTML 文件永远不会进入 Babel / i18next-scanner 处理阶段。在文档 `outputDir` 下生成的语言环境 HTML 会被排除在此扫描之外。
+对于 `.html` / `.htm` 来源（当列在 `ui.uiExtractor.extensions` 中时），`extract` 会改为通过 `html-i18n-marks.ts` 路由文件，该文件会扫描 `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` 标记属性（可通过 `ui.uiExtractor.htmlI18nAttributes` 配置）。裸标记从元素自身的 `textContent` 或属性获取其源文本；有值标记 (`data-i18n="Key"`) 则使用该值。`data-i18n-locale-src` 和 `data-i18n-locale-href` 保留给浏览器运行时，从不提取。同一模块驱动 `mark-html` 命令，该命令会自动插入裸标记（包括 `alt` 和 `aria-label`），并且从不插入区域设置 URL 标记。HTML 文件从不会到达 Babel 传递。文档 `outputDir` 下生成的区域设置 HTML 将从此扫描中排除。
 
 普通 Astro SSG 站点可以跳过 i18next：在构建时加载扁平的 `{locale}.json`，并按源文本键解析 `t('source text')`。源语言为 `sourceLocale`，并且可以是任何语言（请参阅 `examples/astro-website/src/i18n/t.ts` 和 [界面字符串 — Astro 网站](/zh-Hans/guide/ui-strings/astro-website)）。
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

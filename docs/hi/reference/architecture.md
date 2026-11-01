@@ -55,7 +55,7 @@
 | चरण | घटक | परिणाम |
 | --- | --- | --- |
 | 1 | स्रोत फ़ाइलें (जेएस/टीएस; वैकल्पिक `.astro` / `.html`) | डिस्क पर फ़ाइलें |
-| 2 | `UIStringExtractor` (i18next-scanner; `.astro` के माध्यम से `ui-string-babel.ts`) | एमडी5 हैश द्वारा कुंजीबद्ध खंड |
+| 2 | `UIStringExtractor` (`ui-string-babel.ts` के माध्यम से बैबेल) | MD5 हैश द्वारा कुंजीबद्ध खंड |
 | 3 | `strings.json` | मास्टर कैटलॉग: `{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | स्रोत स्ट्रिंग्स का जेएसओएन सरणी → अनुवाद (+ प्रति बैच मॉडल आईडी) |
 | 5 | `de.json`, `pt-BR.json`, … | फ़्लैट मैप्स: स्रोत स्ट्रिंग → अनुवाद (कोई मॉडल मेटाडेटा नहीं) |
@@ -63,9 +63,9 @@
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-जेएस/टीएस फ़ाइलों में `i18next-scanner` के `Parser.parseFuncFromString` का उपयोग `t("literal")` और `i18n.t("literal")` कॉल खोजने के लिए करता है। `.astro` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हो), `ui-string-babel.ts` फ्रंटमैटर और टेम्प्लेट `{expression}` ब्लॉक को `@babel/parser` के साथ पार्स करता है और वही `funcNames` नियम लागू करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन `ui.uiExtractor` के माध्यम से कॉन्फ़िगर करने योग्य हैं (`ui.reactExtractor` एक समर्थित उपनाम है)। `extract` **गैर-स्कैनर इनपुट को भी उसी कैटलॉग में मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `includePackageDescription` सक्षम होता है (डिफ़ॉल्ट), और बंडल किए गए यूआई-भाषाओं मास्टर कैटलॉग से प्रत्येक `englishName` (`sourceLocale` + `targetLocales` से निर्मित) जब `includeUiLanguageEnglishNames` `true` होता है (स्रोत में पहले से मिली स्ट्रिंग्स को प्राथमिकता मिलती है; `languagesManifestPath` नहीं पढ़ता है)। `extract` `languagesManifestPath` पर `ui-languages.json` को भी पुनर्जीवित करता है। सेगमेंट हैश ट्रिम किए गए स्रोत स्ट्रिंग के **एमडी5 के पहले 8 हेक्स वर्ण** होते हैं — ये `strings.json` में कुंजी बन जाते हैं।
+`extractUiCallsFromFileContent` `ui-string-babel.ts` में `t("literal")` और `i18n.t("literal")` कॉल ढूंढता है। JS और TS फ़ाइलें `@babel/parser` (मॉड्यूल स्रोत, टाइपस्क्रिप्ट और JSX) के साथ पार्स की जाती हैं। `.astro` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हों), वही फ़ंक्शन फ्रंटमैटर और टेम्पलेट `{expression}` ब्लॉक को पार्स करता है और वही `funcNames` नियम लागू करता है। फ़ंक्शन नाम और फ़ाइल एक्सटेंशन `ui.uiExtractor` के माध्यम से कॉन्फ़िगर किए जा सकते हैं (`ui.reactExtractor` एक समर्थित उपनाम है)। `extract` **अतिरिक्त इनपुट को भी उसी कैटलॉग में मर्ज करता है:** प्रोजेक्ट `package.json` `description` जब `includePackageDescription` सक्षम हो (डिफ़ॉल्ट), और बंडल किए गए ui-languages मास्टर कैटलॉग (`sourceLocale` + `targetLocales` से निर्मित) से प्रत्येक `englishName` जब `includeUiLanguageEnglishNames` `true` हो (स्रोत में पहले से मिली स्ट्रिंग प्राथमिकता बनाए रखती हैं; `languagesManifestPath` नहीं पढ़ता है)। `extract` `languagesManifestPath` पर `ui-languages.json` को भी पुनः उत्पन्न करता है। सेगमेंट हैश ट्रिम की गई स्रोत स्ट्रिंग के **MD5 के पहले 8 हेक्स वर्ण** होते हैं — ये `strings.json` में कुंजियाँ बन जाते हैं।
 
-`.html` / `.htm` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हों), `extract` इसके बजाय फ़ाइल को `html-i18n-marks.ts` के माध्यम से रूट करता है, जो `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` मार्कर विशेषताओं को स्कैन करता है (`ui.uiExtractor.htmlI18nAttributes` द्वारा कॉन्फ़िगर करने योग्य)। एक बेयर मार्कर अपना स्रोत टेक्स्ट एलिमेंट के स्वयं के `textContent` या विशेषता से लेता है; एक वैल्यूड मार्कर (`data-i18n="Key"`) मान का उपयोग करता है। `data-i18n-locale-src` और `data-i18n-locale-href` ब्राउज़र रनटाइम के लिए आरक्षित हैं और इन्हें कभी भी एक्सट्रैक्ट नहीं किया जाता है। यही मॉड्यूल `mark-html` कमांड को संचालित करता है, जो बेयर मार्कर को स्वचालित रूप से सम्मिलित करता है (जिसमें `alt` और `aria-label` शामिल हैं) और लोकेल URL मार्कर को कभी सम्मिलित नहीं करता है। HTML फ़ाइलें कभी भी Babel / i18next-scanner पास तक नहीं पहुँचती हैं। docs `outputDir` के अंतर्गत जनरेट किया गया लोकेल HTML इस स्कैन से बाहर रखा गया है।
+`.html` / `.htm` स्रोतों के लिए (जब `ui.uiExtractor.extensions` में सूचीबद्ध हों), `extract` इसके बजाय फ़ाइल को `html-i18n-marks.ts` के माध्यम से रूट करता है, जो `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` मार्कर विशेषताओं को स्कैन करता है (`ui.uiExtractor.htmlI18nAttributes` के माध्यम से कॉन्फ़िगर किया जा सकता है)। एक नंगे मार्कर तत्व के अपने `textContent` या विशेषता से अपना स्रोत पाठ लेता है; एक मान वाला मार्कर (`data-i18n="Key"`) मान का उपयोग करता है। `data-i18n-locale-src` और `data-i18n-locale-href` ब्राउज़र रनटाइम के लिए आरक्षित हैं और कभी नहीं निकाले जाते हैं। वही मॉड्यूल `mark-html` कमांड को संचालित करता है, जो नंगे मार्करों को स्वचालित रूप से सम्मिलित करता है (`alt` और `aria-label` सहित) और कभी भी लोकेल URL मार्करों को सम्मिलित नहीं करता है। HTML फ़ाइलें कभी भी बैबेल पास तक नहीं पहुँचती हैं। डॉक्स `outputDir` के तहत जेनरेट किया गया लोकेल HTML इस स्कैन से बाहर रखा गया है।
 
 सामान्य Astro SSG साइटें i18next को छोड़ सकती हैं: बिल्ड समय पर फ्लैट `{locale}.json` लोड करें और स्रोत-पाठ कुंजी द्वारा `t('source text')` को हल करें। स्रोत भाषा `sourceLocale` है और कोई भी भाषा हो सकती है (`examples/astro-website/src/i18n/t.ts` और [UI स्ट्रिंग्स — Astro वेबसाइट](/hi/guide/ui-strings/astro-website) देखें)।
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

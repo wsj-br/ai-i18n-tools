@@ -55,7 +55,7 @@ Alles, was für die programmatische Nutzung vorgesehen ist, wird aus `src/index.
 | Schritt | Komponente | Ergebnis |
 | --- | --- | --- |
 | 1 | Quelldateien (JS/TS; optional `.astro` / `.html`) | Dateien auf der Festplatte |
-| 2 | `UIStringExtractor` (i18next-scanner; `.astro` über `ui-string-babel.ts`) | Segmente, die durch MD5-Hash verschlüsselt sind |
+| 2 | `UIStringExtractor` (Babel via `ui-string-babel.ts`) | Segmente, die durch MD5-Hashs identifiziert werden |
 | 3 | `strings.json` | Masterkatalog: `{ hash: { source, translated, models?, locations? } }` |
 | 4 | `LlmClient.translateUIBatch()` | JSON-Array von Quell-Strings → Übersetzungen (+ Modell-ID pro Batch) |
 | 5 | `de.json`, `pt-BR.json`, … | Flache Zuordnungen: Quell-String → Übersetzung (keine Modellmetadaten) |
@@ -63,9 +63,9 @@ Alles, was für die programmatische Nutzung vorgesehen ist, wird aus `src/index.
 <a id="uistringextractor"></a>
 ### `UIStringExtractor`
 
-Verwendet die `i18next-scanner` `Parser.parseFuncFromString`, um `t("literal")`- und `i18n.t("literal")`-Aufrufe in JS/TS-Dateien zu finden. Für `.astro`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) parst `ui-string-babel.ts` Frontmatter- und Template-`{expression}`-Blöcke mit `@babel/parser` und wendet dieselben `funcNames`-Regeln an. Funktionsnamen und Dateierweiterungen können über `ui.uiExtractor` konfiguriert werden (`ui.reactExtractor` ist ein unterstützter Alias). `extract` **führt auch Nicht-Scanner-Eingaben in denselben Katalog zusammen:** die Projekt-`package.json` `description`, wenn `includePackageDescription` aktiviert ist (Standard), und jede `englishName` aus dem gebündelten UI-Sprach-Masterkatalog (erstellt aus `sourceLocale` + `targetLocales`), wenn `includeUiLanguageEnglishNames` `true` ist (bereits in der Quelle gefundene Zeichenfolgen behalten Vorrang; `languagesManifestPath` wird nicht gelesen). `extract` generiert auch `ui-languages.json` unter `languagesManifestPath` neu. Segment-Hashes sind die **ersten 8 Hex-Zeichen des MD5** der gekürzten Quellzeichenfolge – diese werden zu den Schlüsseln in `strings.json`.
+`extractUiCallsFromFileContent` in `ui-string-babel.ts` findet `t("literal")`- und `i18n.t("literal")`-Aufrufe. JS- und TS-Dateien werden mit `@babel/parser` (Modulquellcode, TypeScript und JSX) geparst. Für `.astro`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) parst dieselbe Funktion Frontmatter- und Vorlagen-`{expression}`-Blöcke und wendet dieselben `funcNames`-Regeln an. Funktionsnamen und Dateierweiterungen sind über `ui.uiExtractor` konfigurierbar (`ui.reactExtractor` ist ein unterstützter Alias). `extract` **führt auch zusätzliche Eingaben in denselben Katalog zusammen:** das Projekt-`package.json` `description`, wenn `includePackageDescription` aktiviert ist (Standard), und jedes `englishName` aus dem gebündelten UI-Sprachen-Masterkatalog (erstellt aus `sourceLocale` + `targetLocales`), wenn `includeUiLanguageEnglishNames` `true` ist (bereits im Quellcode gefundene Zeichenketten behalten Vorrang; liest `languagesManifestPath` nicht). `extract` generiert auch `ui-languages.json` unter `languagesManifestPath` neu. Segment-Hashs sind die **ersten 8 Hex-Zeichen des MD5-Hashs** der gekürzten Quellzeichenkette – diese werden zu den Schlüsseln in `strings.json`.
 
-Für `.html`- / `.htm`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) leitet `extract` die Datei stattdessen durch `html-i18n-marks.ts`, das die Marker-Attribute `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label` scannt (konfigurierbar über `ui.uiExtractor.htmlI18nAttributes`). Ein Bare-Marker übernimmt seinen Quelltext aus dem eigenen `textContent` oder Attribut des Elements; ein Valued-Marker (`data-i18n="Key"`) verwendet den Wert. `data-i18n-locale-src` und `data-i18n-locale-href` sind für die Browser-Laufzeitumgebung reserviert und werden nie extrahiert. Dasselbe Modul steuert den Befehl `mark-html`, der die Bare-Marker automatisch einfügt (einschließlich `alt` und `aria-label`) und niemals die Locale-URL-Marker einfügt. HTML-Dateien erreichen niemals die Babel- / i18next-scanner-Durchläufe. Generiertes Locale-HTML unter einem Docs-`outputDir` ist von diesem Scan ausgeschlossen.
+Für `.html` / `.htm`-Quellen (wenn in `ui.uiExtractor.extensions` aufgeführt) leitet `extract` die Datei stattdessen durch `html-i18n-marks.ts`, das `data-i18n` / `data-i18n-title` / `data-i18n-placeholder` / `data-i18n-alt` / `data-i18n-aria-label`-Marker-Attribute scannt (konfigurierbar über `ui.uiExtractor.htmlI18nAttributes`). Ein einfacher Marker entnimmt seinen Quelltext dem eigenen `textContent` oder Attribut des Elements; ein Marker mit Wert (`data-i18n="Key"`) verwendet den Wert. `data-i18n-locale-src` und `data-i18n-locale-href` sind für die Browser-Laufzeitumgebung reserviert und werden niemals extrahiert. Dasselbe Modul steuert den `mark-html`-Befehl, der die einfachen Marker automatisch einfügt (einschließlich `alt` und `aria-label`) und niemals die Locale-URL-Marker einfügt. HTML-Dateien erreichen niemals den Babel-Durchlauf. Generiertes Locale-HTML unter einem Dokumentations-`outputDir` wird von diesem Scan ausgeschlossen.
 
 Einfache Astro SSG-Sites können i18next überspringen: Laden Sie flache `{locale}.json` zur Build-Zeit und lösen Sie `t('source text')` nach Quelltextschlüssel auf. Die Ausgangssprache ist `sourceLocale` und kann jede Sprache sein (siehe `examples/astro-website/src/i18n/t.ts` und [UI-Strings – Astro-Website](/de/guide/ui-strings/astro-website)).
 
@@ -411,8 +411,8 @@ src/
 │
 ├── extractors/
 │   ├── base-extractor.ts           Abstract base class for all extractors
-│   ├── ui-string-extractor.ts      JS/TS source scanner (i18next-scanner + Babel for `.astro`)
-│   ├── ui-string-babel.ts          Babel-based `t()` discovery in `.astro` frontmatter and `{expression}` blocks
+│   ├── ui-string-extractor.ts      JS/TS and `.astro` UI scanner (Babel via `ui-string-babel.ts`)
+│   ├── ui-string-babel.ts          Babel `t()` discovery (`extractUiCallsFromFileContent`)
 │   ├── ui-string-locations.ts      Source locations for extracted UI strings
 │   ├── html-i18n-marks.ts          HTML `data-i18n*` marker scanner + `mark-html` annotator
 │   ├── classify-segment.ts         Heuristic segment type classification

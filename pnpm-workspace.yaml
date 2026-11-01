@@ -50,7 +50,7 @@ minimumReleaseAgeExclude:
   - "@img/sharp-win32-ia32@0.35.4"
   - "@img/sharp-win32-x64@0.35.4"
   - sharp@0.35.4
-  - i18next@26.3.6 || 26.4.2 || 26.5.5
+  - i18next@26.3.6 || 26.4.2 || 26.5.5 || 26.6.0
   - "@ai-sdk/gateway@4.0.74"
   - ai@7.0.92
   - ignore@7.0.8
@@ -102,11 +102,12 @@ minimumReleaseAgeExclude:
   - "@next/swc-win32-arm64-msvc@16.3.6"
   - "@next/swc-win32-x64-msvc@16.3.6"
   - next@16.3.6
-  - react-i18next@17.0.15 || 17.1.1
+  - react-i18next@17.0.15 || 17.1.1 || 17.1.10
   - mdast-util-from-markdown@2.1.0
   - "@astrojs/markdown-satteri@0.4.5"
   - "@astrojs/prism@4.1.1"
   - "@astrojs/telemetry@3.4.1"
+  - globals@17.14.0
 overrides:
   ai-i18n-tools: workspace:*
   # Tailwind 4.3 pins lightningcss 1.32, which warns on the CSS Custom Highlight
@@ -153,6 +154,10 @@ overrides:
   # (<=4.2.0). The patch below still blocks max-stale reuse that 4.3.0 left open.
   http-cache-semantics@<=4.2.0: 4.3.0
   zod@<4.6.6: ^4.6.6
+  follow-redirects@>=1.16.0 <=1.16.1: ^1.16.2
+  glob@>=9.0.0 <=14.0.1: ^14.0.2
+  joi@>=17.1.1 <17.13.9: ^17.13.9
+  minimatch@<11.0.1: ^11.0.1
 patchedDependencies:
   nextra-theme-docs@4.6.1: patches/nextra-theme-docs@4.6.1.patch
   # No release past braces <=3.0.3 (GHSA-vfj7-8cjw-p6xm). The patch is the fix.

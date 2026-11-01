@@ -218,8 +218,8 @@ export function providerModelsCatalogQuery(
 
 /** Return the first non-empty configured API-key environment variable, including legacy aliases. */
 export function findApiKeyEnvName(settings: ResolvedProviderSettings): string | undefined {
-  return [settings.apiKeyEnv, ...(settings.apiKeyEnvAliases ?? [])].find(
-    (name): name is string => Boolean(name && process.env[name]?.trim())
+  return [settings.apiKeyEnv, ...(settings.apiKeyEnvAliases ?? [])].find((name): name is string =>
+    Boolean(name && process.env[name]?.trim())
   );
 }
 
