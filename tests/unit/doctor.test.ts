@@ -4,6 +4,7 @@ import path from "path";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { describeRuntime, runDoctor } from "../../src/cli/doctor.js";
+import { DEFAULT_GITIGNORE_BLOCK } from "../../src/cli/project-gitignore.js";
 import { UI_SOURCE_LOCALE, initUiI18n } from "../../src/i18n/index.js";
 import { stripAnsi } from "../../src/utils/logger.js";
 import { displayWidth } from "../../src/utils/table.js";
@@ -868,6 +869,131 @@ describe("runDoctor", () => {
     ).toBe(true);
     expect(raw).not.toContain("inlineItems");
     expect(raw).not.toContain("doctor-secret-token");
+  });
+
+  it("warns when .gitignore is missing and stays successful without --strict", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(result.exitCode).toBe(0);
+    const warning = result.checks.find(
+      (check) => check.status === "warn" && check.message.includes(".gitignore")
+    );
+    expect(warning?.message).toContain(".gitignore for .translation-cache is missing");
+    expect(warning?.message).toContain(".translation-cache/*");
+    expect(warning?.message).toContain("!.translation-cache/cache.db");
+    expect(warning?.message).toContain(".env");
+    expect(warning?.message).toContain("*.backup.*");
+
+    const strict = await runDoctor({
+      cwd: root,
+      local: true,
+      strict: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(strict.exitCode).toBe(1);
+  });
+
+  it("passes a complete default .gitignore", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+    });
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(result.exitCode).toBe(0);
+    expect(messages(result)).toContain("pass:.gitignore for .translation-cache");
+    expect(
+      result.checks.some((check) => check.status === "warn" && check.message.includes(".gitignore"))
+    ).toBe(false);
+  });
+
+  it("checks the configured cacheDir instead of .translation-cache", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    const fixed = [
+      "benchmark-scores.json",
+      ".env",
+      ".env.local",
+      ".env.*.local",
+      "*.tmp",
+      "*.backup.*",
+    ].join("\n");
+    writeProject(root, uiConfig({ cacheDir: ".i18n-cache/" }), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": `${DEFAULT_GITIGNORE_BLOCK}${fixed}\n`,
+    });
+    const wrong = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const wrongText = messages(wrong);
+    expect(wrongText).toContain(
+      ".gitignore for .i18n-cache is missing .i18n-cache/*, !.i18n-cache/cache.db"
+    );
+    expect(wrongText).not.toContain("missing .translation-cache/*");
+
+    fs.writeFileSync(
+      path.join(root, ".gitignore"),
+      [".i18n-cache/*", "!.i18n-cache/cache.db", fixed, ""].join("\n"),
+      "utf8"
+    );
+    const right = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(messages(right)).toContain("pass:.gitignore for .i18n-cache");
+    expect(right.exitCode).toBe(0);
+  });
+
+  it("warns when the cache directory itself is ignored", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    writeProject(root, uiConfig({ cacheDir: ".i18n-cache" }), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": [
+        ".i18n-cache/",
+        ".i18n-cache/*",
+        "!.i18n-cache/cache.db",
+        "benchmark-scores.json",
+        ".env",
+        ".env.local",
+        ".env.*.local",
+        "*.tmp",
+        "*.backup.*",
+        "",
+      ].join("\n"),
+    });
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(result.exitCode).toBe(0);
+    expect(messages(result)).toContain("pass:.gitignore for .i18n-cache");
+    expect(messages(result)).toContain(
+      "warn:.i18n-cache/ ignores the cache directory, so !.i18n-cache/cache.db does not keep cache.db"
+    );
   });
 
   it("describes a standalone executable", () => {

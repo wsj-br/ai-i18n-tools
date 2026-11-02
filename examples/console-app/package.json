@@ -16,7 +16,7 @@
     "i18n:clean": "rm -rf .translation-cache"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.13.1",
+    "ai-i18n-tools": "^1.13.2",
     "i18next": "^26.6.0"
   },
   "engines": {

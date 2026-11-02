@@ -4,6 +4,13 @@ import { createRequire } from "node:module";
 import chalk from "chalk";
 import { loadConfiguredModelCatalogStatus } from "./check-models.js";
 import { resolveConfigFileLocation } from "./helpers.js";
+import {
+  cacheDirectoryIgnorePatterns,
+  cacheGitignorePatterns,
+  gitignorePatternSet,
+  normalizeCacheDir,
+  requiredGitignorePatterns,
+} from "./project-gitignore.js";
 import { BUILD_TIMESTAMP_ISO, PACKAGE_VERSION } from "../build-info.generated.js";
 import { TranslationCache } from "../core/cache.js";
 import {
@@ -300,6 +307,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     cache: t("Cache"),
     provider: t("Provider"),
     environment: t("Environment"),
+    git: t("Git"),
   };
 
   const pass = (name: string, message: string, note = false, inlineItems?: string[]): void => {
@@ -448,6 +456,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     fail,
     section.provider
   );
+  checkGitignore(config, projectRoot, pass, warn, section.git);
   checkEnvironment(config, pass, section.environment);
 
   return finish();
@@ -1322,6 +1331,60 @@ function modelsExpiredInCatalogMessage(
     "{{count}} of {{total}} configured models are past their expiration date in {{provider}}'s catalog: {{details}}",
     { provider, count, total, details }
   );
+}
+
+function checkGitignore(
+  config: I18nConfig,
+  projectRoot: string,
+  pass: (section: string, message: string, note?: boolean, inlineItems?: string[]) => void,
+  warn: (section: string, message: string) => void,
+  section: string
+): void {
+  const cacheDir = normalizeCacheDir(config.cacheDir);
+  const required = requiredGitignorePatterns(cacheDir);
+  const file = path.join(projectRoot, ".gitignore");
+  let text: string;
+  try {
+    text = fs.readFileSync(file, "utf8");
+  } catch (e) {
+    const code = e instanceof Error && "code" in e ? (e as NodeJS.ErrnoException).code : undefined;
+    if (code === "ENOENT") {
+      warn(
+        section,
+        t(".gitignore for {{cacheDir}} is missing {{patterns}}", {
+          cacheDir,
+          patterns: required.join(", "),
+        })
+      );
+      return;
+    }
+    warn(section, errorMessage(e));
+    return;
+  }
+  const present = gitignorePatternSet(text);
+  const missing = required.filter((pattern) => !present.has(pattern));
+  if (missing.length === 0) {
+    pass(section, t(".gitignore for {{cacheDir}}", { cacheDir }));
+  } else {
+    warn(
+      section,
+      t(".gitignore for {{cacheDir}} is missing {{patterns}}", {
+        cacheDir,
+        patterns: missing.join(", "),
+      })
+    );
+  }
+  const blocking = cacheDirectoryIgnorePatterns(cacheDir).filter((pattern) => present.has(pattern));
+  if (blocking.length > 0) {
+    const keep = cacheGitignorePatterns(cacheDir).keepDatabase;
+    warn(
+      section,
+      t("{{patterns}} ignores the cache directory, so {{keep}} does not keep cache.db", {
+        patterns: blocking.join(", "),
+        keep,
+      })
+    );
+  }
 }
 
 function checkEnvironment(

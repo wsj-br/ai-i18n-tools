@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` crea un `.translate-ignore` inicial (incluyendo el entorno virtual de Python y los directorios de caché).
 
+`init` también crea `.gitignore` en el directorio de trabajo, o lo añade a él. Las líneas añadidas son `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` y `*.backup.*`, cada una bajo un breve comentario. Las líneas ya presentes se mantienen como están, y una segunda ejecución no las duplica.
+
 `ui-python`, `ui-python-gettext` y `ui-python-flask` también escriben `i18n.py` cuando ese archivo falta. Los proyectos de Django mantienen su propio tiempo de ejecución de gettext de Django, por lo que `ui-python-django` no escribe `i18n.py`. `ui-dotnet` escribe `I18n.cs` cuando ese archivo falta e imprime el elemento `EmbeddedResource` para añadir a `.csproj`. `ui-dotnet-resx` escribe `I18nResx.cs` en su lugar y apunta `ui.resx` a `Resources/SharedResource.<culture>.resx`. `--namespace` anula el espacio de nombres de C#. Guía: [Aplicaciones .NET](/es/guide/ui-strings/dotnet) y [Añadir i18n a una aplicación .NET ResourceManager](/es/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n` reescribe las llamadas preevaluadas no seguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) en llamadas de búsqueda antes de formato. El valor predeterminado es una ejecución de prueba. Pase `--write` para editar archivos y lea `migrate-python-i18n-report.md` para notas de revisión. Una expresión compleja se nombra a partir de la expresión cuando esta es estable (`start.isoformat()` se convierte en `{start}`, `len(rows)` se convierte en `{rows_count}`). Se informa de un `{value_1}` restante para que pueda ser renombrado. Los archivos `i18n.py` generados se omiten. Un informe limpio no significa que las f-strings desenvueltas estuvieran cubiertas.
@@ -72,6 +74,8 @@ De forma predeterminada, `doctor` también verifica los ID de modelo configurado
 Los valores de las claves de API nunca se imprimen. Las variables configuradas se listan en orden alfabético como `Configured variables: NAME, ...`. Una variable que no es una clave de API incluye su valor.
 
 Las rutas de entrada faltantes provocan un fallo. Los directorios de salida faltantes son una nota, porque la primera ejecución de traducción los crea. `doctor` no reescribe la configuración, no crea directorios ni envía texto de origen a un modelo.
+
+`doctor` advierte cuando a `.gitignore` junto a la configuración le falta un patrón requerido. Los dos patrones de caché siguen el `cacheDir` configurado, por lo que `.i18n-cache` necesita `.i18n-cache/*` y `!.i18n-cache/cache.db` en lugar de las líneas predeterminadas `.translation-cache`. Los otros patrones son `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` y `*.backup.*`. Una línea que ignora el propio directorio de caché, como `.i18n-cache/`, también es una advertencia, porque Git no rastreará `cache.db` bajo un directorio ignorado. La advertencia hace que el comando falle solo con `--strict`.
 
 **Opciones clave:** `--local`, `--strict`, `--json`
 

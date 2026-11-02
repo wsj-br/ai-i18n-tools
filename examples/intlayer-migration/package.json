@@ -17,7 +17,7 @@
     "i18n:locales": "ai-i18n-tools generate-ui-languages"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.13.1",
+    "ai-i18n-tools": "^1.13.2",
     "i18next": "^26.6.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

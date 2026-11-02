@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore`은(는) 시작 `.translate-ignore`을(를) 생성합니다(Python 가상 환경 및 캐시 디렉터리 포함).
 
+`init`는 작업 디렉터리에 `.gitignore`을 생성하거나 여기에 추가합니다. 추가되는 줄은 `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, `*.backup.*`이며, 각 줄은 짧은 주석 아래에 있습니다. 이미 존재하는 줄은 그대로 유지되며, 두 번째 실행 시 중복되지 않습니다.
+
 `ui-python`, `ui-python-gettext`, 및 `ui-python-flask`는 해당 파일이 없는 경우 `i18n.py`도 작성합니다. Django 프로젝트는 Django 자체의 gettext 런타임을 유지하므로 `ui-python-django`는 `i18n.py`를 작성하지 않습니다. `ui-dotnet`는 해당 파일이 없는 경우 `I18n.cs`을(를) 작성하고 `.csproj`에 추가할 `EmbeddedResource` 항목을 출력합니다. `ui-dotnet-resx`는 대신 `I18nResx.cs`을(를) 작성하고 `ui.resx`가 `Resources/SharedResource.<culture>.resx`을(를) 가리키도록 합니다. `--namespace`는 C# 네임스페이스를 재정의합니다. 가이드: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet) 및 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n`는 안전하지 않은 사전 평가된 호출(``_(f"...")``, ``_("..." % expr)``, ``_("...".format(...))``)을 조회 후 형식 지정 호출로 재작성합니다. 기본값은 시뮬레이션 실행입니다. 파일을 편집하려면 ``--write``를 전달하고, 검토 노트를 보려면 ``migrate-python-i18n-report.md``를 읽으십시오. 복잡한 표현식은 안정적일 때 해당 표현식에서 이름을 따옵니다(``start.isoformat()``은 ``{start}``이 되고, ``len(rows)``은 ``{rows_count}``이 됩니다). 남은 ``{value_1}``은 이름을 바꿀 수 있도록 보고됩니다. 생성된 ``i18n.py`` 파일은 건너뜁니다. 깨끗한 보고서가 래핑되지 않은 f-문자열이 처리되었음을 의미하지는 않습니다.
@@ -72,6 +74,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 API 키 값은 절대 출력되지 않습니다. 설정된 변수는 `Configured variables: NAME, ...`와 같이 알파벳 순서로 나열됩니다. API 키가 아닌 변수는 해당 값을 포함합니다.
 
 누락된 입력 경로는 실패합니다. 누락된 출력 디렉터리는 첫 번째 번역 실행 시 생성되기 때문에 참고 사항입니다. `doctor`은(는) 구성을 다시 작성하거나, 디렉터리를 생성하거나, 소스 텍스트를 모델로 보내지 않습니다.
+
+`doctor`는 구성 옆의 `.gitignore`에 필수 패턴이 누락된 경우 경고합니다. 두 캐시 패턴은 구성된 `cacheDir`를 따르므로, `.i18n-cache`은 기본 `.translation-cache` 줄 대신 `.i18n-cache/*`와 `!.i18n-cache/cache.db`가 필요합니다. 다른 패턴은 `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, `*.backup.*`입니다. `.i18n-cache/`과 같이 캐시 디렉터리 자체를 무시하는 줄도 경고인데, Git은 무시된 디렉터리 아래의 `cache.db`를 추적하지 않기 때문입니다. 이 경고는 `--strict`가 있는 경우에만 명령을 실패시킵니다.
 
 **주요 옵션:** `--local`, `--strict`, `--json`
 

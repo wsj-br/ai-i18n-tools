@@ -9,6 +9,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-11-02
+
+- **Added**: `init` — creates `.gitignore`, or appends the cache, environment, and temporary-file patterns that are not already there. A second run does not duplicate lines.
+- **Added**: `doctor` — warns when `.gitignore` is missing a required pattern. The cache lines follow the configured `cacheDir`. Ignoring that directory is also a warning, because `cache.db` would stay untracked. `--strict` turns the warning into a failure.
+- **Changed**: guides — the add-i18n agent prompts tell the agent to keep the `.gitignore` patterns `init` writes, and to follow `cacheDir` when it is not `.translation-cache`.
+
 ## [1.13.1] - 2026-11-02
 
 - **Added**: release — GitHub Releases attach `ai-i18n-tools-dotnet-examples.zip` with `examples/dotnet-console`, `examples/dotnet-resx`, and `assets/dotnet`. Build directories `bin` and `obj` are left out. The npm tarball and the standalone executable do not contain it.

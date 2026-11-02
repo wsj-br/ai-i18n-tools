@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` एक स्टार्टर `.translate-ignore` बनाता है (जिसमें Python virtualenv और कैश डायरेक्टरी शामिल हैं)।
 
+`init` कार्यशील डायरेक्टरी में `.gitignore` भी बनाता है, या उसमें जोड़ता है। जोड़ी गई लाइनें `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, और `*.backup.*` हैं, प्रत्येक एक छोटी टिप्पणी के तहत। पहले से मौजूद लाइनें वैसी ही छोड़ दी जाती हैं, और दूसरी बार चलाने पर वे डुप्लिकेट नहीं होती हैं।
+
 `ui-python`, `ui-python-gettext`, और `ui-python-flask` उस फ़ाइल के गुम होने पर `i18n.py` भी लिखते हैं। Django प्रोजेक्ट Django का अपना gettext रनटाइम रखते हैं, इसलिए `ui-python-django` `i18n.py` नहीं लिखता है। `ui-dotnet` उस फ़ाइल के गुम होने पर `I18n.cs` लिखता है और `.csproj` में जोड़ने के लिए `EmbeddedResource` आइटम प्रिंट करता है। `ui-dotnet-resx` इसके बजाय `I18nResx.cs` लिखता है और `ui.resx` को `Resources/SharedResource.<culture>.resx` पर इंगित करता है। `--namespace` C# नेमस्पेस को ओवरराइड करता है। गाइड: [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet) और [.NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager)।
 
 `migrate-python-i18n` असुरक्षित पूर्व-मूल्यांकित कॉल (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) को लुकअप-बिफोर-फॉर्मेट कॉल में फिर से लिखता है। डिफ़ॉल्ट रूप से यह एक ड्राई रन है। फ़ाइलों को संपादित करने के लिए `--write` पास करें, और समीक्षा नोट्स के लिए `migrate-python-i18n-report.md` पढ़ें। एक जटिल एक्सप्रेशन को एक्सप्रेशन से नाम दिया जाता है जब वह स्थिर होता है (`start.isoformat()` `{start}` बन जाता है, `len(rows)` `{rows_count}` बन जाता है)। एक बचा हुआ `{value_1}` रिपोर्ट किया जाता है ताकि उसका नाम बदला जा सके। जेनरेट की गई `i18n.py` फ़ाइलें छोड़ दी जाती हैं। एक साफ़ रिपोर्ट का मतलब यह नहीं है कि अनरैप्ड f-स्ट्रिंग्स कवर किए गए थे।
@@ -72,6 +74,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 API कुंजी मान कभी प्रिंट नहीं किए जाते हैं। सेट वैरिएबल `Configured variables: NAME, ...` के रूप में वर्णानुक्रम में सूचीबद्ध किए जाते हैं। एक वैरिएबल जो API कुंजी नहीं है, उसका मान शामिल होता है।
 
 गुम इनपुट पाथ विफल हो जाते हैं। गुम आउटपुट डायरेक्टरी एक नोट हैं, क्योंकि पहली अनुवाद रन उन्हें बनाती है। `doctor` कॉन्फ़िग को फिर से नहीं लिखता, डायरेक्टरी नहीं बनाता, या स्रोत टेक्स्ट को किसी मॉडल पर नहीं भेजता।
+
+`doctor` चेतावनी देता है जब कॉन्फ़िग के बगल में `.gitignore` में एक आवश्यक पैटर्न गायब होता है। दो कैश पैटर्न कॉन्फ़िगर किए गए `cacheDir` का पालन करते हैं, इसलिए `.i18n-cache` को डिफ़ॉल्ट `.translation-cache` लाइनों के बजाय `.i18n-cache/*` और `!.i18n-cache/cache.db` की आवश्यकता होती है। अन्य पैटर्न `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, और `*.backup.*` हैं। एक लाइन जो कैश डायरेक्टरी को ही अनदेखा करती है, जैसे `.i18n-cache/`, वह भी एक चेतावनी है, क्योंकि Git अनदेखी की गई डायरेक्टरी के तहत `cache.db` को ट्रैक नहीं करेगा। चेतावनी केवल `--strict` के साथ कमांड को विफल करती है।
 
 **मुख्य विकल्प:** `--local`, `--strict`, `--json`
 

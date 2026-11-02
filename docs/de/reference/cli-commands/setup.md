@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` erstellt ein Starter-`.translate-ignore` (einschließlich Python-Virtualenv- und Cache-Verzeichnissen).
 
+`init` erstellt auch `.gitignore` im Arbeitsverzeichnis oder hängt sie daran an. Die hinzugefügten Zeilen sind `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` und `*.backup.*`, jeweils unter einem kurzen Kommentar. Bereits vorhandene Zeilen bleiben unverändert, und ein zweiter Durchlauf dupliziert sie nicht.
+
 `ui-python`, `ui-python-gettext` und `ui-python-flask` schreiben auch `i18n.py`, wenn diese Datei fehlt. Django-Projekte behalten Djangos eigene gettext-Laufzeitumgebung bei, daher schreibt `ui-python-django` nicht `i18n.py`. `ui-dotnet` schreibt `I18n.cs`, wenn diese Datei fehlt, und gibt das `EmbeddedResource`-Element aus, das zu `.csproj` hinzugefügt werden soll. `ui-dotnet-resx` schreibt stattdessen `I18nResx.cs` und verweist `ui.resx` auf `Resources/SharedResource.<culture>.resx`. `--namespace` überschreibt den C#-Namespace. Anleitung: [.NET-Anwendungen](/de/guide/ui-strings/dotnet) und [i18n zu einer .NET ResourceManager-App hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n` schreibt unsichere vorab ausgewertete Aufrufe (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) in Lookup-vor-Format-Aufrufe um. Standardmäßig wird ein Probelauf durchgeführt. Übergeben Sie `--write`, um Dateien zu bearbeiten, und lesen Sie `migrate-python-i18n-report.md` für Überprüfungshinweise. Ein komplexer Ausdruck wird nach dem Ausdruck benannt, wenn dieser stabil ist (`start.isoformat()` wird zu `{start}`, `len(rows)` wird zu `{rows_count}`). Ein übrig gebliebener `{value_1}` wird gemeldet, damit er umbenannt werden kann. Generierte `i18n.py`-Dateien werden übersprungen. Ein sauberer Bericht bedeutet nicht, dass nicht umbrochene f-Strings abgedeckt wurden.
@@ -72,6 +74,8 @@ Standardmäßig prüft `doctor` auch konfigurierte Modell-IDs anhand des Katalog
 API-Schlüsselwerte werden niemals ausgegeben. Gesetzte Variablen werden in alphabetischer Reihenfolge als `Configured variables: NAME, ...` aufgelistet. Eine Variable, die kein API-Schlüssel ist, enthält ihren Wert.
 
 Fehlende Eingabepfade führen zu einem Fehler. Fehlende Ausgabeverzeichnisse sind ein Hinweis, da sie beim ersten Übersetzungsdurchlauf erstellt werden. `doctor` schreibt die Konfiguration nicht neu, erstellt keine Verzeichnisse und sendet keinen Quelltext an ein Modell.
+
+`doctor` warnt, wenn `.gitignore` neben der Konfiguration ein erforderliches Muster fehlt. Die beiden Cache-Muster folgen der konfigurierten `cacheDir`, daher benötigt `.i18n-cache` `.i18n-cache/*` und `!.i18n-cache/cache.db` anstelle der standardmäßigen `.translation-cache`-Zeilen. Die anderen Muster sind `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` und `*.backup.*`. Eine Zeile, die das Cache-Verzeichnis selbst ignoriert, wie z.B. `.i18n-cache/`, ist ebenfalls eine Warnung, da Git `cache.db` unter einem ignorierten Verzeichnis nicht verfolgen wird. Die Warnung lässt den Befehl nur mit `--strict` fehlschlagen.
 
 **Wichtige Optionen:** `--local`, `--strict`, `--json`
 

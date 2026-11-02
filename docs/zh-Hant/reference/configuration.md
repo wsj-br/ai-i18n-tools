@@ -326,24 +326,30 @@ SQLite 快取目錄（由所有 `docs` 區塊共用）。預設值 `.translation
 <a id="best-practice-for-git-exclusions"></a>
 #### git 排除的最佳實踐：
 
-- 排除翻譯快取資料夾的內容（例如，使用 `.gitignore` 或 `.git/info/exclude`），以防止提交臨時快取偽影。
-- 保留 `cache.db`（不要例行刪除它），因為保留 SQLite 快取可以防止重新翻譯未變更的區段。這在更新或修改使用 `ai-i18n-tools` 的軟體時，可以節省執行時間和 API 成本。
-- 排除臨時檔案和日誌檔案，以避免提交備份和除錯相關檔案。
+- 排除翻譯快取資料夾的內容（例如，使用 `.gitignore` 或 `.git/info/exclude`），以避免提交暫時的快取成品。
+- 保留 `cache.db`（請勿例行性地刪除它），因為保留 SQLite 快取可避免重新翻譯未變更的區段。這在更新或修改使用 `ai-i18n-tools` 的軟體時，可節省執行時間和 API 成本。
+- 排除環境檔案和暫存檔案，以避免提交機密和備份。
 
 <br/>
 
 **範例：**
 
+`init` 為預設的 `cacheDir` 寫入此區塊。當 `cacheDir` 不同時，這兩行快取會使用該目錄，例如 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`。
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---

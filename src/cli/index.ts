@@ -142,6 +142,7 @@ import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
 import { runDoctor } from "./doctor.js";
+import { ensureProjectGitignore } from "./project-gitignore.js";
 import { runListModels } from "./list-models.js";
 import { runSuggestModels } from "./suggest-models.js";
 import { runBenchModels } from "./bench-models.js";
@@ -1046,6 +1047,12 @@ Built-in presets for -P / --provider (required):
           );
           console.log(t("Wrote .translate-ignore"));
         }
+      }
+      const gitignore = ensureProjectGitignore(process.cwd());
+      if (gitignore === "created") {
+        console.log(t("Wrote .gitignore"));
+      } else if (gitignore === "updated") {
+        console.log(t("Updated .gitignore"));
       }
     }
   );

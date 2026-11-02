@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` はスターター `.translate-ignore` を作成します（Python 仮想環境およびキャッシュディレクトリを含みます）。
 
+`init` は作業ディレクトリに `.gitignore` を作成するか、または追記します。追加される行は `.translation-cache/*`、`!.translation-cache/cache.db`、`benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp`、および `*.backup.*` で、それぞれ短いコメントの下に記述されます。既に存在する行はそのままにされ、2回目の実行で重複することはありません。
+
 `ui-python`、`ui-python-gettext`、および`ui-python-flask`は、そのファイルがない場合に`i18n.py`も書き込みます。DjangoプロジェクトはDjango独自のgettextランタイムを保持するため、`ui-python-django`は`i18n.py`を書き込みません。`ui-dotnet`は、そのファイルがない場合に`I18n.cs`を書き込み、`.csproj`に追加する`EmbeddedResource`項目を出力します。`ui-dotnet-resx`は代わりに`I18nResx.cs`を書き込み、`ui.resx`を`Resources/SharedResource.<culture>.resx`に向けます。`--namespace`はC#の名前空間を上書きします。ガイド: [.NETアプリケーション](/ja/guide/ui-strings/dotnet)および[.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)。
 
 `migrate-python-i18n` は、安全でない事前評価済み呼び出し (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`) を、ルックアップ・ビフォー・フォーマット呼び出しに書き換えます。デフォルトはドライランです。ファイルを編集するには `--write` を渡し、レビューノートについては `migrate-python-i18n-report.md` をお読みください。複雑な式は、それが安定している場合にその式から命名されます (`start.isoformat()` は `{start}` に、`len(rows)` は `{rows_count}` になります)。残された `{value_1}` は、名前を変更できるように報告されます。生成された `i18n.py` ファイルはスキップされます。クリーンなレポートは、アンラップされた f-文字列がカバーされたことを意味しません。
@@ -72,6 +74,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 APIキーの値は決して出力されません。設定済み変数は、`Configured variables: NAME, ...`としてアルファベット順に一覧表示されます。APIキーではない変数については、その値も表示されます。
 
 入力パスが見つからない場合は失敗します。出力ディレクトリが見つからない場合は注意書きとなります。最初の翻訳実行時に作成されるためです。`doctor` は設定を書き換えたり、ディレクトリを作成したり、ソーステキストをモデルに送信したりしません。
+
+`doctor` は、設定ファイルの隣の `.gitignore` に必要なパターンが不足している場合に警告します。2つのキャッシュパターンは設定された `cacheDir` に従うため、`.i18n-cache` はデフォルトの `.translation-cache` 行ではなく、`.i18n-cache/*` と `!.i18n-cache/cache.db` を必要とします。その他のパターンは `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp`、および `*.backup.*` です。`.i18n-cache/` のような、キャッシュディレクトリ自体を無視する行も警告の対象です。なぜなら、Git は無視されたディレクトリ内の `cache.db` を追跡しないためです。この警告は `--strict` を使用した場合にのみコマンドを失敗させます。
 
 **主なオプション:** `--local`, `--strict`, `--json`
 

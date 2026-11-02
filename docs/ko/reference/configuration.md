@@ -326,24 +326,30 @@ SQLite 캐시 디렉터리(모든 `docs` 블록이 공유). 기본값 `.translat
 <a id="best-practice-for-git-exclusions"></a>
 #### git 제외를 위한 모범 사례:
 
-- 번역 캐시 폴더의 내용을 제외하세요(예: `.gitignore` 또는 `.git/info/exclude` 사용). 임시 캐시 아티팩트를 커밋하는 것을 방지할 수 있습니다.
-- `cache.db`는 유지하세요(정기적으로 삭제하지 마세요). SQLite 캐시를 보존하면 변경되지 않은 세그먼트를 다시 번역하지 않아도 되므로, `ai-i18n-tools`를 사용하는 소프트웨어를 업데이트하거나 수정할 때 실행 시간과 API 비용을 절약할 수 있습니다.
-- 백업 및 디버그 관련 파일이 커밋되는 것을 방지하기 위해 임시 파일과 로그 파일도 제외하세요.
+- 번역 캐시 폴더의 내용을 제외합니다(예: `.gitignore` 또는 `.git/info/exclude` 사용). 이는 임시 캐시 아티팩트가 커밋되는 것을 방지하기 위함입니다.
+- `cache.db`를 유지합니다(정기적으로 삭제하지 마십시오). SQLite 캐시를 보존하면 변경되지 않은 세그먼트를 다시 번역하는 것을 방지할 수 있기 때문입니다. 이는 `ai-i18n-tools`을 사용하는 소프트웨어를 업데이트하거나 수정할 때 런타임 및 API 비용을 모두 절약해 줍니다.
+- 비밀 정보와 백업이 커밋되지 않도록 환경 파일 및 임시 파일을 제외합니다.
 
 <br/>
 
 **예시:**
 
+`init`는 기본 `cacheDir`에 대해 이 블록을 작성합니다. `cacheDir`가 다를 경우, 두 캐시 라인은 해당 디렉터리를 사용합니다. 예를 들어 `.i18n-cache/*` 및 `!.i18n-cache/cache.db`와 같이.
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---

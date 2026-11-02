@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` cria um `.translate-ignore` inicial (incluindo virtualenv Python e diretórios de cache).
 
+`init` também cria `.gitignore` no diretório de trabalho, ou anexa a ele. As linhas adicionadas são `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` e `*.backup.*`, cada uma sob um breve comentário. As linhas já presentes são mantidas como estão, e uma segunda execução não as duplica.
+
 `ui-python`, `ui-python-gettext` e `ui-python-flask` também escrevem `i18n.py` quando esse arquivo está ausente. Projetos Django mantêm o próprio runtime gettext do Django, portanto `ui-python-django` não escreve `i18n.py`. `ui-dotnet` escreve `I18n.cs` quando esse arquivo está ausente e imprime o item `EmbeddedResource` para adicionar ao `.csproj`. `ui-dotnet-resx` escreve `I18nResx.cs` em vez disso e aponta `ui.resx` para `Resources/SharedResource.<culture>.resx`. `--namespace` sobrescreve o namespace C#. Guia: [aplicativos .NET](/pt-BR/guide/ui-strings/dotnet) e [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n` reescreve chamadas pré-avaliadas inseguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) em chamadas de pesquisa-antes-da-formatação. O padrão é uma execução de teste. Passe `--write` para editar arquivos e leia `migrate-python-i18n-report.md` para notas de revisão. Uma expressão complexa é nomeada a partir da expressão quando esta é estável (`start.isoformat()` torna-se `{start}`, `len(rows)` torna-se `{rows_count}`). Um `{value_1}` remanescente é relatado para que possa ser renomeado. Arquivos `i18n.py` gerados são ignorados. Um relatório limpo não significa que f-strings não encapsuladas foram cobertas.
@@ -72,6 +74,8 @@ Por padrão, `doctor` também verifica os IDs de modelo configurados em relaçã
 Os valores das chaves de API nunca são impressos. As variáveis definidas são listadas em ordem alfabética como `Configured variables: NAME, ...`. Uma variável que não é uma chave de API inclui seu valor.
 
 Caminhos de entrada ausentes causam falha. Diretórios de saída ausentes são uma observação, porque a primeira execução de tradução os cria. `doctor` não reescreve a configuração, não cria diretórios, nem envia texto de origem para um modelo.
+
+`doctor` avisa quando `.gitignore` ao lado da configuração está faltando um padrão obrigatório. Os dois padrões de cache seguem o `cacheDir` configurado, então `.i18n-cache` precisa de `.i18n-cache/*` e `!.i18n-cache/cache.db` em vez das linhas padrão `.translation-cache`. Os outros padrões são `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` e `*.backup.*`. Uma linha que ignora o próprio diretório de cache, como `.i18n-cache/`, também é um aviso, porque o Git não rastreará `cache.db` sob um diretório ignorado. O aviso falha o comando apenas com `--strict`.
 
 **Opções principais:** `--local`, `--strict`, `--json`
 

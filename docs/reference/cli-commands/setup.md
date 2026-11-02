@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` creates a starter `.translate-ignore` (including Python virtualenv and cache directories).
 
+`init` also creates `.gitignore` in the working directory, or appends to it. The added lines are `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, and `*.backup.*`, each under a short comment. Lines already present are left as they are, and a second run does not duplicate them.
+
 `ui-python`, `ui-python-gettext`, and `ui-python-flask` also write `i18n.py` when that file is missing. Django projects keep Django's own gettext runtime, so `ui-python-django` does not write `i18n.py`. `ui-dotnet` writes `I18n.cs` when that file is missing and prints the `EmbeddedResource` item to add to the `.csproj`. `ui-dotnet-resx` writes `I18nResx.cs` instead and points `ui.resx` at `Resources/SharedResource.<culture>.resx`. `--namespace` overrides the C# namespace. Guide: [.NET applications](/guide/ui-strings/dotnet) and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) into lookup-before-format calls. The default is a dry run. Pass `--write` to edit files, and read `migrate-python-i18n-report.md` for review notes. A complex expression is named from the expression when that is stable (`start.isoformat()` becomes `{start}`, `len(rows)` becomes `{rows_count}`). A leftover `{value_1}` is reported so it can be renamed. Generated `i18n.py` files are skipped. A clean report does not mean unwrapped f-strings were covered.
@@ -72,6 +74,8 @@ By default, `doctor` also checks configured model ids against the active provide
 API key values are never printed. Set variables are listed in alphabetical order as `Configured variables: NAME, ...`. A variable that is not an API key includes its value.
 
 Missing input paths fail. Missing output directories are a note, because the first translation run creates them. `doctor` does not rewrite config, create directories, or send source text to a model.
+
+`doctor` warns when `.gitignore` next to the config is missing a required pattern. The two cache patterns follow the configured `cacheDir`, so `.i18n-cache` needs `.i18n-cache/*` and `!.i18n-cache/cache.db` rather than the default `.translation-cache` lines. The other patterns are `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, and `*.backup.*`. A line that ignores the cache directory itself, such as `.i18n-cache/`, is also a warning, because Git will not track `cache.db` under an ignored directory. The warning fails the command only with `--strict`.
 
 **Key options:** `--local`, `--strict`, `--json`
 

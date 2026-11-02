@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` 會建立一個啟動器 `.translate-ignore`（包含 Python 虛擬環境與快取目錄）。
 
+`init` 也會在工作目錄中建立 `.gitignore`，或附加到其中。新增的行是 `.translation-cache/*`、`!.translation-cache/cache.db`、`benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`，每一行都帶有簡短註解。已存在的行會保持不變，第二次執行也不會重複新增。
+
 `ui-python`、`ui-python-gettext` 和 `ui-python-flask` 也會在該檔案遺失時寫入 `i18n.py`。Django 專案會保留 Django 自己的 gettext 執行階段，因此 `ui-python-django` 不會寫入 `i18n.py`。`ui-dotnet` 會在該檔案遺失時寫入 `I18n.cs`，並列印要新增至 `.csproj` 的 `EmbeddedResource` 項目。`ui-dotnet-resx` 則會寫入 `I18nResx.cs`，並將 `ui.resx` 指向 `Resources/SharedResource.<culture>.resx`。`--namespace` 會覆寫 C# 命名空間。指南：[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet) 和 [將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。
 
 `migrate-python-i18n` 會將不安全的預先評估呼叫 (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`) 重寫為先查詢後格式化的呼叫。預設為模擬執行。傳遞 `--write` 以編輯檔案，並閱讀 `migrate-python-i18n-report.md` 以取得審閱備註。當複雜表達式穩定時，會從該表達式命名 (`start.isoformat()` 變成 `{start}`，`len(rows)` 變成 `{rows_count}`)。剩餘的 `{value_1}` 會被報告，以便重新命名。產生的 `i18n.py` 檔案會被跳過。乾淨的報告不代表未包裝的 f-string 已被涵蓋。
@@ -72,6 +74,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 API 金鑰值絕不列印。已設定的變數會依字母順序列出，如 `Configured variables: NAME, ...` 所示。非 API 金鑰的變數會包含其值。
 
 遺失的輸入路徑會導致失敗。遺失的輸出目錄會是一個備註，因為第一次翻譯執行會建立它們。`doctor` 不會重寫配置、建立目錄或將來源文字傳送至模型。
+
+`doctor` 會在設定檔旁的 `.gitignore` 缺少必要的模式時發出警告。這兩個快取模式遵循已設定的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是預設的 `.translation-cache` 行。其他模式是 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略快取目錄本身的行，例如 `.i18n-cache/`，也會發出警告，因為 Git 不會追蹤被忽略目錄下的 `cache.db`。此警告只會在 `--strict` 的情況下導致指令失敗。
 
 **主要選項：** `--local`、`--strict`、`--json`
 

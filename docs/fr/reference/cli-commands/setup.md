@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` crée un `.translate-ignore` de démarrage (incluant les répertoires virtualenv Python et de cache).
 
+`init` crée également `.gitignore` dans le répertoire de travail, ou y ajoute du contenu. Les lignes ajoutées sont `.translation-cache/*`, `!.translation-cache/cache.db`, `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` et `*.backup.*`, chacune sous un court commentaire. Les lignes déjà présentes sont laissées telles quelles, et une deuxième exécution ne les duplique pas.
+
 `ui-python`, `ui-python-gettext` et `ui-python-flask` écrivent également `i18n.py` lorsque ce fichier est manquant. Les projets Django conservent leur propre environnement d'exécution gettext de Django, donc `ui-python-django` n'écrit pas `i18n.py`. `ui-dotnet` écrit `I18n.cs` lorsque ce fichier est manquant et affiche l'élément `EmbeddedResource` à ajouter au `.csproj`. `ui-dotnet-resx` écrit `I18nResx.cs` à la place et pointe `ui.resx` vers `Resources/SharedResource.<culture>.resx`. `--namespace` outrepasse l'espace de noms C#. Guide : [Applications .NET](/fr/guide/ui-strings/dotnet) et [Ajouter l'i18n à une application .NET ResourceManager](/fr/guide/add-i18n-to-dotnet-resourcemanager).
 
 `migrate-python-i18n` réécrit les appels pré-évalués non sécurisés (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) en appels de recherche avant formatage. La valeur par défaut est une exécution à blanc. Passez `--write` pour modifier les fichiers, et lisez `migrate-python-i18n-report.md` pour les notes de révision. Une expression complexe est nommée d'après l'expression lorsqu'elle est stable (`start.isoformat()` devient `{start}`, `len(rows)` devient `{rows_count}`). Un `{value_1}` restant est signalé afin qu'il puisse être renommé. Les fichiers `i18n.py` générés sont ignorés. Un rapport propre ne signifie pas que les f-strings non encapsulées ont été couvertes.
@@ -72,6 +74,8 @@ Par défaut, `doctor` vérifie également les identifiants de modèle configuré
 Les valeurs des clés API ne sont jamais affichées. Les variables définies sont listées par ordre alphabétique comme `Configured variables: NAME, ...`. Une variable qui n'est pas une clé API inclut sa valeur.
 
 Les chemins d'accès d'entrée manquants entraînent un échec. Les répertoires de sortie manquants sont une note, car la première exécution de traduction les crée. `doctor` ne réécrit pas la configuration, ne crée pas de répertoires et n'envoie pas de texte source à un modèle.
+
+`doctor` avertit lorsque `.gitignore` à côté de la configuration manque un motif requis. Les deux motifs de cache suivent le `cacheDir` configuré, donc `.i18n-cache` a besoin de `.i18n-cache/*` et `!.i18n-cache/cache.db` plutôt que des lignes par défaut `.translation-cache`. Les autres motifs sont `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` et `*.backup.*`. Une ligne qui ignore le répertoire de cache lui-même, telle que `.i18n-cache/`, est également un avertissement, car Git ne suivra pas `cache.db` sous un répertoire ignoré. L'avertissement fait échouer la commande uniquement avec `--strict`.
 
 **Options clés :** `--local`, `--strict`, `--json`
 

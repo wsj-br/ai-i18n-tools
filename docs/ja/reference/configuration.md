@@ -326,24 +326,30 @@ SQLite キャッシュディレクトリ（すべての `docs` ブロックで�
 <a id="best-practice-for-git-exclusions"></a>
 #### Git 除外のベストプラクティス:
 
-- 一時的なキャッシュアーティファクトをコミットしないように、翻訳キャッシュフォルダーの内容を除外します（例: `.gitignore` または `.git/info/exclude` を使用）。
-- `cache.db` を保持します（定期的に削除しないでください）。SQLite キャッシュを保持することで、変更されていないセグメントの再翻訳を防ぎます。これにより、`ai-i18n-tools` を使用するソフトウェアの更新や修正時に、ランタイムと API コストの両方を節約できます。
-- バックアップやデバッグ関連のファイルをコミットしないように、一時ファイルとログファイルを除外します。
+- 翻訳キャッシュフォルダーの内容は除外してください (例えば、`.gitignore` や `.git/info/exclude` を使用)。これにより、一時的なキャッシュ成果物がコミットされるのを防ぎます。
+- `cache.db` は保持してください (定期的に削除しないでください)。SQLite キャッシュを保持することで、変更されていないセグメントの再翻訳を防ぎます。これにより、`ai-i18n-tools` を使用するソフトウェアを更新または変更する際のランタイムコストとAPIコストの両方を節約できます。
+- 環境ファイルと一時ファイルは除外して、シークレットとバックアップがコミットされないようにしてください。
 
 <br/>
 
 **例:**
 
+`init` は、デフォルトの `cacheDir` のためにこのブロックを書き込みます。`cacheDir` が異なる場合、2つのキャッシュ行はそのディレクトリを使用します。例えば `.i18n-cache/*` と `!.i18n-cache/cache.db` です。
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---

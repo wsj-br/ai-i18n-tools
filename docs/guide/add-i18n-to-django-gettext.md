@@ -112,6 +112,15 @@ install or initialise anything yourself.
 
 - Do not read or search the ai-i18n-tools source. This prompt is complete.
 - Never read, print, or write API keys, `.env` files, or the shell environment.
+- `init` already adds `.gitignore` patterns for the default `cacheDir`
+  `.translation-cache`: `.translation-cache/*`, `!.translation-cache/cache.db`,
+  `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, and
+  `*.backup.*`. Do not replace those lines. Do not ignore the cache directory
+  itself (`<cacheDir>/` drops `cache.db`). If `cacheDir` is not
+  `.translation-cache`, the two cache lines must use that directory
+  (`<cacheDir>/*` and `!<cacheDir>/cache.db`). If `doctor` reports a missing
+  pattern, append only that pattern. Keep the negation so `cache.db` stays
+  tracked.
 - Do not run `translate-ui` or `suggest-models`. They call the translation API,
   cost money, and `translate-ui` rewrites the `.po` and `.mo` files. The user
   runs them after reviewing your work.

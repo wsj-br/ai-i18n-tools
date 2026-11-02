@@ -10,10 +10,7 @@ src/build-info.generated.ts
 # Cache
 .translation-cache/*
 !.translation-cache/cache.db
-*.db
-!.translation-cache/cache.db
-*.db-wal
-*.db-shm
+benchmark-scores.json
 
 # Logs
 *.log

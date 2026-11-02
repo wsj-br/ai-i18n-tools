@@ -52,6 +52,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` 会创建一个启动器 `.translate-ignore`（包括 Python 虚拟环境和缓存目录）。
 
+`init` 也会在工作目录中创建 `.gitignore`，或向其追加内容。添加的行是 `.translation-cache/*`、`!.translation-cache/cache.db`、`benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`，每行都带有一条简短注释。已存在的行保持不变，第二次运行不会重复添加这些行。
+
 当文件缺失时，`ui-python`、`ui-python-gettext` 和 `ui-python-flask` 也会写入 `i18n.py`。Django 项目保留 Django 自己的 gettext 运行时，因此 `ui-python-django` 不会写入 `i18n.py`。当文件缺失时，`ui-dotnet` 会写入 `I18n.cs`，并打印要添加到 `.csproj` 的 `EmbeddedResource` 项。`ui-dotnet-resx` 转而写入 `I18nResx.cs`，并将 `ui.resx` 指向 `Resources/SharedResource.<culture>.resx`。`--namespace` 覆盖 C# 命名空间。指南：[.NET 应用程序](/zh-Hans/guide/ui-strings/dotnet) 和 [将 i18n 添加到 .NET ResourceManager 应用程序](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)。
 
 `migrate-python-i18n` 重写不安全的预评估调用 (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`)，将其转换为查找前格式化调用。默认情况下是空运行。传递 `--write` 以编辑文件，并阅读 `migrate-python-i18n-report.md` 以获取审阅说明。当复杂表达式稳定时，其名称取自该表达式 (`start.isoformat()` 变为 `{start}`，`len(rows)` 变为 `{rows_count}`)。剩余的 `{value_1}` 会被报告，以便可以对其进行重命名。生成的 `i18n.py` 文件会被跳过。整洁的报告并不意味着未包装的 f-string 已被覆盖。
@@ -72,6 +74,8 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 API 密钥值永不打印。已设置的变量按字母顺序排列，作为 `Configured variables: NAME, ...`。非 API 密钥的变量会包含其值。
 
 缺少输入路径会导致失败。缺少输出目录是一个提示，因为首次翻译运行时会创建它们。`doctor` 不会重写配置、创建目录或将源文本发送到模型。
+
+当配置旁边的 `.gitignore` 缺少所需模式时，`doctor` 会发出警告。这两个缓存模式遵循配置的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是默认的 `.translation-cache` 行。其他模式是 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略缓存目录本身的行（例如 `.i18n-cache/`）也会发出警告，因为 Git 不会跟踪被忽略目录下的 `cache.db`。此警告仅在使用 `--strict` 时会导致命令失败。
 
 **主要选项:** `--local`、`--strict`、`--json`
 

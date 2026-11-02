@@ -326,24 +326,30 @@ Répertoire de cache SQLite (partagé par tous les blocs `docs`). Par défaut `.
 <a id="best-practice-for-git-exclusions"></a>
 #### Bonnes pratiques pour les exclusions git :
 
-- Excluez le contenu du dossier de cache de traduction (par exemple, en utilisant `.gitignore` ou `.git/info/exclude`) afin d'éviter de valider des artefacts temporaires.
-- Conservez `cache.db` (ne le supprimez pas systématiquement), car la préservation du cache SQLite évite de retraduire des segments inchangés. Cela permet d'économiser à la fois du temps d'exécution et des coûts d'API lors de la mise à jour ou de la modification d'un logiciel utilisant `ai-i18n-tools`.
-- Excluez les fichiers temporaires et les fichiers journaux pour éviter de valider des fichiers de sauvegarde ou de débogage.
+- Excluez le contenu du dossier de cache de traduction (par exemple, en utilisant `.gitignore` ou `.git/info/exclude`) pour éviter de commettre des artefacts de cache temporaires.
+- Conservez `cache.db` (ne le supprimez pas systématiquement), car la conservation du cache SQLite empêche la retraduction des segments inchangés. Cela permet d'économiser des coûts d'exécution et d'API lors de la mise à jour ou de la modification de logiciels utilisant `ai-i18n-tools`.
+- Excluez les fichiers d'environnement et les fichiers temporaires afin que les secrets et les sauvegardes ne soient pas commis.
 
 <br/>
 
 **Exemple :**
 
+`init` écrit ce bloc pour le `cacheDir` par défaut. Lorsque `cacheDir` est différent, les deux lignes de cache utilisent ce répertoire, par exemple `.i18n-cache/*` et `!.i18n-cache/cache.db`.
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---

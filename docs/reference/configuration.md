@@ -330,23 +330,29 @@ SQLite cache directory (shared by all `docs` blocks). Default `.translation-cach
 
 - Exclude the contents of the translation cache folder (for example, using `.gitignore` or `.git/info/exclude`) to prevent committing temporary cache artefacts.
 - Retain `cache.db` (do not routinely delete it), as preserving the SQLite cache prevents re-translating unchanged segments. This saves both runtime and API costs when updating or modifying software that uses `ai-i18n-tools`.
-- Exclude temporary and log files to avoid committing backup and debug-related files.
+- Exclude environment files and temporary files so secrets and backups are not committed.
 
 
 <br/>
 
 **Example:**
 
+`init` writes this block for the default `cacheDir`. When `cacheDir` is different, the two cache lines use that directory, for example `.i18n-cache/*` and `!.i18n-cache/cache.db`.
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---

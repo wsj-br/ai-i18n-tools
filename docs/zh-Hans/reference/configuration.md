@@ -326,24 +326,30 @@ SQLite 缓存目录（所有 `docs` 块共享）。默认 `.translation-cache`�
 <a id="best-practice-for-git-exclusions"></a>
 #### git 排除的最佳实践：
 
-- 排除翻译缓存文件夹的内容（例如，使用 `.gitignore` 或 `.git/info/exclude`），以防止提交临时缓存的伪影。
-- 保留 `cache.db`（不要例行删除它），因为保留 SQLite 缓存可以防止重新翻译未更改的片段。这在更新或修改使用 `ai-i18n-tools` 的软件时可以节省运行时间和 API 成本。
-- 排除临时文件和日志文件，以避免提交与备份和调试相关的文件。
+- 排除翻译缓存文件夹的内容（例如，使用 `.gitignore` 或 `.git/info/exclude`），以防止提交临时缓存文件。
+- 保留 `cache.db`（请勿定期删除），因为保留 SQLite 缓存可以防止重新翻译未更改的段。这在更新或修改使用 `ai-i18n-tools` 的软件时，可以节省运行时和 API 成本。
+- 排除环境文件和临时文件，以免提交机密信息和备份。
 
 <br/>
 
 **示例：**
 
+`init` 为默认的 `cacheDir` 写入此块。当 `cacheDir` 不同时，这两条缓存行使用该目录，例如 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`。
+
 ```gitignore
-# Translation cache directory
+# Cache
 .translation-cache/*
-
-# Keep SQLite cache for reuse
 !.translation-cache/cache.db
+benchmark-scores.json
 
-# Temporary and log files
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
 *.tmp
-*.log
+*.backup.*
 ```
 
 ---
