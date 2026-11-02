@@ -52,6 +52,31 @@
         }
     }
 
+    # Windows PowerShell has no gzip command. GZipStream is part of .NET and
+    # reads the same gzip bytes GNU gzip writes.
+    function Expand-GzipFile([string]$InFile, [string]$OutFile) {
+        Add-Type -AssemblyName System.IO.Compression
+        $source = [System.IO.File]::OpenRead($InFile)
+        try {
+            $gzipStream = New-Object System.IO.Compression.GZipStream(
+                $source,
+                [System.IO.Compression.CompressionMode]::Decompress
+            )
+            try {
+                $target = [System.IO.File]::Create($OutFile)
+                try {
+                    $gzipStream.CopyTo($target)
+                } finally {
+                    $target.Dispose()
+                }
+            } finally {
+                $gzipStream.Dispose()
+            }
+        } finally {
+            $source.Dispose()
+        }
+    }
+
     function Get-ExpectedHash([string]$SumsPath, [string]$AssetName) {
         foreach ($raw in @(Get-Content -LiteralPath $SumsPath)) {
             $line = $raw.Trim()
@@ -97,27 +122,49 @@
     $work = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-i18n-tools-install-" + [guid]::NewGuid().ToString("N"))
     New-Item -ItemType Directory -Path $work | Out-Null
     try {
-        $downloaded = Join-Path $work $asset
+        $archiveName = "$asset.gz"
+        $archivePath = Join-Path $work $archiveName
+        $binaryPath = Join-Path $work $asset
         $sumsPath = Join-Path $work "SHA256SUMS.txt"
-        Write-Host "ai-i18n-tools: downloading $asset from $base"
-        Save-Url "$base/$asset" $downloaded
+        $downloaded = $archivePath
+        $downloadedName = $archiveName
+        # Try the gzip archive first. A release from before gzip archives still
+        # publishes the raw executable.
+        Write-Host "ai-i18n-tools: downloading $archiveName from $base"
+        try {
+            Save-Url "$base/$archiveName" $archivePath
+        } catch {
+            if (Test-Path -LiteralPath $archivePath) {
+                Remove-Item -LiteralPath $archivePath -Force
+            }
+            Write-Host "ai-i18n-tools: downloading $asset from $base"
+            Save-Url "$base/$asset" $binaryPath
+            $downloaded = $binaryPath
+            $downloadedName = $asset
+        }
         Save-Url "$base/SHA256SUMS.txt" $sumsPath
 
         if ((Get-Item -LiteralPath $downloaded).Length -lt 1) {
-            throw "Download was empty: $asset"
+            throw "Download was empty: $downloadedName"
         }
 
-        $expected = Get-ExpectedHash $sumsPath $asset
+        $expected = Get-ExpectedHash $sumsPath $downloadedName
         $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $downloaded).Hash.ToLowerInvariant()
         if ($actual -ne $expected) {
-            throw "Checksum mismatch for $asset"
+            throw "Checksum mismatch for $downloadedName"
         }
         Write-Host "ai-i18n-tools: checksum verified"
+
+        $payload = $downloaded
+        if ($downloadedName.EndsWith(".gz")) {
+            $payload = Join-Path $work "ai-i18n-tools.unpacked.exe"
+            Expand-GzipFile $downloaded $payload
+        }
 
         New-Item -ItemType Directory -Force -Path $installDir | Out-Null
         $dest = Join-Path $installDir "ai-i18n-tools.exe"
         try {
-            Copy-Item -LiteralPath $downloaded -Destination $dest -Force
+            Copy-Item -LiteralPath $payload -Destination $dest -Force
         } catch {
             throw "Could not write $dest. Close any running ai-i18n-tools process and run the installer again. $($_.Exception.Message)"
         }

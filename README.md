@@ -83,7 +83,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-The installer picks the executable for this machine, checks `SHA256SUMS.txt`, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual download steps: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/guide/installation#standalone-executables).
+The installer downloads a gzip archive for this machine, checks `SHA256SUMS.txt`, unpacks it, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual download steps: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/guide/installation#standalone-executables).
 
 The four Python examples are in the repository and in `ai-i18n-tools-python-examples.zip` on the release. They are not inside the npm tarball or the executable.
 

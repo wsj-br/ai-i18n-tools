@@ -9,8 +9,11 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+
+
 ## [1.13.0] - 2026-11-02
 
+- **Changed**: release — platform executables are published as gzip archives (`ai-i18n-tools-<os>-<arch>.gz`, and `ai-i18n-tools-win-x64.exe.gz` on Windows). `install.sh` unpacks with `gzip`. `install.ps1` unpacks with `System.IO.Compression.GZipStream`. A release that still has the raw executable is installed as before.
 - **Fixed**: glossary — a UI label inside a sentence is a hint, even when the English uses the catalog capitalization. Hindi can inflect `Cursor account` to `कर्सर खाते` instead of copying `कर्सर खाता`. The exact catalog wording is required only for bold, inline code, a heading, or a line that is only that label. A single-content-word label such as `Sign in` stays a hint.
 - **Fixed**: glossary — a shared UI prefix is seeded only when the English prefix is a capitalized label and the shared translation is a short phrase without a placeholder. Sentence stems such as `Could not` and `There is` are not terms. Markdown locks a two-to-five-word UI label only when the source cites it in bold, inline code, a heading, or a line that is only that label, and the check ignores capitalization in the translation. Ordinary prose may inflect the same words. The document prompt tells the model not to add bold the source does not have.
 - **Fixed**: glossary — a multi-word prefix shared by two or more UI catalog keys is seeded as its own term, using the shared start of those translations. Markdown translation rejects a segment that drops a two-to-five-word UI label and retries the next model without splitting the segment.

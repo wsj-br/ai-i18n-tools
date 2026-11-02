@@ -55,17 +55,24 @@ jobs:
       - name: Build standalone binary
         run: pnpm build:binary
 
-      - name: Checksum
+      - name: Compress and checksum
         shell: bash
         run: |
           set -euo pipefail
           cd dist-sea
-          file=$(find . -maxdepth 1 -type f -name 'ai-i18n-tools-*' ! -name '*.blob' | head -n 1)
+          file=$(find . -maxdepth 1 -type f -name 'ai-i18n-tools-*' ! -name '*.blob' ! -name '*.gz' | head -n 1)
+          if [ -z "$file" ]; then
+            echo "platform binary not found" >&2
+            exit 1
+          fi
           base=$(basename "$file")
+          gzip -9 -n -c "$base" > "$base.gz"
+          rm -f "$base"
+          archive="${base}.gz"
           if command -v sha256sum >/dev/null 2>&1; then
-            sha256sum "$base" > "SHA256-${{ matrix.name }}.txt"
+            sha256sum "$archive" > "SHA256-${{ matrix.name }}.txt"
           else
-            shasum -a 256 "$base" > "SHA256-${{ matrix.name }}.txt"
+            shasum -a 256 "$archive" > "SHA256-${{ matrix.name }}.txt"
           fi
 
       - uses: actions/upload-artifact@v7
@@ -120,10 +127,10 @@ jobs:
             zip -r "$GITHUB_WORKSPACE/dist-sea/release/ai-i18n-tools-skill.zip" -- *
           )
           cd dist-sea/release
-          # ai-i18n-tools-* already includes the Python examples zip and the skill zip.
+          # ai-i18n-tools-* is the gzip archives plus the Python examples zip and the skill zip.
           # install.sh and install.ps1 stay in the repository.
           gh release upload "$tag" \
             ai-i18n-tools-* \
             SHA256SUMS.txt \
             --clobber
-          echo "Uploaded unsigned binaries. They are not notarized or Authenticode-signed."
+          echo "Uploaded unsigned gzip archives. They are not notarized or Authenticode-signed."

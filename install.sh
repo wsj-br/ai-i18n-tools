@@ -132,15 +132,25 @@ main() {
   fi
 
   tmpdir=$(mktemp -d)
-  printf 'ai-i18n-tools: downloading %s from %s\n' "$asset" "$base_url"
-  fetch "${base_url}/${asset}" "${tmpdir}/${asset}" || die "download failed: ${base_url}/${asset}"
+  archive="${asset}.gz"
+  # The .gz attempt stays quiet. A release from before gzip archives still
+  # publishes the raw executable, and curl would otherwise print a 404.
+  printf 'ai-i18n-tools: downloading %s from %s\n' "$archive" "$base_url"
+  if fetch "${base_url}/${archive}" "${tmpdir}/${archive}" 2>/dev/null; then
+    downloaded=$archive
+  else
+    rm -f "${tmpdir}/${archive}"
+    printf 'ai-i18n-tools: downloading %s from %s\n' "$asset" "$base_url"
+    fetch "${base_url}/${asset}" "${tmpdir}/${asset}" || die "download failed: ${base_url}/${asset}"
+    downloaded=$asset
+  fi
   fetch "${base_url}/SHA256SUMS.txt" "${tmpdir}/SHA256SUMS.txt" || die "download failed: ${base_url}/SHA256SUMS.txt"
 
-  if [ ! -s "${tmpdir}/${asset}" ]; then
-    die "download was empty: ${asset}"
+  if [ ! -s "${tmpdir}/${downloaded}" ]; then
+    die "download was empty: ${downloaded}"
   fi
 
-  expected=$(awk -v name="$asset" '
+  expected=$(awk -v name="$downloaded" '
     {
       gsub(/\r/, "")
       if ($2 == name) {
@@ -150,22 +160,28 @@ main() {
     }
   ' "${tmpdir}/SHA256SUMS.txt")
   if [ -z "$expected" ] || [ "${#expected}" -ne 64 ]; then
-    die "SHA256SUMS.txt has no checksum for ${asset}"
+    die "SHA256SUMS.txt has no checksum for ${downloaded}"
   fi
 
   if command -v sha256sum >/dev/null 2>&1; then
-    actual=$(sha256sum "${tmpdir}/${asset}" | awk '{ print $1 }')
+    actual=$(sha256sum "${tmpdir}/${downloaded}" | awk '{ print $1 }')
   elif command -v shasum >/dev/null 2>&1; then
-    actual=$(shasum -a 256 "${tmpdir}/${asset}" | awk '{ print $1 }')
+    actual=$(shasum -a 256 "${tmpdir}/${downloaded}" | awk '{ print $1 }')
   else
     die "sha256sum or shasum is required to verify the download"
   fi
   expected=$(printf '%s' "$expected" | tr 'ABCDEF' 'abcdef')
   actual=$(printf '%s' "$actual" | tr 'ABCDEF' 'abcdef')
   if [ "$expected" != "$actual" ]; then
-    die "checksum mismatch for ${asset}"
+    die "checksum mismatch for ${downloaded}"
   fi
   printf 'ai-i18n-tools: checksum verified\n'
+
+  if [ "$downloaded" != "$asset" ]; then
+    command -v gzip >/dev/null 2>&1 || die "gzip is required to unpack ${downloaded}"
+    # gzip reads the archive path. It does not read stdin, so curl | sh is safe.
+    gzip -dc "${tmpdir}/${downloaded}" >"${tmpdir}/${asset}" || die "could not decompress ${downloaded}"
+  fi
 
   mkdir -p "$install_dir" || die "could not create ${install_dir}"
   dest="${install_dir}/ai-i18n-tools"

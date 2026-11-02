@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { gzipSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -58,6 +59,15 @@ function writeRelease(dir: string, asset: string, body: string, checksum?: strin
   fs.writeFileSync(path.join(dir, asset), body, { mode: 0o755 });
   const hash = checksum ?? createHash("sha256").update(body).digest("hex");
   const sums = [`${"a".repeat(64)}  ai-i18n-tools-other`, `${hash}  ${asset}`, ""].join("\n");
+  fs.writeFileSync(path.join(dir, "SHA256SUMS.txt"), sums);
+}
+
+function writeGzipRelease(dir: string, asset: string, body: string): void {
+  const compressed = gzipSync(Buffer.from(body));
+  const name = `${asset}.gz`;
+  fs.writeFileSync(path.join(dir, name), compressed);
+  const hash = createHash("sha256").update(compressed).digest("hex");
+  const sums = [`${"a".repeat(64)}  ai-i18n-tools-other`, `${hash}  ${name}`, ""].join("\n");
   fs.writeFileSync(path.join(dir, "SHA256SUMS.txt"), sums);
 }
 
@@ -129,6 +139,7 @@ describe("install scripts", () => {
     );
     expect(workflow).toContain("install.sh and install.ps1 stay in the repository");
     expect(workflow).toContain("ai-i18n-tools-*");
+    expect(workflow).toContain("gzip -9 -n");
     expect(workflow).toContain("SHA256SUMS.txt");
     expect(workflow).not.toContain('"$GITHUB_WORKSPACE/install.sh"');
     expect(workflow).not.toContain('"$GITHUB_WORKSPACE/install.ps1"');
@@ -138,6 +149,8 @@ describe("install scripts", () => {
     const source = fs.readFileSync(installPs1, "utf8");
     expect(source).toContain("Get-FileHash -Algorithm SHA256");
     expect(source).toContain("ai-i18n-tools-win-x64.exe");
+    expect(source).toContain('"$asset.gz"');
+    expect(source).toContain("System.IO.Compression.GZipStream");
     expect(source).toContain('Join-Path $installDir "ai-i18n-tools.exe"');
     expect(source).toContain("SHA256SUMS.txt");
     expect(source).toContain("Unblock-File");
@@ -188,6 +201,22 @@ describe.skipIf(process.platform === "win32")("install.sh", () => {
       }
       const fish = path.join(home, ".config", "fish", "config.fish");
       expect(countExactLines(fish, fishPathLine)).toBe(1);
+    });
+  });
+
+  it("unpacks a gzip archive and installs the executable", () => {
+    withTempDirs((home, release) => {
+      const asset = releaseAssetName();
+      writeGzipRelease(release, asset, versionScript);
+      fs.writeFileSync(path.join(home, ".bashrc"), "# existing\n");
+      const result = runInstall(home, `file://${release}`);
+      expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+      expect(result.stdout).toContain(`${asset}.gz`);
+      expect(result.stdout).toContain("checksum verified");
+      expect(result.stdout).not.toContain(`downloading ${asset} from`);
+      const dest = path.join(home, ".local", "bin", "ai-i18n-tools");
+      expect(fs.readFileSync(dest, "utf8")).toBe(versionScript);
+      expect(fs.statSync(dest).mode & 0o777).toBe(0o755);
     });
   });
 
