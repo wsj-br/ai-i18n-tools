@@ -12,12 +12,27 @@ import {
   type UiTranslationPlaceholderIssue,
 } from "./ui-placeholders.js";
 
+/**
+ * English plural pair from a catalog row. `source` is the singular; `pluralSource`
+ * is the plural (`Tn` / gettext `msgid_plural`). Absent when the row has no plural source.
+ */
+export function pluralReferenceFormsFromRow(
+  source: string,
+  pluralSource: unknown
+): Partial<Record<CldrPluralForm, string>> | undefined {
+  if (typeof pluralSource !== "string" || pluralSource.trim() === "") {
+    return undefined;
+  }
+  return { one: source, other: pluralSource };
+}
+
 /** Messages for one source/translation pair. Empty when the placeholders match. */
 export function translationValuePlaceholderMessages(
   source: string,
   translated: unknown,
   style: UiPlaceholderStyle = "default",
-  zeroDigit = false
+  zeroDigit = false,
+  sourceForms?: Partial<Record<CldrPluralForm, string>>
 ): string[] {
   if (typeof translated === "string") {
     if (translated.trim() === "") {
@@ -38,6 +53,7 @@ export function translationValuePlaceholderMessages(
     return pluralFormPlaceholderIssues(source, forms, {
       placeholderStyle: style,
       zeroDigit,
+      sourceForms,
     }).map((issue) => `${issue.form}: ${issue.detail}`);
   }
   return [];
@@ -71,9 +87,16 @@ export function catalogPlaceholderHits(
       continue;
     }
     const zeroDigit = record.zeroDigit === true;
+    const sourceForms = pluralReferenceFormsFromRow(source, record.pluralSource);
     for (const locale of locales) {
       const value = (translated as Record<string, unknown>)[locale];
-      const messages = translationValuePlaceholderMessages(source, value, style, zeroDigit);
+      const messages = translationValuePlaceholderMessages(
+        source,
+        value,
+        style,
+        zeroDigit,
+        sourceForms
+      );
       if (messages.length === 0) {
         continue;
       }

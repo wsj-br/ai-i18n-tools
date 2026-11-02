@@ -21,7 +21,7 @@ ai-i18n-tools init -t ui-dotnet -P openrouter --namespace CursorPace
 <EmbeddedResource Include="locales/*.json" />
 ```
 
-The scan skips directories named `bin`, `obj`, `.vs`, `TestResults`, and `packages`. The template also sets `uiExtractor.exclude` to `**/bin/**`, `**/obj/**`, `**/Tests/**`, and `**/*.Tests/**`.
+The scan skips directories named `bin`, `obj`, `.vs`, `TestResults`, and `packages`. The template also sets `uiExtractor.exclude` to `**/bin/**`, `**/obj/**`, `**/Tests/**`, `**/*.Tests/**`, and `**/TrExtension.cs`.
 
 <a id="calls-that-translate"></a>
 ## Calls that translate
@@ -39,7 +39,7 @@ I18n.Loc["Show token"]
 
 `N` returns its argument and is only there so a static field, enum label, or attribute can hold a literal the extractor can see. Show it later with `T(label)`.
 
-`Tn` treats `{0}` as the count. Extra arguments follow it (`{1}`, `{2}`).
+`Tn` treats `{0}` as the count. Extra arguments follow it (`{1}`, `{2}`). The singular can write that count as a literal (`1 sample`) while the plural keeps `{0}`. Translation keeps `{0}` on the plural categories and leaves the literal number on the singular.
 
 `Tp` stores the context and the source string under one key (context, U+0004, source), the same separator flat JSON already uses. Use it when the same short word means different things (`Open` the window and `Open` the file).
 
@@ -77,9 +77,11 @@ The default style, used by JavaScript and Python, is unchanged.
 
 `I18n.SetLocale("pt-BR")` walks `CultureInfo.Parent` until a catalog opens. `OpenLocale` is used when it is set. Otherwise a configured `FlatDirectory` is the only source: a missing file there does not fall through to embedded JSON. Embedded resources are used only when neither `OpenLocale` nor `FlatDirectory` is set. A missing key returns the source string. `I18n.Strict = true` throws instead, which is useful in tests. `string.Format` is called on the translated template. An invalid format can throw `FormatException`. A dropped `{0}` can omit the argument. There is no fallback to the source template after a format error.
 
-`I18n.SupportedLocales` is the list stamped at init (native name and English name). `I18n.IsRightToLeft` reads `CultureInfo.TextInfo`. The app sets `CultureInfo.CurrentUICulture` and `CultureInfo.CurrentCulture` itself. `string.Format` uses the current UI culture, so `{0:C}` follows that culture.
+`I18n.SupportedLocales` starts as the list stamped at init (`BuiltInLocales`: native name and English name). The language menu does not read that stamp. Before the first `T()`, search upward from `AppContext.BaseDirectory`, then from the current directory, at most 8 directories each, for `locales/ui-languages.json`. The first file wins. Map `code`, `label`, and `englishName` to `LocaleInfo` (`label` is the native name) and pass them to `Configure` as `Locales`, with `FlatDirectory` set to that `locales` directory in the same call. Every `Configure` call replaces `Strict`, `FlatDirectory`, and `OpenLocale`. A later call that only sets `Locales` clears `FlatDirectory`. A null `Locales` array leaves the current list in place and does not restore `BuiltInLocales`. If the manifest is missing, pass a one-element list for the source language and do not set `FlatDirectory`. The menu is then the source language only, and catalogs stay embedded. Development reads the files `sync` just wrote. An installer that should follow `sync` ships `ui-languages.json` and the locale JSON next to the app.
 
-`LocaleChanged` fires inside `SetLocale`. Set `CurrentUICulture` and `CurrentCulture` first so a refresh handler formats with the new culture. View-model properties that call `T` should raise `PropertyChanged` from that event. A markup extension that returns a plain string updates the next time the view is built. The catalog and current locale are static. That is safe for a desktop process. It is not a per-request locale for a multi-user server. Keep `IStringLocalizer` or `ResourceManager` there. Setting `CurrentUICulture` does not give each request its own map.
+`I18n.IsRightToLeft` reads `CultureInfo.TextInfo`. The app sets `CultureInfo.CurrentUICulture` and `CultureInfo.CurrentCulture` itself, and persists the locale code. `string.Format` uses the current UI culture, so `{0:C}` follows that culture.
+
+`LocaleChanged` fires inside `SetLocale`. Set `CurrentUICulture` and `CurrentCulture` first so a refresh handler formats with the new culture. View-model properties that call `T` should raise `PropertyChanged` from that event. For Avalonia, WPF, and MAUI, the markup extension returns `I18n.T(Text)` and sets that property again on `LocaleChanged`, then unsubscribes when the control leaves the visual tree. The catalog and current locale are static. That is safe for a desktop process. It is not a per-request locale for a multi-user server. Keep `IStringLocalizer` or `ResourceManager` there. Setting `CurrentUICulture` does not give each request its own map.
 
 To refresh a copied helper, scaffold the same template in a disposable directory and copy only the generated file you intend to replace. Do not rerun `init` in the app to upgrade the helper.
 
@@ -88,18 +90,38 @@ The file starts with `ai-i18n-tools-i18n-cs:` so `extract` skips it.
 <a id="desktop-recipe"></a>
 ## Desktop recipe
 
-Avalonia, WPF, and MAUI each have their own markup-extension base class. The helper does not reference those assemblies. One Avalonia shape:
+Avalonia, WPF, and MAUI each have their own markup-extension base class. The helper does not reference those assemblies. `ProvideValue` returns `I18n.T(Text)` and sets that property again on `LocaleChanged`. Unsubscribe when the control leaves the visual tree. Add `**/TrExtension.cs` to `ui.uiExtractor.exclude` so `T(Text)` is not reported as a non-literal. The XAML literals are already extracted through `Tr`. `{loc:Tr}` can only call `T`. Two meanings of one short word are set in code with `Tp`.
+
+One Avalonia shape (`IProvideValueTarget` is in `Avalonia.Metadata`):
 
 ```csharp
 public sealed class TrExtension : MarkupExtension
 {
     public TrExtension(string text) { Text = text; }
     public string Text { get; }
-    public override object ProvideValue(IServiceProvider serviceProvider) => I18n.T(Text);
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var text = I18n.T(Text);
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target
+            && target.TargetObject is AvaloniaObject control
+            && target.TargetProperty is AvaloniaProperty property)
+        {
+            void Refresh() => control.SetValue(property, I18n.T(Text));
+            I18n.LocaleChanged += Refresh;
+            if (control is StyledElement element)
+            {
+                element.DetachedFromVisualTree += (_, _) => I18n.LocaleChanged -= Refresh;
+            }
+        }
+        return text;
+    }
 }
 ```
 
-Formatted sentences stay in C# (`T("Cursor {0}", value)`), which keeps the extractor on a single literal. The same call works from a view model, a tray tooltip, and a dialog.
+WPF and MAUI use the same idea with their own property types. Avalonia only: ignore `SelectionChanged` unless `e.Source` is the control that owns the handler. Do not assign `ItemsSource` or `SelectedItem` inside that handler, or inside a `LocaleChanged` that this combo's `SetLocale` raised. Post the refresh with `Dispatcher.UIThread.Post`, and guard the handler while code sets `SelectedItem`. A parent `TabControl` that assigns `ItemsSource` again from the bubbled event crashes the process (exit code 139, empty `crash.log`).
+
+Formatted sentences stay in C# (`T("Cursor {0}", value)`), which keeps the extractor on a single literal. `StringFormat` on a binding is invisible. The same call works from a view model, a tray tooltip, and a dialog. An enum combo keeps the enum, returns `T("Light")` from its caption, and rebuilds the items on `LocaleChanged`. A tray item uses `Tp("tray", "Open")` and a stable `CommandParameter`. Match the parameter, not the header. A service stores the English error sentence, and the display site maps known sentences through `T`. Linux `.desktop` `Name=` and `Comment=` stay in the source language. Duration tokens that are compared (`2d`, `7h 47m`) stay untranslated. Translate `T("now")` and `T("in {0}", duration)` at the display site. A leading or trailing space on a literal is still an extract warning. Move it into the format string or the layout. `Tn` may correct a source sentence that was always plural (`1 samples`).
 
 <a id="migrate"></a>
 ## Rewrite unsafe calls

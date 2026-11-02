@@ -98,6 +98,7 @@ namespace AiI18n
             get { return _locales; }
         }
 
+        // Every call replaces Strict, FlatDirectory, and OpenLocale. A null Locales array does not restore BuiltInLocales.
         public static void Configure(I18nOptions options)
         {
             if (options == null)

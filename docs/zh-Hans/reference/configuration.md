@@ -100,7 +100,7 @@
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs`（可选）
 
-每个提供商的每次 LLM 请求的最大等待时间。`requestTimeout` 为整秒数；`requestTimeoutMs` 为毫秒数。当两者均省略时默认值为 **45** 秒。仅设置其中一项。如果某个提供商设置了其中任一字段，则仅对该提供商使用该值。
+每个提供商的每次 LLM 请求的最大等待时间。`requestTimeout` 是整秒数；`requestTimeoutMs` 是毫秒数。默认值：当两者都省略时为 **120** 秒。只能设置其中一个。如果提供商设置了其中一个字段，则仅对该提供商使用该值。
 
 ---
 
@@ -130,11 +130,11 @@
 - `temperature`
   采样温度。默认值：`0.2`。
 - `requestTimeout`
-  等待每个请求到此提供者的最大秒数。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供者和顶层配置均未设置超时时，默认为 `45` 秒。在同一对象上仅设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待此提供商的每个请求的最大时间（秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `120` 秒。在同一对象上只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `requestTimeoutMs`
-  等待每个请求到此提供者的最大毫秒数。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供者和顶层配置均未设置超时时，默认为 `45000`（45 秒）。在同一对象上仅设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
+  等待此提供商的每个请求的最大时间（毫秒）。覆盖顶层 `requestTimeout` / `requestTimeoutMs`。当此提供商和顶层配置均未设置超时时，默认值为 `120000`（120 秒）。在同一对象上只能设置 `requestTimeout` 和 `requestTimeoutMs` 中的一个。
 - `pricing`（可选）
-  提供者范围的每百万令牌美元价格：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供者报告的 `usage.cost`（除 OpenRouter 和 Cheaper Inference 外的大多数提供者）时，此费率应用于该调用的输入和输出令牌。金额包含在翻译摘要中，并存储在 `api_calls` 行上。
+  提供商范围内的每 100 万个令牌的美元价格：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。当计费调用没有提供商报告的 `usage.cost` 时（OpenRouter 和 Cheaper Inference 之外的大多数提供商），此费率将应用于该调用的输入和输出令牌。该金额包含在翻译摘要中，并存储在 `api_calls` 行。
 
 成本来源按以下顺序解析：
 
@@ -307,11 +307,11 @@
   用于该可选描述提取的 `package.json` 文件的自定义路径。
 - `uiExtractor.includeUiLanguageEnglishNames`（或旧版 `reactExtractor.includeUiLanguageEnglishNames`）
 
-当 `true`（默认值 `false`）时，如果源扫描中尚未存在（哈希键相同），`extract` 还会将捆绑的 UI 语言主目录（由 `sourceLocale` + 块的有效 `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`。不读取 `languagesManifestPath`。
+当 `true` (默认为 `false`) 时，`extract` 还会将捆绑的 ui-languages 主目录 (由 `sourceLocale` + 块的有效 `targetLocales` 构建) 中的每个 `englishName` 添加到 `strings.json` 中，如果源扫描中尚未存在 (哈希键相同)。不读取 `languagesManifestPath`。
 - `uiExtractor.placeholderStyle`
-  `default`（mustache、Python 格式字段和 printf）或 `dotnet`（仅限 `{0}`、`{0,-10}`、`{0:format}`）。在 `dotnet` 样式中，百分号是字面文本，双大括号是字面大括号。`ui-dotnet` 模板设置 `dotnet`。
+  `default` (mustache、Python 格式字段和 printf) 或 `dotnet` (仅限 `{0}`、`{0,-10}`、`{0:format}`)。在 `dotnet` 样式中，百分号是字面文本，双大括号是字面大括号。`ui-dotnet` 模板设置 `dotnet`。
 - `uiExtractor.exclude`
-  相对于项目根目录的 Minimatch 模式，在扫描后被丢弃。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已按目录名跳过。`ui-dotnet` 模板排除 `**/Tests/**` 和 `**/*.Tests/**`。
+  Minimatch 模式，相对于项目根目录，在扫描后丢弃。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已按目录名跳过。`ui-dotnet` 和 `ui-dotnet-resx` 模板排除 `**/Tests/**`、`**/*.Tests/**` 和 `**/TrExtension.cs`。
 
 不再接受 `glossary.uiGlossary` 和 `glossary.uiGlossaryFromStringsJson`。配置加载将失败，并且错误会说明替换方法：删除该键。提示现在来自每个区块的 `uiGlossary` 标志（默认 `true`）。
 

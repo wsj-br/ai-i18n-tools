@@ -72,6 +72,7 @@ import {
   type UiPlaceholderStyle,
 } from "../core/ui-placeholders.js";
 import type { Logger } from "../utils/logger.js";
+import { t } from "../i18n/index.js";
 import {
   warnTranslationFailureLogPath,
   writeTranslationFailureLog,
@@ -201,6 +202,92 @@ export function llmFailureHasAssistantOutput(details: LlmAllModelsFailedDetails)
   return typeof raw === "string" && raw.trim().length > 0;
 }
 
+/** Internal batch labels stay in the failure file; the console line matches translate-docs when a real range is set. */
+function segmentsLabelForConsole(label: string | undefined): string | undefined {
+  if (
+    !label ||
+    label === "batch" ||
+    label === "ui-batch" ||
+    label === "plural-batch" ||
+    label === "proofread-ui"
+  ) {
+    return undefined;
+  }
+  return label;
+}
+
+function batchSegmentLabel(index: number, keys: readonly string[] | undefined): string {
+  const key = keys?.[index];
+  return key ? `batch seg id=${index} (hash ${key})` : `batch seg id=${index}`;
+}
+
+/** Per-item lines for `--debug-failed`, in the same shape translate-docs writes for a batch. */
+function uiCheckPerSegmentLines(
+  error: unknown,
+  count: number,
+  keys?: readonly string[]
+): string[] {
+  if (error instanceof UiBatchPlaceholderError) {
+    const byIndex = new Map<number, string[]>();
+    for (const issue of error.issues) {
+      if (issue.index === undefined) {
+        continue;
+      }
+      const list = byIndex.get(issue.index) ?? [];
+      list.push(issue.message);
+      byIndex.set(issue.index, list);
+    }
+    if (byIndex.size === 0) {
+      return [];
+    }
+    const lines: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const errs = byIndex.get(i);
+      lines.push(
+        `${batchSegmentLabel(i, keys)}: ${errs && errs.length > 0 ? errs.join("; ") : "OK"}`
+      );
+    }
+    return lines;
+  }
+  if (error instanceof ScriptValidationError) {
+    if (error.segmentLabel) {
+      return [`${error.segmentLabel}: ${error.message}`];
+    }
+    if (error.segmentIndex !== undefined) {
+      return [`${batchSegmentLabel(error.segmentIndex, keys)}: ${error.message}`];
+    }
+    return [];
+  }
+  if (error instanceof PluralFormsPlaceholderError) {
+    const key = keys?.[0];
+    const prefix = key ? `(hash ${key}) ` : "";
+    return error.issues.map((issue) => `${prefix}form ${issue.form}: ${issue.detail}`);
+  }
+  return [];
+}
+
+/** How many strings or plural groups a discarded UI check should add to the run summary. */
+function uiValidationFailureCount(error: unknown): number {
+  if (error instanceof UiBatchPlaceholderError) {
+    const indexes = new Set<number>();
+    for (const issue of error.issues) {
+      if (issue.index !== undefined) {
+        indexes.add(issue.index);
+      }
+    }
+    return indexes.size > 0 ? indexes.size : 1;
+  }
+  return 1;
+}
+
+function isUiQualityCheckError(error: unknown): boolean {
+  return (
+    error instanceof ScriptValidationError ||
+    error instanceof UiBatchPlaceholderError ||
+    error instanceof PluralFormsPlaceholderError
+  );
+}
+
 /** Thrown when every model in the chain fails for {@link LlmClient.translateDocumentBatch}. */
 export class DocumentBatchAllModelsFailedError extends LlmAllModelsFailedError {
   constructor(message: string, details: LlmAllModelsFailedDetails) {
@@ -249,6 +336,12 @@ export interface LlmClientOptions {
    * billed body. Must be synchronous and must not throw.
    */
   onApiCall?: (event: LlmApiCallEvent) => void;
+  /**
+   * Fires when a model response is discarded for a translation check (parse, placeholder, or script),
+   * not for a provider/API failure. `count` is the number of strings that failed when that is known.
+   * Must be synchronous and must not throw.
+   */
+  onValidationFailure?: (count: number) => void;
   /** Project/feature context from `glossary.contextFiles` injected into translation prompts. */
   translationContext?: string;
   /**
@@ -294,6 +387,7 @@ export class LlmClient {
   private modelsDevLoad: Promise<Record<string, ModelsDevRate>> | null = null;
   private readonly onApiUsage?: (usage: LlmUsageStats, cost: number | undefined) => void;
   private readonly onApiCall?: (event: LlmApiCallEvent) => void;
+  private readonly onValidationFailure?: (count: number) => void;
   private readonly translationContext: string;
   /** Dedupes identical API/call-failure console lines per (model, error message). */
   private readonly warnedCallFailures = new Set<string>();
@@ -349,6 +443,7 @@ export class LlmClient {
     this.xTitle = opts.xTitle ?? "ai-i18n-tools";
     this.onApiUsage = opts.onApiUsage;
     this.onApiCall = opts.onApiCall;
+    this.onValidationFailure = opts.onValidationFailure;
     this.translationContext = opts.translationContext?.trim() ?? "";
     this.pricing = collectProviderPricing(opts.config.providers);
     this.benchmarkCachePath =
@@ -492,19 +587,62 @@ export class LlmClient {
     }
   }
 
-  /** Match doc-translate log lines: two-space indent, locale, filename. */
+  /** Match doc-translate log lines: two-space indent, locale, filename, optional batch range. */
   private warnModelSwitch(
     localeCode: string,
     relativePath: string | undefined,
     failedModel: string,
     nextModel: string | undefined,
-    error: unknown
+    error: unknown,
+    segmentsLabel?: string
   ): void {
     const loc =
       relativePath != null && relativePath !== "" ? `${localeCode} ${relativePath}` : localeCode;
     const detail = error instanceof Error ? error.message : String(error);
-    const trying = nextModel ? `. Trying ${nextModel}…` : "";
-    console.warn(chalk.yellow(`  ⚠️  ${loc}: ${failedModel} failed (${detail})${trying}`));
+    const seg = segmentsLabel ? `: ${segmentsLabel}` : "";
+    const line = nextModel
+      ? t("  ⚠️  {{loc}}{{seg}}: {{failedModel}} failed ({{detail}}). Trying {{nextModel}}…", {
+          loc,
+          seg,
+          failedModel,
+          detail,
+          nextModel,
+        })
+      : t("  ⚠️  {{loc}}{{seg}}: {{failedModel}} failed ({{detail}})", {
+          loc,
+          seg,
+          failedModel,
+          detail,
+        });
+    console.warn(chalk.yellow(line));
+  }
+
+  /**
+   * Same wording as translate-docs quality retries (`output failed quality check`), used for UI
+   * placeholder and script misses that still have a fallback model.
+   */
+  private warnQualityModelSwitch(
+    localeCode: string,
+    relativePath: string | undefined,
+    failedModel: string,
+    nextModel: string,
+    error: unknown,
+    segmentsLabel: string | undefined,
+    nextModelOrdinal: { index1Based: number; total: number }
+  ): void {
+    const loc =
+      relativePath != null && relativePath !== "" ? `${localeCode} ${relativePath}` : localeCode;
+    const detail = error instanceof Error ? error.message : String(error);
+    const seg = segmentsLabel ? `: ${segmentsLabel}` : "";
+    const ordinal = ` (${nextModelOrdinal.index1Based}/${nextModelOrdinal.total})`;
+    console.warn(
+      chalk.yellow(
+        t(
+          "  ⚠️  {{loc}}{{seg}}: {{failedModel}} output failed quality check ({{detail}}). Trying {{nextModel}}{{ordinal}}…",
+          { loc, seg, failedModel, detail, nextModel, ordinal }
+        )
+      )
+    );
   }
 
   private static isCallFailure(rawAssistantContent?: string): boolean {
@@ -526,24 +664,58 @@ export class LlmClient {
     userContent: string;
     rawAssistantContent?: string;
     segmentsLabel?: string;
-    /** Docs/chat with `docLogContext`: console.warn check failures when a fallback remains. */
+    /** Docs/chat with `docLogContext`, and UI string/plural batches: console.warn when a fallback remains. */
     warnCheckFailure?: boolean;
+    /** UI placeholder/script misses use the translate-docs quality-check line. Parse stays on the model-failed line. */
+    qualityCheck?: boolean;
+    /** Strings that failed this check. Omitted counts as one discarded batch. */
+    validationFailureCount?: number;
+    perSegmentLines?: string[];
     loggerCheckMessage?: string;
   }): void {
     const nextModel = this.modelsToTry[args.modelIndex + 1];
+    const seg = segmentsLabelForConsole(args.segmentsLabel);
     if (LlmClient.isCallFailure(args.rawAssistantContent)) {
       const errMsg = args.error instanceof Error ? args.error.message : String(args.error);
       const key = `${args.model}\0${errMsg}`;
       if (!this.warnedCallFailures.has(key)) {
         this.warnedCallFailures.add(key);
-        this.warnModelSwitch(args.locale, args.relativePath, args.model, nextModel, args.error);
+        this.warnModelSwitch(
+          args.locale,
+          args.relativePath,
+          args.model,
+          nextModel,
+          args.error,
+          seg
+        );
       }
       return;
     }
 
+    this.onValidationFailure?.(args.validationFailureCount ?? 1);
+
     if (args.warnCheckFailure) {
       if (nextModel) {
-        this.warnModelSwitch(args.locale, args.relativePath, args.model, nextModel, args.error);
+        if (args.qualityCheck) {
+          this.warnQualityModelSwitch(
+            args.locale,
+            args.relativePath,
+            args.model,
+            nextModel,
+            args.error,
+            seg,
+            { index1Based: args.modelIndex + 2, total: this.modelsToTry.length }
+          );
+        } else {
+          this.warnModelSwitch(
+            args.locale,
+            args.relativePath,
+            args.model,
+            nextModel,
+            args.error,
+            seg
+          );
+        }
       }
     } else {
       this.logger?.warn(args.loggerCheckMessage ?? `Model ${args.model} failed: ${args.error}`);
@@ -566,6 +738,7 @@ export class LlmClient {
     userContent: string;
     rawAssistantContent?: string;
     segmentsLabel?: string;
+    perSegmentLines?: string[];
   }): void {
     if (!this.debugFailedDir) {
       return;
@@ -582,7 +755,7 @@ export class LlmClient {
         failedModel: args.model,
         nextModel,
         qualityErrors: [errMsg],
-        perSegmentLines: [],
+        perSegmentLines: args.perSegmentLines ?? [],
         systemPrompt: args.systemPrompt,
         userContent: args.userContent,
         rawAssistantContent: args.rawAssistantContent ?? "",
@@ -1114,6 +1287,10 @@ export class LlmClient {
       startModelIndex?: number;
       glossaryHints?: string[];
       placeholderStyle?: UiPlaceholderStyle;
+      /** Shown on the console and in `--debug-failed` logs, e.g. `strings 1–50/120`. */
+      segmentsLabel?: string;
+      /** Catalog hashes parallel to `texts`, included in per-segment failure lines. */
+      segmentKeys?: readonly string[];
     }
   ): Promise<{
     translations: string[];
@@ -1144,6 +1321,7 @@ export class LlmClient {
     ]);
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    const segmentsLabel = options?.segmentsLabel?.trim() || "ui-batch";
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
     let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
@@ -1182,7 +1360,8 @@ export class LlmClient {
           error: e,
           systemPrompt,
           userContent: userContentForAttempt,
-          segmentsLabel: "ui-batch",
+          segmentsLabel,
+          warnCheckFailure: true,
           loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
         });
         continue;
@@ -1196,7 +1375,14 @@ export class LlmClient {
           options?.placeholderStyle ?? "default"
         );
         for (let i = 0; i < translations.length; i++) {
-          this.assertExpectedScript(translations[i]!, targetLocale, texts[i]);
+          try {
+            this.assertExpectedScript(translations[i]!, targetLocale, texts[i]);
+          } catch (scriptError) {
+            if (scriptError instanceof ScriptValidationError) {
+              scriptError.segmentIndex = i;
+            }
+            throw scriptError;
+          }
         }
         this.assertBatchExpectedScript(translations, texts, targetLocale);
         this.accountAccepted(result.model, result.usage, result.cost);
@@ -1229,7 +1415,11 @@ export class LlmClient {
           systemPrompt,
           userContent: userContentForAttempt,
           rawAssistantContent: result.content,
-          segmentsLabel: "ui-batch",
+          segmentsLabel,
+          warnCheckFailure: true,
+          qualityCheck: isUiQualityCheckError(e),
+          validationFailureCount: uiValidationFailureCount(e),
+          perSegmentLines: uiCheckPerSegmentLines(e, texts.length, options?.segmentKeys),
           loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
         });
       }
@@ -1359,8 +1549,17 @@ export class LlmClient {
       targetLocale?: string;
       /** Original developer literal; when set, placeholder/qty validation runs after parse. */
       originalLiteral?: string;
+      /**
+       * Source-locale plural forms. Placeholders that exist only on one of
+       * these forms are required on the matching target category.
+       */
+      sourceForms?: Partial<Record<CldrPluralForm, string>>;
       zeroDigit?: boolean;
       placeholderStyle?: UiPlaceholderStyle;
+      /** Shown on the console and in `--debug-failed` logs, e.g. `plural 2/40 (hash)`. */
+      segmentsLabel?: string;
+      /** Catalog hash for this plural group, included in per-form failure lines. */
+      segmentKeys?: readonly string[];
     }
   ): Promise<{
     forms: Record<CldrPluralForm, string>;
@@ -1384,6 +1583,7 @@ export class LlmClient {
     ]);
 
     const start = Math.max(0, Math.floor(options?.startModelIndex ?? 0));
+    const segmentsLabel = options?.segmentsLabel?.trim() || "plural-batch";
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
     let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
@@ -1422,7 +1622,8 @@ export class LlmClient {
           error: e,
           systemPrompt: messages.systemPrompt,
           userContent: userContentForAttempt,
-          segmentsLabel: "plural-batch",
+          segmentsLabel,
+          warnCheckFailure: true,
           loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,
         });
         continue;
@@ -1434,11 +1635,23 @@ export class LlmClient {
             zeroDigit: options.zeroDigit === true,
             rawResponse: result.content,
             placeholderStyle: options.placeholderStyle,
+            sourceForms: options.sourceForms,
           });
         }
         if (options?.targetLocale) {
-          for (const value of Object.values(forms)) {
-            this.assertExpectedScript(value, options.targetLocale, options.originalLiteral);
+          for (const form of expectedForms) {
+            const value = forms[form];
+            if (value === undefined) {
+              continue;
+            }
+            try {
+              this.assertExpectedScript(value, options.targetLocale, options.originalLiteral);
+            } catch (scriptError) {
+              if (scriptError instanceof ScriptValidationError) {
+                scriptError.segmentLabel = `plural form ${form}`;
+              }
+              throw scriptError;
+            }
           }
         }
         this.accountAccepted(result.model, result.usage, result.cost);
@@ -1461,7 +1674,7 @@ export class LlmClient {
           lastRawAssistantContent: result.content,
         };
         if (e instanceof PluralFormsPlaceholderError) {
-          placeholderRetryNote = `${e.message} Copy every placeholder name and format spec unchanged. Do not translate names inside braces.`;
+          placeholderRetryNote = `${e.message} Copy each source form's placeholders into the matching category only. Do not add a placeholder that form does not have, and do not drop one it does have. Do not translate names inside braces.`;
         }
         this.recordDiscardedAttempt({
           locale: options?.targetLocale ?? "unknown",
@@ -1472,7 +1685,11 @@ export class LlmClient {
           systemPrompt: messages.systemPrompt,
           userContent: userContentForAttempt,
           rawAssistantContent: result.content,
-          segmentsLabel: "plural-batch",
+          segmentsLabel,
+          warnCheckFailure: true,
+          qualityCheck: isUiQualityCheckError(e),
+          validationFailureCount: uiValidationFailureCount(e),
+          perSegmentLines: uiCheckPerSegmentLines(e, expectedForms.length, options?.segmentKeys),
           loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,
         });
       }

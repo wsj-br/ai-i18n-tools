@@ -46,7 +46,10 @@ import {
   renderDotnetResxHelper,
 } from "./dotnet-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
-import { translationValuePlaceholderMessages } from "../core/ui-placeholder-audit.js";
+import {
+  pluralReferenceFormsFromRow,
+  translationValuePlaceholderMessages,
+} from "../core/ui-placeholder-audit.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
   getConfiguredCacheLocales,
@@ -3050,7 +3053,8 @@ program
               source,
               value,
               placeholderStyle,
-              record.zeroDigit === true
+              record.zeroDigit === true,
+              pluralReferenceFormsFromRow(source, record.pluralSource)
             );
             if (messages.length > 0) {
               count++;

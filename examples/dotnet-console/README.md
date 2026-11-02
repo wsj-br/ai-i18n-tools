@@ -1,6 +1,6 @@
 # dotnet-console
 
-xUnit checks for the shipped `I18n.cs` helper: embedded locale JSON, culture fallback, whitespace, `{0}` formatting, plurals, and the GNU plural-form table.
+xUnit checks for the shipped `I18n.cs` helper: embedded locale JSON, culture fallback, whitespace, `{0}` formatting, plurals, the GNU plural-form table, and `Configure` replacing `FlatDirectory` while a null `Locales` array keeps the current list.
 
 This directory is not an app to translate. It does not need an API key.
 

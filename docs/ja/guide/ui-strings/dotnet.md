@@ -21,7 +21,7 @@ ai-i18n-tools init -t ui-dotnet -P openrouter --namespace CursorPace
 <EmbeddedResource Include="locales/*.json" />
 ```
 
-スキャンは、`bin`、`obj`、`.vs`、`TestResults`、および `packages` という名前のディレクトリをスキップします。テンプレートはまた、`uiExtractor.exclude` を `**/bin/**`、`**/obj/**`、`**/Tests/**`、および `**/*.Tests/**` に設定します。
+スキャンは、`bin`、`obj`、`.vs`、`TestResults`、および`packages`という名前のディレクトリをスキップします。テンプレートはまた、`uiExtractor.exclude`を`**/bin/**`、`**/obj/**`、`**/Tests/**`、`**/*.Tests/**`、および`**/TrExtension.cs`に設定します。
 
 <a id="calls-that-translate"></a>
 ## 翻訳用の呼び出し
@@ -39,7 +39,7 @@ I18n.Loc["Show token"]
 
 `N` はその引数を返し、静的フィールド、列挙型ラベル、または属性がエクストラクターが認識できるリテラルを保持できるように、そこにのみ存在します。後で `T(label)` を使って表示します。
 
-`Tn` は `{0}` をカウントとして扱います。追加の引数がそれに続きます (`{1}`、`{2}`)。
+`Tn` は `{0}` をカウントとして扱います。その後に（`{1}`、`{2}`）のような追加の引数が続きます。単数形ではそのカウントをリテラル（`1 sample`）として記述できますが、複数形では`{0}`を保持します。翻訳では、複数形のカテゴリには`{0}`を保持し、単数形にはリテラル数を残します。
 
 `Tp` はコンテキストとソース文字列を 1 つのキー (context, U+0004, source) の下に格納します。これはフラット JSON がすでに使用しているのと同じ区切り文字です。同じ短い単語が異なる意味を持つ場合 (ウィンドウを `Open` し、ファイルを `Open` するなど) に使用します。
 
@@ -77,9 +77,11 @@ JavaScript および Python で使用されるデフォルトのスタイルは�
 
 `I18n.SetLocale("pt-BR")` はカタログが開かれるまで `CultureInfo.Parent` を辿ります。`OpenLocale` は設定されている場合に使用されます。それ以外の場合、構成された `FlatDirectory` が唯一のソースとなります。そこにあるファイルが見つからない場合でも、埋め込みJSONにはフォールバックしません。埋め込みリソースは、`OpenLocale` も `FlatDirectory` も設定されていない場合にのみ使用されます。キーが見つからない場合はソース文字列を返します。`I18n.Strict = true` は代わりにスローし、これはテストで役立ちます。`string.Format` は翻訳されたテンプレートで呼び出されます。無効な形式は `FormatException` をスローする可能性があります。省略された `{0}` は引数を省略できます。フォーマットエラーの後、ソーステンプレートへのフォールバックはありません。
 
-`I18n.SupportedLocales` は初期化時に記録されるリストです（ネイティブ名と英語名）。`I18n.IsRightToLeft` は `CultureInfo.TextInfo` を読み取ります。アプリは `CultureInfo.CurrentUICulture` と `CultureInfo.CurrentCulture` を自身で設定します。`string.Format` は現在の UI カルチャを使用するため、`{0:C}` はそのカルチャに従います。
+`I18n.SupportedLocales` は、初期化時にスタンプされたリスト（`BuiltInLocales`: ネイティブ名と英語名）として開始します。言語メニューはそのスタンプを読み込みません。最初の`T()`の前に、`AppContext.BaseDirectory`から、次に現在のディレクトリから、それぞれ最大8つのディレクトリを上方向に`locales/ui-languages.json`を検索します。最初に見つかったファイルが優先されます。`code`、`label`、および`englishName`を`LocaleInfo`（`label`はネイティブ名）にマッピングし、それらを`Configure`に`Locales`として渡します。その際、同じ呼び出しで`FlatDirectory`をその`locales`ディレクトリに設定します。`Configure`の呼び出しごとに、`Strict`、`FlatDirectory`、および`OpenLocale`が置き換えられます。後続の呼び出しで`Locales`のみを設定した場合、`FlatDirectory`はクリアされます。nullの`Locales`配列は、現在のリストをそのままにし、`BuiltInLocales`を復元しません。マニフェストが見つからない場合、ソース言語の1要素リストを渡し、`FlatDirectory`を設定しません。その場合、メニューはソース言語のみとなり、カタログは埋め込まれたままになります。開発は、`sync`が書き込んだばかりのファイルを読み込みます。`sync`に従うべきインストーラーは、`ui-languages.json`とロケールJSONをアプリの隣に同梱します。
 
-`LocaleChanged` は `SetLocale` の内部で発生します。リフレッシュハンドラーが新しいカルチャでフォーマットするように、まず `CurrentUICulture` と `CurrentCulture` を設定してください。`T` を呼び出すビューモデルのプロパティは、そのイベントから `PropertyChanged` を発生させるべきです。プレーンな文字列を返すマークアップ拡張は、次にビューがビルドされるときに更新されます。カタログと現在のロケールは静的です。これはデスクトッププロセスでは安全です。マルチユーザーサーバーの要求ごとのロケールではありません。そこに `IStringLocalizer` または `ResourceManager` を保持してください。`CurrentUICulture` を設定しても、各リクエストに独自のマップが与えられるわけではありません。
+`I18n.IsRightToLeft` は `CultureInfo.TextInfo` を読み込みます。アプリは `CultureInfo.CurrentUICulture` と `CultureInfo.CurrentCulture` を自身で設定し、ロケールコードを永続化します。`string.Format` は現在のUIカルチャを使用するため、`{0:C}` はそのカルチャに従います。
+
+`LocaleChanged` は `SetLocale` の内部で発生します。リフレッシュハンドラーが新しいカルチャでフォーマットするように、最初に`CurrentUICulture`と`CurrentCulture`を設定します。`T`を呼び出すビューモデルプロパティは、そのイベントから`PropertyChanged`を発生させる必要があります。Avalonia、WPF、およびMAUIの場合、マークアップ拡張は`I18n.T(Text)`を返し、そのプロパティを`LocaleChanged`で再度設定し、コントロールがビジュアルツリーを離れるときに購読を解除します。カタログと現在のロケールは静的です。これはデスクトッププロセスでは安全です。これはマルチユーザーサーバーの要求ごとのロケールではありません。そこに`IStringLocalizer`または`ResourceManager`を保持してください。`CurrentUICulture`を設定しても、各要求に独自のマップが与えられるわけではありません。
 
 コピーされたヘルパーをリフレッシュするには、一時的なディレクトリに同じテンプレートをスキャフォールドし、置換する予定の生成されたファイルのみをコピーします。ヘルパーをアップグレードするために、アプリで `init` を再実行しないでください。
 
@@ -88,18 +90,38 @@ JavaScript および Python で使用されるデフォルトのスタイルは�
 <a id="desktop-recipe"></a>
 ## デスクトップレシピ
 
-Avalonia、WPF、MAUI はそれぞれ独自のマークアップ拡張基底クラスを持っています。ヘルパーはそれらのアセンブリを参照しません。Avalonia の一例:
+Avalonia、WPF、およびMAUIはそれぞれ独自のマークアップ拡張基底クラスを持っています。ヘルパーはそれらのアセンブリを参照しません。`ProvideValue` は `I18n.T(Text)` を返し、そのプロパティを`LocaleChanged`で再度設定します。コントロールがビジュアルツリーを離れるときに購読を解除します。`**/TrExtension.cs`を`ui.uiExtractor.exclude`に追加して、`T(Text)`が非リテラルとして報告されないようにします。XAMLリテラルは`Tr`を通じて既に抽出されています。`{loc:Tr}` は `T` のみを呼び出すことができます。1つの短い単語の2つの意味は、`Tp`を使用してコードで設定されます。
+
+1つのAvaloniaの形式（`IProvideValueTarget` は `Avalonia.Metadata` にあります）:
 
 ```csharp
 public sealed class TrExtension : MarkupExtension
 {
     public TrExtension(string text) { Text = text; }
     public string Text { get; }
-    public override object ProvideValue(IServiceProvider serviceProvider) => I18n.T(Text);
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var text = I18n.T(Text);
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target
+            && target.TargetObject is AvaloniaObject control
+            && target.TargetProperty is AvaloniaProperty property)
+        {
+            void Refresh() => control.SetValue(property, I18n.T(Text));
+            I18n.LocaleChanged += Refresh;
+            if (control is StyledElement element)
+            {
+                element.DetachedFromVisualTree += (_, _) => I18n.LocaleChanged -= Refresh;
+            }
+        }
+        return text;
+    }
 }
 ```
 
-フォーマットされた文は C# (`T("Cursor {0}", value)`) に残るため、エクストラクタは単一のリテラルに留まります。同じ呼び出しは、ビューモデル、トレイツールチップ、およびダイアログから機能します。
+WPFとMAUIは、独自のプロパティ型で同じ考え方を使用します。Avaloniaのみ: `e.Source`がハンドラーを所有するコントロールでない限り、`SelectionChanged`を無視します。そのハンドラー内、またはこのコンボの`SetLocale`が発生させた`LocaleChanged`内で、`ItemsSource`または`SelectedItem`を割り当てないでください。`Dispatcher.UIThread.Post`でリフレッシュをポストし、コードが`SelectedItem`を設定している間はハンドラーを保護します。バブルされたイベントから`ItemsSource`を再度割り当てる親`TabControl`は、プロセスをクラッシュさせます（終了コード139、空の`crash.log`）。
+
+フォーマットされた文はC#（`T("Cursor {0}", value)`）に残され、これにより抽出器は単一のリテラルに留まります。バインディング上の`StringFormat`は非表示です。同じ呼び出しが、ビューモデル、トレイツールチップ、およびダイアログから機能します。列挙型コンボは列挙型を保持し、そのキャプションから`T("Light")`を返し、`LocaleChanged`で項目を再構築します。トレイ項目は`Tp("tray", "Open")`と安定した`CommandParameter`を使用します。ヘッダーではなく、パラメーターを一致させます。サービスは英語のエラー文を保存し、表示サイトは既知の文を`T`を通じてマッピングします。Linuxの`.desktop`、`Name=`、および`Comment=`はソース言語のままです。比較される期間トークン（`2d`、`7h 47m`）は翻訳されません。`T("now")`と`T("in {0}", duration)`は表示サイトで翻訳します。リテラルの先頭または末尾のスペースは、依然として抽出警告です。それをフォーマット文字列またはレイアウトに移動してください。`Tn` は、常に複数形であったソース文（`1 samples`）を修正する場合があります。
 
 <a id="migrate"></a>
 ## 安全でない呼び出しを書き換える

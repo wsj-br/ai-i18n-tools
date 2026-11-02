@@ -94,8 +94,8 @@ Formatos de chamada, f-strings inseguras e configuração de localidade por fram
 | `Tp(context, source, args)` | Procura contexto + U+0004 + origem, então formata. |
 | `N(source)` | Retorna `source`. Extraído para que rótulos estáticos possam ser catalogados. |
 | `Loc[source]` | Indexador que chama `T`. `Loc` é um campo estático do tipo `StringSourceLocalizer`. |
-| `Configure(options)` | Define a localidade de origem, o modo estrito de chave ausente, um carregador de diretório ou fluxo e a lista de idiomas. |
-| `SupportedLocales` | Localidades carimbadas por `init`, com nomes nativos e em inglês. |
+| `Configure(options)` | Define o local de origem quando `SourceLocale` não está vazio. Cada chamada substitui `Strict`, `FlatDirectory` e `OpenLocale` (nulo limpa o diretório e o carregador de fluxo). `Locales` substitui a lista de idiomas somente quando o array não é nulo. |
+| `SupportedLocales` | `BuiltInLocales` até que um array `Locales` não nulo seja passado. Nome nativo e nome em inglês. Um array `Locales` nulo não restaura o carimbo. |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | Nome do formato CLDR das mesmas regras GNU que os arquivos `.po`. |
 

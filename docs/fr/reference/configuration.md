@@ -100,7 +100,7 @@ Traitement par lots des segments pour **translate-docs**, **translate-svg** et *
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs` (facultatif)
 
-Délai maximal d'attente pour chaque requête LLM, pour chaque fournisseur. `requestTimeout` correspond à des secondes entières ; `requestTimeoutMs` correspond à des millisecondes. Par défaut : **45** secondes lorsque les deux sont omis. Ne définissez qu'un seul des deux. Un fournisseur qui définit l'un ou l'autre champ utilise cette valeur à la place, pour ce fournisseur uniquement.
+Délai d'attente maximal pour chaque requête LLM, pour chaque fournisseur. `requestTimeout` correspond à des secondes entières ; `requestTimeoutMs` correspond à des millisecondes. Par défaut : **120** secondes si les deux sont omis. Définissez un seul des deux. Un fournisseur qui définit l'un ou l'autre champ utilise cette valeur à la place, pour ce fournisseur uniquement.
 
 ---
 
@@ -130,11 +130,11 @@ Chaque bloc `providers.<name>` accepte :
 - `temperature`
   Température d'échantillonnage. Par défaut : `0.2`.
 - `requestTimeout`
-  Temps maximal en secondes à attendre pour chaque requête à ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `45` secondes. Ne définissez qu'un seul de `requestTimeout` et `requestTimeoutMs` sur le même objet.
+  Délai d'attente maximal en secondes pour chaque requête adressée à ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est de `120` secondes. Définissez un seul des `requestTimeout` et `requestTimeoutMs` sur le même objet.
 - `requestTimeoutMs`
-  Temps maximal en millisecondes à attendre pour chaque requête à ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est `45000` (45 secondes). Ne définissez qu'un seul de `requestTimeout` et `requestTimeoutMs` sur le même objet.
+  Délai d'attente maximal en millisecondes pour chaque requête adressée à ce fournisseur. Remplace le `requestTimeout` / `requestTimeoutMs` de niveau supérieur. Si ni ce fournisseur ni la configuration de niveau supérieur ne définissent de délai d'attente, la valeur par défaut est `120000` (120 secondes). Définissez un seul des `requestTimeout` et `requestTimeoutMs` sur le même objet.
 - `pricing` (facultatif)
-  Coût par 1 million de jetons en USD pour l'ensemble du fournisseur : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé n'a pas de `usage.cost` signalé par le fournisseur (la plupart des fournisseurs autres qu'OpenRouter et Cheaper Inference), ce taux est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de la traduction et stocké dans la ligne `api_calls`.
+  Coût en USD par million de jetons pour l'ensemble du fournisseur : `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Lorsqu'un appel facturé n'a pas de `usage.cost` signalé par le fournisseur (la plupart des fournisseurs, à l'exception d'OpenRouter et de Cheaper Inference), ce taux est appliqué aux jetons d'entrée et de sortie de cet appel. Le montant est inclus dans le résumé de la traduction et stocké dans la ligne `api_calls`.
 
 La source du coût est résolue dans cet ordre :
 
@@ -307,11 +307,11 @@ Les chemins résolus `stringsJson`, `flatOutputDir` et de manifeste doivent êtr
   Chemin personnalisé vers le fichier `package.json` utilisé pour cette extraction de description facultative.
 - `uiExtractor.includeUiLanguageEnglishNames` (ou `reactExtractor.includeUiLanguageEnglishNames` hérité)
 
-Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englishName` du catalogue maître ui-languages fourni (construit à partir de `sourceLocale` + le `targetLocales` effectif du bloc) à `strings.json` lorsqu'il n'est pas déjà présent à partir de l'analyse source (mêmes clés de hachage). Ne lit pas `languagesManifestPath`.
+Lorsque `true` (par défaut `false`), `extract` ajoute également chaque `englishName` du catalogue maître ui-languages fourni (construit à partir de `sourceLocale` + le `targetLocales` effectif du bloc) à `strings.json` s'il n'est pas déjà présent à partir de l'analyse source (mêmes clés de hachage). Ne lit pas `languagesManifestPath`.
 - `uiExtractor.placeholderStyle`
-  `default` (mustache, champs de format Python et printf) ou `dotnet` (`{0}`, `{0,-10}`, `{0:format}` seulement). Dans le style `dotnet`, un signe de pourcentage est un texte littéral et les accolades doublées sont des accolades littérales. Le modèle `ui-dotnet` définit `dotnet`.
+  `default` (mustache, champs de format Python et printf) ou `dotnet` (`{0}`, `{0,-10}`, `{0:format}` uniquement). Dans le style `dotnet`, un signe de pourcentage est un texte littéral et les accolades doubles sont des accolades littérales. Le modèle `ui-dotnet` définit `dotnet`.
 - `uiExtractor.exclude`
-  Modèles Minimatch, relatifs à la racine du projet, supprimés après l'analyse. `bin`, `obj`, `.vs`, `TestResults` et `packages` sont déjà ignorés par nom de répertoire. Le modèle `ui-dotnet` exclut `**/Tests/**` et `**/*.Tests/**`.
+  Motifs minimatch, relatifs à la racine du projet, ignorés après l'analyse. `bin`, `obj`, `.vs`, `TestResults` et `packages` sont déjà ignorés par nom de répertoire. Les modèles `ui-dotnet` et `ui-dotnet-resx` excluent `**/Tests/**`, `**/*.Tests/**` et `**/TrExtension.cs`.
 
 `glossary.uiGlossary` et `glossary.uiGlossaryFromStringsJson` ne sont plus acceptés. Le chargement de la configuration échoue et l'erreur explique le remplacement : supprimez la clé. Les indices proviennent désormais de l'option `uiGlossary` de chaque bloc (par défaut `true`).
 

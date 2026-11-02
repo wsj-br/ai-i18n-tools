@@ -100,7 +100,7 @@ Segment batching for **translate-docs**, **translate-svg**, and **translate-json
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs` (optional)
 
-Maximum time to wait for each LLM request, for every provider. `requestTimeout` is whole seconds; `requestTimeoutMs` is milliseconds. Default: **45** seconds when both are omitted. Set only one of the two. A provider that sets either field uses that value instead, for that provider only.
+Maximum time to wait for each LLM request, for every provider. `requestTimeout` is whole seconds; `requestTimeoutMs` is milliseconds. Default: **120** seconds when both are omitted. Set only one of the two. A provider that sets either field uses that value instead, for that provider only.
 
 ---
 
@@ -130,9 +130,9 @@ Each `providers.<name>` block accepts:
 - `temperature`
   Sampling temperature. Default: `0.2`.
 - `requestTimeout`
-  Maximum time in seconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45` seconds. Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
+  Maximum time in seconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `120` seconds. Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
 - `requestTimeoutMs`
-  Maximum time in milliseconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `45000` (45 seconds). Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
+  Maximum time in milliseconds to wait for each request to this provider. Overrides the top-level `requestTimeout` / `requestTimeoutMs`. When neither this provider nor the top-level config sets a timeout, the default is `120000` (120 seconds). Set only one of `requestTimeout` and `requestTimeoutMs` on the same object.
 - `pricing` (optional)
   Provider-wide USD per 1M tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. When a billed call has no provider-reported `usage.cost` (most providers besides OpenRouter and Cheaper Inference), this rate is applied to that call's input and output tokens. The amount is included in the translation summary and stored on the `api_calls` row.
 
@@ -312,7 +312,7 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
 - `uiExtractor.placeholderStyle`
   `default` (mustache, Python format fields, and printf) or `dotnet` (`{0}`, `{0,-10}`, `{0:format}` only). In the `dotnet` style a percent sign is literal text and doubled braces are literal braces. The `ui-dotnet` template sets `dotnet`.
 - `uiExtractor.exclude`
-  Minimatch patterns, relative to the project root, dropped after the scan. `bin`, `obj`, `.vs`, `TestResults`, and `packages` are already skipped by directory name. The `ui-dotnet` template excludes `**/Tests/**` and `**/*.Tests/**`.
+  Minimatch patterns, relative to the project root, dropped after the scan. `bin`, `obj`, `.vs`, `TestResults`, and `packages` are already skipped by directory name. The `ui-dotnet` and `ui-dotnet-resx` templates exclude `**/Tests/**`, `**/*.Tests/**`, and `**/TrExtension.cs`.
 
 `glossary.uiGlossary` and `glossary.uiGlossaryFromStringsJson` are no longer accepted. Config load fails and the error explains the replacement: delete the key. Hints now come from each block's `uiGlossary` flag (default `true`).
 

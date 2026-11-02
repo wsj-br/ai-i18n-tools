@@ -94,8 +94,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `Tp(context, source, args)` | 컨텍스트 + U+0004 + 소스를 조회한 다음 서식을 지정합니다. |
 | `N(source)` | `source`을 반환합니다. 정적 레이블을 카탈로그화할 수 있도록 추출되었습니다. |
 | `Loc[source]` | `T`을 호출하는 인덱서. `Loc`는 `StringSourceLocalizer` 형식의 정적 필드입니다. |
-| `Configure(options)` | 원본 로케일, 엄격한 키 누락 모드, 디렉터리 또는 스트림 로더, 언어 목록을 설정합니다. |
-| `SupportedLocales` | `init`로 스탬프 처리된 로케일(기본 이름 및 영어 이름 포함). |
+| `Configure(options)` | `SourceLocale`이 비어 있지 않을 때 소스 로케일을 설정합니다. 모든 호출은 `Strict`, `FlatDirectory`, 및 `OpenLocale`를 대체합니다(null은 디렉터리와 스트림 로더를 지웁니다). `Locales`는 배열이 null이 아닐 때만 언어 목록을 대체합니다. |
+| `SupportedLocales` | `BuiltInLocales` null이 아닌 `Locales` 배열이 전달될 때까지. 기본 이름 및 영어 이름. null `Locales` 배열은 스탬프를 복원하지 않습니다. |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | `.po` 파일과 동일한 GNU 규칙에서 가져온 CLDR 형식 이름. |
 

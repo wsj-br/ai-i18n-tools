@@ -94,8 +94,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `Tp(context, source, args)` | コンテキスト + U+0004 + ソースを検索し、フォーマットします。 |
 | `N(source)` | `source` を返します。静的ラベルをカタログ化できるように抽出されています。 |
 | `Loc[source]` | `T` を呼び出すインデクサー。`Loc` は `StringSourceLocalizer` 型の静的フィールドです。 |
-| `Configure(options)` | ソースロケール、厳密なキー欠落モード、ディレクトリまたはストリームローダー、および言語リストを設定します。 |
-| `SupportedLocales` | `init` によってスタンプされた、ネイティブ名と英語名付きのロケール。 |
+| `Configure(options)` | `SourceLocale` が空でない場合にソースロケールを設定します。呼び出しごとに `Strict`、`FlatDirectory`、および `OpenLocale` が置き換えられます (null はディレクトリとストリームローダーをクリアします)。`Locales` は、配列が null でない場合にのみ言語リストを置き換えます。 |
+| `SupportedLocales` | `BuiltInLocales` は、null でない `Locales` 配列が渡されるまで。ネイティブ名と英語名。null の `Locales` 配列はスタンプを復元しません。 |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`。 |
 | `PluralForm(locale, n)` | `.po` ファイルと同じ GNU ルールからの CLDR 形式名。 |
 

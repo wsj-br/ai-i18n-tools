@@ -310,6 +310,82 @@ describe("runTranslateUI", () => {
     expect(written.brand?.translated?.hi).toBe("GitHub");
   });
 
+  it("keeps plain UI translations on disk when plural translation fails", async () => {
+    fs.writeFileSync(
+      path.join(tmp, "strings.json"),
+      JSON.stringify(
+        {
+          save: { source: "Save" },
+          samples: {
+            plural: true,
+            source: "{{count}} sample",
+            translated: {
+              en: { one: "{{count}} sample", other: "{{count}} samples" },
+            },
+            models: { en: "plural-source" },
+          },
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    const fetchMock = vi
+      .fn()
+      .mockImplementation((reqUrl: string | URL | Request, init?: RequestInit) => {
+        const u =
+          typeof reqUrl === "string" ? reqUrl : reqUrl instanceof URL ? reqUrl.href : reqUrl.url;
+        if (u.includes("/models")) {
+          return Promise.resolve(
+            mockJsonResponse({
+              data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+            })
+          );
+        }
+        const payload = JSON.parse(String(init?.body)) as {
+          messages?: Array<{ content: string | Array<{ text?: string }> }>;
+        };
+        const userMessage = payload.messages?.[payload.messages.length - 1]?.content;
+        const userPrompt = Array.isArray(userMessage)
+          ? String(userMessage[0]?.text ?? "")
+          : String(userMessage ?? "");
+        const content = userPrompt.includes("Source-language plural strings")
+          ? "not-json"
+          : '["Speichern"]';
+        return Promise.resolve(
+          mockJsonResponse({
+            id: "r1",
+            choices: [{ message: { content }, finish_reason: "stop" }],
+            usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+          })
+        );
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      runTranslateUI(buildConfig(), {
+        cwd: tmp,
+        locales: ["de"],
+        force: false,
+        dryRun: false,
+        verbose: false,
+      })
+    ).rejects.toThrow(/plural/i);
+
+    const written = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as {
+      save?: { translated?: Record<string, string> };
+      samples?: { translated?: Record<string, unknown> };
+    };
+    expect(written.save?.translated?.de).toBe("Speichern");
+    expect(written.samples?.translated?.de).toBeUndefined();
+
+    const flat = JSON.parse(
+      fs.readFileSync(path.join(tmp, "locales", "de.json"), "utf8")
+    ) as Record<string, string>;
+    expect(flat.Save).toBe("Speichern");
+  });
+
   describe("plural Step 0 under --force", () => {
     const PLURAL_FORMS = {
       zero: "{{count}} nuevo",

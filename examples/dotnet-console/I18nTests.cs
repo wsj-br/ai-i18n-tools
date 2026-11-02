@@ -103,6 +103,50 @@ public class I18nTests
         Assert.Equal("Light", I18n.N("Light"));
     }
 
+    [Fact]
+    public void SecondConfigureClearsFlatDirectoryAndNullLocalesKeepsTheList()
+    {
+        var previous = I18n.SupportedLocales.ToArray();
+        var dir = Path.Combine(Path.GetTempPath(), "ai-i18n-flat-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        try
+        {
+            File.WriteAllText(Path.Combine(dir, "de.json"), "{\"Save\":\"VonPlatte\"}");
+            I18n.Configure(new I18nOptions
+            {
+                FlatDirectory = dir,
+                Locales = new[] { new LocaleInfo("de", "Deutsch", "German") },
+            });
+            I18n.SetLocale("de");
+            Assert.Equal("VonPlatte", I18n.T("Save"));
+            Assert.Equal("de", Assert.Single(I18n.SupportedLocales).Code);
+
+            I18n.Configure(new I18nOptions
+            {
+                Locales = new[]
+                {
+                    new LocaleInfo("en", "English", "English"),
+                    new LocaleInfo("fr", "Français", "French"),
+                },
+            });
+            I18n.SetLocale("de");
+            Assert.Equal("Speichern", I18n.T("Save"));
+            Assert.Equal(new[] { "en", "fr" }, I18n.SupportedLocales.Select(row => row.Code).ToArray());
+
+            I18n.Configure(new I18nOptions());
+            Assert.Equal(new[] { "en", "fr" }, I18n.SupportedLocales.Select(row => row.Code).ToArray());
+        }
+        finally
+        {
+            I18n.Configure(new I18nOptions { Locales = previous });
+            I18n.SetLocale("en");
+            if (Directory.Exists(dir))
+            {
+                Directory.Delete(dir, true);
+            }
+        }
+    }
+
     private static string Md5Eight(string text)
     {
         var bytes = System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(text));

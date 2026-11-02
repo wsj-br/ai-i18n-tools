@@ -143,6 +143,17 @@ describe("ui-dotnet scaffold", () => {
     expect(
       isExcludedRelPath("Tests/MainViewModelTests.cs", parsed.ui[0]?.uiExtractor?.exclude)
     ).toBe(true);
+    expect(
+      isExcludedRelPath("Views/TrExtension.cs", parsed.ui[0]?.uiExtractor?.exclude)
+    ).toBe(true);
+    const resx = parseI18nConfig({
+      ...initConfigTemplates.uiDotnetResx(),
+      provider: "openrouter",
+      providers: { openrouter: { translationModels: ["test-model"] } },
+    });
+    expect(
+      isExcludedRelPath("Views/TrExtension.cs", resx.ui[0]?.uiExtractor?.exclude)
+    ).toBe(true);
   });
 
   it("matches the C# plural selector fixture to the GNU table", () => {

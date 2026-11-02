@@ -76,11 +76,11 @@ ai-i18n-tools init -t ui-dotnet -P openrouter
 
 Passe `--namespace` quando o namespace do projeto não for o que `init` imprime em `I18n.cs`. Com um `.csproj` no diretório e nenhum `--namespace`, `init` usa o `RootNamespace` desse arquivo, ou o nome do arquivo do projeto. Caso contrário, o namespace é `AiI18n`.
 
-Em seguida, edite `sourceLocale` e `targetLocales` em `ai-i18n-tools.config.json`. `sourceLocale` é o idioma das strings na fonte. Qualquer idioma BCP-47 é válido; o scaffold usa `en`. A mesma lista é carimbada em `I18n.cs` como `BuiltInLocales`, entre os marcadores `ai-i18n-tools-locales`, e `SourceLocale` é uma constante. `SupportedLocales` lê esse array. Depois de alterar a configuração, atualize o carimbo ou passe um novo array `Locales` para `I18n.Configure`. Não execute novamente `init` no aplicativo para atualizar o helper.
+Em seguida, edite `sourceLocale` e `targetLocales` em `ai-i18n-tools.config.json`. `sourceLocale` é o idioma das strings na origem. Qualquer idioma BCP-47 é válido; o scaffold usa `en`. `init` carimba essa lista em `I18n.cs` como `BuiltInLocales`, entre os marcadores `ai-i18n-tools-locales`, e `SourceLocale` é uma constante. Esse carimbo não é o menu de idiomas. `extract` reescreve `locales/ui-languages.json` da configuração, e o aplicativo lê esse arquivo na inicialização. Não execute novamente `init` no aplicativo para atualizar o helper.
 
 Execute `init` uma vez. Ele reescreve `ai-i18n-tools.config.json` toda vez, então uma segunda execução descarta as edições que você fez. Se `I18n.cs` já contiver o marcador `ai-i18n-tools-i18n-cs`, o projeto já está inicializado: pule esta etapa. `init` não sobrescreve um `I18n.cs` existente e não edita o `.csproj`.
 
-`init` define `ui.sourceRoots` como `"."`, então `extract` escanearia todo o repositório. O prompt o restringe ao código do seu aplicativo (manualmente, isso é [Etapa 1](#step-1-place-the-helper-and-embed-the-catalogs)). A varredura já ignora diretórios nomeados `bin`, `obj`, `.vs`, `TestResults` e `packages`, e o template exclui `**/Tests/**` e `**/*.Tests/**`.
+`init` define `ui.sourceRoots` como `"."`, então `extract` escanearia o repositório inteiro. O prompt o restringe ao código da sua aplicação (manualmente, ou seja, [Etapa 1](#step-1-place-the-helper-and-embed-the-catalogs)). A varredura já ignora diretórios nomeados `bin`, `obj`, `.vs`, `TestResults` e `packages`, e o template exclui `**/Tests/**`, `**/*.Tests/**` e `**/TrExtension.cs`.
 
 Formas de chamada: [aplicativos .NET](/pt-BR/guide/ui-strings/dotnet). Todas as outras chaves de configuração: [Configuração](/pt-BR/reference/configuration).
 
@@ -120,14 +120,20 @@ template instead. Do not add `I18n.cs` beside that loader.
 
 - Do not read or search the ai-i18n-tools source. This prompt is complete.
 - Never read, print, or write API keys, `.env` files, or the shell environment.
-- Do not run `translate-ui`, `suggest-models`, or `sync`. They call the
-  translation API and cost money. The user runs them after reviewing your work.
+- Do not run `translate-ui`, `suggest-models`, `sync`, or `glossary-generate`.
+  The first three call the translation API and cost money. `glossary-generate`
+  only writes an empty CSV and does not call the translator. The user runs
+  them after reviewing your work, and fills `glossary-user.csv` before the
+  first `translate-ui`. Do not read `.env` or the environment to fill it.
 - Do not translate, reword, or rename source text. Do not edit `I18n.cs`
   except `SourceLocale` and the `BuiltInLocales` array between the
-  `ai-i18n-tools-locales` markers, and only when `sourceLocale` or
-  `targetLocales` changed after init. Do not edit generated files
-  (`strings.json`, per-locale JSON, `ui-languages.json`, `.resx`). Do not add
-  another helper module.
+  `ai-i18n-tools-locales` markers, and only when `sourceLocale` drifted after
+  init. That stamp is not the language menu. Loading
+  `locales/ui-languages.json` does not require editing the helper. Do not edit
+  generated files (`strings.json`, per-locale JSON, `ui-languages.json`,
+  `.resx`). Do not add another helper module.
+- Follow that project's changelog and user-doc rules in the same session when
+  visible behaviour changes.
 - Do not introduce semantic keys (`LoginButton`, `nav.home`). The literal in
   `T("…")` is the source-language sentence and the catalog key.
 - Do not reformat unrelated code. Keep existing blank lines. Run the project's
@@ -151,18 +157,20 @@ uses them, the config points at them, and the project embeds `locales/*.json`.
    application project instead of `"."`.
 4. Add `global using static <Namespace>.I18n;` in that project, or call
    `I18n.T` at each site. The namespace is the one already in `I18n.cs`.
-5. `BuiltInLocales` inside `I18n.cs`, between the `ai-i18n-tools-locales`
-   markers, is the list stamped at init. `SupportedLocales` reads it. If
-   `sourceLocale` or `targetLocales` was edited after that, update
-   `SourceLocale` and that array, or call `I18n.Configure` with a new
-   `Locales` array. Do not rewrite the rest of the helper.
+5. `BuiltInLocales`, between the `ai-i18n-tools-locales` markers, is only the
+   list stamped at init. It is not the language menu. If `sourceLocale`
+   drifted after init, update the `SourceLocale` const so it matches the
+   config. Leave the rest of the helper alone. Part 3 loads the menu from
+   `locales/ui-languages.json`.
 6. Run `ai-i18n-tools extract` and confirm the catalog is in the new place.
 
 ## Part 2 — Wrap strings
 
 The literal in `T("…")` is the source-language sentence and the catalog key.
-With the source locale active, the app must behave exactly as before. Text
-that is already wrapped needs no change.
+With the source locale active, the app must behave exactly as before. The
+exception is `Tn`: it may correct a sentence that was always plural
+(`1 samples` becomes the singular form). Text that is already wrapped needs
+no change.
 
 - Call shapes: `T("Sign in")`, `T("Saved to {0}", path)`,
   `Tn("1 sample", "{0} samples", count)`, `Tp("menu", "Open")`, `N("Light")`.
@@ -185,8 +193,14 @@ that is already wrapped needs no change.
   A literal that contains an apostrophe uses `&quot;` so the XML attribute can
   stay in double quotes: `Content="{loc:Tr &quot;Don't&quot;}"`.
 - Avalonia, WPF, and MAUI each have their own markup-extension base class. Add
-  a `TrExtension` in the app. `ProvideValue` returns `I18n.T(Text)`. Do not
-  reference those UI assemblies from `I18n.cs`.
+  a `TrExtension` in the app. Do not reference those UI assemblies from
+  `I18n.cs`. `ProvideValue` returns `I18n.T(Text)` and sets that same property
+  again on `LocaleChanged`, so a screen that is already open updates.
+  Unsubscribe when the control leaves the visual tree. Add `**/TrExtension.cs`
+  to `ui.uiExtractor.exclude`. `extract` otherwise warns that `T(Text)` is not
+  a literal. The XAML literals are already extracted through `Tr`. `{loc:Tr}`
+  can only call `T`. When one short word has two meanings, set those controls
+  in code with `Tp`.
 - Wrap text a person sees: labels, titles, captions, messages, validation
   text that is shown, progress, accessibility names, dialogs. Also review
   returned labels, dictionaries, variable-backed captions, and XAML element
@@ -202,8 +216,28 @@ const string PresetLast12 = "Last 12 months";
 string PresetCaption() => T("Last 12 months");
 ```
 
-- Tray or menu items found by their header should use `Tp` and a stable tag,
-  not the translated header.
+- `StringFormat` on a binding (`StringFormat='Cursor {0}'`) is invisible to
+  `extract`. Move it to the view model as `T("Cursor {0}", value)`, and raise
+  `PropertyChanged` from `LocaleChanged`.
+- A combo bound to an enum (`System`, `Light`, `Dark`) shows `ToString()`.
+  Keep the stored enum. Return `T("Light")` from the caption, and rebuild the
+  item list on `LocaleChanged` so the old caption is not cached.
+- Tray or menu items use `Tp("tray", "Open")` and a stable `CommandParameter`.
+  Match the parameter, not the translated header.
+- An error built in a service and shown later stays in the source language
+  until the display site. Store the English sentence. The display site maps
+  known sentences through `T`, so a later `LocaleChanged` can translate them.
+  `T()` at the moment of the failure freezes that sentence.
+- Linux `.desktop` `Name=` and `Comment=` are launcher metadata. Leave them in
+  the source language. Translating `Name=` replaces the desktop file's default
+  name.
+- Compact durations that are compared before display (`2d`, `7h 47m`) stay as
+  tokens. Translate `T("now")` and `T("in {0}", duration)` at the display
+  site. Do not translate the tokens inside the comparison.
+- A literal with leading or trailing spaces (`Updated: `) is an extract
+  warning. Move the space into the format string (`T("Updated: {0}", value)`)
+  or into the layout. The helper trims the catalog key and puts the spaces
+  back. Clear the warning anyway.
 - Text sent to a model stays in the source locale even when it is built from
   labels. Build that text before any user-locale `SetLocale`, or format it
   from the source strings. Do not change the static locale around asynchronous
@@ -227,6 +261,9 @@ comparisons, or `Path` calls. A clean report does not prove every sentence is
 wrapped, so keep scanning. Do not commit the report.
 
 A phrase that looks like a plural (`{0} samples`) should be `Tn`, not `T`.
+`Tn` may change the source-locale sentence when the old text was always
+plural (`1 samples`).
+
 Lines the command leaves in place (`await`, a raw `$$"""` string, a `? :`
 hole, `ref` or `out`, a concatenation with no literal) are fixed by hand.
 
@@ -238,48 +275,97 @@ part: `--lang <code>` (and `-L` when that name is free), not a widget. Do not
 read `AI_I18N_LANG`. That variable is only for the ai-i18n-tools CLI.
 
 Goal: one chosen language applies to every `T()` in that process, and a screen
-can remember the choice. Accept only codes from `I18n.SupportedLocales`
-(`Code`, `NativeName`).
+can remember the choice. Persist the locale code, not the native name.
 
-- Restore the saved locale at startup, before the first `T`. Set
-  `CultureInfo.CurrentUICulture` and `CultureInfo.CurrentCulture` to that
-  culture, then call `I18n.SetLocale`. `SetLocale` raises `LocaleChanged`
-  immediately, so the cultures have to be set first. `string.Format` uses the
-  current UI culture, so `{0:C}` follows it.
-- Add a control labelled `T("Language")` whose options come from
-  `SupportedLocales`. On change, set both cultures, then call `SetLocale`, and
-  persist the choice.
-- Refresh visible text from `LocaleChanged`. View-model properties that call
-  `T` raise `PropertyChanged` from that event. WinForms and other toolkits
-  that copy text into controls rebuild those properties in the handler. A
-  markup extension that returns a plain string updates the next time the view
-  is built.
-- When the framework has a flow direction, set it from
-  `I18n.IsRightToLeft(code)`.
-- Do not use this helper as a per-user selector in a multi-user server. Keep
-  `IStringLocalizer` or `ResourceManager` for that case.
+Load the language menu from `locales/ui-languages.json` on disk at startup,
+before the first `T()`. Search upward from `AppContext.BaseDirectory`, then
+from the current directory, at most 8 directories each. The first
+`locales/ui-languages.json` wins. Map `code`, `label`, and `englishName` to
+`LocaleInfo` (`label` is `NativeName`) and pass that array to `I18n.Configure`
+as `Locales`. When the file is found, set `FlatDirectory` to that `locales`
+directory in the same call. `Configure` replaces `Strict`, `FlatDirectory`,
+and `OpenLocale` on every call, even when the caller only set `Locales`. A
+later call that sets the language list clears a `FlatDirectory` set earlier.
+`Locales: null` does not restore the previous list.
+
+If `ui-languages.json` is missing, pass a one-element `Locales` array for the
+source language and do not set `FlatDirectory`. The menu is the source
+language only. Do not show `BuiltInLocales`. In development, `FlatDirectory`
+is the `locales` folder that contained the manifest, so `sync` updates
+sentences without a rebuild. A published build with no manifest nearby uses
+the embedded catalogs and shows the source language only. An installer that
+should follow `sync` must ship `ui-languages.json` and the locale JSON next
+to the app.
+
+Accept only codes from the list just passed. Set
+`CultureInfo.CurrentUICulture` and `CultureInfo.CurrentCulture`, then call
+`I18n.SetLocale`, before the first `T()`. `SetLocale` raises `LocaleChanged`
+immediately, so the cultures have to be set first. `string.Format` uses the
+current UI culture, so `{0:C}` follows it. Restore the saved code the same
+way at startup.
+
+Add a control labelled `T("Language")` whose options are that list (`Code`,
+`NativeName`). On change, set both cultures, then call `SetLocale`, and
+persist the code.
+
+On `LocaleChanged`, refresh view-model properties that call `T`. WinForms and
+other toolkits that copy text into controls rebuild those properties in the
+handler. For Avalonia, WPF, and MAUI, `TrExtension` returns `I18n.T(Text)` and
+updates the target property on `LocaleChanged`. Exclude `TrExtension.cs` from
+extraction. When the framework has a flow direction, set it from
+`I18n.IsRightToLeft(code)`.
+
+Avalonia only: ignore `SelectionChanged` unless `e.Source` is the control that
+owns the handler. Do not assign `ItemsSource`, `SelectedItem`, or other combo
+state inside a `SelectionChanged` handler, including from `LocaleChanged` if
+that event was raised by the combo. Post the refresh with
+`Dispatcher.UIThread.Post` so it runs after the selection event returns. Guard
+the language handler with a flag while the code itself sets `SelectedItem`,
+or the refresh will set the locale again. Avalonia will crash (exit code 139,
+`SIGSEGV`, no managed stack in `crash.log`) if a parent `TabControl` handles
+a child combo's `SelectionChanged` by setting `ItemsSource` again.
+
+Do not use this helper as a per-user selector in a multi-user server. Keep
+`IStringLocalizer` or `ResourceManager` for that case.
 
 ## Verify and report
 
 The project's build and tests pass. `extract` writes a non-empty catalog of
 the sentences you wrapped, with no warnings. With the source locale, the
-output is unchanged. A missing key returns the source string unless `Strict`
-is set. A bad format in a translation can throw `FormatException`. A dropped
+output is unchanged, except a `Tn` singular that corrects a sentence that was
+always plural. A missing key returns the source string unless `Strict` is
+set. A bad format in a translation can throw `FormatException`. A dropped
 `{0}` can omit the value. `string.Format` does not fall back to the source
 template.
+
+`I18n` and the two cultures are process-global. xUnit runs test classes in
+parallel by default. When a test calls `SetLocale`, turn assembly
+parallelization off and restore `CurrentCulture`, `CurrentUICulture`, the
+locale, and the previous `Locales` array before the test returns. `Configure`
+with `Locales: null` does not restore the list. With a locale file present,
+one test sets a target locale and asserts that a validation message and a
+caption change, while the stored option value stays in the source language,
+then restores that static state. Do not add a test that only checks the menu
+against `ui-languages.json` unless the user asks. If `dotnet` is not
+installed, say the runtime check was skipped.
 
 Report the files changed, each string you skipped with file, line, surface,
 and reason, the same word used with different meanings, sentences built from
 translated pieces, plurals left as one string, and any `T()` that runs at
-startup. With a locale file present, one test sets a target locale and asserts
-that a validation message and a caption change, while the stored option value
-stays in the source language. If `dotnet` is not installed, say the runtime
-check was skipped.
+startup.
 
 Then list the commands for the user, and do not run them:
-`ai-i18n-tools suggest-models` (optional), `ai-i18n-tools translate-ui`, then
-restart the app. Remind the user to fill `glossary-user.csv` before the first
-translation.
+`ai-i18n-tools suggest-models` (optional), `ai-i18n-tools glossary-generate`
+when `glossary-user.csv` is missing, then fill that file,
+`ai-i18n-tools translate-ui`, then restart the app. With `FlatDirectory`
+pointed at the `locales` folder, a restart picks up new sentences. A rebuild
+is needed only when the manifest was not found and the app is still reading
+embedded JSON. Also list these checks, and do not perform them: change
+`targetLocales`, run `sync`, and launch with no further code edit (the menu
+matches `ui-languages.json` and the sentences match the new locale file);
+hide `ui-languages.json` and launch again (the menu is the source language
+only); switch language from a combo inside a `TabControl` with that page
+already open (the process stays up and the open labels change).
 ````
 
 <a id="review-the-result"></a>
@@ -287,13 +373,13 @@ translation.
 
 O agente termina com um relatório. Verifique-o antes de traduzir:
 
-- O diff. O texto encapsulado deve ser lido da mesma forma que antes, sem reformatação não relacionada. `git diff --stat` mostra o quanto mudou. O posicionamento do helper, o item `EmbeddedResource`, as chamadas encapsuladas e o seletor de idioma são as edições esperadas.
-- Os catálogos gerados (`strings.json`, JSON por localidade, `ui-languages.json`) permanecem intocados, exceto pelo que `extract` escreveu. `I18n.cs` permanece intocado, exceto por um carimbo de localidade que você pediu para atualizar.
-- `ai-i18n-tools extract` é executado sem problemas, e `strings.json` lista as frases que você espera. Nenhum aviso permanece, e nenhum literal ainda contém `{name}`.
-- A execução de teste (dry run) de `migrate-dotnet-i18n` não lista nada que precise ser corrigido. Um relatório limpo não prova que todas as frases foram encapsuladas. As strings ignoradas no relatório do agente são o restante dessa verificação.
-- Seus testes são aprovados, e o aplicativo parece o mesmo no idioma de origem.
+- O diff. O texto encapsulado deve ser lido da mesma forma que antes, sem reformatação não relacionada. `git diff --stat` mostra o quanto mudou. O posicionamento do helper, o item `EmbeddedResource`, as chamadas encapsuladas e a troca de idioma são as edições esperadas.
+- Catálogos gerados (`strings.json`, JSON por localidade, `ui-languages.json`) não são tocados, exceto pelo que `extract` escreveu. `I18n.cs` não é tocado, exceto por um carimbo `SourceLocale` quando essa constante havia se desviado. O menu é carregado de `ui-languages.json`. Uma chamada `Configure` define `Locales` e `FlatDirectory` juntos quando esse arquivo foi encontrado. `TrExtension` é excluído da extração e atualiza a visualização aberta em `LocaleChanged`.
+- `ai-i18n-tools extract` executa limpo, e `strings.json` lista as frases que você espera. Nenhum aviso permanece, e nenhum literal ainda contém `{name}`.
+- A execução de teste de `migrate-dotnet-i18n` não lista nada que precise ser corrigido. Um relatório limpo não prova que todas as frases foram encapsuladas. As strings ignoradas no relatório do agente são o restante dessa verificação.
+- Seus testes passam, e o aplicativo parece o mesmo no idioma de origem.
 - Nenhum script descartável ou `migrate-dotnet-i18n-report.md` foi deixado para trás.
-- `SourceLocale` em `I18n.cs` é igual a `sourceLocale` na configuração, caractere por caractere. `BuiltInLocales` lista os mesmos idiomas que a configuração.
+- `SourceLocale` em `I18n.cs` é igual a `sourceLocale` na configuração, caractere por caractere. O menu de idiomas não lê `BuiltInLocales`.
 
 Strings que o agente perdeu aparecem como texto que permanece no idioma de origem posteriormente.
 
@@ -332,10 +418,12 @@ Reinicie o aplicativo, mude para um idioma de destino e abra uma tela com alguma
 
 `SetLocale` percorre `CultureInfo.Parent` até que um catálogo seja aberto (`pt-BR` pode carregar `pt.json`). Recursos incorporados são usados quando nem `OpenLocale` nem `FlatDirectory` estão definidos. Um `FlatDirectory` configurado não recorre ao JSON incorporado quando um arquivo está faltando.
 
+Quando a inicialização encontrou `locales/ui-languages.json`, `FlatDirectory` é esse diretório, então as frases que você vê são os arquivos que `sync` acabou de escrever. Oculte esse manifesto e comece novamente: o menu oferece apenas o idioma de origem, e as strings vêm dos recursos incorporados na última compilação. Uma compilação instalada que deve seguir `sync` precisa enviar `ui-languages.json` e o JSON de localidade ao lado do aplicativo.
+
 <a id="keep-it-translated"></a>
 ## Mantenha traduzido
 
-Execute novamente `ai-i18n-tools sync` (ou `extract` e depois `translate-ui`) após alterar o texto de origem. O cache significa que apenas strings novas ou alteradas vão para o modelo. Execute-o na CI para que as traduções não se desviem. Recompile ou reinicie o aplicativo após uma execução de tradução para que o JSON incorporado seja carregado. `ai-i18n-tools dashboard` abre o [Painel de Tradução](/pt-BR/guide/translation-dashboard/) para revisar as traduções.
+Execute novamente `ai-i18n-tools sync` (ou `extract` e depois `translate-ui`) após alterar o texto de origem. O cache significa que apenas strings novas ou alteradas vão para o modelo. Execute-o na CI para que as traduções não se desviem. Com `FlatDirectory` apontado para a pasta `locales`, reinicie o aplicativo. Uma reconstrução é necessária apenas quando o manifesto não foi encontrado e o aplicativo ainda está lendo o JSON incorporado. `ai-i18n-tools dashboard` abre o [Painel de Tradução](/pt-BR/guide/translation-dashboard/) para revisar as traduções.
 
 Para atualizar um `I18n.cs` copiado, crie o mesmo modelo em um diretório descartável e copie apenas o arquivo gerado que você pretende substituir. Não execute novamente `init` no aplicativo para atualizar o helper.
 
@@ -361,7 +449,7 @@ Siga estas etapas se preferir fazer as alterações você mesmo, ou se quiser sa
 | `I18n.cs` | O helper que seu código chama (`T`, `Tn`, `Tp`, `SetLocale`) | Não. Ele é gerado. `init` não o sobrescreverá |
 | `locales/strings.json` | O cache de extração. O aplicativo nunca o lê | Não. `extract` o escreve |
 | `locales/<code>.json` | As traduções que o aplicativo carrega, um arquivo por idioma | Não. `translate-ui` as escreve |
-| `locales/ui-languages.json` | A lista de idiomas para a ferramenta. O helper usa `BuiltInLocales` em `I18n.cs` | Não. `extract` o escreve |
+| `locales/ui-languages.json` | O menu de idiomas. O aplicativo lê `code`, `label` e `englishName` na inicialização | Não. `extract` o escreve |
 
 Mova `I18n.cs` e `locales/` para o projeto do aplicativo. Adicione o incorporado a esse `.csproj` e deixe o restante do arquivo intocado:
 
@@ -387,7 +475,7 @@ Atualize a configuração para o novo local e aponte `sourceRoots` para o projet
 
 Adicione `global using static MyApp.I18n;` (use o namespace impresso em `I18n.cs`) ou chame `I18n.T` em cada local.
 
-`SourceLocale` no auxiliar deve ser igual a `sourceLocale` na configuração. `BuiltInLocales`, entre os marcadores `ai-i18n-tools-locales`, é a lista `init` carimbada. `SupportedLocales` a lê. Depois de alterar `targetLocales`, atualize esse array ou passe um novo array `Locales` para `I18n.Configure`. Crie um diretório descartável quando precisar de um auxiliar novo. Não execute `init` novamente aqui.
+`SourceLocale` no helper deve ser igual a `sourceLocale` na configuração. `BuiltInLocales`, entre os marcadores `ai-i18n-tools-locales`, é a lista que `init` carimbou. Não é o menu. Depois de alterar `targetLocales`, `extract` reescreve `ui-languages.json`, e o aplicativo lê esse arquivo. Crie um diretório descartável quando precisar de um helper novo. Não execute novamente `init` aqui.
 
 Confirme com `ai-i18n-tools extract`. O catálogo deve aparecer na nova pasta `locales/`. Espere 0 strings até que algo seja encapsulado.
 
@@ -427,20 +515,40 @@ XAML e AXAML:
 
 O prefixo é ignorado. `{Binding}` e `{StaticResource}` são deixados como estão. O texto escrito como conteúdo de elemento não é extraído. Um literal que contém um apóstrofo é escrito com `&quot;` para que o atributo possa permanecer entre aspas duplas.
 
-Avalonia, WPF e MAUI fornecem cada um sua própria classe base `MarkupExtension`. Um formato, no projeto do aplicativo:
+Avalonia, WPF e MAUI fornecem cada um sua própria classe base `MarkupExtension`. O helper não referencia esses assemblies. `ProvideValue` retorna `I18n.T(Text)` e define essa propriedade novamente em `LocaleChanged`, então cancela a inscrição quando o controle sai da árvore visual. Uma forma Avalonia (`IProvideValueTarget` está em `Avalonia.Metadata`):
 
 ```csharp
 public sealed class TrExtension : MarkupExtension
 {
     public TrExtension(string text) { Text = text; }
     public string Text { get; }
-    public override object ProvideValue(IServiceProvider serviceProvider) => I18n.T(Text);
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var text = I18n.T(Text);
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target
+            && target.TargetObject is AvaloniaObject control
+            && target.TargetProperty is AvaloniaProperty property)
+        {
+            void Refresh() => control.SetValue(property, I18n.T(Text));
+            I18n.LocaleChanged += Refresh;
+            if (control is StyledElement element)
+            {
+                element.DetachedFromVisualTree += (_, _) => I18n.LocaleChanged -= Refresh;
+            }
+        }
+        return text;
+    }
 }
 ```
 
-Frases formatadas permanecem em C# (`T("Saved to {0}", path)`), o que mantém o extrator em um único literal. A mesma chamada funciona a partir de um view model, uma dica de ferramenta da bandeja e uma caixa de diálogo.
+WPF e MAUI fazem o mesmo com seus próprios tipos de propriedade. Adicione `**/TrExtension.cs` a `ui.uiExtractor.exclude`. `T(Text)` não é um literal, e os literais XAML já são extraídos através de `Tr`. `{loc:Tr}` só pode chamar `T`. Dois significados de uma palavra curta são definidos no código com `Tp`.
 
-Um valor que é armazenado e exibido mantém o valor armazenado no idioma de origem. Traduza a legenda quando o controle for construído. `N("Last 12 months")` existe para que um campo estático possa conter um literal que o extrator vê. `T()` em um dicionário estático é executado uma vez, no primeiro carregamento de tipo, e permanece nesse idioma.
+Frases formatadas permanecem em C# (`T("Cursor {0}", value)`), o que mantém o extrator em um único literal. `StringFormat` em uma ligação é invisível para `extract`. A mesma chamada funciona a partir de um view model, uma dica de ferramenta da bandeja e um diálogo. Acione `PropertyChanged` de `LocaleChanged` para strings de view model.
+
+Um valor que é armazenado e exibido mantém o valor armazenado no idioma de origem. Uma caixa de combinação de enumeração mantém a enumeração e retorna `T("Light")` de sua legenda, então reconstrói os itens em `LocaleChanged`. `N("Last 12 months")` existe para que um campo estático possa conter um literal que o extrator vê. `T()` em um dicionário estático é executado uma vez, no primeiro carregamento do tipo, e permanece nesse idioma. Um serviço armazena a frase de erro em inglês. O local de exibição mapeia frases conhecidas através de `T`, para que uma alteração de localidade posterior possa traduzi-las. `T()` na falha congela essa frase.
+
+Um item da bandeja usa `Tp("tray", "Open")` e um `CommandParameter` estável. Corresponda ao parâmetro, não ao cabeçalho. `.desktop` `Name=` e `Comment=` do Linux permanecem no idioma de origem. Tokens de duração que são comparados (`2d`, `7h 47m`) permanecem sem tradução. Traduza `T("now")` e `T("in {0}", duration)` onde o texto é exibido. Um literal com um espaço inicial ou final (`Updated: `) ainda é um aviso de extração. Mova o espaço para a string de formato ou para o layout. `Tn` pode alterar uma frase de origem que sempre foi plural (`1 samples`).
 
 Deixe estes como estão: logs, nomes de propriedades JSON, nomes de arquivos, `nameof`, argumentos de atributo, chaves de objeto usadas como identificadores e texto de exceção que o programa corresponde em vez de exibir.
 
@@ -472,7 +580,7 @@ ai-i18n-tools migrate-dotnet-i18n --write
 ai-i18n-tools extract
 ```
 
-Execute a execução de teste novamente. Pare quando não listar edições e, em seguida, execute os testes do projeto. Linhas deixadas no lugar (`await`, uma string bruta interpolada, um "buraco" condicional, `ref` ou `out`, uma concatenação sem literal, um `IFormatProvider` passado para `string.Format`) são corrigidas manualmente. Uma frase que parece um plural pertence a `Tn`. `I18n.cs` gerado é ignorado. Exclua o relatório ou ignore-o com git.
+Execute a simulação novamente. Pare quando não listar edições, então execute os testes do projeto. Linhas deixadas no lugar (`await`, uma string bruta interpolada, um buraco condicional, `ref` ou `out`, uma concatenação sem literal, um `IFormatProvider` passado para `string.Format`) são corrigidas manualmente. Uma frase que parece plural pertence a `Tn`, o que pode corrigir uma frase de origem que sempre foi plural. `I18n.cs` gerado é ignorado. Exclua o relatório ou ignore-o com git.
 
 `--wrap` também marca XAML não marcado `Text`, `Header`, `Content` e os outros atributos de rótulo como `{loc:Tr '…'}`, além de atribuições C# cujo nome termina em `Text`, `Title` ou `Message`, e `MessageBox.Show`. Sem `--write`, isso é uma auditoria. Ele não edita logs, atributos, `nameof`, comparações ou chamadas `Path`.
 
@@ -481,7 +589,11 @@ Um relatório sem edições significa que as chamadas encapsuladas são seguras.
 <a id="step-4-add-a-language-switch"></a>
 ## Passo 4: Adicionar um seletor de idioma
 
-Defina as culturas antes de `SetLocale`, porque `LocaleChanged` é disparado dentro dessa chamada:
+Antes do primeiro `T()`, encontre `locales/ui-languages.json`. Pesquise para cima a partir de `AppContext.BaseDirectory`, então a partir do diretório atual, no máximo 8 diretórios cada. O primeiro arquivo vence. Analise `code`, `label` e `englishName` em `LocaleInfo` (`label` é `NativeName`). Chame `Configure` uma vez com esse array como `Locales` e com `FlatDirectory` definido para o diretório `locales` que continha o arquivo. `Configure` substitui `Strict`, `FlatDirectory` e `OpenLocale` em cada chamada. Uma chamada posterior que apenas define `Locales` limpa `FlatDirectory`. `Locales: null` não restaura a lista anterior.
+
+Se o arquivo estiver faltando, passe um array `Locales` de um elemento para o idioma de origem e não defina `FlatDirectory`. O menu está apenas no idioma de origem. Não mostre `BuiltInLocales`. O desenvolvimento então lê os catálogos que `sync` acabou de escrever. Uma compilação publicada sem um manifesto próximo mantém os catálogos incorporados. Um instalador que deve seguir `sync` envia `ui-languages.json` e o JSON de localidade ao lado do aplicativo.
+
+Persista o código da localidade, não o nome nativo. Defina ambas as culturas antes de `SetLocale`, porque `LocaleChanged` é acionado dentro dessa chamada:
 
 ```csharp
 var culture = CultureInfo.GetCultureInfo(code);
@@ -490,9 +602,11 @@ CultureInfo.CurrentCulture = culture;
 I18n.SetLocale(code);
 ```
 
-Crie as opções a partir de `I18n.SupportedLocales`. Cada linha tem `Code`, `NativeName` e `EnglishName`. Rotule o controle com `T("Language")`. Persista a escolha e restaure-a na inicialização, antes do primeiro `T`. Em `LocaleChanged`, acione `PropertyChanged` para strings de view-model, ou reconstrua os controles que copiaram seu texto. Quando o framework tiver uma direção de fluxo, defina-a a partir de `I18n.IsRightToLeft(code)`.
+Rotule o controle com `T("Language")`. Aceite apenas códigos da lista que você passou. Em `LocaleChanged`, levante `PropertyChanged` para strings de view-model, ou reconstrua controles que copiaram seu texto. `TrExtension` atualiza a exibição aberta, como na [Etapa 2](#step-2-wrap-strings). Quando o framework tiver uma direção de fluxo, defina-a a partir de `I18n.IsRightToLeft(code)`.
 
-Um programa de console não tem widget. Adicione `--lang <code>` (e `-L` quando esse nome estiver livre). Aceite apenas os códigos listados em `SupportedLocales`. Não leia `AI_I18N_LANG`. Essa variável é apenas para a CLI ai-i18n-tools.
+Avalonia: ignore `SelectionChanged` a menos que `e.Source` seja o controle que possui o manipulador. Não atribua `ItemsSource` ou `SelectedItem` dentro desse manipulador, ou dentro de um `LocaleChanged` que o `SetLocale` desta caixa de combinação levantou. Publique a atualização com `Dispatcher.UIThread.Post`. Proteja o manipulador enquanto o código define `SelectedItem`. Um `TabControl` pai que trata o evento borbulhado como uma mudança de aba e atribui `ItemsSource` novamente trava o processo (código de saída 139, `crash.log` vazio).
+
+Um programa de console não tem widget. Adicione `--lang <code>` (e `-L` quando esse nome estiver livre). Aceite apenas códigos da lista carregada acima. Não leia `AI_I18N_LANG`. Essa variável é apenas para o CLI ai-i18n-tools.
 
 Pule esta etapa quando o programa não exibir texto que uma pessoa possa ler.
 
@@ -518,6 +632,6 @@ Este é o último passo manual. Continue em [Escolher modelos e traduzir](#choos
 
 | Exemplo | O que ele mostra |
 | --- | --- |
-| [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | verificações xUnit de `I18n.cs`: JSON incorporado, fallback de cultura, `{0}`, plurais |
+| [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | Verificações xUnit de `I18n.cs`: JSON incorporado, fallback de cultura, `{0}`, plurais e `Configure` |
 
 Esses diretórios verificam o auxiliar. Eles não são aplicativos para traduzir, e não precisam de uma chave de API. `dotnet test` nesse diretório executa as verificações. Um aplicativo real começa de `init` nesta página.

@@ -100,7 +100,7 @@
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs` (선택 사항)
 
-모든 프로바이더에 대한 각 LLM 요청의 최대 대기 시간입니다. `requestTimeout`는 초 단위이고, `requestTimeoutMs`는 밀리초 단위입니다. 둘 다 생략 시 기본값은 **45**초입니다. 둘 중 하나만 설정하세요. 프로바이더가 두 필드 중 하나를 설정하면, 해당 프로바이더에 한해 그 값이 대신 사용됩니다.
+각 LLM 요청에 대해 모든 공급자에 대한 최대 대기 시간입니다. `requestTimeout`는 전체 초 단위이고, `requestTimeoutMs`는 밀리초 단위입니다. 둘 다 생략된 경우 기본값은 **120**초입니다. 둘 중 하나만 설정하십시오. 어떤 필드든 설정하는 공급자는 해당 공급자에 한해 그 값을 대신 사용합니다.
 
 ---
 
@@ -130,9 +130,9 @@
 - `temperature`
   샘플링 온도입니다. 기본값: `0.2`.
 - `requestTimeout`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(초). 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성이 시간 초과를 설정하지 않으면 기본값은 `45`초입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청에 대해 초 단위로 대기할 최대 시간입니다. 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성(config)이 시간 초과를 설정하지 않은 경우, 기본값은 `120`초입니다. 동일한 객체에서 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `requestTimeoutMs`
-  이 공급자에 대한 각 요청을 기다리는 최대 시간(밀리초). 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성이 시간 초과를 설정하지 않으면 기본값은 `45000`(45초)입니다. 동일한 객체에 `requestTimeout`와 `requestTimeoutMs` 중 하나만 설정하십시오.
+  이 공급자에 대한 각 요청에 대해 밀리초 단위로 대기할 최대 시간입니다. 최상위 `requestTimeout` / `requestTimeoutMs`를 재정의합니다. 이 공급자나 최상위 구성(config)이 시간 초과를 설정하지 않은 경우, 기본값은 `120000` (120초)입니다. 동일한 객체에서 `requestTimeout`과 `requestTimeoutMs` 중 하나만 설정하십시오.
 - `pricing` (선택 사항)
   공급자 전체 100만 토큰당 USD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. 청구된 호출에 공급자가 보고한 `usage.cost`가 없는 경우(OpenRouter 및 Cheaper Inference를 제외한 대부분의 공급자), 이 요율이 해당 호출의 입력 및 출력 토큰에 적용됩니다. 이 금액은 번역 요약에 포함되며 `api_calls` 행에 저장됩니다.
 
@@ -307,11 +307,11 @@
   해당 선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로.
 - `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
-`true` (기본값 `false`)일 때, `extract`는 번들된 UI 언어 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`로 빌드됨)에서 각 `englishName`을(를) 소스 스캔에서 이미 존재하지 않는 경우 (동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`을(를) 읽지 않습니다.
+`true`일 때 (기본값 `false`), `extract`는 번들된 UI 언어 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`로 빌드됨)에서 각 `englishName`을 소스 스캔에서 아직 존재하지 않는 경우 (동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`을 읽지 않습니다.
 - `uiExtractor.placeholderStyle`
-  `default` (mustache, Python 형식 필드 및 printf) 또는 `dotnet` (`{0}`, `{0,-10}`, `{0:format}`만 해당). `dotnet` 스타일에서는 퍼센트 기호가 리터럴 텍스트이고 이중 중괄호는 리터럴 중괄호입니다. `ui-dotnet` 템플릿은 `dotnet`을(를) 설정합니다.
+  `default` (머스테치, Python 형식 필드 및 printf) 또는 `dotnet` (`{0}`, `{0,-10}`, `{0:format}`만 해당). `dotnet` 스타일에서는 퍼센트 기호가 리터럴 텍스트이고 이중 중괄호는 리터럴 중괄호입니다. `ui-dotnet` 템플릿은 `dotnet`을 설정합니다.
 - `uiExtractor.exclude`
-  프로젝트 루트를 기준으로 하는 Minimatch 패턴은 스캔 후 삭제됩니다. `bin`, `obj`, `.vs`, `TestResults` 및 `packages`는 디렉터리 이름으로 이미 건너뛰어집니다. `ui-dotnet` 템플릿은 `**/Tests/**` 및 `**/*.Tests/**`을(를) 제외합니다.
+  프로젝트 루트를 기준으로 하는 미니매치 패턴은 스캔 후 삭제됩니다. `bin`, `obj`, `.vs`, `TestResults` 및 `packages`는 디렉터리 이름으로 이미 건너뛰어집니다. `ui-dotnet` 및 `ui-dotnet-resx` 템플릿은 `**/Tests/**`, `**/*.Tests/**` 및 `**/TrExtension.cs`을 제외합니다.
 
 `glossary.uiGlossary` 및 `glossary.uiGlossaryFromStringsJson`은(는) 더 이상 허용되지 않습니다. 구성 로드가 실패하며, 오류 메시지에 대체 방법이 안내됩니다. 해당 키를 삭제하십시오. 이제 힌트는 각 블록의 `uiGlossary` 플래그(기본값 `true`)에서 가져옵니다.
 

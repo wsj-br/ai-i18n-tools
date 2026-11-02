@@ -21,7 +21,7 @@ ai-i18n-tools init -t ui-dotnet -P openrouter --namespace CursorPace
 <EmbeddedResource Include="locales/*.json" />
 ```
 
-A varredura ignora diretórios nomeados `bin`, `obj`, `.vs`, `TestResults` e `packages`. O template também define `uiExtractor.exclude` para `**/bin/**`, `**/obj/**`, `**/Tests/**` e `**/*.Tests/**`.
+A varredura ignora os diretórios nomeados `bin`, `obj`, `.vs`, `TestResults`, e `packages`. O modelo também define `uiExtractor.exclude` para `**/bin/**`, `**/obj/**`, `**/Tests/**`, `**/*.Tests/**`, e `**/TrExtension.cs`.
 
 <a id="calls-that-translate"></a>
 ## Chamadas que traduzem
@@ -39,7 +39,7 @@ I18n.Loc["Show token"]
 
 `N` retorna seu argumento e está lá apenas para que um campo estático, rótulo de enumeração ou atributo possa conter um literal que o extrator possa ver. Mostre-o mais tarde com `T(label)`.
 
-`Tn` trata `{0}` como a contagem. Argumentos extras o seguem (`{1}`, `{2}`).
+`Tn` trata `{0}` como o número. Argumentos extras o seguem (`{1}`, `{2}`). O singular pode escrever esse número como um literal (`1 sample`), enquanto o plural mantém `{0}`. A tradução mantém `{0}` nas categorias de plural e deixa o número literal no singular.
 
 `Tp` armazena o contexto e a string de origem sob uma chave (contexto, U+0004, origem), o mesmo separador que o JSON plano já usa. Use-o quando a mesma palavra curta significa coisas diferentes (`Open` a janela e `Open` o arquivo).
 
@@ -77,9 +77,11 @@ O estilo padrão, usado por JavaScript e Python, permanece inalterado.
 
 `I18n.SetLocale("pt-BR")` percorre `CultureInfo.Parent` até que um catálogo seja aberto. `OpenLocale` é usado quando definido. Caso contrário, um `FlatDirectory` configurado é a única fonte: um arquivo ausente lá não recorre ao JSON incorporado. Recursos incorporados são usados apenas quando nem `OpenLocale` nem `FlatDirectory` estão definidos. Uma chave ausente retorna a string de origem. `I18n.Strict = true` lança uma exceção em vez disso, o que é útil em testes. `string.Format` é chamado no modelo traduzido. Um formato inválido pode lançar `FormatException`. Um `{0}` descartado pode omitir o argumento. Não há fallback para o modelo de origem após um erro de formato.
 
-`I18n.SupportedLocales` é a lista definida na inicialização (nome nativo e nome em inglês). `I18n.IsRightToLeft` lê `CultureInfo.TextInfo`. O aplicativo define `CultureInfo.CurrentUICulture` e `CultureInfo.CurrentCulture` por conta própria. `string.Format` usa a cultura de interface do usuário atual, então `{0:C}` segue essa cultura.
+`I18n.SupportedLocales` começa como a lista carimbada na inicialização (`BuiltInLocales`: nome nativo e nome em inglês). O menu de idioma não lê esse carimbo. Antes do primeiro `T()`, procure para cima a partir de `AppContext.BaseDirectory`, depois a partir do diretório atual, no máximo 8 diretórios cada, por `locales/ui-languages.json`. O primeiro arquivo vence. Mapeie `code`, `label`, e `englishName` para `LocaleInfo` (`label` é o nome nativo) e passe-os para `Configure` como `Locales`, com `FlatDirectory` definido para esse diretório `locales` na mesma chamada. Cada chamada de `Configure` substitui `Strict`, `FlatDirectory`, e `OpenLocale`. Uma chamada posterior que apenas define `Locales` limpa `FlatDirectory`. Um array `Locales` nulo mantém a lista atual no lugar e não restaura `BuiltInLocales`. Se o manifesto estiver ausente, passe uma lista de um elemento para o idioma de origem e não defina `FlatDirectory`. O menu é então apenas o idioma de origem, e os catálogos permanecem incorporados. O desenvolvimento lê os arquivos que `sync` acabou de escrever. Um instalador que deve seguir `sync` envia `ui-languages.json` e o JSON de localidade ao lado do aplicativo.
 
-`LocaleChanged` é acionado dentro de `SetLocale`. Defina `CurrentUICulture` e `CurrentCulture` primeiro para que um manipulador de atualização formate com a nova cultura. As propriedades do view-model que chamam `T` devem levantar `PropertyChanged` a partir desse evento. Uma extensão de marcação que retorna uma string simples é atualizada na próxima vez que a visualização é construída. O catálogo e o local atual são estáticos. Isso é seguro para um processo de desktop. Não é um local por requisição para um servidor multiusuário. Mantenha `IStringLocalizer` ou `ResourceManager` lá. Definir `CurrentUICulture` não dá a cada requisição seu próprio mapa.
+`I18n.IsRightToLeft` lê `CultureInfo.TextInfo`. O aplicativo define `CultureInfo.CurrentUICulture` e `CultureInfo.CurrentCulture` por si mesmo, e persiste o código de localidade. `string.Format` usa a cultura da UI atual, então `{0:C}` segue essa cultura.
+
+`LocaleChanged` é acionado dentro de `SetLocale`. Defina `CurrentUICulture` e `CurrentCulture` primeiro para que um manipulador de atualização formate com a nova cultura. Propriedades do view-model que chamam `T` devem levantar `PropertyChanged` a partir desse evento. Para Avalonia, WPF e MAUI, a extensão de marcação retorna `I18n.T(Text)` e define essa propriedade novamente em `LocaleChanged`, então cancela a inscrição quando o controle sai da árvore visual. O catálogo e a localidade atual são estáticos. Isso é seguro para um processo de desktop. Não é uma localidade por solicitação para um servidor multiusuário. Mantenha `IStringLocalizer` ou `ResourceManager` lá. Definir `CurrentUICulture` não dá a cada solicitação seu próprio mapa.
 
 Para atualizar um auxiliar copiado, gere o mesmo modelo em um diretório descartável e copie apenas o arquivo gerado que você pretende substituir. Não execute novamente `init` no aplicativo para atualizar o auxiliar.
 
@@ -88,18 +90,38 @@ O arquivo começa com `ai-i18n-tools-i18n-cs:`, então `extract` o ignora.
 <a id="desktop-recipe"></a>
 ## Receita para desktop
 
-Avalonia, WPF e MAUI cada um tem sua própria classe base de extensão de marcação. O auxiliar não referencia esses assemblies. Um formato Avalonia:
+Avalonia, WPF e MAUI cada um tem sua própria classe base de extensão de marcação. O auxiliar não referencia esses assemblies. `ProvideValue` retorna `I18n.T(Text)` e define essa propriedade novamente em `LocaleChanged`. Cancele a inscrição quando o controle sair da árvore visual. Adicione `**/TrExtension.cs` a `ui.uiExtractor.exclude` para que `T(Text)` não seja relatado como um não-literal. Os literais XAML já são extraídos através de `Tr`. `{loc:Tr}` só pode chamar `T`. Dois significados de uma palavra curta são definidos no código com `Tp`.
+
+Uma forma de Avalonia (`IProvideValueTarget` está em `Avalonia.Metadata`):
 
 ```csharp
 public sealed class TrExtension : MarkupExtension
 {
     public TrExtension(string text) { Text = text; }
     public string Text { get; }
-    public override object ProvideValue(IServiceProvider serviceProvider) => I18n.T(Text);
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var text = I18n.T(Text);
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target
+            && target.TargetObject is AvaloniaObject control
+            && target.TargetProperty is AvaloniaProperty property)
+        {
+            void Refresh() => control.SetValue(property, I18n.T(Text));
+            I18n.LocaleChanged += Refresh;
+            if (control is StyledElement element)
+            {
+                element.DetachedFromVisualTree += (_, _) => I18n.LocaleChanged -= Refresh;
+            }
+        }
+        return text;
+    }
 }
 ```
 
-Frases formatadas permanecem em C# (`T("Cursor {0}", value)`), o que mantém o extrator em um único literal. A mesma chamada funciona a partir de um view model, uma tooltip da bandeja e uma caixa de diálogo.
+WPF e MAUI usam a mesma ideia com seus próprios tipos de propriedade. Somente Avalonia: ignore `SelectionChanged` a menos que `e.Source` seja o controle que possui o manipulador. Não atribua `ItemsSource` ou `SelectedItem` dentro desse manipulador, ou dentro de um `LocaleChanged` que o `SetLocale` deste combo levantou. Publique a atualização com `Dispatcher.UIThread.Post`, e proteja o manipulador enquanto o código define `SelectedItem`. Um `TabControl` pai que atribui `ItemsSource` novamente do evento borbulhado trava o processo (código de saída 139, `crash.log` vazio).
+
+Frases formatadas permanecem em C# (`T("Cursor {0}", value)`), o que mantém o extrator em um único literal. `StringFormat` em uma ligação é invisível. A mesma chamada funciona a partir de um view model, uma dica de ferramenta da bandeja e um diálogo. Um combo de enumeração mantém a enumeração, retorna `T("Light")` de sua legenda e reconstrói os itens em `LocaleChanged`. Um item da bandeja usa `Tp("tray", "Open")` e um `CommandParameter` estável. Corresponda ao parâmetro, não ao cabeçalho. Um serviço armazena a frase de erro em inglês, e o local de exibição mapeia frases conhecidas através de `T`. Linux `.desktop` `Name=` e `Comment=` permanecem no idioma de origem. Tokens de duração que são comparados (`2d`, `7h 47m`) permanecem não traduzidos. Traduza `T("now")` e `T("in {0}", duration)` no local de exibição. Um espaço inicial ou final em um literal ainda é um aviso de extração. Mova-o para a string de formato ou para o layout. `Tn` pode corrigir uma frase de origem que sempre foi plural (`1 samples`).
 
 <a id="migrate"></a>
 ## Reescrever chamadas não seguras

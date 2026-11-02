@@ -9,17 +9,21 @@ type Case = {
   id: string;
   source: string;
   zeroDigit?: boolean;
+  placeholderStyle?: "default" | "dotnet";
+  sourceForms?: Partial<Record<CldrPluralForm, string>>;
   forms: Partial<Record<CldrPluralForm, string>>;
   want: "pass" | PluralPlaceholderIssueKind[];
 };
 
-function kindsOf(
-  source: string,
-  forms: Partial<Record<CldrPluralForm, string>>,
-  zeroDigit?: boolean
-) {
+function kindsOf(c: Case) {
   return [
-    ...new Set(pluralFormPlaceholderIssues(source, forms, { zeroDigit }).map((i) => i.kind)),
+    ...new Set(
+      pluralFormPlaceholderIssues(c.source, c.forms, {
+        zeroDigit: c.zeroDigit,
+        placeholderStyle: c.placeholderStyle,
+        sourceForms: c.sourceForms,
+      }).map((i) => i.kind)
+    ),
   ].sort();
 }
 
@@ -560,11 +564,66 @@ const cases: Case[] = [
     forms: { one: "1 backup", other: "{{count}} backups" },
     want: ["missing"],
   },
+
+  // §13 pluralSource has a token the singular does not ({0} count, {1} timestamp)
+  {
+    id: "13.dotnet.last-synced.good",
+    source: "Last synced {1} · 1 sample",
+    placeholderStyle: "dotnet",
+    sourceForms: {
+      one: "Last synced {1} · 1 sample",
+      other: "Last synced {1} · {0} samples",
+    },
+    forms: {
+      one: "Última sincronización {1} · 1 muestra",
+      many: "Última sincronización {1} · {0} muestras",
+      other: "Última sincronización {1} · {0} muestras",
+    },
+    want: "pass",
+  },
+  {
+    id: "13.dotnet.last-synced.one-gains-count",
+    source: "Last synced {1} · 1 sample",
+    placeholderStyle: "dotnet",
+    sourceForms: {
+      one: "Last synced {1} · 1 sample",
+      other: "Last synced {1} · {0} samples",
+    },
+    forms: {
+      one: "Última sincronización {1} · 1 muestra {0}",
+      other: "Última sincronización {1} · {0} muestras",
+    },
+    want: ["extra"],
+  },
+  {
+    id: "13.dotnet.last-synced.other-drops-count",
+    source: "Last synced {1} · 1 sample",
+    placeholderStyle: "dotnet",
+    sourceForms: {
+      one: "Last synced {1} · 1 sample",
+      other: "Last synced {1} · {0} samples",
+    },
+    forms: {
+      one: "Última sincronización {1} · 1 muestra",
+      other: "Última sincronización {1} · muestras",
+    },
+    want: ["missing"],
+  },
+  {
+    id: "13.dotnet.last-synced.step0-must-not-invent",
+    source: "Last synced {1} · 1 sample",
+    placeholderStyle: "dotnet",
+    forms: {
+      one: "Last synced {1} · 1 sample",
+      other: "Last synced {1} · {0} samples",
+    },
+    want: ["extra"],
+  },
 ];
 
 describe("pluralFormPlaceholderIssues corpus", () => {
   it.each(cases)("$id", (c) => {
-    const got = kindsOf(c.source, c.forms, c.zeroDigit);
+    const got = kindsOf(c);
     if (c.want === "pass") {
       expect(got).toEqual([]);
     } else {

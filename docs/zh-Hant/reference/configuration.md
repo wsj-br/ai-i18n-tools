@@ -100,7 +100,7 @@
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs`（選填）
 
-每個供應商每次 LLM 請求的最長等待時間。`requestTimeout` 為整數秒；`requestTimeoutMs` 為毫秒。預設值：當兩者皆省略時為 **45** 秒。僅設定其中一項。若供應商設定了其中任一欄位，則僅對該供應商使用該值。
+每個 LLM 請求對每個供應商的最大等待時間。`requestTimeout` 是整數秒；`requestTimeoutMs` 是毫秒。預設值：當兩者都省略時為 **120** 秒。僅設定其中一個。設定任一欄位的供應商將改用該值，且僅適用於該供應商。
 
 ---
 
@@ -130,11 +130,11 @@
 - `temperature`
   取樣溫度。預設值：`0.2`。
 - `requestTimeout`
-  等待此提供者每個請求的最長時間 (秒)。覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此提供者和頂層組態都未設定逾時時，預設為 `45` 秒。在同一個物件上，只能設定 `requestTimeout` 和 `requestTimeoutMs` 其中一個。
+  等待此供應商每個請求的最大時間（以秒為單位）。覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此供應商和頂層設定均未設定逾時時，預設值為 `120` 秒。在同一物件上僅設定 `requestTimeout` 和 `requestTimeoutMs` 的其中一個。
 - `requestTimeoutMs`
-  等待此提供者每個請求的最長時間 (毫秒)。覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此提供者和頂層組態都未設定逾時時，預設為 `45000` (45 秒)。在同一個物件上，只能設定 `requestTimeout` 和 `requestTimeoutMs` 其中一個。
+  等待此供應商每個請求的最大時間（以毫秒為單位）。覆寫頂層的 `requestTimeout` / `requestTimeoutMs`。當此供應商和頂層設定均未設定逾時時，預設值為 `120000` (120 秒)。在同一物件上僅設定 `requestTimeout` 和 `requestTimeoutMs` 的其中一個。
 - `pricing` (選用)
-  提供者範圍內每 1M 權杖的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有提供者報告的 `usage.cost` (大多數提供者，OpenRouter 和 Cheaper Inference 除外) 時，此費率會應用於該呼叫的輸入和輸出權杖。該金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。
+  供應商範圍內每 100 萬個權杖的美元費用：`{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。當計費呼叫沒有供應商報告的 `usage.cost` (大多數供應商，OpenRouter 和 Cheaper Inference 除外) 時，此費率將套用於該呼叫的輸入和輸出權杖。該金額會包含在翻譯摘要中，並儲存在 `api_calls` 列。
 
 費用來源依此順序解析：
 
@@ -307,11 +307,11 @@
   用於該選用描述提取的 `package.json` 檔案的自訂路徑。
 - `uiExtractor.includeUiLanguageEnglishNames` (或舊版 `reactExtractor.includeUiLanguageEnglishNames`)
 
-當 `true` 時（預設值 `false`），`extract` 也會將捆綁的 ui-languages 主目錄（由 `sourceLocale` + 區塊的有效 `targetLocales` 建構）中的每個 `englishName` 新增到 `strings.json` 中，如果來源掃描中尚未存在（相同的雜湊鍵）。不讀取 `languagesManifestPath`。
+當 `true` (預設值 `false`)，`extract` 也會將每個 `englishName` 從隨附的 UI 語言主目錄 (根據 `sourceLocale` + 區塊的有效 `targetLocales` 建置) 新增到 `strings.json`，如果來源掃描中尚未存在 (相同的雜湊金鑰)。不會讀取 `languagesManifestPath`。
 - `uiExtractor.placeholderStyle`
-  `default` (mustache、Python 格式欄位和 printf) 或 `dotnet` (僅限 `{0}`、`{0,-10}`、`{0:format}`)。在 `dotnet` 樣式中，百分號是字面文字，雙大括號是字面大括號。`ui-dotnet` 範本設定 `dotnet`。
+  `default` (mustache、Python 格式欄位和 printf) 或 `dotnet` (僅限 `{0}`、`{0,-10}`、`{0:format}`)。在 `dotnet` 樣式中，百分比符號是常值文字，雙大括號是常值大括號。`ui-dotnet` 範本會設定 `dotnet`。
 - `uiExtractor.exclude`
-  相對於專案根目錄的 Minimatch 模式，掃描後會被捨棄。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已按目錄名稱跳過。`ui-dotnet` 範本排除 `**/Tests/**` 和 `**/*.Tests/**`。
+  Minimatch 模式，相對於專案根目錄，在掃描後捨棄。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已依目錄名稱跳過。`ui-dotnet` 和 `ui-dotnet-resx` 範本會排除 `**/Tests/**`、`**/*.Tests/**` 和 `**/TrExtension.cs`。
 
 不再接受 `glossary.uiGlossary` 和 `glossary.uiGlossaryFromStringsJson`。設定載入會失敗，且錯誤會說明取代方式：刪除該索引鍵。提示現在來自每個區塊的 `uiGlossary` 旗標（預設 `true`）。
 

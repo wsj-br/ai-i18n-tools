@@ -13,6 +13,8 @@ export interface UiTranslationPlaceholderIssue {
   /** Family key from the translation when one was paired or invented. */
   translatedFamily?: string;
   message: string;
+  /** Index in the UI batch when the issue was raised by {@link assertUIBatchPlaceholders}. */
+  index?: number;
 }
 
 /** Thrown when a UI batch translation drops, invents, or rewrites a placeholder. */
@@ -732,7 +734,7 @@ export function assertUIBatchPlaceholders(
       style
     )) {
       lines.push(`index ${i}: ${issue.message}`);
-      issues.push(issue);
+      issues.push({ ...issue, index: i });
     }
   }
   if (lines.length === 0) {

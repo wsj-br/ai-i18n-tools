@@ -94,8 +94,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `Tp(context, source, args)` | संदर्भ + U+0004 + स्रोत देखें, फिर फ़ॉर्मेट करें। |
 | `N(source)` | `source` लौटाएँ। निकाला गया ताकि स्टैटिक लेबल को कैटलॉग किया जा सके। |
 | `Loc[source]` | इंडेक्सर जो `T` को कॉल करता है। `Loc` `StringSourceLocalizer` प्रकार का एक स्टैटिक फ़ील्ड है। |
-| `Configure(options)` | स्रोत लोकल, सख्त मिसिंग-की मोड, एक डायरेक्टरी या स्ट्रीम लोडर, और भाषा सूची सेट करें। |
-| `SupportedLocales` | `init` द्वारा स्टैंप किए गए लोकल, नेटिव और अंग्रेजी नामों के साथ। |
+| `Configure(options)` | स्रोत लोकले सेट करें जब `SourceLocale` खाली न हो। प्रत्येक कॉल `Strict`, `FlatDirectory`, और `OpenLocale` को बदल देता है (नल डायरेक्टरी और स्ट्रीम लोडर को साफ़ करता है)। `Locales` भाषा सूची को केवल तभी बदलता है जब ऐरे नल न हो। |
+| `SupportedLocales` | `BuiltInLocales` तब तक जब तक एक गैर-नल `Locales` ऐरे पास न किया जाए। मूल नाम और अंग्रेज़ी नाम। एक नल `Locales` ऐरे स्टैंप को पुनर्स्थापित नहीं करता है। |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | CLDR फ़ॉर्म नाम `.po` फ़ाइलों के समान GNU नियमों से। |
 

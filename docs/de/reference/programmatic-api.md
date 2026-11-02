@@ -94,8 +94,8 @@ Aufrufformen, unsichere f-Strings und frameworkspezifische Locale-Anbindung: [Py
 | `Tp(context, source, args)` | Sucht nach Kontext + U+0004 + Quelle und formatiert dann. |
 | `N(source)` | Gibt `source` zurück. Extrahiert, damit statische Bezeichnungen katalogisiert werden können. |
 | `Loc[source]` | Indexer, der `T` aufruft. `Loc` ist ein statisches Feld vom Typ `StringSourceLocalizer`. |
-| `Configure(options)` | Legt das Quell-Locale, den strikten Modus für fehlende Schlüssel, einen Verzeichnis- oder Stream-Loader und die Sprachliste fest. |
-| `SupportedLocales` | Locales, gekennzeichnet durch `init`, mit nativen und englischen Namen. |
+| `Configure(options)` | Die Quell-Locale festlegen, wenn `SourceLocale` nicht leer ist. Jeder Aufruf ersetzt `Strict`, `FlatDirectory` und `OpenLocale` (null löscht das Verzeichnis und den Stream-Loader). `Locales` ersetzt die Sprachliste nur, wenn das Array nicht null ist. |
+| `SupportedLocales` | `BuiltInLocales` bis ein nicht-null `Locales`-Array übergeben wird. Nativer Name und englischer Name. Ein null `Locales`-Array stellt den Stempel nicht wieder her. |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | CLDR-Formname aus denselben GNU-Regeln wie `.po`-Dateien. |
 

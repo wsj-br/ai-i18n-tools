@@ -94,8 +94,8 @@ Formes d'appel, f-strings non sécurisées et configuration des paramètres rég
 | `Tp(context, source, args)` | Recherche le contexte + U+0004 + la source, puis formate. |
 | `N(source)` | Retourne `source`. Extrait pour que les étiquettes statiques puissent être cataloguées. |
 | `Loc[source]` | Indexeur qui appelle `T`. `Loc` est un champ statique de type `StringSourceLocalizer`. |
-| `Configure(options)` | Définit le paramètre régional source, le mode clé manquante stricte, un chargeur de répertoire ou de flux, et la liste des langues. |
-| `SupportedLocales` | Paramètres régionaux estampillés par `init`, avec des noms natifs et anglais. |
+| `Configure(options)` | Définir la locale source lorsque `SourceLocale` n'est pas vide. Chaque appel remplace `Strict`, `FlatDirectory` et `OpenLocale` (null efface le répertoire et le chargeur de flux). `Locales` remplace la liste des langues uniquement lorsque le tableau n'est pas null. |
+| `SupportedLocales` | `BuiltInLocales` jusqu'à ce qu'un tableau `Locales` non null soit passé. Nom natif et nom anglais. Un tableau `Locales` null ne restaure pas l'horodatage. |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | Nom de forme CLDR selon les mêmes règles GNU que les fichiers `.po`. |
 

@@ -94,8 +94,8 @@ Call shapes, unsafe f-strings, and per-framework locale wiring: [Python applicat
 | `Tp(context, source, args)` | Look up context + U+0004 + source, then format. |
 | `N(source)` | Return `source`. Extracted so static labels can be catalogued. |
 | `Loc[source]` | Indexer that calls `T`. `Loc` is a static field of type `StringSourceLocalizer`. |
-| `Configure(options)` | Set the source locale, strict missing-key mode, a directory or stream loader, and the language list. |
-| `SupportedLocales` | Locales stamped by `init`, with native and English names. |
+| `Configure(options)` | Set the source locale when `SourceLocale` is non-empty. Every call replaces `Strict`, `FlatDirectory`, and `OpenLocale` (null clears the directory and the stream loader). `Locales` replaces the language list only when the array is non-null. |
+| `SupportedLocales` | `BuiltInLocales` until a non-null `Locales` array is passed. Native name and English name. A null `Locales` array does not restore the stamp. |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
 | `PluralForm(locale, n)` | CLDR form name from the same GNU rules as `.po` files. |
 

@@ -100,7 +100,7 @@
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs`（任意）
 
-各LLMリクエストの最大待機時間。すべてのプロバイダーに適用されます。`requestTimeout`は秒単位、`requestTimeoutMs`はミリ秒単位です。両方を省略した場合のデフォルトは**45**秒です。いずれか一方のみを設定してください。プロバイダーがいずれかのフィールドを設定している場合、そのプロバイダーではその値が優先されます。
+各LLMリクエストの最大待機時間（すべてのプロバイダーに適用）。`requestTimeout`は秒単位、`requestTimeoutMs`はミリ秒単位です。両方が省略された場合のデフォルトは**120**秒です。どちらか一方のみを設定してください。いずれかのフィールドを設定したプロバイダーは、そのプロバイダーに限り、その値を使用します。
 
 ---
 
@@ -130,11 +130,11 @@
 - `temperature`
   サンプリング温度。デフォルト: `0.2`。
 - `requestTimeout`
-  このプロバイダーへの各リクエストを待機する最大時間（秒）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定しない場合、デフォルトは`45`秒です。同じオブジェクトで`requestTimeout`と`requestTimeoutMs`のいずれか一方のみを設定してください。
+  このプロバイダーへの各リクエストに対して待機する最大時間（秒単位）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定していない場合、デフォルトは`120`秒です。同じオブジェクト上で`requestTimeout`と`requestTimeoutMs`のどちらか一方のみを設定してください。
 - `requestTimeoutMs`
-  このプロバイダーへの各リクエストを待機する最大時間（ミリ秒）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定しない場合、デフォルトは`45000`（45秒）です。同じオブジェクトで`requestTimeout`と`requestTimeoutMs`のいずれか一方のみを設定してください。
+  このプロバイダーへの各リクエストに対して待機する最大時間（ミリ秒単位）。トップレベルの`requestTimeout` / `requestTimeoutMs`を上書きします。このプロバイダーもトップレベルの設定もタイムアウトを設定していない場合、デフォルトは`120000`（120秒）です。同じオブジェクト上で`requestTimeout`と`requestTimeoutMs`のどちらか一方のみを設定してください。
 - `pricing`（オプション）
-  プロバイダー全体の100万トークンあたりのUSD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。請求対象の呼び出しにプロバイダーが報告した`usage.cost`がない場合（OpenRouterおよびCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls`行に保存されます。
+  プロバイダー全体での100万トークンあたりのUSD: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`。請求対象の呼び出しにプロバイダーが報告する`usage.cost`がない場合（OpenRouterとCheaper Inference以外のほとんどのプロバイダー）、このレートがその呼び出しの入力および出力トークンに適用されます。この金額は翻訳サマリーに含まれ、`api_calls`行に保存されます。
 
 コストソースは次の順序で解決されます。
 
@@ -307,11 +307,11 @@
   そのオプションの説明抽出に使用される`package.json`ファイルへのカスタムパス。
 - `uiExtractor.includeUiLanguageEnglishNames`（またはレガシーな`reactExtractor.includeUiLanguageEnglishNames`）
 
-`true`（デフォルトは`false`）の場合、`extract`は、バンドルされたUI言語マスターカタログ（`sourceLocale` + ブロックの実効`targetLocales`から構築）からの各`englishName`を、ソーススキャンからまだ存在しない場合（同じハッシュキー）に`strings.json`に追加します。`languagesManifestPath`は読み取りません。
+`true` (デフォルトは`false`) の場合、`extract` は、バンドルされたui-languagesマスターカタログ (`sourceLocale` とブロックの有効な`targetLocales` から構築されます) からの各`englishName` を、ソーススキャンからまだ存在しない場合 (同じハッシュキーの場合) は`strings.json` に追加します。`languagesManifestPath` は読み取りません。
 - `uiExtractor.placeholderStyle`
-  `default`（mustache、Python書式フィールド、およびprintf）または`dotnet`（`{0}`、`{0,-10}`、`{0:format}`のみ）。`dotnet`スタイルでは、パーセント記号はリテラルテキストであり、二重の中括弧はリテラルの中括弧です。`ui-dotnet`テンプレートは`dotnet`を設定します。
+  `default` (mustache、Python形式フィールド、およびprintf) または`dotnet` (`{0}`、`{0,-10}`、`{0:format}` のみ)。`dotnet` スタイルでは、パーセント記号はリテラルテキストであり、二重の中括弧はリテラルの中括弧です。`ui-dotnet` テンプレートは`dotnet` を設定します。
 - `uiExtractor.exclude`
-  プロジェクトルートを基準とした、スキャン後に破棄されるミニマッチパターン。`bin`、`obj`、`.vs`、`TestResults`、および`packages`は、ディレクトリ名によってすでにスキップされています。`ui-dotnet`テンプレートは`**/Tests/**`と`**/*.Tests/**`を除外します。
+  プロジェクトルートからの相対的なMinimatchパターンは、スキャン後に破棄されます。`bin`、`obj`、`.vs`、`TestResults`、および`packages` は、ディレクトリ名によって既にスキップされています。`ui-dotnet` および`ui-dotnet-resx` テンプレートは、`**/Tests/**`、`**/*.Tests/**`、および`**/TrExtension.cs` を除外します。
 
 `glossary.uiGlossary` と `glossary.uiGlossaryFromStringsJson` は受け入れられなくなりました。設定の読み込みに失敗し、エラーで代替手段が説明されます。キーを削除してください。ヒントは現在、各ブロックの `uiGlossary` フラグ（デフォルトは `true`）から取得されます。
 

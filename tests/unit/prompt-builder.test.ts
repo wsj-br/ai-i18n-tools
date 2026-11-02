@@ -577,6 +577,29 @@ describe("plural prompt builders and parsers", () => {
     const joined = PROMPTS.ui.pluralFormsSystemPrompt.join("\n");
     expect(joined).not.toContain("use {{count}} where a number must appear");
     expect(joined).toContain("inflect the noun only");
+    expect(joined).toContain('{"one":"Minute","other":"Minutes"}');
+    expect(joined).toContain("Last synced {1} · 1 sample");
+    expect(joined).toContain("no count placeholder");
+  });
+
+  it("buildPluralPassBPrompt lists per-form tokens when the plural has a count placeholder the singular lacks", () => {
+    const { userContent } = buildPluralPassBPrompt({
+      sourceLanguageLabel: "English",
+      targetLanguageLabel: "Spanish",
+      sourceForms: {
+        one: "Last synced {1} · 1 sample",
+        other: "Last synced {1} · {0} samples",
+      },
+      requiredTargetForms: ["one", "many", "other"],
+      originalLiteral: "Last synced {1} · 1 sample",
+      placeholderStyle: "dotnet",
+    });
+    expect(userContent).toContain("Do not add a format item that is not in this list: {1}");
+    expect(userContent).toContain("- one: no placeholders beyond the original");
+    expect(userContent).toContain("- other: also copy {0}");
+    expect(userContent).toContain('follows "other"');
+    expect(userContent).toContain("Última sincronización {1} · 1 muestra");
+    expect(userContent).not.toContain("({0}, {0,-10}, {0:C}, {0,-10:C})");
   });
 
   it("buildPluralPassBPrompt omits intl hint when empty tag", () => {

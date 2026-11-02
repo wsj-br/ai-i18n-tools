@@ -9,6 +9,12 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: `translate-ui` — plain UI strings are written to `strings.json` and the locale file when that phase finishes, and plural forms are written when the plural phase finishes. A later plural failure keeps the strings already translated. A parallel locale wave waits for every locale to finish its phase writes before the run stops.
+- **Fixed**: ui/plurals — Pass B keeps a placeholder that exists only on the English plural form, such as `{0}` in `Tn("… {1} · 1 sample", "… {1} · {0} samples", count, when)`. That token stays off `one` when the singular has a literal number. Dropping it from `other` or from `many` / `few` / `two` is still a placeholder miss. `status`, `doctor`, and the dashboard use the same rule.
+- **Changed**: prompts — plural rules include a noun-only example (`Minute` / `Minutes`) and, when source forms disagree on placeholders, a per-form token list plus an example of a singular with a literal number and no count placeholder.
+- **Fixed**: cli — `translate-ui` logs discarded UI-string and plural checks the same way as `translate-docs`: a console warning with locale, catalog path, batch or plural label, model, error, and the next model. Placeholder and script misses use the quality-check line; parse and provider errors keep the model-failed line. `--debug-failed` lists each string or plural form. The run summary includes segment translation failures.
+- **Changed**: .NET — the guide and `ui-dotnet` template take the language menu and development catalogs from `locales/ui-languages.json` on disk. `Configure` still replaces `Strict`, `FlatDirectory`, and `OpenLocale` on every call. The template excludes `**/TrExtension.cs`.
+- **Changed**: config - the default LLM request timeout is 120 seconds when `requestTimeout` and `requestTimeoutMs` are omitted.
 - **Changed**: `doctor` — model checks say how many `translationModels` are configured for the active provider, and whether those models are valid, missing, or past their expiration date in that provider's catalog.
 - **Changed**: `doctor` — set environment variables are one alphabetical list, `Configured variables: NAME, ...`, wrapped at 80 columns. API key values stay hidden.
 - **Changed**: UI strings — a JavaScript, TypeScript, or Python literal keeps a leading or trailing space in the catalog key. `t()` looks that text up as written. C# and XAML still trim, because `I18n.T` puts those spaces back after lookup.

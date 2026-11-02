@@ -1020,6 +1020,62 @@ describe("LlmClient", () => {
     expect(generateTextMock).toHaveBeenCalledTimes(2);
   });
 
+  it("translatePluralCardinalBatch accepts {0} on the plural when the singular has a literal number", async () => {
+    generateTextMock.mockResolvedValueOnce(
+      genResult(
+        '{"one":"Última sincronización {1} · 1 muestra","many":"Última sincronización {1} · {0} muestras","other":"Última sincronización {1} · {0} muestras"}'
+      )
+    );
+    const c = new LlmClient({ config: llmConfig(["good"]), apiKey: "k" });
+    const sourceForms = {
+      one: "Last synced {1} · 1 sample",
+      other: "Last synced {1} · {0} samples",
+    };
+    const r = await c.translatePluralCardinalBatch(
+      ["one", "many", "other"],
+      { systemPrompt: "sys", userContent: "usr" },
+      {
+        originalLiteral: "Last synced {1} · 1 sample",
+        sourceForms,
+        placeholderStyle: "dotnet",
+      }
+    );
+    expect(r.forms.one).toBe("Última sincronización {1} · 1 muestra");
+    expect(r.forms.other).toContain("{0}");
+    expect(generateTextMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("translatePluralCardinalBatch retries when {0} is added to the singular", async () => {
+    generateTextMock
+      .mockResolvedValueOnce(
+        genResult(
+          '{"one":"Última sincronización {1} · {0} muestra","other":"Última sincronización {1} · {0} muestras"}'
+        )
+      )
+      .mockResolvedValueOnce(
+        genResult(
+          '{"one":"Última sincronización {1} · 1 muestra","other":"Última sincronización {1} · {0} muestras"}'
+        )
+      );
+    const c = new LlmClient({ config: llmConfig(["bad", "good"]), apiKey: "k" });
+    const r = await c.translatePluralCardinalBatch(
+      ["one", "other"],
+      { systemPrompt: "sys", userContent: "usr" },
+      {
+        originalLiteral: "Last synced {1} · 1 sample",
+        sourceForms: {
+          one: "Last synced {1} · 1 sample",
+          other: "Last synced {1} · {0} samples",
+        },
+        placeholderStyle: "dotnet",
+      }
+    );
+    expect(r.forms.one).not.toContain("{0}");
+    expect(r.forms.other).toContain("{0}");
+    expect(r.model).toBe("good");
+    expect(generateTextMock).toHaveBeenCalledTimes(2);
+  });
+
   it("translatePluralCardinalBatch retries when noun-only source invents {{count}}", async () => {
     generateTextMock
       .mockResolvedValueOnce(genResult('{"one":"1 minute","other":"{{count}} minutes"}'))
@@ -1479,6 +1535,138 @@ describe("LlmClient", () => {
     } finally {
       warn.mockRestore();
       fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("translateUIBatch warns with the docs quality line when a placeholder check fails", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-ui-ph-"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const onValidationFailure = vi.fn();
+    generateTextMock
+      .mockResolvedValueOnce(genResult('["Hola!","Guardar"]'))
+      .mockResolvedValueOnce(genResult('["¡Hola, {name}!","Guardar"]'));
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+      debugFailedRelativePath: "src/i18n/strings.json",
+      onValidationFailure,
+    });
+    try {
+      const r = await c.translateUIBatch(["Hello, {name}!", "Save"], "de", {
+        segmentsLabel: "strings 1–2/2",
+        segmentKeys: ["hash-hello", "hash-save"],
+      });
+      expect(r.translations).toEqual(["¡Hola, {name}!", "Guardar"]);
+      expect(r.model).toBe("good");
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("de src/i18n/strings.json: strings 1–2/2");
+      expect(joined).toContain("bad output failed quality check");
+      expect(joined).toContain("index 0:");
+      expect(joined).toContain("Trying good (2/2)");
+      expect(onValidationFailure).toHaveBeenCalledTimes(1);
+      expect(onValidationFailure).toHaveBeenCalledWith(1);
+      const files = fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"));
+      expect(files).toHaveLength(1);
+      const text = fs.readFileSync(path.join(tmp, files[0]!), "utf8");
+      expect(text).toContain("segments: strings 1–2/2");
+      expect(text).toContain("batch seg id=0 (hash hash-hello):");
+      expect(text).toContain("batch seg id=1 (hash hash-save): OK");
+      expect(text).toContain("outcome: retrying_next_model");
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("translateUIBatch parse failure uses the model-failed line, not the quality line", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    generateTextMock
+      .mockResolvedValueOnce(genResult("not-json"))
+      .mockResolvedValueOnce(genResult('["Hallo"]'));
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      debugFailedRelativePath: "strings.json",
+    });
+    try {
+      await c.translateUIBatch(["Hello"], "de", { segmentsLabel: "string 1/1" });
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("bad failed");
+      expect(joined).toContain("Trying good");
+      expect(joined).not.toContain("output failed quality check");
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("translatePluralCardinalBatch warns on a placeholder miss and logs the form", async () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "llm-plural-ph-"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const onValidationFailure = vi.fn();
+    generateTextMock
+      .mockResolvedValueOnce(genResult('{"one":"un archivo","other":"archivos"}'))
+      .mockResolvedValueOnce(genResult('{"one":"{count} archivo","other":"{count} archivos"}'));
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      debugFailedDir: tmp,
+      debugFailedRelativePath: "src/i18n/strings.json",
+      onValidationFailure,
+    });
+    try {
+      const r = await c.translatePluralCardinalBatch(
+        ["one", "other"],
+        { systemPrompt: "s", userContent: "u" },
+        {
+          targetLocale: "es",
+          originalLiteral: "{count} files",
+          segmentsLabel: "plural 1/4 (abc)",
+          segmentKeys: ["abc"],
+        }
+      );
+      expect(r.forms.one).toBe("{count} archivo");
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("es src/i18n/strings.json: plural 1/4 (abc)");
+      expect(joined).toContain("output failed quality check");
+      expect(joined).toContain("Trying good (2/2)");
+      expect(onValidationFailure).toHaveBeenCalledWith(1);
+      const files = fs.readdirSync(tmp).filter((f) => f.includes("FAILED-TRANSLATION"));
+      expect(files).toHaveLength(1);
+      const text = fs.readFileSync(path.join(tmp, files[0]!), "utf8");
+      expect(text).toContain("(hash abc) form one:");
+      expect(text).toContain("(hash abc) form other:");
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it("does not count provider API errors as UI validation failures", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const onValidationFailure = vi.fn();
+    generateTextMock
+      .mockRejectedValueOnce(new Error("Batch API"))
+      .mockResolvedValueOnce(genResult('{"one":"1 file","other":"n files"}'));
+    const c = new LlmClient({
+      config: llmConfig(["bad", "good"]),
+      apiKey: "k",
+      onValidationFailure,
+    });
+    try {
+      await c.translatePluralCardinalBatch(
+        ["one", "other"],
+        { systemPrompt: "s", userContent: "u" },
+        { targetLocale: "en-GB", segmentsLabel: "plural 2/3 (id)" }
+      );
+      expect(onValidationFailure).not.toHaveBeenCalled();
+      const joined = warn.mock.calls.map((call) => String(call[0])).join("\n");
+      expect(joined).toContain("en-GB");
+      expect(joined).toContain("plural 2/3 (id)");
+      expect(joined).toContain("bad failed");
+      expect(joined).not.toContain("output failed quality check");
+    } finally {
+      warn.mockRestore();
     }
   });
 

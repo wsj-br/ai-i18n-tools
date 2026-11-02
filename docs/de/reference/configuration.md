@@ -100,7 +100,7 @@ Segment-Batching für **translate-docs**, **translate-svg** und **translate-json
 <a id="requesttimeout--requesttimeoutms-optional"></a>
 ### `requestTimeout` / `requestTimeoutMs` (optional)
 
-Maximale Wartezeit für jede LLM-Anfrage, für jeden Anbieter. `requestTimeout` sind ganze Sekunden; `requestTimeoutMs` sind Millisekunden. Standard: **45** Sekunden, wenn beide weggelassen werden. Legen Sie nur eines von beiden fest. Ein Anbieter, der eines der Felder festlegt, verwendet diesen Wert stattdessen nur für diesen Anbieter.
+Maximale Wartezeit für jede LLM-Anfrage, für jeden Anbieter. `requestTimeout` sind ganze Sekunden; `requestTimeoutMs` sind Millisekunden. Standard: **120** Sekunden, wenn beide weggelassen werden. Legen Sie nur eines von beiden fest. Ein Anbieter, der eines der Felder festlegt, verwendet stattdessen diesen Wert, nur für diesen Anbieter.
 
 ---
 
@@ -130,11 +130,11 @@ Jeder `providers.<name>`-Block akzeptiert:
 - `temperature`
   Sampling-Temperatur. Standard: `0.2`.
 - `requestTimeout`
-  Maximale Wartezeit in Sekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `45` Sekunden. Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
+  Maximale Wartezeit in Sekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `120` Sekunden. Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
 - `requestTimeoutMs`
-  Maximale Wartezeit in Millisekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `45000` (45 Sekunden). Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
+  Maximale Wartezeit in Millisekunden für jede Anfrage an diesen Anbieter. Überschreibt die übergeordnete `requestTimeout` / `requestTimeoutMs`. Wenn weder dieser Anbieter noch die übergeordnete Konfiguration ein Timeout festlegt, beträgt der Standardwert `120000` (120 Sekunden). Legen Sie nur eines von `requestTimeout` und `requestTimeoutMs` für dasselbe Objekt fest.
 - `pricing` (optional)
-  Anbieterweite USD pro 1 Mio. Tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf keine vom Anbieter gemeldeten `usage.cost` hat (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabe-Tokens dieses Aufrufs angewendet. Der Betrag wird in der Übersetzungszusammenfassung aufgeführt und in der `api_calls`-Zeile gespeichert.
+  Anbieterweite USD pro 1 Mio. Tokens: `{ "inputPerMTokens": 0.15, "outputPerMTokens": 0.6 }`. Wenn ein abgerechneter Aufruf keine vom Anbieter gemeldeten `usage.cost` hat (die meisten Anbieter außer OpenRouter und Cheaper Inference), wird dieser Satz auf die Eingabe- und Ausgabe-Tokens dieses Aufrufs angewendet. Der Betrag ist in der Übersetzungszusammenfassung enthalten und wird in der Zeile `api_calls` gespeichert.
 
 Die Kostenquelle wird in dieser Reihenfolge aufgelöst:
 
@@ -307,11 +307,11 @@ Aufgelöste `stringsJson`-, `flatOutputDir`- und Manifest-Pfade müssen blocküb
   Benutzerdefinierter Pfad zur `package.json`-Datei, die für diese optionale Beschreibungsextraktion verwendet wird.
 - `uiExtractor.includeUiLanguageEnglishNames` (oder älteres `reactExtractor.includeUiLanguageEnglishNames`)
 
-Wenn `true` (Standard `false`), fügt `extract` auch jede `englishName` aus dem gebündelten ui-languages Masterkatalog (erstellt aus `sourceLocale` + dem effektiven `targetLocales` des Blocks) zu `strings.json` hinzu, wenn sie nicht bereits aus dem Quellscan vorhanden ist (gleiche Hash-Schlüssel). Liest `languagesManifestPath` nicht.
+Wenn `true` (Standard `false`), fügt `extract` auch jedes `englishName` aus dem gebündelten ui-languages Masterkatalog (erstellt aus `sourceLocale` + dem effektiven `targetLocales` des Blocks) zu `strings.json` hinzu, wenn es nicht bereits aus dem Quellscan vorhanden ist (gleiche Hash-Schlüssel). Liest `languagesManifestPath` nicht.
 - `uiExtractor.placeholderStyle`
-  `default` (Mustache, Python-Formatfelder und printf) oder `dotnet` (nur `{0}`, `{0,-10}`, `{0:format}`). Im `dotnet`-Stil ist ein Prozentzeichen ein Literaltext und doppelte geschweifte Klammern sind Literal-Klammern. Die `ui-dotnet`-Vorlage legt `dotnet` fest.
+  `default` (Mustache, Python-Formatfelder und Printf) oder `dotnet` (nur `{0}`, `{0,-10}`, `{0:format}`). Im `dotnet`-Stil ist ein Prozentzeichen ein Literaltext und doppelte geschweifte Klammern sind Literal-Klammern. Die `ui-dotnet`-Vorlage setzt `dotnet`.
 - `uiExtractor.exclude`
-  Minimatch-Muster, relativ zum Projektstamm, die nach dem Scan verworfen werden. `bin`, `obj`, `.vs`, `TestResults` und `packages` werden bereits nach Verzeichnisnamen übersprungen. Die `ui-dotnet`-Vorlage schließt `**/Tests/**` und `**/*.Tests/**` aus.
+  Minimatch-Muster, relativ zum Projekt-Root, werden nach dem Scan verworfen. `bin`, `obj`, `.vs`, `TestResults` und `packages` werden bereits anhand des Verzeichnisnamens übersprungen. Die `ui-dotnet`- und `ui-dotnet-resx`-Vorlagen schließen `**/Tests/**`, `**/*.Tests/**` und `**/TrExtension.cs` aus.
 
 `glossary.uiGlossary` und `glossary.uiGlossaryFromStringsJson` werden nicht mehr akzeptiert. Das Laden der Konfiguration schlägt fehl und der Fehler erklärt die Ersetzung: Löschen Sie den Schlüssel. Hinweise stammen jetzt aus dem `uiGlossary`-Flag jedes Blocks (Standard `true`).
 

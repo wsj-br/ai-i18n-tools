@@ -1244,12 +1244,12 @@ const i18nConfigSchemaInner = z
     maxBatchChars: z.number().int().positive().optional(),
     /**
      * Max time in seconds to wait for each LLM request, for every provider that does not set its own
-     * timeout. Mutually exclusive with top-level `requestTimeoutMs`. Default 45 seconds.
+     * timeout. Mutually exclusive with top-level `requestTimeoutMs`. Default 120 seconds.
      */
     requestTimeout: z.number().int().positive().optional(),
     /**
      * Max time in milliseconds to wait for each LLM request, for every provider that does not set its own
-     * timeout. Mutually exclusive with top-level `requestTimeout`. Default 45000.
+     * timeout. Mutually exclusive with top-level `requestTimeout`. Default 120000.
      */
     requestTimeoutMs: z.number().int().positive().optional(),
     /**

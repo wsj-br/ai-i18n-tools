@@ -9,7 +9,12 @@ import {
   type UIPromptStrings,
   type ProofreadUIPromptStrings,
 } from "./prompts.js";
-import { extractUiPlaceholderTokens, type UiPlaceholderStyle } from "./ui-placeholders.js";
+import {
+  canonicalPlaceholderFamily,
+  collectPlaceholderFamilies,
+  extractUiPlaceholderTokens,
+  type UiPlaceholderStyle,
+} from "./ui-placeholders.js";
 import {
   buildDocumentCoreRules,
   buildMarkdownExample,
@@ -88,10 +93,10 @@ export function buildPluralPlaceholderConstraint(
     }
     const listed = tokens.join(", ");
     return (
-      "PLACEHOLDERS in the original string are .NET composite format items ({0}, {0,-10}, {0:C}, {0,-10:C}). " +
-      'Copy each one character-for-character into EVERY category value, including "one". ' +
+      "PLACEHOLDERS in the original string are .NET composite format items (a number, optional alignment, optional format, such as {0,-10:C}). " +
+      'Copy each listed token character-for-character into EVERY category value, including "one". ' +
       "Copy doubled braces exactly: {{ and }} are literal braces, and {{GLS_N}} is a glossary token. " +
-      `Do not add {name}, %s, or any new format item: ${listed}`
+      `Do not add a format item that is not in this list: ${listed}`
     );
   }
   if (tokens.length === 0) {
@@ -105,6 +110,66 @@ export function buildPluralPlaceholderConstraint(
     'PLACEHOLDERS in the original string (copy character-for-character into EVERY category value, including "one"; ' +
     `do not add any other {{…}} / {name} / %d / %(name)s / %{name} / {n} tokens; keep format specs): ${listed}`
   );
+}
+
+const PLURAL_FORM_ORDER: readonly CldrPluralForm[] = [
+  "zero",
+  "one",
+  "two",
+  "few",
+  "many",
+  "other",
+];
+
+const RESTORE_OMITTED_PLACEHOLDER =
+  "If a source-language form omitted a listed placeholder, still restore it from this list in every target category value.";
+
+function placeholderSignature(text: string, style: UiPlaceholderStyle): string {
+  return [...collectPlaceholderFamilies(text, style).keys()].sort().join("|");
+}
+
+/**
+ * Pass B placeholder note. When every source form carries the same tokens as
+ * the original, repeat the shared inventory. When they differ (a literal
+ * number on "one", `{0}` only on "other"), list each form so the model does
+ * not copy the plural token onto the singular.
+ */
+function buildPluralPassBPlaceholderConstraint(
+  originalLiteral: string,
+  sourceForms: Partial<Record<CldrPluralForm, string>>,
+  style: UiPlaceholderStyle = "default"
+): string {
+  const present = PLURAL_FORM_ORDER.filter((form) => {
+    const value = sourceForms[form];
+    return typeof value === "string" && value.trim() !== "";
+  });
+  const signatures = new Set<string>([placeholderSignature(originalLiteral, style)]);
+  for (const form of present) {
+    signatures.add(placeholderSignature(sourceForms[form]!, style));
+  }
+  const shared = buildPluralPlaceholderConstraint(originalLiteral, style);
+  if (signatures.size <= 1) {
+    return `${shared}\n${RESTORE_OMITTED_PLACEHOLDER}`;
+  }
+  const originalFamilies = collectPlaceholderFamilies(originalLiteral, style);
+  const lines = present.map((form) => {
+    const text = sourceForms[form]!;
+    const extras = extractUiPlaceholderTokens(text, style).filter(
+      (token) => !originalFamilies.has(canonicalPlaceholderFamily(token, style))
+    );
+    if (extras.length === 0) {
+      return `- ${form}: no placeholders beyond the original. Keep any literal number that this form already has.`;
+    }
+    return `- ${form}: also copy ${extras.join(", ")}`;
+  });
+  return [
+    shared,
+    RESTORE_OMITTED_PLACEHOLDER,
+    'Source forms do not all use the same placeholders. Copy the extra tokens below only into the matching target category. A requested category with no source form (many, few, two, zero) follows "other", including its extra tokens.',
+    ...lines,
+    "Example of a string whose singular has no count placeholder (literal number) while the plural form has one. Keep that split:",
+    '{"one":"Last synced {1} · 1 sample","other":"Last synced {1} · {0} samples"} → {"one":"Última sincronización {1} · 1 muestra","many":"Última sincronización {1} · {0} muestras","other":"Última sincronización {1} · {0} muestras"}',
+  ].join("\n");
 }
 
 /** Nicer English names than `Intl` for common script codes used in directives. */
@@ -423,8 +488,9 @@ export function buildPluralPassBPrompt(opts: {
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
       ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
       : "";
-  const placeholderConstraint = buildPluralPlaceholderConstraint(
+  const placeholderConstraint = buildPluralPassBPlaceholderConstraint(
     opts.originalLiteral,
+    opts.sourceForms,
     opts.placeholderStyle
   );
 
@@ -434,7 +500,6 @@ Original developer string (context):
 ${JSON.stringify(opts.originalLiteral)}
 
 ${placeholderConstraint}
-If a source-language form omitted a listed placeholder, still restore it from this list in every target category value.
 
 Source-language plural strings (JSON object):
 ${JSON.stringify(opts.sourceForms, null, 2)}
@@ -532,6 +597,11 @@ export class ProofreadUIJsonParseError extends PromptParseError {
  * script requirement.
  */
 export class ScriptValidationError extends PromptParseError {
+  /** UI batch index, set by the caller so failure logs can name the string. */
+  segmentIndex?: number;
+  /** Plural form label, set by the caller so failure logs can name the form. */
+  segmentLabel?: string;
+
   constructor(
     message: string,
     rawResponse: string,

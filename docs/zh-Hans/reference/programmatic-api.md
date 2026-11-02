@@ -94,8 +94,8 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `Tp(context, source, args)` | 查找上下文 + U+0004 + 源，然后格式化。 |
 | `N(source)` | 返回 `source`。提取出来以便静态标签可以被编目。 |
 | `Loc[source]` | 调用 `T` 的索引器。`Loc` 是类型为 `StringSourceLocalizer` 的静态字段。 |
-| `Configure(options)` | 设置源区域设置、严格的缺失键模式、目录或流加载器以及语言列表。 |
-| `SupportedLocales` | 由 `init` 标记的区域设置，带有本地名称和英文名称。 |
+| `Configure(options)` | 设置源区域设置，当 `SourceLocale` 非空时。每次调用都会替换 `Strict`、`FlatDirectory` 和 `OpenLocale`（null 会清除目录和流加载器）。仅当数组非空时，`Locales` 才会替换语言列表。 |
+| `SupportedLocales` | `BuiltInLocales` 直到传递非空的 `Locales` 数组。本地名称和英文名称。null 的 `Locales` 数组不会恢复时间戳。 |
 | `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`。 |
 | `PluralForm(locale, n)` | 来自与 `.po` 文件相同的 GNU 规则的 CLDR 形式名称。 |
 

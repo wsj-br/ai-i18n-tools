@@ -21,7 +21,7 @@ ai-i18n-tools init -t ui-dotnet -P openrouter --namespace CursorPace
 <EmbeddedResource Include="locales/*.json" />
 ```
 
-스캔은 `bin`, `obj`, `.vs`, `TestResults` 및 `packages`라는 이름의 디렉터리를 건너뜁니다. 템플릿은 또한 `uiExtractor.exclude`을(를) `**/bin/**`, `**/obj/**`, `**/Tests/**` 및 `**/*.Tests/**`(으)로 설정합니다.
+스캔은 `bin`, `obj`, `.vs`, `TestResults`, `packages` 이름의 디렉터리를 건너뜁니다. 템플릿은 또한 `uiExtractor.exclude`를 `**/bin/**`, `**/obj/**`, `**/Tests/**`, `**/*.Tests/**`, `**/TrExtension.cs`으로 설정합니다.
 
 <a id="calls-that-translate"></a>
 ## 번역 호출
@@ -39,7 +39,7 @@ I18n.Loc["Show token"]
 
 `N`은(는) 인수를 반환하며, 추출기가 볼 수 있는 리터럴을 정적 필드, 열거형 레이블 또는 특성이 보유할 수 있도록 존재합니다. 나중에 `T(label)`을(를) 사용하여 표시합니다.
 
-`Tn`은(는) `{0}`을(를) 개수로 처리합니다. 추가 인수는 그 뒤에 옵니다(`{1}`, `{2}`).
+`Tn`는 `{0}`을(를) 개수로 처리합니다. 그 뒤에 추가 인수(`{1}`, `{2}`)가 따릅니다. 단수형은 해당 개수를 리터럴(`1 sample`)로 작성할 수 있지만, 복수형은 `{0}`를 유지합니다. 번역은 복수형 범주에 `{0}`를 유지하고 단수형에는 리터럴 숫자를 남겨둡니다.
 
 `Tp`은(는) 컨텍스트와 원본 문자열을 하나의 키(컨텍스트, U+0004, 원본) 아래에 저장하며, 이는 플랫 JSON이 이미 사용하는 것과 동일한 구분자입니다. 동일한 짧은 단어가 다른 의미를 가질 때 사용합니다(`Open` 창과 `Open` 파일).
 
@@ -77,9 +77,11 @@ JavaScript 및 Python에서 사용되는 기본 스타일은 변경되지 않습
 
 `I18n.SetLocale("pt-BR")`은(는) `CultureInfo.Parent`을(를) 순회하여 카탈로그가 열릴 때까지 진행합니다. `OpenLocale`은(는) 설정된 경우 사용됩니다. 그렇지 않으면 구성된 `FlatDirectory`이(가) 유일한 소스입니다. 그곳에 파일이 없어도 내장된 JSON으로 대체되지 않습니다. 내장 리소스는 `OpenLocale`와 `FlatDirectory` 둘 다 설정되지 않은 경우에만 사용됩니다. 키가 없으면 소스 문자열을 반환합니다. `I18n.Strict = true`은(는) 대신 예외를 발생시키며, 이는 테스트에 유용합니다. `string.Format`은(는) 번역된 템플릿에서 호출됩니다. 잘못된 형식은 `FormatException` 예외를 발생시킬 수 있습니다. 생략된 `{0}`은(는) 인수를 생략할 수 있습니다. 형식 오류 발생 후에는 소스 템플릿으로 대체되지 않습니다.
 
-`I18n.SupportedLocales`는 초기화 시 각인된 목록입니다(기본 이름 및 영어 이름). `I18n.IsRightToLeft`는 `CultureInfo.TextInfo`를 읽습니다. 앱은 `CultureInfo.CurrentUICulture` 및 `CultureInfo.CurrentCulture`를 자체적으로 설정합니다. `string.Format`는 현재 UI 문화권을 사용하므로 `{0:C}`는 해당 문화권을 따릅니다.
+`I18n.SupportedLocales`는 초기화 시 스탬프된 목록으로 시작합니다 (`BuiltInLocales`: 기본 이름 및 영어 이름). 언어 메뉴는 해당 스탬프를 읽지 않습니다. 첫 번째 `T()` 이전에, `AppContext.BaseDirectory`에서 위로, 그리고 현재 디렉터리에서 각각 최대 8개의 디렉터리까지 `locales/ui-languages.json`를 검색합니다. 첫 번째 파일이 우선합니다. `code`, `label`, `englishName`를 `LocaleInfo`에 매핑하고 (`label`는 기본 이름입니다) 동일한 호출에서 `FlatDirectory`를 해당 `locales` 디렉터리로 설정하여 `Locales`로 `Configure`에 전달합니다. 모든 `Configure` 호출은 `Strict`, `FlatDirectory`, `OpenLocale`를 대체합니다. `Locales`만 설정하는 후속 호출은 `FlatDirectory`를 지웁니다. null `Locales` 배열은 현재 목록을 그대로 두고 `BuiltInLocales`를 복원하지 않습니다. 매니페스트가 없으면, 소스 언어에 대해 한 요소 목록을 전달하고 `FlatDirectory`를 설정하지 마십시오. 그러면 메뉴는 소스 언어만 표시되고, 카탈로그는 내장된 상태로 유지됩니다. 개발은 `sync`이 방금 작성한 파일을 읽습니다. `sync`를 따라야 하는 설치 프로그램은 `ui-languages.json`와 로케일 JSON을 앱 옆에 함께 제공합니다.
 
-`LocaleChanged`은(는) `SetLocale` 내부에서 발생합니다. 먼저 `CurrentUICulture`와 `CurrentCulture`을(를) 설정하여 새로 고침 핸들러가 새 문화권으로 형식을 지정하도록 하십시오. `T`를 호출하는 뷰 모델 속성은 해당 이벤트에서 `PropertyChanged`를 발생시켜야 합니다. 일반 문자열을 반환하는 마크업 확장은 뷰가 다음에 빌드될 때 업데이트됩니다. 카탈로그와 현재 로캘은 정적입니다. 이는 데스크톱 프로세스에 안전합니다. 다중 사용자 서버의 경우 요청별 로캘이 아닙니다. 그곳에 `IStringLocalizer` 또는 `ResourceManager`을(를) 유지하십시오. `CurrentUICulture`을(를) 설정해도 각 요청에 자체 맵이 제공되지 않습니다.
+`I18n.IsRightToLeft`는 `CultureInfo.TextInfo`을(를) 읽습니다. 앱은 `CultureInfo.CurrentUICulture`와 `CultureInfo.CurrentCulture`를 자체적으로 설정하고 로케일 코드를 유지합니다. `string.Format`는 현재 UI 문화를 사용하므로, `{0:C}`는 해당 문화를 따릅니다.
+
+`LocaleChanged`는 `SetLocale` 내에서 발생합니다. 새로 고침 핸들러가 새 문화권으로 포맷하도록 `CurrentUICulture`와 `CurrentCulture`를 먼저 설정하십시오. `T`를 호출하는 뷰 모델 속성은 해당 이벤트에서 `PropertyChanged`를 발생시켜야 합니다. Avalonia, WPF, MAUI의 경우, 마크업 확장은 `I18n.T(Text)`을(를) 반환하고 `LocaleChanged`에서 해당 속성을 다시 설정한 다음, 컨트롤이 시각적 트리에서 벗어날 때 구독을 취소합니다. 카탈로그와 현재 로케일은 정적입니다. 이는 데스크톱 프로세스에 안전합니다. 다중 사용자 서버의 요청별 로케일이 아닙니다. `IStringLocalizer` 또는 `ResourceManager`를 거기에 유지하십시오. `CurrentUICulture`을(를) 설정해도 각 요청에 자체 맵이 제공되지 않습니다.
 
 복사된 헬퍼를 새로 고치려면, 일회용 디렉터리에 동일한 템플릿을 스캐폴드하고 교체하려는 생성된 파일만 복사하십시오. 헬퍼를 업그레이드하기 위해 앱에서 `init`을(를) 다시 실행하지 마십시오.
 
@@ -88,18 +90,38 @@ JavaScript 및 Python에서 사용되는 기본 스타일은 변경되지 않습
 <a id="desktop-recipe"></a>
 ## 데스크톱 레시피
 
-Avalonia, WPF, MAUI는 각각 고유한 마크업 확장 기본 클래스를 가집니다. 헬퍼는 해당 어셈블리를 참조하지 않습니다. Avalonia 형태 중 하나:
+Avalonia, WPF, MAUI는 각각 고유한 마크업 확장 기본 클래스를 가집니다. 헬퍼는 해당 어셈블리를 참조하지 않습니다. `ProvideValue`는 `I18n.T(Text)`을(를) 반환하고 `LocaleChanged`에서 해당 속성을 다시 설정합니다. 컨트롤이 시각적 트리에서 벗어날 때 구독을 취소하십시오. `**/TrExtension.cs`를 `ui.uiExtractor.exclude`에 추가하여 `T(Text)`가 비리터럴로 보고되지 않도록 하십시오. XAML 리터럴은 이미 `Tr`을(를) 통해 추출되었습니다. `{loc:Tr}`는 `T`만 호출할 수 있습니다. 하나의 짧은 단어에 대한 두 가지 의미는 `Tp`를 사용하여 코드에 설정됩니다.
+
+하나의 Avalonia 형태 (`IProvideValueTarget`는 `Avalonia.Metadata`에 있습니다):
 
 ```csharp
 public sealed class TrExtension : MarkupExtension
 {
     public TrExtension(string text) { Text = text; }
     public string Text { get; }
-    public override object ProvideValue(IServiceProvider serviceProvider) => I18n.T(Text);
+
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
+        var text = I18n.T(Text);
+        if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target
+            && target.TargetObject is AvaloniaObject control
+            && target.TargetProperty is AvaloniaProperty property)
+        {
+            void Refresh() => control.SetValue(property, I18n.T(Text));
+            I18n.LocaleChanged += Refresh;
+            if (control is StyledElement element)
+            {
+                element.DetachedFromVisualTree += (_, _) => I18n.LocaleChanged -= Refresh;
+            }
+        }
+        return text;
+    }
 }
 ```
 
-서식 있는 문장은 C#(`T("Cursor {0}", value)`)에 유지되며, 이는 추출기가 단일 리터럴에 머무르게 합니다. 동일한 호출은 뷰 모델, 트레이 툴팁 및 대화 상자에서 작동합니다.
+WPF와 MAUI는 자체 속성 유형으로 동일한 아이디어를 사용합니다. Avalonia 전용: `e.Source`이 핸들러를 소유하는 컨트롤이 아닌 한 `SelectionChanged`를 무시하십시오. 해당 핸들러 내부 또는 이 콤보의 `SetLocale`가 발생시킨 `LocaleChanged` 내부에서 `ItemsSource` 또는 `SelectedItem`를 할당하지 마십시오. `Dispatcher.UIThread.Post`으로 새로 고침을 게시하고, 코드가 `SelectedItem`를 설정하는 동안 핸들러를 보호하십시오. 버블링된 이벤트에서 `ItemsSource`를 다시 할당하는 부모 `TabControl`는 프로세스를 충돌시킵니다 (종료 코드 139, 빈 `crash.log`).
+
+포맷된 문장은 C# (`T("Cursor {0}", value)`)에 유지되며, 이는 추출기가 단일 리터럴에 머무르도록 합니다. 바인딩의 `StringFormat`은 보이지 않습니다. 동일한 호출이 뷰 모델, 트레이 툴팁 및 대화 상자에서 작동합니다. 열거형 콤보는 열거형을 유지하고, 캡션에서 `T("Light")`를 반환하며, `LocaleChanged`에서 항목을 다시 빌드합니다. 트레이 항목은 `Tp("tray", "Open")`와 안정적인 `CommandParameter`를 사용합니다. 헤더가 아닌 매개변수를 일치시키십시오. 서비스는 영어 오류 문장을 저장하고, 표시 사이트는 `T`을(를) 통해 알려진 문장을 매핑합니다. Linux `.desktop` `Name=` 및 `Comment=`는 소스 언어로 유지됩니다. 비교되는 기간 토큰 (`2d`, `7h 47m`)은 번역되지 않은 상태로 유지됩니다. 표시 사이트에서 `T("now")`와 `T("in {0}", duration)`를 번역하십시오. 리터럴의 선행 또는 후행 공백은 여전히 추출 경고입니다. 이를 포맷 문자열 또는 레이아웃으로 이동하십시오. `Tn`는 항상 복수형이었던 소스 문장 (`1 samples`)을 수정할 수 있습니다.
 
 <a id="migrate"></a>
 ## 안전하지 않은 호출 다시 작성

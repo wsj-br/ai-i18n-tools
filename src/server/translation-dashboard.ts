@@ -14,7 +14,10 @@ import {
 } from "../core/plural-forms.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { translationScriptIssue } from "../core/locale-utils.js";
-import { translationValuePlaceholderMessages } from "../core/ui-placeholder-audit.js";
+import {
+  pluralReferenceFormsFromRow,
+  translationValuePlaceholderMessages,
+} from "../core/ui-placeholder-audit.js";
 import type { UiPlaceholderStyle } from "../core/ui-placeholders.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import {
@@ -652,7 +655,8 @@ export function createTranslationDashboardApp(
             source,
             value,
             catalog.placeholderStyle,
-            row.zeroDigit === true
+            row.zeroDigit === true,
+            pluralReferenceFormsFromRow(source, row.pluralSource)
           );
           if (messages.length > 0) {
             placeholderIssuesByLocale[loc] = messages;
@@ -743,7 +747,8 @@ export function createTranslationDashboardApp(
               source,
               value,
               catalog.placeholderStyle,
-              prev.zeroDigit === true
+              prev.zeroDigit === true,
+              pluralReferenceFormsFromRow(source, prev.pluralSource)
             );
             if (messages.length > 0) {
               res.status(409).json({
