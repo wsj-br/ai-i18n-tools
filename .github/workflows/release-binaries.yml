@@ -106,7 +106,7 @@ jobs:
             echo "value=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Assemble checksums, Python examples, and the skill archive
+      - name: Assemble checksums, example archives, and the skill archive
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -122,12 +122,19 @@ jobs:
             examples/python-fastapi \
             examples/python-gettext \
             -x '*/__pycache__/*' '*.pyc' '*/.venv/*'
+          # The projects compile ../../assets/dotnet, so the archive keeps that path.
+          # bin/ and obj/ are build output and stay out.
+          zip -r dist-sea/release/ai-i18n-tools-dotnet-examples.zip \
+            examples/dotnet-console \
+            examples/dotnet-resx \
+            assets/dotnet \
+            -x '*/bin/*' '*/obj/*' '*/.vs/*' '*/TestResults/*'
           (
             cd skills
             zip -r "$GITHUB_WORKSPACE/dist-sea/release/ai-i18n-tools-skill.zip" -- *
           )
           cd dist-sea/release
-          # ai-i18n-tools-* is the gzip archives plus the Python examples zip and the skill zip.
+          # ai-i18n-tools-* is the gzip archives, both example zips, and the skill zip.
           # install.sh and install.ps1 stay in the repository.
           gh release upload "$tag" \
             ai-i18n-tools-* \

@@ -479,4 +479,4 @@ public static LocalizedString Plural(
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | `I18nResx.cs`のxUnitチェック: ソース文字列キー、引用符、コンテキスト、複数形、実際のサテライト |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | `ResourceManager`上にないアプリ用のJSONヘルパー |
 
-これらのディレクトリはヘルパーをチェックします。これらは翻訳するアプリではなく、APIキーは必要ありません。`dotnet-resx`内の`dotnet test`がサテライトチェックを実行します。実際のアプリは、このページの`init`から開始します。
+これらのディレクトリはヘルパーをチェックします。これらは翻訳対象のアプリではなく、APIキーも不要です。`dotnet-resx` 内の `dotnet test` がサテライトチェックを実行します。実際のアプリは、このページの `init` から始まります。`npx degit` を使ってコピーするか、GitHubリリースから `ai-i18n-tools-dotnet-examples.zip` をダウンロードしてください。そのzipファイルには、プロジェクトがコンパイルする `assets/dotnet` も含まれています。コマンド: [例](/ja/examples#net-examples)。

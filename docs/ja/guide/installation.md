@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### スタンドアロン実行ファイル
 
-GitHub Releasesには、Node.jsの単一実行可能ビルドが添付されています。Pythonプロジェクトは、Node.jsをインストールすることなく、そのバイナリから`extract`、`translate-ui`、`suggest-models`を含むCLIを実行します。
+GitHubリリースにはNode.jsの単一実行可能ビルドが添付されています。プロジェクトがNode.jsで実行されない場合は、そのバイナリを使用してください。Pythonおよび.NETプロジェクトは、Node.jsのインストールなしで、`extract`、`translate-ui`、および`suggest-models`を含む同じCLIをそこから実行できます。
 
 LinuxおよびmacOS:
 
@@ -34,7 +34,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 バイナリは公証されておらず、Authenticode署名もされていません。macOSは、署名されていないプログラムの承認を求める場合があります。Windows SmartScreenは警告を表示する場合があります。macOSインストーラーは、チェックサムが一致した後、隔離フラグをクリアします。
 
-各リリースには、`SHA256SUMS.txt`と`ai-i18n-tools-python-examples.zip`（4つのPythonサンプル）も添付されています。それが追加されたリリース以降、同じページには`ai-i18n-tools-skill.zip`、つまりすべてのコーディングエージェントスキルディレクトリが含まれています。そのzipより前に公開されたリリースには含まれておらず、最初のzipには`ai-i18n-tools/`のみが含まれています。`install.sh`と`install.ps1`はリポジトリのルートに残り、上記のコマンドはそこからダウンロードします。npm tarballと実行可能ファイルには、Pythonのサンプルやスキルzipは含まれていません。サンプルはリポジトリに残ります。スキルディレクトリはnpm tarball内にあります。[コーディングエージェントスキル](/ja/guide/coding-agent-skill#download-the-skill-directory)を参照してください。
+各リリースには、さらに`SHA256SUMS.txt`、`ai-i18n-tools-python-examples.zip`（4つのPythonサンプル）、および`ai-i18n-tools-dotnet-examples.zip`（`dotnet-console`、`dotnet-resx`、およびそれらのプロジェクトがコンパイルする`assets/dotnet`ヘルパー）が添付されています。.NETアーカイブより前に公開されたリリースには、それは含まれていません。スキルアーカイブが追加されたリリース以降、同じページに、すべてのコーディングエージェントスキルディレクトリである`ai-i18n-tools-skill.zip`が含まれています。そのスキルzipより前に公開されたリリースには、それは含まれておらず、最初のスキルzipには`ai-i18n-tools/`のみが含まれています。`install.sh`と`install.ps1`はリポジトリのルートにあり、上記のコマンドはそこからそれらをダウンロードします。npm tarballと実行可能ファイルには、サンプルアーカイブやスキルzipは含まれていません。サンプルはリポジトリに残ります。スキルディレクトリはnpm tarball内にあります。[コーディングエージェントスキル](/ja/guide/coding-agent-skill#download-the-skill-directory)を参照してください。
 
 <details>
 <summary><code>ai-i18n-tools</code> 実行可能ファイルの手動インストール手順</summary>
@@ -92,17 +92,22 @@ if ([string]::IsNullOrEmpty($userPath)) {
 
 </details>
 
-アクティブなプロバイダーのAPIキーを、npmインストールと同じ方法で設定します (下記参照)。その後:
+アクティブなプロバイダーのAPIキーは、npmインストールと同じ方法で設定します（下記参照）。次に、プロジェクトの`init`テンプレートを選択して翻訳します。Pythonプロジェクトは`-t ui-python`を使用します。.NETプロジェクトは`-t ui-dotnet`を使用します。すでに`ResourceManager`または`IStringLocalizer`で文字列をロードしているアプリは`-t ui-dotnet-resx`を使用します。以下の`init`行を実行します。
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 新しい設定の場合にのみ`init`を使用してください。これは選択された設定ファイルを上書きします。既存のプロジェクトの場合は、代わりに設定を編集してください。`sync`は、UI抽出を含む、設定済み/有効化されたすべての翻訳パイプラインを処理します。
 
-チュートリアル: [Pythonアプリへのi18nの追加](/ja/guide/add-i18n-to-python)。コマンドリファレンス: [suggest-models](/ja/reference/cli-commands/models#suggest-models)。
+ウォークスルー：[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)、[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)、および[.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)。コマンドリファレンス：[suggest-models](/ja/reference/cli-commands/models#suggest-models)。
 
 <a id="set-the-api-key"></a>
 ### APIキーを設定する

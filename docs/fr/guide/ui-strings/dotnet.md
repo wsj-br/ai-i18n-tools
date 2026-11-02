@@ -5,6 +5,8 @@
 
 Ajout de locales à une application existante en une seule langue : [Ajouter l'i18n à une application .NET](/fr/guide/add-i18n-to-dotnet).
 
+Les copies exécutables se trouvent dans `examples/dotnet-console` et `examples/dotnet-resx`. Ce sont des projets xUnit, pas des applications à traduire. L'archive de publication `ai-i18n-tools-dotnet-examples.zip` contient ces deux répertoires et `assets/dotnet`, que les projets compilent. Le tarball npm et l'exécutable autonome ne l'incluent pas. Les versions publiées avant ce zip ne l'incluent pas.
+
 <a id="scaffold"></a>
 ## Génération
 

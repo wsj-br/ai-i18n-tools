@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### Eigenständige ausführbare Dateien
 
-GitHub Releases fügen einen Node.js Single-Executable-Build bei. Python-Projekte führen die CLI über diese Binärdatei aus, einschließlich `extract`, `translate-ui` und `suggest-models`, ohne dass eine Node.js-Installation erforderlich ist.
+GitHub Releases stellen einen Node.js-Einzel-Executable-Build bereit. Verwenden Sie diese Binärdatei, wenn das Projekt nicht auf Node.js läuft. Python- und .NET-Projekte führen dieselbe CLI von dort aus, einschließlich `extract`, `translate-ui` und `suggest-models`, ohne Node.js-Installation.
 
 Linux und macOS:
 
@@ -34,7 +34,7 @@ Der Installer erkennt das System, lädt ein gzip-Archiv der passenden ausführba
 
 Die Binärdateien sind nicht notariell beglaubigt oder Authenticode-signiert. macOS fordert Sie möglicherweise auf, ein unsigniertes Programm zu genehmigen. Windows SmartScreen zeigt möglicherweise eine Warnung an. Der macOS-Installer löscht das Quarantäne-Flag, nachdem die Prüfsumme übereinstimmt.
 
-Jede Veröffentlichung enthält auch `SHA256SUMS.txt` und `ai-i18n-tools-python-examples.zip` (die vier Python-Beispiele). Ab der Veröffentlichung, die es hinzufügt, enthält dieselbe Seite `ai-i18n-tools-skill.zip`, jedes Coding-Agent-Skill-Verzeichnis. Veröffentlichungen, die vor diesem Zip veröffentlicht wurden, enthalten es nicht, und das erste Zip enthält nur `ai-i18n-tools/`. `install.sh` und `install.ps1` bleiben im Repository-Root, und die oben genannten Befehle laden sie von dort herunter. Das npm-Tarball und die ausführbare Datei enthalten die Python-Beispiele oder das Skill-Zip nicht. Die Beispiele bleiben im Repository. Die Skill-Verzeichnisse befinden sich im npm-Tarball. Siehe [Coding-Agent-Skill](/de/guide/coding-agent-skill#download-the-skill-directory).
+Jede Version enthält auch `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip` (die vier Python-Beispiele) und `ai-i18n-tools-dotnet-examples.zip` (`dotnet-console`, `dotnet-resx` und die `assets/dotnet`-Helfer, die diese Projekte kompilieren). Versionen, die vor dem .NET-Archiv veröffentlicht wurden, enthalten es nicht. Ab der Version, die das Skill-Archiv hinzufügt, enthält dieselbe Seite `ai-i18n-tools-skill.zip`, jedes Coding-Agent-Skill-Verzeichnis. Versionen, die vor diesem Skill-Zip veröffentlicht wurden, enthalten es nicht, und das erste Skill-Zip enthält nur `ai-i18n-tools/`. `install.sh` und `install.ps1` bleiben im Repository-Stammverzeichnis, und die oben genannten Befehle laden sie von dort herunter. Das npm-Tarball und die ausführbare Datei enthalten die Beispielarchive oder das Skill-Zip nicht. Die Beispiele bleiben im Repository. Die Skill-Verzeichnisse befinden sich im npm-Tarball. Siehe [Coding-Agent-Skill](/de/guide/coding-agent-skill#download-the-skill-directory).
 
 <details>
 <summary>Manuelle Anweisungen zur Installation der ausführbaren Datei <code>ai-i18n-tools</code></summary>
@@ -92,17 +92,22 @@ if ([string]::IsNullOrEmpty($userPath)) {
 
 </details>
 
-Legen Sie den API-Schlüssel für den aktiven Anbieter auf die gleiche Weise fest wie bei einer npm-Installation (siehe unten). Dann:
+Legen Sie den API-Schlüssel für den aktiven Anbieter auf die gleiche Weise fest wie bei einer npm-Installation (siehe unten). Wählen Sie dann die `init`-Vorlage für das Projekt aus und übersetzen Sie. Ein Python-Projekt verwendet `-t ui-python`. Ein .NET-Projekt verwendet `-t ui-dotnet`. Eine App, die bereits Zeichenfolgen mit `ResourceManager` oder `IStringLocalizer` lädt, verwendet `-t ui-dotnet-resx`. Führen Sie eine `init`-Zeile aus:
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 Verwenden Sie `init` nur für eine neue Konfiguration: Es überschreibt die ausgewählte Konfigurationsdatei. Für bestehende Projekte bearbeiten Sie stattdessen die Konfiguration. `sync` verarbeitet alle konfigurierten/aktivierten Übersetzungs-Pipelines, einschließlich der UI-Extraktion.
 
-Anleitung: [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python). Befehlsreferenz: [suggest-models](/de/reference/cli-commands/models#suggest-models).
+Anleitungen: [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python), [i18n zu einer .NET-App hinzufügen](/de/guide/add-i18n-to-dotnet) und [i18n zu einer .NET-ResourceManager-App hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager). Befehlsreferenz: [suggest-models](/de/reference/cli-commands/models#suggest-models).
 
 <a id="set-the-api-key"></a>
 ### API-Schlüssel festlegen

@@ -479,4 +479,4 @@ public static LocalizedString Plural(
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | xUnit 檢查 `I18nResx.cs` 的：原始字串金鑰、引號、內容、複數形式、實際附屬組件 |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | JSON 協助程式，適用於不在 `ResourceManager` 上的應用程式 |
 
-這些目錄會檢查協助程式。它們不是要翻譯的應用程式，而且不需要 API 金鑰。`dotnet test` 在 `dotnet-resx` 中執行附屬組件檢查。實際應用程式從此頁面上的 `init` 開始。
+這些目錄會檢查輔助程式。它們不是需要翻譯的應用程式，也不需要 API 金鑰。`dotnet-resx` 中的 `dotnet test` 會執行衛星檢查。真正的應用程式從本頁的 `init` 開始。使用 `npx degit` 複製一個，或從 GitHub 發行版下載 `ai-i18n-tools-dotnet-examples.zip`。該壓縮檔也包含專案編譯的 `assets/dotnet`。命令：[範例](/zh-Hant/examples#net-examples)。

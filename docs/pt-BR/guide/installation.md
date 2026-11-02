@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### Executáveis independentes
 
-As versões do GitHub incluem um build de executável único do Node.js. Projetos Python executam a CLI a partir desse binário, incluindo `extract`, `translate-ui` e `suggest-models`, sem a necessidade de instalar o Node.js.
+Lançamentos do GitHub anexam uma compilação executável única do Node.js. Use esse binário quando o projeto não for executado em Node.js. Projetos Python e .NET executam a mesma CLI a partir dele, incluindo `extract`, `translate-ui` e `suggest-models`, sem instalação do Node.js.
 
 Linux e macOS:
 
@@ -34,7 +34,7 @@ O instalador detecta o sistema, baixa um arquivo gzip do executável corresponde
 
 Os binários não são autenticados (notarised) nem assinados com Authenticode. O macOS pode pedir que você aprove um programa não assinado. O Windows SmartScreen pode exibir um aviso. O instalador do macOS limpa o sinalizador de quarentena após a correspondência do checksum.
 
-Cada lançamento também anexa `SHA256SUMS.txt` e `ai-i18n-tools-python-examples.zip` (os quatro exemplos Python). A partir do lançamento que o adiciona, a mesma página inclui `ai-i18n-tools-skill.zip`, cada diretório de skill do agente de codificação. Lançamentos publicados antes desse zip não o incluem, e o primeiro zip contém apenas `ai-i18n-tools/`. `install.sh` e `install.ps1` permanecem na raiz do repositório, e os comandos acima os baixam de lá. O tarball do npm e o executável não contêm os exemplos Python ou o zip de skills. Os exemplos permanecem no repositório. Os diretórios de skill estão dentro do tarball do npm. Consulte [Skill do agente de codificação](/pt-BR/guide/coding-agent-skill#download-the-skill-directory).
+Cada lançamento também anexa `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip` (os quatro exemplos Python) e `ai-i18n-tools-dotnet-examples.zip` (`dotnet-console`, `dotnet-resx` e os auxiliares `assets/dotnet` que esses projetos compilam). Lançamentos publicados antes do arquivo .NET não o incluem. A partir do lançamento que adiciona o arquivo de skill, a mesma página inclui `ai-i18n-tools-skill.zip`, cada diretório de skill do coding-agent. Lançamentos publicados antes desse zip de skill não o incluem, e o primeiro zip de skill contém apenas `ai-i18n-tools/`. `install.sh` e `install.ps1` permanecem na raiz do repositório, e os comandos acima os baixam de lá. O tarball npm e o executável não contêm os arquivos de exemplo ou o zip de skill. Os exemplos permanecem no repositório. Os diretórios de skill estão dentro do tarball npm. Consulte [Skill do coding-agent](/pt-BR/guide/coding-agent-skill#download-the-skill-directory).
 
 <details>
 <summary>Instruções para instalar manualmente o executável <code>ai-i18n-tools</code></summary>
@@ -92,17 +92,22 @@ Abra um novo terminal e execute `ai-i18n-tools --version`. O nome do comando é 
 
 </details>
 
-Defina a chave de API para o provedor ativo da mesma forma que em uma instalação com npm (veja abaixo). Depois:
+Defina a chave de API para o provedor ativo da mesma forma que uma instalação npm (veja abaixo). Em seguida, escolha o modelo `init` para o projeto e traduza. Um projeto Python usa `-t ui-python`. Um projeto .NET usa `-t ui-dotnet`. Um aplicativo que já carrega strings com `ResourceManager` ou `IStringLocalizer` usa `-t ui-dotnet-resx`. Execute uma linha `init`:
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 Use `init` apenas para uma nova configuração: ele sobrescreve o arquivo de configuração selecionado. Para projetos existentes, edite a configuração em vez disso. `sync` lida com todos os pipelines de tradução configurados/habilitados, incluindo a extração da interface do usuário.
 
-Passo a passo: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python). Referência de comando: [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
+Passo a passo: [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet) e [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager). Referência de comando: [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models).
 
 <a id="set-the-api-key"></a>
 ### Definir a chave de API

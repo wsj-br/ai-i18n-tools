@@ -5,6 +5,8 @@
 
 Adicionando localidades a um aplicativo existente de idioma único: [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet).
 
+Cópias executáveis residem em `examples/dotnet-console` e `examples/dotnet-resx`. São projetos xUnit, não aplicativos para traduzir. O arquivo de lançamento `ai-i18n-tools-dotnet-examples.zip` contém esses dois diretórios e `assets/dotnet`, que os projetos compilam. O tarball npm e o executável autônomo não contêm. Lançamentos publicados antes desse zip não o incluem.
+
 <a id="scaffold"></a>
 ## Scaffold
 

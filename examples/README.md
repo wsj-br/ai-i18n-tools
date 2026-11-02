@@ -18,7 +18,7 @@ pnpm install
 
 Replace `<name>` with a Node.js folder in the table below. Each of those READMEs repeats the same three commands with the folder name filled in, then documents how to run it (for example `pnpm start`, `pnpm dev`, or `pnpm run docs:dev`).
 
-Python examples (`python-streamlit`, `python-flask`, `python-fastapi`, `python-gettext`) use the same `degit` command and have no `package.json`. Skip `pnpm install`. Setup is under [Python examples](#python-examples). The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories.
+Python examples (`python-streamlit`, `python-flask`, `python-fastapi`, `python-gettext`) use the same `degit` command and have no `package.json`. Skip `pnpm install`. Setup is under [Python examples](#python-examples). The release archive `ai-i18n-tools-python-examples.zip` contains the same four directories. The .NET examples use the same `degit` command. Setup is under [.NET examples](#net-examples). The release archive `ai-i18n-tools-dotnet-examples.zip` contains both directories and `assets/dotnet`.
 
 | Example | Copy with degit |
 | --- | --- |
@@ -91,9 +91,12 @@ pip install -r requirements.txt
 
 To re-run extraction without Node.js, install the standalone command. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Then run `ai-i18n-tools` from the example directory. The same four directories are attached as `ai-i18n-tools-python-examples.zip`. They are not inside the npm tarball or the executable. From this repository, `node ../../bin/ai-i18n-tools.mjs` works after `pnpm build`. `pnpm update-all` does not run `cleanup` / `sync` inside these directories, so it will not call the translation API on the committed catalogs.
 
-### .NET example
+<a id="net-examples"></a>
+### .NET examples
 
 `dotnet-console` is an xUnit project that compiles the shipped `assets/dotnet/I18n.cs`. `dotnet-resx` compiles `I18nResx.cs` and checks `ResourceManager` against source-string `.resx` keys. Neither calls a translation API. From the repository root, `pnpm test:dotnet` runs both and skips when `dotnet` is not on `PATH`.
+
+Copy one directory with `npx degit`, or take both directories and `assets/dotnet` from `ai-i18n-tools-dotnet-examples.zip`. The projects compile `../../assets/dotnet`, so that path has to stay next to `examples/`. The archive is not inside the npm tarball or the executable. Releases published before that zip do not include it. `degit` of one directory does not include `assets/dotnet`.
 
 ---
 

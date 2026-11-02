@@ -85,7 +85,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 설치 프로그램은 이 머신용 gzip 아카이브를 다운로드하고, `SHA256SUMS.txt`을(를) 확인하고, 압축을 해제하고, `ai-i18n-tools`(으)로 명령을 설치하며, `PATH`에 추가합니다. 바이너리는 공증되지 않았으며 Authenticode 서명되지 않았습니다. 수동 다운로드 단계: [독립 실행형 실행 파일](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation#standalone-executables).
 
-네 가지 Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. npm tarball 또는 실행 파일 내에는 없습니다.
+4개의 Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. 2개의 .NET 예제는 `assets/dotnet`와 함께 `ai-i18n-tools-dotnet-examples.zip`에 있습니다. 이 두 아카이브는 npm tarball이나 실행 파일 안에 포함되어 있지 않습니다. .NET 아카이브 이전에 게시된 릴리스에는 해당 아카이브가 포함되어 있지 않습니다.
 
 <a id="quick-start"></a>
 ## 빠른 시작

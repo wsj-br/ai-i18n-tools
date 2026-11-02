@@ -634,4 +634,4 @@ Avalonia: `e.Source`이(가) 핸들러를 소유하는 컨트롤이 아닌 한 `
 | --- | --- |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | `I18n.cs`에 대한 xUnit 검사: 내장 JSON, 문화권 대체, `{0}`, 복수형, 그리고 `Configure` |
 
-이 디렉터리들은 도우미를 확인합니다. 이들은 번역할 앱이 아니며 API 키가 필요하지 않습니다. 해당 디렉터리의 `dotnet test`이(가) 검사를 실행합니다. 실제 앱은 이 페이지의 `init`부터 시작합니다.
+이 디렉터리들은 헬퍼를 확인합니다. 이들은 번역할 앱이 아니며, API 키가 필요하지 않습니다. 해당 디렉터리에 있는 `dotnet test`이(가) 검사를 실행합니다. 실제 앱은 이 페이지의 `init`부터 시작합니다. `npx degit`를 사용하여 하나를 복사하거나, GitHub 릴리스에서 `ai-i18n-tools-dotnet-examples.zip`을(를) 다운로드하세요. 해당 zip 파일에는 프로젝트가 컴파일하는 `assets/dotnet`도 포함되어 있습니다. 명령어: [예시](/ko/examples#net-examples).

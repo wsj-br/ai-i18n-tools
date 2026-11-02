@@ -479,4 +479,4 @@ Ese es el último paso manual. Continúe en [Elegir modelos y traducir](#choose-
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | Comprobaciones xUnit de `I18nResx.cs`: claves de cadena de origen, comillas, contexto, plurales, satélites reales |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | El asistente JSON, para una aplicación que no está en `ResourceManager` |
 
-Estos directorios comprueban los asistentes. No son aplicaciones para traducir y no necesitan una clave de API. `dotnet test` en `dotnet-resx` ejecuta las comprobaciones de satélite. Una aplicación real comienza desde `init` en esta página.
+Estos directorios comprueban las utilidades. No son aplicaciones para traducir y no necesitan una clave de API. `dotnet test` en `dotnet-resx` ejecuta las comprobaciones satélite. Una aplicación real comienza desde `init` en esta página. Copie una con `npx degit`, o descargue `ai-i18n-tools-dotnet-examples.zip` desde la versión de GitHub. Ese zip también contiene `assets/dotnet`, que el proyecto compila. Comandos: [Ejemplos](/es/examples#net-examples).

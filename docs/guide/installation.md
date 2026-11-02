@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### Standalone executables
 
-GitHub Releases attach a Node.js single-executable build. Python projects run the CLI from that binary, including `extract`, `translate-ui`, and `suggest-models`, with no Node.js install.
+GitHub Releases attach a Node.js single-executable build. Use that binary when the project does not run on Node.js. Python and .NET projects run the same CLI from it, including `extract`, `translate-ui`, and `suggest-models`, with no Node.js install.
 
 Linux and macOS:
 
@@ -34,7 +34,7 @@ The installer detects the system, downloads a gzip archive of the matching execu
 
 The binaries are not notarised or Authenticode-signed. macOS may ask you to approve an unsigned program. Windows SmartScreen may show a warning. The macOS installer clears the quarantine flag after the checksum matches.
 
-Each release also attaches `SHA256SUMS.txt` and `ai-i18n-tools-python-examples.zip` (the four Python examples). From the release that adds it, the same page includes `ai-i18n-tools-skill.zip`, every coding-agent skill directory. Releases published before that zip do not include it, and the first zip contains only `ai-i18n-tools/`. `install.sh` and `install.ps1` stay in the repository root, and the commands above download them from there. The npm tarball and the executable do not contain the Python examples or the skill zip. The examples stay in the repository. The skill directories are inside the npm tarball. See [Coding-agent skill](/guide/coding-agent-skill#download-the-skill-directory).
+Each release also attaches `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip` (the four Python examples), and `ai-i18n-tools-dotnet-examples.zip` (`dotnet-console`, `dotnet-resx`, and the `assets/dotnet` helpers those projects compile). Releases published before the .NET archive do not include it. From the release that adds the skill archive, the same page includes `ai-i18n-tools-skill.zip`, every coding-agent skill directory. Releases published before that skill zip do not include it, and the first skill zip contains only `ai-i18n-tools/`. `install.sh` and `install.ps1` stay in the repository root, and the commands above download them from there. The npm tarball and the executable do not contain the example archives or the skill zip. The examples stay in the repository. The skill directories are inside the npm tarball. See [Coding-agent skill](/guide/coding-agent-skill#download-the-skill-directory).
 
 <details>
 <summary>Manual instructions to install <code>ai-i18n-tools</code> executable</summary>
@@ -92,17 +92,22 @@ Open a new terminal and run `ai-i18n-tools --version`. The command name is `ai-i
 
 </details>
 
-Set the API key for the active provider the same way as an npm install (see below). Then:
+Set the API key for the active provider the same way as an npm install (see below). Then pick the `init` template for the project and translate. A Python project uses `-t ui-python`. A .NET project uses `-t ui-dotnet`. An app that already loads strings with `ResourceManager` or `IStringLocalizer` uses `-t ui-dotnet-resx`. Run one `init` line:
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 Use `init` only for a new configuration: it overwrites the selected config file. For existing projects, edit the config instead. `sync` handles all configured/enabled translation pipelines, including UI extraction.
 
-Walkthrough: [Add i18n to a Python app](/guide/add-i18n-to-python). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
+Walkthroughs: [Add i18n to a Python app](/guide/add-i18n-to-python), [Add i18n to a .NET app](/guide/add-i18n-to-dotnet), and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager). Command reference: [suggest-models](/reference/cli-commands/models#suggest-models).
 
 <a id="set-the-api-key"></a>
 ### Set the API key

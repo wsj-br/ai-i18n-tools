@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### स्टैंडअलोन निष्पादन योग्य (Standalone executables)
 
-GitHub Releases में एक Node.js सिंगल-एक्जीक्यूटेबल बिल्ड संलग्न होता है। Python प्रोजेक्ट्स उस बाइनरी से CLI चलाते हैं, जिसमें `extract`, `translate-ui`, और `suggest-models` शामिल हैं, जिसके लिए Node.js इंस्टॉल करने की आवश्यकता नहीं है।
+GitHub रिलीज़ एक Node.js सिंगल-एक्सेक्यूटेबल बिल्ड संलग्न करते हैं। उस बाइनरी का उपयोग तब करें जब प्रोजेक्ट Node.js पर न चलता हो। Python और .NET प्रोजेक्ट इससे वही CLI चलाते हैं, जिसमें `extract`, `translate-ui`, और `suggest-models` शामिल हैं, बिना किसी Node.js इंस्टॉलेशन के।
 
 Linux और macOS:
 
@@ -34,7 +34,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 बाइनरीज़ नोटराइज़्ड या ऑथेंटिकोड-साइन नहीं हैं। macOS आपसे एक अहस्ताक्षरित प्रोग्राम को मंज़ूरी देने के लिए कह सकता है। Windows SmartScreen एक चेतावनी दिखा सकता है। चेकसम मेल खाने के बाद macOS इंस्टॉलर क्वारंटाइन फ़्लैग को हटा देता है।
 
-प्रत्येक रिलीज़ में `SHA256SUMS.txt` और `ai-i18n-tools-python-examples.zip` (चार Python उदाहरण) भी संलग्न होते हैं। जिस रिलीज़ से इसे जोड़ा गया है, उसी पृष्ठ में `ai-i18n-tools-skill.zip`, प्रत्येक कोडिंग-एजेंट स्किल डायरेक्टरी शामिल है। उस ज़िप से पहले प्रकाशित रिलीज़ में यह शामिल नहीं है, और पहली ज़िप में केवल `ai-i18n-tools/` है। `install.sh` और `install.ps1` रिपॉजिटरी रूट में रहते हैं, और ऊपर दिए गए कमांड उन्हें वहीं से डाउनलोड करते हैं। npm टारबॉल और निष्पादन योग्य में Python उदाहरण या स्किल ज़िप शामिल नहीं हैं। उदाहरण रिपॉजिटरी में रहते हैं। स्किल डायरेक्टरीज़ npm टारबॉल के अंदर हैं। [कोडिंग-एजेंट स्किल](/hi/guide/coding-agent-skill#download-the-skill-directory) देखें।
+प्रत्येक रिलीज़ `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip` (चार Python उदाहरण), और `ai-i18n-tools-dotnet-examples.zip` (`dotnet-console`, `dotnet-resx`, और `assets/dotnet` हेल्पर जो उन प्रोजेक्ट्स को कंपाइल करते हैं) भी संलग्न करती है। .NET आर्काइव से पहले प्रकाशित रिलीज़ में यह शामिल नहीं है। उस रिलीज़ से जो स्किल आर्काइव जोड़ती है, उसी पेज में `ai-i18n-tools-skill.zip`, हर कोडिंग-एजेंट स्किल डायरेक्टरी शामिल है। उस स्किल ज़िप से पहले प्रकाशित रिलीज़ में यह शामिल नहीं है, और पहली स्किल ज़िप में केवल `ai-i18n-tools/` है। `install.sh` और `install.ps1` रिपॉजिटरी रूट में रहते हैं, और ऊपर दिए गए कमांड उन्हें वहीं से डाउनलोड करते हैं। npm टारबॉल और एक्सेक्यूटेबल में उदाहरण आर्काइव या स्किल ज़िप शामिल नहीं हैं। उदाहरण रिपॉजिटरी में रहते हैं। स्किल डायरेक्टरी npm टारबॉल के अंदर हैं। [कोडिंग-एजेंट स्किल](/hi/guide/coding-agent-skill#download-the-skill-directory) देखें।
 
 <details>
 <summary> <code>ai-i18n-tools</code> निष्पादन योग्य को स्थापित करने के लिए मैन्युअल निर्देश</summary>
@@ -92,17 +92,22 @@ if ([string]::IsNullOrEmpty($userPath)) {
 
 </details>
 
-सक्रिय प्रदाता के लिए API कुंजी को npm इंस्टॉल के समान तरीके से सेट करें (नीचे देखें)। फिर:
+सक्रिय प्रदाता के लिए API कुंजी को npm इंस्टॉलेशन के समान तरीके से सेट करें (नीचे देखें)। फिर प्रोजेक्ट के लिए `init` टेम्पलेट चुनें और अनुवाद करें। एक Python प्रोजेक्ट `-t ui-python` का उपयोग करता है। एक .NET प्रोजेक्ट `-t ui-dotnet` का उपयोग करता है। एक ऐप जो पहले से ही `ResourceManager` या `IStringLocalizer` के साथ स्ट्रिंग लोड करता है, वह `-t ui-dotnet-resx` का उपयोग करता है। एक `init` लाइन चलाएँ:
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 `init` का उपयोग केवल एक नए कॉन्फ़िगरेशन के लिए करें: यह चयनित कॉन्फ़िग फ़ाइल को अधिलेखित कर देता है। मौजूदा प्रोजेक्ट्स के लिए, इसके बजाय कॉन्फ़िग को संपादित करें। `sync` UI एक्सट्रैक्शन सहित सभी कॉन्फ़िगर किए गए/सक्षम अनुवाद पाइपलाइनों को संभालता है।
 
-वॉकथ्रू: [Add i18n to a Python app](/hi/guide/add-i18n-to-python)। कमांड संदर्भ: [suggest-models](/hi/reference/cli-commands/models#suggest-models)।
+वॉकथ्रू: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), [एक .NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet), और [एक .NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager)। कमांड संदर्भ: [suggest-models](/hi/reference/cli-commands/models#suggest-models)।
 
 <a id="set-the-api-key"></a>
 ### API कुंजी सेट करें

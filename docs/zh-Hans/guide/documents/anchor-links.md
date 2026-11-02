@@ -41,7 +41,7 @@ Read the [installation checklist](setup.md#first-run) before you deploy.
 ## 示例
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `{#…}` / `{/* #… */}` 后缀
+### Docusaurus `` / `` 后缀
 
 `docs/overview.md`:
 

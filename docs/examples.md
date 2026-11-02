@@ -38,6 +38,21 @@ On Windows, activate `.venv\Scripts\activate`.
 
 If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) repository instead, run `pnpm install` and `pnpm run build` at the repository root, then `cd examples/<name>`. Workspace (Node.js) examples use the local CLI via their `pnpm run i18n:*` scripts, or bare `ai-i18n-tools …` after [PATH setup](/guide/installation#using-the-cli). Python examples in that checkout translate with `node ../../bin/ai-i18n-tools.mjs` after the build. See [Installation — Cloned monorepo](/guide/installation#cloned-monorepo).
 
+<a id="net-examples"></a>
+### .NET examples
+
+`dotnet-console` and `dotnet-resx` have no `package.json`. The `degit` commands in the table below are valid. You can also download `ai-i18n-tools-dotnet-examples.zip` from the [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases). That zip contains the same two directories and `assets/dotnet`, which the projects compile through `../../assets/dotnet`. It is not part of the npm package, and it is not inside the standalone executable. Releases published before that zip do not include it.
+
+Both are xUnit projects. `dotnet-console` checks `I18n.cs`. `dotnet-resx` checks `I18nResx.cs` and `.resx` satellites. Neither calls a translation API. Run `dotnet test` in the directory. From a full clone, `pnpm test:dotnet` at the repository root runs both and skips when `dotnet` is not on `PATH`.
+
+Unpack `ai-i18n-tools-dotnet-examples.zip`, then run the checks from the example directory. The archive keeps `examples/` and `assets/dotnet` side by side, which is the path the projects compile:
+
+```bash
+cd examples/dotnet-console
+dotnet test
+```
+
+`degit` copies one directory and does not include `assets/dotnet`. Those compile links resolve in a full clone, or after unpacking the zip.
 
 <a id="which-example-matches-my-project"></a>
 ## Which example matches my project?
@@ -45,6 +60,7 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 - A JS/TS app: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (smallest) or [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). Guide: [Add i18n to a JS/TS app](/guide/add-i18n-to-js).
 - A Python app: python-streamlit, python-flask, or python-fastapi. Guide: [Add i18n to a Python app](/guide/add-i18n-to-python).
 - A Django or GNU gettext app: python-gettext (a gettext command-line tool; there is no Django example directory). Guide: [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext).
+- A .NET helper: dotnet-console (`I18n.cs`) or dotnet-resx (`I18nResx.cs` and `.resx` satellites). Guides: [Add i18n to a .NET app](/guide/add-i18n-to-dotnet) and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager).
 - A website or docs site: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, or plain-html-docs. Guide: [Add i18n to a website or docs site](/guide/add-i18n-to-website).
 - A repository README next to an app: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) or [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (the nextjs example also has a docs site). Guide: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 - Something else: multi-provider, test-markdown, and intlayer-migration.
@@ -70,6 +86,8 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 <a id="python-flask"></a>
 <a id="python-fastapi"></a>
 <a id="python-gettext"></a>
+<a id="dotnet-console"></a>
+<a id="dotnet-resx"></a>
 
 | Example | Best for | Copy with degit | Run |
 | --- | --- | --- | --- |
@@ -91,10 +109,12 @@ If you cloned the **whole** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-to
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, source-string JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar locale, `t()` / `_()`, source-string JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | Existing GNU gettext CLI; `extract` / `translate-ui` refresh `.po` and `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
+| [**dotnet-console**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console/README.md) | xUnit checks of `I18n.cs`: embedded JSON, culture fallback, `{0}`, plurals, and `Configure` | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` | `dotnet test` |
+| [**dotnet-resx**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx/README.md) | xUnit checks of `I18nResx.cs` and source-string `.resx` satellites | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` | `dotnet test` |
 
 Each **Example** name links to its GitHub README with full setup, commands, and project layout — or browse the [examples index in the repository](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md).
 
-Node.js examples install the CLI from npm after `pnpm install`. The four Python examples use `venv` and `pip` (`python-gettext` uses only the standard library) and the [standalone executable](/guide/installation#standalone-executables) for translation.
+Node.js examples install the CLI from npm after `pnpm install`. The four Python examples use `venv` and `pip` (`python-gettext` uses only the standard library) and the [standalone executable](/guide/installation#standalone-executables) for translation. The two .NET examples are xUnit projects. Run them with `dotnet test`. They are also in `ai-i18n-tools-dotnet-examples.zip` on the GitHub Release.
 
 
 <br/>

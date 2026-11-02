@@ -634,4 +634,4 @@ Avalonia：忽略 `SelectionChanged`，除非 `e.Source` 是擁有處理常式�
 | --- | --- |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | `I18n.cs` 的 xUnit 檢查：嵌入式 JSON、文化回退、`{0}`、複數和 `Configure` |
 
-這些目錄會檢查輔助程式。它們不是要翻譯的應用程式，而且它們不需要API金鑰。該目錄中的`dotnet test`會執行檢查。實際應用程式從本頁的`init`開始。
+這些目錄會檢查輔助程式。它們不是需要翻譯的應用程式，也不需要 API 金鑰。該目錄中的 `dotnet test` 會執行檢查。實際的應用程式會從本頁的 `init` 開始。使用 `npx degit` 複製一個，或從 GitHub 發行版下載 `ai-i18n-tools-dotnet-examples.zip`。該壓縮檔也包含 `assets/dotnet`，這是專案編譯的內容。指令：[範例](/zh-Hant/examples#net-examples)。

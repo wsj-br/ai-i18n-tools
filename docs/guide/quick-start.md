@@ -3,7 +3,7 @@
 
 This page guides a single-language project to its first translated files. It is for a JS/TS app, a Python app, a .NET app, a website or documentation site, or a repository README and other Markdown files. It assumes:
 
-- Node.js `>=22.16.0`, or the [standalone executable](/guide/installation#standalone-executables) for a Python project.
+- Node.js `>=22.16.0`, or the [standalone executable](/guide/installation#standalone-executables) for a Python or .NET project.
 - An API key for an LLM provider, or a local Ollama install.
 - The project is in version control, so you can review what the tool writes.
 
@@ -21,7 +21,7 @@ pnpm install
 pnpm run i18n:sync
 ```
 
-Replace `console-app` with any other Node.js example. Python examples have no `package.json`; copy them the same way or download `ai-i18n-tools-python-examples.zip` from the GitHub Release. The full list, with what each one shows, is on the [Examples](/examples) page.
+Replace `console-app` with any other Node.js example. Python and .NET examples have no `package.json`; copy them the same way. The four Python examples are also in `ai-i18n-tools-python-examples.zip` on the GitHub Release, and the two .NET examples are in `ai-i18n-tools-dotnet-examples.zip`. The full list, with what each one shows, is on the [Examples](/examples) page.
 
 <a id="install"></a>
 ## Install
@@ -30,7 +30,7 @@ Replace `console-app` with any other Node.js example. Python examples have no `p
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools` and `yarn add --dev ai-i18n-tools` work too. Python projects install the standalone executable and need no Node.js. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Other install options: [Installation](/guide/installation).
+`npm install --save-dev ai-i18n-tools` and `yarn add --dev ai-i18n-tools` work too. Python and .NET projects install the standalone executable and need no Node.js. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Other install options: [Installation](/guide/installation).
 
 <a id="provider-and-api-key"></a>
 ## Provider and API key
@@ -114,6 +114,7 @@ Most repositories want this together with the app: the default `ui-markdown` tem
 ```bash
 ai-i18n-tools init -P openrouter
 ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t ui-dotnet -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 

@@ -5,6 +5,8 @@
 
 기존 단일 언어 앱에 로케일 추가: [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet).
 
+실행 가능한 사본은 `examples/dotnet-console` 및 `examples/dotnet-resx`에 있습니다. 이것들은 번역할 앱이 아닌 xUnit 프로젝트입니다. 릴리스 아카이브 `ai-i18n-tools-dotnet-examples.zip`에는 해당 두 디렉터리와 프로젝트가 컴파일하는 `assets/dotnet`이(가) 포함되어 있습니다. npm 타르볼과 독립 실행 파일에는 포함되어 있지 않습니다. 해당 zip 파일 이전에 게시된 릴리스에는 그것이 포함되어 있지 않습니다.
+
 <a id="scaffold"></a>
 ## 스캐폴드
 

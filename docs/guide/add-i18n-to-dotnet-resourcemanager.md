@@ -479,4 +479,4 @@ That is the last manual step. Continue at [Choose models and translate](#choose-
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | xUnit checks of `I18nResx.cs`: source-string keys, quotes, context, plurals, real satellites |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | The JSON helper, for an app that is not on `ResourceManager` |
 
-These directories check the helpers. They are not apps to translate, and they do not need an API key. `dotnet test` in `dotnet-resx` runs the satellite checks. A real app starts from `init` on this page.
+These directories check the helpers. They are not apps to translate, and they do not need an API key. `dotnet test` in `dotnet-resx` runs the satellite checks. A real app starts from `init` on this page. Copy one with `npx degit`, or download `ai-i18n-tools-dotnet-examples.zip` from the GitHub Release. That zip also contains `assets/dotnet`, which the project compiles. Commands: [Examples](/examples#net-examples).

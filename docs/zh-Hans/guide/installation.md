@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### 独立可执行文件
 
-GitHub Releases 附带一个 Node.js 单可执行文件构建。Python 项目可直接从该二进制文件运行 CLI，包括 `extract`、`translate-ui` 和 `suggest-models`，无需安装 Node.js。
+GitHub 发布附带一个 Node.js 单一可执行文件构建。当项目不在 Node.js 上运行时，请使用该二进制文件。Python 和 .NET 项目可以从中运行相同的 CLI，包括 `extract`、`translate-ui` 和 `suggest-models`，无需安装 Node.js。
 
 Linux 和 macOS：
 
@@ -34,7 +34,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 这些二进制文件未经公证或 Authenticode 签名。macOS 可能会要求您批准未签名的程序。Windows SmartScreen 可能会显示警告。macOS 安装程序在校验和匹配后会清除隔离标志。
 
-每个版本还附带 `SHA256SUMS.txt` 和 `ai-i18n-tools-python-examples.zip`（四个 Python 示例）。从添加该内容的版本开始，同一页面包含 `ai-i18n-tools-skill.zip`，即每个编码代理技能目录。在该 zip 文件发布之前的版本不包含它，并且第一个 zip 文件仅包含 `ai-i18n-tools/`。`install.sh` 和 `install.ps1` 保留在仓库根目录中，上述命令将从那里下载它们。npm tarball 和可执行文件不包含 Python 示例或技能 zip 文件。示例保留在仓库中。技能目录在 npm tarball 中。请参阅 [编码代理技能](/zh-Hans/guide/coding-agent-skill#download-the-skill-directory)。
+每个版本还附带 `SHA256SUMS.txt`、`ai-i18n-tools-python-examples.zip`（四个 Python 示例）以及 `ai-i18n-tools-dotnet-examples.zip`（`dotnet-console`、`dotnet-resx` 和这些项目编译的 `assets/dotnet` 辅助程序）。在 .NET 存档发布之前的版本不包含它。从添加技能存档的版本开始，同一页面包含 `ai-i18n-tools-skill.zip`，即每个编码代理技能目录。在该技能 zip 发布之前的版本不包含它，并且第一个技能 zip 仅包含 `ai-i18n-tools/`。`install.sh` 和 `install.ps1` 保留在存储库根目录中，上述命令从那里下载它们。npm tarball 和可执行文件不包含示例存档或技能 zip。示例保留在存储库中。技能目录位于 npm tarball 中。请参阅 [编码代理技能](/zh-Hans/guide/coding-agent-skill#download-the-skill-directory)。
 
 <details>
 <summary>手动安装 <code>ai-i18n-tools</code> 可执行文件的说明</summary>
@@ -92,17 +92,22 @@ if ([string]::IsNullOrEmpty($userPath)) {
 
 </details>
 
-为活动提供商设置 API 密钥的方法与 npm 安装相同（见下文）。然后：
+按照 npm 安装的相同方式设置活动提供程序的 API 密钥（见下文）。然后为项目选择 `init` 模板并进行翻译。Python 项目使用 `-t ui-python`。 .NET 项目使用 `-t ui-dotnet`。已经使用 `ResourceManager` 或 `IStringLocalizer` 加载字符串的应用程序使用 `-t ui-dotnet-resx`。运行一行 `init`：
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 仅将 `init` 用于新配置：它会覆盖选定的配置文件。对于现有项目，请改为编辑配置。`sync` 处理所有已配置/已启用的翻译管道，包括 UI 提取。
 
-演练：[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)。命令参考：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
+演练：[将 i18n 添加到 Python 应用程序](/zh-Hans/guide/add-i18n-to-python)、[将 i18n 添加到 .NET 应用程序](/zh-Hans/guide/add-i18n-to-dotnet) 以及 [将 i18n 添加到 .NET ResourceManager 应用程序](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)。命令参考：[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
 <a id="set-the-api-key"></a>
 ### 设置 API 密钥

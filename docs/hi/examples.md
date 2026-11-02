@@ -38,15 +38,32 @@ Windows पर, `.venv\Scripts\activate` को सक्रिय करें�
 
 यदि आपने इसके बजाय **पूरी** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) रिपॉजिटरी को क्लोन किया है, तो रिपॉजिटरी रूट पर `pnpm install` और `pnpm run build` चलाएँ, फिर `cd examples/<name>` चलाएँ। वर्कस्पेस (Node.js) उदाहरण अपने `pnpm run i18n:*` स्क्रिप्ट के माध्यम से स्थानीय CLI का उपयोग करते हैं, या [PATH setup](/hi/guide/installation#using-the-cli) के बाद सीधे `ai-i18n-tools …` का उपयोग करते हैं। उस चेकआउट में Python उदाहरण बिल्ड के बाद `node ../../bin/ai-i18n-tools.mjs` के साथ अनुवाद करते हैं। [Installation — Cloned monorepo](/hi/guide/installation#cloned-monorepo) देखें।
 
+<a id="net-examples"></a>
+### .NET उदाहरण
+
+`dotnet-console` और `dotnet-resx` में कोई `package.json` नहीं है। नीचे दी गई तालिका में `degit` कमांड मान्य हैं। आप [GitHub रिलीज़](https://github.com/wsj-br/ai-i18n-tools/releases) से `ai-i18n-tools-dotnet-examples.zip` भी डाउनलोड कर सकते हैं। उस ज़िप में वही दो डायरेक्टरी और `assets/dotnet` शामिल हैं, जिन्हें प्रोजेक्ट `../../assets/dotnet` के माध्यम से कंपाइल करते हैं। यह npm पैकेज का हिस्सा नहीं है, और यह स्टैंडअलोन एक्ज़ीक्यूटेबल के अंदर नहीं है। उस ज़िप से पहले प्रकाशित रिलीज़ में यह शामिल नहीं है।
+
+दोनों xUnit प्रोजेक्ट हैं। `dotnet-console` `I18n.cs` की जाँच करता है। `dotnet-resx` `I18nResx.cs` और `.resx` सैटेलाइट्स की जाँच करता है। कोई भी अनुवाद API को कॉल नहीं करता है। डायरेक्टरी में `dotnet test` चलाएँ। एक पूर्ण क्लोन से, रिपॉजिटरी रूट पर `pnpm test:dotnet` दोनों को चलाता है और तब छोड़ देता है जब `dotnet` `PATH` पर नहीं होता है।
+
+`ai-i18n-tools-dotnet-examples.zip` को अनपैक करें, फिर उदाहरण डायरेक्टरी से जाँचें चलाएँ। आर्काइव `examples/` और `assets/dotnet` को साथ-साथ रखता है, जो वह पाथ है जिसे प्रोजेक्ट कंपाइल करते हैं:
+
+```bash
+cd examples/dotnet-console
+dotnet test
+```
+
+`degit` एक डायरेक्टरी कॉपी करता है और इसमें `assets/dotnet` शामिल नहीं है। वे कंपाइल लिंक एक पूर्ण क्लोन में, या ज़िप को अनपैक करने के बाद हल होते हैं।
+
 <a id="which-example-matches-my-project"></a>
 ## कौन सा उदाहरण मेरे प्रोजेक्ट से मेल खाता है?
 
-- एक JS/TS ऐप: [कंसोल-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (सबसे छोटा) या [नेक्स्टजेएस-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). गाइड: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js).
-- एक Python ऐप: python-streamlit, python-flask, या python-fastapi. गाइड: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python).
-- एक Django या GNU gettext ऐप: python-gettext (एक gettext कमांड-लाइन टूल; कोई Django उदाहरण डायरेक्टरी नहीं है). गाइड: [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext).
-- एक वेबसाइट या डॉक्स साइट: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, या plain-html-docs. गाइड: [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website).
-- एक ऐप के बगल में एक रिपॉजिटरी README: [कंसोल-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) या [नेक्स्टजेएस-ऐप](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (नेक्स्टजेएस उदाहरण में एक डॉक्स साइट भी है). गाइड: [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme).
-- कुछ और: multi-provider, test-markdown, और intlayer-migration.
+- एक JS/TS ऐप: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (सबसे छोटा) या [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)। गाइड: [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js)।
+- एक Python ऐप: python-streamlit, python-flask, या python-fastapi। गाइड: [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python)।
+- एक Django या GNU gettext ऐप: python-gettext (एक gettext कमांड-लाइन टूल; कोई Django उदाहरण डायरेक्टरी नहीं है)। गाइड: [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)।
+- एक .NET हेल्पर: dotnet-console (`I18n.cs`) या dotnet-resx (`I18nResx.cs` और `.resx` सैटेलाइट्स)। गाइड: [एक .NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) और [एक .NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager)।
+- एक वेबसाइट या डॉक्स साइट: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, या plain-html-docs। गाइड: [एक वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website)।
+- एक ऐप के बगल में एक रिपॉजिटरी README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) या [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs उदाहरण में एक डॉक्स साइट भी है)। गाइड: [अपने README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
+- कुछ और: multi-provider, test-markdown, और intlayer-migration।
 
 <a id="list-of-examples"></a>
 ## उदाहरणों की सूची
@@ -69,6 +86,8 @@ Windows पर, `.venv\Scripts\activate` को सक्रिय करें�
 <a id="python-flask"></a>
 <a id="python-fastapi"></a>
 <a id="python-gettext"></a>
+<a id="dotnet-console"></a>
+<a id="dotnet-resx"></a>
 
 | उदाहरण | इसके लिए सबसे अच्छा | degit के साथ कॉपी करें | चलाएँ |
 | --- | --- | --- | --- |
@@ -90,10 +109,12 @@ Windows पर, `.venv\Scripts\activate` को सक्रिय करें�
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, सोर्स-स्ट्रिंग JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar लोकेल, `t()` / `_()`, सोर्स-स्ट्रिंग JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | मौजूदा GNU gettext CLI; `extract` / `translate-ui` रिफ्रेश `.po` और `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
+| [**dotnet-console**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console/README.md) | `I18n.cs` के xUnit जाँच: एम्बेडेड JSON, कल्चर फ़ॉलबैक, `{0}`, प्लुरल्स, और `Configure` | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` | `dotnet test` |
+| [**dotnet-resx**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx/README.md) | `I18nResx.cs` और स्रोत-स्ट्रिंग `.resx` सैटेलाइट्स के xUnit जाँच | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` | `dotnet test` |
 
 प्रत्येक **उदाहरण** नाम पूर्ण सेटअप, कमांड और प्रोजेक्ट लेआउट के साथ अपने GitHub README से लिंक करता है — या [रिपॉजिटरी में उदाहरण इंडेक्स](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) ब्राउज़ करें।
 
-Node.js उदाहरण `pnpm install` के बाद npm से CLI इंस्टॉल करते हैं। चार Python उदाहरण `venv` और `pip` का उपयोग करते हैं (`python-gettext` केवल मानक लाइब्रेरी का उपयोग करता है) और अनुवाद के लिए [standalone executable](/hi/guide/installation#standalone-executables) का उपयोग करते हैं।
+Node.js उदाहरण `pnpm install` के बाद npm से CLI इंस्टॉल करते हैं। चार Python उदाहरण `venv` और `pip` (`python-gettext` केवल मानक लाइब्रेरी का उपयोग करता है) और अनुवाद के लिए [स्टैंडअलोन एक्ज़ीक्यूटेबल](/hi/guide/installation#standalone-executables) का उपयोग करते हैं। दो .NET उदाहरण xUnit प्रोजेक्ट हैं। उन्हें `dotnet test` के साथ चलाएँ। वे GitHub रिलीज़ पर `ai-i18n-tools-dotnet-examples.zip` में भी हैं।
 
 <br/>
 

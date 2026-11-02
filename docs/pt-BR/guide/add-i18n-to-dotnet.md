@@ -634,4 +634,4 @@ Este é o último passo manual. Continue em [Escolher modelos e traduzir](#choos
 | --- | --- |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | Verificações xUnit de `I18n.cs`: JSON incorporado, fallback de cultura, `{0}`, plurais e `Configure` |
 
-Esses diretórios verificam o auxiliar. Eles não são aplicativos para traduzir, e não precisam de uma chave de API. `dotnet test` nesse diretório executa as verificações. Um aplicativo real começa de `init` nesta página.
+Esses diretórios verificam o auxiliar. Eles não são aplicativos para traduzir e não precisam de uma chave de API. `dotnet test` nesse diretório executa as verificações. Um aplicativo real começa a partir de `init` nesta página. Copie um com `npx degit`, ou baixe `ai-i18n-tools-dotnet-examples.zip` do GitHub Release. Esse zip também contém `assets/dotnet`, que o projeto compila. Comandos: [Exemplos](/pt-BR/examples#net-examples).

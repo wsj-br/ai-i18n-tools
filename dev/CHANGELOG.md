@@ -9,7 +9,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-11-02
 
+- **Added**: release — GitHub Releases attach `ai-i18n-tools-dotnet-examples.zip` with `examples/dotnet-console`, `examples/dotnet-resx`, and `assets/dotnet`. Build directories `bin` and `obj` are left out. The npm tarball and the standalone executable do not contain it.
 
 ## [1.13.0] - 2026-11-02
 

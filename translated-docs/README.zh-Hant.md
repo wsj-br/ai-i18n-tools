@@ -85,7 +85,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 安裝程式會下載適用於這台機器的 gzip 壓縮檔，檢查 `SHA256SUMS.txt`，解壓縮，將指令安裝為 `ai-i18n-tools`，並將其新增至 `PATH`。這些二進位檔未經公證或 Authenticode 簽署。手動下載步驟：[獨立執行檔](https://wsj-br.github.io/ai-i18n-tools/zh-Hant/guide/installation#standalone-executables)。
 
-四個 Python 範例位於儲存庫中以及發行版中的 `ai-i18n-tools-python-examples.zip`。它們不在 npm tarball 或可執行檔中。
+這四個 Python 範例位於儲存庫中，並在發行版上的 `ai-i18n-tools-python-examples.zip` 中。這兩個 .NET 範例位於 `ai-i18n-tools-dotnet-examples.zip` 中，連同 `assets/dotnet`。這兩個壓縮檔都不在 npm tarball 或執行檔內。在 .NET 壓縮檔之前發佈的版本不包含它。
 
 <a id="quick-start"></a>
 ## 快速開始

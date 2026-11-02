@@ -5,6 +5,8 @@
 
 將地區設定新增至現有的單一語言應用程式：[將 i18n 新增至 .NET 應用程式](/zh-Hant/guide/add-i18n-to-dotnet)。
 
+可執行副本位於 `examples/dotnet-console` 和 `examples/dotnet-resx` 中。它們是 xUnit 專案，而不是需要翻譯的應用程式。發行封存檔 `ai-i18n-tools-dotnet-examples.zip` 包含那兩個目錄以及 `assets/dotnet`，後者是專案編譯的目標。npm tarball 和獨立可執行檔則不包含。在該 zip 檔之前發佈的版本不包含它。
+
 <a id="scaffold"></a>
 ## 鷹架
 

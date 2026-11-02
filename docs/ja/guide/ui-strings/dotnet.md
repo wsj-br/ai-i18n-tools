@@ -5,6 +5,8 @@
 
 既存の単一言語アプリにロケールを追加する: [.NET アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet)。
 
+実行可能なコピーは `examples/dotnet-console` と `examples/dotnet-resx` にあります。これらはxUnitプロジェクトであり、翻訳するアプリではありません。リリースアーカイブ `ai-i18n-tools-dotnet-examples.zip` には、これら2つのディレクトリと、プロジェクトがコンパイルする `assets/dotnet` が含まれています。npm tarball およびスタンドアロン実行可能ファイルには含まれていません。そのzipファイルより前に公開されたリリースにも、それは含まれていません。
+
 <a id="scaffold"></a>
 ## スキャフォールド
 

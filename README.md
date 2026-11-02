@@ -85,7 +85,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 The installer downloads a gzip archive for this machine, checks `SHA256SUMS.txt`, unpacks it, installs the command as `ai-i18n-tools`, and adds it to `PATH`. The binaries are not notarized or Authenticode-signed. Manual download steps: [Standalone executables](https://wsj-br.github.io/ai-i18n-tools/guide/installation#standalone-executables).
 
-The four Python examples are in the repository and in `ai-i18n-tools-python-examples.zip` on the release. They are not inside the npm tarball or the executable.
+The four Python examples are in the repository and in `ai-i18n-tools-python-examples.zip` on the release. The two .NET examples are in `ai-i18n-tools-dotnet-examples.zip`, together with `assets/dotnet`. Neither archive is inside the npm tarball or the executable. Releases published before the .NET archive do not include it.
 
 <a id="quick-start"></a>
 ## Quick start

@@ -3,8 +3,8 @@
 
 Esta página guía un proyecto de un solo idioma a sus primeros archivos traducidos. Es para una aplicación JS/TS, una aplicación Python, una aplicación .NET, un sitio web o un sitio de documentación, o un README de repositorio y otros archivos Markdown. Se asume que:
 
-- Node.js `>=22.16.0`, o el [ejecutable independiente](/es/guide/installation#standalone-executables) para un proyecto Python.
-- Una clave API para un proveedor de LLM, o una instalación local de Ollama.
+- Node.js `>=22.16.0`, o el [ejecutable independiente](/es/guide/installation#standalone-executables) para un proyecto de Python o .NET.
+- Una clave de API para un proveedor de LLM, o una instalación local de Ollama.
 - El proyecto está en control de versiones, para que puedas revisar lo que escribe la herramienta.
 
 Dos cosas difieren entre proyectos: cómo la herramienta encuentra tu texto y cómo tu aplicación carga el resultado. [Elige tu ruta](#pick-your-path) a continuación te envía a la guía correcta para ello.
@@ -21,7 +21,7 @@ pnpm install
 pnpm run i18n:sync
 ```
 
-Reemplaza `console-app` con cualquier otro ejemplo de Node.js. Los ejemplos de Python no tienen `package.json`; cópialos de la misma manera o descarga `ai-i18n-tools-python-examples.zip` de la versión de GitHub. La lista completa, con lo que muestra cada uno, está en la página de [Ejemplos](/es/examples).
+Reemplaza `console-app` con cualquier otro ejemplo de Node.js. Los ejemplos de Python y .NET no tienen `package.json`; cópiatelos de la misma manera. Los cuatro ejemplos de Python también están en `ai-i18n-tools-python-examples.zip` en la versión de GitHub, y los dos ejemplos de .NET están en `ai-i18n-tools-dotnet-examples.zip`. La lista completa, con lo que muestra cada uno, está en la página de [Ejemplos](/es/examples).
 
 <a id="install"></a>
 ## Instalar
@@ -30,7 +30,7 @@ Reemplaza `console-app` con cualquier otro ejemplo de Node.js. Los ejemplos de P
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools` y `yarn add --dev ai-i18n-tools` también funcionan. Los proyectos Python instalan el ejecutable independiente y no necesitan Node.js. Linux y macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Otras opciones de instalación: [Instalación](/es/guide/installation).
+`npm install --save-dev ai-i18n-tools` y `yarn add --dev ai-i18n-tools` también funcionan. Los proyectos de Python y .NET instalan el ejecutable independiente y no necesitan Node.js. Linux y macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Otras opciones de instalación: [Instalación](/es/guide/installation).
 
 <a id="provider-and-api-key"></a>
 ## Proveedor y clave API
@@ -114,6 +114,7 @@ La mayoría de los repositorios quieren esto junto con la aplicación: la planti
 ```bash
 ai-i18n-tools init -P openrouter
 ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t ui-dotnet -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 

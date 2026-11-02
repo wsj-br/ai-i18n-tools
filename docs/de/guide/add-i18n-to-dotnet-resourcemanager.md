@@ -479,4 +479,4 @@ Das ist der letzte manuelle Schritt. Fahren Sie fort unter [Modelle auswählen u
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | xUnit-Prüfungen von `I18nResx.cs`: Quellstring-Schlüssel, Anführungszeichen, Kontext, Pluralformen, echte Satelliten |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | Der JSON-Helfer, für eine App, die nicht auf `ResourceManager` ist |
 
-Diese Verzeichnisse prüfen die Helfer. Sie sind keine zu übersetzenden Apps und benötigen keinen API-Schlüssel. `dotnet test` in `dotnet-resx` führt die Satellitenprüfungen aus. Eine echte App beginnt ab `init` auf dieser Seite.
+Diese Verzeichnisse überprüfen die Helfer. Sie sind keine zu übersetzenden Apps und benötigen keinen API-Schlüssel. `dotnet test` in `dotnet-resx` führt die Satellitenprüfungen aus. Eine echte App beginnt auf dieser Seite mit `init`. Kopieren Sie eine davon mit `npx degit` oder laden Sie `ai-i18n-tools-dotnet-examples.zip` vom GitHub Release herunter. Diese Zip-Datei enthält auch `assets/dotnet`, die das Projekt kompiliert. Befehle: [Beispiele](/de/examples#net-examples).

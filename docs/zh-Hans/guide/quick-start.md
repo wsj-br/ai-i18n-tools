@@ -3,9 +3,9 @@
 
 本页指导单语言项目生成其首批翻译文件。它适用于 JS/TS 应用、Python 应用、.NET 应用、网站或文档站点，或存储库 README 和其他 Markdown 文件。它假设：
 
-- 已安装 Node.js `>=22.16.0`，或者对于 Python 项目，已安装[独立可执行文件](/zh-Hans/guide/installation#standalone-executables)。
-- 拥有一个 LLM 提供商的 API 密钥，或在本地安装了 Ollama。
-- 项目已纳入版本控制，以便您可以审查工具写入的内容。
+- Node.js `>=22.16.0`，或 [独立可执行文件](/zh-Hans/guide/installation#standalone-executables)（适用于 Python 或 .NET 项目）。
+- LLM 提供商的 API 密钥，或本地 Ollama 安装。
+- 项目处于版本控制中，因此您可以查看工具写入的内容。
 
 不同项目之间有两个差异：工具如何找到您的文本，以及您的应用如何加载结果。下方的[选择您的路径](#pick-your-path)部分会将您引导至相应的指南。
 
@@ -21,7 +21,7 @@ pnpm install
 pnpm run i18n:sync
 ```
 
-将 `console-app` 替换为任何其他 Node.js 示例。Python 示例没有 `package.json`；您可以按同样的方式复制它们，或从 GitHub Release 下载 `ai-i18n-tools-python-examples.zip`。完整的列表以及每个示例的展示内容，请参见[示例](/zh-Hans/examples)页面。
+将 `console-app` 替换为任何其他 Node.js 示例。Python 和 .NET 示例没有 `package.json`；请以相同方式复制它们。四个 Python 示例也位于 GitHub Release 的 `ai-i18n-tools-python-examples.zip` 中，两个 .NET 示例位于 `ai-i18n-tools-dotnet-examples.zip` 中。包含每个示例所展示内容的完整列表，请参见[示例](/zh-Hans/examples)页面。
 
 <a id="install"></a>
 ## 安装
@@ -30,7 +30,7 @@ pnpm run i18n:sync
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools` 和 `yarn add --dev ai-i18n-tools` 也可以。Python 项目安装独立可执行文件，无需 Node.js。Linux 和 macOS：`curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`。Windows PowerShell：`irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`。其他安装选项：[安装](/zh-Hans/guide/installation)。
+`npm install --save-dev ai-i18n-tools` 和 `yarn add --dev ai-i18n-tools` 也适用。Python 和 .NET 项目安装独立可执行文件，无需 Node.js。Linux 和 macOS：`curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`。Windows PowerShell：`irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`。其他安装选项：[安装](/zh-Hans/guide/installation)。
 
 <a id="provider-and-api-key"></a>
 ## 提供商和 API 密钥
@@ -114,6 +114,7 @@ ai-i18n-tools init -t ui-vitepress -P openrouter
 ```bash
 ai-i18n-tools init -P openrouter
 ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t ui-dotnet -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 

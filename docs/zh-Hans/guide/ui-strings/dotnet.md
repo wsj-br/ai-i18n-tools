@@ -5,6 +5,8 @@
 
 将区域设置添加到现有的单语言应用：[向 .NET 应用添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet)。
 
+可运行副本位于 `examples/dotnet-console` 和 `examples/dotnet-resx` 中。它们是 xUnit 项目，而不是要翻译的应用程序。发布存档 `ai-i18n-tools-dotnet-examples.zip` 包含那两个目录以及项目会编译的 `assets/dotnet`。npm tarball 和独立可执行文件则不包含。在该 zip 文件之前发布的版本不包含它。
+
 <a id="scaffold"></a>
 ## 脚手架
 

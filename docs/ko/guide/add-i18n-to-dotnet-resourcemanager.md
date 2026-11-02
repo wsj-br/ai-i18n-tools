@@ -479,4 +479,4 @@ public static LocalizedString Plural(
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | `I18nResx.cs`의 xUnit 검사: 소스 문자열 키, 따옴표, 컨텍스트, 복수형, 실제 위성 어셈블리 |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | `ResourceManager`에 없는 앱을 위한 JSON 도우미 |
 
-이 디렉터리들은 도우미를 확인합니다. 이것들은 번역할 앱이 아니며, API 키가 필요하지 않습니다. `dotnet-resx`의 `dotnet test`가 위성 어셈블리 검사를 실행합니다. 실제 앱은 이 페이지의 `init`부터 시작합니다.
+이 디렉터리들은 헬퍼를 확인합니다. 번역할 앱이 아니며 API 키가 필요하지 않습니다. `dotnet test`는 `dotnet-resx` 디렉터리 내에서 위성 검사를 실행합니다. 실제 앱은 이 페이지에서 `init`부터 시작합니다. `npx degit`를 사용하여 하나를 복사하거나, GitHub 릴리스에서 `ai-i18n-tools-dotnet-examples.zip`를 다운로드하세요. 해당 zip 파일에는 프로젝트가 컴파일하는 `assets/dotnet`도 포함되어 있습니다. 명령: [예시](/ko/examples#net-examples).

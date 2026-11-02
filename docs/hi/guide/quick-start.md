@@ -3,9 +3,9 @@
 
 यह पृष्ठ एक एकल-भाषा परियोजना को उसकी पहली अनुवादित फ़ाइलों तक मार्गदर्शन करता है। यह एक JS/TS ऐप, एक Python ऐप, एक .NET ऐप, एक वेबसाइट या दस्तावेज़ीकरण साइट, या एक रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए है। यह मानता है:
 
-- Node.js `>=22.16.0`, या Python परियोजना के लिए [स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables)।
-- एक LLM प्रदाता के लिए एक API कुंजी, या एक स्थानीय Ollama इंस्टॉलेशन।
-- परियोजना संस्करण नियंत्रण में है, ताकि आप उपकरण द्वारा लिखी गई चीज़ों की समीक्षा कर सकें।
+- Node.js `>=22.16.0`, या Python या .NET प्रोजेक्ट के लिए [स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables)।
+- किसी LLM प्रदाता के लिए एक API कुंजी, या एक स्थानीय Ollama इंस्टाल।
+- प्रोजेक्ट वर्ज़न कंट्रोल में है, ताकि आप टूल द्वारा लिखी गई चीज़ों की समीक्षा कर सकें।
 
 परियोजनाओं के बीच दो चीजें भिन्न होती हैं: उपकरण आपके टेक्स्ट को कैसे ढूंढता है, और आपका ऐप परिणाम को कैसे लोड करता है। नीचे [अपना मार्ग चुनें](#pick-your-path) आपको उसके लिए सही मार्गदर्शिका पर भेजता है।
 
@@ -21,7 +21,7 @@ pnpm install
 pnpm run i18n:sync
 ```
 
-`console-app` को किसी अन्य Node.js उदाहरण से बदलें। Python उदाहरणों में कोई `package.json` नहीं है; उन्हें उसी तरह कॉपी करें या GitHub रिलीज़ से `ai-i18n-tools-python-examples.zip` डाउनलोड करें। प्रत्येक उदाहरण क्या दिखाता है, उसकी पूरी सूची [उदाहरण](/hi/examples) पृष्ठ पर है।
+`console-app` को किसी अन्य Node.js उदाहरण से बदलें। Python और .NET उदाहरणों में कोई `package.json` नहीं है; उन्हें वैसे ही कॉपी करें। GitHub रिलीज़ पर चार Python उदाहरण `ai-i18n-tools-python-examples.zip` में भी हैं, और दो .NET उदाहरण `ai-i18n-tools-dotnet-examples.zip` में हैं। प्रत्येक उदाहरण क्या दिखाता है, उसकी पूरी सूची [उदाहरण](/hi/examples) पेज पर है।
 
 <a id="install"></a>
 ## इंस्टॉल करें
@@ -30,7 +30,7 @@ pnpm run i18n:sync
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools` और `yarn add --dev ai-i18n-tools` भी काम करते हैं। Python परियोजनाएं स्टैंडअलोन निष्पादन योग्य स्थापित करती हैं और उन्हें Node.js की आवश्यकता नहीं होती है। Linux और macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`। Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`। अन्य इंस्टॉलेशन विकल्प: [इंस्टॉलेशन](/hi/guide/installation)।
+`npm install --save-dev ai-i18n-tools` और `yarn add --dev ai-i18n-tools` भी काम करते हैं। Python और .NET प्रोजेक्ट स्टैंडअलोन निष्पादन योग्य को इंस्टॉल करते हैं और उन्हें Node.js की आवश्यकता नहीं होती है। Linux और macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`। Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`। अन्य इंस्टाल विकल्प: [इंस्टॉलेशन](/hi/guide/installation)।
 
 <a id="provider-and-api-key"></a>
 ## प्रदाता और API कुंजी
@@ -114,6 +114,7 @@ ai-i18n-tools init -t ui-vitepress -P openrouter
 ```bash
 ai-i18n-tools init -P openrouter
 ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t ui-dotnet -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 

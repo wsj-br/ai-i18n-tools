@@ -651,7 +651,7 @@ The script creates an annotated tag `v<version>` at **HEAD**, pushes it to `orig
 
 That GitHub release triggers CI, which runs lint, format check, build, and tests; if all checks pass, it publishes the package to npm. Check the **Actions** tab to verify.
 
-The Release binaries workflow then uploads the platform executables, `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip`, and `ai-i18n-tools-skill.zip`. The skill zip contains every directory under `skills/`, with each skill folder at the top level. It is a GitHub Release asset. It is not part of the npm tarball or the standalone executable. Releases published before that zip was added do not have the asset. The first zip contains only `ai-i18n-tools/`.
+The Release binaries workflow then uploads the platform executables, `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip`, `ai-i18n-tools-dotnet-examples.zip`, and `ai-i18n-tools-skill.zip`. The .NET archive contains `examples/dotnet-console`, `examples/dotnet-resx`, and `assets/dotnet`, and leaves out `bin` and `obj`. Releases published before that archive do not include it. The skill zip contains every directory under `skills/`, with each skill folder at the top level. It is a GitHub Release asset. It is not part of the npm tarball or the standalone executable. Releases published before that zip was added do not have the asset. The first zip contains only `ai-i18n-tools/`.
 
 **Manual alternative:** you can still create a release from the GitHub **Releases** UI if needed; prefer the script so the tag, title, and notes stay aligned with `package.json` and `release-notes/RELEASE_NOTES_<version>.md`.
 

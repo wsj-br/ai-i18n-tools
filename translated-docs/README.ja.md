@@ -85,7 +85,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 インストーラーは、このマシン用のgzipアーカイブをダウンロードし、`SHA256SUMS.txt`をチェックし、展開し、コマンドを`ai-i18n-tools`としてインストールし、`PATH`に追加します。バイナリは公証されておらず、Authenticode署名もされていません。手動ダウンロード手順：[スタンドアロン実行可能ファイル](https://wsj-br.github.io/ai-i18n-tools/ja/guide/installation#standalone-executables)。
 
-4つのPythonの例は、リポジトリとリリース版の`ai-i18n-tools-python-examples.zip`に含まれています。それらはnpm tarballや実行可能ファイル内にはありません。
+4つのPythonのサンプルは、リポジトリおよびリリース上の`ai-i18n-tools-python-examples.zip`にあります。2つの.NETのサンプルは、`assets/dotnet`と共に`ai-i18n-tools-dotnet-examples.zip`にあります。どちらのアーカイブもnpm tarballや実行可能ファイル内にはありません。.NETアーカイブより前に公開されたリリースには、それは含まれていません。
 
 <a id="quick-start"></a>
 ## クイックスタート

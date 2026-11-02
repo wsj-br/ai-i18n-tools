@@ -3,9 +3,9 @@
 
 このページでは、単一言語プロジェクトを最初の翻訳ファイルに導きます。これは、JS/TSアプリ、Pythonアプリ、.NETアプリ、ウェブサイトまたはドキュメントサイト、あるいはリポジトリのREADMEやその他のMarkdownファイル向けです。前提条件は次のとおりです。
 
-- Node.js `>=22.16.0`、またはPythonプロジェクトの場合は[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
+- Node.js `>=22.16.0`、またはPythonまたは.NETプロジェクト用の[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
 - LLMプロバイダーのAPIキー、またはローカルのOllamaインストール。
-- プロジェクトがバージョン管理されていること。これにより、ツールが書き込んだ内容を確認できます。
+- プロジェクトはバージョン管理されているため、ツールが書き込む内容を確認できます。
 
 プロジェクトによって異なる点が2つあります。ツールがテキストをどのように見つけるか、そしてアプリがその結果をどのように読み込むかです。以下の[パスを選択](#pick-your-path)から、それぞれに適したガイドに進んでください。
 
@@ -21,7 +21,7 @@ pnpm install
 pnpm run i18n:sync
 ```
 
-`console-app`を他のNode.jsの例に置き換えることができます。Pythonの例には`package.json`がありません。同じ方法でコピーするか、GitHubリリースから`ai-i18n-tools-python-examples.zip`をダウンロードしてください。それぞれの例が何を示しているかを含む完全なリストは、[サンプル](/ja/examples)ページにあります。
+`console-app`を他のNode.jsの例に置き換えてください。Pythonおよび.NETの例には`package.json`はありません。これらは同じ方法でコピーしてください。4つのPythonの例は、GitHubリリースにある`ai-i18n-tools-python-examples.zip`にも含まれており、2つの.NETの例は`ai-i18n-tools-dotnet-examples.zip`にあります。各例が何を示すかを含む完全なリストは、[例](/ja/examples)ページにあります。
 
 <a id="install"></a>
 ## インストール
@@ -30,7 +30,7 @@ pnpm run i18n:sync
 pnpm add -D ai-i18n-tools
 ```
 
-`npm install --save-dev ai-i18n-tools`や`yarn add --dev ai-i18n-tools`も使用できます。Pythonプロジェクトではスタンドアロン実行可能ファイルをインストールするため、Node.jsは不要です。LinuxおよびmacOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`。Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`。その他のインストールオプション: [インストール](/ja/guide/installation)。
+`npm install --save-dev ai-i18n-tools`と`yarn add --dev ai-i18n-tools`も機能します。Pythonおよび.NETプロジェクトはスタンドアロン実行可能ファイルをインストールし、Node.jsは不要です。LinuxおよびmacOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`。Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`。その他のインストールオプション: [インストール](/ja/guide/installation)。
 
 <a id="provider-and-api-key"></a>
 ## プロバイダーとAPIキー
@@ -114,6 +114,7 @@ ai-i18n-tools init -t ui-vitepress -P openrouter
 ```bash
 ai-i18n-tools init -P openrouter
 ai-i18n-tools init -t ui-python -P openrouter --with-readme
+ai-i18n-tools init -t ui-dotnet -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 

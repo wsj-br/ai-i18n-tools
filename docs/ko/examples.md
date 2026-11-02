@@ -38,15 +38,32 @@ Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 저장소 **전체**를 복제한 경우, 저장소 루트에서 `pnpm install` 및 `pnpm run build`을 실행한 다음 `cd examples/<name>`를 실행하십시오. 작업 영역(Node.js) 예제는 `pnpm run i18n:*` 스크립트를 통해 로컬 CLI를 사용하거나 [PATH 설정](/ko/guide/installation#using-the-cli) 후 일반 `ai-i18n-tools …`를 사용합니다. 해당 체크아웃의 Python 예제는 빌드 후 `node ../../bin/ai-i18n-tools.mjs`를 사용하여 번역합니다. [설치 — 복제된 모노레포](/ko/guide/installation#cloned-monorepo)를 참조하십시오.
 
+<a id="net-examples"></a>
+### .NET 예제
+
+`dotnet-console` 및 `dotnet-resx`에는 `package.json`가 없습니다. 아래 표의 `degit` 명령은 유효합니다. 또한 [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases)에서 `ai-i18n-tools-dotnet-examples.zip`를 다운로드할 수 있습니다. 해당 zip 파일에는 동일한 두 디렉터리와 프로젝트가 `../../assets/dotnet`를 통해 컴파일하는 `assets/dotnet`가 포함되어 있습니다. 이는 npm 패키지의 일부가 아니며, 독립 실행형 실행 파일 안에도 없습니다. 해당 zip 파일 이전에 게시된 릴리스에는 포함되어 있지 않습니다.
+
+둘 다 xUnit 프로젝트입니다. `dotnet-console`는 `I18n.cs`을(를) 확인합니다. `dotnet-resx`는 `I18nResx.cs` 및 `.resx` 위성 어셈블리(satellites)를 확인합니다. 둘 다 번역 API를 호출하지 않습니다. 해당 디렉터리에서 `dotnet test`를 실행합니다. 전체 클론에서 리포지토리 루트의 `pnpm test:dotnet`는 둘 다 실행하며, `dotnet`가 `PATH`에 없을 때 건너뜁니다.
+
+`ai-i18n-tools-dotnet-examples.zip`의 압축을 푼 다음, 예제 디렉터리에서 검사를 실행합니다. 아카이브는 `examples/`과 `assets/dotnet`를 나란히 유지하며, 이는 프로젝트가 컴파일되는 경로입니다.
+
+```bash
+cd examples/dotnet-console
+dotnet test
+```
+
+`degit`는 하나의 디렉터리를 복사하며 `assets/dotnet`을(를) 포함하지 않습니다. 이러한 컴파일 링크는 전체 클론에서 또는 zip 파일 압축 해제 후에 해결됩니다.
+
 <a id="which-example-matches-my-project"></a>
 ## 어떤 예제가 제 프로젝트에 맞을까요?
 
 - JS/TS 앱: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (가장 작음) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md). 가이드: [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js).
-- Python 앱: python-streamlit, python-flask 또는 python-fastapi. 가이드: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).
-- Django 또는 GNU gettext 앱: python-gettext (gettext 명령줄 도구; Django 예제 디렉터리는 없음). 가이드: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext).
-- 웹사이트 또는 문서 사이트: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html 또는 plain-html-docs. 가이드: [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website).
-- 앱 옆의 저장소 README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 예제에는 문서 사이트도 포함되어 있음). 가이드: [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme).
-- 기타: multi-provider, test-markdown 및 intlayer-migration.
+- Python 앱: python-streamlit, python-flask, 또는 python-fastapi. 가이드: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python).
+- Django 또는 GNU gettext 앱: python-gettext (gettext 명령줄 도구; Django 예제 디렉터리는 없습니다). 가이드: [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext).
+- .NET 헬퍼: dotnet-console (`I18n.cs`) 또는 dotnet-resx (`I18nResx.cs` 및 `.resx` 위성 어셈블리). 가이드: [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) 및 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager).
+- 웹사이트 또는 문서 사이트: docusaurus-docs, vitepress-docs, astro-docs, nextra-docs, fumadocs-docs, astro-website, plain-html, 또는 plain-html-docs. 가이드: [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website).
+- 앱 옆의 리포지토리 README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 또는 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 예제에는 문서 사이트도 있습니다). 가이드: [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme).
+- 기타: multi-provider, test-markdown, 및 intlayer-migration.
 
 <a id="list-of-examples"></a>
 ## 예시 목록
@@ -69,6 +86,8 @@ Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
 <a id="python-flask"></a>
 <a id="python-fastapi"></a>
 <a id="python-gettext"></a>
+<a id="dotnet-console"></a>
+<a id="dotnet-resx"></a>
 
 | 예시 | 가장 적합한 용도 | degit으로 복사 | 실행 |
 | --- | --- | --- | --- |
@@ -90,10 +109,12 @@ Windows에서는 `.venv\Scripts\activate`을 활성화하십시오.
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja, `t()` / `_()`, 소스 문자열 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI, ContextVar 로케일, `t()` / `_()`, 소스 문자열 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 기존 GNU gettext CLI; `extract` / `translate-ui` 새로 고침 `.po` 및 `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
+| [**dotnet-console**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console/README.md) | `I18n.cs`의 xUnit 검사: 내장 JSON, 문화권 대체, `{0}`, 복수형, 및 `Configure` | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` | `dotnet test` |
+| [**dotnet-resx**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx/README.md) | `I18nResx.cs` 및 소스 문자열 `.resx` 위성 어셈블리(satellites)의 xUnit 검사 | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` | `dotnet test` |
 
 각 **예시** 이름은 전체 설정, 명령 및 프로젝트 레이아웃이 포함된 GitHub README로 연결되거나 [저장소의 예시 색인](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)을 탐색할 수 있습니다.
 
-Node.js 예제는 `pnpm install` 후 npm에서 CLI를 설치합니다. 4개의 Python 예제는 `venv` 및 `pip`(`python-gettext`은 표준 라이브러리만 사용)와 번역을 위한 [독립 실행형 실행 파일](/ko/guide/installation#standalone-executables)을 사용합니다.
+Node.js 예제는 `pnpm install` 이후 npm에서 CLI를 설치합니다. 네 가지 Python 예제는 `venv` 및 `pip`를 사용하며(`python-gettext`는 표준 라이브러리만 사용), 번역을 위해 [독립 실행형 실행 파일](/ko/guide/installation#standalone-executables)을 사용합니다. 두 가지 .NET 예제는 xUnit 프로젝트입니다. `dotnet test`로 실행합니다. 또한 GitHub Release의 `ai-i18n-tools-dotnet-examples.zip`에 있습니다.
 
 <br/>
 

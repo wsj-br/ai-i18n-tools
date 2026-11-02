@@ -5,6 +5,8 @@
 
 Adding locales to an existing single-language app: [Add i18n to a .NET app](/guide/add-i18n-to-dotnet).
 
+Runnable copies live in `examples/dotnet-console` and `examples/dotnet-resx`. They are xUnit projects, not apps to translate. The release archive `ai-i18n-tools-dotnet-examples.zip` contains those two directories and `assets/dotnet`, which the projects compile. The npm tarball and the standalone executable do not. Releases published before that zip do not include it.
+
 <a id="scaffold"></a>
 ## Scaffold
 

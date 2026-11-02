@@ -38,14 +38,31 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 
 [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools)リポジトリを**全体**クローンした場合は、リポジトリのルートで`pnpm install`と`pnpm run build`を実行してから、`cd examples/<name>`を実行してください。ワークスペース（Node.js）の例では、`pnpm run i18n:*`スクリプトを介してローカルCLIを使用するか、[PATH設定](/ja/guide/installation#using-the-cli)の後に直接`ai-i18n-tools …`を使用します。このチェックアウト内のPythonの例は、ビルド後に`node ../../bin/ai-i18n-tools.mjs`を使用して翻訳します。[インストール — クローンしたモノレポ](/ja/guide/installation#cloned-monorepo)を参照してください。
 
+<a id="net-examples"></a>
+### .NET の例
+
+`dotnet-console` と `dotnet-resx` には `package.json` がありません。以下の表にある `degit` コマンドは有効です。[GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases) から `ai-i18n-tools-dotnet-examples.zip` をダウンロードすることもできます。その zip には、同じ 2 つのディレクトリと `assets/dotnet` が含まれており、プロジェクトは `../../assets/dotnet` を通じてこれをコンパイルします。これは npm パッケージの一部ではなく、スタンドアロン実行可能ファイル内にもありません。その zip より前に公開されたリリースには、これは含まれていません。
+
+どちらも xUnit プロジェクトです。`dotnet-console` は `I18n.cs` をチェックします。`dotnet-resx` は `I18nResx.cs` と `.resx` サテライトをチェックします。どちらも翻訳 API を呼び出しません。ディレクトリ内で `dotnet test` を実行します。フルクローンから、リポジトリのルートにある `pnpm test:dotnet` は両方を実行し、`dotnet` が `PATH` にない場合はスキップします。
+
+`ai-i18n-tools-dotnet-examples.zip` を展開し、例のディレクトリからチェックを実行します。アーカイブは `examples/` と `assets/dotnet` を並べて保持します。これはプロジェクトがコンパイルするパスです。
+
+```bash
+cd examples/dotnet-console
+dotnet test
+```
+
+`degit` は 1 つのディレクトリをコピーし、`assets/dotnet` を含みません。これらのコンパイルリンクは、フルクローンで、または zip を展開した後に解決されます。
+
 <a id="which-example-matches-my-project"></a>
 ## どの例がプロジェクトに合致しますか？
 
-- JS/TSアプリ: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (最小) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。ガイド: [JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)。
-- Pythonアプリ: python-streamlit、python-flask、または python-fastapi。ガイド: [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)。
-- DjangoまたはGNU gettextアプリ: python-gettext (gettextコマンドラインツール。Djangoの例のディレクトリはありません)。ガイド: [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)。
-- ウェブサイトまたはドキュメントサイト: docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html、または plain-html-docs。ガイド: [ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)。
-- アプリの隣にあるリポジトリのREADME: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjsの例にはドキュメントサイトも含まれています)。ガイド: [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)。
+- JS/TS アプリ: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (最小) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。ガイド: [JS/TS アプリに i18n を追加する](/ja/guide/add-i18n-to-js)。
+- Python アプリ: python-streamlit、python-flask、または python-fastapi。ガイド: [Python アプリに i18n を追加する](/ja/guide/add-i18n-to-python)。
+- Django または GNU gettext アプリ: python-gettext (gettext コマンドラインツール。Django の例のディレクトリはありません)。ガイド: [Django / Python gettext アプリに i18n を追加する](/ja/guide/add-i18n-to-django-gettext)。
+- .NET ヘルパー: dotnet-console (`I18n.cs`) または dotnet-resx (`I18nResx.cs` と `.resx` サテライト)。ガイド: [.NET アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet) および [.NET ResourceManager アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)。
+- ウェブサイトまたはドキュメントサイト: docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html、または plain-html-docs。ガイド: [ウェブサイトまたはドキュメントサイトに i18n を追加する](/ja/guide/add-i18n-to-website)。
+- アプリの隣にあるリポジトリの README: [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) または [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs の例にはドキュメントサイトも含まれています)。ガイド: [README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme)。
 - その他: multi-provider、test-markdown、および intlayer-migration。
 
 <a id="list-of-examples"></a>
@@ -69,6 +86,8 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 <a id="python-flask"></a>
 <a id="python-fastapi"></a>
 <a id="python-gettext"></a>
+<a id="dotnet-console"></a>
+<a id="dotnet-resx"></a>
 
 | 例 | 最適な用途 | degit でコピー | 実行 |
 | --- | --- | --- | --- |
@@ -90,10 +109,12 @@ Windowsでは、`.venv\Scripts\activate`をアクティブ化してください�
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja、`t()` / `_()`、ソース文字列 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI、ContextVar ロケール、`t()` / `_()`、ソース文字列 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 既存の GNU gettext CLI。`extract` / `translate-ui` は `.po` と `.mo` を更新します | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
+| [**dotnet-console**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console/README.md) | `I18n.cs` の xUnit チェック: 埋め込み JSON、カルチャフォールバック、`{0}`、複数形、および `Configure` | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` | `dotnet test` |
+| [**dotnet-resx**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx/README.md) | `I18nResx.cs` とソース文字列 `.resx` サテライトの xUnit チェック | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` | `dotnet test` |
 
 各**例**の名前は、完全なセットアップ、コマンド、プロジェクトレイアウトが記載された GitHub README にリンクしています。または、[リポジトリの例のインデックス](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md) を参照してください。
 
-Node.jsの例では、`pnpm install`の後にnpmからCLIをインストールします。4つのPythonの例では、`venv`と`pip`（`python-gettext`は標準ライブラリのみを使用）および翻訳用の[スタンドアロン実行ファイル](/ja/guide/installation#standalone-executables)を使用します。
+Node.js の例では、`pnpm install` の後に npm から CLI をインストールします。4 つの Python の例では、`venv` と `pip` (`python-gettext` は標準ライブラリのみを使用) および翻訳用の [スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables) を使用します。2 つの .NET の例は xUnit プロジェクトです。これらを `dotnet test` で実行します。これらは GitHub Release の `ai-i18n-tools-dotnet-examples.zip` にも含まれています。
 
 <br/>
 

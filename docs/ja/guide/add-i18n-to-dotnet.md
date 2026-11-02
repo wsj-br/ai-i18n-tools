@@ -634,4 +634,4 @@ Avalonia: `e.Source`がハンドラーを所有するコントロールでない
 | --- | --- |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | `I18n.cs`のxUnitチェック: 埋め込みJSON、カルチャフォールバック、`{0}`、複数形、および`Configure` |
 
-これらのディレクトリはヘルパーをチェックします。これらは翻訳するアプリではなく、API キーも必要ありません。そのディレクトリ内の `dotnet test` がチェックを実行します。実際のアプリは、このページの `init` から始まります。
+これらのディレクトリはヘルパーをチェックします。これらは翻訳するアプリではなく、APIキーも必要ありません。そのディレクトリ内の`dotnet test`がチェックを実行します。実際のアプリは、このページの`init`から始まります。`npx degit`でコピーするか、GitHubリリースから`ai-i18n-tools-dotnet-examples.zip`をダウンロードしてください。そのzipファイルには、プロジェクトがコンパイルする`assets/dotnet`も含まれています。コマンド：[例](/ja/examples#net-examples)。

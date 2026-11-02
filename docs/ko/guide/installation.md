@@ -16,7 +16,7 @@ yarn add ai-i18n-tools
 <a id="standalone-executables"></a>
 ### 독립 실행형 실행 파일
 
-GitHub Releases는 Node.js 단일 실행 파일 빌드를 첨부합니다. Python 프로젝트는 Node.js 설치 없이 `extract`, `translate-ui`, `suggest-models`를 포함하여 해당 바이너리에서 CLI를 실행합니다.
+GitHub Releases는 Node.js 단일 실행 파일 빌드를 첨부합니다. 프로젝트가 Node.js에서 실행되지 않을 때 해당 바이너리를 사용하세요. Python 및 .NET 프로젝트는 `extract`, `translate-ui`, `suggest-models`를 포함하여 Node.js 설치 없이 동일한 CLI를 실행합니다.
 
 Linux 및 macOS:
 
@@ -34,7 +34,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 바이너리는 공증되거나 Authenticode 서명되지 않았습니다. macOS는 서명되지 않은 프로그램을 승인하도록 요청할 수 있습니다. Windows SmartScreen은 경고를 표시할 수 있습니다. macOS 설치 프로그램은 체크섬이 일치하면 격리 플래그를 지웁니다.
 
-각 릴리스에는 `SHA256SUMS.txt` 및 `ai-i18n-tools-python-examples.zip`(네 가지 Python 예제)도 첨부됩니다. 이를 추가하는 릴리스부터 동일한 페이지에 모든 코딩 에이전트 스킬 디렉터리인 `ai-i18n-tools-skill.zip`가 포함됩니다. 해당 zip 파일 이전에 게시된 릴리스에는 포함되어 있지 않으며, 첫 번째 zip 파일에는 `ai-i18n-tools/`만 포함되어 있습니다. `install.sh` 및 `install.ps1`는 리포지토리 루트에 유지되며, 위 명령은 거기에서 다운로드합니다. npm tarball과 실행 파일에는 Python 예제 또는 스킬 zip 파일이 포함되어 있지 않습니다. 예제는 리포지토리에 유지됩니다. 스킬 디렉터리는 npm tarball 내부에 있습니다. [코딩 에이전트 스킬](/ko/guide/coding-agent-skill#download-the-skill-directory)을(를) 참조하십시오.
+각 릴리스는 `SHA256SUMS.txt`, `ai-i18n-tools-python-examples.zip`(네 가지 Python 예제), `ai-i18n-tools-dotnet-examples.zip`(`dotnet-console`, `dotnet-resx`, 해당 프로젝트가 컴파일하는 `assets/dotnet` 헬퍼)도 첨부합니다. .NET 아카이브 이전에 게시된 릴리스에는 포함되지 않습니다. 스킬 아카이브를 추가하는 릴리스부터 동일한 페이지에는 `ai-i18n-tools-skill.zip`, 모든 코딩 에이전트 스킬 디렉터리가 포함됩니다. 해당 스킬 zip 이전에 게시된 릴리스에는 포함되지 않으며, 첫 번째 스킬 zip에는 `ai-i18n-tools/`만 포함됩니다. `install.sh`과 `install.ps1`는 저장소 루트에 남아 있으며, 위 명령어는 해당 위치에서 다운로드합니다. npm tarball과 실행 파일에는 예제 아카이브나 스킬 zip이 포함되지 않습니다. 예제는 저장소에 남아 있습니다. 스킬 디렉터리는 npm tarball 내부에 있습니다. [코딩 에이전트 스킬](/ko/guide/coding-agent-skill#download-the-skill-directory)을 참조하세요.
 
 <details>
 <summary><code>ai-i18n-tools</code> 실행 파일을 설치하는 수동 지침</summary>
@@ -92,17 +92,22 @@ if ([string]::IsNullOrEmpty($userPath)) {
 
 </details>
 
-활성 공급자의 에이피아이 키를 npm 설치와 같은 방식으로 설정합니다(아래 참조). 그런 다음:
+활성 공급자의 API 키를 npm 설치와 동일한 방식으로 설정합니다(아래 참조). 그런 다음 프로젝트에 `init` 템플릿을 선택하고 번역합니다. Python 프로젝트는 `-t ui-python`을 사용합니다. .NET 프로젝트는 `-t ui-dotnet`를 사용합니다. 이미 `ResourceManager` 또는 `IStringLocalizer`로 문자열을 로드하는 앱은 `-t ui-dotnet-resx`를 사용합니다. `init` 한 줄을 실행합니다:
 
 ```bash
+# Python
 ai-i18n-tools init -t ui-python -P cheaperinference
+# .NET
+# ai-i18n-tools init -t ui-dotnet -P cheaperinference
+# .NET ResourceManager or IStringLocalizer
+# ai-i18n-tools init -t ui-dotnet-resx -P cheaperinference
 ai-i18n-tools suggest-models --apply
 ai-i18n-tools sync
 ```
 
 새 구성에만 `init`을(를) 사용하십시오. 선택한 구성 파일을 덮어씁니다. 기존 프로젝트의 경우 대신 구성을 편집하십시오. `sync`은(는) UI 추출을 포함하여 구성/활성화된 모든 번역 파이프라인을 처리합니다.
 
-연습: [Python 앱에 i18n 추가하기](/ko/guide/add-i18n-to-python). 명령 참조: [suggest-models](/ko/reference/cli-commands/models#suggest-models).
+연습 가이드: [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python), [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet), [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager). 명령어 참조: [suggest-models](/ko/reference/cli-commands/models#suggest-models).
 
 <a id="set-the-api-key"></a>
 ### 에이피아이 키 설정

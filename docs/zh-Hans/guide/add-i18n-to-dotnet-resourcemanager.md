@@ -479,4 +479,4 @@ public static LocalizedString Plural(
 | [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) | xUnit 检查 `I18nResx.cs`：源字符串键、引号、上下文、复数、真实卫星程序集 |
 | [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) | JSON 助手，适用于不在 `ResourceManager` 上的应用 |
 
-这些目录检查助手。它们不是要翻译的应用，也不需要 API 密钥。`dotnet test` 在 `dotnet-resx` 中运行卫星程序集检查。一个真实的应用从本页的 `init` 开始。
+这些目录用于检查辅助程序。它们不是需要翻译的应用程序，也不需要 API 密钥。在 `dotnet-resx` 中的 `dotnet test` 运行卫星检查。真正的应用程序从此页面上的 `init` 开始。使用 `npx degit` 复制一个，或者从 GitHub Release 下载 `ai-i18n-tools-dotnet-examples.zip`。该 zip 文件也包含 `assets/dotnet`，项目会编译它。命令：[示例](/zh-Hans/examples#net-examples)。

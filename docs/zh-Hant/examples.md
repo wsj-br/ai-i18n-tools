@@ -38,14 +38,31 @@ pip install -r requirements.txt
 
 如果您改為複製了 **整個** [ai-i18n-tools](https://github.com/wsj-br/ai-i18n-tools) 儲存庫，請在儲存庫根目錄執行 `pnpm install` 和 `pnpm run build`，然後執行 `cd examples/<name>`。工作區 (Node.js) 範例透過其 `pnpm run i18n:*` 指令碼使用本機 CLI，或在 [PATH 設定](/zh-Hant/guide/installation#using-the-cli) 後直接使用 `ai-i18n-tools …`。該檢出中的 Python 範例在建置後使用 `node ../../bin/ai-i18n-tools.mjs` 進行翻譯。請參閱 [安裝 — 複製的 monorepo](/zh-Hant/guide/installation#cloned-monorepo)。
 
+<a id="net-examples"></a>
+### .NET 範例
+
+`dotnet-console` 和 `dotnet-resx` 沒有 `package.json`。下表中的 `degit` 命令有效。您也可以從 [GitHub Release](https://github.com/wsj-br/ai-i18n-tools/releases) 下載 `ai-i18n-tools-dotnet-examples.zip`。該 zip 檔案包含相同的兩個目錄以及 `assets/dotnet`，專案透過 `../../assets/dotnet` 編譯。它不是 npm 套件的一部分，也不在獨立執行檔中。在該 zip 檔案之前發佈的版本不包含它。
+
+兩者都是 xUnit 專案。`dotnet-console` 檢查 `I18n.cs`。`dotnet-resx` 檢查 `I18nResx.cs` 和 `.resx` 附屬檔案。兩者都不呼叫翻譯 API。在該目錄中執行 `dotnet test`。從完整複製的專案中，儲存庫根目錄下的 `pnpm test:dotnet` 會執行兩者，並在 `dotnet` 不在 `PATH` 上時跳過。
+
+解壓縮 `ai-i18n-tools-dotnet-examples.zip`，然後從範例目錄執行檢查。該壓縮檔將 `examples/` 和 `assets/dotnet` 並排放置，這是專案編譯的路徑：
+
+```bash
+cd examples/dotnet-console
+dotnet test
+```
+
+`degit` 複製一個目錄，但不包含 `assets/dotnet`。這些編譯連結在完整複製的專案中，或解壓縮 zip 檔案後解析。
+
 <a id="which-example-matches-my-project"></a>
 ## 哪個範例符合我的專案？
 
 - JS/TS 應用程式：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) (最小) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md)。指南：[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js)。
 - Python 應用程式：python-streamlit、python-flask 或 python-fastapi。指南：[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。
-- Django 或 GNU gettext 應用程式：python-gettext (一個 gettext 命令列工具；沒有 Django 範例目錄)。指南：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。
+- Django 或 GNU gettext 應用程式：python-gettext (gettext 命令列工具；沒有 Django 範例目錄)。指南：[為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext)。
+- .NET 輔助工具：dotnet-console (`I18n.cs`) 或 dotnet-resx (`I18nResx.cs` 和 `.resx` 附屬檔案)。指南：[為 .NET 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet) 和 [為 .NET ResourceManager 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。
 - 網站或文件網站：docusaurus-docs、vitepress-docs、astro-docs、nextra-docs、fumadocs-docs、astro-website、plain-html 或 plain-html-docs。指南：[為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website)。
-- 應用程式旁的儲存庫 README：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 範例也包含文件網站)。指南：[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
+- 應用程式旁的儲存庫 README：[console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app/README.md) 或 [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app/README.md) (nextjs 範例也有文件網站)。指南：[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 - 其他：multi-provider、test-markdown 和 intlayer-migration。
 
 <a id="list-of-examples"></a>
@@ -69,6 +86,8 @@ pip install -r requirements.txt
 <a id="python-flask"></a>
 <a id="python-fastapi"></a>
 <a id="python-gettext"></a>
+<a id="dotnet-console"></a>
+<a id="dotnet-resx"></a>
 
 | 範例 | 最適合 | 使用 degit 複製 | 執行 |
 | --- | --- | --- | --- |
@@ -90,10 +109,12 @@ pip install -r requirements.txt
 | [**python-flask**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask/README.md) | Flask + Jinja，`t()` / `_()`，來源字串 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` | `python3 -m venv .venv && pip install -r requirements.txt && flask --app app run` |
 | [**python-fastapi**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi/README.md) | FastAPI、ContextVar 語系，`t()` / `_()`，來源字串 JSON | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` | `python3 -m venv .venv && pip install -r requirements.txt && uvicorn app:app` |
 | [**python-gettext**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext/README.md) | 現有的 GNU gettext CLI；`extract` / `translate-ui` 重新整理 `.po` 與 `.mo` | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` | `python3 app.py --lang es` |
+| [**dotnet-console**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console/README.md) | xUnit 對 `I18n.cs` 的檢查：嵌入式 JSON、文化特性回退、`{0}`、複數形式和 `Configure` | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` | `dotnet test` |
+| [**dotnet-resx**](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx/README.md) | xUnit 對 `I18nResx.cs` 和原始字串 `.resx` 附屬檔案的檢查 | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` | `dotnet test` |
 
 每個**範例**名稱都連結到其 GitHub README，其中包含完整的設定、命令和專案佈局 — 或者瀏覽[儲存庫中的範例索引](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/README.md)。
 
-Node.js 範例在 `pnpm install` 之後從 npm 安裝 CLI。四個 Python 範例使用 `venv` 和 `pip`（`python-gettext` 僅使用標準函式庫）以及用於翻譯的 [獨立執行檔](/zh-Hant/guide/installation#standalone-executables) 。
+Node.js 範例在 `pnpm install` 之後從 npm 安裝 CLI。這四個 Python 範例使用 `venv` 和 `pip` (`python-gettext` 僅使用標準函式庫) 以及 [獨立執行檔](/zh-Hant/guide/installation#standalone-executables) 進行翻譯。這兩個 .NET 範例是 xUnit 專案。使用 `dotnet test` 執行它們。它們也位於 GitHub Release 的 `ai-i18n-tools-dotnet-examples.zip` 中。
 
 <br/>
 
