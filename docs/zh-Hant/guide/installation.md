@@ -30,7 +30,7 @@ Windows (PowerShell)：
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-安裝程式會偵測系統、下載相符的可執行檔、檢查 `SHA256SUMS.txt`、將指令安裝為 `ai-i18n-tools` (在 Windows 上為 `ai-i18n-tools.exe`)，並將安裝目錄新增至 `PATH`。預設目錄為 `~/.local/bin`。如果還找不到指令，請開啟一個新的終端機。設定 `AI_I18N_VERSION` (例如 `v1.11.0`) 以鎖定特定版本，或設定 `AI_I18N_INSTALL_DIR` 以選擇其他目錄。
+安裝程式會偵測系統，下載符合的可執行檔的 gzip 壓縮檔，檢查 `SHA256SUMS.txt`，解壓縮，將指令安裝為 `ai-i18n-tools` (在 Windows 上為 `ai-i18n-tools.exe`)，並將安裝目錄新增至 `PATH`。Linux 和 macOS 使用 `gzip` 解壓縮。Windows PowerShell 使用 .NET gzip 讀取器解壓縮，該讀取器已是 Windows 的一部分。預設目錄是 `~/.local/bin`。如果尚未找到指令，請開啟新的終端機。設定 `AI_I18N_VERSION` (例如 `v1.11.0`) 以釘選發行版本，或設定 `AI_I18N_INSTALL_DIR` 以選擇另一個目錄。在 gzip 壓縮檔之前發行的版本仍包含原始可執行檔，且安裝程式接受該檔案。
 
 這些二進位檔未經公證或 Authenticode 簽署。macOS 可能會要求您批准未簽署的程式。Windows SmartScreen 可能會顯示警告。macOS 安裝程式會在校驗和匹配後清除隔離旗標。
 
@@ -41,21 +41,21 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 | 平台 | 資產 |
 | --- | --- |
-| Linux x64 | `ai-i18n-tools-linux-x64` |
-| Linux arm64 | `ai-i18n-tools-linux-arm64` |
-| macOS arm64 | `ai-i18n-tools-macos-arm64` |
-| macOS x64 | `ai-i18n-tools-macos-x64` |
-| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+| Linux x64 | `ai-i18n-tools-linux-x64.gz` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64.gz` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64.gz` |
+| macOS x64 | `ai-i18n-tools-macos-x64.gz` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe.gz` |
 
-1. 從 [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) 頁面下載符合您機器的資產以及 `SHA256SUMS.txt`。
-2. 檢查校驗和。在 Linux 上，執行 `grep ' ai-i18n-tools-linux-x64$' SHA256SUMS.txt | sha256sum -c -` (請使用您下載的資產名稱)。在 macOS 上，執行相同的指令列，但使用 `shasum -a 256 -c -`。在 Windows 上，執行 `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe).Hash` 並將其與 `SHA256SUMS.txt` 中的雜湊值進行比較。
-3. 將下載的檔案重新命名為 `ai-i18n-tools`，並將該目錄放在 `PATH` 上。
+1. 從 [GitHub 發行版本](https://github.com/wsj-br/ai-i18n-tools/releases) 頁面下載符合機器的資產和 `SHA256SUMS.txt`。
+2. 檢查 gzip 壓縮檔的總和檢查碼。在 Linux 上，`grep ' ai-i18n-tools-linux-x64.gz$' SHA256SUMS.txt | sha256sum -c -` (使用您下載的資產名稱)。在 macOS 上，使用 `shasum -a 256 -c -` 的相同行。在 Windows 上，`(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe.gz).Hash` 並將其與 `SHA256SUMS.txt` 中的雜湊值進行比較。
+3. 解壓縮檔案並將指令放在 `PATH`。
 
 Linux 和 macOS，以 Linux x64 資產為例 (請替換為您下載的資產)：
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-mv ai-i18n-tools-linux-x64 "$HOME/.local/bin/ai-i18n-tools"
+gzip -dc ai-i18n-tools-linux-x64.gz > "$HOME/.local/bin/ai-i18n-tools"
 chmod +x "$HOME/.local/bin/ai-i18n-tools"
 ```
 
@@ -65,11 +65,20 @@ chmod +x "$HOME/.local/bin/ai-i18n-tools"
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Windows (PowerShell)，將 `ai-i18n-tools-win-x64.exe` 重新命名為 `ai-i18n-tools.exe`：
+Windows (PowerShell)。`GZipStream` 是 Windows PowerShell 的一部分；無需單獨安裝 gzip：
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.local\bin" | Out-Null
-Move-Item -Force .\ai-i18n-tools-win-x64.exe "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+Add-Type -AssemblyName System.IO.Compression
+$gz = [System.IO.File]::OpenRead("$PWD\ai-i18n-tools-win-x64.exe.gz")
+$outPath = "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+try {
+  $gzipStream = New-Object System.IO.Compression.GZipStream($gz, [System.IO.Compression.CompressionMode]::Decompress)
+  try {
+    $out = [System.IO.File]::Create($outPath)
+    try { $gzipStream.CopyTo($out) } finally { $out.Dispose() }
+  } finally { $gzipStream.Dispose() }
+} finally { $gz.Dispose() }
 $installDir = "$env:USERPROFILE\.local\bin"
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ([string]::IsNullOrEmpty($userPath)) {

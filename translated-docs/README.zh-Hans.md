@@ -83,7 +83,7 @@ Windows (PowerShell)：
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-安装程序会为本机选择可执行文件，检查 `SHA256SUMS.txt`，将命令安装为 `ai-i18n-tools`，并将其添加到 `PATH`。这些二进制文件未经公证或 Authenticode 签名。手动下载步骤：[独立可执行文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/installation#standalone-executables)。
+安装程序会为此机器下载一个 gzip 归档文件，检查 `SHA256SUMS.txt`，解压它，将命令安装为 `ai-i18n-tools`，并将其添加到 `PATH`。这些二进制文件未经公证，也未进行 Authenticode 签名。手动下载步骤：[独立可执行文件](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/installation#standalone-executables)。
 
 四个 Python 示例位于仓库中和发布版的 `ai-i18n-tools-python-examples.zip` 中。它们不在 npm tarball 或可执行文件内。
 

@@ -83,7 +83,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-설치 프로그램은 이 시스템에 맞는 실행 파일을 선택하고, `SHA256SUMS.txt`를 확인하며, `ai-i18n-tools`로 명령을 설치하고, `PATH`에 추가합니다. 바이너리는 공증되거나 Authenticode 서명되지 않았습니다. 수동 다운로드 단계: [독립형 실행 파일](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation#standalone-executables).
+설치 프로그램은 이 머신용 gzip 아카이브를 다운로드하고, `SHA256SUMS.txt`을(를) 확인하고, 압축을 해제하고, `ai-i18n-tools`(으)로 명령을 설치하며, `PATH`에 추가합니다. 바이너리는 공증되지 않았으며 Authenticode 서명되지 않았습니다. 수동 다운로드 단계: [독립 실행형 실행 파일](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation#standalone-executables).
 
 네 가지 Python 예제는 저장소와 릴리스의 `ai-i18n-tools-python-examples.zip`에 있습니다. npm tarball 또는 실행 파일 내에는 없습니다.
 

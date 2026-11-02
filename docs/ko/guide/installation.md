@@ -30,7 +30,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-설치 프로그램은 시스템을 감지하고, 일치하는 실행 파일을 다운로드하고, `SHA256SUMS.txt`을 확인한 다음, 명령을 `ai-i18n-tools`(윈도우에서는 `ai-i18n-tools.exe`)로 설치하고 설치 디렉터리를 `PATH`에 추가합니다. 기본 디렉터리는 `~/.local/bin`입니다. 아직 명령을 찾을 수 없으면 새 터미널을 여세요. 릴리스를 고정하려면 `AI_I18N_VERSION`(예: `v1.11.0`)를 설정하고, 다른 디렉터리를 선택하려면 `AI_I18N_INSTALL_DIR`을 설정하세요.
+설치 프로그램이 시스템을 감지하고, 일치하는 실행 파일의 gzip 아카이브를 다운로드하며, `SHA256SUMS.txt`을(를) 확인하고, 압축을 해제하며, 명령을 `ai-i18n-tools`(으)로 설치하고(Windows에서는 `ai-i18n-tools.exe`), 설치 디렉터리를 `PATH`에 추가합니다. Linux 및 macOS는 `gzip`로 압축을 해제합니다. Windows PowerShell은 Windows에 이미 포함된 .NET gzip 리더로 압축을 해제합니다. 기본 디렉터리는 `~/.local/bin`입니다. 명령을 찾을 수 없는 경우 새 터미널을 엽니다. 릴리스를 고정하려면 `AI_I18N_VERSION`(예: `v1.11.0`)을(를) 설정하거나, 다른 디렉터리를 선택하려면 `AI_I18N_INSTALL_DIR`을(를) 설정합니다. gzip 아카이브 이전에 게시된 릴리스에는 여전히 원시 실행 파일이 있으며, 설치 프로그램은 해당 파일을 허용합니다.
 
 바이너리는 공증되거나 Authenticode 서명되지 않았습니다. macOS는 서명되지 않은 프로그램을 승인하도록 요청할 수 있습니다. Windows SmartScreen은 경고를 표시할 수 있습니다. macOS 설치 프로그램은 체크섬이 일치하면 격리 플래그를 지웁니다.
 
@@ -39,23 +39,23 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 <details>
 <summary><code>ai-i18n-tools</code> 실행 파일을 설치하는 수동 지침</summary>
 
-| 플랫폼 | 에셋 |
+| 플랫폼 | 자산 |
 | --- | --- |
-| Linux x64 | `ai-i18n-tools-linux-x64` |
-| Linux arm64 | `ai-i18n-tools-linux-arm64` |
-| macOS arm64 | `ai-i18n-tools-macos-arm64` |
-| macOS x64 | `ai-i18n-tools-macos-x64` |
-| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+| Linux x64 | `ai-i18n-tools-linux-x64.gz` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64.gz` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64.gz` |
+| macOS x64 | `ai-i18n-tools-macos-x64.gz` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe.gz` |
 
-1. 컴퓨터에 맞는 에셋과 `SHA256SUMS.txt`을 [GitHub 릴리스](https://github.com/wsj-br/ai-i18n-tools/releases) 페이지에서 다운로드하세요.
-2. 체크섬을 확인하세요. 리눅스에서는 `grep ' ai-i18n-tools-linux-x64$' SHA256SUMS.txt | sha256sum -c -`(다운로드한 에셋 이름 사용). 맥오에스에서는 `shasum -a 256 -c -`를 사용하여 같은 줄을 실행합니다. 윈도우에서는 `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe).Hash`을 실행하고 `SHA256SUMS.txt`의 해시와 비교합니다.
-3. 다운로드한 파일 이름을 `ai-i18n-tools`로 바꾸고 해당 디렉터리를 `PATH`에 추가하세요.
+1. [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) 페이지에서 컴퓨터와 일치하는 자산 및 `SHA256SUMS.txt`을(를) 다운로드합니다.
+2. gzip 아카이브의 체크섬을 확인합니다. Linux에서는 `grep ' ai-i18n-tools-linux-x64.gz$' SHA256SUMS.txt | sha256sum -c -`(다운로드한 자산 이름을 사용). macOS에서는 `shasum -a 256 -c -`와(과) 동일한 줄을 사용합니다. Windows에서는 `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe.gz).Hash`을(를) 사용하여 `SHA256SUMS.txt`의 해시와 비교합니다.
+3. 아카이브의 압축을 해제하고 명령을 `PATH`에 배치합니다.
 
 리눅스 및 맥오에스, 리눅스 육십사비트 에셋을 예로 사용(다운로드한 에셋으로 대체):
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-mv ai-i18n-tools-linux-x64 "$HOME/.local/bin/ai-i18n-tools"
+gzip -dc ai-i18n-tools-linux-x64.gz > "$HOME/.local/bin/ai-i18n-tools"
 chmod +x "$HOME/.local/bin/ai-i18n-tools"
 ```
 
@@ -65,11 +65,20 @@ chmod +x "$HOME/.local/bin/ai-i18n-tools"
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-윈도우(파워셸), `ai-i18n-tools-win-x64.exe`의 이름을 `ai-i18n-tools.exe`로 변경:
+Windows (PowerShell). `GZipStream`은(는) Windows PowerShell의 일부이므로 별도의 gzip 설치가 필요하지 않습니다.
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.local\bin" | Out-Null
-Move-Item -Force .\ai-i18n-tools-win-x64.exe "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+Add-Type -AssemblyName System.IO.Compression
+$gz = [System.IO.File]::OpenRead("$PWD\ai-i18n-tools-win-x64.exe.gz")
+$outPath = "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+try {
+  $gzipStream = New-Object System.IO.Compression.GZipStream($gz, [System.IO.Compression.CompressionMode]::Decompress)
+  try {
+    $out = [System.IO.File]::Create($outPath)
+    try { $gzipStream.CopyTo($out) } finally { $out.Dispose() }
+  } finally { $gzipStream.Dispose() }
+} finally { $gz.Dispose() }
 $installDir = "$env:USERPROFILE\.local\bin"
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ([string]::IsNullOrEmpty($userPath)) {

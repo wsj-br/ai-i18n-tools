@@ -30,7 +30,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-Das Installationsprogramm erkennt das System, lädt die passende ausführbare Datei herunter, prüft `SHA256SUMS.txt`, installiert den Befehl als `ai-i18n-tools` (`ai-i18n-tools.exe` unter Windows) und fügt das Installationsverzeichnis zu `PATH` hinzu. Das Standardverzeichnis ist `~/.local/bin`. Öffnen Sie ein neues Terminal, falls der Befehl noch nicht gefunden wird. Setzen Sie `AI_I18N_VERSION` (zum Beispiel `v1.11.0`), um eine Version festzulegen, oder `AI_I18N_INSTALL_DIR`, um ein anderes Verzeichnis zu wählen.
+Der Installer erkennt das System, lädt ein gzip-Archiv der passenden ausführbaren Datei herunter, prüft `SHA256SUMS.txt`, entpackt es, installiert den Befehl als `ai-i18n-tools` (`ai-i18n-tools.exe` unter Windows) und fügt das Installationsverzeichnis zu `PATH` hinzu. Linux und macOS entpacken mit `gzip`. Windows PowerShell entpackt mit dem .NET-gzip-Reader, der bereits Teil von Windows ist. Das Standardverzeichnis ist `~/.local/bin`. Öffnen Sie ein neues Terminal, falls der Befehl noch nicht gefunden wird. Legen Sie `AI_I18N_VERSION` fest (zum Beispiel `v1.11.0`), um eine Version festzulegen, oder `AI_I18N_INSTALL_DIR`, um ein anderes Verzeichnis zu wählen. Eine Version, die vor den gzip-Archiven veröffentlicht wurde, enthält noch die rohe ausführbare Datei, und der Installer akzeptiert diese Datei.
 
 Die Binärdateien sind nicht notariell beglaubigt oder Authenticode-signiert. macOS fordert Sie möglicherweise auf, ein unsigniertes Programm zu genehmigen. Windows SmartScreen zeigt möglicherweise eine Warnung an. Der macOS-Installer löscht das Quarantäne-Flag, nachdem die Prüfsumme übereinstimmt.
 
@@ -41,21 +41,21 @@ Jede Veröffentlichung enthält auch `SHA256SUMS.txt` und `ai-i18n-tools-python-
 
 | Plattform | Asset |
 | --- | --- |
-| Linux x64 | `ai-i18n-tools-linux-x64` |
-| Linux arm64 | `ai-i18n-tools-linux-arm64` |
-| macOS arm64 | `ai-i18n-tools-macos-arm64` |
-| macOS x64 | `ai-i18n-tools-macos-x64` |
-| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+| Linux x64 | `ai-i18n-tools-linux-x64.gz` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64.gz` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64.gz` |
+| macOS x64 | `ai-i18n-tools-macos-x64.gz` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe.gz` |
 
-1. Laden Sie das Asset, das zu Ihrem Computer und `SHA256SUMS.txt` passt, von der [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases)-Seite herunter.
-2. Überprüfen Sie die Prüfsumme. Unter Linux, `grep ' ai-i18n-tools-linux-x64$' SHA256SUMS.txt | sha256sum -c -` (verwenden Sie den Namen des heruntergeladenen Assets). Unter macOS, die gleiche Zeile mit `shasum -a 256 -c -`. Unter Windows, `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe).Hash` und vergleichen Sie es mit dem Hash in `SHA256SUMS.txt`.
-3. Benennen Sie die heruntergeladene Datei in `ai-i18n-tools` um und legen Sie dieses Verzeichnis in `PATH` ab.
+1. Laden Sie das Asset, das zu Ihrem Computer passt, und `SHA256SUMS.txt` von der Seite [GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) herunter.
+2. Überprüfen Sie die Prüfsumme des gzip-Archivs. Unter Linux, `grep ' ai-i18n-tools-linux-x64.gz$' SHA256SUMS.txt | sha256sum -c -` (verwenden Sie den Namen des heruntergeladenen Assets). Unter macOS, die gleiche Zeile mit `shasum -a 256 -c -`. Unter Windows, `(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe.gz).Hash` und vergleichen Sie es mit dem Hash in `SHA256SUMS.txt`.
+3. Entpacken Sie das Archiv und legen Sie den Befehl auf `PATH` ab.
 
 Linux und macOS, am Beispiel des Linux x64 Assets (ersetzen Sie das von Ihnen heruntergeladene Asset):
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-mv ai-i18n-tools-linux-x64 "$HOME/.local/bin/ai-i18n-tools"
+gzip -dc ai-i18n-tools-linux-x64.gz > "$HOME/.local/bin/ai-i18n-tools"
 chmod +x "$HOME/.local/bin/ai-i18n-tools"
 ```
 
@@ -65,11 +65,20 @@ Wenn `$HOME/.local/bin` noch nicht in `PATH` enthalten ist, fügen Sie dies zum 
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Windows (PowerShell), Umbenennen von `ai-i18n-tools-win-x64.exe` in `ai-i18n-tools.exe`:
+Windows (PowerShell). `GZipStream` ist Teil von Windows PowerShell; es gibt keine separate gzip-Installation:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.local\bin" | Out-Null
-Move-Item -Force .\ai-i18n-tools-win-x64.exe "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+Add-Type -AssemblyName System.IO.Compression
+$gz = [System.IO.File]::OpenRead("$PWD\ai-i18n-tools-win-x64.exe.gz")
+$outPath = "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+try {
+  $gzipStream = New-Object System.IO.Compression.GZipStream($gz, [System.IO.Compression.CompressionMode]::Decompress)
+  try {
+    $out = [System.IO.File]::Create($outPath)
+    try { $gzipStream.CopyTo($out) } finally { $out.Dispose() }
+  } finally { $gzipStream.Dispose() }
+} finally { $gz.Dispose() }
 $installDir = "$env:USERPROFILE\.local\bin"
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ([string]::IsNullOrEmpty($userPath)) {

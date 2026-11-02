@@ -83,7 +83,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-इंस्टॉलर इस मशीन के लिए निष्पादन योग्य चुनता है, `SHA256SUMS.txt` की जाँच करता है, कमांड को `ai-i18n-tools` के रूप में स्थापित करता है, और इसे `PATH` में जोड़ता है। बाइनरीज़ नोटराइज़्ड या Authenticode-हस्ताक्षरित नहीं हैं। मैन्युअल डाउनलोड चरण: [स्टैंडअलोन निष्पादन योग्य](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation#standalone-executables)।
+इंस्टॉलर इस मशीन के लिए एक gzip आर्काइव डाउनलोड करता है, `SHA256SUMS.txt` की जाँच करता है, इसे अनपैक करता है, कमांड को `ai-i18n-tools` के रूप में इंस्टॉल करता है, और इसे `PATH` में जोड़ता है। बाइनरी नोटराइज़ नहीं किए गए हैं या ऑथेंटिकोड-साइन नहीं किए गए हैं। मैन्युअल डाउनलोड चरण: [स्टैंडअलोन एग्जीक्यूटेबल](https://wsj-br.github.io/ai-i18n-tools/hi/guide/installation#standalone-executables)।
 
 चार Python उदाहरण रिपॉजिटरी में और रिलीज़ पर `ai-i18n-tools-python-examples.zip` में हैं। वे npm tarball या निष्पादन योग्य के अंदर नहीं हैं।
 

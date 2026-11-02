@@ -30,7 +30,7 @@ Windows (PowerShell):
 irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex
 ```
 
-インストーラーはシステムを検出し、一致する実行可能ファイルをダウンロードし、`SHA256SUMS.txt` をチェックし、コマンドを `ai-i18n-tools` (Windowsでは `ai-i18n-tools.exe`) としてインストールし、インストールディレクトリを `PATH` に追加します。デフォルトのディレクトリは `~/.local/bin` です。コマンドがまだ見つからない場合は、新しいターミナルを開いてください。リリースを固定するには `AI_I18N_VERSION` (例: `v1.11.0`) を設定するか、別のディレクトリを選択するには `AI_I18N_INSTALL_DIR` を設定します。
+インストーラーはシステムを検出し、一致する実行可能ファイルのgzipアーカイブをダウンロードし、`SHA256SUMS.txt`をチェックし、それを展開し、コマンドを`ai-i18n-tools`としてインストールし（Windowsでは`ai-i18n-tools.exe`）、インストールディレクトリを`PATH`に追加します。LinuxとmacOSは`gzip`で展開します。Windows PowerShellは、Windowsに既に含まれている.NET gzipリーダーで展開します。デフォルトのディレクトリは`~/.local/bin`です。コマンドがまだ見つからない場合は、新しいターミナルを開いてください。リリースを固定するには`AI_I18N_VERSION`（例: `v1.11.0`）を設定するか、別のディレクトリを選択するには`AI_I18N_INSTALL_DIR`を設定します。gzipアーカイブより前に公開されたリリースには、まだ生の実行可能ファイルが含まれており、インストーラーはそのファイルを受け入れます。
 
 バイナリは公証されておらず、Authenticode署名もされていません。macOSは、署名されていないプログラムの承認を求める場合があります。Windows SmartScreenは警告を表示する場合があります。macOSインストーラーは、チェックサムが一致した後、隔離フラグをクリアします。
 
@@ -41,21 +41,21 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 | プラットフォーム | アセット |
 | --- | --- |
-| Linux x64 | `ai-i18n-tools-linux-x64` |
-| Linux arm64 | `ai-i18n-tools-linux-arm64` |
-| macOS arm64 | `ai-i18n-tools-macos-arm64` |
-| macOS x64 | `ai-i18n-tools-macos-x64` |
-| Windows x64 | `ai-i18n-tools-win-x64.exe` |
+| Linux x64 | `ai-i18n-tools-linux-x64.gz` |
+| Linux arm64 | `ai-i18n-tools-linux-arm64.gz` |
+| macOS arm64 | `ai-i18n-tools-macos-arm64.gz` |
+| macOS x64 | `ai-i18n-tools-macos-x64.gz` |
+| Windows x64 | `ai-i18n-tools-win-x64.exe.gz` |
 
-1. [GitHubリリース](https://github.com/wsj-br/ai-i18n-tools/releases) ページから、マシンに一致するアセットと `SHA256SUMS.txt` をダウンロードします。
-2. チェックサムを確認します。Linuxでは `grep ' ai-i18n-tools-linux-x64$' SHA256SUMS.txt | sha256sum -c -` (ダウンロードしたアセット名を使用)。macOSでは、同じ行で `shasum -a 256 -c -` を使用します。Windowsでは、`(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe).Hash` を実行し、`SHA256SUMS.txt` 内のハッシュと比較します。
-3. ダウンロードしたファイルの名前を `ai-i18n-tools` に変更し、そのディレクトリを `PATH` に追加します。
+1. マシンに一致するアセットと`SHA256SUMS.txt`を、[GitHub Releases](https://github.com/wsj-br/ai-i18n-tools/releases) ページからダウンロードします。
+2. gzipアーカイブのチェックサムを確認します。Linuxでは、`grep ' ai-i18n-tools-linux-x64.gz$' SHA256SUMS.txt | sha256sum -c -`（ダウンロードしたアセット名を使用してください）。macOSでは、`shasum -a 256 -c -`と同じ行です。Windowsでは、`(Get-FileHash -Algorithm SHA256 .\ai-i18n-tools-win-x64.exe.gz).Hash`を実行し、`SHA256SUMS.txt`のハッシュと比較します。
+3. アーカイブを展開し、コマンドを`PATH`に配置します。
 
 LinuxとmacOS、Linux x64アセットを例として使用 (ダウンロードしたアセットに置き換えてください):
 
 ```bash
 mkdir -p "$HOME/.local/bin"
-mv ai-i18n-tools-linux-x64 "$HOME/.local/bin/ai-i18n-tools"
+gzip -dc ai-i18n-tools-linux-x64.gz > "$HOME/.local/bin/ai-i18n-tools"
 chmod +x "$HOME/.local/bin/ai-i18n-tools"
 ```
 
@@ -65,11 +65,20 @@ chmod +x "$HOME/.local/bin/ai-i18n-tools"
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Windows (PowerShell)、`ai-i18n-tools-win-x64.exe` の名前を `ai-i18n-tools.exe` に変更:
+Windows (PowerShell)。`GZipStream`はWindows PowerShellの一部であり、個別のgzipインストールは不要です。
 
 ```powershell
 New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.local\bin" | Out-Null
-Move-Item -Force .\ai-i18n-tools-win-x64.exe "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+Add-Type -AssemblyName System.IO.Compression
+$gz = [System.IO.File]::OpenRead("$PWD\ai-i18n-tools-win-x64.exe.gz")
+$outPath = "$env:USERPROFILE\.local\bin\ai-i18n-tools.exe"
+try {
+  $gzipStream = New-Object System.IO.Compression.GZipStream($gz, [System.IO.Compression.CompressionMode]::Decompress)
+  try {
+    $out = [System.IO.File]::Create($outPath)
+    try { $gzipStream.CopyTo($out) } finally { $out.Dispose() }
+  } finally { $gzipStream.Dispose() }
+} finally { $gz.Dispose() }
 $installDir = "$env:USERPROFILE\.local\bin"
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ([string]::IsNullOrEmpty($userPath)) {
