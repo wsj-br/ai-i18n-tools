@@ -32,10 +32,16 @@ function makeFakeI18n(translations: Record<string, string> = {}) {
 // ---------------------------------------------------------------------------
 
 describe("wrapI18nWithKeyTrim – key trimming", () => {
-  it("trims leading/trailing spaces from the key before lookup", () => {
+  it("looks up the literal as written, including surrounding spaces", () => {
+    const i18n = makeFakeI18n({ "  Hello  ": "  Hola  " });
+    wrapI18nWithKeyTrim(i18n);
+    expect(i18n.t("  Hello  ")).toBe("  Hola  ");
+  });
+
+  it("uses a trimmed catalog key from an older extract and keeps the call's spaces", () => {
     const i18n = makeFakeI18n({ Hello: "Hola" });
     wrapI18nWithKeyTrim(i18n);
-    expect(i18n.t("  Hello  ")).toBe("Hola");
+    expect(i18n.t("  Hello  ")).toBe("  Hola  ");
   });
 
   it("passes non-string keys through unchanged", () => {
@@ -94,7 +100,7 @@ describe("wrapI18nWithKeyTrim – source-locale interpolation fallback", () => {
   it("trims key AND interpolates in the same call", () => {
     const i18n = makeFakeI18n();
     wrapI18nWithKeyTrim(i18n);
-    expect(i18n.t("  Hello {{name}}  ", { name: "World" })).toBe("Hello World");
+    expect(i18n.t("  Hello {{name}}  ", { name: "World" })).toBe("  Hello World  ");
   });
 });
 

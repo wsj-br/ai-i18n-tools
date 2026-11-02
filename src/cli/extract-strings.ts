@@ -10,6 +10,7 @@ import { isPluralStringsEntry } from "../core/types.js";
 import { UIStringExtractor } from "../extractors/ui-string-extractor.js";
 import {
   aggregateUiStringLocations,
+  catalogUiLiteral,
   defaultFuncNamesFromConfig,
   uiCatalogHash,
   uiStringHash,
@@ -308,7 +309,7 @@ function runExtractBlock(
       locByHash.set(h, cur);
     }
     for (const call of extractTemplateI18nCalls(content, rel, funcNames)) {
-      const text = call.literal.trim();
+      const text = catalogUiLiteral(rel, call.literal);
       if (!text) {
         continue;
       }

@@ -9,6 +9,10 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: `doctor` — model checks say how many `translationModels` are configured for the active provider, and whether those models are valid, missing, or past their expiration date in that provider's catalog.
+- **Changed**: `doctor` — set environment variables are one alphabetical list, `Configured variables: NAME, ...`, wrapped at 80 columns. API key values stay hidden.
+- **Changed**: UI strings — a JavaScript, TypeScript, or Python literal keeps a leading or trailing space in the catalog key. `t()` looks that text up as written. C# and XAML still trim, because `I18n.T` puts those spaces back after lookup.
+- **Changed**: cli — `pnpm build:binary` strips debug info and static symbols from the copied Node binary before `postject` injection.
 - **Fixed**: `check-markdown` — a `{{` is not paired with a `}}` inside a later backtick span. `<code v-pre>{{</code>` followed by a closed `` `}}` `` span is no longer reported as unclosed inline code.
 - **Fixed**: `translate-ui --dry-run` no longer creates the flat output directory and does not call a model.
 - **Fixed**: UI placeholder scan — a percent sign followed by a word and an apostrophe, as in French `% d'appels`, is prose. A real `%s` or `%d` token is unchanged.

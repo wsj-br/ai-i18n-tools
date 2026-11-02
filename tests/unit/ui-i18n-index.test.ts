@@ -114,6 +114,11 @@ describe("initUiI18n / getUiLocale / t", () => {
     // Unknown source text falls back to the (interpolated) source string.
     expect(t("Definitely not a real key {{x}}", { x: 1 })).toBe("Definitely not a real key 1");
   });
+
+  it("keeps spaces around a trimmed catalog entry", () => {
+    initUiI18n("de");
+    expect(t(" Usage: ")).toBe(" Verwendung: ");
+  });
 });
 
 describe("readUiLangFromArgv", () => {

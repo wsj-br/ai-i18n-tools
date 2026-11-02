@@ -15,18 +15,38 @@ export function uiStringHash(content: string): string {
 }
 
 /**
- * Catalog id for a UI string. Context-free rows stay `MD5-8(trimmed source)`.
+ * Catalog text for one call. JavaScript, TypeScript, and Python look the literal up
+ * as written, including a leading or trailing space. C# and XAML keep the trimmed
+ * key because `I18n.T` trims for lookup and puts that whitespace back on the result.
+ * A whitespace-only literal is not a catalog entry.
+ */
+export function catalogUiLiteral(relPath: string, literal: string): string {
+  if (!literal.trim()) {
+    return "";
+  }
+  const ext = relPath.toLowerCase();
+  const dotnet =
+    ext.endsWith(".cs") ||
+    ext.endsWith(".razor") ||
+    ext.endsWith(".cshtml") ||
+    ext.endsWith(".xaml") ||
+    ext.endsWith(".axaml");
+  return dotnet ? literal.trim() : literal;
+}
+
+/**
+ * Catalog id for a UI string. Context-free rows stay `MD5-8(source)`.
  * Contextual rows (`pgettext`, Qt comment, `msgctxt`) use
- * `MD5-8(trimmed context + "\\u0004" + trimmed source)` so identical English
- * strings in different contexts do not collide.
+ * `MD5-8(trimmed context + "\\u0004" + source)` so identical English
+ * strings in different contexts do not collide. `source` is the catalog text
+ * from {@link catalogUiLiteral}, not a second trim.
  */
 export function uiCatalogHash(source: string, context?: string): string {
-  const trimmed = source.trim();
   const ctx = context?.trim();
   if (!ctx) {
-    return uiStringHash(trimmed);
+    return uiStringHash(source);
   }
-  return uiStringHash(`${ctx}${GETTEXT_CONTEXT_SEPARATOR}${trimmed}`);
+  return uiStringHash(`${ctx}${GETTEXT_CONTEXT_SEPARATOR}${source}`);
 }
 
 /** Flat JSON key. Contextual rows use `context + "\\u0004" + English source`. */
@@ -54,7 +74,7 @@ export function collectUiStringLocationsFromSource(
     if (call.skipCatalog) {
       continue;
     }
-    const str = call.literal.trim();
+    const str = catalogUiLiteral(relPath, call.literal);
     if (!str) {
       continue;
     }

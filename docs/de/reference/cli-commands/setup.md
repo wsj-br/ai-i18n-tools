@@ -69,7 +69,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 Standardmäßig prüft `doctor` auch konfigurierte Modell-IDs anhand des Katalogs des aktiven Providers und vergleicht die installierte Version mit dem neuesten GitHub-Release. `--local` überspringt beide Netzwerkaufrufe. Ein neueres Release oder eine fehlgeschlagene GitHub-Anfrage ist eine Warnung. Eine fehlende oder abgelaufene Modell-ID führt zum Fehlschlagen des Befehls. `--strict` beendet den Vorgang mit einem Fehler, wenn eine Prüfung eine Warnung ausgibt.
 
-API-Schlüsselwerte werden niemals ausgegeben. Ein gesetzter Schlüssel wird als `NAME (set)` angezeigt.
+API-Schlüsselwerte werden niemals ausgegeben. Gesetzte Variablen werden in alphabetischer Reihenfolge als `Configured variables: NAME, ...` aufgelistet. Eine Variable, die kein API-Schlüssel ist, enthält ihren Wert.
 
 Fehlende Eingabepfade führen zu einem Fehler. Fehlende Ausgabeverzeichnisse sind ein Hinweis, da sie beim ersten Übersetzungsdurchlauf erstellt werden. `doctor` schreibt die Konfiguration nicht neu, erstellt keine Verzeichnisse und sendet keinen Quelltext an ein Modell.
 

@@ -55,6 +55,7 @@ import {
 import { loadTranslationContext } from "../glossary/translation-context.js";
 import { catalogPlaceholderHits } from "../core/ui-placeholder-audit.js";
 import { t } from "../i18n/index.js";
+import { displayWidth } from "../utils/table.js";
 
 const require = createRequire(import.meta.url);
 
@@ -62,6 +63,9 @@ const DOC_EXTENSIONS = [".md", ".mdx", ".astro", ".html", ".htm"] as const;
 const JSON_EXTENSIONS = [".json"] as const;
 const DEFAULT_UI_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const GITHUB_RELEASES_LATEST = "https://api.github.com/repos/wsj-br/ai-i18n-tools/releases/latest";
+/** Whole doctor line, including the `  ✓  ` prefix, stays within a normal terminal width. */
+const REPORT_LINE_WIDTH = 80;
+const PASSING_CHECK_PREFIX = "  ✓  ";
 const GITHUB_RELEASES_PAGE = "https://github.com/wsj-br/ai-i18n-tools/releases";
 
 /** Tool and provider variables `doctor` may print when they are set. Keys come from {@link PROVIDER_PRESETS}. */
@@ -86,6 +90,11 @@ export interface DoctorCheck {
   message: string;
   /** Informational pass. Printed with a dot instead of a check mark. */
   note?: boolean;
+  /**
+   * Environment entries printed as one wrapped list. The report breaks on these
+   * items; `message` is the same list on one line for `--json`.
+   */
+  inlineItems?: string[];
 }
 
 export interface RunDoctorOptions {
@@ -293,8 +302,14 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     environment: t("Environment"),
   };
 
-  const pass = (name: string, message: string, note = false): void => {
-    checks.push({ section: name, status: "pass", message, ...(note ? { note: true } : {}) });
+  const pass = (name: string, message: string, note = false, inlineItems?: string[]): void => {
+    checks.push({
+      section: name,
+      status: "pass",
+      message,
+      ...(note ? { note: true } : {}),
+      ...(inlineItems !== undefined && inlineItems.length > 0 ? { inlineItems } : {}),
+    });
   };
   const warn = (name: string, message: string): void => {
     checks.push({ section: name, status: "warn", message });
@@ -316,7 +331,15 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     if (options.json === true) {
       console.log(
         JSON.stringify(
-          { ok: exitCode === 0, errorCount: errors, warningCount: warnings, checks },
+          {
+            ok: exitCode === 0,
+            errorCount: errors,
+            warningCount: warnings,
+            checks: checks.map((check) => {
+              const { inlineItems: _inlineItems, ...reportCheck } = check;
+              return reportCheck;
+            }),
+          },
           null,
           2
         )
@@ -1163,7 +1186,7 @@ async function checkProviders(
     if (models.length === 0 && needsLlm && !modelsAlreadyReported) {
       fail(section, t("providers.{{provider}}.translationModels is empty", { provider: active }));
     } else if (!modelsAlreadyReported) {
-      pass(section, t("translationModels ({{count}})", { count: models.length }));
+      pass(section, translationModelsConfiguredMessage(active, models.length));
     }
   }
 
@@ -1183,36 +1206,127 @@ async function checkProviders(
     fail(section, status.error);
     return;
   }
+  const total = status.configured.length;
   if (status.missing.length > 0 || status.expired.length > 0) {
-    const parts = [
-      status.missing.length > 0
-        ? t("missing {{ids}}", { ids: status.missing.map((item) => item.id).join(", ") })
-        : "",
-      status.expired.length > 0
-        ? t("expired {{ids}}", { ids: status.expired.map((item) => item.id).join(", ") })
-        : "",
-    ].filter((part) => part !== "");
-    fail(
-      section,
-      t("models in {{provider}}'s catalog: {{detail}}", {
-        provider: active,
-        detail: parts.join("; "),
-      })
-    );
+    if (status.missing.length > 0) {
+      fail(
+        section,
+        modelsMissingFromCatalogMessage(
+          active,
+          status.missing.map((item) => item.id),
+          total
+        )
+      );
+    }
+    if (status.expired.length > 0) {
+      fail(section, modelsExpiredInCatalogMessage(active, status.expired, total));
+    }
     return;
   }
-  pass(
-    section,
-    t("models in {{provider}}'s catalog ({{count}} ok)", {
-      provider: active,
-      count: status.ok.length,
-    })
+  pass(section, modelsValidInCatalogMessage(active, total));
+}
+
+function translationModelsConfiguredMessage(provider: string, count: number): string {
+  return t("{{count}} translationModels configured for {{provider}}", { count, provider });
+}
+
+function modelsValidInCatalogMessage(provider: string, count: number): string {
+  if (count === 1) {
+    return t("the configured model is valid in {{provider}}'s catalog", { provider });
+  }
+  return t("all {{count}} configured models are valid in {{provider}}'s catalog", {
+    count,
+    provider,
+  });
+}
+
+function modelsMissingFromCatalogMessage(provider: string, ids: string[], total: number): string {
+  const count = ids.length;
+  if (count === 1 && total === 1) {
+    return t("the configured model is missing from {{provider}}'s catalog: {{id}}", {
+      provider,
+      id: ids[0]!,
+    });
+  }
+  if (count === 1) {
+    return t("1 of {{total}} configured models is missing from {{provider}}'s catalog: {{id}}", {
+      provider,
+      total,
+      id: ids[0]!,
+    });
+  }
+  const listed = ids.join(", ");
+  if (count === total) {
+    return t("all {{total}} configured models are missing from {{provider}}'s catalog: {{ids}}", {
+      provider,
+      total,
+      ids: listed,
+    });
+  }
+  return t(
+    "{{count}} of {{total}} configured models are missing from {{provider}}'s catalog: {{ids}}",
+    {
+      provider,
+      count,
+      total,
+      ids: listed,
+    }
+  );
+}
+
+function catalogExpirationDay(value: string): string {
+  const trimmed = value.trim();
+  const day = trimmed.slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : trimmed;
+}
+
+function modelsExpiredInCatalogMessage(
+  provider: string,
+  expired: { id: string; expirationDate: string }[],
+  total: number
+): string {
+  const count = expired.length;
+  if (count === 1 && total === 1) {
+    const item = expired[0]!;
+    return t(
+      "the configured model is past its expiration date in {{provider}}'s catalog: {{id}} ({{date}})",
+      {
+        provider,
+        id: item.id,
+        date: catalogExpirationDay(item.expirationDate),
+      }
+    );
+  }
+  if (count === 1) {
+    const item = expired[0]!;
+    return t(
+      "1 of {{total}} configured models is past its expiration date in {{provider}}'s catalog: {{id}} ({{date}})",
+      {
+        provider,
+        total,
+        id: item.id,
+        date: catalogExpirationDay(item.expirationDate),
+      }
+    );
+  }
+  const details = expired
+    .map((item) => `${item.id} (${catalogExpirationDay(item.expirationDate)})`)
+    .join(", ");
+  if (count === total) {
+    return t(
+      "all {{total}} configured models are past their expiration date in {{provider}}'s catalog: {{details}}",
+      { provider, total, details }
+    );
+  }
+  return t(
+    "{{count}} of {{total}} configured models are past their expiration date in {{provider}}'s catalog: {{details}}",
+    { provider, count, total, details }
   );
 }
 
 function checkEnvironment(
   config: I18nConfig,
-  pass: (section: string, message: string, note?: boolean) => void,
+  pass: (section: string, message: string, note?: boolean, inlineItems?: string[]) => void,
   section: string
 ): void {
   const secrets = secretEnvNames(config);
@@ -1223,26 +1337,74 @@ function checkEnvironment(
       continue;
     }
     if (secrets.has(name)) {
-      listed.push(t("{{name}} (set)", { name }));
+      listed.push(name);
     } else {
       listed.push(`${name}=${value.replace(/\s+/g, " ")}`);
     }
   }
+  listed.sort((left, right) =>
+    environmentVariableName(left).localeCompare(environmentVariableName(right), "en")
+  );
   if (listed.length === 0) {
     pass(section, t("No supported environment variables are set"), true);
     return;
   }
-  for (const line of listed) {
-    pass(section, line);
+  const label = t("Configured variables:");
+  pass(section, `${label} ${listed.join(", ")}`, false, listed);
+}
+
+function environmentVariableName(item: string): string {
+  const split = item.indexOf("=");
+  return split === -1 ? item : item.slice(0, split);
+}
+
+/** Wrap `label item, item, ...` so each printed line, including its indent, stays within `maxWidth`. */
+function wrapLabeledItems(label: string, items: string[], maxWidth: number): string[] {
+  const first = items[0];
+  if (first === undefined) {
+    return [];
   }
+  const prefixWidth = displayWidth(PASSING_CHECK_PREFIX);
+  const lines: string[] = [];
+  let line = `${label} ${first}`;
+  let width = prefixWidth + displayWidth(line);
+  for (const item of items.slice(1)) {
+    const addition = `, ${item}`;
+    if (width + displayWidth(addition) > maxWidth) {
+      lines.push(line);
+      line = item;
+      width = prefixWidth + displayWidth(item);
+      continue;
+    }
+    line += addition;
+    width += displayWidth(addition);
+  }
+  lines.push(line);
+  return lines;
 }
 
 function printReport(checks: DoctorCheck[], summary: string): void {
+  let index = 0;
   let current = "";
-  for (const check of checks) {
+  while (index < checks.length) {
+    const check = checks[index]!;
     if (check.section !== current) {
       current = check.section;
       console.log(chalk.bold(`\n${current}`));
+    }
+    if (check.inlineItems !== undefined && check.inlineItems.length > 0) {
+      const [first, ...rest] = wrapLabeledItems(
+        t("Configured variables:"),
+        check.inlineItems,
+        REPORT_LINE_WIDTH
+      );
+      console.log(`  ${chalk.green("✓")}  ${first ?? ""}`);
+      const indent = " ".repeat(displayWidth(PASSING_CHECK_PREFIX));
+      for (const line of rest) {
+        console.log(`${indent}${line}`);
+      }
+      index += 1;
+      continue;
     }
     const mark =
       check.status === "fail"
@@ -1259,6 +1421,7 @@ function printReport(checks: DoctorCheck[], summary: string): void {
           ? chalk.yellow(check.message)
           : check.message;
     console.log(`  ${mark}  ${text}`);
+    index += 1;
   }
   console.log(`\n${summary}\n`);
 }

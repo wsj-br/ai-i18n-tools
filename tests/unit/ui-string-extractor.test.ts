@@ -17,6 +17,18 @@ describe("UIStringExtractor", () => {
     expect(ex.canHandle("x.js")).toBe(true);
   });
 
+  it("keeps a leading or trailing space in a JS literal and skips a blank one", () => {
+    const ex = new UIStringExtractor();
+    const segs = ex.extract(`t(" (fetched {{when}})"); t("   ");`, "cli.ts");
+    expect(segs.map((s) => s.content)).toEqual([" (fetched {{when}})"]);
+  });
+
+  it("trims a C# literal because I18n.T looks up the trimmed key", () => {
+    const ex = new UIStringExtractor({ extensions: [".cs"], funcNames: ["T"] });
+    const segs = ex.extract(`T("Updated: ");`, "View.cs");
+    expect(segs.map((s) => s.content)).toEqual(["Updated:"]);
+  });
+
   it("extract finds t() string literals", () => {
     const ex = new UIStringExtractor();
     const src = `const x = t("Hello world");`;

@@ -228,14 +228,39 @@ function interpolate(text: string, vars?: UiInterpolationVars): string {
   });
 }
 
+function catalogText(key: string): string | undefined {
+  const value = currentBundle[key];
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+/** Put the call's leading and trailing whitespace back around a trimmed catalog hit. */
+function withSourceEdges(source: string, text: string): string {
+  const core = source.trim();
+  if (!core || core === source) {
+    return text;
+  }
+  const start = source.indexOf(core);
+  return `${source.slice(0, start)}${text}${source.slice(start + core.length)}`;
+}
+
 /**
  * Translate a source string to the active UI locale, with optional `{{name}}` interpolation.
  * Returns the (interpolated) source string when no translation exists.
+ *
+ * The lookup is the literal, including a leading or trailing space. A catalog row extracted
+ * before that still has the trimmed text, so a miss tries that row and keeps the call's spaces.
  */
 export function t(source: string, vars?: UiInterpolationVars): string {
-  const translated = currentBundle[source];
-  return interpolate(
-    typeof translated === "string" && translated.length > 0 ? translated : source,
-    vars
-  );
+  const direct = catalogText(source);
+  if (direct !== undefined) {
+    return interpolate(direct, vars);
+  }
+  const core = source.trim();
+  if (core && core !== source) {
+    const fallback = catalogText(core);
+    if (fallback !== undefined) {
+      return interpolate(withSourceEdges(source, fallback), vars);
+    }
+  }
+  return interpolate(source, vars);
 }

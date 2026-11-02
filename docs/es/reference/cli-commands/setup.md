@@ -69,7 +69,7 @@ Compruebe que el proyecto está listo para traducir. El informe cubre la sintaxi
 
 De forma predeterminada, `doctor` también verifica los ID de modelo configurados con el catálogo del proveedor activo y compara la versión instalada con la última versión de GitHub. `--local` omite ambas llamadas de red. Una versión más reciente, o una solicitud de GitHub que falla, es una advertencia. Un ID de modelo faltante o caducado hace que el comando falle. `--strict` sale con un error cuando alguna verificación emite una advertencia.
 
-Los valores de las claves de API nunca se imprimen. Una clave configurada se muestra como `NAME (set)`.
+Los valores de las claves de API nunca se imprimen. Las variables configuradas se listan en orden alfabético como `Configured variables: NAME, ...`. Una variable que no es una clave de API incluye su valor.
 
 Las rutas de entrada faltantes provocan un fallo. Los directorios de salida faltantes son una nota, porque la primera ejecución de traducción los crea. `doctor` no reescribe la configuración, no crea directorios ni envía texto de origen a un modelo.
 

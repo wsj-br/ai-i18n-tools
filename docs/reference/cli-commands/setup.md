@@ -69,7 +69,7 @@ Check that the project is ready to translate. The report covers config syntax an
 
 By default, `doctor` also checks configured model ids against the active provider's catalog and compares the installed version with the latest GitHub release. `--local` skips both network calls. A newer release, or a GitHub request that fails, is a warning. A missing or expired model id fails the command. `--strict` exits with an error when any check warns.
 
-API key values are never printed. A set key is shown as `NAME (set)`.
+API key values are never printed. Set variables are listed in alphabetical order as `Configured variables: NAME, ...`. A variable that is not an API key includes its value.
 
 Missing input paths fail. Missing output directories are a note, because the first translation run creates them. `doctor` does not rewrite config, create directories, or send source text to a model.
 

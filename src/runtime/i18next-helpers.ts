@@ -158,13 +158,14 @@ export interface I18nLike {
 
 /**
  * Wrap `i18n.t` so that:
- * 1. Keys are trimmed before lookup - the extract script stores keys trimmed
- *    (e.g. `"Label"` not `"Label "`), so `t("Label ")` would miss the cache without this.
+ * 1. The literal is looked up as written, including a leading or trailing space.
+ *    A catalog extracted before that still stored the trimmed text, so a miss
+ *    tries the trimmed key and puts the original spaces back around the result.
  * 2. Source-locale `{{var}}` interpolation is applied as a fallback - in key-as-default
  *    mode `parseMissingKeyHandler` returns the raw key string without running
  *    interpolation, so `t("Hello {{name}}", { name })` would return `"Hello {{name}}"`
  *    instead of `"Hello World"` for the source locale. This wrapper detects that case
- *    (result === trimmed key) and applies `interpolateTemplate` automatically.
+ *    (result === key) and applies `interpolateTemplate` automatically.
  *
  * Mutates the `t` property on the passed instance in-place.
  *
@@ -172,21 +173,43 @@ export interface I18nLike {
  *
  * @example wrapI18nWithKeyTrim(i18n);
  */
+function withSourceEdges(source: string, text: string): string {
+  const core = source.trim();
+  if (!core || core === source) {
+    return text;
+  }
+  const start = source.indexOf(core);
+  return `${source.slice(0, start)}${text}${source.slice(start + core.length)}`;
+}
+
+function interpolationOptions(
+  value: unknown
+): Record<string, string | number | boolean> | undefined {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  return value as Record<string, string | number | boolean>;
+}
+
 export function wrapI18nWithKeyTrim(i18n: I18nLike): void {
   const originalT = i18n.t.bind(i18n) as (...args: unknown[]) => string;
   i18n.t = function (key: string, ...rest: unknown[]): string {
-    const normalizedKey = typeof key === "string" ? key.trim() : key;
-    const result = originalT(normalizedKey, ...rest);
-    const options = rest[0];
-    if (
-      result === normalizedKey &&
-      options !== null &&
-      typeof options === "object" &&
-      !Array.isArray(options)
-    ) {
-      return interpolateTemplate(result, options as Record<string, string | number | boolean>);
+    if (typeof key !== "string") {
+      return originalT(key, ...rest);
     }
-    return result;
+    const options = interpolationOptions(rest[0]);
+    const exact = originalT(key, ...rest);
+    if (exact !== key) {
+      return exact;
+    }
+    const trimmed = key.trim();
+    if (trimmed && trimmed !== key) {
+      const fallback = originalT(trimmed, ...rest);
+      if (fallback !== trimmed) {
+        return withSourceEdges(key, fallback);
+      }
+    }
+    return options ? interpolateTemplate(key, options) : key;
   };
 }
 

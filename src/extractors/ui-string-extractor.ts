@@ -9,7 +9,7 @@ import type {
 import { isPluralStringsEntry, segmentTranslationText } from "../core/types.js";
 import { BaseExtractor } from "./base-extractor.js";
 import { extractUiCallsFromFileContent } from "./ui-string-babel.js";
-import { uiCatalogHash } from "./ui-string-locations.js";
+import { catalogUiLiteral, uiCatalogHash } from "./ui-string-locations.js";
 
 const DEFAULT_EXT = [".js", ".jsx", ".ts", ".tsx"];
 const DEFAULT_FUNCS = ["t", "i18n.t"];
@@ -61,7 +61,7 @@ export class UIStringExtractor extends BaseExtractor {
       if (call.skipCatalog) {
         continue;
       }
-      const str = call.literal.trim();
+      const str = catalogUiLiteral(filepath, call.literal);
       if (!str) {
         continue;
       }

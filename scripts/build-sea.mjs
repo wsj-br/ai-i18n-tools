@@ -2,9 +2,10 @@
 /**
  * Build a Node.js Single Executable for the current platform.
  *
- * Pipeline: esbuild (CJS) → node --experimental-sea-config → postject.
- * Public binaries are not notarized or Authenticode-signed. macOS builds
- * receive an ad-hoc signature so the injected blob can run locally.
+ * Pipeline: esbuild (CJS) → node --experimental-sea-config → strip the copied
+ * Node binary → postject. Public binaries are not notarized or
+ * Authenticode-signed. macOS builds receive an ad-hoc signature so the
+ * injected blob can run locally.
  */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -51,6 +52,29 @@ function run(cmd, args, options = {}) {
   if (result.status !== 0) {
     throw new Error(`${cmd} ${args.join(" ")} exited ${result.status}`);
   }
+}
+
+function formatMb(bytes) {
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Drop debug info and static symbols from the copied Node host before injection. */
+function stripHostBinary(binary) {
+  const args =
+    process.platform === "darwin" ? ["-x", "-S", binary] : ["--strip-unneeded", binary];
+  const before = fs.statSync(binary).size;
+  const result = spawnSync("strip", args, { cwd: root, stdio: "inherit" });
+  if (result.error) {
+    if (result.error.code === "ENOENT" && process.platform === "win32") {
+      console.warn("strip was not found on PATH. The Windows executable is the copied Node binary.");
+      return;
+    }
+    throw result.error;
+  }
+  if (result.status !== 0) {
+    throw new Error(`strip ${args.join(" ")} exited ${result.status}`);
+  }
+  console.log(`Stripped host binary (${formatMb(before)} -> ${formatMb(fs.statSync(binary).size)})`);
 }
 
 function binaryName() {
@@ -137,6 +161,7 @@ if (process.platform !== "win32") {
 if (process.platform === "darwin") {
   run("codesign", ["--remove-signature", binary]);
 }
+stripHostBinary(binary);
 
 const blob = fs.readFileSync(path.join(outDir, "sea-prep.blob"));
 await inject(binary, "NODE_SEA_BLOB", blob, {

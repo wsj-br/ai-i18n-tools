@@ -4,6 +4,9 @@ import path from "path";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { describeRuntime, runDoctor } from "../../src/cli/doctor.js";
+import { UI_SOURCE_LOCALE, initUiI18n } from "../../src/i18n/index.js";
+import { stripAnsi } from "../../src/utils/logger.js";
+import { displayWidth } from "../../src/utils/table.js";
 import { PACKAGE_VERSION } from "../../src/build-info.generated.js";
 import { TranslationCache } from "../../src/core/cache.js";
 import { BENCHMARK_CACHE_VERSION } from "../../src/core/model-benchmarks.js";
@@ -109,6 +112,7 @@ describe("runDoctor", () => {
     const text = messages(result);
     expect(result.exitCode).toBe(0);
     expect(text).toContain("version");
+    expect(text).toContain("1 translationModels configured for openrouter");
     expect(text).toContain("Node.js package /app/bin/ai-i18n-tools.mjs");
     expect(text).toContain("pass:ui[0] sourceRoots src");
     expect(text).toContain("created on first run");
@@ -145,6 +149,8 @@ describe("runDoctor", () => {
     });
     expect(result.exitCode).toBe(0);
     expect(catalogAuth).toBe("Bearer legacy-secret-token");
+    expect(messages(result)).toContain("1 translationModels configured for apikeyfan");
+    expect(messages(result)).toContain("the configured model is valid in apikeyfan's catalog");
     expect(messages(result)).toContain("APIFUN_API_KEY is set");
     expect(JSON.stringify(result)).not.toContain("legacy-secret-token");
   });
@@ -178,7 +184,10 @@ describe("runDoctor", () => {
       argv1: "cli",
     });
     expect(online.exitCode).toBe(1);
-    expect(messages(online)).toContain("models in openrouter's catalog: missing m1");
+    expect(messages(online)).toContain("1 translationModels configured for openrouter");
+    expect(messages(online)).toContain(
+      "the configured model is missing from openrouter's catalog: m1"
+    );
     expect(online.checks.filter((check) => check.message.startsWith("version "))).toEqual([
       expect.objectContaining({
         message: expect.stringMatching(/^version .+ \(latest release\)$/),
@@ -198,6 +207,172 @@ describe("runDoctor", () => {
     expect(local.exitCode).toBe(0);
     expect(calls).toEqual([]);
     expect(messages(local)).toContain("provider catalog was not checked");
+  });
+
+  it("reports every configured model as valid, missing, or past its expiration date", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    const fetchCatalog = (data: Array<{ id: string; expiration_date?: string }>): typeof fetch =>
+      (async (url: string | URL) => {
+        if (String(url).includes("api.github.com")) {
+          return {
+            ok: true,
+            status: 200,
+            text: async () => JSON.stringify({ tag_name: `v${PACKAGE_VERSION}` }),
+          };
+        }
+        return { ok: true, status: 200, text: async () => JSON.stringify({ data }) };
+      }) as typeof fetch;
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: { openrouter: { translationModels: ["keep", "also"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const valid = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "keep" }, { id: "also" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(valid.exitCode).toBe(0);
+    expect(messages(valid)).toContain("2 translationModels configured for openrouter");
+    expect(messages(valid)).toContain("all 2 configured models are valid in openrouter's catalog");
+
+    const oneMissing = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "keep" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(oneMissing.exitCode).toBe(1);
+    expect(messages(oneMissing)).toContain(
+      "1 of 2 configured models is missing from openrouter's catalog: also"
+    );
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: { openrouter: { translationModels: ["keep", "gone-a", "gone-b"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const someMissing = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "keep" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(someMissing.exitCode).toBe(1);
+    expect(messages(someMissing)).toContain(
+      "2 of 3 configured models are missing from openrouter's catalog: gone-a, gone-b"
+    );
+
+    const allMissing = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "other" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(allMissing.exitCode).toBe(1);
+    expect(messages(allMissing)).toContain(
+      "all 3 configured models are missing from openrouter's catalog: keep, gone-a, gone-b"
+    );
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: { openrouter: { translationModels: ["old"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const expiredOnly = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "old", expiration_date: "1999-06-01T00:00:00Z" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(expiredOnly.exitCode).toBe(1);
+    expect(messages(expiredOnly)).toContain(
+      "the configured model is past its expiration date in openrouter's catalog: old (1999-06-01)"
+    );
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: { openrouter: { translationModels: ["keep", "old-a", "old-b"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const expiredSome = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([
+        { id: "keep" },
+        { id: "old-a", expiration_date: "1999-01-01" },
+        { id: "old-b", expiration_date: "1999-06-01" },
+      ]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(expiredSome.exitCode).toBe(1);
+    expect(messages(expiredSome)).toContain(
+      "2 of 3 configured models are past their expiration date in openrouter's catalog: old-a (1999-01-01), old-b (1999-06-01)"
+    );
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: { openrouter: { translationModels: ["old-a", "old-b"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const expiredAll = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([
+        { id: "old-a", expiration_date: "1999-01-01" },
+        { id: "old-b", expiration_date: "1999-06-01" },
+      ]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(expiredAll.exitCode).toBe(1);
+    expect(messages(expiredAll)).toContain(
+      "all 2 configured models are past their expiration date in openrouter's catalog: old-a (1999-01-01), old-b (1999-06-01)"
+    );
+
+    writeProject(
+      root,
+      uiConfig({
+        providers: {
+          openrouter: { translationModels: ["keep", "gone"], uiModels: ["ui-only"] },
+        },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const mixed = await runDoctor({
+      cwd: root,
+      fetchImpl: fetchCatalog([{ id: "keep" }, { id: "ui-only", expiration_date: "2001-02-03" }]),
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(mixed.exitCode).toBe(1);
+    expect(messages(mixed)).toContain("2 translationModels configured for openrouter");
+    expect(messages(mixed)).toContain(
+      "1 of 3 configured models is missing from openrouter's catalog: gone"
+    );
+    expect(messages(mixed)).toContain(
+      "1 of 3 configured models is past its expiration date in openrouter's catalog: ui-only (2001-02-03)"
+    );
+    expect(messages(mixed)).not.toContain("models in openrouter's catalog");
   });
 
   it("warns when GitHub has a newer release and does not request it with --local", async () => {
@@ -388,9 +563,9 @@ describe("runDoctor", () => {
       "openrouter (active, OPENROUTER_API_KEY is set, baseUrl https://openrouter.ai/api/v1)"
     );
     expect(text).toContain("openai (OPENAI_API_KEY is set, baseUrl https://api.openai.com/v1)");
-    expect(text).toContain("OPENROUTER_API_KEY (set)");
-    expect(text).toContain("OPENAI_API_KEY (set)");
-    expect(text).toContain("AI_I18N_LANG=pt-BR");
+    expect(text).toContain(
+      "Configured variables: AI_I18N_LANG=pt-BR, OPENAI_API_KEY, OPENROUTER_API_KEY"
+    );
     expect(text).not.toContain("I18N_LOG_LEVEL");
     expect(log.mock.calls.join("\n")).not.toContain("router-secret-token");
     expect(log.mock.calls.join("\n")).not.toContain("openai-secret-token");
@@ -549,7 +724,25 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(messages(present)).toContain("languagebench 2, arena 1, models.dev 2");
+    expect(messages(present)).toContain(
+      "languagebench 2, arena 1, models.dev 2 (fetched 2026-10-21)"
+    );
+
+    initUiI18n("pt-BR");
+    try {
+      const translated = await runDoctor({
+        cwd: root,
+        local: true,
+        sea: false,
+        execPath: "node",
+        argv1: "cli",
+      });
+      expect(messages(translated)).toContain(
+        "languagebench 2, arena 1, models.dev 2 (obtido 2026-10-21)"
+      );
+    } finally {
+      initUiI18n(UI_SOURCE_LOCALE);
+    }
   });
 
   it("fails on a missing context file and warns on a missing user glossary", async () => {
@@ -595,6 +788,58 @@ describe("runDoctor", () => {
     expect(strict.exitCode).toBe(1);
   });
 
+  it("prints set environment variables side by side and wraps at 80 columns", async () => {
+    for (const key of [
+      "OPENROUTER_API_KEY",
+      "OPENAI_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "GOOGLE_API_KEY",
+      "DEEPSEEK_API_KEY",
+      "CEREBRAS_API_KEY",
+      "GROQ_API_KEY",
+      "MISTRAL_API_KEY",
+      "XAI_API_KEY",
+      "NVIDIA_API_KEY",
+      "ALIBABA_API_KEY",
+      "APIKEYFAN_API_KEY",
+      "CHEAPERINFERENCE_API_KEY",
+    ]) {
+      process.env[key] = "doctor-secret-token";
+    }
+    const longLocales = "de,".repeat(40);
+    process.env.I18N_TARGET_LOCALES = longLocales;
+    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const printed = log.mock.calls.map((call) => stripAnsi(call.map(String).join(" ")));
+    const start = printed.findIndex((line) => line.includes("Environment"));
+    const rest = printed.slice(start + 1);
+    const end = rest.findIndex((line) => line.includes("Summary"));
+    const envLines = rest.slice(0, end);
+    expect(envLines).toEqual([
+      "  ✓  Configured variables: ALIBABA_API_KEY, ANTHROPIC_API_KEY, APIKEYFAN_API_KEY",
+      "     CEREBRAS_API_KEY, CHEAPERINFERENCE_API_KEY, DEEPSEEK_API_KEY",
+      "     GOOGLE_API_KEY, GROQ_API_KEY",
+      `     I18N_TARGET_LOCALES=${longLocales}`,
+      "     MISTRAL_API_KEY, NVIDIA_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY",
+      "     XAI_API_KEY",
+    ]);
+    for (const line of envLines) {
+      if (line.includes("I18N_TARGET_LOCALES=")) {
+        expect(displayWidth(line)).toBeGreaterThan(80);
+        expect(line).toContain(longLocales);
+      } else {
+        expect(displayWidth(line)).toBeLessThanOrEqual(80);
+      }
+    }
+    expect(printed.join("\n")).not.toContain("doctor-secret-token");
+  });
+
   it("prints a JSON report with redacted environment values", async () => {
     process.env.OPENROUTER_API_KEY = "doctor-secret-token";
     process.env.AI_I18N_LANG = "pt-BR";
@@ -616,8 +861,12 @@ describe("runDoctor", () => {
     };
     expect(report.ok).toBe(result.exitCode === 0);
     expect(report.errorCount).toBe(0);
-    expect(report.checks.some((check) => check.message === "OPENROUTER_API_KEY (set)")).toBe(true);
-    expect(report.checks.some((check) => check.message === "AI_I18N_LANG=pt-BR")).toBe(true);
+    expect(
+      report.checks.some(
+        (check) => check.message === "Configured variables: AI_I18N_LANG=pt-BR, OPENROUTER_API_KEY"
+      )
+    ).toBe(true);
+    expect(raw).not.toContain("inlineItems");
     expect(raw).not.toContain("doctor-secret-token");
   });
 
