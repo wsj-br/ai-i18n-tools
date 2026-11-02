@@ -381,6 +381,7 @@ Astroの`i18n.locales`をオンにし、ページHTMLを翻訳する必要があ
 | --- | --- |
 | アプリのUI文字列 | [JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js) または [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python) |
 | Django、Flask-Babelカタログ、または既にGNU gettextを使用しているアプリ | [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext) |
+| .NET アプリ | [.NET アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet) または [.NET ResourceManager アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager) |
 | サイトの隣にあるリポジトリのREADME、またはサイトフレームワークのないMarkdownファイル | [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)。`init … --with-readme` はサイトテンプレートの隣にそのブロックを追加します |
 | スタンドアロンのネストされたロケールJSON | [JSON](/ja/guide/json) |
 | サイトとアプリの文字列を1つの設定で | [パイプラインの結合](/ja/guide/combining-pipelines) |

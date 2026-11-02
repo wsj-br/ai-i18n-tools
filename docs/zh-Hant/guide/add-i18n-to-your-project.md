@@ -19,11 +19,11 @@
 
 每個逐步教學都遵循相同的順序。您所選的頁面會提供詳細資訊。
 
-1. 安裝 CLI 並設定您的供應商 API 金鑰。Ollama 無需金鑰。[安裝](/zh-Hant/guide/installation) 和 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
-2. 執行 `init`，並使用該頁面指定的範本。這會寫入 `ai-i18n-tools.config.json`。
-3. 準備專案，讓工具能夠看到文字。使用該頁面的代理程式提示，或同一頁面上的手動步驟。
-4. 執行 `ai-i18n-tools sync`，然後執行 `ai-i18n-tools status`。
-5. 載入輸出，檢查一個目標語言，並在來源變更時重新執行 `sync`。快取只會將新增或變更的文字傳送給模型。
+1. 安裝 CLI 並設定您的供應商 API 金鑰。Ollama 不需要金鑰。[安裝](/zh-Hant/guide/installation) 和 [供應商與 API 金鑰](/zh-Hant/guide/quick-start#provider-and-api-key)。
+2. 執行 `init`，並使用該頁面命名的範本。這會寫入 `ai-i18n-tools.config.json`。
+3. 準備專案，以便工具能看到文字。使用該頁面的代理程式提示，或同一頁面上的手動步驟。
+4. 檢閱或建立使用者詞彙表，然後執行 `ai-i18n-tools sync` 和 `ai-i18n-tools status`。乾淨的擷取並不表示每個可見的句子都已包裝。
+5. 載入輸出，檢查一個目標語言，並在來源變更時重新執行 `sync`。快取只會將新增或變更的文字傳送到模型。正常執行會讓 `user-edited` 列保持不變。`--force` 會再次翻譯它們。
 
 <a id="pages-in-this-section"></a>
 ## 本節頁面
@@ -32,6 +32,8 @@
 | --- | --- | --- |
 | 一個 JS/TS 應用程式 (React、Next.js、Node、CLI)，其按鈕和訊息仍為純文字 | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) | 安裝 i18next，新增啟動程式碼，將字面值包裝在 `t()` 中，並新增語言切換器，然後 `extract` 和 `translate-ui` |
 | 一個 Python 應用程式 (Streamlit、FastAPI、Flask、桌面、指令碼) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) | 放置 `i18n.py` 輔助程式，包裝 `t()` 或 `_()`，新增語言切換器。CLI 可以從獨立的可執行檔執行，無需安裝 Node.js |
+| 一個 .NET 應用程式 (Avalonia、WPF、MAUI、ASP.NET、Blazor、主控台) | [將 i18n 新增至 .NET 應用程式](/zh-Hant/guide/add-i18n-to-dotnet) | 放置 `I18n.cs`。包裝 `T()`，或執行 `migrate-dotnet-i18n`。嵌入 `locales/*.json`，並新增語言切換功能 |
+| 已使用 `ResourceManager` 或 `IStringLocalizer` 的 .NET 應用程式 | [將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager) | 保留該載入器。放置 `I18nResx.cs` 並從相同的 `T()` 目錄寫入 `.resx` 附屬組件。 |
 | 一個 Django 應用程式、使用 Flask-Babel 目錄的 Flask，或任何已使用 GNU gettext 的應用程式 | [為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext) | 保留 `gettext`、`{% blocktranslate %}` 和您的 `.po` 檔案。該工具會填入並編譯目錄 |
 | 一個文件或行銷網站 (VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、純 HTML) | [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website) | 使用該頁面的代理程式提示啟用框架的 i18n，然後 `sync` 以翻譯頁面和主題標籤 |
 | 一個儲存庫 README 和其他 Markdown 檔案，通常與應用程式放在一起 | [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme) | 每種語言一個檔案 (`translated-docs/README.de.md`)，並在 README 中加入一個語言列。`init --with-readme` 會將該區塊新增至任何範本 |

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 集成
 
-框架集成参考：它们的共同点以及外围字符串有何不同。要向网站添加语言，请从[为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website)开始。对于应用，请从[为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js)或[为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python)开始。对于仓库 README 和其他 Markdown 文件，请从[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)开始。
+框架集成参考：它们的共同点以及它们的 shell 字符串有何不同。要为网站添加语言，请从[为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website)开始。对于应用程序，请从[为 JS/TS 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-js)、[为 Python 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-python)或[为 .NET 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet)开始。对于存储库 README 和其他 Markdown 文件，请从[为 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)开始。
 
 文档集成使用[文档](/zh-Hans/guide/documents/)流水线 (`translate-docs` / `sync`) 处理页面内容；外围字符串（导航、侧边栏、主题）在注明的情况下，在同一流水线内处理——而不是通过单独的 [JSON](/zh-Hans/guide/json) 流水线。Python 应用程序使用 [UI 字符串](/zh-Hans/guide/ui-strings/python) 流水线 (`extract` / `translate-ui`)。
 
@@ -49,3 +49,5 @@
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| .NET JSON 助手 | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| .NET ResourceManager 助手 | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

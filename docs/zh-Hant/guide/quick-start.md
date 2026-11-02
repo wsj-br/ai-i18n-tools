@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # 快速入門
 
-本頁將引導單一語言專案，以產生其第一個翻譯檔案。它適用於 JS/TS 應用程式、Python 應用程式、網站或文件網站，或儲存庫的 README 檔案及其他 Markdown 檔案。本頁假設：
+本頁指引單一語言專案產生其第一個翻譯檔案。它適用於 JS/TS 應用程式、Python 應用程式、.NET 應用程式、網站或文件網站，或儲存庫的 README 及其他 Markdown 檔案。本頁假設：
 
 - 已安裝 Node.js `>=22.16.0`，若是 Python 專案，則需[獨立執行檔](/zh-Hant/guide/installation#standalone-executables)。
 - 擁有 LLM 供應商的 API 金鑰，或是在本機安裝 Ollama。
@@ -75,6 +75,16 @@ ai-i18n-tools suggest-models --apply
 
 Django 應用程式、使用 Flask-Babel 目錄的 Flask，或已呼叫 `gettext` 的應用程式會保留這些呼叫。改為使用 `ui-python-django`、`ui-python-flask` 或 `ui-python-gettext` 建立骨架，然後遵循[將 i18n 加入 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext)。
 
+<a id="a-dotnet-app"></a>
+### .NET 應用程式
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+然後依照 [將 i18n 新增至 .NET 應用程式](/zh-Hant/guide/add-i18n-to-dotnet)。已使用 `ResourceManager` 或 `IStringLocalizer` 的應用程式則改用 `ui-dotnet-resx`，然後 [將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。`migrate-dotnet-i18n` 會將 `T($"…")` 重寫為編號的 `{0}` 呼叫。`--wrap` 會稽核未標記的 XAML 和 C# 標籤。報告會列出具名的 resx 索引鍵 (例如 `Resources.LoginButton`) 作為建議，但不會編輯這些行。
+
 <a id="a-website-or-documentation-site"></a>
 ### 網站或文件站台
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-然後依照 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。將語言清單標記貼到 `README.md` 中，置於 `sync` 之前。應用程式路徑（若有的話）仍然是 [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 或 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)。
+然後依照 [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。將語言清單標記貼到 `sync` 之前的 `README.md` 中。如果您有應用程式路徑，它仍然是 [將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js)、[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python) 或 [將 i18n 新增至 .NET 應用程式](/zh-Hant/guide/add-i18n-to-dotnet)。
 
 <a id="something-else"></a>
 ### 其他項目

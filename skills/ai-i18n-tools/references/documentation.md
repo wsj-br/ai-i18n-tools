@@ -69,7 +69,7 @@ Merge this Documents fragment into a configured project; provider and locale set
 1. Edit source-language content, config, and runtime/framework wiring, not generated translations.
 2. Run `ai-i18n-tools sync` when a translation refresh is authorized.
 3. Run the consumer project's existing site build command; inspect its scripts rather than guessing.
-4. Check source and target routes, dropdown navigation, sidebar labels, asset URLs, and heading fragments.
+4. Check source and target routes, dropdown navigation, sidebar labels, visible attributes, asset URLs, and heading fragments. Load one target locale in the running site.
 5. Check RTL layout, missing imports, locale casing, and deployment base paths.
 6. Fix source/config and rerun sync instead of patching generated locale files.
 

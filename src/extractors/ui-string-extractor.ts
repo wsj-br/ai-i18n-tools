@@ -58,6 +58,9 @@ export class UIStringExtractor extends BaseExtractor {
     const found = new Map<string, Segment>();
     let i = 0;
     for (const call of calls) {
+      if (call.skipCatalog) {
+        continue;
+      }
       const str = call.literal.trim();
       if (!str) {
         continue;

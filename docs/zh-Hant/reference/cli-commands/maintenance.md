@@ -38,7 +38,7 @@
 
 **概要：** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-從 `translations`、`file_tracking` 和 `translation_failures` 中刪除指定地區設定的所有快取列，以及該地區設定的已產生構件：翻譯文件（從 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 輸出，包括來源已移除的孤立輸出 — 透過掃描每個區塊的輸出樹找到，除非配置了自訂 `pathTemplate`），每個地區設定的平面 UI 檔案 (`<flatOutputDir>/<locale>.json`)，以及該地區設定在 `strings.json` 中的條目。
+從 `translations`、`file_tracking` 和 `translation_failures` 中刪除指定語言環境的所有快取行，以及該語言環境的生成產物：已翻譯文件（從 `docs[]` 解析出的 `.md` / `.mdx` / `.astro` 輸出，包括來源已被移除的孤立輸出——透過掃描每個區塊的輸出樹來找出，除非設定了自訂的 `pathTemplate`）、每個語言環境的平面 UI 檔案（`<flatOutputDir>/<locale>.json`）、該語言環境的 Gettext `.po` / `.mo`（若有設定）、該語言環境的 `.resx` 衛星（`{baseName}.{culture}.resx`；中性的 `{baseName}.resx` 保留），以及該語言環境在 `strings.json` 中的條目。
 
 地區設定透過可重複的 `-l` / `--locale` 傳遞（正規化為 BCP-47）。輸出每個地區設定的計數（快取列、文件、`strings.json` 條目、平面檔案）；對於沒有任何內容可清除的地區設定發出警告（而非錯誤）。除非 `-y` / `--yes` / `-f` / `--force`，否則會提示確認。`--dry-run`：報告計數和將被移除的檔案，不刪除任何內容。`--keep-files`：僅清除 SQLite 快取，保留已產生的檔案和 `strings.json` 不變。除非傳遞 `--backup <path>`，否則不會建立 SQLite 備份，該參數會在刪除前將備份寫入該路徑。
 

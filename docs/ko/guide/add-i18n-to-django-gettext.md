@@ -124,7 +124,7 @@ install or initialise anything yourself.
 
 ## Part 1 — Config
 
-1. If init wrote an `i18n.py`, delete it. A gettext app does not use it. If the
+1. If this init just wrote an unused `i18n.py`, delete that new file. Do not delete an `i18n.py` the app already had. A gettext app does not use the generated helper. If the
    project uses the `ui-python-gettext` template, set `"flatOutput": false` in
    the `ui` block.
 2. Make the config match the project. `ui.gettext.outputDir`, `potPath`, and
@@ -140,7 +140,12 @@ install or initialise anything yourself.
 
 Keep the gettext calls the project already uses, and wrap what is missing. The
 literal is the source-language message. With the source language active, the
-app must behave exactly as before.
+app must behave exactly as before. Also cover shown validation text, returned
+labels, and captions. Keep stored values in the source language. A clean
+extract is not coverage. Use the framework's language override for text sent
+to a model. Do not activate a process-global translation around asynchronous
+work. One target-locale test must show a message change while a stored value
+stays.
 
 - Python: `gettext`, `ngettext`, `pgettext`. Placeholders are `%(name)s`,
   filled after the lookup: `_("Hello, %(name)s!") % {"name": name}`. Strings that
@@ -475,6 +480,8 @@ print(_("Hello"))
 | --- | --- |
 | gettext가 없는 Streamlit, FastAPI, Flask, 데스크톱 또는 스크립트 앱 | [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python) |
 | JS/TS 앱 | [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) |
+| .NET 앱 | [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) |
+| `ResourceManager` 또는 ASP.NET `IStringLocalizer` | [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager) |
 | 웹사이트 또는 문서 사이트 | [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website) |
 | 리포지토리 README 또는 기타 마크다운 파일 | [README 및 마크다운 문서에 i18n 추가](/ko/guide/add-i18n-to-readme) |
 

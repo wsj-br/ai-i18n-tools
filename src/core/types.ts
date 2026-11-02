@@ -623,6 +623,18 @@ const uiExtractorSchema = z
      * reserved for the plain-HTML runtime and are never extracted, even if listed here.
      */
     htmlI18nAttributes: z.array(z.string().min(1)).optional(),
+    /**
+     * `default` keeps mustache, Python format fields, and printf tokens.
+     * `dotnet` keeps `{0}`, `{0,alignment}`, and `{0:format}` only. `%` is literal
+     * and `{{` / `}}` are escaped braces.
+     */
+    placeholderStyle: z.enum(["default", "dotnet"]).default("default"),
+    /**
+     * Minimatch patterns (relative to the project root) dropped after the source scan.
+     * Use this for test projects. `bin`, `obj`, `.vs`, `TestResults`, and `packages`
+     * are already skipped by directory name.
+     */
+    exclude: z.array(z.string().min(1)).default([]),
   })
   .strict();
 
@@ -870,6 +882,26 @@ const gettextConfigSchema = z
   })
   .strict();
 
+const resxConfigSchema = z
+  .object({
+    /** Directory for `{baseName}.resx` and `{baseName}.{culture}.resx`. */
+    outputDir: z.string().min(1).default("Resources"),
+    /** File stem. `SharedResource` writes `SharedResource.de.resx`. */
+    baseName: z.string().min(1).default("SharedResource"),
+    /** Write `{baseName}.resx` with the source strings so ResourceManager can fall back. */
+    writeNeutral: z.boolean().default(true),
+    /** Read existing `.resx` values into `strings.json` during extract. */
+    ingestExistingResx: z.boolean().default(true),
+    /**
+     * Neutral file used to map legacy named keys (`LoginButton`) to source text.
+     * When omitted, `{outputDir}/{baseName}.resx` is used when it exists.
+     */
+    neutralFile: z.string().min(1).optional(),
+    /** `bcp47` writes `pt-BR` (default, .NET culture names). `posix` writes `pt_BR`. */
+    localeFormat: z.enum(["posix", "bcp47"]).default("bcp47"),
+  })
+  .strict();
+
 const uiConfigSchema = z.preprocess(
   (raw) => {
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
@@ -893,11 +925,13 @@ const uiConfigSchema = z.preprocess(
       flatOutputDir: z.string().min(1).default("./locales"),
       /**
        * When true (default), `translate-ui` writes flat `{locale}.json` bundles.
-       * Set false to emit Gettext `.po`/`.mo` only. At least one of flat JSON or `gettext` is required.
+       * Set false to emit Gettext `.po`/`.mo` or `.resx` only. At least one of flat JSON, `gettext`, or `resx` is required.
        */
       flatOutput: z.boolean().default(true),
       /** GNU Gettext / Babel output and optional ingest of existing `.po` catalogs. */
       gettext: gettextConfigSchema.optional(),
+      /** .NET `.resx` satellites. Keys are the source strings. */
+      resx: resxConfigSchema.optional(),
       /**
        * Locales for this catalog only. When omitted or empty, root `targetLocales` is used.
        */

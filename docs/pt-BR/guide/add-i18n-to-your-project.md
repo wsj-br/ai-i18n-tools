@@ -21,9 +21,9 @@ Todo guia segue a mesma ordem. A página que você escolher preenche os detalhes
 
 1. Instale a CLI e defina a chave de API do seu provedor. O Ollama não precisa de chave. [Instalação](/pt-BR/guide/installation) e [Provedor e chave de API](/pt-BR/guide/quick-start#provider-and-api-key).
 2. Execute `init` com o modelo que a página nomeia. Isso escreve `ai-i18n-tools.config.json`.
-3. Prepare o projeto para que a ferramenta possa ver o texto. Use o prompt do agente dessa página ou as etapas manuais na mesma página.
-4. Execute `ai-i18n-tools sync`, depois `ai-i18n-tools status`.
-5. Carregue a saída, verifique um idioma de destino e execute novamente o `sync` quando a origem for alterada. O cache envia apenas o texto novo ou alterado para o modelo.
+3. Prepare o projeto para que a ferramenta possa ver o texto. Use o prompt do agente dessa página, ou as etapas manuais na mesma página.
+4. Revise ou crie o glossário do usuário, em seguida, execute `ai-i18n-tools sync` e `ai-i18n-tools status`. Uma extração limpa não é prova de que cada frase visível está encapsulada.
+5. Carregue a saída, verifique um idioma de destino e execute novamente `sync` quando a origem mudar. O cache envia apenas texto novo ou alterado para o modelo. Uma execução normal deixa as linhas `user-edited` intocadas. `--force` as traduz novamente.
 
 <a id="pages-in-this-section"></a>
 ## Páginas nesta seção
@@ -32,6 +32,8 @@ Todo guia segue a mesma ordem. A página que você escolher preenche os detalhes
 | --- | --- | --- |
 | Um aplicativo JS/TS (React, Next.js, Node, CLI) cujos botões e mensagens ainda são texto simples | [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js) | Instale o i18next, adicione o bootstrap, envolva literais em `t()` e adicione um seletor de idioma, depois `extract` e `translate-ui` |
 | Um aplicativo Python (Streamlit, FastAPI, Flask, desktop, scripts) | [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python) | Coloque o auxiliar `i18n.py`, envolva `t()` ou `_()`, adicione um seletor de idioma. A CLI pode ser executada a partir de um executável autônomo sem instalação do Node.js |
+| Um aplicativo .NET (Avalonia, WPF, MAUI, ASP.NET, Blazor, console) | [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet) | Coloque `I18n.cs`. Encapsule `T()`, ou execute `migrate-dotnet-i18n`. Incorpore `locales/*.json`, e adicione um seletor de idioma |
+| Um aplicativo .NET que já usa `ResourceManager` ou `IStringLocalizer` | [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager) | Mantenha esse carregador. Coloque `I18nResx.cs` e escreva satélites `.resx` do mesmo catálogo `T()` |
 | Um aplicativo Django, Flask com catálogos Flask-Babel, ou qualquer aplicativo que já use GNU gettext | [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext) | Mantenha os arquivos `gettext`, `{% blocktranslate %}` e seus `.po`. A ferramenta preenche e compila os catálogos |
 | Um site de documentação ou marketing (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, HTML simples) | [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website) | Habilite o i18n do framework com o prompt do agente da página, depois `sync` para traduzir páginas e rótulos de tema |
 | Um README de repositório e outros arquivos Markdown, geralmente ao lado de um aplicativo | [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme) | Um arquivo por idioma (`translated-docs/README.de.md`) e uma linha de idioma no README. O `init --with-readme` adiciona esse bloco a qualquer template |

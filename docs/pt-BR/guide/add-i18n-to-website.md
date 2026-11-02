@@ -381,6 +381,7 @@ Este é o último passo manual. Continue em [Escolher modelos e traduzir](#choos
 | --- | --- |
 | Strings da UI do aplicativo | [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js) ou [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python) |
 | Catálogos Django, Flask-Babel, ou um aplicativo que já usa GNU gettext | [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext) |
+| Um aplicativo .NET | [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet) ou [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager) |
 | Um README de repositório ao lado do site, ou arquivos Markdown e nenhum framework de site | [Adicionar i18n aos seus documentos README e Markdown](/pt-BR/guide/add-i18n-to-readme). `init … --with-readme` adiciona esse bloco ao lado de um modelo de site |
 | JSON de localidade aninhado autônomo | [JSON](/pt-BR/guide/json) |
 | Um site e strings de aplicativo em uma única configuração | [Combinando pipelines](/pt-BR/guide/combining-pipelines) |

@@ -618,4 +618,160 @@ describe("runTranslateUI", () => {
     expect(written.k0?.translated?.de).toBe("DE:String 0");
     expect(written.k50?.translated?.de).toBe("DE:String 50");
   });
+
+  it("re-translates a renamed placeholder and copies a placeholder-only string", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    fs.writeFileSync(
+      path.join(tmp, "strings.json"),
+      JSON.stringify(
+        {
+          renamed: {
+            source: "{help}\n\nField: {name}",
+            translated: { de: "{ajuda}\n\nCampo: {name}" },
+            models: { de: "old-model" },
+          },
+          edited: {
+            source: "When {schedule}",
+            translated: { de: "Quando {cronograma}" },
+            models: { de: USER_EDITED_MODEL },
+          },
+          marks: { source: "{state} · {title}" },
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    const fetchMock = vi
+      .fn()
+      .mockImplementation((reqUrl: string | URL | Request, init?: RequestInit) => {
+        const u =
+          typeof reqUrl === "string" ? reqUrl : reqUrl instanceof URL ? reqUrl.href : reqUrl.url;
+        if (u.includes("/models")) {
+          return Promise.resolve(
+            mockJsonResponse({
+              data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+            })
+          );
+        }
+        const body = JSON.parse(String(init?.body)) as {
+          messages: Array<{ content?: string }>;
+        };
+        const user = String(body.messages[body.messages.length - 1]?.content ?? "");
+        expect(user).toContain("{help}");
+        expect(user).not.toContain("{schedule}");
+        expect(user).not.toContain("{state}");
+        return Promise.resolve(
+          mockJsonResponse({
+            id: "r1",
+            choices: [
+              {
+                message: { content: JSON.stringify(["{help}\n\nFeld: {name}"]) },
+                finish_reason: "stop",
+              },
+            ],
+            usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+          })
+        );
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await runTranslateUI(buildConfig(), {
+      cwd: tmp,
+      locales: ["de"],
+      force: false,
+      dryRun: false,
+      verbose: false,
+    });
+
+    const written = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as Record<
+      string,
+      { translated?: Record<string, string>; models?: Record<string, string> }
+    >;
+    expect(written.renamed?.translated?.de).toBe("{help}\n\nFeld: {name}");
+    expect(written.renamed?.models?.de).toBe("model-a");
+    expect(written.edited?.translated?.de).toBe("Quando {cronograma}");
+    expect(written.marks?.translated?.de).toBe("{state} · {title}");
+    expect(written.marks?.models?.de).toBe("placeholder-copy");
+    expect(warn.mock.calls.some((call) => String(call[0]).includes("{schedule}"))).toBe(true);
+  });
+
+  it("dry-run reports placeholder repairs without writing or calling a model", async () => {
+    const catalog = {
+      renamed: {
+        source: "Field: {name}",
+        translated: { de: "Feld: {nome}" },
+        models: { de: "old-model" },
+      },
+    };
+    const catalogPath = path.join(tmp, "strings.json");
+    fs.writeFileSync(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+    const before = fs.readFileSync(catalogPath, "utf8");
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await runTranslateUI(buildConfig(), {
+      cwd: tmp,
+      locales: ["de"],
+      force: false,
+      dryRun: true,
+      verbose: false,
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(fs.existsSync(path.join(tmp, "locales"))).toBe(false);
+    expect(fs.readFileSync(catalogPath, "utf8")).toBe(before);
+  });
+
+  it("force retranslates a user-edited placeholder mismatch", async () => {
+    fs.writeFileSync(
+      path.join(tmp, "strings.json"),
+      JSON.stringify({
+        edited: {
+          source: "When {schedule}",
+          translated: { de: "Quando {cronograma}" },
+          models: { de: USER_EDITED_MODEL },
+        },
+      }),
+      "utf8"
+    );
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((reqUrl: string | URL | Request) => {
+        const u =
+          typeof reqUrl === "string" ? reqUrl : reqUrl instanceof URL ? reqUrl.href : reqUrl.url;
+        if (u.includes("/models")) {
+          return Promise.resolve(
+            mockJsonResponse({
+              data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+            })
+          );
+        }
+        return Promise.resolve(
+          mockJsonResponse({
+            id: "r1",
+            choices: [
+              { message: { content: JSON.stringify(["Wenn {schedule}"]) }, finish_reason: "stop" },
+            ],
+            usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+          })
+        );
+      })
+    );
+
+    await runTranslateUI(buildConfig(), {
+      cwd: tmp,
+      locales: ["de"],
+      force: true,
+      dryRun: false,
+      verbose: false,
+    });
+
+    const written = JSON.parse(fs.readFileSync(path.join(tmp, "strings.json"), "utf8")) as {
+      edited: { translated: { de: string }; models: { de: string } };
+    };
+    expect(written.edited.translated.de).toBe("Wenn {schedule}");
+    expect(written.edited.models.de).toBe("model-a");
+  });
 });

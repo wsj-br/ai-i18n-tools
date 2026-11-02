@@ -48,6 +48,7 @@ skills CLIは匿名の使用状況データを収集します。それをオフ�
 | --- | --- |
 | `/ai-i18n-js` | JavaScriptまたはTypeScriptのソース文字列UI |
 | `/ai-i18n-python` | 生成されたPythonヘルパーとフラットJSONカタログ |
+| `/ai-i18n-dotnet` | 生成された `I18n.cs` または `I18nResx.cs`、および `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django、Flask-Babel、またはプレーンなgettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlightドキュメント |

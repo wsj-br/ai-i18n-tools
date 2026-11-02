@@ -19,7 +19,7 @@
 
 **概要:** `ai-i18n-tools status [--max-columns <n>]`
 
-`features.translateUIStrings`がオンの場合、ロケールごとのUIカバレッジ（`Translated` / `Missing` / `Total`）を出力します。次に、ファイル×ロケールごとのMarkdown翻訳ステータスを出力します（`--locale`フィルタはなし、ロケールは設定から取得）。`features.translateJson`がオンで`json[]`が設定されている場合、ブロックごとのJSONバンドルステータスも出力します。ロケールリストが大きい場合は、ターミナルで行が狭くなりすぎないよう、最大`n`ロケール列の繰り返しテーブルに分割されます（デフォルト**9**）。
+`features.translateUIStrings` がオンの場合、ロケールごとの UI カバレッジ（`Translated` / `Missing` / `Placeholder issues` / `Total`）を出力します。`Placeholder issues` は、保存された翻訳がプレースホルダーの名前を変更したり、削除したり、新しく作成したり、ターゲットを変更したりする行をカウントします。次に、ファイル × ロケールごとの Markdown 翻訳ステータスを出力します（`--locale` フィルターなし。ロケールは設定から取得されます）。`features.translateJson` がオンで `json[]` が設定されている場合、ブロックごとの JSON バンドルステータスも出力します。大規模なロケールリストは、ターミナルで表示される行が狭く保たれるように、最大 `n` 個のロケール列（デフォルトは **9**）を持つ繰り返しテーブルに分割されます。
 
 **主なオプション:** `--max-columns`
 

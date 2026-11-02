@@ -81,18 +81,19 @@ Gettext ファイルはコンテキストに `msgctxt` を、複数形に `msgid
 - ヘルパーは、ロードされた各JSONファイルをプロセスの存続期間中メモリに保持します。これには、最初の検索時にファイルが見つからなかった場合の空のマップも含まれます。`translate-ui` の後、アプリを再起動してください。
 - その実行の最初の `t()` の前に `set_locale` を呼び出してください。`?lang=` は、アプリがそれを読み込み `set_locale` を呼び出すまで何も行いません。
 - インポート時の `t()` は一度実行され、そのモジュールが再度インポートされるまでソース言語を保持します。ウィジェットが構築されるときに `t()` を呼び出してください。
-- プレースホルダーは `{name}`、`{name:.2%}`、`{name:,.2f}`、および `{name!r}` です。`{row.rate}` のようなドット付きフィールドは拒否されます。`rate=row.rate` を渡してください。
-- printf型文字 (`%d`、`%a`、`%s`、その他) が直後に続くリテラルのパーセントは、旧式の書式設定として扱われます。キーワード引数を使用した場合、`%` の書式設定が失敗するとテンプレートが返され、`{name}` の置換はスキップされます。`% do CDI` や `% a.a.` のようなソーステキストのように、リテラルのパーセントをこれらの文字から離してください。
+- プレースホルダーは`{when}`、`{counts}`、`{name:.2%}`、`{name:,.2f}`、および`{name!r}`です。プレースホルダーは、フォーマット指定子（`{when:%Y-%m-%d}`、`{share:.0%}`）を含め、それが何であるかを示す名前を付けてください。`{value}`と`{value_2}`は避けてください。翻訳では、すべてのプレースホルダー名とフォーマット指定子を変更せずにコピーする必要があります。いずれかの名前を変更した場合、書式設定はスキップされ、ヘルパーが一度警告し、元の文が表示されます。`translate-ui`は、プレースホルダーの名前を変更するバッチを拒否し、その後の実行で、まだ問題がある保存された行を再翻訳します。`{state} · {title}`のようにプレースホルダーと句読点のみで構成される文字列は、コピーされ、モデルには送信されません。`{row.rate}`のようなドット付きフィールドは拒否されます。`rate=row.rate`を渡します。`migrate-python-i18n`は`start.isoformat()`から`{start}`を、`obj.attr`から`{attr}`を、`len(rows)`から`{rows_count}`を、`", ".join(selected)`から`{selected}`を推測し、残りの`{value_1}`を報告します。
+- Streamlitページファイル内の`t()`は、`set_locale`の後に、再実行ごとに実行されます。一度インポートされたモジュール内、またはインポート時に構築された辞書内の`t()`は、最初のインポート時の言語のままになります。これらの呼び出しは、テキストが表示されるときに実行される関数内に配置してください。ロケールを追跡するためにモジュールをリロードしないでください。
+- printf型文字（`%d`、`%a`、`%s`、その他）が直後に続くリテラルのパーセントは、旧式の書式設定として扱われます。キーワード引数を使用すると、失敗した`%`の書式設定はテンプレートを返し、`{name}`の置換をスキップします。`% do CDI`や`% a.a.`のようなソーステキストのように、リテラルのパーセントをこれらの文字から離してください。
 
 <a id="locale-in-each-framework"></a>
 ## 各フレームワークのロケール
 
 `set_locale` は `ContextVar` トークンを返します。FastAPI や Flask のミドルウェアを含め、`finally` でリセットしてください。これにより、同時リクエスト間でロケールが漏洩するのを防ぎます。
 
-- <a id="streamlit"></a>**Streamlit.** 実行の最初の `t()` (`st.set_page_config(page_title=…)` を含む) の前に `set_locale` を呼び出してください。`streamlit_language_selector(sidebar=True, key="lang_selector")` は `st.session_state.locale` と `st.query_params["lang"]` を書き込み、ウィジェットが描画されるときに `set_locale` を呼び出すため、その上にある翻訳されたタイトルは、その実行中は以前の言語のままになります。そのラベルは固定された英語です。翻訳されたタイトルが必要なページは、[言語切り替えを追加する](/ja/guide/add-i18n-to-python#step-4-add-a-language-switch) に従う必要があります。すべてのウィジェットに固定の `key` を与えてください。`examples/python-streamlit` を参照してください。
-- <a id="fastapi"></a>**FastAPI.** ミドルウェアで `?lang=` または `Accept-Language` を読み込み、`set_locale` を呼び出し、`finally` で `reset_locale` を呼び出してください。ルートは `t()` と `_()` を呼び出します。`examples/python-fastapi` を参照してください。
-- <a id="flask"></a>**Flask and Pyramid.** リクエストからロケールを設定し、`_`、`t`、`current_locale`、`ui_languages`、および `direction` をテンプレートコンテキストに注入してください。`examples/python-flask` を参照してください。
-- <a id="gettext"></a>**Existing gettext.** `_()`、`gettext()`、および `ngettext()` はそのままにしてください。`ui.gettext` を現在の `locales/` ツリーに向け、`extract` を実行してから `translate-ui` を実行してください。`examples/python-gettext` を参照してください。
+- <a id="streamlit"></a>**Streamlit.** 実行の最初の`t()`（`st.set_page_config(page_title=…)`を含む）の前に`set_locale`を呼び出します。トークンを保持し、ページスクリプトが戻った後（`st.navigation`の`run()`の後を含む）に`reset_locale`を呼び出します。`streamlit_language_selector(sidebar=True, key="lang_selector")`は`st.session_state.locale`と`st.query_params["lang"]`を書き込み、ウィジェットが描画されるときに`set_locale`を呼び出すため、その上にある翻訳されたタイトルは、その実行では以前の言語のままになります。そのラベルは固定された英語です。翻訳されたタイトルが必要なページは、[言語切り替えの追加](/ja/guide/add-i18n-to-python#step-4-add-a-language-switch)に従う必要があります。すべてのウィジェットに固定の`key`を与えてください。短いヘルパーについては`examples/python-streamlit`を、マッチング、プロセスロケール、および`reset_locale`についてはガイドサンプルを参照してください。
+- <a id="fastapi"></a>**FastAPI.** ミドルウェアで`?lang=`または`Accept-Language`を読み取り、`set_locale`を呼び出し、`finally`で`reset_locale`を呼び出します。ルートは`t()`と`_()`を呼び出します。`examples/python-fastapi`を参照してください。
+- <a id="flask"></a>**Flask and Pyramid.** リクエストからロケールを設定し、`_`、`t`、`current_locale`、`ui_languages`、および`direction`をテンプレートコンテキストに挿入します。`examples/python-flask`を参照してください。
+- <a id="gettext"></a>**既存のgettext.** `_()`、`gettext()`、および`ngettext()`はそのままにしておきます。`ui.gettext`を現在の`locales/`ツリーに向け、`extract`を実行してから`translate-ui`を実行します。`examples/python-gettext`を参照してください。
 - <a id="django"></a>**Django。** `gettext`、`ngettext`、および`{% blocktrans %}`を使用します。初期化テンプレート`ui-python-django`は、Djangoの`locale/`ディレクトリおよび`django`ドメインと一致します。
 - <a id="tkinter"></a>**Tkinter。** 各ウィジェットの作成時に`t()`または`_()`を呼び出し、`set_locale`の後に表示テキストを再構築します。
 - <a id="pyqt"></a>**PyQt / PySide。** `self.tr("...")`が抽出されます。`notr="true"`でない限り、`.ui`ファイルが`<string>`要素を提供します。`comment`属性はgettextコンテキストになります。

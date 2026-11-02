@@ -381,6 +381,7 @@ MDX को `content/<sourceLocale>/` के तहत ले जाएं, `app/
 | --- | --- |
 | ऐप UI स्ट्रिंग्स | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) |
 | Django, Flask-Babel कैटलॉग, या एक ऐप जो पहले से ही GNU gettext का उपयोग करता है | [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) |
+| एक .NET ऐप | [.NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) या [.NET रिसोर्समैनेजर ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager) |
 | साइट के बगल में एक रिपॉजिटरी README, या मार्कडाउन फ़ाइलें और कोई साइट फ्रेमवर्क नहीं | [अपने README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme)। `init … --with-readme` साइट टेम्पलेट के बगल में वह ब्लॉक जोड़ता है |
 | स्टैंडअलोन नेस्टेड लोकले JSON | [JSON](/hi/guide/json) |
 | एक कॉन्फ़िग में एक साइट और ऐप स्ट्रिंग्स | [पाइपलाइनों का संयोजन](/hi/guide/combining-pipelines) |

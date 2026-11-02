@@ -9,6 +9,20 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Fixed**: `check-markdown` — a `{{` is not paired with a `}}` inside a later backtick span. `<code v-pre>{{</code>` followed by a closed `` `}}` `` span is no longer reported as unclosed inline code.
+- **Fixed**: `translate-ui --dry-run` no longer creates the flat output directory and does not call a model.
+- **Fixed**: UI placeholder scan — a percent sign followed by a word and an apostrophe, as in French `% d'appels`, is prose. A real `%s` or `%d` token is unchanged.
+- **Changed**: dashboard — document-cache edits are no longer rejected with the UI placeholder rules. UI catalog rows still require confirmation when a placeholder does not match its source.
+
+- **Added**: .NET resx — `ui.resx` writes neutral and per-culture `.resx` from the UI catalog. Keys are the source strings, context uses U+2404, and plurals are `{singular}[{form}]`. `extract` ingests satellites, including legacy named keys matched through the neutral value. `init -t ui-dotnet-resx` writes `I18nResx.cs`. `purge-locale` deletes the culture file and leaves the neutral file.
+- **Added**: `migrate-dotnet-i18n` — rewrites `T($"...")`, concatenation, and `string.Format` inside `T()` into numbered `{0}` calls. `--wrap` marks unmarked XAML labels and high-confidence C# sinks. The default is a dry run and writes `migrate-dotnet-i18n-report.md`. When `extract` ingests a neutral `.resx`, that report also lists named-key call sites such as `Resources.LoginButton` → `T("Sign in")` as suggestions and does not edit them.
+- **Added**: .NET UI strings — `extract` reads `T`, `Tn`, `Tp`, `N`, and `Loc["…"]` from C#, Razor, and cshtml, and `{loc:Tr '…'}` from XAML and AXAML. Unsafe interpolation is reported and not catalogued. `init -t ui-dotnet` writes `I18n.cs` (embedded flat JSON, culture fallback, plurals, `string.Format`).
+- **Added**: UI placeholders — `uiExtractor.placeholderStyle` `dotnet` keeps `{0}` / `{0,-10}` / `{0:format}`, treats `%` as text, and treats doubled braces as literal. `translate-ui` checks placeholder counts on UI batches.
+- **Fixed**: `translate-ui` — a stored translation that renames, drops, invents, or changes a placeholder is translated again. `user-edited` rows are kept and warned about. `--dry-run`, `status`, and `doctor` report the rows. The dashboard flags them and asks before saving a broken placeholder. A string that is only placeholders and punctuation is copied. The next model in a rejected batch sees the placeholder error.
+- **Changed**: python — `migrate-python-i18n` names a placeholder from the expression (`start.isoformat()` becomes `{start}`, `len(rows)` becomes `{rows_count}`) and reports a leftover `{value_1}`. The generated helper warns once when a translation's placeholder names do not match the source, then shows the source sentence.
+- **Added**: UI scan — `uiExtractor.exclude` minimatch list. Directory walks also skip `bin`, `obj`, `.vs`, `TestResults`, and `packages`. Generated `I18n.cs` is skipped the same way as `i18n.py`.
+- **Changed**: CLI — the unsafe-call warning names `migrate-python-i18n` only for Python files. .NET warnings point at a string literal and `N()`.
+
 ## [1.12.0] - 2026-11-01
 
 - **Removed**: dependencies — drop unused `i18next-scanner`. UI extraction already uses `@babel/parser` in `ui-string-babel.ts`, so the scanner and its install tree are no longer dependencies of the published package.

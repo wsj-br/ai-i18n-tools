@@ -19,7 +19,7 @@
 
 **개요:** `ai-i18n-tools status [--max-columns <n>]`
 
-`features.translateUIStrings`가 켜져 있으면 로케일별 UI 커버리지(`Translated` / `Missing` / `Total`)를 출력합니다. 그런 다음 파일 × 로케일별 마크다운 번역 상태를 출력합니다(`--locale` 필터 없음, 로케일은 설정에서 가져옴). `features.translateJson`가 켜져 있고 `json[]`가 구성된 경우 블록별 JSON 번들 상태도 출력합니다. 로케일 목록이 큰 경우 터미널에서 줄이 좁게 유지되도록 최대 `n`개의 로케일 열로 반복되는 테이블로 분할됩니다(기본값 **9**).
+`features.translateUIStrings`가 켜져 있으면 로케일별 UI 적용 범위(`Translated` / `Missing` / `Placeholder issues` / `Total`)를 출력합니다. `Placeholder issues`는 저장된 번역이 플레이스홀더의 이름을 바꾸거나, 삭제하거나, 새로 만들거나, 대상을 변경하는 행을 계산합니다. 그런 다음 파일 × 로케일별 마크다운 번역 상태를 출력합니다(`--locale` 필터는 적용되지 않으며, 로케일은 구성에서 가져옵니다). `features.translateJson`가 켜져 있고 `json[]`가 구성되어 있으면 블록별 JSON 번들 상태도 출력합니다. 큰 로케일 목록은 터미널에서 줄이 좁게 유지되도록 최대 `n`개의 로케일 열(기본값 **9**)로 구성된 반복 테이블로 분할됩니다.
 
 **주요 옵션:** `--max-columns`
 

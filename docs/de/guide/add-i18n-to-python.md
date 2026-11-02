@@ -150,10 +150,18 @@ is already wrapped needs no change.
   validation text, progress lines, emails. Leave SQL, regexes, file formats, log
   messages, CSS, identifiers, widget keys, status and enum codes, number and
   date formats, and prompts sent to a model.
+- A rewriter that only visits `st.*` methods is not a wrap. After it runs,
+  search again for f-strings and string literals that are raised, returned, or
+  passed to progress and status APIs. Those are the calls `migrate-python-i18n`
+  cannot see. Include them when a person reads the text: `ValueError` and
+  `st.error` messages, `st.status` and progress labels, values returned as a
+  badge or a table cell, and dict entries shown with `format_func`. Leave
+  logger calls, SQL, widget `key=` values, and text sent to a model.
 - Call shapes: `t("Hello, {name}!", name=name)` and `_("Hello, %s!") % name`.
   Placeholders are `{name}`, `{price:,.2f}`, `{rate:.2%}`, or `{item!r}`, passed
-  as keyword arguments. No dotted fields: pass `rate=row.rate`. Keep a literal
-  `%` away from a printf letter such as `%d`.
+  as keyword arguments. Name placeholders for the translator (`{when}`,
+  `{counts}`). Do not emit `{value}` or `{value_2}`. No dotted fields: pass
+  `rate=row.rate`. Keep a literal `%` away from a printf letter such as `%d`.
 - Look up first, then format. Never `_(f"…")`, `_("…" % x)`, or
   `_("…".format(…))`.
 - The argument must be a string literal, so `t(variable)` is invisible. Use one
@@ -161,7 +169,38 @@ is already wrapped needs no change.
   the text already branches. Keep markers that the code detects outside `t()`.
 - A value that is both stored and shown keeps its source-language value.
   Translate the label where it is displayed, and compare against the stored
-  value.
+  value. Each shown label is its own string literal. A dict of `t()` results
+  built at import time freezes on the first import.
+
+```python
+PRESET_ALL = "All"
+PRESET_LAST_12 = "Last 12"
+PRESET_YTD = "YTD"
+
+def preset_label(value: str) -> str:
+    if value == PRESET_LAST_12:
+        return t("Last 12")
+    if value == PRESET_YTD:
+        return t("YTD")
+    return t("All")
+```
+
+- Widget markup, HTML tags, and markdown emphasis that the framework parses stay
+  outside `t()`. Build `":red[" + t("Errors {errors}", errors=errors) + "]"`.
+  Splitting one visual line into two `t()` calls is appropriate when the split
+  is the markup boundary. It is not a reason to split a paragraph.
+- When a prompt sent to a model is built from labels that themselves go through
+  `t()`, pin the catalog source locale around that build. The pinned locale is
+  `sourceLocale`, the language the model is asked to read, not the visitor's
+  language.
+
+```python
+token = set_locale("en")
+try:
+    return glossary_markdown()
+finally:
+    reset_locale(token)
+```
 - `t()` at module level runs once and freezes. Call it where the text is shown.
 - Put the import with the project's other first-party imports.
 
@@ -196,8 +235,10 @@ rules:
 2. Choose in this order: the explicit choice (CLI option, selector, `?lang=`),
    the stored choice (settings, cookie, session), the environment, then the
    source locale. Accept only codes from `get_ui_languages()`, matched
-   case-insensitively and by language (`pt-br` and `pt` become `pt-BR`).
-   `set_locale` does not match. An explicit option or the app's own language
+   case-insensitively and by language subtag only when exactly one configured
+   language has that subtag (`pt` matches a sole `pt-BR`, and matches neither
+   when both `pt-BR` and `pt-PT` are configured). `set_locale` does not match.
+   An explicit option or the app's own language
    variable that names an unavailable language warns once, then uses the source
    locale. A locale taken only from the operating system does not warn.
 3. Keep the locale local to the unit of work: keep the token from `set_locale`
@@ -230,7 +271,9 @@ chooses the locale, an after-request hook stores the cookie, and templates get
 `t`, `_`, and the language helpers. Streamlit: set the locale at the top of the
 entry script, before `st.set_page_config`, with a selectbox that has a fixed
 `key`, sets `?lang=`, and calls `st.rerun()`; `streamlit_language_selector()`
-sets the locale only after it is drawn. Desktop: set the saved locale before
+sets the locale only after it is drawn. Keep the `set_locale` token and call
+`reset_locale` after `st.navigation`'s `run()` returns. Resetting before that
+call leaves the page in the source locale. Desktop: set the saved locale before
 building the window, and refresh the visible text in the selector handler.
 
 ## Verify and report
@@ -241,9 +284,16 @@ source locale, the output is unchanged.
 
 Report the files changed, skipped strings grouped by reason, plurals left as one
 string, one word with several meanings, sentences built from translated pieces,
-and any `t()` that runs at import time. Then list the commands for the user, and
-do not run them: `ai-i18n-tools suggest-models` (optional),
-`ai-i18n-tools translate-ui`, then restart the app.
+and any `t()` that runs at import time. Also report the count of remaining
+f-strings that contain a letter and are raised, returned, or passed to a status
+widget, grouped as wrapped, skipped (log or identifier), or still on screen in
+the source language. A test that only checks `resolve_ui_locale` does not show
+that the wrap worked. With a locale file present, one test sets the project's
+target locale, asserts that a validation message, a returned label, and a
+`format_func` label change, and asserts that the stored option value stays in
+the source language. `reset_locale` restores the source locale.
+
+Then list the commands for the user, and do not run them: `ai-i18n-tools suggest-models` (optional), `ai-i18n-tools translate-ui`, then restart the app.
 ````
 
 <a id="review-the-result"></a>
@@ -251,10 +301,11 @@ do not run them: `ai-i18n-tools suggest-models` (optional),
 
 Der Agent schließt mit einem Bericht ab. Überprüfen Sie ihn, bevor Sie übersetzen:
 
-- Der Diff. Umhüllter Text sollte sich wie zuvor lesen, ohne irrelevante Neuformatierung. `git diff --stat` zeigt, wie viel sich geändert hat.
-- Die übersprungenen Zeichenfolgen und die mehrdeutigen Fälle im Bericht: Plurale, die als eine Zeichenfolge belassen wurden, ein Wort, das als gespeicherter Wert und als Beschriftung verwendet wird, und Sätze, die aus übersetzten Teilen aufgebaut sind. Entscheiden Sie diese manuell.
+- Der Diff. Umbrochener Text sollte sich wie zuvor lesen, ohne irrelevante Neuformatierungen. `git diff --stat` zeigt, wie viel sich geändert hat.
+- Die übersprungenen Zeichenfolgen und die mehrdeutigen Fälle im Bericht: Pluralformen, die als eine Zeichenfolge belassen wurden, ein Wort, das als gespeicherter Wert und als Beschriftung verwendet wird, und Sätze, die aus übersetzten Teilen aufgebaut sind. Entscheiden Sie diese manuell. Wenn dies ein zweiter Umbruch ist, vergleichen Sie die Satzstrukturen mit dem vorherigen Katalog und berücksichtigen Sie Sätze, die verschwunden sind.
+- Die Anzahl der verbleibenden f-Strings, die einen Buchstaben enthalten. Ein sauberer `migrate-python-i18n`-Bericht ignoriert nicht umbrochene f-Strings.
 - `ai-i18n-tools extract` läuft fehlerfrei, und `strings.json` befindet sich im erwarteten Ordner.
-- Ihre Tests bestehen, und die App sieht in der Ausgangssprache gleich aus.
+- Ihre Tests sind erfolgreich, und die App sieht in der Quellsprache gleich aus.
 - Es wurde kein Wegwerfskript oder `migrate-python-i18n-report.md` zurückgelassen.
 
 Zeichenfolgen, die der Agent übersehen hat, erscheinen später als Text, der in der Ausgangssprache verbleibt. [Schritt 2](#wrap-strings) enthält ein optionales Skript, das nicht umhüllten Text ausgibt.
@@ -273,6 +324,8 @@ ai-i18n-tools suggest-models --apply
 
 `--apply` ersetzt nur `translationModels`. Verwenden Sie `--max-output-price`, um Modelle auszuschließen, deren Ausgabepreis ein Limit überschreitet. Wenn Sie eine GUI bevorzugen, verwenden Sie `ai-i18n-tools dashboard`, um die [Modelle](/de/guide/translation-dashboard/models) auszuwählen.
 
+Füllen Sie das Glossar vor dem ersten `translate-ui` aus. `init` verweist `glossary.userGlossary` auf `glossary-user.csv` und erstellt die Datei nicht. `translate-ui` liest nur diese CSV-Datei. Wenn die Datei fehlt, führen Sie `ai-i18n-tools glossary-generate` aus und fügen Sie dann Domänenbegriffe hinzu. Verwenden Sie **Force** für Namen, die unverändert kopiert werden müssen (`Focus`, `CDI`, `Selic`). Verwenden Sie eine bevorzugte Übersetzung für Wörter, die konsistent bleiben sollen (`portfolio` → `carteira`). Ein zweiter `translate-ui` einer unveränderten Zeichenfolge kann anders formuliert zurückkommen. Das Glossar sorgt dafür, dass die beiden Läufe übereinstimmen. Das Prüfen, ob jeder Schlüssel einen Zielwert hat, ist keine Überprüfung.
+
 Dann extrahieren und übersetzen:
 
 ```bash
@@ -288,6 +341,10 @@ ai-i18n-tools translate-ui
 ### Eine Sprache überprüfen
 
 Starten Sie die App neu, wechseln Sie zu einer Zielsprache und öffnen Sie eine Seite mit einigen umhüllten Zeichenfolgen. Verwenden Sie das vom Agenten hinzugefügte Sprachmenü oder stellen Sie das Gebietsschema manuell ein. Text, der sich noch in der Ausgangssprache befindet, wurde nicht umhüllt, wird zur Importzeit ausgeführt oder hat keinen Eintrag in `locales/<code>.json`. Überprüfen Sie die JSON-Datei auf den Satz, bevor Sie den Code verdächtigen.
+
+Eine in der Quellsprache geschriebene Zahl folgt dem Dezimaltrennzeichen der Zielsprache (`1.00` wird zu `1,00` in `pt-BR`). Ein `{price:,.2f}`-Platzhalter ist eine Formatierungsangabe und bleibt wie geschrieben. Das Hilfsprogramm lokalisiert Zahlen nicht selbstständig.
+
+Suchen Sie in der Locale-JSON-Datei nach einem Platzhalternamen, der in der Quellzeichenfolge dieses Eintrags fehlt. `translate-ui --dry-run` und `status` melden diese Zeilen, und `doctor` warnt, wenn ein Katalog solche enthält. Ein umbenannter Platzhalter wie `{schedule}`, der zu `{cronograma}` wird, ist fehlerhaft, selbst wenn `translate-ui` zuvor Erfolg gemeldet hat: Die Formatierung wird übersprungen und der Quellsatz wird angezeigt. Eine Zeile, die Sie manuell korrigiert und im Dashboard markiert haben, bleibt bestehen und wird nur gewarnt.
 
 <a id="keep-it-translated"></a>
 ## Übersetzt halten
@@ -373,11 +430,58 @@ _("Hello, %s!" % name)
 _("Hello, {name}!".format(name=name))
 ```
 
-Umschließen Sie Text, den eine Person sieht: Widget-Beschriftungen, Seitentitel, Bildunterschriften, in der Benutzeroberfläche angezeigte Fehler, Fortschrittsanzeigen, Validierungsmeldungen und Absätze, die einige Zahlen enthalten. Ein Absatz mit interpolierten Zahlen ist immer noch ein `t()`-Aufruf. Platzhalter sind Namen wie `{name}`, `{price:,.2f}` oder `{rate:.2%}`. Übergeben Sie `rate=row.rate`. Ein Platzhalter wie `{row.rate:.2%}` wird abgelehnt.
+Text umbrechen, den eine Person sieht: Widget-Beschriftungen, Seitentitel, Beschriftungen, in der Benutzeroberfläche angezeigte Fehler, Fortschrittsanzeigen, Validierungsmeldungen und Absätze, die einige Zahlen enthalten. Ein Absatz mit interpolierten Zahlen ist immer noch ein `t()`-Aufruf. Platzhalter sind Namen wie `{when}`, `{counts}`, `{price:,.2f}` oder `{rate:.2%}`, einschließlich der Formatierungsangabe. Übergeben Sie `rate=row.rate`. Ein Platzhalter wie `{row.rate:.2%}` wird abgelehnt. Vermeiden Sie `{value}` und `{value_2}`. `migrate-python-i18n` benennt einen Platzhalter aus dem Ausdruck, wenn möglich (`start.isoformat()` wird zu `{start}`), und meldet einen übrig gebliebenen `{value_1}`, damit Sie ihn umbenennen können.
+
+Ein Umschreiber, der nur `st.*`-Methoden besucht, ist kein Umbruch. Suchen Sie nach dessen Ausführung erneut nach f-Strings und Zeichenfolgenliteralen, die ausgelöst, zurückgegeben oder an Fortschritts- und Status-APIs übergeben werden. `migrate-python-i18n` kann `raise ValueError("…")`, `st.status.update(label="…")` oder ein Wörterbuch von Beschriftungen nicht sehen. Fügen Sie sie ein, wenn eine Person den Text liest.
 
 Belassen Sie die Quellformulierung wie sie ist. Eine fehlende Übersetzung gibt diesen Satz zurück, sodass die App in der Ausgangssprache gleich bleibt.
 
-Überspringen Sie Text, den das Programm abgleicht oder protokolliert: SQL, Regexes, Dateikopfzeilen, Logger-Zeilen, CSS, Widget-Schlüssel, Enum-Codes und Prompts, die Sie an ein Modell senden. Wenn ein Wert sowohl gespeichert als auch angezeigt wird (ein Auswahlfeld, dessen Option auch im Code verglichen wird), behalten Sie den gespeicherten Wert in der Ausgangssprache und übersetzen Sie die Beschriftung mit `format_func`.
+Text überspringen, den das Programm abgleicht oder protokolliert: SQL, Regexes, Dateikopfzeilen, Logger-Zeilen, CSS, Widget-Schlüssel, Enum-Codes und Prompts, die Sie an ein Modell senden. Den Prompt nicht umzubrechen, ist nicht ausreichend, wenn der Prompt aus Beschriftungen aufgebaut ist, die selbst `t()`-Ergebnisse sind. Pinnen Sie die Quell-Locale des Katalogs um diesen Build herum:
+
+```python
+token = set_locale("en")
+try:
+    return glossary_markdown()
+finally:
+    reset_locale(token)
+```
+
+Die gepinnte Locale ist `sourceLocale`, die Sprache, die das Modell lesen soll.
+
+Widget-Markup, HTML-Tags und Markdown-Hervorhebung, die das Framework parst, bleiben außerhalb von `t()`. Der Übersetzer erhält nur den Satz.
+
+```python
+errors_label = ":red[" + t("Errors {errors}", errors=errors) + "]"
+if warnings and not acknowledged:
+    return errors_label + " · " + t("Warnings {warnings}", warnings=warnings)
+return errors_label
+```
+
+Eine visuelle Zeile in zwei `t()`-Aufrufe aufzuteilen, ist angemessen, wenn die Trennung die Markup-Grenze ist. Es ist kein Grund, einen Absatz aufzuteilen.
+
+Wenn ein Wert sowohl gespeichert als auch angezeigt wird (ein Auswahlfeld, dessen Option auch im Code verglichen wird), behalten Sie den gespeicherten Wert in der Quellsprache bei und übersetzen Sie die Beschriftung mit `format_func`. Jede Beschriftung ist ein eigenes Zeichenfolgenliteral. Ein zur Importzeit erstelltes Wörterbuch friert beim ersten Import ein.
+
+```python
+PRESET_ALL = "All"
+PRESET_LAST_12 = "Last 12"
+PRESET_YTD = "YTD"
+
+def preset_label(value: str) -> str:
+    if value == PRESET_LAST_12:
+        return t("Last 12")
+    if value == PRESET_YTD:
+        return t("YTD")
+    return t("All")
+
+st.segmented_control(
+    t("Range"),
+    options=[PRESET_ALL, PRESET_LAST_12, PRESET_YTD],
+    format_func=preset_label,
+    key="monthly_preset",
+)
+```
+
+Vergleiche bleiben bei `PRESET_YTD`. Das Widget zeigt die Übersetzung. Dieselbe Form deckt einen gespeicherten Code und eine angezeigte Beschriftung ab (`hold` gespeichert, `t("Hold")` angezeigt).
 
 `t()` wird beim Import einmal ausgeführt und behält die Ausgangssprache bei, bis dieses Modul erneut importiert wird. Rufen Sie `t()` auf, wenn das Widget erstellt wird.
 
@@ -541,7 +645,7 @@ Führen Sie den Testlauf erneut aus. Stoppen Sie, wenn keine Änderungen aufgef�
 
 Zeilen, die der Befehl beibehält (Debug-Felder wie `{value=}`, verschachtelte Formatierungsangaben), werden im Bericht aufgeführt. Beheben Sie diese manuell und führen Sie den Testlauf erneut aus. Generiertes `i18n.py` wird übersprungen. Der Bericht ist ein Build-Artefakt: Löschen Sie ihn oder ignorieren Sie ihn mit Git.
 
-Ein Bericht ohne Änderungen bedeutet, dass die umschlossenen Aufrufe sicher sind. Es bedeutet nicht, dass jeder benutzersichtbare Satz umschlossen wurde. Die [Liste der nicht umschlossenen Literale](#find-unwrapped-strings) ist die Überprüfung dafür.
+Ein Bericht ohne Bearbeitungen bedeutet, dass die umhüllten Aufrufe sicher sind. Es bedeutet nicht, dass jeder benutzerseitige Satz umhüllt wurde. Reine `st.status.update(label="Forecast ready")`, `raise ValueError(f"…")` und ein Wörterbuch von Labels sind für ihn unsichtbar. Die [Liste der nicht umhüllten Literale](#find-unwrapped-strings) ist die Überprüfung dafür.
 
 Optional `--report <path>` ändert den Berichtspfad. Optional `--ui-block` begrenzt den Scan auf einen UI-Block.
 
@@ -573,21 +677,73 @@ Der Selektorwert gewinnt, sobald der Benutzer gewählt hat. `?lang=` gilt bei ei
 <summary>Widget-Code</summary>
 
 ```python
+import locale
+import os
+import warnings
+
 import streamlit as st
-from i18n import get_locale, get_ui_languages, set_locale, t
+from i18n import get_direction, get_locale, get_ui_languages, reset_locale, set_locale, t
+
+_warned = False
+
+
+def _codes() -> list[str]:
+    return [str(row["code"]) for row in get_ui_languages() if row.get("code")]
+
+
+def _source_locale() -> str:
+    for row in get_ui_languages():
+        if row.get("isSourceLocale"):
+            return str(row["code"])
+    return (_codes() or [get_locale()])[0]
+
+
+def match_locale(candidate: str | None) -> str | None:
+    """Match case-insensitively, then by language subtag only when exactly one language has it."""
+    if not candidate:
+        return None
+    wanted = candidate.strip().replace("_", "-").lower()
+    if wanted in {"c", "posix"}:
+        return None
+    codes = _codes()
+    for code in codes:
+        if code.lower() == wanted:
+            return code
+    language = wanted.split("-")[0]
+    same = [code for code in codes if code.lower().split("-")[0] == language]
+    if len(same) == 1:
+        return same[0]
+    return None
+
+
+def _process_locale() -> str | None:
+    for name in ("LC_ALL", "LC_MESSAGES", "LANG"):
+        found = match_locale(os.environ.get(name))
+        if found:
+            return found
+    try:
+        raw = locale.getlocale()[0]
+    except ValueError:
+        raw = None
+    return match_locale(raw)
 
 
 def apply_requested_locale() -> str:
+    global _warned
     rows = [row for row in get_ui_languages() if row.get("code")]
-    codes = [str(row["code"]) for row in rows] or [get_locale()]
-    requested = (
+    explicit = (
         st.session_state.get("lang_selector")
         or st.query_params.get("lang")
         or st.session_state.get("locale")
-        or get_locale()
     )
-    choice = requested if requested in codes else codes[0]
-    set_locale(choice)
+    choice = match_locale(str(explicit)) if explicit else None
+    if explicit and choice is None:
+        if not _warned:
+            warnings.warn(f"unknown locale {explicit!r}; using the source locale", stacklevel=2)
+            _warned = True
+        choice = _source_locale()
+    if choice is None:
+        choice = _process_locale() or _source_locale()
     st.session_state["locale"] = choice
     if st.query_params.get("lang") != choice:
         st.query_params["lang"] = choice
@@ -615,21 +771,30 @@ def render_language_selector() -> None:
         st.rerun()
 
 
-apply_requested_locale()
-st.set_page_config(page_title=t("My app"))
+token = set_locale(apply_requested_locale())
+try:
+    st.set_page_config(page_title=t("My app"))
+    if get_direction() == "rtl":
+        st.markdown("<style>:root { direction: rtl; }</style>", unsafe_allow_html=True)
 
+    def main() -> None:
+        render_language_selector()
+        st.write(t("Hello"))
 
-def main() -> None:
-    render_language_selector()
-    st.write(t("Hello"))
-
-
-main()
+    main()
+finally:
+    reset_locale(token)
 ```
 
 </details>
 
-Ändern Sie `from i18n import …` in den Paketpfad aus [Helfer und Kataloge platzieren](#place-the-helper). Geben Sie jedem anderen Widget ein festes `key` und rufen Sie `t()` auf, wenn das Widget erstellt wird. Labels, die zur Importzeit berechnet werden, bleiben nach einem Wechsel in der Quellsprache. Wenn ein Seitentitel später verglichen wird, umschließen Sie beide Seiten: `nav.title != t("Forecast settings")`, da `nav.title` bereits übersetzt ist.
+Ändern Sie `from i18n import …` in den Paketpfad aus [Platzieren Sie den Helfer und die Kataloge](#place-the-helper). Geben Sie jedem anderen Widget einen festen `key` und rufen Sie `t()` auf, wenn das Widget erstellt wird. Ein expliziter oder gespeicherter Code, der nichts übereinstimmt, warnt einmal und verwendet das Quell-Gebietsschema. Er fällt nicht auf das Betriebssystem-Gebietsschema zurück. Ein Gebietsschema, das nur vom Betriebssystem übernommen wird, warnt nicht. `pt` stimmt mit einem einzigen `pt-BR` überein. Es stimmt mit keinem von beiden überein, wenn sowohl `pt-BR` als auch `pt-PT` konfiguriert sind.
+
+`nav.run()` führt das ausgewählte Seiten-Skript innerhalb des Eingangs-Skripts aus. Rufen Sie `reset_locale` auf, nachdem `nav.run()` zurückkehrt. Ein Zurücksetzen vor diesem Aufruf belässt die Seite im Quell-Gebietsschema.
+
+Eine Seitendatei wird bei jedem erneuten Ausführen wieder ausgeführt, sodass `t()` am Anfang dieser Datei nach `set_locale` läuft und der Sprache folgt. Ein einmal importiertes Modul tut dies nicht. `t()` im Hauptteil dieses Moduls oder in einem beim Import erstellten Wörterbuch bleibt bei der Sprache des ersten Imports. Platzieren Sie diese Aufrufe in einer Funktion, die ausgeführt wird, wenn der Text angezeigt wird. Das Neuladen des Moduls bei jedem Wechsel übersieht jedes Modul, das die Neuladeliste vergessen hat. Verwenden Sie `importlib.reload` hierfür nicht.
+
+Wenn ein Seitentitel später verglichen wird, umhüllen Sie beide Seiten: `nav.title != t("Forecast settings")`, da `nav.title` bereits übersetzt ist.
 
 `streamlit_language_selector()` von `i18n.py` ist ausreichend für ein kurzes Skript, dessen Titel eine einfache Zeichenkette ist. Es ruft `set_locale` auf, wenn das Widget gezeichnet wird, sodass ein übersetztes `page_title` darüber für diesen Durchlauf in der vorherigen Sprache bleibt und sein Label Englisch bleibt. Siehe `examples/python-streamlit`.
 
@@ -674,9 +839,10 @@ def match(candidate: str | None) -> str | None:
     for code in codes:
         if code.lower() == wanted:
             return code
-    for code in codes:
-        if code.lower().split("-")[0] == wanted.split("-")[0]:
-            return code
+    language = wanted.split("-")[0]
+    same = [code for code in codes if code.lower().split("-")[0] == language]
+    if len(same) == 1:
+        return same[0]
     return None
 
 
@@ -906,6 +1072,8 @@ Das ist der letzte manuelle Schritt. Fahren Sie fort unter [Modelle auswählen u
 | --- | --- |
 | Django, Flask-Babel-Kataloge oder eine App, die bereits GNU gettext verwendet | [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext) |
 | Eine JS/TS-App | [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) |
+| Eine .NET-Anwendung | [i18n zu einer .NET-Anwendung hinzufügen](/de/guide/add-i18n-to-dotnet) |
+| `ResourceManager` oder ASP.NET `IStringLocalizer` | [i18n zu einer .NET-Anwendung mit ResourceManager hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager) |
 | Eine Website oder Dokumentationsseite | [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website) |
 | Eine Repository-README oder andere Markdown-Dateien | [i18n zu Ihrer README und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme) |
 | Verschachteltes Gebietsschema-JSON | [JSON](/de/guide/json) |

@@ -13,16 +13,16 @@
 
 **모든 LLM 제공업체에서 원하는 모델로 앱, 웹사이트, 문서를 번역하세요. 하나의 구성, 캐시된 재실행.**
 
-JavaScript/TypeScript 앱, Python 앱 및 문서 사이트에 언어를 추가하는 CLI 및 툴킷입니다. 시작 언어는 `sourceLocale`이며, 어떤 언어든 가능합니다. 텍스트를 찾아 번역하고 프로젝트가 로드하는 파일을 작성합니다. 내장된 사전 설정은 OpenAI, Anthropic, Gemini, OpenRouter, Ollama 및 모든 OpenAI 호환 API를 지원합니다. 프로젝트 또는 로케일별로 공급자나 모델을 전환할 수 있습니다.
+JavaScript/TypeScript 앱, Python 앱, .NET 앱 및 문서 사이트에 언어를 추가하는 CLI 및 툴킷입니다. 시작 언어는 `sourceLocale`이며, 어떤 언어든 될 수 있습니다. 텍스트를 찾아 번역하고 프로젝트가 로드하는 파일을 작성합니다. 내장된 사전 설정은 OpenAI, Anthropic, Gemini, OpenRouter, Ollama 및 모든 OpenAI 호환 API를 지원합니다. 프로젝트 또는 로케일별로 공급자나 모델을 전환할 수 있습니다.
 
-[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), [일반 Markdown](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) (저장소 README 및 기타 `.md` 파일), 그리고 일반 HTML과 함께 작동합니다. Python 앱은 `t()` / `_()` 또는 GNU gettext(Streamlit, FastAPI, Flask, Django 및 데스크톱 툴킷)를 사용합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지합니다. [Intlayer](https://intlayer.org/)와 두 가지 방식으로 작동합니다: Intlayer를 유지하고 `translate-intlayer`로 사전을 채우거나, `migrate-intlayer`를 사용하여 소스 문자열 `t()` 호출로 전환할 수 있습니다. Intlayer는 유형화된 콘텐츠 사전 및 번역 관리 시스템에 계속 적합합니다.
+[VitePress](https://vitepress.dev/), [Starlight](https://starlight.astro.build/), [Docusaurus](https://docusaurus.io/), [Nextra](https://nextra.site/), [Fumadocs](https://www.fumadocs.dev/), [Astro](https://astro.build/), [일반 Markdown](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) (저장소 README 및 기타 `.md` 파일), 그리고 일반 HTML과 함께 작동합니다. Python 앱은 `t()` / `_()` 또는 GNU gettext(Streamlit, FastAPI, Flask, Django 및 데스크톱 툴킷)를 사용합니다. .NET 앱은 C#에서 `T()` 및 XAML에서 `{loc:Tr '...'}`를 사용하며, 생성된 `I18n.cs`(Avalonia, WPF, MAUI, ASP.NET, Blazor 및 콘솔)와 함께 사용합니다. 기존 [i18next](https://www.i18next.com/) 카탈로그(네임스페이스 JSON 또는 `t()` 소스 문자열)를 유지합니다. [Intlayer](https://intlayer.org/)와 두 가지 방식으로 작동합니다: Intlayer를 유지하고 해당 사전을 `translate-intlayer`으로 채우거나, `migrate-intlayer`를 사용하여 소스 문자열 `t()` 호출로 전환합니다. Intlayer는 유형화된 콘텐츠 사전 및 번역 관리 시스템에 계속 적합합니다.
 
 <a id="features"></a>
 ## 기능
 
 | | |
 | --- | --- |
-| **UI 문자열** | JS/TS/Astro 및 Python에서 `t("…")` / `_()`을 추출하거나, 하나의 HTML 파일에서 `data-i18n*`를 추출하여 로케일별 플랫 JSON 또는 GNU gettext로 변환 |
+| **UI 문자열** | JS/TS/Astro 및 Python에서 `t("…")` / `_()`, C# 및 XAML에서 `T("…")`, 또는 하나의 HTML 파일에서 `data-i18n*` 추출 → 로케일별 플랫 JSON, `.resx` 위성, 또는 GNU gettext |
 | **문서** | Markdown, MDX, `.astro` 및 HTML 페이지 번역(로캘당 하나의 파일) |
 | **JSON** | 텍스트가 `t()` 호출 외부에 있을 때 중첩된 로케일 번들 번역 |
 | **SVG** | `translate-svg`를 통해 일러스트레이션 SVG 라벨 번역 |
@@ -38,6 +38,7 @@ JavaScript/TypeScript 앱, Python 앱 및 문서 사이트에 언어를 추가�
 | --- | --- |
 | 소스에 일반 텍스트가 있는 JS/TS 앱(React, Next.js, Node, CLI) | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
 | 파이썬 앱 (Streamlit, FastAPI, Flask, 데스크톱, 스크립트) | [파이썬 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| .NET 앱 (Avalonia, WPF, MAUI, ASP.NET, Blazor, 콘솔) | [.NET 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-dotnet) |
 | Django 앱, Flask-Babel 카탈로그 또는 이미 GNU gettext를 사용하는 앱 | [Django / 파이썬 gettext 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트(VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, 일반 HTML) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
 | 저장소 README 및 기타 Markdown 파일(앱 유무와 관계없이) | [README 및 Markdown 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
@@ -95,6 +96,8 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 | --- | --- | --- |
 | JS/TS 앱 | `ai-i18n-tools init -P openrouter` | [JS/TS 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) |
 | Python 앱 | `ai-i18n-tools init -t ui-python -P openrouter` | [Python 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) |
+| .NET 앱 | `ai-i18n-tools init -t ui-dotnet -P openrouter` | [.NET 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-dotnet) |
+| 이미 `ResourceManager` 또는 `IStringLocalizer`을 사용하는 .NET 앱 | `ai-i18n-tools init -t ui-dotnet-resx -P openrouter` | [.NET ResourceManager 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-dotnet-resourcemanager) |
 | Django 또는 GNU gettext 앱 | `ai-i18n-tools init -t ui-python-django -P openrouter` (또는 `ui-python-gettext`, `ui-python-flask`) | [Django / 파이썬 gettext 앱에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트 | `ai-i18n-tools init -t ui-vitepress -P openrouter` (프레임워크에 맞게 템플릿을 교체하세요) | [웹사이트 또는 문서 사이트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) |
 | 앱 유무와 관계없이 README | `ai-i18n-tools init -P openrouter` (JS/TS 앱 + README) 또는 `init -t docs-markdown` | [README 및 마크다운 문서에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) |
@@ -103,7 +106,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 JS/TS 앱은 먼저 텍스트를 `t()`으로 래핑해야 합니다. 일반 텍스트에서 실행하면 `sync`은 오류 없이 완료되지만 유용한 내용을 작성하지 않습니다. 또한 사이트 프레임워크는 `sync` 전에 자체 i18n 라우팅이 활성화되어 있어야 합니다.
 
-웹사이트용 템플릿: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, 및 `ui-plain-html` 또는 `docs-plain-html`. README 및 Markdown 전용: `docs-markdown`. 다른 템플릿에 `--with-readme`를 추가하여 README 블록을 포함합니다. 파이썬 gettext 앱: `ui-python-django`, `ui-python-flask`, `ui-python-gettext`. 중첩된 i18next JSON: `ui-json-bundles`. 전체 목록: [CLI 설정 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/setup).
+웹사이트 템플릿: `ui-starlight`, `ui-docusaurus`, `ui-vitepress`, `ui-nextra`, `ui-fumadocs`, `ui-astro-website`, 그리고 `ui-plain-html` 또는 `docs-plain-html`. README 및 Markdown 전용: `docs-markdown`. README 블록을 포함하려면 다른 템플릿에 `--with-readme`를 추가하세요. Python gettext 앱: `ui-python-django`, `ui-python-flask`, `ui-python-gettext`. .NET 앱: `ui-dotnet` (내장 JSON 및 `I18n.cs`) 또는 `ui-dotnet-resx` (`.resx` 위성 및 `I18nResx.cs`). `migrate-dotnet-i18n`는 `T($"…")`를 `T("…{0}…", arg)`으로 다시 작성하고 `Resources.LoginButton`과 같은 명명된 resx 키를 제안으로 나열합니다. 중첩된 i18next JSON: `ui-json-bundles`. 전체 목록: [CLI 설정 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/setup).
 
 `suggest-models`은(는) 게시된 벤치마크를 기준으로 활성 공급자의 채팅 모델 순위를 매기며, `suggest-models --apply`은(는) `translationModels`을(를) 대체합니다. 동일한 순위가 [모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translation-dashboard/models) 탭에 있습니다. 가이드: [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models). 명령어 참조: [suggest-models](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/models#suggest-models).
 
@@ -114,10 +117,10 @@ JS/TS 앱은 먼저 텍스트를 `t()`으로 래핑해야 합니다. 일반 텍�
 
 - [문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/) — 가이드, 통합 및 참조
 - [설치](https://wsj-br.github.io/ai-i18n-tools/ko/guide/installation) · [빠른 시작](https://wsj-br.github.io/ai-i18n-tools/ko/guide/quick-start) · [LLM 공급자](https://wsj-br.github.io/ai-i18n-tools/ko/guide/providers-and-models) · [AI 모델](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ai-models)
-- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/python) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
-- [Intlayer](https://intlayer.org/) — [사전을 바로 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translating-intlayer) · [소스 문자열 호출로 이동](https://wsj-br.github.io/ai-i18n-tools/ko/guide/migrating-from-intlayer)
-- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, 및 [파이썬](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
-- [프로젝트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-your-project) — [JS/TS 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) · [파이썬 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) · [Django / gettext 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) · [웹사이트 또는 문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) · [README 및 Markdown 문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) · [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines)
+- [UI 문자열](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/) · [일반 HTML](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/python) · [.NET](https://wsj-br.github.io/ai-i18n-tools/ko/guide/ui-strings/dotnet) · [ResourceManager](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-dotnet-resourcemanager) · [문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/) · [HTML 페이지](https://wsj-br.github.io/ai-i18n-tools/ko/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/ko/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/ko/guide/svg-translation/)
+- [Intlayer](https://intlayer.org/) — [사전 제자리 번역](https://wsj-br.github.io/ai-i18n-tools/ko/guide/translating-intlayer) · [소스 문자열 호출로 이동](https://wsj-br.github.io/ai-i18n-tools/ko/guide/migrating-from-intlayer)
+- [통합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/) — VitePress, Nextra, Fumadocs, Docusaurus, Astro, 및 [Python](https://wsj-br.github.io/ai-i18n-tools/ko/guide/integrations/python)
+- [프로젝트에 i18n 추가](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-your-project) — [JS/TS 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-js) · [Python 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-python) · [.NET 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-dotnet) · [Django / gettext 앱](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-django-gettext) · [웹사이트 또는 문서 사이트](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-website) · [README 및 Markdown 문서](https://wsj-br.github.io/ai-i18n-tools/ko/guide/add-i18n-to-readme) · [파이프라인 결합](https://wsj-br.github.io/ai-i18n-tools/ko/guide/combining-pipelines)
 - [CLI 참조](https://wsj-br.github.io/ai-i18n-tools/ko/reference/cli-commands/) · [구성](https://wsj-br.github.io/ai-i18n-tools/ko/reference/configuration) · [런타임 도우미](https://wsj-br.github.io/ai-i18n-tools/ko/guide/runtime-helpers)
 - [예시](https://wsj-br.github.io/ai-i18n-tools/ko/examples) — 실행 가능한 데모 (`npx degit …`)
 - [AI 에이전트 컨텍스트](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 소비자 프로젝트를 위한 간결한 프롬프트 / `AGENTS.md` 진입점

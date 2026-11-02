@@ -68,6 +68,10 @@ function findPlaceholderEnd(text: string, start: number): number {
   }
   let i = start + 2;
   while (i < text.length - 1) {
+    // Same boundary as the inline-code scan: do not pair `{{` with a `}}` inside a backtick span.
+    if (text[i] === "`") {
+      return -1;
+    }
     if (text[i] === "}" && text[i + 1] === "}") {
       return i + 2;
     }

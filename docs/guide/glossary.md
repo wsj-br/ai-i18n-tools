@@ -20,6 +20,8 @@ Two kinds of guidance are sent to the model:
 | UI catalogs | `ui[].uiGlossary` (boolean, default `true`) — that block's `stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
 | User CSV | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
+`init` points `glossary.userGlossary` at `glossary-user.csv` and does not create that file. Run `glossary-generate` when it is missing, and put domain terms in it before the first `translate-ui`. A second translation of an unchanged string can come back worded differently. The glossary is what makes the two runs agree.
+
 A block with `uiGlossary: true` reuses translations already stored in its `strings.json` as hints, so documentation, JSON, and SVG stay aligned with the UI. `translate-ui` and `proofread-ui` do not read those catalogs — they only take hints from the user CSV, so a bad UI translation is not fed back in as the preferred term. Set `uiGlossary` to `false` on a block that should not steer other pipelines. When several blocks share a source term, the earlier block fills a locale and later blocks add only locales that are still missing. The user CSV wins over every UI catalog. A row whose `locale` is a specific code replaces both the `*` row and the UI-catalog translation for that locale. A `locale` of `*` applies the same translation to every target locale that does not already have one from a UI catalog.
 
 Compact UI-label abbreviations (a trailing dot such as `Alm.`, or a short single-token compression such as `Size` → `Tam`) stay available for UI translation. Document prompts skip them, so they do not push models toward invented <code v-pre>{{…}}</code> tokens in markdown or MDX.

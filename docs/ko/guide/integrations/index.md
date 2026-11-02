@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 통합
 
-프레임워크 통합에 대한 참조: 공통점과 셸 문자열의 차이점. 사이트에 언어를 추가하려면 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website)에서 시작하세요. 앱의 경우 [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)에서 시작하세요. 리포지토리 README 및 기타 Markdown 파일의 경우 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)에서 시작하세요.
+프레임워크 통합 참조: 공유하는 내용과 셸 문자열이 다른 방식. 웹사이트에 언어를 추가하려면 [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website)에서 시작하세요. 앱의 경우 [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js), [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python), 또는 [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet)에서 시작하세요. 리포지토리 README 및 기타 Markdown 파일의 경우 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)에서 시작하세요.
 
 문서 통합은 페이지 콘텐츠에 대해 [문서](/ko/guide/documents/) 파이프라인(`translate-docs` / `sync`)을 사용하며, 셸 문자열(탐색, 사이드바, 테마)은 명시된 경우 별도의 [JSON](/ko/guide/json) 파이프라인을 통하지 않고 동일한 파이프라인 내에서 처리됩니다. Python 애플리케이션은 [UI 문자열](/ko/guide/ui-strings/python) 파이프라인(`extract` / `translate-ui`)을 사용합니다.
 
@@ -49,3 +49,5 @@
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| .NET JSON 도우미 | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| .NET ResourceManager 도우미 | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

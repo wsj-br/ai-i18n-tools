@@ -81,6 +81,8 @@ Traduz apenas strings da UI (`strings.json` → JSON de localidade). Requer `fea
 
 `-l` / `--locale`: locales de destino separados por vírgulas (padrão: configuração `targetLocales` menos `sourceLocale`). `--force`: retraduzir todas as entradas por locale (ignorar traduções existentes). `--dry-run`: sem gravações, sem chamadas de API. `-j` paraleliza **locales**; dentro de cada locale, a configuração `uiBatchConcurrency` (padrão **2**) paraleliza lotes LLM (blocos de 50 strings, depois grupos de plural). Não há flag CLI para `uiBatchConcurrency`.
 
+Uma tradução armazenada cujos placeholders não correspondem à sua origem é traduzida novamente. A verificação abrange um nome renomeado (`{schedule}` tornando-se `{cronograma}`), um token descartado ou inventado e uma alteração de especificação de formato (`{price:,.2f}` tornando-se `{price}`). A contagem é impressa antes do lote, incluindo em `--dry-run`. Uma linha cujo modelo é `user-edited` é mantida no lugar e apenas avisada. Uma string que contém apenas placeholders e pontuação, como `{state} · {title}`, é copiada e não é enviada para um modelo. Um lote que renomeia um placeholder é rejeitado e o próximo modelo na cadeia é tentado com esse erro anexado. O painel sinaliza as mesmas linhas e pergunta antes de salvar uma tradução que quebra um placeholder.
+
 ---
 
 <a id="sync-ui"></a>

@@ -89,7 +89,7 @@ Merge an explicit policy into the relevant `json[]` block when the source shape 
 
 1. Edit source JSON and config, then run `ai-i18n-tools sync` when translation is authorized.
 2. Use `ai-i18n-tools status` to inspect JSON coverage and stale/missing outputs.
-3. Parse outputs, compare key structure, check placeholders, and test namespace loading and plural counts.
+3. Parse outputs, compare key structure, check placeholders, and test namespace loading and plural counts in the running app. Do not rewrite dictionary call sites to `t()` when the project keeps that runtime.
 4. Fix source/config and rerun sync; treat generated target JSON as pipeline-owned output.
 
 ## Published guides

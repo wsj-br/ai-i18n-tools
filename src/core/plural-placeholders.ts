@@ -9,6 +9,7 @@ import {
   collectPlaceholderFamilies,
   isNounOnlyPluralSource,
   isQuantityPlaceholderFamily,
+  type UiPlaceholderStyle,
 } from "./ui-placeholders.js";
 
 export type PluralPlaceholderIssueKind = "missing" | "extra" | "qty";
@@ -34,6 +35,7 @@ export interface AssertPluralFormsPlaceholdersOptions {
   zeroDigit?: boolean;
   /** Raw model response for error context (defaults to JSON of forms). */
   rawResponse?: string;
+  placeholderStyle?: UiPlaceholderStyle;
 }
 
 function formAllowsLiteralZeroForQuantity(
@@ -57,11 +59,12 @@ function formAllowsLiteralZeroForQuantity(
 export function pluralFormPlaceholderIssues(
   source: string,
   forms: Partial<Record<CldrPluralForm, string>>,
-  opts?: { zeroDigit?: boolean }
+  opts?: { zeroDigit?: boolean; placeholderStyle?: UiPlaceholderStyle }
 ): PluralFormPlaceholderIssue[] {
   const zeroDigit = opts?.zeroDigit === true;
-  const sourceFamilies = collectPlaceholderFamilies(source);
-  const nounOnly = isNounOnlyPluralSource(source);
+  const style = opts?.placeholderStyle ?? "default";
+  const sourceFamilies = collectPlaceholderFamilies(source, style);
+  const nounOnly = isNounOnlyPluralSource(source, style);
   const issues: PluralFormPlaceholderIssue[] = [];
 
   for (const [formKey, value] of Object.entries(forms)) {
@@ -69,7 +72,7 @@ export function pluralFormPlaceholderIssues(
       continue;
     }
     const form = formKey as CldrPluralForm;
-    const formFamilies = collectPlaceholderFamilies(value);
+    const formFamilies = collectPlaceholderFamilies(value, style);
     const zeroLiteralOk = formAllowsLiteralZeroForQuantity(form, zeroDigit, value);
 
     for (const [family, srcCount] of sourceFamilies) {
@@ -125,7 +128,10 @@ export function assertPluralFormsPlaceholders(
   forms: Partial<Record<CldrPluralForm, string>>,
   opts?: AssertPluralFormsPlaceholdersOptions
 ): void {
-  const issues = pluralFormPlaceholderIssues(source, forms, { zeroDigit: opts?.zeroDigit });
+  const issues = pluralFormPlaceholderIssues(source, forms, {
+    zeroDigit: opts?.zeroDigit,
+    placeholderStyle: opts?.placeholderStyle,
+  });
   if (issues.length === 0) {
     return;
   }

@@ -49,6 +49,12 @@ temp/
 *.tmp
 *.backup.*
 
+# .NET example build output
+examples/dotnet-console/bin/
+examples/dotnet-console/obj/
+examples/dotnet-resx/bin/
+examples/dotnet-resx/obj/
+
 # Framework / toolchain generated (see also scripts/clean-workspace.sh)
 .next/
 out/

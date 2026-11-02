@@ -80,3 +80,23 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `ngettext(singular, plural, n, **values)` | प्लुरल लुकअप, फिर इंटरपोलेट करें। `count` फ़ॉर्मेट स्ट्रिंग के लिए उपलब्ध है। |
 | `pgettext(context, message, **values)` | कॉन्टेक्स्ट लुकअप (`msgctxt`, या `context` + U+0004 + फ़्लैट JSON में स्रोत-भाषा स्ट्रिंग), फिर इंटरपोलेट करें। |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit सिलेक्ट बॉक्स। `st.session_state.locale` और `st.query_params["lang"]` लिखता है, `set_locale` को कॉल करता है, और चुना गया कोड लौटाता है। |
+
+<a id="dotnet-runtime-i18ncs"></a>
+## .NET रनटाइम (`I18n.cs`)
+
+`init -t ui-dotnet` `assets/dotnet/I18n.cs` को प्रोजेक्ट में कॉपी करता है जब `I18n.cs` मौजूद नहीं होता है। यह .NET 6 या नए संस्करणों के लिए एक डिपेंडेंसी-मुक्त हेल्पर है। नीचे दिए गए सदस्य ऊपर दी गई तालिका में नोड एक्सपोर्ट्स से अलग हैं। कॉल शेप्स और XAML मार्कअप: [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet).
+
+| सदस्य | व्यवहार |
+| --- | --- |
+| `SetLocale(locale)` | उस लोकल का फ्लैट JSON लोड करें, जब सटीक फ़ाइल मौजूद न हो तो `CultureInfo.Parent` को पार करते हुए। `LocaleChanged` बढ़ाता है। |
+| `T(source, args)` | ट्रिम्ड लिटरल देखें, `string.Format` के साथ फ़ॉर्मेट करें, और स्रोत के शुरुआती और अंतिम व्हाइटस्पेस को वापस रखें। |
+| `Tn(singular, plural, count, args)` | बहुवचन लुकअप। `{0}` संख्या है। कैटलॉग कुंजी ट्रिम्ड सिंगुलर का MD5-8 है, साथ ही `_` और CLDR फ़ॉर्म। |
+| `Tp(context, source, args)` | संदर्भ + U+0004 + स्रोत देखें, फिर फ़ॉर्मेट करें। |
+| `N(source)` | `source` लौटाएँ। निकाला गया ताकि स्टैटिक लेबल को कैटलॉग किया जा सके। |
+| `Loc[source]` | इंडेक्सर जो `T` को कॉल करता है। `Loc` `StringSourceLocalizer` प्रकार का एक स्टैटिक फ़ील्ड है। |
+| `Configure(options)` | स्रोत लोकल, सख्त मिसिंग-की मोड, एक डायरेक्टरी या स्ट्रीम लोडर, और भाषा सूची सेट करें। |
+| `SupportedLocales` | `init` द्वारा स्टैंप किए गए लोकल, नेटिव और अंग्रेजी नामों के साथ। |
+| `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
+| `PluralForm(locale, n)` | CLDR फ़ॉर्म नाम `.po` फ़ाइलों के समान GNU नियमों से। |
+
+`init -t ui-dotnet-resx` इसके बजाय `I18nResx.cs` को कॉपी करता है। `T`, `Tn`, और `Tp` समान स्रोत-स्ट्रिंग कुंजियों के साथ `ResourceManager` को कॉल करते हैं। `SetLocale` `CurrentUICulture` और `CurrentCulture` को सेट करता है। विवरण: [.NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager).

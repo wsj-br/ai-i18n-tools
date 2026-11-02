@@ -143,6 +143,7 @@ Do not change keys, add keys, remove keys, or return XML tags/markdown/code fenc
       "- Preserve capitalization style (Title Case stays Title Case, ALL CAPS stays ALL CAPS)",
       "- Preserve leading/trailing whitespace exactly",
       "- Keep placeholders unchanged: {{variable}}, {0}, {name}, {price:,.2f}, %s, %d, %.2f, %(name)s, %{name}, :value, and {{GLS_N}} (any non-negative integer N; copy exactly)",
+      "- The name inside a placeholder is code, not prose. Copy it unchanged, including the format spec: {schedule} stays {schedule} and must not become {cronograma}. {price:,.2f} must not become {price} or {preco:,.2f}.",
       "- Keep HTML tags unchanged: <strong>, <br/>, etc.",
       "- Short strings (1-3 words) must stay short - do not expand them",
       "- You MUST respond with ONLY a valid JSON array, nothing else",

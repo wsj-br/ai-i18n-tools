@@ -22,4 +22,4 @@ Keep the existing gettext imports, template tags, and catalogs. Do not introduce
 
 - Preserve existing `.po` translations; they can seed the catalog.
 - Run `ai-i18n-tools sync` only when translation is authorized. Enable `compileMo` and confirm the `.mo` files are in the deployed artifact.
-- Use Django locale middleware or Flask-Babel's selector. Do not install translations process-wide for a web app.
+- Use Django locale middleware or Flask-Babel's selector. Do not install translations process-wide for a web app. One target-locale test must change a shown message while a stored value stays. A clean extract is not coverage.

@@ -12,7 +12,7 @@
 | 사용자에게 표시되는 텍스트를 도구에 노출: 앱 코드의 `t()` 호출, 사이트용 프레임워크 자체 i18n 또는 README의 언어 목록 마커 | 번역을 캐시하고 매 재실행 시 재사용합니다 |
 | 결과를 앱, 사이트 라우팅 또는 README의 언어 행에 연결합니다. | 진행 상황을 표시하고 대시보드에서 번역을 검토할 수 있도록 합니다. |
 
-이 도구는 소스를 다시 작성하지 않습니다. 래핑 단계를 위해 코딩 에이전트 프롬프트가 제공됩니다. i18next나 사이트 프레임워크의 i18n을 설치하지 않으며, 언어 전환기를 빌드하지도 않습니다. 단, 이를 위한 런타임 헬퍼는 제공됩니다.
+이 도구는 `--write`와 함께 `migrate-python-i18n` 또는 `migrate-dotnet-i18n`을(를) 실행하지 않는 한 소스를 다시 작성하지 않습니다. 래핑 단계에 대한 코딩 에이전트 프롬프트가 제공됩니다. 이 도구는 i18next 또는 사이트 프레임워크의 i18n을 설치하지 않으며, 이를 위한 런타임 헬퍼가 제공되더라도 언어 전환기를 빌드하지 않습니다.
 
 <a id="where-do-i-start"></a>
 ## 어디서부터 시작해야 하나요?
@@ -23,6 +23,8 @@
 | --- | --- |
 | 소스에 일반 텍스트가 있는 JS/TS 앱(React, Next.js, Node, CLI) | [JS/TS 앱에 i18n 추가하기](/ko/guide/add-i18n-to-js) |
 | 파이썬 앱 (스트림릿, FastAPI, 플라스크, 데스크톱, 스크립트) | [파이썬 앱에 i18n 추가](/ko/guide/add-i18n-to-python) |
+| .NET 앱(Avalonia, WPF, MAUI, ASP.NET, Blazor, 콘솔) | [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) |
+| 이미 `ResourceManager` 또는 `IStringLocalizer`을(를) 사용하는 .NET 앱 | [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager) |
 | Django 앱, Flask-Babel 카탈로그, 또는 이미 GNU gettext를 사용하는 앱 | [Django / 파이썬 gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext) |
 | 웹사이트 또는 문서 사이트(VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, 일반 HTML) | [웹사이트 또는 문서 사이트에 i18n 추가하기](/ko/guide/add-i18n-to-website) |
 | 리포지토리 README 및 기타 Markdown 파일(보통 앱 옆에 위치) | [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@
 
 내부적으로 이 도구는 네 개의 파이프라인을 실행합니다. 구성에서 필요한 파이프라인을 활성화하면 `sync`가 순서대로 실행합니다.
 
-- UI 문자열 — JS/TS 및 Python 소스에서 `t("…")` 및 `_()` 호출(및 GNU gettext를 포함한 유사한 마커)을 추출하고 로케일별 플랫 JSON 또는 `.po` / `.mo` 카탈로그를 작성합니다. 명령어: `extract`, `translate-ui`. 가이드: [UI 문자열](/ko/guide/ui-strings/). Python: [Python 애플리케이션](/ko/guide/ui-strings/python).
-- 문서 — `docs[].contentPaths`에 나열된 Markdown, MDX 및 `.astro` 페이지를 번역합니다. VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 및 기타 정적 문서 사이트와 리포지토리 README(`flat`의 `docsOutput.style`)와 함께 작동합니다. 명령어: `translate-docs`. 가이드: [문서](/ko/guide/documents/) 및 [README 및 Markdown 문서에 i18n 추가하기](/ko/guide/add-i18n-to-readme).
-- JSON — 최상위 `json[]`에 정의된 중첩된 JSON 로케일 번들(테마 레이블, i18n 재정의, 소스에 없는 앱 사본)을 번역합니다. 명령어: `translate-json`. 가이드: [JSON](/ko/guide/json).
-- SVG — SVG 일러스트레이션(`<text>`, `<title>`, `<desc>`) 내부의 보이는 텍스트를 번역하고 로케일당 하나의 출력 파일을 작성합니다. 문서 번역과는 별개입니다. 명령어: `translate-svg`. 가이드: [SVG 번역](/ko/guide/svg-translation/).
+- UI 문자열 — JS/TS 및 Python에서 `t("…")` 및 `_()` 호출을, C# 및 XAML에서 `T("…")` / `{loc:Tr '…'}`을(를) 추출하고 (GNU gettext 및 .NET `.resx` 위성 포함) 로케일별 플랫 JSON, `.po` / `.mo` 또는 `.resx`을(를) 작성합니다. 명령: `extract`, `translate-ui`, `migrate-dotnet-i18n`. 가이드: [UI 문자열](/ko/guide/ui-strings/). Python: [Python 애플리케이션](/ko/guide/ui-strings/python). .NET: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet) 및 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager).
+- 문서 — `docs[].contentPaths`에 나열된 Markdown, MDX 및 `.astro` 페이지를 번역합니다. VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro 및 기타 정적 문서 사이트와 리포지토리 README(`flat`의 `docsOutput.style`)에서 작동합니다. 명령: `translate-docs`. 가이드: [문서](/ko/guide/documents/) 및 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme).
+- JSON — 최상위 `json[]`에 정의된 중첩 JSON 로케일 번들(테마 레이블, i18n 재정의, 소스에 없는 앱 텍스트)을 번역합니다. 명령: `translate-json`. 가이드: [JSON](/ko/guide/json).
+- SVG — SVG 일러스트레이션(`<text>`, `<title>`, `<desc>`) 내의 보이는 텍스트를 번역하고 로케일당 하나의 출력 파일을 작성합니다. 문서 번역과는 별개입니다. 명령: `translate-svg`. 가이드: [SVG 번역](/ko/guide/svg-translation/).
 
 많은 프로젝트가 모드를 결합합니다. 일반적인 조합은 UI 문자열과 리포지토리 README입니다. VitePress와 같은 문서 사이트도 자주 사용되는 또 다른 조합입니다. [파이프라인 결합](/ko/guide/combining-pipelines) 및 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 참조하세요.
 
@@ -62,6 +64,7 @@
 | JS/TS 앱 | [console-app](/ko/examples#console-app), [nextjs-app](/ko/examples#nextjs-app) |
 | 앱과 함께 있는 리포지토리 README | [console-app](/ko/examples#console-app), [nextjs-app](/ko/examples#nextjs-app) |
 | Python 앱 | [python-streamlit](/ko/examples#python-streamlit), [python-fastapi](/ko/examples#python-fastapi), [python-gettext](/ko/examples#python-gettext) |
+| .NET 헬퍼 | [dotnet-console](/ko/examples#dotnet-console), [dotnet-resx](/ko/examples#dotnet-resx) |
 | 문서 사이트 | [docusaurus-docs](/ko/examples#docusaurus-docs), [vitepress-docs](/ko/examples#vitepress-docs), [astro-docs](/ko/examples#astro-docs) |
 | 웹사이트 또는 일반 HTML | [astro-website](/ko/examples#astro-website), [plain-html](/ko/examples#plain-html) |
 

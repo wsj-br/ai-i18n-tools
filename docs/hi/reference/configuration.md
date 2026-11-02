@@ -286,26 +286,32 @@
 - `flatOutputDir`
   वह निर्देशिका जहाँ इस ब्लॉक की प्रति-लोकेल JSON फ़ाइलें लिखी जाती हैं (`de.json`, आदि)।
 - `flatOutput`
-  जब `true` (डिफ़ॉल्ट) हो, तो `translate-ui` हर लोकेल के लिए एक सपाट जेएसओएन फ़ाइल लिखता है। केवल गेटटेक्स्ट ब्लॉक के लिए `false` सेट करें। `flatOutput: false` वाले ब्लॉक में `gettext` सेट होना चाहिए।
+  जब `true` (डिफ़ॉल्ट), `translate-ui` प्रति लोकैल एक फ़्लैट JSON फ़ाइल लिखता है। केवल gettext या resx उत्सर्जित करने के लिए `false` सेट करें। `flatOutput: false` वाले ब्लॉक को `gettext` या `resx` सेट करना होगा।
+- `resx`
+  वैकल्पिक .NET `.resx` आउटपुट। `outputDir` (डिफ़ॉल्ट `Resources`) और `baseName` (डिफ़ॉल्ट `SharedResource`) `{baseName}.resx` के साथ `{baseName}.{culture}.resx` लिखते हैं। `writeNeutral` (डिफ़ॉल्ट true) स्रोत टेक्स्ट को न्यूट्रल फ़ाइल में रखता है ताकि `ResourceManager` फ़ॉलबैक कर सके। `localeFormat` या तो `bcp47` (डिफ़ॉल्ट, `pt-BR`) है या `posix` (`pt_BR`)। `ingestExistingResx` (डिफ़ॉल्ट true) `extract` के दौरान सैटेलाइट्स पढ़ता है। `neutralFile` `LoginButton` जैसी लेगेसी नामित कुंजियों को न्यूट्रल मान के माध्यम से मैप करता है। संदर्भ कुंजियाँ U+2404 का उपयोग करती हैं। बहुवचन रूप `{singular}[{form}]` नामक अलग प्रविष्टियाँ हैं। `flatOutput: false` वाले ब्लॉक को `gettext` या `resx` सेट करना होगा।
 - `gettext`
-  इस ब्लॉक के लिए वैकल्पिक जीएनयू गेटटेक्स्ट आउटपुट। `outputDir` (डिफ़ॉल्ट `./locales`) को `<locale>/LC_MESSAGES/<domain>.po` मिलता है और, जब `compileMo` सत्य हो (डिफ़ॉल्ट), तो संबंधित `.mo` भी मिलता है। `domain` डिफ़ॉल्ट रूप से `messages` होता है। `potPath` टेम्पलेट कैटलॉग है। `ingestExistingPo` (डिफ़ॉल्ट `true`) `extract` के दौरान गैर-फ़ज़ी `msgstr` मानों से खाली `strings.json` स्लॉट भरता है और गैर-रिक्त या उपयोगकर्ता-संपादित अनुवाद को प्रतिस्थापित नहीं करता। `localeFormat` `posix` (डिफ़ॉल्ट, `pt_BR`) या `bcp47` (`pt-BR`) है। प्रसंगात्मक पंक्तियाँ गेटटेक्स्ट `\u0004` विभाजक का उपयोग करती हैं। दो प्रसंगों में समान स्रोत-भाषा स्ट्रिंग कैटलॉग आईडी साझा नहीं करती।
+  इस ब्लॉक के लिए वैकल्पिक GNU gettext आउटपुट। `outputDir` (डिफ़ॉल्ट `./locales`) `<locale>/LC_MESSAGES/<domain>.po` प्राप्त करता है और, जब `compileMo` true (डिफ़ॉल्ट) होता है, तो मिलान करने वाला `.mo` प्राप्त करता है। `domain` का डिफ़ॉल्ट `messages` है। `potPath` टेम्पलेट कैटलॉग है। `ingestExistingPo` (डिफ़ॉल्ट `true`) `extract` के दौरान गैर-फ़ज़ी `msgstr` मानों से खाली `strings.json` स्लॉट भरता है और गैर-खाली या उपयोगकर्ता-संपादित अनुवाद को प्रतिस्थापित नहीं करता है। `localeFormat` या तो `posix` (डिफ़ॉल्ट, `pt_BR`) है या `bcp47` (`pt-BR`)। प्रासंगिक पंक्तियाँ gettext `\u0004` सेपरेटर का उपयोग करती हैं। दो संदर्भों में एक ही स्रोत-भाषा स्ट्रिंग एक कैटलॉग आईडी साझा नहीं करती है।
 - `targetLocales`
-  इस ब्लॉक के लिए वैकल्पिक लोकेल सूची। छोड़े जाने या खाली होने पर, ब्लॉक रूट `targetLocales` का उपयोग करता है।
+  इस ब्लॉक के लिए वैकल्पिक लोकैल सूची। जब इसे छोड़ा जाता है या खाली होता है, तो ब्लॉक रूट `targetLocales` का उपयोग करता है।
 - `languagesManifestPath`
-  वैकल्पिक पथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। छोड़े जाने पर, ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं डिफ़ॉल्ट रूप से इस ब्लॉक का `{flatOutputDir}/ui-languages.json` होता है)। बाद के ब्लॉक डिफ़ॉल्ट रूप से `{flatOutputDir}/ui-languages.json` होते हैं।
+  वैकल्पिक पाथ जहाँ `extract` और `generate-ui-languages` इस ब्लॉक का `ui-languages.json` लिखते हैं। जब इसे छोड़ा जाता है, तो ब्लॉक 0 रूट `languagesManifestPath` का उपयोग करता है (जो स्वयं इस ब्लॉक के `{flatOutputDir}/ui-languages.json` पर डिफ़ॉल्ट होता है)। बाद के ब्लॉक `{flatOutputDir}/ui-languages.json` पर डिफ़ॉल्ट होते हैं।
 - `uiGlossary`
-  जब `true` (डिफ़ॉल्ट) होता है, तो इस ब्लॉक का `strings.json` `translate-docs`, `translate-json`, और `translate-svg` के लिए एक शब्दावली संकेत स्रोत है। `translate-ui`, `proofread-ui`, और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। किसी कैटलॉग को उन संकेतों से बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जिसे दस्तावेज़ीकरण का मार्गदर्शन नहीं करना चाहिए)।
-- `uiExtractor.funcNames` (या लीगेसी `reactExtractor.funcNames`)
+  जब `true` (डिफ़ॉल्ट) होता है, तो इस ब्लॉक का `strings.json` `translate-docs`, `translate-json` और `translate-svg` के लिए एक शब्दावली संकेत स्रोत होता है। `translate-ui`, `proofread-ui` और स्रोत लिंटिंग केवल `glossary.userGlossary` का उपयोग करते हैं। उन संकेतों से कैटलॉग को बाहर रखने के लिए `false` सेट करें (उदाहरण के लिए एक CLI स्ट्रिंग कैटलॉग जो दस्तावेज़ को निर्देशित नहीं करना चाहिए)।
+- `uiExtractor.funcNames` (या लेगेसी `reactExtractor.funcNames`)
   स्कैन करने के लिए अतिरिक्त फ़ंक्शन नाम (डिफ़ॉल्ट: `["t", "i18n.t"]`)।
-- `uiExtractor.extensions` (या लीगेसी `reactExtractor.extensions`)
-  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्प्लेट एक्सप्रेशन के लिए `.astro` जोड़ें।
-- `uiExtractor.includePackageDescription` (या लीगेसी `reactExtractor.includePackageDescription`)
-  जब `true` (डिफ़ॉल्ट) होता है, तो `extract` मौजूद होने पर `package.json` `description` को UI स्ट्रिंग के रूप में भी शामिल करता है। अतिरिक्त ब्लॉकों पर `false` सेट करें ताकि वही विवरण हर कैटलॉग में एक्सट्रैक्ट न हो।
-- `uiExtractor.packageJsonPath` (या लीगेसी `reactExtractor.packageJsonPath`)
-  उस वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पथ।
-- `uiExtractor.includeUiLanguageEnglishNames` (या लीगेसी `reactExtractor.includeUiLanguageEnglishNames`)
+- `uiExtractor.extensions` (या लेगेसी `reactExtractor.extensions`)
+  शामिल करने के लिए फ़ाइल एक्सटेंशन (डिफ़ॉल्ट: `[".js", ".jsx", ".ts", ".tsx"]`)। Astro फ्रंटमैटर और टेम्पलेट एक्सप्रेशन के लिए `.astro` जोड़ें।
+- `uiExtractor.includePackageDescription` (या लेगेसी `reactExtractor.includePackageDescription`)
+  जब `true` (डिफ़ॉल्ट) होता है, तो `extract` मौजूद होने पर `package.json` `description` को UI स्ट्रिंग के रूप में भी शामिल करता है। अतिरिक्त ब्लॉकों पर `false` सेट करें ताकि वही विवरण हर कैटलॉग में न निकाला जाए।
+- `uiExtractor.packageJsonPath` (या लेगेसी `reactExtractor.packageJsonPath`)
+  उस वैकल्पिक विवरण निष्कर्षण के लिए उपयोग की जाने वाली `package.json` फ़ाइल का कस्टम पाथ।
+- `uiExtractor.includeUiLanguageEnglishNames` (या लेगेसी `reactExtractor.includeUiLanguageEnglishNames`)
 
-जब `true` (डिफ़ॉल्ट `false`), `extract` बंडल किए गए ui-languages मास्टर कैटलॉग (`sourceLocale` + ब्लॉक के प्रभावी `targetLocales` से बनाया गया) से प्रत्येक `englishName` को `strings.json` में भी जोड़ता है जब वह स्रोत स्कैन से पहले से मौजूद न हो (समान हैश कुंजियाँ)। `languagesManifestPath` को नहीं पढ़ता है।
+जब `true` (डिफ़ॉल्ट `false`) होता है, तो `extract` बंडल किए गए ui-languages मास्टर कैटलॉग (`sourceLocale` + ब्लॉक के प्रभावी `targetLocales` से निर्मित) से प्रत्येक `englishName` को `strings.json` में भी जोड़ता है, जब स्रोत स्कैन से पहले से मौजूद न हो (समान हैश कुंजियाँ)। `languagesManifestPath` नहीं पढ़ता है।
+- `uiExtractor.placeholderStyle`
+  `default` (मस्टैच, पायथन फ़ॉर्मेट फ़ील्ड, और printf) या `dotnet` (केवल `{0}`, `{0,-10}`, `{0:format}`)। `dotnet` शैली में एक प्रतिशत चिह्न शाब्दिक टेक्स्ट है और दोहरे ब्रेसिज़ शाब्दिक ब्रेसिज़ हैं। `ui-dotnet` टेम्पलेट `dotnet` सेट करता है।
+- `uiExtractor.exclude`
+  मिनिमैच पैटर्न, प्रोजेक्ट रूट के सापेक्ष, स्कैन के बाद हटा दिए जाते हैं। `bin`, `obj`, `.vs`, `TestResults`, और `packages` पहले से ही डायरेक्टरी नाम से छोड़े जाते हैं। `ui-dotnet` टेम्पलेट `**/Tests/**` और `**/*.Tests/**` को बाहर करता है।
 
 `glossary.uiGlossary` और `glossary.uiGlossaryFromStringsJson` अब स्वीकार नहीं किए जाते हैं। कॉन्फ़िग लोड विफल हो जाता है और त्रुटि प्रतिस्थापन की व्याख्या करती है: कुंजी को हटा दें। संकेत अब प्रत्येक ब्लॉक के `uiGlossary` फ्लैग से आते हैं (डिफ़ॉल्ट `true`)।
 

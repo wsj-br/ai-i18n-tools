@@ -13,16 +13,16 @@
 
 **在任何 LLM 提供商上，使用您选择的模型来翻译您的应用、网站和文档。单一配置，缓存重跑。**
 
-一个 CLI 和工具包，可为 JavaScript/TypeScript 应用、Python 应用和文档网站添加语言。您开始使用的语言是 `sourceLocale`，它可以是任何语言。它会查找文本，进行翻译，并写入您的项目加载的文件。内置预设支持 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 以及任何与 OpenAI 兼容的 API。可以按项目或按区域设置切换提供商或模型。
+命令行工具和工具包，可为 JavaScript/TypeScript 应用程序、Python 应用程序、.NET 应用程序和文档网站添加语言。您开始使用的语言是 `sourceLocale`，它可以是任何语言。它会查找文本、翻译文本，并写入您的项目加载的文件。内置预设支持 OpenAI、Anthropic、Gemini、OpenRouter、Ollama 以及任何兼容 OpenAI 的 API。可以按项目或按区域设置切换提供商或模型。
 
-适用于 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、[纯 Markdown](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme)（仓库 README 和其他 `.md` 文件）以及纯 HTML。Python 应用使用 `t()` / `_()` 或 GNU gettext（Streamlit、FastAPI、Flask、Django 和桌面工具包）。保留您现有的 [i18next](https://www.i18next.com/) 目录（命名空间 JSON 或 `t()` 源字符串）。与 [Intlayer](https://intlayer.org/) 有两种协作方式：保留 Intlayer 并使用 `translate-intlayer` 填充其字典，或者使用 `migrate-intlayer` 迁移到源字符串 `t()` 调用。Intlayer 仍然非常适合类型化内容字典和翻译管理系统。
+适用于 [VitePress](https://vitepress.dev/)、[Starlight](https://starlight.astro.build/)、[Docusaurus](https://docusaurus.io/)、[Nextra](https://nextra.site/)、[Fumadocs](https://www.fumadocs.dev/)、[Astro](https://astro.build/)、[纯 Markdown](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme)（仓库 README 和其他 `.md` 文件）以及纯 HTML。Python 应用程序使用 `t()` / `_()` 或 GNU gettext（Streamlit、FastAPI、Flask、Django 和桌面工具包）。.NET 应用程序在 C# 中使用 `T()`，在 XAML 中使用 `{loc:Tr '...'}`，并生成 `I18n.cs`（Avalonia、WPF、MAUI、ASP.NET、Blazor 和控制台）。保留您现有的 [i18next](https://www.i18next.com/) 目录（命名空间 JSON 或 `t()` 源字符串）。与 [Intlayer](https://intlayer.org/) 配合使用有两种方式：保留 Intlayer 并用 `translate-intlayer` 填充其字典，或使用 `migrate-intlayer` 迁移到源字符串 `t()` 调用。Intlayer 仍然非常适合类型化内容字典和翻译管理系统。
 
 <a id="features"></a>
 ## 功能
 
 | | |
 | --- | --- |
-| **UI 字符串** | 从 JS/TS/Astro 和 Python 中提取 `t("…")` / `_()`，或提取单个 HTML 文件中的 `data-i18n*` → 转换为扁平的各区域设置 JSON 或 GNU gettext |
+| **UI 字符串** | 从 JS/TS/Astro 和 Python 中提取 `t("…")` / `_()`，从 C# 和 XAML 中提取 `T("…")`，或从一个 HTML 文件中提取 `data-i18n*` → 平面按区域设置 JSON、`.resx` 卫星程序集或 GNU gettext |
 | **文档** | 翻译 Markdown、MDX、`.astro` 和 HTML 页面（每个语言区域一个文件） |
 | **JSON** | 当文案位于 `t()` 调用之外时翻译嵌套的区域设置包 |
 | **SVG** | 通过 `translate-svg` 翻译带插图的 SVG 标签 |
@@ -38,6 +38,7 @@
 | --- | --- |
 | 带有纯文本源的 JS/TS 应用（React、Next.js、Node、CLI） | [为 JS/TS 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-js) |
 | 一个 Python 应用（Streamlit、FastAPI、Flask、桌面应用、脚本） | [为 Python 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-python) |
+| .NET 应用程序（Avalonia、WPF、MAUI、ASP.NET、Blazor、控制台） | [为 .NET 应用程序添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-dotnet) |
 | 一个 Django 应用、Flask-Babel 目录，或已使用 GNU gettext 的应用 | [为 Django / Python gettext 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-django-gettext) |
 | 网站或文档站点（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、纯 HTML） | [为网站或文档站点添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-website) |
 | 仓库 README 和其他 Markdown 文件（无论是否包含应用） | [为您的 README 和 Markdown 文档添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme) |
@@ -95,6 +96,8 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 | --- | --- | --- |
 | JS/TS 应用 | `ai-i18n-tools init -P openrouter` | [为 JS/TS 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-js) |
 | Python 应用 | `ai-i18n-tools init -t ui-python -P openrouter` | [为 Python 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-python) |
+| .NET 应用程序 | `ai-i18n-tools init -t ui-dotnet -P openrouter` | [为 .NET 应用程序添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-dotnet) |
+| 已使用 `ResourceManager` 或 `IStringLocalizer` 的 .NET 应用程序 | `ai-i18n-tools init -t ui-dotnet-resx -P openrouter` | [为 .NET ResourceManager 应用程序添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager) |
 | 一个 Django 或 GNU gettext 应用 | `ai-i18n-tools init -t ui-python-django -P openrouter`（或 `ui-python-gettext`、`ui-python-flask`） | [为 Django / Python gettext 应用添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-django-gettext) |
 | 网站或文档站点 | `ai-i18n-tools init -t ui-vitepress -P openrouter`（替换为您的框架模板） | [为网站或文档站点添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-website) |
 | README（无论是否包含应用） | `ai-i18n-tools init -P openrouter`（JS/TS 应用 + README）或 `init -t docs-markdown` | [为您的 README 和 Markdown 文档添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme) |
@@ -103,7 +106,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 JS/TS 应用必须首先将其文本包装在 `t()` 中。如果在纯文本上运行，`sync` 将无错误完成，但不会写入任何有用的内容。您的站点框架还必须在 `sync` 之前启用其自身的 i18n 路由。
 
-网站模板：`ui-starlight`、`ui-docusaurus`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`，以及 `ui-plain-html` 或 `docs-plain-html`。仅限 README 和 Markdown：`docs-markdown`。将 `--with-readme` 添加到任何其他模板以包含 README 块。Python gettext 应用：`ui-python-django`、`ui-python-flask`、`ui-python-gettext`。嵌套的 i18next JSON：`ui-json-bundles`。完整列表：[CLI 设置参考](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/cli-commands/setup)。
+网站模板：`ui-starlight`、`ui-docusaurus`、`ui-vitepress`、`ui-nextra`、`ui-fumadocs`、`ui-astro-website`，以及 `ui-plain-html` 或 `docs-plain-html`。仅限 README 和 Markdown：`docs-markdown`。将 `--with-readme` 添加到任何其他模板以包含 README 块。Python gettext 应用程序：`ui-python-django`、`ui-python-flask`、`ui-python-gettext`。.NET 应用程序：`ui-dotnet`（嵌入式 JSON 和 `I18n.cs`）或 `ui-dotnet-resx`（`.resx` 卫星程序集和 `I18nResx.cs`）。`migrate-dotnet-i18n` 将 `T($"…")` 重写为 `T("…{0}…", arg)`，并将诸如 `Resources.LoginButton` 之类的命名 resx 键列为建议。嵌套 i18next JSON：`ui-json-bundles`。完整列表：[CLI 设置参考](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/cli-commands/setup)。
 
 `suggest-models` 根据已发布的基准对活动提供商的聊天模型进行排名，并且 `suggest-models --apply` 会替换 `translationModels`。相同的排名位于 [模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/translation-dashboard/models) 选项卡上。指南：[AI 模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ai-models)。命令参考：[suggest-models](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/cli-commands/models#suggest-models)。
 
@@ -114,10 +117,10 @@ JS/TS 应用必须首先将其文本包装在 `t()` 中。如果在纯文本上�
 
 - [文档网站](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/) — 指南、集成和参考
 - [安装](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/installation) · [快速入门](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/quick-start) · [LLM 提供商](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/providers-and-models) · [AI 模型](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ai-models)
-- [UI 字符串](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/) · [纯 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/python) · [文档](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/documents/) · [HTML 页面](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/svg-translation/)
-- [Intlayer](https://intlayer.org/) — [就地翻译字典](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/translating-intlayer) · [移动到源字符串调用](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/migrating-from-intlayer)
+- [UI 字符串](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/) · [纯 HTML](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/plain-html) · [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/python) · [.NET](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/ui-strings/dotnet) · [ResourceManager](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager) · [文档](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/documents/) · [HTML 页面](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/documents/html-pages) · [JSON](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/json) · [SVG](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/svg-translation/)
+- [Intlayer](https://intlayer.org/) — [原地翻译字典](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/translating-intlayer) · [迁移到源字符串调用](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/migrating-from-intlayer)
 - [集成](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/integrations/) — VitePress、Nextra、Fumadocs、Docusaurus、Astro 和 [Python](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/integrations/python)
-- [为您的项目添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-your-project) — [JS/TS 应用](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-js) · [Python 应用](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-python) · [Django / gettext 应用](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-django-gettext) · [网站或文档站点](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-website) · [README 和 Markdown 文档](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme) · [组合管道](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/combining-pipelines)
+- [为您的项目添加 i18n](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-your-project) — [JS/TS 应用程序](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-js) · [Python 应用程序](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-python) · [.NET 应用程序](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-dotnet) · [Django / gettext 应用程序](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-django-gettext) · [网站或文档站点](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-website) · [README 和 Markdown 文档](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/add-i18n-to-readme) · [组合管道](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/combining-pipelines)
 - [CLI 参考](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/cli-commands/) · [配置](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/reference/configuration) · [运行时助手](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/guide/runtime-helpers)
 - [示例](https://wsj-br.github.io/ai-i18n-tools/zh-Hans/examples) — 可运行的演示 (`npx degit …`)
 - [AI 代理上下文](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — 简洁的提示 / `AGENTS.md` 消费者项目入口点

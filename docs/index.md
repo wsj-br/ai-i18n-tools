@@ -5,7 +5,7 @@ pageClass: home-onboarding
 description: >-
   Take your single-language app, website, or repository docs multilingual with
   guided setup, AI translation, and cached reruns. Start with JavaScript,
-  TypeScript, Python, or a README.
+  TypeScript, Python, .NET, or a README.
 hero:
   name: ai-i18n-tools
   text: Take your single-language project multilingual.
@@ -69,6 +69,22 @@ Wrap user-facing text and load translated messages with a generated helper. Alre
 Streamlit · FastAPI · Flask · Django · CLI
 
 [Add i18n to a Python app](/guide/add-i18n-to-python) · [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NET app
+
+Wrap C# and XAML text and load translations from embedded JSON, or keep `ResourceManager` and write `.resx` satellites. A dry-run command turns interpolation into `T()` calls and lists named resource keys, such as `Resources.LoginButton`, for you to convert.
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[Add i18n to a .NET app](/guide/add-i18n-to-dotnet) · [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -289,7 +305,7 @@ See translated VitePress pages alongside localised navigation and theme labels.
 </article>
 </div>
 
-[Browse all runnable examples](/examples), including plain HTML, other frameworks, and existing-i18n workflows.
+[Browse all runnable examples](/examples), including .NET helpers, plain HTML, other frameworks, and existing-i18n workflows.
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## Already have i18n? Keep what works.
@@ -308,7 +324,7 @@ You do not have to start over.
 
 Keep the `t()` and gettext calls already in the project.
 
-[JS/TS UI strings](/guide/ui-strings/) · [Python and gettext](/guide/ui-strings/python)
+[JS/TS UI strings](/guide/ui-strings/) · [Python and gettext](/guide/ui-strings/python) · [.NET](/guide/ui-strings/dotnet) · [ResourceManager](/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

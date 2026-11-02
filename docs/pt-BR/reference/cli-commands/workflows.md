@@ -19,7 +19,7 @@ Extrai (se ativado), depois tradução da IU, depois `translate-svg` quando `fea
 
 **Sinopse:** `ai-i18n-tools status [--max-columns <n>]`
 
-Quando `features.translateUIStrings` está ativado, imprime a cobertura da IU por localidade (`Translated` / `Missing` / `Total`). Em seguida, imprime o status da tradução markdown por arquivo × localidade (sem filtro `--locale`; as localidades vêm da configuração). Quando `features.translateJson` está ativado e `json[]` está configurado, também imprime o status do pacote JSON por bloco. Grandes listas de localidades são divididas em tabelas repetidas de até `n` colunas de localidade (padrão **9**) para que as linhas permaneçam estreitas no terminal.
+Quando `features.translateUIStrings` está ativado, imprime a cobertura da interface do usuário por localidade (`Translated` / `Missing` / `Placeholder issues` / `Total`). `Placeholder issues` conta as linhas cuja tradução armazenada renomeia, descarta, inventa ou redireciona um placeholder. Em seguida, imprime o status da tradução markdown por arquivo × localidade (sem filtro `--locale`; as localidades vêm da configuração). Quando `features.translateJson` está ativado e `json[]` está configurado, também imprime o status do pacote JSON por bloco. Listas grandes de localidades são divididas em tabelas repetidas de até `n` colunas de localidade (padrão **9**) para que as linhas permaneçam estreitas no terminal.
 
 **Opções principais:** `--max-columns`
 

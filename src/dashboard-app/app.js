@@ -292,7 +292,7 @@
         <td><code>${escapeHtml(row.source_hash)}</code></td>
         <td class="source-text" title="${escapeHtml(row.source_text || "")}">${escapeHtml(truncate(row.source_text, 200))}</td>
         <td>${escapeHtml(row.locale)}</td>
-        <td class="translated-text" title="${escapeHtml(row.translated_text || "")}">${escapeHtml(truncate(row.translated_text, 200))}</td>
+        <td class="translated-text" title="${escapeHtml(placeholderIssueTitle(row.placeholderIssue ? [row.placeholderIssue] : []) || row.translated_text || "")}">${row.placeholderIssue ? '<span class="placeholder-issue" title="' + escapeHtml(row.placeholderIssue) + '">\u26A0</span> ' : ""}${escapeHtml(truncate(row.translated_text, 200))}</td>
         <td>${escapeHtml(row.model || "")}</td>
         <td>${escapeHtml(row.created_at || "")}</td>
         <td class="last-hit-at ${row.last_hit_at ? "" : "stale"}" title="${escapeHtml(row.last_hit_at || "null")}">${escapeHtml(row.last_hit_at || "\u2014")}</td>
@@ -392,7 +392,21 @@
     document.getElementById("seg-modal-overlay").classList.add("hidden");
   }
 
-  async function segPatchTranslation(newText, confirmScriptIssue) {
+  function placeholderIssueTitle(messages) {
+    if (!messages || messages.length === 0) return "";
+    return messages.join("; ");
+  }
+
+  function confirmPlaceholderSave(issue) {
+    return window.confirm(
+      t("This translation changes a placeholder ({{issue}}). Save it anyway?", {
+        issue: typeof issue === "string" ? issue : "",
+      })
+    );
+  }
+
+  async function segPatchTranslation(newText, accepted) {
+    const flags = accepted || {};
     const res = await fetch("/api/translations", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -400,7 +414,8 @@
         source_hash: seg.editingRow.source_hash,
         locale: seg.editingRow.locale,
         translated_text: newText,
-        ...(confirmScriptIssue ? { confirm_script_issue: true } : {}),
+        ...(flags.script ? { confirm_script_issue: true } : {}),
+        ...(flags.placeholder ? { confirm_placeholder_issue: true } : {}),
       }),
     });
     let body = {};
@@ -409,8 +424,8 @@
     } catch {
       body = {};
     }
-    if (res.status === 409 && body.code === "script_issue" && !confirmScriptIssue) {
-      const ok = confirm(
+    if (res.status === 409 && body.code === "script_issue" && !flags.script) {
+      const ok = window.confirm(
         t(
           "This translation does not use the expected writing system ({{issue}}). Save it anyway?",
           {
@@ -419,7 +434,11 @@
         )
       );
       if (!ok) return false;
-      return segPatchTranslation(newText, true);
+      return segPatchTranslation(newText, { ...flags, script: true });
+    }
+    if (res.status === 409 && body.code === "placeholder_issue" && !flags.placeholder) {
+      if (!confirmPlaceholderSave(body.error)) return false;
+      return segPatchTranslation(newText, { ...flags, placeholder: true });
     }
     if (!res.ok) {
       throw new Error(typeof body.error === "string" ? body.error : res.statusText);
@@ -1405,7 +1424,7 @@
         <td title="${escapeHtml(uiFormatLocations(e.locations))}">${escapeHtml(truncate(uiFormatLocations(e.locations), 80))}</td>
         <td class="source-text">${escapeHtml(truncate(e.source, 200))}</td>
         <td>${escapeHtml(rowLocale)}</td>
-        <td>${escapeHtml(truncate(trText, 120))}</td>
+        <td title="${escapeHtml(placeholderIssueTitle((e.placeholderIssuesByLocale || {})[rowLocale]) || trText)}">${(e.placeholderIssuesByLocale || {})[rowLocale] ? '<span class="placeholder-issue" title="' + escapeHtml(placeholderIssueTitle((e.placeholderIssuesByLocale || {})[rowLocale])) + '">\u26A0</span> ' : ""}${escapeHtml(truncate(trText, 120))}</td>
         <td title="${escapeHtml(modelLabel)}">${escapeHtml(truncate(modelLabel, 48))}</td>
         <td class="actions"></td>
       `;
@@ -1452,21 +1471,35 @@
     if (modalH2) modalH2.textContent = t("Edit UI translation");
   }
 
+  async function uiPatchEntry(id, body) {
+    const res = await fetch(withUiCatalog(`/api/ui-strings/${encodeURIComponent(id)}`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    let pj = {};
+    try {
+      pj = await res.json();
+    } catch {
+      pj = {};
+    }
+    if (res.status === 409 && pj.code === "placeholder_issue" && !body.confirm_placeholder_issue) {
+      if (!confirmPlaceholderSave(pj.error)) return false;
+      return uiPatchEntry(id, { ...body, confirm_placeholder_issue: true });
+    }
+    if (!res.ok) {
+      throw new Error(typeof pj.error === "string" ? pj.error : res.statusText);
+    }
+    return true;
+  }
+
   async function uiSaveModal() {
     if (!uiState.editingEntry || uiState.editingLocale == null) return;
     const loc = uiState.editingLocale;
     const val = document.getElementById("ui-modal-textarea").value;
     try {
-      const res = await fetch(
-        withUiCatalog(`/api/ui-strings/${encodeURIComponent(uiState.editingEntry.id)}`),
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ translated: { [loc]: val } }),
-        }
-      );
-      const pj = await res.json();
-      if (!res.ok) throw new Error(pj.error || res.statusText);
+      const saved = await uiPatchEntry(uiState.editingEntry.id, { translated: { [loc]: val } });
+      if (!saved) return;
       uiCloseModal();
       await loadUiStrings();
     } catch (err) {
@@ -1593,6 +1626,7 @@
           translated: e.translated || {},
           models: e.models || {},
           locations: e.locations || [],
+          placeholderIssuesByLocale: e.placeholderIssuesByLocale || {},
         }));
       uiFillFilepathSelect();
       uiFillModelSelect();
@@ -1952,6 +1986,7 @@
           completenessByLocale: e.completenessByLocale || {},
           requiredFormsByLocale: e.requiredFormsByLocale || {},
           zeroDigit: e.zeroDigit,
+          placeholderIssuesByLocale: e.placeholderIssuesByLocale || {},
         }));
       upFillFilepathSelect();
       upFillModelSelect();
@@ -2054,7 +2089,7 @@
         <td title="${escapeHtml(uiFormatLocations(e.locations))}">${escapeHtml(truncate(uiFormatLocations(e.locations), 80))}</td>
         <td class="source-text">${upSourceCellHtml(e)}</td>
         <td>${escapeHtml(rowLocale)}</td>
-        <td class="up-forms-col" title="${escapeHtml(upFormsCellTitlePlain(e, rowLocale))}">${upFormsCellHtml(e, rowLocale)}</td>
+        <td class="up-forms-col" title="${escapeHtml(placeholderIssueTitle((e.placeholderIssuesByLocale || {})[rowLocale]) || upFormsCellTitlePlain(e, rowLocale))}">${(e.placeholderIssuesByLocale || {})[rowLocale] ? '<span class="placeholder-issue" title="' + escapeHtml(placeholderIssueTitle((e.placeholderIssuesByLocale || {})[rowLocale])) + '">\u26A0</span> ' : ""}${upFormsCellHtml(e, rowLocale)}</td>
         <td title="${escapeHtml(modelLabel)}">${escapeHtml(truncate(modelLabel, 48))}</td>
         <td class="actions"></td>
       `;
@@ -2143,16 +2178,10 @@
       if (id) payload[id] = ta.value;
     }
     try {
-      const res = await fetch(
-        withUiCatalog(`/api/ui-strings/${encodeURIComponent(upState.editingEntry.id)}`),
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ translated: { [locale]: payload } }),
-        }
-      );
-      const pj = await res.json();
-      if (!res.ok) throw new Error(pj.error || res.statusText);
+      const saved = await uiPatchEntry(upState.editingEntry.id, {
+        translated: { [locale]: payload },
+      });
+      if (!saved) return;
       upCloseModal();
       await loadUiPlurals();
     } catch (err) {

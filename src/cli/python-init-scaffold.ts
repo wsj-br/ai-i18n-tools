@@ -38,6 +38,7 @@ import hashlib
 import json
 import re
 import string
+import warnings
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -48,6 +49,7 @@ _DOMAIN = __DOMAIN__
 _USE_FLAT = __USE_FLAT__
 _USE_GETTEXT = __USE_GETTEXT__
 
+_placeholder_warnings: set[str] = set()
 _locale: contextvars.ContextVar[str] = contextvars.ContextVar(
     "ai_i18n_locale", default=_SOURCE_LOCALE
 )
@@ -296,6 +298,24 @@ def _is_template(value: object) -> bool:
     return kind.__name__ == "Template" and hasattr(value, "strings") and hasattr(value, "interpolations")
 
 
+def _inferred_placeholder_name(expr: str) -> str | None:
+    text = expr.strip()
+    if not text or len(text) > 120:
+        return None
+    method = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\.[A-Za-z_][A-Za-z0-9_]*\(\)", text)
+    if method:
+        return method.group(1)
+    if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+", text):
+        return text.rsplit(".", 1)[-1]
+    length = re.fullmatch(r"len\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)", text)
+    if length:
+        return length.group(1) + "_count"
+    joined = re.fullmatch(r"""(?:'[^']*'|"[^"]*")\.join\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)""", text)
+    if joined:
+        return joined.group(1)
+    return None
+
+
 def _template_parts(value: Any) -> tuple[str, dict[str, Any]]:
     strings = list(value.strings)
     interpolations = list(value.interpolations)
@@ -311,10 +331,20 @@ def _template_parts(value: Any) -> tuple[str, dict[str, Any]]:
         conversion = getattr(item, "conversion", None)
         spec = str(getattr(item, "format_spec", "") or "")
         simple = expr.isidentifier()
+        preferred = expr if simple else _inferred_placeholder_name(expr)
         if simple:
             name = expr
+        elif preferred and preferred not in extracted:
+            name = preferred
+        elif preferred:
+            suffix = 2
+            while f"{preferred}_{suffix}" in extracted:
+                suffix += 1
+            name = f"{preferred}_{suffix}"
         else:
             generated += 1
+            while f"value_{generated}" in extracted:
+                generated += 1
             name = f"value_{generated}"
         extracted[name] = getattr(item, "value", None)
         conv = f"!{conversion}" if conversion else ""
@@ -356,7 +386,16 @@ def _format(source: str, translated: str, values: Mapping[str, Any]) -> str:
     except ValueError:
         source_fields = set()
         translated_fields = {"__unsafe__"}
-    chosen = translated if translated_fields <= source_fields else source
+    names_match = translated_fields <= source_fields
+    chosen = translated if names_match else source
+    if not names_match and translated != source and source not in _placeholder_warnings:
+        _placeholder_warnings.add(source)
+        warnings.warn(
+            "translation placeholders do not match the source; showing the source sentence: "
+            + source,
+            RuntimeWarning,
+            stacklevel=2,
+        )
     text = _apply_mustache(chosen, values)
     try:
         return _SAFE.format(text, **dict(values))

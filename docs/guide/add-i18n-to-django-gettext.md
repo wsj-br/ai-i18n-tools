@@ -125,7 +125,7 @@ install or initialise anything yourself.
 
 ## Part 1 — Config
 
-1. If init wrote an `i18n.py`, delete it. A gettext app does not use it. If the
+1. If this init just wrote an unused `i18n.py`, delete that new file. Do not delete an `i18n.py` the app already had. A gettext app does not use the generated helper. If the
    project uses the `ui-python-gettext` template, set `"flatOutput": false` in
    the `ui` block.
 2. Make the config match the project. `ui.gettext.outputDir`, `potPath`, and
@@ -141,7 +141,12 @@ install or initialise anything yourself.
 
 Keep the gettext calls the project already uses, and wrap what is missing. The
 literal is the source-language message. With the source language active, the
-app must behave exactly as before.
+app must behave exactly as before. Also cover shown validation text, returned
+labels, and captions. Keep stored values in the source language. A clean
+extract is not coverage. Use the framework's language override for text sent
+to a model. Do not activate a process-global translation around asynchronous
+work. One target-locale test must show a message change while a stored value
+stays.
 
 - Python: `gettext`, `ngettext`, `pgettext`. Placeholders are `%(name)s`,
   filled after the lookup: `_("Hello, %(name)s!") % {"name": name}`. Strings that
@@ -476,6 +481,8 @@ That is the last manual step. Continue at [Choose models and translate](#transla
 | --- | --- |
 | A Streamlit, FastAPI, Flask, desktop, or script app with no gettext | [Add i18n to a Python app](/guide/add-i18n-to-python) |
 | A JS/TS app | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
+| A .NET app | [Add i18n to a .NET app](/guide/add-i18n-to-dotnet) |
+| `ResourceManager` or ASP.NET `IStringLocalizer` | [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager) |
 | A website or docs site | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
 | A repository README or other Markdown files | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) |
 

@@ -19,7 +19,7 @@ Extraction (si activée), puis traduction de l'interface utilisateur, puis `tran
 
 **Synopsis :** `ai-i18n-tools status [--max-columns <n>]`
 
-Lorsque `features.translateUIStrings` est activé, affiche la couverture de l'interface utilisateur par locale (`Translated` / `Missing` / `Total`). Ensuite, affiche l'état de la traduction Markdown par fichier × locale (pas de filtre `--locale` ; les locales proviennent de la configuration). Lorsque `features.translateJson` est activé et que `json[]` est configuré, affiche également l'état du bundle JSON par bloc. Les grandes listes de locales sont divisées en tableaux répétés de jusqu'à `n` colonnes de locales (par défaut **9**) afin que les lignes restent étroites dans le terminal.
+Lorsque `features.translateUIStrings` est activé, affiche la couverture de l'interface utilisateur par locale (`Translated` / `Missing` / `Placeholder issues` / `Total`). `Placeholder issues` compte les lignes dont la traduction stockée renomme, supprime, invente ou redirige un espace réservé. Ensuite, affiche l'état de la traduction Markdown par fichier × locale (sans filtre `--locale` ; les locales proviennent de la configuration). Lorsque `features.translateJson` est activé et que `json[]` est configuré, affiche également l'état du bundle JSON par bloc. Les listes de locales volumineuses sont divisées en tableaux répétés de jusqu'à `n` colonnes de locales (par défaut **9**) afin que les lignes restent étroites dans le terminal.
 
 **Options clés :** `--max-columns`
 

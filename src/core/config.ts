@@ -498,6 +498,7 @@ function assertUniqueUiPaths(config: I18nConfig, issues: I18nBusinessRuleIssue[]
     seen.set(key, label);
   };
   const gettextKeys = new Map<string, string>();
+  const resxKeys = new Map<string, string>();
   config.ui.forEach((block, index) => {
     const paths = {
       stringsJson: resolveConfigPath(process.cwd(), block.stringsJson),
@@ -523,10 +524,24 @@ function assertUniqueUiPaths(config: I18nConfig, issues: I18nBusinessRuleIssue[]
         gettextKeys.set(key, label);
       }
     }
-    if (block.flatOutput === false && !block.gettext) {
+    if (block.resx) {
+      const dir = resolveConfigPath(process.cwd(), block.resx.outputDir);
+      const key = `${dir.split("\\").join("/")}\0${block.resx.baseName}`;
+      const label = `ui[${index}].resx`;
+      const prev = resxKeys.get(key);
+      if (prev) {
+        issues.push({
+          path: label,
+          message: `UI blocks must use distinct Resx output. ${label} and ${prev} both use base name ${JSON.stringify(block.resx.baseName)} in ${dir}.`,
+        });
+      } else {
+        resxKeys.set(key, label);
+      }
+    }
+    if (block.flatOutput === false && !block.gettext && !block.resx) {
       issues.push({
         path: `ui[${index}]`,
-        message: `ui[${index}] must enable flat JSON output or configure gettext.`,
+        message: `ui[${index}] must enable flat JSON output, configure gettext, or configure resx.`,
       });
     }
   });
@@ -1347,6 +1362,10 @@ export const initConfigTemplates = {
         localeFormat: "posix",
       },
     }),
+
+  uiDotnet: (): RawI18nConfigInput => dotnetUiTemplate(),
+
+  uiDotnetResx: (): RawI18nConfigInput => dotnetResxTemplate(),
 } as const;
 
 function pythonUiTemplate(
@@ -1406,6 +1425,68 @@ function pythonUiTemplate(
     maxBatchChars: 4096,
     cacheDir: ".translation-cache",
     docs: [],
+  };
+}
+
+function dotnetUiTemplate(): RawI18nConfigInput {
+  return {
+    ...defaultI18nConfigPartial,
+    sourceLocale: "en",
+    targetLocales: ["es", "pt-BR", "de"],
+    features: {
+      translateUIStrings: true,
+      translateDocs: false,
+      translateJson: false,
+      translateSVG: false,
+    },
+    glossary: {
+      userGlossary: "glossary-user.csv",
+    },
+    ui: {
+      sourceRoots: ["."],
+      stringsJson: "locales/strings.json",
+      flatOutputDir: "locales",
+      flatOutput: true,
+      uiExtractor: {
+        extensions: [".cs", ".razor", ".cshtml", ".xaml", ".axaml"],
+        funcNames: ["T", "Tn", "Tp", "N", "Tr", "Loc"],
+        placeholderStyle: "dotnet",
+        exclude: ["**/bin/**", "**/obj/**", "**/Tests/**", "**/*.Tests/**"],
+        includePackageDescription: false,
+      },
+    },
+    concurrency: 4,
+    uiBatchConcurrency: 2,
+    batchSize: 20,
+    maxBatchChars: 4096,
+    cacheDir: ".translation-cache",
+    docs: [],
+  };
+}
+
+function dotnetResxTemplate(): RawI18nConfigInput {
+  return {
+    ...dotnetUiTemplate(),
+    ui: {
+      sourceRoots: ["."],
+      stringsJson: "Resources/strings.json",
+      flatOutputDir: "Resources",
+      flatOutput: false,
+      resx: {
+        outputDir: "Resources",
+        baseName: "SharedResource",
+        writeNeutral: true,
+        ingestExistingResx: true,
+        localeFormat: "bcp47",
+      },
+      uiExtractor: {
+        extensions: [".cs", ".razor", ".cshtml", ".xaml", ".axaml"],
+        funcNames: ["T", "Tn", "Tp", "N", "Tr", "Loc"],
+        placeholderStyle: "dotnet",
+        exclude: ["**/bin/**", "**/obj/**", "**/Tests/**", "**/*.Tests/**"],
+        includePackageDescription: false,
+      },
+    },
   };
 }
 

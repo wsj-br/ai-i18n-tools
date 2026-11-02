@@ -19,6 +19,7 @@ import {
   toGettextLocale,
   writeAtomicBuffer,
 } from "../core/gettext-codec.js";
+import { catalogEntriesToResx, serializeResx } from "../core/resx-codec.js";
 import {
   LlmAllModelsFailedError,
   LlmClient,
@@ -80,6 +81,11 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
+import {
+  plainPlaceholderIssues,
+  translationValuePlaceholderMessages,
+} from "../core/ui-placeholder-audit.js";
+import { isPlaceholderOnlyUiString } from "../core/ui-placeholders.js";
 import { TranslationCache } from "../core/cache.js";
 import { usageRecorderForCache } from "../core/usage-recorder.js";
 import {
@@ -89,6 +95,9 @@ import {
 } from "../core/llm-providers.js";
 import { t } from "../i18n/index.js";
 const UI_CHUNK = 50;
+
+/** Model id stored when a placeholder-only string is copied instead of sent to a model. */
+const PLACEHOLDER_COPY_MODEL = "placeholder-copy";
 
 const RULE = "⋯".repeat(30);
 
@@ -383,6 +392,54 @@ function printTranslateUiRunSummary(
   );
 }
 
+function writeResxCatalogs(
+  config: I18nUiTranslateConfig,
+  opts: TranslateUIOptions,
+  strings: StringsFile,
+  sourceLocale: string
+): void {
+  const resx = config.ui.resx;
+  if (!resx) {
+    return;
+  }
+  const dir = path.resolve(opts.cwd, resx.outputDir);
+  fs.mkdirSync(dir, { recursive: true });
+  if (resx.writeNeutral !== false) {
+    const neutralPath = path.join(dir, `${resx.baseName}.resx`);
+    writeAtomicUtf8(
+      neutralPath,
+      serializeResx(catalogEntriesToResx(strings, sourceLocale, { neutral: true }))
+    );
+    console.log(
+      chalk.gray(
+        t("   wrote Resx neutral catalog → {{path}}", {
+          path: neutralPath,
+        })
+      )
+    );
+  }
+  for (const locale of config.targetLocales) {
+    const norm = normalizeLocale(locale);
+    if (norm === normalizeLocale(sourceLocale)) {
+      continue;
+    }
+    const culture = toGettextLocale(norm, resx.localeFormat);
+    const satellitePath = path.join(dir, `${resx.baseName}.${culture}.resx`);
+    writeAtomicUtf8(
+      satellitePath,
+      serializeResx(catalogEntriesToResx(strings, norm, { neutral: false }))
+    );
+    console.log(
+      chalk.gray(
+        t("   wrote Resx catalog {{locale}} → {{path}}", {
+          locale: culture,
+          path: satellitePath,
+        })
+      )
+    );
+  }
+}
+
 function writeGettextCatalogs(
   config: I18nUiTranslateConfig,
   opts: TranslateUIOptions,
@@ -478,10 +535,11 @@ async function runTranslateUIBody(
     );
   }
 
+  const placeholderStyle = config.ui.uiExtractor?.placeholderStyle ?? "default";
   let entries = Object.entries(strings);
   const writeFlat = config.ui.flatOutput !== false;
   const outDir = path.join(opts.cwd, config.ui.flatOutputDir);
-  if (writeFlat) {
+  if (writeFlat && !opts.dryRun) {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
@@ -732,6 +790,7 @@ async function runTranslateUIBody(
           originalLiteral: entry.source,
           requiredForms: req,
           zeroDigit: entry.zeroDigit === true,
+          placeholderStyle,
           glossaryHints: hints,
           intlPluralLocaleTag: srcNorm,
           sourceLocale: srcNorm,
@@ -743,6 +802,7 @@ async function runTranslateUIBody(
             originalLiteral: entry.source,
             zeroDigit: entry.zeroDigit === true,
             targetLocale: srcNorm,
+            placeholderStyle,
           });
         } catch (e) {
           writeUiTranslationFailureLog(opts, config, stringsRel, srcNorm, `plural Step 0 ${h}`, e);
@@ -830,6 +890,8 @@ async function runTranslateUIBody(
         storedGuidance.promptContextHash !== promptContextHash;
 
       // Pass A — plain (non-plural) rows
+      const userEditedPlaceholderWarnings: Array<{ source: string; message: string }> = [];
+      let placeholderHealCount = 0;
       const missingPlain = entries.filter(([_hash, entry]) => {
         if (isPluralStringsEntry(entry)) {
           return false;
@@ -838,21 +900,61 @@ async function runTranslateUIBody(
         if (!src.trim()) {
           return false;
         }
+        const translatedValue = entry.translated?.[locale];
+        const placeholderIssues =
+          typeof translatedValue === "string" && translatedValue.trim() !== ""
+            ? plainPlaceholderIssues(src, translatedValue, placeholderStyle)
+            : [];
         if (opts.force) {
           return true;
         }
         if (entry.models?.[locale] === USER_EDITED_MODEL) {
+          if (placeholderIssues.length > 0) {
+            userEditedPlaceholderWarnings.push({
+              source: src,
+              message: placeholderIssues[0]!.message,
+            });
+          }
           return false;
         }
-        const t = entry.translated?.[locale];
-        if (t === undefined || String(t).trim() === "") {
+        if (translatedValue === undefined || String(translatedValue).trim() === "") {
           return true;
         }
         if (guidanceChanged) {
           return true;
         }
-        return translationScriptIssue(String(t), locale, src) !== null;
+        if (translationScriptIssue(String(translatedValue), locale, src) !== null) {
+          return true;
+        }
+        if (placeholderIssues.length > 0) {
+          placeholderHealCount++;
+          return true;
+        }
+        return false;
       });
+
+      if (placeholderHealCount > 0) {
+        console.log(
+          chalk.yellow(
+            t(
+              "{{locale}}: {{count}} string(s) will be re-translated because a placeholder was renamed, dropped, invented, or its format spec changed.",
+              { locale, count: placeholderHealCount }
+            )
+          )
+        );
+      }
+      for (const warning of userEditedPlaceholderWarnings) {
+        const preview =
+          warning.source.length > 80 ? `${warning.source.slice(0, 77)}...` : warning.source;
+        console.warn(
+          chalk.yellow(
+            t(
+              "{{locale}}: user-edited string keeps a placeholder problem ({{issue}}): {{source}}",
+              { locale, issue: warning.message, source: preview }
+            )
+          )
+        );
+      }
 
       const plainEligible = entries.filter(([, entry]) => {
         if (isPluralStringsEntry(entry)) {
@@ -909,10 +1011,50 @@ async function runTranslateUIBody(
               return;
             }
 
+            const copyIndexes = new Set<number>();
+            sources.forEach((src, index) => {
+              if (isPlaceholderOnlyUiString(src, placeholderStyle)) {
+                copyIndexes.add(index);
+              }
+            });
+            const writeCopied = (index: number): void => {
+              const [hash] = chunk[index]!;
+              const ent = strings[hash];
+              if (!ent || isPluralStringsEntry(ent)) {
+                return;
+              }
+              ent.translated = ent.translated ?? {};
+              ent.translated[locale] = sources[index] ?? "";
+              ent.models = ent.models ?? {};
+              ent.models[locale] = PLACEHOLDER_COPY_MODEL;
+              stringsUpdated++;
+              stringsTranslated++;
+            };
+            if (copyIndexes.size > 0) {
+              console.log(
+                chalk.gray(
+                  t(
+                    "{{locale}} {{path}}: copied {{count}} placeholder-only string(s) without calling a model.",
+                    { locale, path: stringsRel, count: copyIndexes.size }
+                  )
+                )
+              );
+            }
+            for (const index of copyIndexes) {
+              writeCopied(index);
+            }
+
+            const translateIndexes = sources
+              .map((_, index) => index)
+              .filter((index) => !copyIndexes.has(index));
+            if (translateIndexes.length === 0) {
+              return;
+            }
+
             const protectedSources: string[] = [];
             const glossaryReplacementsPerString: string[][] = [];
-            for (const src of sources) {
-              const g = protectGlossaryForcedTerms(src, glossary, locale);
+            for (const index of translateIndexes) {
+              const g = protectGlossaryForcedTerms(sources[index] ?? "", glossary, locale);
               protectedSources.push(g.text);
               glossaryReplacementsPerString.push(g.replacements);
             }
@@ -921,6 +1063,7 @@ async function runTranslateUIBody(
             try {
               uiBatch = await client.translateUIBatch(protectedSources, locale, {
                 glossaryHints: hints,
+                placeholderStyle,
               });
             } catch (e) {
               writeUiTranslationFailureLog(
@@ -942,7 +1085,7 @@ async function runTranslateUIBody(
               chunk.length,
               missingPlain.length
             );
-            const n = chunk.length;
+            const n = translateIndexes.length;
             const batchMsg =
               n === 1
                 ? t(
@@ -969,13 +1112,17 @@ async function runTranslateUIBody(
                   );
             console.log(chalk.green(batchMsg));
 
-            chunk.forEach(([h], idx) => {
-              let tr = uiBatch.translations[idx];
+            translateIndexes.forEach((chunkIndex, batchIndex) => {
+              const [hash] = chunk[chunkIndex]!;
+              let tr = uiBatch.translations[batchIndex];
               if (tr !== undefined) {
-                tr = restoreGlossaryForcedTerms(tr, glossaryReplacementsPerString[idx] ?? []);
+                tr = restoreGlossaryForcedTerms(
+                  tr,
+                  glossaryReplacementsPerString[batchIndex] ?? []
+                );
               }
-              if (tr !== undefined && strings[h]) {
-                const ent = strings[h];
+              if (tr !== undefined && strings[hash]) {
+                const ent = strings[hash];
                 if (isPluralStringsEntry(ent)) {
                   return;
                 }
@@ -1002,30 +1149,69 @@ async function runTranslateUIBody(
       }
 
       // Pass B — plural rows for this locale
+      let pluralPlaceholderHealCount = 0;
       const pluralTargets = entries.filter(([, entry]) => {
         if (!isPluralStringsEntry(entry)) {
           return false;
         }
+        const forms = entry.translated?.[locale];
+        const pluralIssues = translationValuePlaceholderMessages(
+          entry.source,
+          forms,
+          placeholderStyle,
+          entry.zeroDigit === true
+        );
         if (opts.force) {
           return true;
         }
         if (entry.models?.[locale] === USER_EDITED_MODEL) {
+          if (pluralIssues.length > 0) {
+            const preview =
+              entry.source.length > 80 ? `${entry.source.slice(0, 77)}...` : entry.source;
+            console.warn(
+              chalk.yellow(
+                t(
+                  "{{locale}}: user-edited string keeps a placeholder problem ({{issue}}): {{source}}",
+                  { locale, issue: pluralIssues[0]!, source: preview }
+                )
+              )
+            );
+          }
           return false;
         }
         if (guidanceChanged) {
           return true;
         }
-        if (!pluralTranslatedLocaleHasContent(entry.translated?.[locale], locale)) {
+        if (!pluralTranslatedLocaleHasContent(forms, locale)) {
           return true;
         }
-        const forms = entry.translated?.[locale];
         if (!forms || typeof forms !== "object") {
           return true;
         }
-        return Object.values(forms).some(
-          (v) => typeof v === "string" && translationScriptIssue(v, locale, entry.source) !== null
-        );
+        if (
+          Object.values(forms).some(
+            (v) => typeof v === "string" && translationScriptIssue(v, locale, entry.source) !== null
+          )
+        ) {
+          return true;
+        }
+        if (pluralIssues.length > 0) {
+          pluralPlaceholderHealCount++;
+          return true;
+        }
+        return false;
       });
+
+      if (pluralPlaceholderHealCount > 0) {
+        console.log(
+          chalk.yellow(
+            t(
+              "{{locale}}: {{count}} plural group(s) will be re-translated because a placeholder was renamed, dropped, invented, or its format spec changed.",
+              { locale, count: pluralPlaceholderHealCount }
+            )
+          )
+        );
+      }
 
       const pluralEligible = entries.filter(([, entry]) => isPluralStringsEntry(entry)).length;
       stringsCached += pluralEligible - pluralTargets.length;
@@ -1089,6 +1275,7 @@ async function runTranslateUIBody(
               sourceForms: sourceFormsProtected,
               requiredTargetForms: reqTarget,
               originalLiteral: entry.source,
+              placeholderStyle,
               glossaryHints: hints,
               intlPluralLocaleTag: locale,
               targetLocale: locale,
@@ -1100,6 +1287,7 @@ async function runTranslateUIBody(
                 targetLocale: locale,
                 originalLiteral: entry.source,
                 zeroDigit: entry.zeroDigit === true,
+                placeholderStyle,
               });
             } catch (e) {
               writeUiTranslationFailureLog(opts, config, stringsRel, locale, `plural ${h}`, e);
@@ -1233,6 +1421,9 @@ async function runTranslateUIBody(
     // Source locale bundle: plural keys only (for i18next suffix resolution)
     if (!opts.dryRun && config.ui.gettext) {
       writeGettextCatalogs(config, opts, strings, srcNorm);
+    }
+    if (!opts.dryRun && config.ui.resx) {
+      writeResxCatalogs(config, opts, strings, srcNorm);
     }
 
     const srcFlat = buildPluralOnlyFlatForSourceLocale(strings, srcNorm);

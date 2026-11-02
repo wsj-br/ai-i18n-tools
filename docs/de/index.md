@@ -5,8 +5,8 @@ pageClass: home-onboarding
 description: >-
   Machen Sie Ihre einsprachige App, Website oder Repository-Dokumentation
   mehrsprachig mit geführter Einrichtung, KI-Übersetzung und
-  zwischengespeicherten Wiederholungen. Beginnen Sie mit JavaScript, TypeScript,
-  Python oder einer README-Datei.
+  zwischengespeicherten Neuausführungen. Beginnen Sie mit JavaScript,
+  TypeScript, Python, .NET oder einer README-Datei.
 hero:
   name: ai-i18n-tools
   text: Machen Sie Ihr einsprachiges Projekt mehrsprachig.
@@ -73,6 +73,22 @@ Umschließen Sie benutzerorientierten Text und laden Sie übersetzte Nachrichten
 Streamlit · FastAPI · Flask · Django · CLI
 
 [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) · [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NET-App
+
+Umschließen Sie C#- und XAML-Text und laden Sie Übersetzungen aus eingebettetem JSON, oder behalten Sie `ResourceManager` bei und schreiben Sie `.resx`-Satelliten. Ein Dry-Run-Befehl wandelt Interpolation in `T()`-Aufrufe um und listet benannte Ressourcen-Keys, wie z. B. `Resources.LoginButton`, auf, die Sie konvertieren können.
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[i18n zu einer .NET-App hinzufügen](/de/guide/add-i18n-to-dotnet) · [i18n zu einer .NET ResourceManager-App hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -293,7 +309,7 @@ Sehen Sie übersetzte VitePress-Seiten zusammen mit lokalisierter Navigation und
 </article>
 </div>
 
-[Alle ausführbaren Beispiele durchsuchen](/de/examples), einschließlich einfachem HTML, anderer Frameworks und bestehender i18n-Workflows.
+[Alle ausführbaren Beispiele durchsuchen](/de/examples), einschließlich .NET-Helfern, einfachem HTML, anderen Frameworks und bestehenden i18n-Workflows.
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## Bereits i18n im Einsatz? Behalten Sie, was funktioniert.
@@ -312,7 +328,7 @@ Sie müssen nicht von vorne anfangen.
 
 Behalten Sie die `t()`- und gettext-Aufrufe bei, die bereits im Projekt vorhanden sind.
 
-[JS/TS-UI-Strings](/de/guide/ui-strings/) · [Python und gettext](/de/guide/ui-strings/python)
+[JS/TS UI-Strings](/de/guide/ui-strings/) · [Python und gettext](/de/guide/ui-strings/python) · [.NET](/de/guide/ui-strings/dotnet) · [ResourceManager](/de/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

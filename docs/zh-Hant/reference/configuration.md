@@ -286,26 +286,32 @@
 - `flatOutputDir`
   寫入此區塊各語言環境 JSON 檔案的目錄（`de.json` 等）。
 - `flatOutput`
-  當為 `true`（預設值）時，`translate-ui` 會為每個語區寫入一個扁平的 JSON 檔案。設定為 `false` 以用於僅限 gettext 的區塊。具有 `flatOutput: false` 的區塊必須設定 `gettext`。
+  當 `true` 時（預設值），`translate-ui` 會為每個地區設定寫入一個扁平的 JSON 檔案。設定 `false` 以僅輸出 gettext 或 resx。包含 `flatOutput: false` 的區塊必須設定 `gettext` 或 `resx`。
+- `resx`
+  選用的 .NET `.resx` 輸出。`outputDir`（預設值 `Resources`）和 `baseName`（預設值 `SharedResource`）會寫入 `{baseName}.resx` 以及 `{baseName}.{culture}.resx`。`writeNeutral`（預設為 true）會將原始文字放入中性檔案中，以便 `ResourceManager` 可以回溯。`localeFormat` 是 `bcp47`（預設值，`pt-BR`）或 `posix`（`pt_BR`）。`ingestExistingResx`（預設為 true）會在 `extract` 期間讀取附屬檔案。`neutralFile` 會透過中性值映射舊版命名鍵，例如 `LoginButton`。上下文鍵使用 U+2404。複數形式是名為 `{singular}[{form}]` 的獨立條目。包含 `flatOutput: false` 的區塊必須設定 `gettext` 或 `resx`。
 - `gettext`
-  此區塊的選用 GNU gettext 輸出。`outputDir`（預設為 `./locales`）會接收 `<locale>/LC_MESSAGES/<domain>.po`，且當 `compileMo` 為 true（預設值）時，會接收相符的 `.mo`。`domain` 預設為 `messages`。`potPath` 是範本目錄。`ingestExistingPo`（預設為 `true`）會在 `extract` 期間，從非模糊的 `msgstr` 值填入空的 `strings.json` 位置，且不會取代非空白或使用者編輯過的翻譯。`localeFormat` 為 `posix`（預設，`pt_BR`）或 `bcp47`（`pt-BR`）。內容相關的資料列使用 gettext `\u0004` 分隔符號。在兩個內容中相同的來源語言字串不會共用目錄 ID。
+  此區塊的選用 GNU gettext 輸出。`outputDir`（預設值 `./locales`）會接收 `<locale>/LC_MESSAGES/<domain>.po`，並且當 `compileMo` 為 true 時（預設值），接收匹配的 `.mo`。`domain` 預設為 `messages`。`potPath` 是範本目錄。`ingestExistingPo`（預設值 `true`）會在 `extract` 期間從非模糊的 `msgstr` 值填補空的 `strings.json` 槽位，並且不會取代非空或使用者編輯的翻譯。`localeFormat` 是 `posix`（預設值，`pt_BR`）或 `bcp47`（`pt-BR`）。上下文行使用 gettext `\u0004` 分隔符。相同來源語言字串在兩個不同上下文中不共用目錄 ID。
 - `targetLocales`
-  此區塊的選用語區清單。若省略或為空，區塊會使用根 `targetLocales`。
+  此區塊的選用地區設定清單。當省略或為空時，此區塊使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 寫入此區塊 `ui-languages.json` 的選用路徑。若省略，區塊 0 會使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續的區塊預設為 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 寫入此區塊 `ui-languages.json` 的選用路徑。當省略時，區塊 0 使用根 `languagesManifestPath`（其本身預設為此區塊的 `{flatOutputDir}/ui-languages.json`）。後續區塊預設為 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
-  當 `true`（預設值）時，此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的詞彙提示來源。`translate-ui`、`proofread-ui` 和來源 linting 僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如，不應引導文件說明的 CLI 字串目錄）。
-- `uiExtractor.funcNames`（或舊版 `reactExtractor.funcNames`）
+  當 `true` 時（預設值），此區塊的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的詞彙表提示來源。`translate-ui`、`proofread-ui` 和原始碼檢查僅使用 `glossary.userGlossary`。設定 `false` 以將目錄排除在這些提示之外（例如，不應引導文件說明的 CLI 字串目錄）。
+- `uiExtractor.funcNames` (或舊版 `reactExtractor.funcNames`)
   要掃描的其他函數名稱（預設值：`["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（或舊版 `reactExtractor.extensions`）
+- `uiExtractor.extensions` (或舊版 `reactExtractor.extensions`)
   要包含的檔案副檔名（預設值：`[".js", ".jsx", ".ts", ".tsx"]`）。為 Astro frontmatter 和範本表達式新增 `.astro`。
-- `uiExtractor.includePackageDescription`（或舊版 `reactExtractor.includePackageDescription`）
-  當 `true`（預設值）時，`extract` 也會將 `package.json` `description` 作為 UI 字串（如果存在）包含在內。在額外區塊上設定 `false`，這樣相同的描述就不會被提取到每個目錄中。
-- `uiExtractor.packageJsonPath`（或舊版 `reactExtractor.packageJsonPath`）
-  用於選用描述提取的 `package.json` 檔案的自訂路徑。
-- `uiExtractor.includeUiLanguageEnglishNames`（或舊版 `reactExtractor.includeUiLanguageEnglishNames`）
+- `uiExtractor.includePackageDescription` (或舊版 `reactExtractor.includePackageDescription`)
+  當 `true` 時（預設值），`extract` 也會將 `package.json` `description` 作為 UI 字串包含在內（如果存在）。在額外區塊上設定 `false`，這樣相同的描述就不會被提取到每個目錄中。
+- `uiExtractor.packageJsonPath` (或舊版 `reactExtractor.packageJsonPath`)
+  用於該選用描述提取的 `package.json` 檔案的自訂路徑。
+- `uiExtractor.includeUiLanguageEnglishNames` (或舊版 `reactExtractor.includeUiLanguageEnglishNames`)
 
-當 `true`（預設 `false`）時，若來源掃描中尚未存在（相同的雜湊索引鍵），`extract` 也會將隨附的 ui-languages 主目錄（從 `sourceLocale` + 區塊的有效 `targetLocales` 建置）中的每個 `englishName` 新增至 `strings.json`。不會讀取 `languagesManifestPath`。
+當 `true` 時（預設值 `false`），`extract` 也會將捆綁的 ui-languages 主目錄（由 `sourceLocale` + 區塊的有效 `targetLocales` 建構）中的每個 `englishName` 新增到 `strings.json` 中，如果來源掃描中尚未存在（相同的雜湊鍵）。不讀取 `languagesManifestPath`。
+- `uiExtractor.placeholderStyle`
+  `default` (mustache、Python 格式欄位和 printf) 或 `dotnet` (僅限 `{0}`、`{0,-10}`、`{0:format}`)。在 `dotnet` 樣式中，百分號是字面文字，雙大括號是字面大括號。`ui-dotnet` 範本設定 `dotnet`。
+- `uiExtractor.exclude`
+  相對於專案根目錄的 Minimatch 模式，掃描後會被捨棄。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已按目錄名稱跳過。`ui-dotnet` 範本排除 `**/Tests/**` 和 `**/*.Tests/**`。
 
 不再接受 `glossary.uiGlossary` 和 `glossary.uiGlossaryFromStringsJson`。設定載入會失敗，且錯誤會說明取代方式：刪除該索引鍵。提示現在來自每個區塊的 `uiGlossary` 旗標（預設 `true`）。
 

@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # UI文字列
 
-`extract` と `translate-ui` のリファレンスです。これは `t()` の呼び出しをロケールごとのカタログに変換するパイプラインです。アプリに初めて i18n を追加する場合は、まず [JS/TS アプリに i18n を追加する](/ja/guide/add-i18n-to-js) または [Python アプリに i18n を追加する](/ja/guide/add-i18n-to-python) をご覧ください。これらのドキュメントではラップするステップを説明しており、その後、ステップ 2 から 4 のためにこのページに戻るよう案内しています。
+`extract`と`translate-ui`のリファレンス。これは`t()`呼び出しをロケールごとのカタログに変換するパイプラインです。初めてアプリにi18nを追加しますか？[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)、または[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)から始めてください。これらはラッピングステップをカバーし、その後ステップ2から4のためにここに戻ってきます。
 
-このパイプラインは、JS/TS プロジェクト (React、Next.js のクライアントコンポーネントとサーバーコンポーネント、Node.js サービス、プレーン HTML、Astro ウェブサイト、CLI ツール) と Python アプリケーションに対応しています。JS/TS では、ソースが `t()` を呼び出した後、i18next を使って文字列を検索します。Python は、生成された `i18n.py` を介して `t()` または gettext を呼び出します (Django は Django の gettext を維持します)。
+このパイプラインは、JS/TSプロジェクト（React、Next.jsのクライアントおよびサーバーコンポーネント、Node.jsサービス、プレーンHTML、Astroウェブサイト、CLIツール）、Pythonアプリケーション、および.NETアプリケーションに対応しています。JS/TSは、ソースが`t()`を呼び出した後、i18nextで文字列を検索します。Pythonは、生成された`i18n.py`を介して`t()`またはgettextを呼び出します（DjangoはDjangoのgettextを維持します）。.NETは、生成された`I18n.cs`を介して`T()`を呼び出します。
 
 <a id="which-guide-to-read"></a>
 ## 読むべきガイド
@@ -13,6 +13,7 @@
 | ハードコードされたソース文字列があり、まだ `t()` がない JS/TS | [JS/TS アプリに i18n を追加する](/ja/guide/add-i18n-to-js) |
 | ソースにすでに `t()` がある React / Next.js / Node | [i18next を接続する](/ja/guide/ui-strings/i18next-runtime) |
 | Python (`t()`、`_()`、gettext、Jinja、Django) | [Pythonアプリケーション](/ja/guide/ui-strings/python)。初期化: `ui-python`、`ui-python-gettext`、`ui-python-flask`、または`ui-python-django`。ヘルパー: `i18n.py`。既存のアプリにロケールを追加するには、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)を参照してください。アプリがgettextを使用している場合は、[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)を参照してください。 |
+| .NET (`T()`、`Tn`、`Tp`、XAML `loc:Tr`) | [.NETアプリケーション](/ja/guide/ui-strings/dotnet)。初期化: `ui-dotnet` (`I18n.cs`) または `ui-dotnet-resx` ([.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager))。既存のアプリにロケールを追加するには、[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)を参照してください。 |
 | プレーンHTML (マークアップに`t()`なし) | [プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html) |
 | Astroマーケティングサイト (ハイブリッド) | [Astroウェブサイト](/ja/guide/ui-strings/astro-website) |
 | `t()`ルール、補間、複数形 | [t()呼び出しと複数形](/ja/guide/ui-strings/t-calls-and-plurals) |
@@ -79,9 +80,10 @@ ai-i18n-tools translate-ui
 
 `translate-ui` はファイルを書き込むだけです。アプリがそれらを読み込む必要があります。
 
-- JS/TS: i18nextをランタイムヘルパーでセットアップし、ユーザーが選択したロケールファイルを読み込み、言語スイッチャーを追加します。[i18nextの配線](/ja/guide/ui-strings/i18next-runtime)および[言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)を参照してください。
+- JS/TS: ランタイムヘルパーでi18nextを設定し、ユーザーが選択したロケールファイルをロードし、言語スイッチャーを追加します。[i18nextを配線する](/ja/guide/ui-strings/i18next-runtime)および[言語スイッチャーとRTL](/ja/guide/ui-strings/language-switcher)を参照してください。
 - Python: 生成された`i18n.py`またはgettextカタログを使用します。[Pythonアプリケーション](/ja/guide/ui-strings/python)を参照してください。
-- Plain HTML: ページに隣接してランタイムスクリプトを読み込みます。[プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)を参照してください。
+- .NET: 生成された`I18n.cs`を使用するか、アプリがすでに`ResourceManager`を使用している場合は`I18nResx.cs`を使用します。[.NETアプリケーション](/ja/guide/ui-strings/dotnet)および[.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)を参照してください。`migrate-dotnet-i18n`は安全でない`T()`引数を書き換えます。`--wrap`はマークされていないラベルを監査します。
+- プレーンHTML: ページの隣にランタイムスクリプトをロードします。[プレーンHTMLアプリ](/ja/guide/ui-strings/plain-html)を参照してください。
 - Astro: [Astroウェブサイト](/ja/guide/ui-strings/astro-website)を参照してください。
 
 <a id="optional"></a>

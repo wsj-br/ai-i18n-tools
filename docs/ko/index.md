@@ -3,8 +3,8 @@ layout: home
 title: ai-i18n-tools
 pageClass: home-onboarding
 description: >-
-  안내 설정, AI 번역, 캐시된 재실행을 통해 단일 언어 앱, 웹사이트 또는 리포지토리 문서를 다국어로 만들어 보세요. JavaScript,
-  TypeScript, Python 또는 README로 시작하세요.
+  안내식 설정, AI 번역 및 캐시된 재실행을 통해 단일 언어 앱, 웹사이트 또는 저장소 문서를 다국어화하세요. JavaScript,
+  TypeScript, Python, .NET 또는 README로 시작하세요.
 hero:
   name: ai-i18n-tools
   text: 단일 언어 프로젝트를 다국어로 만들어 보세요.
@@ -69,6 +69,22 @@ React · Next.js · Node.js · CLI
 Streamlit · FastAPI · Flask · Django · CLI
 
 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python) · [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NET 앱
+
+C# 및 XAML 텍스트를 래핑하고 임베디드 JSON에서 번역을 로드하거나, `ResourceManager`를 유지하고 `.resx` 위성 어셈블리를 작성하세요. 드라이 런 명령은 보간을 `T()` 호출로 변환하고, 변환할 `Resources.LoginButton`와 같은 명명된 리소스 키를 나열합니다.
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) · [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -289,7 +305,7 @@ Streamlit 앱이 앱에 JavaScript 런타임을 추가하지 않고 메시지를
 </article>
 </div>
 
-일반 HTML, 다른 프레임워크, 기존 i18n 워크플로를 포함한 [모든 실행 가능한 예제를 둘러보세요](/ko/examples).
+[모든 실행 가능한 예시 찾아보기](/ko/examples), .NET 헬퍼, 일반 HTML, 다른 프레임워크 및 기존 i18n 워크플로를 포함합니다.
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## 이미 i18n이 있나요? 작동하는 것은 그대로 유지하세요.
@@ -308,7 +324,7 @@ Streamlit 앱이 앱에 JavaScript 런타임을 추가하지 않고 메시지를
 
 프로젝트에 이미 있는 `t()` 및 gettext 호출을 유지하세요.
 
-[JS/TS UI 문자열](/ko/guide/ui-strings/) · [Python 및 gettext](/ko/guide/ui-strings/python)
+[JS/TS UI 문자열](/ko/guide/ui-strings/) · [Python 및 gettext](/ko/guide/ui-strings/python) · [.NET](/ko/guide/ui-strings/dotnet) · [ResourceManager](/ko/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

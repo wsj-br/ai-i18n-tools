@@ -19,11 +19,11 @@ Les guides pas à pas indiquent quelles modifications de source vous incombent. 
 
 Chaque guide pas à pas suit le même ordre. La page que vous choisissez fournit les détails.
 
-1. Installez la CLI et définissez la clé API de votre fournisseur. Ollama n'a pas besoin de clé. [Installation](/fr/guide/installation) et [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
+1. Installez la CLI et configurez la clé API de votre fournisseur. Ollama n'a pas besoin de clé. [Installation](/fr/guide/installation) et [Fournisseur et clé API](/fr/guide/quick-start#provider-and-api-key).
 2. Exécutez `init` avec le modèle nommé sur cette page. Ceci écrit `ai-i18n-tools.config.json`.
-3. Préparez le projet afin que l'outil puisse voir le texte. Utilisez l'invite de l'agent de cette page, ou les étapes manuelles sur la même page.
-4. Exécutez `ai-i18n-tools sync`, puis `ai-i18n-tools status`.
-5. Chargez la sortie, vérifiez une langue cible et réexécutez `sync` lorsque la source change. Le cache n'envoie au modèle que le texte nouveau ou modifié.
+3. Préparez le projet afin que l'outil puisse voir le texte. Utilisez l'invite d'agent de cette page, ou les étapes manuelles sur la même page.
+4. Passez en revue ou créez le glossaire utilisateur, puis exécutez `ai-i18n-tools sync` et `ai-i18n-tools status`. Un extrait propre ne prouve pas que chaque phrase visible est encapsulée.
+5. Chargez la sortie, vérifiez une langue cible, et réexécutez `sync` lorsque la source change. Le cache n'envoie que le texte nouveau ou modifié au modèle. Une exécution normale laisse les lignes `user-edited` intactes. `--force` les traduit à nouveau.
 
 <a id="pages-in-this-section"></a>
 ## Pages de cette section
@@ -32,6 +32,8 @@ Chaque guide pas à pas suit le même ordre. La page que vous choisissez fournit
 | --- | --- | --- |
 | Une application JS/TS (React, Next.js, Node, CLI) dont les boutons et messages sont encore en texte brut | [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js) | Installez i18next, ajoutez le bootstrap, enveloppez les littéraux dans `t()`, et ajoutez un sélecteur de langue, puis `extract` et `translate-ui` |
 | Une application Python (Streamlit, FastAPI, Flask, bureau, scripts) | [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) | Placez l'aide `i18n.py`, enveloppez `t()` ou `_()`, ajoutez un sélecteur de langue. La CLI peut s'exécuter à partir d'un exécutable autonome sans installation de Node.js |
+| Une application .NET (Avalonia, WPF, MAUI, ASP.NET, Blazor, console) | [Ajouter l'i18n à une application .NET](/fr/guide/add-i18n-to-dotnet) | Placer `I18n.cs`. Encapsuler `T()`, ou exécuter `migrate-dotnet-i18n`. Intégrer `locales/*.json`, et ajouter un sélecteur de langue |
+| Une application .NET qui utilise déjà `ResourceManager` ou `IStringLocalizer` | [Ajouter l'i18n à une application .NET ResourceManager](/fr/guide/add-i18n-to-dotnet-resourcemanager) | Conservez ce chargeur. Placez `I18nResx.cs` et écrivez les satellites `.resx` à partir du même catalogue `T()` |
 | Une application Django, Flask avec des catalogues Flask-Babel, ou toute application utilisant déjà GNU gettext | [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext) | Conservez vos fichiers `gettext`, `{% blocktranslate %}` et `.po`. L'outil remplit et compile les catalogues |
 | Un site de documentation ou de marketing (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, HTML simple) | [Ajouter l'i18n à un site web ou de documentation](/fr/guide/add-i18n-to-website) | Activez l'i18n du framework avec l'invite de l'agent de la page, puis `sync` pour traduire les pages et les étiquettes de thème |
 | Un README de dépôt et d'autres fichiers Markdown, généralement à côté d'une application | [Ajouter l'i18n à votre README et à vos documents Markdown](/fr/guide/add-i18n-to-readme) | Un fichier par langue (`translated-docs/README.de.md`) et une ligne de langue dans le README. `init --with-readme` ajoute ce bloc à n'importe quel modèle |

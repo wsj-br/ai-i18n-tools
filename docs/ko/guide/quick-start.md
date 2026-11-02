@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # 빠른 시작
 
-이 페이지는 단일 언어 프로젝트가 첫 번역 파일을 생성하도록 안내합니다. JS/TS 앱, Python 앱, 웹사이트 또는 문서 사이트, 또는 리포지토리 README 및 기타 Markdown 파일에 적용됩니다. 다음을 가정합니다:
+이 페이지는 단일 언어 프로젝트가 첫 번역 파일을 생성하도록 안내합니다. 이 페이지는 JS/TS 앱, Python 앱, .NET 앱, 웹사이트 또는 문서 사이트, 또는 저장소 README 및 기타 Markdown 파일에 해당합니다. 다음을 가정합니다:
 
 - Python 프로젝트의 경우 Node.js `>=22.16.0` 또는 [독립 실행 파일](/ko/guide/installation#standalone-executables).
 - LLM 공급자의 API 키 또는 로컬 Ollama 설치.
@@ -75,6 +75,16 @@ ai-i18n-tools suggest-models --apply
 
 Django 앱, Flask-Babel 카탈로그를 사용하는 Flask, 또는 이미 `gettext`를 호출하는 앱은 해당 호출을 유지합니다. 대신 `ui-python-django`, `ui-python-flask`, 또는 `ui-python-gettext`로 스캐폴딩한 다음 [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)를 따르세요.
 
+<a id="a-dotnet-app"></a>
+### .NET 앱
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+그런 다음 [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet)를 따르세요. 이미 `ResourceManager` 또는 `IStringLocalizer`을(를) 사용하는 앱은 대신 `ui-dotnet-resx`을(를) 사용한 다음 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager)를 따릅니다. `migrate-dotnet-i18n`은(는) `T($"…")`을(를) 번호가 매겨진 `{0}` 호출로 다시 작성합니다. `--wrap`은(는) 표시되지 않은 XAML 및 C# 레이블을 감사합니다. 보고서는 `Resources.LoginButton`과(와) 같은 명명된 resx 키를 제안으로 나열하며 해당 줄을 편집하지 않습니다.
+
 <a id="a-website-or-documentation-site"></a>
 ### 웹사이트 또는 문서 사이트
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-그런 다음 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 따르세요. `sync` 앞에 언어 목록 마커를 `README.md`에 붙여넣으세요. 앱 경로가 있는 경우, 경로는 여전히 [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)입니다.
+그런 다음 [README 및 Markdown 문서에 i18n 추가](/ko/guide/add-i18n-to-readme)를 따르세요. 언어 목록 마커를 `sync` 앞에 있는 `README.md`에 붙여넣으세요. 앱 경로가 있는 경우, 여전히 [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js), [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python), 또는 [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet)입니다.
 
 <a id="something-else"></a>
 ### 기타

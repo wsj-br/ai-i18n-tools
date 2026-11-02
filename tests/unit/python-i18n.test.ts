@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   extractPythonUiCalls,
   findPythonI18nCalls,
+  inferPythonPlaceholderName,
   isGeneratedI18nPy,
   lexPython,
 } from "../../src/extractors/python-string-extractor.js";
@@ -87,6 +88,27 @@ describe("python call extractor", () => {
     expect(named.content).toContain('t("Hello, {name}", name=name)');
     const mixed = migratePythonI18nSource('_("Hello, {name}".format(name, extra=1))', FUNCS);
     expect(mixed.reviews.length).toBeGreaterThan(0);
+  });
+
+  it("names a placeholder from the expression and reports a generic fallback", () => {
+    expect(inferPythonPlaceholderName("start.isoformat()")).toBe("start");
+    expect(inferPythonPlaceholderName("obj.attr")).toBe("attr");
+    expect(inferPythonPlaceholderName("len(rows)")).toBe("rows_count");
+    expect(inferPythonPlaceholderName('", ".join(selected)')).toBe("selected");
+    expect(inferPythonPlaceholderName("items[0]")).toBeNull();
+
+    const named = migratePythonI18nSource('_(f"Ready {start.isoformat()}")', FUNCS);
+    expect(named.content).toContain('t("Ready {start}", start=start.isoformat())');
+    expect(named.reviews.some((review) => review.message.includes("{value_"))).toBe(false);
+
+    const generic = migratePythonI18nSource('_(f"Row {items[0]}")', FUNCS);
+    expect(generic.content).toContain("{value_1}");
+    expect(generic.reviews.some((review) => review.message.includes("generic"))).toBe(true);
+
+    const both = migratePythonI18nSource('_(f"{start.isoformat()} and {start}")', FUNCS);
+    expect(both.content).toContain(
+      't("{start_2} and {start}", start_2=start.isoformat(), start=start)'
+    );
   });
 
   it("lexes prefixes, escapes, and keyword flags", () => {

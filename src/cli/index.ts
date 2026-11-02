@@ -38,7 +38,15 @@ import {
   pythonScaffoldOptionsForTemplate,
   renderPythonI18nHelper,
 } from "./python-init-scaffold.js";
+import {
+  discoverDotnetNamespace,
+  dotnetResourceBaseName,
+  localeStampsFor,
+  renderDotnetI18nHelper,
+  renderDotnetResxHelper,
+} from "./dotnet-init-scaffold.js";
 import { documentationFileTrackingKey } from "../core/doc-file-tracking.js";
+import { translationValuePlaceholderMessages } from "../core/ui-placeholder-audit.js";
 import { resolveCacheTrackingKeyToAbs } from "../core/cache-tracking-keys.js";
 import {
   getConfiguredCacheLocales,
@@ -69,6 +77,7 @@ import { runMarkHtml } from "./mark-html.js";
 import { runMigrateIntlayer } from "./migrate-intlayer.js";
 import { runTranslateIntlayer } from "./translate-intlayer.js";
 import { runMigratePythonI18n } from "./migrate-python-i18n.js";
+import { runMigrateDotnetI18n } from "./migrate-dotnet-i18n.js";
 import {
   runTranslate,
   shouldRunJson,
@@ -822,7 +831,7 @@ program
   .option(
     "-t, --template <name>",
     t(
-      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | docs-markdown | ui-python | ui-python-gettext | ui-python-django | ui-python-flask"
+      "ui-markdown | ui-docusaurus | ui-starlight | ui-vitepress | ui-nextra | ui-fumadocs | ui-astro-website | ui-plain-html | ui-json-bundles | docs-plain-html | docs-markdown | ui-python | ui-python-gettext | ui-python-django | ui-python-flask | ui-dotnet | ui-dotnet-resx"
     ),
     "ui-markdown"
   )
@@ -831,6 +840,10 @@ program
     "--with-readme",
     t("Also add a README.md translation block (flat output with a language list)"),
     false
+  )
+  .option(
+    "--namespace <name>",
+    t("C# namespace written into I18n.cs when the template is ui-dotnet")
   )
   .addHelpText(
     "after",
@@ -856,6 +869,7 @@ Built-in presets for -P / --provider (required):
         template: string;
         withTranslateIgnore?: boolean;
         withReadme?: boolean;
+        namespace?: string;
       },
       cmd: Command
     ) => {
@@ -894,12 +908,14 @@ Built-in presets for -P / --provider (required):
         "ui-python-gettext": "uiPythonGettext",
         "ui-python-django": "uiPythonDjango",
         "ui-python-flask": "uiPythonFlask",
+        "ui-dotnet": "uiDotnet",
+        "ui-dotnet-resx": "uiDotnetResx",
       };
       const key = templateMap[tpl];
       if (!key) {
         console.error(
           t(
-            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", "docs-markdown", "ui-json-bundles", "ui-python", "ui-python-gettext", "ui-python-django", or "ui-python-flask".'
+            'Template must be "ui-markdown", "ui-docusaurus", "ui-starlight", "ui-vitepress", "ui-nextra", "ui-fumadocs", "ui-astro-website", "ui-plain-html", "docs-plain-html", "docs-markdown", "ui-json-bundles", "ui-python", "ui-python-gettext", "ui-python-django", "ui-python-flask", "ui-dotnet", or "ui-dotnet-resx".'
           )
         );
         process.exitCode = 1;
@@ -931,6 +947,61 @@ Built-in presets for -P / --provider (required):
       }
       if (key === "uiVitepress") {
         scaffoldVitepressInitFiles(process.cwd());
+      }
+      if (tpl === "ui-dotnet-resx") {
+        const helperPath = path.join(process.cwd(), "I18nResx.cs");
+        if (!fs.existsSync(helperPath)) {
+          const namespace = opts.namespace?.trim() || discoverDotnetNamespace(process.cwd());
+          const raw = initConfigTemplates.uiDotnetResx();
+          const ui = Array.isArray(raw.ui) ? raw.ui[0] : raw.ui;
+          const resx =
+            ui && typeof ui === "object" && "resx" in ui && ui.resx && typeof ui.resx === "object"
+              ? (ui.resx as { outputDir?: string; baseName?: string })
+              : {};
+          fs.writeFileSync(
+            helperPath,
+            renderDotnetResxHelper({
+              namespace,
+              resourceBaseName: dotnetResourceBaseName(
+                namespace,
+                resx.outputDir ?? "Resources",
+                resx.baseName ?? "SharedResource"
+              ),
+            }),
+            "utf8"
+          );
+          console.log(t("Wrote I18nResx.cs"));
+          console.log(
+            t(
+              "The SDK builds satellite assemblies from Resources/SharedResource.<culture>.resx. ResourceBaseName must match the manifest name."
+            )
+          );
+        }
+      }
+      if (tpl === "ui-dotnet") {
+        const helperPath = path.join(process.cwd(), "I18n.cs");
+        if (!fs.existsSync(helperPath)) {
+          const raw = initConfigTemplates.uiDotnet();
+          const sourceLocale = typeof raw.sourceLocale === "string" ? raw.sourceLocale : "en";
+          const targets = Array.isArray(raw.targetLocales)
+            ? raw.targetLocales.filter((item): item is string => typeof item === "string")
+            : [];
+          const namespace = opts.namespace?.trim() || discoverDotnetNamespace(process.cwd());
+          fs.writeFileSync(
+            helperPath,
+            renderDotnetI18nHelper({
+              namespace,
+              sourceLocale,
+              locales: localeStampsFor([sourceLocale, ...targets]),
+            }),
+            "utf8"
+          );
+          console.log(t("Wrote I18n.cs"));
+          console.log(
+            t("Add this item to the .csproj so the locale JSON is embedded in the assembly:")
+          );
+          console.log('<EmbeddedResource Include="locales/*.json" />');
+        }
       }
       if (tpl === "ui-python" || tpl === "ui-python-gettext" || tpl === "ui-python-flask") {
         const helperPath = path.join(process.cwd(), "i18n.py");
@@ -1456,6 +1527,87 @@ program
       process.exitCode = 1;
     }
   });
+
+program
+  .command("migrate-dotnet-i18n")
+  .description(
+    t(
+      "Rewrite unsafe C# interpolation and concatenation inside T() into lookup-before-format calls. Dry run by default. --wrap also marks unmarked XAML and high-confidence C# sinks."
+    )
+  )
+  .option("--write", t("Apply safe rewrites to disk (default: dry run)"), false)
+  .option(
+    "--wrap",
+    t(
+      "Also wrap unmarked XAML attributes and high-confidence C# UI strings. Without --write this is an audit."
+    ),
+    false
+  )
+  .option(
+    "--report <path>",
+    t("Write the manual-review report to this path (default: migrate-dotnet-i18n-report.md)")
+  )
+  .option(
+    "--ui-block <selector>",
+    t(
+      "UI block to scan: zero-based index, description, or strings.json path (default: every block)"
+    )
+  )
+  .action(
+    (
+      opts: { write?: boolean; wrap?: boolean; report?: string; uiBlock?: string },
+      cmd: Command
+    ) => {
+      const { configFlag, cwd, providerOverride } = withConfig(cmd);
+      const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
+      try {
+        const sum = runMigrateDotnetI18n({
+          cwd: projectRoot,
+          config,
+          write: Boolean(opts.write),
+          wrap: Boolean(opts.wrap),
+          reportPath: opts.report,
+          uiBlock: opts.uiBlock,
+        });
+        console.log(
+          chalk.green(
+            sum.written
+              ? t(
+                  "✅ migrate-dotnet-i18n: {{changed}}/{{scanned}} file(s) updated, {{edits}} rewrite(s), {{reviews}} manual-review site(s), {{candidates}} candidate(s) — see {{report}}",
+                  {
+                    changed: sum.filesChanged,
+                    scanned: sum.filesScanned,
+                    edits: sum.edits,
+                    reviews: sum.reviews,
+                    candidates: sum.candidates,
+                    report: sum.reportPath,
+                  }
+                )
+              : t(
+                  "✅ migrate-dotnet-i18n (dry run): {{changed}}/{{scanned}} file(s) would change, {{edits}} rewrite(s), {{reviews}} manual-review site(s), {{candidates}} candidate(s); re-run with --write to apply — see {{report}}",
+                  {
+                    changed: sum.filesChanged,
+                    scanned: sum.filesScanned,
+                    edits: sum.edits,
+                    reviews: sum.reviews,
+                    candidates: sum.candidates,
+                    report: sum.reportPath,
+                  }
+                )
+          )
+        );
+      } catch (e) {
+        console.error(
+          chalk.red(
+            t("❌ [migrate-dotnet-i18n] {{error}}", {
+              error: e instanceof Error ? e.message : String(e),
+            })
+          )
+        );
+        process.exitCode = 1;
+      }
+    }
+  );
 
 function parsePositiveInt(optionLabel: string, value: string): number {
   const n = Number.parseInt(value, 10);
@@ -2876,8 +3028,36 @@ program
           chalk.bold(t("Locale")),
           chalk.bold(t("Translated")),
           chalk.bold(t("Missing")),
+          chalk.bold(t("Placeholder issues")),
           chalk.bold(t("Total")),
         ];
+        const placeholderStyle = block.uiExtractor?.placeholderStyle ?? "default";
+        const placeholderIssueRows = (subset: string[], loc: string): number => {
+          let count = 0;
+          for (const key of subset) {
+            const row = stringsData[key];
+            if (!row || typeof row !== "object") {
+              continue;
+            }
+            const record = row as Record<string, unknown>;
+            const source = typeof record.source === "string" ? record.source : "";
+            const translated = record.translated;
+            if (!translated || typeof translated !== "object" || Array.isArray(translated)) {
+              continue;
+            }
+            const value = (translated as Record<string, unknown>)[loc];
+            const messages = translationValuePlaceholderMessages(
+              source,
+              value,
+              placeholderStyle,
+              record.zeroDigit === true
+            );
+            if (messages.length > 0) {
+              count++;
+            }
+          }
+          return count;
+        };
 
         const printUiSubset = (sectionTitle: string, subsetKeys: string[]) => {
           console.log(chalk.bold(sectionTitle));
@@ -2893,13 +3073,18 @@ program
               uiStringsEntryTranslatedForLocale(stringsData[k], loc)
             ).length;
             const missing = n - translated;
+            const placeholderIssues = placeholderIssueRows(subsetKeys, loc);
             const translatedCell =
               chalk.green(String(translated)) + " " + chalk.gray(`${pct(translated)}%`);
             const missingCell =
               missing > 0
                 ? chalk.yellow(String(missing)) + " " + chalk.gray(`${pct(missing)}%`)
                 : chalk.green(String(missing)) + " " + chalk.gray(`${pct(missing)}%`);
-            uiRows.push([loc, translatedCell, missingCell, String(n)]);
+            const placeholderCell =
+              placeholderIssues > 0
+                ? chalk.yellow(String(placeholderIssues))
+                : chalk.green(String(placeholderIssues));
+            uiRows.push([loc, translatedCell, missingCell, placeholderCell, String(n)]);
           }
 
           const localeColW = Math.max(
@@ -2912,7 +3097,11 @@ program
             ...uiRows.map((r) => visWidth(r[1]!))
           );
           const wMissing = Math.max(visWidth(uiHeaders[2]!), ...uiRows.map((r) => visWidth(r[2]!)));
-          const wTotal = Math.max(visWidth(uiHeaders[3]!), ...uiRows.map((r) => visWidth(r[3]!)));
+          const wPlaceholders = Math.max(
+            visWidth(uiHeaders[3]!),
+            ...uiRows.map((r) => visWidth(r[3]!))
+          );
+          const wTotal = Math.max(visWidth(uiHeaders[4]!), ...uiRows.map((r) => visWidth(r[4]!)));
           const uiSep = (cols: string[]) => cols.join(" | ");
 
           console.log(
@@ -2920,7 +3109,8 @@ program
               padVis(uiHeaders[0]!, localeColW),
               padVis(uiHeaders[1]!, wTranslated),
               padVis(uiHeaders[2]!, wMissing),
-              padVis(uiHeaders[3]!, wTotal),
+              padVis(uiHeaders[3]!, wPlaceholders),
+              padVis(uiHeaders[4]!, wTotal),
             ])
           );
           console.log(
@@ -2928,6 +3118,7 @@ program
               chalk.bold("-".repeat(localeColW)),
               chalk.bold("-".repeat(wTranslated)),
               chalk.bold("-".repeat(wMissing)),
+              chalk.bold("-".repeat(wPlaceholders)),
               chalk.bold("-".repeat(wTotal)),
             ])
           );
@@ -2937,7 +3128,8 @@ program
                 padVis(r[0]!, localeColW),
                 padVis(r[1]!, wTranslated),
                 padVis(r[2]!, wMissing),
-                padVis(r[3]!, wTotal),
+                padVis(r[3]!, wPlaceholders),
+                padVis(r[4]!, wTotal),
               ])
             );
           }
@@ -3782,13 +3974,19 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
       label: formatUiBlockLabel(index, block),
       stringsJsonPath: resolveStringsJsonPath(block, projectRoot),
       sourceRoots: block.sourceRoots,
+      placeholderStyle: block.uiExtractor?.placeholderStyle ?? "default",
     }))
     .filter(
       (item) =>
         item.sourceRoots.some((root) => root.trim().length > 0) ||
         fs.existsSync(item.stringsJsonPath)
     )
-    .map(({ id, label, stringsJsonPath }) => ({ id, label, stringsJsonPath }));
+    .map(({ id, label, stringsJsonPath, placeholderStyle }) => ({
+      id,
+      label,
+      stringsJsonPath,
+      placeholderStyle,
+    }));
   const glossaryPath = config.glossary?.userGlossary
     ? path.join(projectRoot, config.glossary.userGlossary)
     : null;

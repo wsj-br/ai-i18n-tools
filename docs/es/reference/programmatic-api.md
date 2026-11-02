@@ -80,3 +80,23 @@ Formas de llamada, f-strings no seguras y configuración de configuración regio
 | `ngettext(singular, plural, n, **values)` | Búsqueda de plurales y, a continuación, interpolación. `count` está disponible para la cadena de formato. |
 | `pgettext(context, message, **values)` | Búsqueda de contexto (`msgctxt`, o `context` + U+0004 + la cadena del idioma de origen en JSON plano), luego interpolar. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Cuadro de selección de Streamlit. Escribe `st.session_state.locale` y `st.query_params["lang"]`, llama a `set_locale` y devuelve el código elegido. |
+
+<a id="dotnet-runtime-i18ncs"></a>
+## runtime de .NET (`I18n.cs`)
+
+`init -t ui-dotnet` copia `assets/dotnet/I18n.cs` en el proyecto cuando falta `I18n.cs`. Es un asistente sin dependencias para .NET 6 o posterior. Los miembros siguientes están separados de las exportaciones de Node en la tabla anterior. Formas de llamada y marcado XAML: [Aplicaciones .NET](/es/guide/ui-strings/dotnet).
+
+| Miembro | Comportamiento |
+| --- | --- |
+| `SetLocale(locale)` | Carga el JSON plano de esa configuración regional, recorriendo `CultureInfo.Parent` cuando falta el archivo exacto. Genera `LocaleChanged`. |
+| `T(source, args)` | Busca el literal recortado, formatea con `string.Format` y restaura los espacios en blanco iniciales y finales del origen. |
+| `Tn(singular, plural, count, args)` | Búsqueda de plurales. `{0}` es el recuento. La clave del catálogo es el MD5-8 del singular recortado más `_` y la forma CLDR. |
+| `Tp(context, source, args)` | Busca contexto + U+0004 + origen, y luego formatea. |
+| `N(source)` | Devuelve `source`. Extraído para que las etiquetas estáticas puedan catalogarse. |
+| `Loc[source]` | Indizador que llama a `T`. `Loc` es un campo estático de tipo `StringSourceLocalizer`. |
+| `Configure(options)` | Establece la configuración regional de origen, el modo estricto de clave faltante, un cargador de directorio o de flujo, y la lista de idiomas. |
+| `SupportedLocales` | Configuraciones regionales marcadas por `init`, con nombres nativos e ingleses. |
+| `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
+| `PluralForm(locale, n)` | Nombre de la forma CLDR de las mismas reglas GNU que los archivos `.po`. |
+
+`init -t ui-dotnet-resx` copia `I18nResx.cs` en su lugar. `T`, `Tn` y `Tp` llaman a `ResourceManager` con las mismas claves de cadena de origen. `SetLocale` establece `CurrentUICulture` y `CurrentCulture`. Detalles: [Agregar i18n a una aplicación ResourceManager de .NET](/es/guide/add-i18n-to-dotnet-resourcemanager).

@@ -124,7 +124,7 @@ install or initialise anything yourself.
 
 ## Part 1 — Config
 
-1. If init wrote an `i18n.py`, delete it. A gettext app does not use it. If the
+1. If this init just wrote an unused `i18n.py`, delete that new file. Do not delete an `i18n.py` the app already had. A gettext app does not use the generated helper. If the
    project uses the `ui-python-gettext` template, set `"flatOutput": false` in
    the `ui` block.
 2. Make the config match the project. `ui.gettext.outputDir`, `potPath`, and
@@ -140,7 +140,12 @@ install or initialise anything yourself.
 
 Keep the gettext calls the project already uses, and wrap what is missing. The
 literal is the source-language message. With the source language active, the
-app must behave exactly as before.
+app must behave exactly as before. Also cover shown validation text, returned
+labels, and captions. Keep stored values in the source language. A clean
+extract is not coverage. Use the framework's language override for text sent
+to a model. Do not activate a process-global translation around asynchronous
+work. One target-locale test must show a message change while a stored value
+stays.
 
 - Python: `gettext`, `ngettext`, `pgettext`. Placeholders are `%(name)s`,
   filled after the lookup: `_("Hello, %(name)s!") % {"name": name}`. Strings that
@@ -475,6 +480,8 @@ C'est la dernière étape manuelle. Continuez à [Choisir les modèles et tradui
 | --- | --- |
 | Une application Streamlit, FastAPI, Flask, de bureau ou script sans gettext | [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) |
 | Une application JS/TS | [Ajouter l'i18n à une application JS/TS](/fr/guide/add-i18n-to-js) |
+| Une application .NET | [Ajouter l'i18n à une application .NET](/fr/guide/add-i18n-to-dotnet) |
+| `ResourceManager` ou ASP.NET `IStringLocalizer` | [Ajouter l'i18n à une application .NET ResourceManager](/fr/guide/add-i18n-to-dotnet-resourcemanager) |
 | Un site web ou un site de documentation | [Ajouter l'i18n à un site web ou un site de documentation](/fr/guide/add-i18n-to-website) |
 | Un fichier README de dépôt ou d'autres fichiers Markdown | [Ajouter l'i18n à vos documents README et Markdown](/fr/guide/add-i18n-to-readme) |
 

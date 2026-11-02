@@ -2,10 +2,7 @@
 layout: home
 title: ai-i18n-tools
 pageClass: home-onboarding
-description: >-
-  ガイド付きセットアップ、AI
-  翻訳、キャッシュの再利用で、単一言語のアプリ、ウェブサイト、リポジトリのドキュメントを多言語化しましょう。JavaScript、TypeScript、Python、または
-  README から始められます。
+description: 単一言語のアプリ、ウェブサイト、またはリポジトリのドキュメントを、ガイド付きセットアップ、AI翻訳、キャッシュされた再実行で多言語化しましょう。JavaScript、TypeScript、Python、.NET、またはREADMEから始められます。
 hero:
   name: ai-i18n-tools
   text: 単一言語のプロジェクトを多言語化。
@@ -70,6 +67,22 @@ React · Next.js · Node.js · CLI
 Streamlit · FastAPI · Flask · Django · CLI
 
 [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python) · [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NETアプリ
+
+C#およびXAMLのテキストをラップし、埋め込みJSONから翻訳をロードするか、`ResourceManager`を保持して`.resx`サテライトを作成します。ドライランコマンドは、補間を`T()`呼び出しに変換し、変換するための`Resources.LoginButton`のような名前付きリソースキーをリストします。
+
+Avalonia ・ WPF ・ MAUI ・ ASP.NET ・ Blazor
+
+[.NETアプリにi18nを追加](/ja/guide/add-i18n-to-dotnet) ・ [.NET ResourceManagerアプリにi18nを追加](/ja/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -290,7 +303,7 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 </article>
 </div>
 
-プレーンなHTML、他のフレームワーク、既存のi18nワークフローを含む、[実行可能なすべての例](/ja/examples)をご覧ください。
+[すべての実行可能な例を参照](/ja/examples)。これには、.NETヘルパー、プレーンHTML、その他のフレームワーク、および既存のi18nワークフローが含まれます。
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## 既存の i18n を活用
@@ -309,7 +322,7 @@ Streamlitアプリが、アプリにJavaScriptランタイムを追加するこ�
 
 プロジェクトに既にある `t()` と gettext の呼び出しはそのままにしてください。
 
-[JS/TS UI 文字列](/ja/guide/ui-strings/)・[Python と gettext](/ja/guide/ui-strings/python)
+[JS/TS UI文字列](/ja/guide/ui-strings/) ・ [Pythonとgettext](/ja/guide/ui-strings/python) ・ [.NET](/ja/guide/ui-strings/dotnet) ・ [ResourceManager](/ja/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

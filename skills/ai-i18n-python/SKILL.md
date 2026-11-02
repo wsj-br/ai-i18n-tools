@@ -14,7 +14,8 @@ This command is for an app with no gettext today. When Django, Flask-Babel, or a
 
 - New config: `ai-i18n-tools init -t ui-python -P <provider>`. Do not rerun `init` over an existing config.
 - The template writes `i18n.py` and flat JSON catalogs. Keep the helper and its catalogs in the same directory, and ship both in package data.
-- Call `t("Welcome, {name}!", name=user_name)` with a literal message. Format after lookup. Do not use `t(f"…")` or `t(variable)`.
+- Call `t("Welcome, {name}!", name=user_name)` with a literal message. Format after lookup. Do not use `t(f"…")` or `t(variable)`. Name placeholders for the translator. Do not emit `{value}` or `{value_2}`.
+- Wrap text a person reads beyond widgets: raised errors, returned labels, progress and status text, and `format_func` entries. A clean `migrate-python-i18n` report is not coverage.
 - Set the locale for each request, thread, or Streamlit run, and reset it in `finally`.
 
 ## Verify

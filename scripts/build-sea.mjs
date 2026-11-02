@@ -111,6 +111,8 @@ await esbuild.build({
 
 const assets = {
   "data/ui-languages-complete.json": "data/ui-languages-complete.json",
+  "assets/dotnet/I18n.cs": "assets/dotnet/I18n.cs",
+  "assets/dotnet/I18nResx.cs": "assets/dotnet/I18nResx.cs",
 };
 addTree(assets, "i18n/locales", path.join(root, "src", "i18n", "locales"));
 addTree(assets, "dashboard-app", path.join(root, "src", "dashboard-app"));

@@ -16,6 +16,15 @@ import {
   type UiStringLocation,
 } from "../extractors/ui-string-locations.js";
 import { extractTemplateI18nCalls } from "../extractors/template-i18n-extractor.js";
+import { ingestResxTranslations, parseResx, resxLocaleFromFileName } from "../core/resx-codec.js";
+import {
+  findResxNamedKeyUsages,
+  legacyNamedResxKeys,
+  renderNamedKeySection,
+  upsertNamedKeySection,
+  type ResxNamedKeySuggestion,
+} from "../extractors/resx-named-key-usages.js";
+import { isGeneratedI18nCs } from "../extractors/csharp-string-extractor.js";
 import { isGeneratedI18nPy } from "../extractors/python-string-extractor.js";
 import { readPyprojectDescription } from "../extractors/pyproject-toml.js";
 import {
@@ -35,7 +44,7 @@ import {
   selectUiBlocks,
   toUiTranslateConfig,
 } from "../core/ui-blocks.js";
-import { collectFilesByExtension } from "./file-utils.js";
+import { collectFilesByExtension, isExcludedRelPath } from "./file-utils.js";
 import {
   filterGeneratedHtmlOutputs,
   htmlOutputLocales,
@@ -132,7 +141,10 @@ function runExtractBlock(
   const uiExtractor = getUiExtractorConfig(config.ui);
   const rx = new UIStringExtractor(uiExtractor, { cwd });
   const list = uiExtractor?.extensions ?? [".js", ".jsx", ".ts", ".tsx"];
-  const files = collectFilesByExtension(config.ui.sourceRoots, list, cwd);
+  const exclude = uiExtractor?.exclude ?? [];
+  const files = collectFilesByExtension(config.ui.sourceRoots, list, cwd).filter(
+    (rel) => !isExcludedRelPath(rel, exclude)
+  );
   const packageJsonPath = path.resolve(cwd, uiExtractor?.packageJsonPath ?? "package.json");
   const funcNames = defaultFuncNamesFromConfig(uiExtractor);
 
@@ -166,15 +178,7 @@ function runExtractBlock(
     if (htmlExtensions.has(path.extname(rel).toLowerCase())) {
       return false;
     }
-    const base = rel.split("/").pop();
-    if (base !== "i18n.py") {
-      return true;
-    }
-    try {
-      return !isGeneratedI18nPy(fs.readFileSync(path.join(cwd, rel), "utf8"));
-    } catch {
-      return true;
-    }
+    return !isGeneratedHelper(path.join(cwd, rel));
   });
   const htmlMarkers = uiExtractor?.htmlI18nAttributes ?? [...HTML_I18N_MARKERS];
 
@@ -185,12 +189,46 @@ function runExtractBlock(
     const calls = extractUiCallsFromFileContent(content, rel, funcNames);
     for (const call of calls) {
       if (call.unsafe) {
+        const dotnet = isDotnetSource(rel);
+        console.warn(
+          chalk.yellow(
+            dotnet
+              ? t(
+                  "⚠️  {{file}}:{{line}} pre-evaluated translation {{value}} cannot be looked up. Pass a string literal to T() and format after lookup.",
+                  { file: rel, line: call.line, value: JSON.stringify(call.literal) }
+                )
+              : t(
+                  "⚠️  {{file}}:{{line}} pre-evaluated translation {{value}} cannot be looked up. Run migrate-python-i18n.",
+                  { file: rel, line: call.line, value: JSON.stringify(call.literal) }
+                )
+          )
+        );
+      }
+      if (call.nonLiteral) {
         console.warn(
           chalk.yellow(
             t(
-              "⚠️  {{file}}:{{line}} pre-evaluated translation {{value}} cannot be looked up. Run migrate-python-i18n.",
+              "⚠️  {{file}}:{{line}} {{value}} is not a string literal. Define the text with N() and pass that value to T() where it is shown.",
               { file: rel, line: call.line, value: JSON.stringify(call.literal) }
             )
+          )
+        );
+      }
+      if (call.edgeWhitespace) {
+        console.warn(
+          chalk.yellow(
+            t(
+              "⚠️  {{file}}:{{line}} {{value}} has leading or trailing whitespace. The helper reapplies it. Prefer keeping the separator inside the format string.",
+              { file: rel, line: call.line, value: JSON.stringify(call.literal) }
+            )
+          )
+        );
+      }
+      if (call.namedPlaceholders) {
+        validationErrors.push(
+          t(
+            "[extract] {{file}}:{{line}} {{value}} uses a named format item. .NET composite format needs {0}, {1}, and so on.",
+            { file: rel, line: call.line, value: JSON.stringify(call.literal) }
           )
         );
       }
@@ -444,6 +482,92 @@ function runExtractBlock(
       }
     }
   }
+  if (config.ui.resx?.ingestExistingResx !== false && config.ui.resx) {
+    const resx = config.ui.resx;
+    const dir = path.resolve(cwd, resx.outputDir);
+    const neutralPath = resx.neutralFile
+      ? path.resolve(cwd, resx.neutralFile)
+      : path.join(dir, `${resx.baseName}.resx`);
+    let neutralEntries: ReturnType<typeof parseResx> = [];
+    if (fs.existsSync(neutralPath)) {
+      try {
+        neutralEntries = parseResx(fs.readFileSync(neutralPath, "utf8"));
+      } catch {
+        neutralEntries = [];
+      }
+      for (const row of ingestResxTranslations(
+        fs.readFileSync(neutralPath, "utf8"),
+        config.sourceLocale,
+        { neutral: neutralEntries }
+      )) {
+        if (!byHash.has(row.hash)) {
+          byHash.set(row.hash, {
+            source: row.source,
+            ...(row.plural ? { plurals: true } : {}),
+            ...(row.pluralSource ? { pluralSource: row.pluralSource } : {}),
+            ...(row.context ? { context: row.context } : {}),
+          });
+          found++;
+        }
+      }
+    }
+    if (fs.existsSync(dir)) {
+      for (const name of fs.readdirSync(dir)) {
+        const locale = resxLocaleFromFileName(resx.baseName, name);
+        if (!locale) {
+          continue;
+        }
+        let text: string;
+        try {
+          text = fs.readFileSync(path.join(dir, name), "utf8");
+        } catch {
+          continue;
+        }
+        for (const row of ingestResxTranslations(text, locale, { neutral: neutralEntries })) {
+          if (!byHash.has(row.hash)) {
+            byHash.set(row.hash, {
+              source: row.source,
+              ...(row.plural ? { plurals: true } : {}),
+              ...(row.pluralSource ? { pluralSource: row.pluralSource } : {}),
+              ...(row.context ? { context: row.context } : {}),
+            });
+            found++;
+          }
+          const list = ingested.get(row.hash) ?? [];
+          list.push({ locale: row.locale, translation: row.translation, plural: row.plural });
+          ingested.set(row.hash, list);
+        }
+      }
+    }
+    const namedKeys = legacyNamedResxKeys(neutralEntries);
+    if (namedKeys.size > 0) {
+      const suggestions: ResxNamedKeySuggestion[] = [];
+      for (const rel of codeFiles) {
+        if (!isDotnetSource(rel)) {
+          continue;
+        }
+        suggestions.push(
+          ...findResxNamedKeyUsages(fs.readFileSync(path.join(cwd, rel), "utf8"), rel, namedKeys)
+        );
+      }
+      if (suggestions.length > 0) {
+        const reportPath = path.resolve(cwd, "migrate-dotnet-i18n-report.md");
+        const existing = fs.existsSync(reportPath)
+          ? fs.readFileSync(reportPath, "utf8")
+          : "# migrate-dotnet-i18n\n\nNamed resx keys were found during extract. The list below is a suggestion; those lines were not edited.\n";
+        writeAtomicUtf8(
+          reportPath,
+          upsertNamedKeySection(existing, renderNamedKeySection(suggestions))
+        );
+        console.log(
+          t("Named resx keys: {{count}} suggestion(s) in {{path}}", {
+            count: suggestions.length,
+            path: reportPath,
+          })
+        );
+      }
+    }
+  }
 
   let added = 0;
   let updated = 0;
@@ -572,4 +696,25 @@ function runExtractBlock(
   }
 
   return { found, added, updated, outPath, uiLanguagesOutPath };
+}
+
+function isDotnetSource(rel: string): boolean {
+  const ext = path.extname(rel).toLowerCase();
+  return (
+    ext === ".cs" || ext === ".razor" || ext === ".cshtml" || ext === ".xaml" || ext === ".axaml"
+  );
+}
+
+function isGeneratedHelper(abs: string): boolean {
+  let head: string;
+  try {
+    const fd = fs.openSync(abs, "r");
+    const buf = Buffer.alloc(500);
+    const n = fs.readSync(fd, buf, 0, 500, 0);
+    fs.closeSync(fd);
+    head = buf.toString("utf8", 0, n);
+  } catch {
+    return false;
+  }
+  return isGeneratedI18nPy(head) || isGeneratedI18nCs(head);
 }

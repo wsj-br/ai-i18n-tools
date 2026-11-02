@@ -81,6 +81,8 @@ Translate UI strings only (`strings.json` → locale JSON). Requires `features.t
 
 `-l` / `--locale`: comma-separated target locales (default: config `targetLocales` minus `sourceLocale`). `--force`: re-translate all entries per locale (ignore existing translations). `--dry-run`: no writes, no API calls. `-j` parallelises **locales**; within each locale, config `uiBatchConcurrency` (default **2**) parallelises LLM batches (chunks of 50 strings, then plural groups). There is no CLI flag for `uiBatchConcurrency`.
 
+A stored translation whose placeholders do not match its source is translated again. The check covers a renamed name (`{schedule}` becoming `{cronograma}`), a dropped or invented token, and a format-spec change (`{price:,.2f}` becoming `{price}`). The count is printed before the batch, including on `--dry-run`. A row whose model is `user-edited` is left in place and only warned about. A string that is only placeholders and punctuation, such as `{state} · {title}`, is copied and not sent to a model. A batch that renames a placeholder is rejected and the next model in the chain is tried with that error appended. The dashboard flags the same rows and asks before saving a translation that breaks a placeholder.
+
 ---
 
 <a id="sync-ui"></a>

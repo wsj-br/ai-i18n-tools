@@ -3,9 +3,9 @@ layout: home
 title: एआई-आई18एन-टूल्स
 pageClass: home-onboarding
 description: >-
-  अपने एकल-भाषा ऐप, वेबसाइट या रिपॉजिटरी डॉक्स को निर्देशित सेटअप, AI अनुवाद और
-  कैश्ड रीरन के साथ बहुभाषी बनाएं। JavaScript, TypeScript, Python या README से
-  शुरू करें।
+  अपने एकल-भाषा ऐप, वेबसाइट या रिपॉजिटरी डॉक्स को निर्देशित सेटअप, एआई अनुवाद और
+  कैश्ड रीरन्स के साथ बहुभाषी बनाएं। JavaScript, TypeScript, Python, .NET, या
+  README से शुरू करें।
 hero:
   name: एआई-आई18एन-टूल्स
   text: अपने एकल-भाषा प्रोजेक्ट को बहुभाषी बनाएं।
@@ -71,6 +71,22 @@ React · Next.js · Node.js · CLI
 Streamlit · FastAPI · Flask · Django · CLI
 
 [एक Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) · [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NET ऐप
+
+C# और XAML टेक्स्ट को रैप करें और एम्बेडेड JSON से अनुवाद लोड करें, या `ResourceManager` रखें और `.resx` सैटेलाइट लिखें। एक ड्राई-रन कमांड इंटरपोलेशन को `T()` कॉल्स में बदल देता है और आपके बदलने के लिए `Resources.LoginButton` जैसी नामित संसाधन कुंजियों को सूचीबद्ध करता है।
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[.NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) · [.NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -291,7 +307,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 </article>
 </div>
 
-[सभी चलाने योग्य उदाहरण ब्राउज़ करें](/hi/examples), जिसमें सादा HTML, अन्य फ़्रेमवर्क और मौजूदा i18n वर्कफ़्लो शामिल हैं।
+[सभी चलाने योग्य उदाहरण ब्राउज़ करें](/hi/examples), जिसमें .NET हेल्पर, प्लेन HTML, अन्य फ्रेमवर्क और मौजूदा i18n वर्कफ़्लो शामिल हैं।
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## पहले से i18n है? जो काम करता है उसे बनाए रखें.
@@ -310,7 +326,7 @@ OpenAI, Anthropic, OpenRouter, Gemini, लोकल Ollama, या नौ अन
 
 प्रोजेक्ट में पहले से मौजूद `t()` और gettext कॉल को बनाए रखें।
 
-[JS/TS UI स्ट्रिंग्स](/hi/guide/ui-strings/) · [Python और gettext](/hi/guide/ui-strings/python)
+[JS/TS UI स्ट्रिंग्स](/hi/guide/ui-strings/) · [Python और gettext](/hi/guide/ui-strings/python) · [.NET](/hi/guide/ui-strings/dotnet) · [ResourceManager](/hi/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

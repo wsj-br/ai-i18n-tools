@@ -81,18 +81,19 @@ Gettext 檔案使用 `msgctxt` 作為內容，並使用 `msgid` / `msgid_plural`
 - 輔助程式會將每個載入的 JSON 檔案保留在記憶體中，直到程序結束，包括在首次查詢時檔案遺失時的空映射。在 `translate-ui` 之後重新啟動應用程式。
 - 在該次執行的第一個 `t()` 之前呼叫 `set_locale`。`?lang=` 在應用程式讀取並呼叫 `set_locale` 之前不會執行任何操作。
 - `t()` 在匯入時執行一次，並保留來源語言，直到該模組再次匯入。在建置小工具時呼叫 `t()`。
-- 預留位置為 `{name}`、`{name:.2%}`、`{name:,.2f}` 和 `{name!r}`。諸如 `{row.rate}` 之類的點狀欄位會被拒絕。傳遞 `rate=row.rate`。
-- 緊接在 printf 類型字母 (`%d`、`%a`、`%s` 等) 後面的文字百分比符號會被視為舊式格式。使用關鍵字引數時，失敗的 `%` 格式化會傳回範本並跳過 `{name}` 替換。請將文字百分比符號與這些字母分開，如同 `% do CDI` 或 `% a.a.` 等原始文字。
+- 佔位符是 `{when}`、`{counts}`、`{name:.2%}`、`{name:,.2f}` 和 `{name!r}`。為佔位符命名，說明其用途，包括格式規範 (`{when:%Y-%m-%d}`、`{share:.0%}`)。避免使用 `{value}` 和 `{value_2}`。翻譯必須複製每個佔位符名稱和格式規範，不得更改。如果重新命名其中一個，則會跳過格式設定，輔助程式會發出一次警告，並顯示原始句子。`translate-ui` 會拒絕重新命名佔位符的批次，並在稍後執行時，重新翻譯仍有此問題的已儲存列。僅包含佔位符和標點符號的字串，例如 `{state} · {title}`，會被複製，而不會傳送給模型。點狀欄位，例如 `{row.rate}`，會被拒絕。傳遞 `rate=row.rate`。`migrate-python-i18n` 從 `start.isoformat()` 推斷出 `{start}`，從 `obj.attr` 推斷出 `{attr}`，從 `len(rows)` 推斷出 `{rows_count}`，從 `", ".join(selected)` 推斷出 `{selected}`，並報告剩餘的 `{value_1}`。
+- Streamlit 頁面檔案中的 `t()` 會在每次重新執行時，於 `set_locale` 之後執行。在僅匯入一次的模組中，或在匯入時建立的字典中，`t()` 會保留在首次匯入時的語言。將這些呼叫放入在顯示文字時執行的函數中。請勿重新載入模組以追蹤地區設定。
+- 緊接著 printf 類型字母 (`%d`、`%a`、`%s` 等) 的字面百分比符號會被視為舊式格式設定。使用關鍵字引數時，失敗的 `%` 格式設定會傳回範本並跳過 `{name}` 替換。將字面百分比符號與這些字母分開，例如在原始文字中像 `% do CDI` 或 `% a.a.`。
 
 <a id="locale-in-each-framework"></a>
 ## 各框架中的地區設定
 
 `set_locale` 會傳回 `ContextVar` 權杖。請在 `finally` 中重設它，包含 FastAPI 和 Flask 中介軟體，以確保並行請求不會洩漏地區設定。
 
-- <a id="streamlit"></a>**Streamlit.** 在該次執行的第一個 `t()` 之前呼叫 `set_locale`，包括 `st.set_page_config(page_title=…)`。`streamlit_language_selector(sidebar=True, key="lang_selector")` 會寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，並在繪製小工具時呼叫 `set_locale`，因此其上方的翻譯標題會保留該次執行的先前語言。其標籤是固定的英文。需要翻譯標題的頁面應遵循[新增語言切換](/zh-Hant/guide/add-i18n-to-python#step-4-add-a-language-switch)。為每個小工具提供固定的 `key`。請參閱 `examples/python-streamlit`。
-- <a id="fastapi"></a>**FastAPI.** 在中介軟體中讀取 `?lang=` 或 `Accept-Language`，呼叫 `set_locale`，並在 `finally` 中呼叫 `reset_locale`。路由呼叫 `t()` 和 `_()`。請參閱 `examples/python-fastapi`。
-- <a id="flask"></a>**Flask 和 Pyramid.** 從請求設定語言環境，並將 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入範本內容。請參閱 `examples/python-flask`。
-- <a id="gettext"></a>**現有的 gettext.** 保留 `_()`、`gettext()` 和 `ngettext()`。將 `ui.gettext` 指向目前的 `locales/` 樹狀結構，然後執行 `extract` 和 `translate-ui`。請參閱 `examples/python-gettext`。
+- <a id="streamlit"></a>**Streamlit.** 在執行的第一個 `t()` 之前呼叫 `set_locale`，包括 `st.set_page_config(page_title=…)`。保留該令牌，並在頁面腳本返回後呼叫 `reset_locale`，包括在 `st.navigation` 的 `run()` 之後。`streamlit_language_selector(sidebar=True, key="lang_selector")` 會寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，並在小工具繪製時呼叫 `set_locale`，因此其上方的翻譯標題在該次執行中會保持為先前的語言。其標籤是固定的英文。需要翻譯標題的頁面應遵循[新增語言切換](/zh-Hant/guide/add-i18n-to-python#step-4-add-a-language-switch)。為每個小工具指定一個固定的 `key`。請參閱 `examples/python-streamlit` 以了解簡短輔助程式，以及指南範例以了解比對、處理地區設定和 `reset_locale`。
+- <a id="fastapi"></a>**FastAPI.** 在中介軟體中讀取 `?lang=` 或 `Accept-Language`，呼叫 `set_locale`，並在 `finally` 中呼叫 `reset_locale`。路由會呼叫 `t()` 和 `_()`。請參閱 `examples/python-fastapi`。
+- <a id="flask"></a>**Flask 和 Pyramid.** 從請求中設定地區設定，並將 `_`、`t`、`current_locale`、`ui_languages` 和 `direction` 注入到模板上下文中。請參閱 `examples/python-flask`。
+- <a id="gettext"></a>**現有的 gettext.** 保留 `_()`、`gettext()` 和 `ngettext()` 不變。將 `ui.gettext` 指向目前的 `locales/` 樹，然後執行 `extract` 再執行 `translate-ui`。請參閱 `examples/python-gettext`。
 - <a id="django"></a>**Django。** 使用 `gettext`、`ngettext` 和 `{% blocktrans %}`。初始化模板 `ui-python-django` 以符合 Django 的 `locale/` 目錄與 `django` 網域。
 - <a id="tkinter"></a>**Tkinter。** 在建立每個小工具時呼叫 `t()` 或 `_()`，然後在 `set_locale` 之後重建可見文字。
 - <a id="pyqt"></a>**PyQt / PySide。** `self.tr("...")` 會被提取。除非有 `notr="true"`，否則 `.ui` 檔案會提供 `<string>` 元素。`comment` 屬性會成為 gettext 內容。

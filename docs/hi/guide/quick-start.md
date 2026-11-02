@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # त्वरित शुरुआत
 
-यह पृष्ठ एक एकल-भाषा परियोजना को उसकी पहली अनुवादित फ़ाइलों तक पहुँचने में मार्गदर्शन करता है। यह एक JS/TS ऐप, एक Python ऐप, एक वेबसाइट या दस्तावेज़ीकरण साइट, या एक रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए है। यह मानता है कि:
+यह पृष्ठ एक एकल-भाषा परियोजना को उसकी पहली अनुवादित फ़ाइलों तक मार्गदर्शन करता है। यह एक JS/TS ऐप, एक Python ऐप, एक .NET ऐप, एक वेबसाइट या दस्तावेज़ीकरण साइट, या एक रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए है। यह मानता है:
 
 - Node.js `>=22.16.0`, या Python परियोजना के लिए [स्टैंडअलोन निष्पादन योग्य](/hi/guide/installation#standalone-executables)।
 - एक LLM प्रदाता के लिए एक API कुंजी, या एक स्थानीय Ollama इंस्टॉलेशन।
@@ -75,6 +75,16 @@ ai-i18n-tools suggest-models --apply
 
 एक Django ऐप, Flask-Babel कैटलॉग के साथ Flask, या एक ऐप जो पहले से ही `gettext` को कॉल करता है, उन कॉलों को बनाए रखता है। इसके बजाय `ui-python-django`, `ui-python-flask`, या `ui-python-gettext` के साथ स्कैफोल्ड करें, फिर [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) का पालन करें।
 
+<a id="a-dotnet-app"></a>
+### एक .NET ऐप
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+फिर [Add i18n to a .NET app](/hi/guide/add-i18n-to-dotnet) का पालन करें। एक ऐप जो पहले से ही `ResourceManager` या `IStringLocalizer` का उपयोग करता है, वह इसके बजाय `ui-dotnet-resx` का उपयोग करता है, फिर [Add i18n to a .NET ResourceManager app](/hi/guide/add-i18n-to-dotnet-resourcemanager)। `migrate-dotnet-i18n` `T($"…")` को क्रमांकित `{0}` कॉल्स में फिर से लिखता है। `--wrap` अचिह्नित XAML और C# लेबलों का ऑडिट करता है। रिपोर्ट नामित resx कुंजियों, जैसे `Resources.LoginButton`, को सुझावों के रूप में सूचीबद्ध करती है और उन पंक्तियों को संपादित नहीं करती है।
+
 <a id="a-website-or-documentation-site"></a>
 ### एक वेबसाइट या दस्तावेज़ साइट
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-फिर [अपने README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) का पालन करें। भाषा-सूची मार्कर को `sync` से पहले `README.md` में पेस्ट करें। ऐप पाथ, यदि आपके पास एक है, तो वह अभी भी [किसी JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [किसी Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) है।
+फिर [Add i18n to your README and Markdown docs](/hi/guide/add-i18n-to-readme) का पालन करें। भाषा-सूची मार्कर को `sync` से पहले `README.md` में पेस्ट करें। ऐप पाथ, जब आपके पास एक हो, तो वह अभी भी [Add i18n to a JS/TS app](/hi/guide/add-i18n-to-js), [Add i18n to a Python app](/hi/guide/add-i18n-to-python), या [Add i18n to a .NET app](/hi/guide/add-i18n-to-dotnet) है।
 
 <a id="something-else"></a>
 ### कुछ और

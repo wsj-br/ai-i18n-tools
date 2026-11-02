@@ -19,7 +19,7 @@ Extraer (si está habilitado), luego traducción de la IU, luego `translate-svg`
 
 **Sinopsis:** `ai-i18n-tools status [--max-columns <n>]`
 
-Cuando `features.translateUIStrings` está activado, imprime la cobertura de la IU por configuración regional (`Translated` / `Missing` / `Total`). Luego imprime el estado de la traducción de markdown por archivo × configuración regional (sin filtro `--locale`; las configuraciones regionales provienen de la configuración). Cuando `features.translateJson` está activado y `json[]` está configurado, también imprime el estado del paquete JSON por bloque. Las listas de configuraciones regionales grandes se dividen en tablas repetidas de hasta `n` columnas de configuración regional (predeterminado **9**) para que las líneas permanezcan estrechas en el terminal.
+Cuando `features.translateUIStrings` está activado, imprime la cobertura de la interfaz de usuario por configuración regional (`Translated` / `Missing` / `Placeholder issues` / `Total`). `Placeholder issues` cuenta las filas cuya traducción almacenada renombra, elimina, inventa o redirige un marcador de posición. Luego imprime el estado de la traducción de markdown por archivo × configuración regional (sin filtro `--locale`; las configuraciones regionales provienen de la configuración). Cuando `features.translateJson` está activado y `json[]` está configurado, también imprime el estado del paquete JSON por bloque. Las listas grandes de configuraciones regionales se dividen en tablas repetidas de hasta `n` columnas de configuración regional (predeterminado **9**) para que las líneas permanezcan estrechas en la terminal.
 
 **Opciones clave:** `--max-columns`
 

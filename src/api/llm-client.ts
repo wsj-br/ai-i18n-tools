@@ -62,7 +62,15 @@ import {
   type DocumentPromptContentType,
   type ProofreadUISlotResult,
 } from "../core/prompt-builder.js";
-import { assertPluralFormsPlaceholders } from "../core/plural-placeholders.js";
+import {
+  assertPluralFormsPlaceholders,
+  PluralFormsPlaceholderError,
+} from "../core/plural-placeholders.js";
+import {
+  assertUIBatchPlaceholders,
+  UiBatchPlaceholderError,
+  type UiPlaceholderStyle,
+} from "../core/ui-placeholders.js";
 import type { Logger } from "../utils/logger.js";
 import {
   warnTranslationFailureLogPath,
@@ -1102,7 +1110,11 @@ export class LlmClient {
   async translateUIBatch(
     texts: string[],
     targetLocale: string,
-    options?: { startModelIndex?: number; glossaryHints?: string[] }
+    options?: {
+      startModelIndex?: number;
+      glossaryHints?: string[];
+      placeholderStyle?: UiPlaceholderStyle;
+    }
   ): Promise<{
     translations: string[];
     model: string;
@@ -1123,6 +1135,7 @@ export class LlmClient {
       glossaryHints: options?.glossaryHints,
       targetLocale,
       translationContext: this.translationContext || undefined,
+      placeholderStyle: options?.placeholderStyle,
     });
 
     const openRouterMessages = this.toOpenRouterMessages([
@@ -1134,12 +1147,22 @@ export class LlmClient {
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
     let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
+    let placeholderRetryNote = "";
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      const userContentForAttempt = placeholderRetryNote
+        ? `${userContent}\n\n${placeholderRetryNote}`
+        : userContent;
+      const messagesForAttempt = placeholderRetryNote
+        ? this.toOpenRouterMessages([
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContentForAttempt },
+          ])
+        : openRouterMessages;
       let result: ChatResponse;
       try {
-        result = await this.fetchCompletion(model, openRouterMessages);
+        result = await this.fetchCompletion(model, messagesForAttempt);
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
@@ -1147,7 +1170,7 @@ export class LlmClient {
         }
         lastFailureDetails = {
           systemPrompt,
-          userContent,
+          userContent: userContentForAttempt,
           lastModel: model,
           lastError: e,
         };
@@ -1158,7 +1181,7 @@ export class LlmClient {
           modelIndex: mi,
           error: e,
           systemPrompt,
-          userContent,
+          userContent: userContentForAttempt,
           segmentsLabel: "ui-batch",
           loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
         });
@@ -1166,6 +1189,12 @@ export class LlmClient {
       }
       try {
         const translations = parseUIJsonArrayResponse(result.content, texts.length);
+        assertUIBatchPlaceholders(
+          texts,
+          translations,
+          result.content,
+          options?.placeholderStyle ?? "default"
+        );
         for (let i = 0; i < translations.length; i++) {
           this.assertExpectedScript(translations[i]!, targetLocale, texts[i]);
         }
@@ -1183,11 +1212,14 @@ export class LlmClient {
         this.accountDiscarded(discarded, model, result.usage, result.cost);
         lastFailureDetails = {
           systemPrompt,
-          userContent,
+          userContent: userContentForAttempt,
           lastModel: model,
           lastError: e,
           lastRawAssistantContent: result.content,
         };
+        if (e instanceof UiBatchPlaceholderError) {
+          placeholderRetryNote = e.message;
+        }
         this.recordDiscardedAttempt({
           locale: targetLocale,
           relativePath: this.debugFailedRelativePath,
@@ -1195,7 +1227,7 @@ export class LlmClient {
           modelIndex: mi,
           error: e,
           systemPrompt,
-          userContent,
+          userContent: userContentForAttempt,
           rawAssistantContent: result.content,
           segmentsLabel: "ui-batch",
           loggerCheckMessage: `UI batch failed with ${model}: ${e}`,
@@ -1328,6 +1360,7 @@ export class LlmClient {
       /** Original developer literal; when set, placeholder/qty validation runs after parse. */
       originalLiteral?: string;
       zeroDigit?: boolean;
+      placeholderStyle?: UiPlaceholderStyle;
     }
   ): Promise<{
     forms: Record<CldrPluralForm, string>;
@@ -1354,12 +1387,22 @@ export class LlmClient {
     let lastError: unknown;
     const discarded = LlmClient.emptyDiscarded();
     let lastFailureDetails: LlmAllModelsFailedDetails | undefined;
+    let placeholderRetryNote = "";
 
     for (let mi = start; mi < this.modelsToTry.length; mi++) {
       const model = this.modelsToTry[mi]!;
+      const userContentForAttempt = placeholderRetryNote
+        ? `${messages.userContent}\n\n${placeholderRetryNote}`
+        : messages.userContent;
+      const messagesForAttempt = placeholderRetryNote
+        ? this.toOpenRouterMessages([
+            { role: "system", content: messages.systemPrompt },
+            { role: "user", content: userContentForAttempt },
+          ])
+        : openRouterMessages;
       let result: ChatResponse;
       try {
-        result = await this.fetchCompletion(model, openRouterMessages);
+        result = await this.fetchCompletion(model, messagesForAttempt);
       } catch (e) {
         lastError = e;
         if (e instanceof BilledCompletionError) {
@@ -1367,7 +1410,7 @@ export class LlmClient {
         }
         lastFailureDetails = {
           systemPrompt: messages.systemPrompt,
-          userContent: messages.userContent,
+          userContent: userContentForAttempt,
           lastModel: model,
           lastError: e,
         };
@@ -1378,7 +1421,7 @@ export class LlmClient {
           modelIndex: mi,
           error: e,
           systemPrompt: messages.systemPrompt,
-          userContent: messages.userContent,
+          userContent: userContentForAttempt,
           segmentsLabel: "plural-batch",
           loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,
         });
@@ -1390,6 +1433,7 @@ export class LlmClient {
           assertPluralFormsPlaceholders(options.originalLiteral, forms, {
             zeroDigit: options.zeroDigit === true,
             rawResponse: result.content,
+            placeholderStyle: options.placeholderStyle,
           });
         }
         if (options?.targetLocale) {
@@ -1411,11 +1455,14 @@ export class LlmClient {
         this.accountDiscarded(discarded, model, result.usage, result.cost);
         lastFailureDetails = {
           systemPrompt: messages.systemPrompt,
-          userContent: messages.userContent,
+          userContent: userContentForAttempt,
           lastModel: model,
           lastError: e,
           lastRawAssistantContent: result.content,
         };
+        if (e instanceof PluralFormsPlaceholderError) {
+          placeholderRetryNote = `${e.message} Copy every placeholder name and format spec unchanged. Do not translate names inside braces.`;
+        }
         this.recordDiscardedAttempt({
           locale: options?.targetLocale ?? "unknown",
           relativePath: this.debugFailedRelativePath,
@@ -1423,7 +1470,7 @@ export class LlmClient {
           modelIndex: mi,
           error: e,
           systemPrompt: messages.systemPrompt,
-          userContent: messages.userContent,
+          userContent: userContentForAttempt,
           rawAssistantContent: result.content,
           segmentsLabel: "plural-batch",
           loggerCheckMessage: `Plural cardinal batch failed with ${model}: ${e}`,

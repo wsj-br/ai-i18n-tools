@@ -70,6 +70,16 @@ instead of dotted placeholder fields. Literal `%` beside printf letters can
 trigger printf formatting. Never use `_(f"…")`, `_("…" % value)`, or
 `_("…".format(value))`. Dynamic keys such as `t(variable)` are not extracted.
 Translate complete sentences; keep identifiers, stored values, and widget keys stable.
+A rewriter that only visits `st.*` methods is not a wrap. After it, search again
+for f-strings and literals that are raised, returned, or passed to progress and
+status APIs: `ValueError` and `st.error` messages, `st.status` labels, badge and
+table-cell values, and `format_func` entries. Leave logger calls, SQL, widget
+`key=` values, and text sent to a model. Name placeholders for the translator
+(`{when}`, `{counts}`, including `{when:%Y-%m-%d}`). Do not emit `{value}` or
+`{value_2}`. The translation must copy every placeholder name and format spec.
+A renamed placeholder shows the source sentence. Pin `set_locale` to
+`sourceLocale` around text sent to a model when that text is built from `t()`
+labels, and reset it in `finally`.
 
 Flat JSON uses exact source text, not the MD5-8 ids in `strings.json` (tooling
 cache). Context keys are `context + U+0004 + source`; gettext uses `msgctxt`.
@@ -81,6 +91,9 @@ Use Django lazy translations for import-time labels and `format_lazy` when neede
 keep Django/Jinja translation tags and their gettext placeholders. Register extra
 call names in `ui.uiExtractor.funcNames`. `migrate-python-i18n` is diagnostic without
 `--write`; never apply its helper-specific rewrites blindly to native gettext.
+A clean migrate report is not coverage: it cannot see an unwrapped f-string.
+It names placeholders from expressions when it can, and it reports a leftover
+`{value_1}` so that name can be replaced.
 
 ## Isolate each request or run
 

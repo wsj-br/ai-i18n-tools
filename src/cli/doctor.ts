@@ -53,6 +53,7 @@ import {
   resolveBundledUiLanguagesCompletePath,
 } from "../core/ui-languages-catalog.js";
 import { loadTranslationContext } from "../glossary/translation-context.js";
+import { catalogPlaceholderHits } from "../core/ui-placeholder-audit.js";
 import { t } from "../i18n/index.js";
 
 const require = createRequire(import.meta.url);
@@ -629,6 +630,45 @@ function checkPipelines(
         warn,
         section
       );
+      if (fs.existsSync(paths.stringsJson)) {
+        try {
+          const doc = JSON.parse(fs.readFileSync(paths.stringsJson, "utf8")) as Record<
+            string,
+            unknown
+          >;
+          const locales = resolveLocalesForUiBlock(config, block, projectRoot);
+          const hits = catalogPlaceholderHits(
+            doc,
+            locales,
+            block.uiExtractor?.placeholderStyle ?? "default"
+          );
+          if (hits.length === 0) {
+            pass(section, t("ui[{{index}}] catalog placeholders", { index }));
+          } else {
+            const example = hits[0]!;
+            warn(
+              section,
+              t(
+                "ui[{{index}}] catalog has {{count}} translation(s) with a renamed, dropped, or rewritten placeholder. Example ({{locale}}): {{issue}}",
+                {
+                  index,
+                  count: hits.length,
+                  locale: example.locale,
+                  issue: example.messages[0] ?? "",
+                }
+              )
+            );
+          }
+        } catch (e) {
+          warn(
+            section,
+            t("ui[{{index}}] catalog placeholders could not be checked: {{message}}", {
+              index,
+              message: errorMessage(e),
+            })
+          );
+        }
+      }
       reportJsonFile(
         paths.languagesManifest,
         t("ui[{{index}}] ui-languages.json", { index }),
@@ -656,6 +696,27 @@ function checkPipelines(
           fail,
           section
         );
+      }
+      if (block.resx) {
+        reportOutputDir(
+          projectRoot,
+          block.resx.outputDir,
+          t("ui[{{index}}] resx outputDir", { index }),
+          pass,
+          fail,
+          section
+        );
+        for (const locale of effectiveUiTargetLocales(config, block)) {
+          if (!/^[A-Za-z]{2,8}([_-][A-Za-z0-9]{1,8})*$/.test(locale.trim())) {
+            warn(
+              section,
+              t("ui[{{index}}] resx locale {{locale}} is not a .NET culture name", {
+                index,
+                locale,
+              })
+            );
+          }
+        }
       }
       const packageJson =
         block.uiExtractor?.packageJsonPath ?? block.reactExtractor?.packageJsonPath;

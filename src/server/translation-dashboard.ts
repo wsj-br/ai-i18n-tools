@@ -14,6 +14,8 @@ import {
 } from "../core/plural-forms.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { translationScriptIssue } from "../core/locale-utils.js";
+import { translationValuePlaceholderMessages } from "../core/ui-placeholder-audit.js";
+import type { UiPlaceholderStyle } from "../core/ui-placeholders.js";
 import { computeProjectStats } from "../core/project-stats.js";
 import {
   parseUsageDeleteOlderThan,
@@ -187,7 +189,12 @@ export interface TranslationDashboardOptions {
   /** Resolved absolute or cwd-relative path to strings.json. Used when `uiCatalogs` is omitted. */
   stringsJsonPath?: string | null;
   /** UI catalogs shown in the dashboard. The first catalog is the default. */
-  uiCatalogs?: Array<{ id: string; label: string; stringsJsonPath: string }>;
+  uiCatalogs?: Array<{
+    id: string;
+    label: string;
+    stringsJsonPath: string;
+    placeholderStyle?: UiPlaceholderStyle;
+  }>;
   /** Resolved path to glossary-user.csv (workspace C). */
   glossaryUserPath?: string | null;
   /** BCP-47 locale for source / original strings (from config `sourceLocale`). */
@@ -550,7 +557,12 @@ export function createTranslationDashboardApp(
   });
 
   // --- Workspace B: strings.json ---
-  const dashboardCatalogs = (): Array<{ id: string; label: string; stringsJsonPath: string }> => {
+  const dashboardCatalogs = (): Array<{
+    id: string;
+    label: string;
+    stringsJsonPath: string;
+    placeholderStyle?: UiPlaceholderStyle;
+  }> => {
     if (opts.uiCatalogs && opts.uiCatalogs.length > 0) {
       return opts.uiCatalogs;
     }
@@ -577,12 +589,20 @@ export function createTranslationDashboardApp(
     }
     return undefined;
   };
-  const stringsPathFor = (req: { query: { catalog?: unknown }; body?: unknown }): string | null => {
+  const catalogFor = (req: {
+    query: { catalog?: unknown };
+    body?: unknown;
+  }): { path: string | null; placeholderStyle: UiPlaceholderStyle } => {
     const catalogs = dashboardCatalogs();
     const id = catalogIdFrom(req);
     const chosen = id ? catalogs.find((catalog) => catalog.id === id) : catalogs[0];
-    return chosen ? absCatalogPath(chosen.stringsJsonPath) : null;
+    return {
+      path: chosen ? absCatalogPath(chosen.stringsJsonPath) : null,
+      placeholderStyle: chosen?.placeholderStyle ?? "default",
+    };
   };
+  const stringsPathFor = (req: { query: { catalog?: unknown }; body?: unknown }): string | null =>
+    catalogFor(req).path;
 
   app.get("/api/ui-catalogs", (_req, res) => {
     res.json({
@@ -613,7 +633,8 @@ export function createTranslationDashboardApp(
 
   app.get("/api/ui-strings", (req, res) => {
     try {
-      const stringsPath = stringsPathFor(req);
+      const catalog = catalogFor(req);
+      const stringsPath = catalog.path;
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not configured or missing" });
         return;
@@ -624,12 +645,26 @@ export function createTranslationDashboardApp(
       >;
       const entries = Object.entries(doc).map(([id, row]) => {
         const translatedRaw = (row.translated as Record<string, unknown> | undefined) ?? {};
+        const source = String(row.source ?? "");
+        const placeholderIssuesByLocale: Record<string, string[]> = {};
+        for (const [loc, value] of Object.entries(translatedRaw)) {
+          const messages = translationValuePlaceholderMessages(
+            source,
+            value,
+            catalog.placeholderStyle,
+            row.zeroDigit === true
+          );
+          if (messages.length > 0) {
+            placeholderIssuesByLocale[loc] = messages;
+          }
+        }
         const base = {
           id,
-          source: String(row.source ?? ""),
+          source,
           translated: translatedRaw,
           models: (row.models as Record<string, string> | undefined) ?? {},
           locations: (row.locations as Array<{ file: string; line: number }> | undefined) ?? [],
+          placeholderIssuesByLocale,
         };
         if (isPluralStringsEntry(row)) {
           const locKeys = pluralLocaleUnion(translatedRaw, opts.sourceLocale, opts.targetLocales);
@@ -662,7 +697,8 @@ export function createTranslationDashboardApp(
 
   app.patch("/api/ui-strings/:id", (req, res) => {
     try {
-      const stringsPath = stringsPathFor(req);
+      const catalog = catalogFor(req);
+      const stringsPath = catalog.path;
       if (!stringsPath || !fs.existsSync(stringsPath)) {
         res.status(404).json({ error: "strings.json not available" });
         return;
@@ -699,6 +735,27 @@ export function createTranslationDashboardApp(
           ? { ...(prev.models as Record<string, string>) }
           : {};
       if (body.translated !== undefined) {
+        if (bodyRaw.confirm_placeholder_issue !== true) {
+          const source =
+            body.source !== undefined ? String(body.source) : String(prev.source ?? "");
+          for (const [loc, value] of Object.entries(body.translated)) {
+            const messages = translationValuePlaceholderMessages(
+              source,
+              value,
+              catalog.placeholderStyle,
+              prev.zeroDigit === true
+            );
+            if (messages.length > 0) {
+              res.status(409).json({
+                error: messages.join("; "),
+                code: "placeholder_issue",
+                locale: loc,
+                confirmRequired: true,
+              });
+              return;
+            }
+          }
+        }
         for (const loc of Object.keys(body.translated)) {
           nextModels[loc] = USER_EDITED_MODEL;
         }

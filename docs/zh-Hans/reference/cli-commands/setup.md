@@ -40,6 +40,8 @@
 | `ui-python-gettext` | 带有扁平化 JSON 和 GNU `.po` / `.mo` 的 Python UI 字符串，以及 `i18n.py` |
 | `ui-python-django` | Django `gettext` / `{% blocktrans %}` 目录（`flatOutput: false`，域 `django`，无 `i18n.py`） |
 | `ui-python-flask` | `translations/` 下的 Flask / Jinja 目录（`flatOutput: false`）以及 `i18n.py` |
+| `ui-dotnet` | .NET UI 字符串，以源语言字符串为键的扁平 JSON，以及 `I18n.cs` |
+| `ui-dotnet-resx` | 作为 `.resx` 附属程序集 (`flatOutput: false`) 的 .NET UI 字符串，以及 `I18nResx.cs` |
 
 `--with-readme` 会附加一个 `README.md` 文档块（`outputDir` `translated-docs`、`docsOutput.style` `"flat"`、一个 `languageListBlock`），并将 `features.translateDocs` 设置为 true。如果文档块已列出 `README.md`（`ui-markdown` 和 `docs-markdown` 就是这种情况），则它不执行任何操作。它只写入配置。它会打印标记行以粘贴到 `README.md` 中，并在该文件缺失时发出警告。指南：[将 i18n 添加到您的 README 和 Markdown 文档](/zh-Hans/guide/add-i18n-to-readme)。
 
@@ -50,9 +52,11 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` 会创建一个启动器 `.translate-ignore`（包括 Python 虚拟环境和缓存目录）。
 
-`ui-python`、`ui-python-gettext` 和 `ui-python-flask` 也会在文件缺失时写入 `i18n.py`。Django 项目保留了 Django 自身的 gettext 运行时，因此 `ui-python-django` 不会写入 `i18n.py`。
+当文件缺失时，`ui-python`、`ui-python-gettext` 和 `ui-python-flask` 也会写入 `i18n.py`。Django 项目保留 Django 自己的 gettext 运行时，因此 `ui-python-django` 不会写入 `i18n.py`。当文件缺失时，`ui-dotnet` 会写入 `I18n.cs`，并打印要添加到 `.csproj` 的 `EmbeddedResource` 项。`ui-dotnet-resx` 转而写入 `I18nResx.cs`，并将 `ui.resx` 指向 `Resources/SharedResource.<culture>.resx`。`--namespace` 覆盖 C# 命名空间。指南：[.NET 应用程序](/zh-Hans/guide/ui-strings/dotnet) 和 [将 i18n 添加到 .NET ResourceManager 应用程序](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)。
 
-`migrate-python-i18n` 会将不安全的预求值调用（`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`）重写为先查找后格式化的调用。默认执行试运行。传递 `--write` 以编辑文件，并阅读 `migrate-python-i18n-report.md` 以获取审查说明。生成的 `i18n.py` 文件将被跳过。
+`migrate-python-i18n` 重写不安全的预评估调用 (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`)，将其转换为查找前格式化调用。默认情况下是空运行。传递 `--write` 以编辑文件，并阅读 `migrate-python-i18n-report.md` 以获取审阅说明。当复杂表达式稳定时，其名称取自该表达式 (`start.isoformat()` 变为 `{start}`，`len(rows)` 变为 `{rows_count}`)。剩余的 `{value_1}` 会被报告，以便可以对其进行重命名。生成的 `i18n.py` 文件会被跳过。整洁的报告并不意味着未包装的 f-string 已被覆盖。
+
+`migrate-dotnet-i18n` 对 `T()` 中的 `T($"...")`、连接和 `string.Format` 执行相同的操作。`--wrap` 还会标记未标记的 XAML 标签和高置信度 C# 接收器；如果没有 `--write`，则这是一次审计。报告为 `migrate-dotnet-i18n-report.md`。生成的 `I18n.cs` 和 `I18nResx.cs` 将被跳过。指南：[.NET 应用程序](/zh-Hans/guide/ui-strings/dotnet#migrate)。
 
 ---
 
@@ -61,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 **概述:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
 
-检查项目是否已准备好进行翻译。报告涵盖配置语法和架构、业务规则、已安装版本、源路径和输出路径、UI 目录文件、缓存统计信息、已配置的提供商、已设置的受支持环境变量以及模型 ID。
+检查项目是否已准备好进行翻译。该报告涵盖配置语法和架构、业务规则、已安装版本、源路径和输出路径、UI 目录文件、这些目录中的占位符不匹配项、缓存统计信息、已配置的提供程序、已设置的受支持环境变量以及模型 ID。包含已重命名、已删除或已重写占位符的目录会发出警告，并列举一个示例。
 
 默认情况下，`doctor` 还会根据活动提供商的目录检查已配置的模型 ID，并将已安装版本与最新的 GitHub 版本进行比较。`--local` 会跳过这两个网络调用。如果有新版本，或者 GitHub 请求失败，则会发出警告。缺少或过期的模型 ID 会导致命令失败。在任何检查发出警告时，`--strict` 都会以错误退出。
 

@@ -48,6 +48,7 @@ The shared `ai-i18n-tools` skill stays available to the agent. The other skills 
 | --- | --- |
 | `/ai-i18n-js` | JavaScript or TypeScript source-string UI |
 | `/ai-i18n-python` | Generated Python helper and flat JSON catalogs |
+| `/ai-i18n-dotnet` | Generated `I18n.cs` or `I18nResx.cs`, plus `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel, or plain gettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight docs |

@@ -12,7 +12,7 @@ On a machine with Node.js 22.20 or later, from the repository root:
 npx skills add . --list
 ```
 
-The output must include `ai-i18n-tools` and every workflow command (`ai-i18n-js`, `ai-i18n-python`, `ai-i18n-django`, `ai-i18n-vitepress`, `ai-i18n-starlight`, `ai-i18n-docusaurus`, `ai-i18n-nextra`, `ai-i18n-fumadocs`, `ai-i18n-astro-website`, `ai-i18n-plain-html`, `ai-i18n-plain-html-docs`, `ai-i18n-readme`, `ai-i18n-migrate-intlayer`, and `ai-i18n-translate-intlayer`). If one is missing, fix the skill layout before submitting anywhere. Every frontmatter `description` must stay valid YAML. A colon inside that value, left unquoted, makes the skills CLI skip the file. Workflow commands set `disable-model-invocation: true`. The shared skill does not.
+The output must include `ai-i18n-tools` and every workflow command (`ai-i18n-js`, `ai-i18n-python`, `ai-i18n-dotnet`, `ai-i18n-django`, `ai-i18n-vitepress`, `ai-i18n-starlight`, `ai-i18n-docusaurus`, `ai-i18n-nextra`, `ai-i18n-fumadocs`, `ai-i18n-astro-website`, `ai-i18n-plain-html`, `ai-i18n-plain-html-docs`, `ai-i18n-readme`, `ai-i18n-migrate-intlayer`, and `ai-i18n-translate-intlayer`). If one is missing, fix the skill layout before submitting anywhere. Every frontmatter `description` must stay valid YAML. A colon inside that value, left unquoted, makes the skills CLI skip the file. Workflow commands set `disable-model-invocation: true`. The shared skill does not.
 
 `plugin.json` at the repository root, `.claude-plugin/plugin.json`, and the `version` fields in `.claude-plugin/marketplace.json` must match `package.json`. `node scripts/sync-example-ai-i18n-tools-version.mjs` rewrites them. `pnpm version` and `pnpm pre-release` run that script. `--check` exits 1 when a present manifest is stale.
 

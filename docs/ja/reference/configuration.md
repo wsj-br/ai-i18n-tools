@@ -286,26 +286,32 @@
 - `flatOutputDir`
   このブロックのロケールごとの JSON ファイルが書き込まれるディレクトリ（`de.json` など）。
 - `flatOutput`
-  `true` (デフォルト) の場合、`translate-ui` はロケールごとに 1 つのフラットな JSON ファイルを書き込みます。gettext 専用のブロックには `false` を設定します。`flatOutput: false` を持つブロックは `gettext` を設定する必要があります。
+  `true`（デフォルト）の場合、`translate-ui`はロケールごとに1つのフラットなJSONファイルを書き込みます。gettextまたはresxのみを出力するには、`false`を設定します。`flatOutput: false`を含むブロックは、`gettext`または`resx`を設定する必要があります。
+- `resx`
+  オプションの.NET `.resx` 出力。`outputDir`（デフォルトは`Resources`）と`baseName`（デフォルトは`SharedResource`）は、`{baseName}.resx`に加えて`{baseName}.{culture}.resx`を書き込みます。`writeNeutral`（デフォルトはtrue）は、`ResourceManager`がフォールバックできるように、ソーステキストをニュートラルファイルに配置します。`localeFormat`は`bcp47`（デフォルト、`pt-BR`）または`posix`（`pt_BR`）です。`ingestExistingResx`（デフォルトはtrue）は、`extract`中にサテライトを読み取ります。`neutralFile`は、`LoginButton`などのレガシーな名前付きキーをニュートラル値を介してマッピングします。コンテキストキーはU+2404を使用します。複数形は、`{singular}[{form}]`という名前の個別のエントリです。`flatOutput: false`を含むブロックは、`gettext`または`resx`を設定する必要があります。
 - `gettext`
-  このブロックのオプションの GNU gettext 出力です。`outputDir` (デフォルトは `./locales`) は `<locale>/LC_MESSAGES/<domain>.po` を受け取り、`compileMo` が true (デフォルト) の場合は、一致する `.mo` を受け取ります。`domain` のデフォルトは `messages` です。`potPath` はテンプレートカタログです。`ingestExistingPo` (デフォルトは `true`) は、`extract` 中に、あいまい (fuzzy) でない `msgstr` の値から空の `strings.json` スロットを埋めます。空でない翻訳やユーザーが編集した翻訳は置き換えません。`localeFormat` は `posix` (デフォルト、`pt_BR`) または `bcp47` (`pt-BR`) です。コンテキストを持つ行は gettext の `\u0004` 区切り文字を使用します。2 つのコンテキストで同じソース言語の文字列がカタログ ID を共有することはありません。
+  このブロックのオプションのGNU gettext出力。`outputDir`（デフォルトは`./locales`）は`<locale>/LC_MESSAGES/<domain>.po`を受け取り、`compileMo`がtrue（デフォルト）の場合、一致する`.mo`を受け取ります。`domain`のデフォルトは`messages`です。`potPath`はテンプレートカタログです。`ingestExistingPo`（デフォルトは`true`）は、`extract`中に非ファジーな`msgstr`値から空の`strings.json`スロットを埋め、空でない翻訳やユーザーが編集した翻訳を置き換えません。`localeFormat`は`posix`（デフォルト、`pt_BR`）または`bcp47`（`pt-BR`）です。コンテキスト行はgettext `\u0004`区切り文字を使用します。2つのコンテキストで同じソース言語文字列は、カタログIDを共有しません。
 - `targetLocales`
-  このブロックのオプションのロケールリストです。省略または空の場合、ブロックはルートの `targetLocales` を使用します。
+  このブロックのオプションのロケールリスト。省略または空の場合、ブロックはルート`targetLocales`を使用します。
 - `languagesManifestPath`
-  `extract` と `generate-ui-languages` がこのブロックの `ui-languages.json` を書き込むオプションのパスです。省略した場合、ブロック 0 はルートの `languagesManifestPath` (それ自体はこのブロックの `{flatOutputDir}/ui-languages.json` がデフォルト) を使用します。それ以降のブロックは `{flatOutputDir}/ui-languages.json` がデフォルトになります。
+  `extract`と`generate-ui-languages`がこのブロックの`ui-languages.json`を書き込むオプションのパス。省略された場合、ブロック0はルート`languagesManifestPath`（それ自体がこのブロックの`{flatOutputDir}/ui-languages.json`にデフォルト設定されます）を使用します。後続のブロックは`{flatOutputDir}/ui-languages.json`にデフォルト設定されます。
 - `uiGlossary`
-  `true`（デフォルト）の場合、このブロックの `strings.json` は `translate-docs`、`translate-json`、および `translate-svg` の用語集ヒントソースとなります。`translate-ui`、`proofread-ui`、およびソースのリンティングは `glossary.userGlossary` のみを使用します。カタログをこれらのヒントから除外するには `false` を設定してください（例：ドキュメントを誘導すべきではない CLI 文字列カタログなど）。
-- `uiExtractor.funcNames`（またはレガシー `reactExtractor.funcNames`）
-  スキャンする追加の関数名（デフォルト：`["t", "i18n.t"]`）。
-- `uiExtractor.extensions`（またはレガシー `reactExtractor.extensions`）
-  含めるファイル拡張子（デフォルト：`[".js", ".jsx", ".ts", ".tsx"]`）。Astro のフロントマターおよびテンプレート式を含めるには `.astro` を追加してください。
-- `uiExtractor.includePackageDescription`（またはレガシー `reactExtractor.includePackageDescription`）
-  `true`（デフォルト）の場合、`extract` は存在時に `package.json` `description` を UI 文字列として含めます。同じ説明がすべてのカタログに抽出されないように、追加のブロックで `false` を設定してください。
-- `uiExtractor.packageJsonPath`（またはレガシー `reactExtractor.packageJsonPath`）
-  そのオプションの説明抽出に使用される `package.json` ファイルへのカスタムパス。
-- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシー `reactExtractor.includeUiLanguageEnglishNames`）
+  `true`（デフォルト）の場合、このブロックの`strings.json`は、`translate-docs`、`translate-json`、および`translate-svg`の用語集ヒントソースです。`translate-ui`、`proofread-ui`、およびソースリンティングは`glossary.userGlossary`のみを使用します。カタログをこれらのヒントから除外するには（たとえば、ドキュメントを誘導すべきではないCLI文字列カタログなど）、`false`を設定します。
+- `uiExtractor.funcNames`（またはレガシーな`reactExtractor.funcNames`）
+  スキャンする追加の関数名（デフォルト: `["t", "i18n.t"]`）。
+- `uiExtractor.extensions`（またはレガシーな`reactExtractor.extensions`）
+  含めるファイル拡張子（デフォルト: `[".js", ".jsx", ".ts", ".tsx"]`）。Astroのフロントマターとテンプレート式には`.astro`を追加します。
+- `uiExtractor.includePackageDescription`（またはレガシーな`reactExtractor.includePackageDescription`）
+  `true`（デフォルト）の場合、`extract`は、存在する場合に`package.json` `description`もUI文字列として含めます。同じ説明がすべてのカタログに抽出されないように、追加のブロックで`false`を設定します。
+- `uiExtractor.packageJsonPath`（またはレガシーな`reactExtractor.packageJsonPath`）
+  そのオプションの説明抽出に使用される`package.json`ファイルへのカスタムパス。
+- `uiExtractor.includeUiLanguageEnglishNames`（またはレガシーな`reactExtractor.includeUiLanguageEnglishNames`）
 
-`true`（デフォルトは `false`）の場合、`extract` は、ソーススキャンからまだ存在しない（同じハッシュキーの）各 `englishName` を、バンドルされた ui-languages マスターカタログ（`sourceLocale` + ブロックの有効な `targetLocales` から構築）から `strings.json` に追加します。`languagesManifestPath` は読み取りません。
+`true`（デフォルトは`false`）の場合、`extract`は、バンドルされたUI言語マスターカタログ（`sourceLocale` + ブロックの実効`targetLocales`から構築）からの各`englishName`を、ソーススキャンからまだ存在しない場合（同じハッシュキー）に`strings.json`に追加します。`languagesManifestPath`は読み取りません。
+- `uiExtractor.placeholderStyle`
+  `default`（mustache、Python書式フィールド、およびprintf）または`dotnet`（`{0}`、`{0,-10}`、`{0:format}`のみ）。`dotnet`スタイルでは、パーセント記号はリテラルテキストであり、二重の中括弧はリテラルの中括弧です。`ui-dotnet`テンプレートは`dotnet`を設定します。
+- `uiExtractor.exclude`
+  プロジェクトルートを基準とした、スキャン後に破棄されるミニマッチパターン。`bin`、`obj`、`.vs`、`TestResults`、および`packages`は、ディレクトリ名によってすでにスキップされています。`ui-dotnet`テンプレートは`**/Tests/**`と`**/*.Tests/**`を除外します。
 
 `glossary.uiGlossary` と `glossary.uiGlossaryFromStringsJson` は受け入れられなくなりました。設定の読み込みに失敗し、エラーで代替手段が説明されます。キーを削除してください。ヒントは現在、各ブロックの `uiGlossary` フラグ（デフォルトは `true`）から取得されます。
 

@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { minimatch } from "minimatch";
 
 /** Maximum length for a glob pattern to prevent ReDoS attacks. */
 const MAX_GLOB_PATTERN_LENGTH = 500;
@@ -25,10 +26,26 @@ const SKIPPED_SCAN_DIRS = new Set([
   ".mypy_cache",
   ".ruff_cache",
   ".eggs",
+  "bin",
+  "obj",
+  ".vs",
+  "TestResults",
+  "packages",
 ]);
 
 export function isSkippedScanDir(name: string): boolean {
   return SKIPPED_SCAN_DIRS.has(name);
+}
+
+/** True when `rel` (forward-slash, cwd-relative) matches any minimatch exclude pattern. */
+export function isExcludedRelPath(rel: string, patterns: readonly string[] | undefined): boolean {
+  if (!patterns || patterns.length === 0) {
+    return false;
+  }
+  const norm = rel.split(path.sep).join("/");
+  return patterns.some((pattern) =>
+    minimatch(norm, pattern.split(path.sep).join("/"), { dot: true })
+  );
 }
 
 /** Error thrown when a glob pattern fails security validation. */

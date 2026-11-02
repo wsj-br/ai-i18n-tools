@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # UI 문자열
 
-`t()` 호출을 로캘별 카탈로그로 전환하는 파이프라인인 `extract` 및 `translate-ui`에 대한 참조입니다. 앱에 i18n을 처음 추가하시나요? [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python)에서 시작하세요. 해당 문서에서 래핑 단계를 다룬 후, 2~4단계를 위해 여기로 다시 안내합니다.
+`extract` 및 `translate-ui` 참조: `t()` 호출을 로케일별 카탈로그로 변환하는 파이프라인입니다. 앱에 i18n을 처음 추가하시나요? [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js), [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python), 또는 [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet)에서 시작하세요. 이 문서들은 래핑 단계를 다루며, 이후 2단계부터 4단계까지는 여기로 다시 안내합니다.
 
-이 파이프라인은 JS/TS 프로젝트(React, Next.js 클라이언트 및 서버 컴포넌트, Node.js 서비스, 일반 HTML, Astro 웹사이트, CLI 도구)와 Python 애플리케이션을 지원합니다. JS/TS는 소스가 `t()`를 호출한 후 i18next로 문자열을 조회합니다. Python은 생성된 `i18n.py`를 통해 `t()` 또는 gettext를 호출합니다(Django는 Django의 gettext를 유지합니다).
+이 파이프라인은 JS/TS 프로젝트(React, Next.js 클라이언트 및 서버 컴포넌트, Node.js 서비스, 일반 HTML, Astro 웹사이트 및 CLI 도구), Python 애플리케이션 및 .NET 애플리케이션에 사용됩니다. JS/TS는 소스에서 `t()`를 호출한 후 i18next로 문자열을 찾습니다. Python은 생성된 `i18n.py`를 통해 `t()` 또는 gettext를 호출합니다(Django는 Django의 gettext를 유지합니다). .NET은 생성된 `I18n.cs`를 통해 `T()`를 호출합니다.
 
 <a id="which-guide-to-read"></a>
 ## 어떤 가이드를 읽어야 할까요?
@@ -13,6 +13,7 @@
 | 하드코딩된 소스 문자열이 있고 아직 `t()`가 없는 JS/TS | [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) |
 | 소스에 `t()`가 이미 있는 React / Next.js / Node | [i18next 연결](/ko/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [파이썬 애플리케이션](/ko/guide/ui-strings/python). 초기화: `ui-python`, `ui-python-gettext`, `ui-python-flask`, 또는 `ui-python-django`. 도우미: `i18n.py`. 기존 앱에 로케일을 추가하려면 [파이썬 앱에 i18n 추가](/ko/guide/add-i18n-to-python)를 참조하거나, 앱이 gettext를 사용하는 경우 [Django / 파이썬 gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)를 참조하십시오. |
+| .NET (`T()`, `Tn`, `Tp`, XAML `loc:Tr`) | [.NET 애플리케이션](/ko/guide/ui-strings/dotnet). 초기화: `ui-dotnet` (`I18n.cs`) 또는 `ui-dotnet-resx` ([.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager)). 기존 앱에 로케일을 추가하려면 [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet)를 참조하세요. |
 | 일반 HTML (마크업에 `t()` 없음) | [일반 HTML 앱](/ko/guide/ui-strings/plain-html) |
 | Astro 마케팅 사이트 (하이브리드) | [Astro 웹사이트](/ko/guide/ui-strings/astro-website) |
 | `t()` 규칙, 보간, 복수 | [t() 호출 및 복수](/ko/guide/ui-strings/t-calls-and-plurals) |
@@ -79,8 +80,9 @@ ai-i18n-tools translate-ui
 
 `translate-ui`는 파일만 작성합니다. 앱이 파일을 로드해야 합니다.
 
-- JS/TS: 런타임 헬퍼를 사용하여 i18next를 설정하고, 사용자가 선택한 로케일 파일을 로드한 다음, 언어 전환기를 추가합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime) 및 [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher)을 참조하세요.
+- JS/TS: 런타임 헬퍼로 i18next를 설정하고, 사용자가 선택한 로케일 파일을 로드하며, 언어 전환기를 추가합니다. [i18next 연결](/ko/guide/ui-strings/i18next-runtime) 및 [언어 전환기 및 RTL](/ko/guide/ui-strings/language-switcher)을 참조하세요.
 - Python: 생성된 `i18n.py` 또는 gettext 카탈로그를 사용합니다. [Python 애플리케이션](/ko/guide/ui-strings/python)을 참조하세요.
+- .NET: 생성된 `I18n.cs`을 사용하거나, 앱이 이미 `ResourceManager`를 사용하는 경우 `I18nResx.cs`를 사용합니다. [.NET 애플리케이션](/ko/guide/ui-strings/dotnet) 및 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager)를 참조하세요. `migrate-dotnet-i18n`는 안전하지 않은 `T()` 인수를 다시 작성합니다. `--wrap`는 표시되지 않은 레이블을 감사합니다.
 - 일반 HTML: 페이지 옆에 런타임 스크립트를 로드합니다. [일반 HTML 앱](/ko/guide/ui-strings/plain-html)을 참조하세요.
 - Astro: [Astro 웹사이트](/ko/guide/ui-strings/astro-website)를 참조하세요.
 

@@ -381,6 +381,7 @@ ai-i18n-tools sync
 | --- | --- |
 | 應用程式 UI 字串 | [將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js) 或 [將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python) |
 | Django、Flask-Babel 目錄，或已使用 GNU gettext 的應用程式 | [將 i18n 新增至 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext) |
+| .NET 應用程式 | [為 .NET 應用程式新增國際化](/zh-Hant/guide/add-i18n-to-dotnet) 或 [為 .NET ResourceManager 應用程式新增國際化](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager) |
 | 網站旁的儲存庫 README，或 Markdown 檔案且沒有網站框架 | [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。`init … --with-readme` 會在網站範本旁新增該區塊 |
 | 獨立的巢狀語言環境 JSON | [JSON](/zh-Hant/guide/json) |
 | 網站和應用程式字串在一個組態中 | [結合管線](/zh-Hant/guide/combining-pipelines) |

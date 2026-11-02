@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # Integrações
 
-Referência das integrações de framework: o que elas compartilham e como suas strings de shell diferem. Para adicionar idiomas a um site, comece em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website). Para um app, comece em [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js) ou [Adicionar i18n a um app Python](/pt-BR/guide/add-i18n-to-python). Para um README de repositório e outros arquivos Markdown, comece em [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
+Referência para as integrações de framework: o que elas compartilham e como suas strings de shell diferem. Para adicionar idiomas a um site, comece em [Adicionar i18n a um site ou site de documentação](/pt-BR/guide/add-i18n-to-website). Para um aplicativo, comece em [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js), [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), ou [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet). Para um README de repositório e outros arquivos Markdown, comece em [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
 
 As integrações de documentação usam o pipeline de [Documentos](/pt-BR/guide/documents/) (`translate-docs` / `sync`) para o conteúdo da página; as strings de shell (navegação, barra lateral, tema) são tratadas dentro desse mesmo pipeline, onde indicado — e não através do pipeline de [JSON](/pt-BR/guide/json) separado. As aplicações Python usam o pipeline de [strings de UI](/pt-BR/guide/ui-strings/python) (`extract` / `translate-ui`).
 
@@ -49,3 +49,5 @@ Consulte [Tradução do shell do framework](#framework-shell-translation) para u
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| Auxiliar JSON .NET | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| Auxiliar ResourceManager .NET | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

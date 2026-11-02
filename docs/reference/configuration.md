@@ -287,7 +287,9 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
 - `flatOutputDir`
   Directory where this block's per-locale JSON files are written (`de.json`, etc.).
 - `flatOutput`
-  When `true` (the default), `translate-ui` writes one flat JSON file per locale. Set `false` for a gettext-only block. A block with `flatOutput: false` must set `gettext`.
+  When `true` (the default), `translate-ui` writes one flat JSON file per locale. Set `false` to emit only gettext or resx. A block with `flatOutput: false` must set `gettext` or `resx`.
+- `resx`
+  Optional .NET `.resx` output. `outputDir` (default `Resources`) and `baseName` (default `SharedResource`) write `{baseName}.resx` plus `{baseName}.{culture}.resx`. `writeNeutral` (default true) puts the source text in the neutral file so `ResourceManager` can fall back. `localeFormat` is `bcp47` (default, `pt-BR`) or `posix` (`pt_BR`). `ingestExistingResx` (default true) reads satellites during `extract`. `neutralFile` maps legacy named keys such as `LoginButton` through the neutral value. Context keys use U+2404. Plural forms are separate entries named `{singular}[{form}]`. A block with `flatOutput: false` must set `gettext` or `resx`.
 - `gettext`
   Optional GNU gettext output for this block. `outputDir` (default `./locales`) receives `<locale>/LC_MESSAGES/<domain>.po` and, when `compileMo` is true (the default), the matching `.mo`. `domain` defaults to `messages`. `potPath` is the template catalog. `ingestExistingPo` (default `true`) fills empty `strings.json` slots from non-fuzzy `msgstr` values during `extract` and does not replace a non-empty or user-edited translation. `localeFormat` is `posix` (default, `pt_BR`) or `bcp47` (`pt-BR`). Contextual rows use the gettext `\u0004` separator. The same source-language string in two contexts does not share a catalog id.
 - `targetLocales`
@@ -307,6 +309,10 @@ Resolved `stringsJson`, `flatOutputDir`, and manifest paths must be unique acros
 - `uiExtractor.includeUiLanguageEnglishNames` (or legacy `reactExtractor.includeUiLanguageEnglishNames`)
 
   When `true` (default `false`), `extract` also adds each `englishName` from the bundled ui-languages master catalog (built from `sourceLocale` + the block's effective `targetLocales`) to `strings.json` when not already present from the source scan (same hash keys). Does not read `languagesManifestPath`.
+- `uiExtractor.placeholderStyle`
+  `default` (mustache, Python format fields, and printf) or `dotnet` (`{0}`, `{0,-10}`, `{0:format}` only). In the `dotnet` style a percent sign is literal text and doubled braces are literal braces. The `ui-dotnet` template sets `dotnet`.
+- `uiExtractor.exclude`
+  Minimatch patterns, relative to the project root, dropped after the scan. `bin`, `obj`, `.vs`, `TestResults`, and `packages` are already skipped by directory name. The `ui-dotnet` template excludes `**/Tests/**` and `**/*.Tests/**`.
 
 `glossary.uiGlossary` and `glossary.uiGlossaryFromStringsJson` are no longer accepted. Config load fails and the error explains the replacement: delete the key. Hints now come from each block's `uiGlossary` flag (default `true`).
 

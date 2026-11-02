@@ -4,9 +4,9 @@ title: ai-i18n-tools
 pageClass: home-onboarding
 description: >-
   Rendez votre application, site web ou documentation de dépôt monolingue
-  multilingue grâce à une configuration guidée, une traduction par IA et des
-  réexécutions mises en cache. Commencez avec JavaScript, TypeScript, Python ou
-  un fichier README.
+  multilingue grâce à une configuration guidée, la traduction par IA et des
+  exécutions mises en cache. Commencez avec JavaScript, TypeScript, Python, .NET
+  ou un fichier README.
 hero:
   name: ai-i18n-tools
   text: Rendez votre projet monolingue multilingue.
@@ -73,6 +73,22 @@ Encapsulez le texte destiné à l'utilisateur et chargez les messages traduits a
 Streamlit · FastAPI · Flask · Django · CLI
 
 [Ajouter l'i18n à une application Python](/fr/guide/add-i18n-to-python) · [Ajouter l'i18n à une application Django / Python gettext](/fr/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### Application .NET
+
+Encapsulez le texte C# et XAML et chargez les traductions à partir de JSON intégré, ou conservez `ResourceManager` et écrivez des fichiers satellites `.resx`. Une commande de simulation transforme l'interpolation en appels `T()` et liste les clés de ressources nommées, telles que `Resources.LoginButton`, à convertir.
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[Ajouter l'i18n à une application .NET](/fr/guide/add-i18n-to-dotnet) · [Ajouter l'i18n à une application .NET ResourceManager](/fr/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -293,7 +309,7 @@ Visualisez les pages VitePress traduites ainsi que la navigation et les étiquet
 </article>
 </div>
 
-[Parcourir tous les exemples exécutables](/fr/examples), y compris le HTML simple, d'autres frameworks et les workflows i18n existants.
+[Parcourir tous les exemples exécutables](/fr/examples), y compris les assistants .NET, le HTML simple, d'autres frameworks et les workflows i18n existants.
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## Vous avez déjà l'i18n ? Conservez ce qui fonctionne.
@@ -312,7 +328,7 @@ Vous n'avez pas à tout recommencer.
 
 Conserver les appels `t()` et gettext déjà présents dans le projet.
 
-[Chaînes d'interface utilisateur JS/TS](/fr/guide/ui-strings/) · [Python et gettext](/fr/guide/ui-strings/python)
+[Chaînes d'interface utilisateur JS/TS](/fr/guide/ui-strings/) · [Python et gettext](/fr/guide/ui-strings/python) · [.NET](/fr/guide/ui-strings/dotnet) · [ResourceManager](/fr/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

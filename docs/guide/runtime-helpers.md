@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # Runtime helpers
 
-These helpers are exported from `'ai-i18n-tools/runtime'` and work in any JavaScript environment (browser, Node.js, Deno, Edge). They do **not** import from `i18next` or `react-i18next`. Python applications use the generated `i18n.py` module. Its functions are listed in [Programmatic API — Python runtime](/reference/programmatic-api#python-runtime).
+These helpers are exported from `'ai-i18n-tools/runtime'` and work in any JavaScript environment (browser, Node.js, Deno, Edge). They do **not** import from `i18next` or `react-i18next`. Python applications use the generated `i18n.py` module. Its functions are listed in [Programmatic API — Python runtime](/reference/programmatic-api#python-runtime). .NET applications use the generated `I18n.cs` or `I18nResx.cs` file. Those members are listed in [Programmatic API — .NET runtime](/reference/programmatic-api#dotnet-runtime-i18ncs).
 
 Use them in your app bootstrap (`src/i18n.js`), language switcher, and any non-React code that needs direction or string utilities. For end-to-end wiring, start with [Wire i18next](/guide/ui-strings/i18next-runtime); for language menus and RTL, see [Language switcher & RTL](/guide/ui-strings/language-switcher).
 

@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # यूआई स्ट्रिंग
 
-`extract` और `translate-ui` के लिए संदर्भ, वह पाइपलाइन जो `t()` कॉल को प्रति-स्थानिक कैटलॉग में बदल देती है। पहली बार किसी ऐप में i18n जोड़ रहे हैं? [JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) से शुरू करें। वे रैपिंग चरण को कवर करते हैं, फिर आपको चरण 2 से 4 के लिए वापस यहीं भेजते हैं।
+`extract` और `translate-ui` के लिए संदर्भ, वह पाइपलाइन जो `t()` कॉल को प्रति-स्थानिक कैटलॉग में बदलती है। पहली बार किसी ऐप में i18n जोड़ रहे हैं? [किसी JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js), [किसी Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), या [किसी .NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) से शुरू करें। वे रैपिंग चरण को कवर करते हैं, फिर आपको चरण 2 से 4 के लिए यहां वापस भेजते हैं।
 
-यह पाइपलाइन JS/TS प्रोजेक्ट्स (React, Next.js क्लाइंट और सर्वर कंपोनेंट्स, Node.js सेवाएं, सादा HTML, Astro वेबसाइट्स और CLI टूल्स) और Python एप्लीकेशन्स को सेवा देती है। JS/TS, `t()` के स्रोत कॉल के बाद i18next के साथ स्ट्रिंग्स को देखता है। Python, जेनरेट किए गए `i18n.py` के माध्यम से `t()` या gettext को कॉल करता है (Django, Django के gettext को रखता है)।
+यह पाइपलाइन JS/TS प्रोजेक्ट (React, Next.js क्लाइंट और सर्वर कंपोनेंट, Node.js सेवाएं, सादा HTML, Astro वेबसाइट और CLI टूल), Python एप्लिकेशन और .NET एप्लिकेशन के लिए है। JS/TS स्रोत `t()` को कॉल करने के बाद i18next के साथ स्ट्रिंग खोजता है। Python एक जनरेटेड `i18n.py` के माध्यम से `t()` या gettext को कॉल करता है (Django, Django के gettext को रखता है)। .NET एक जनरेटेड `I18n.cs` के माध्यम से `T()` को कॉल करता है।
 
 <a id="which-guide-to-read"></a>
 ## कौन सी गाइड पढ़ें
@@ -13,6 +13,7 @@
 | हार्डकोडेड स्रोत स्ट्रिंग्स के साथ JS/TS, अभी तक कोई `t()` नहीं | [JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` पहले से ही स्रोत में है | [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [Python अनुप्रयोग](/hi/guide/ui-strings/python)। आरंभ करें: `ui-python`, `ui-python-gettext`, `ui-python-flask`, या `ui-python-django`। सहायक: `i18n.py`। किसी मौजूदा ऐप में लोकेल जोड़ने के लिए, [Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) देखें, या जब ऐप gettext का उपयोग करता है तो [Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) देखें। |
+| .NET (`T()`, `Tn`, `Tp`, XAML `loc:Tr`) | [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet)। आरंभ करें: `ui-dotnet` (`I18n.cs`) या `ui-dotnet-resx` ([किसी .NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager))। किसी मौजूदा ऐप में स्थानीय भाषाएँ जोड़ने के लिए, [किसी .NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) देखें। |
 | Plain HTML (मार्कअप में कोई `t()` नहीं) | [Plain HTML ऐप्स](/hi/guide/ui-strings/plain-html) |
 | Astro मार्केटिंग साइट (हाइब्रिड) | [Astro वेबसाइट](/hi/guide/ui-strings/astro-website) |
 | `t()` नियम, इंटरपोलेशन, बहुवचन | [t() कॉल और बहुवचन](/hi/guide/ui-strings/t-calls-and-plurals) |
@@ -79,10 +80,11 @@ ai-i18n-tools translate-ui
 
 `translate-ui` केवल फ़ाइलें लिखता है। ऐप को उन्हें लोड करना होगा।
 
-- JS/TS: i18next को रनटाइम हेल्पर के साथ सेट अप करें, उपयोगकर्ता द्वारा चुनी गई लोकल फ़ाइल लोड करें, और एक भाषा स्विचर जोड़ें। देखें [i18next को वायर करें](/hi/guide/ui-strings/i18next-runtime) और [भाषा स्विचर और आरटीएल](/hi/guide/ui-strings/language-switcher)।
-- Python: जनरेट किए गए `i18n.py` या अपने गेटटेक्स्ट कैटलॉग का उपयोग करें। देखें [पायथन एप्लिकेशन](/hi/guide/ui-strings/python)।
-- Plain HTML: पेज के बगल में रनटाइम स्क्रिप्ट लोड करें। देखें [प्लेन एचटीएमएल ऐप्स](/hi/guide/ui-strings/plain-html)।
-- Astro: देखें [एस्ट्रो वेबसाइट](/hi/guide/ui-strings/astro-website)।
+- JS/TS: रनटाइम हेल्पर के साथ i18next सेट करें, उपयोगकर्ता द्वारा चुनी गई स्थानीय फ़ाइल लोड करें, और एक भाषा स्विचर जोड़ें। [i18next वायर करें](/hi/guide/ui-strings/i18next-runtime) और [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher) देखें।
+- Python: जनरेटेड `i18n.py` या अपने gettext कैटलॉग का उपयोग करें। [Python एप्लिकेशन](/hi/guide/ui-strings/python) देखें।
+- .NET: जनरेटेड `I18n.cs` का उपयोग करें, या `I18nResx.cs` का उपयोग करें जब ऐप पहले से ही `ResourceManager` का उपयोग करता हो। [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet) और [किसी .NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager) देखें। `migrate-dotnet-i18n` असुरक्षित `T()` आर्ग्यूमेंट को फिर से लिखता है। `--wrap` बिना लेबल वाले लेबलों का ऑडिट करता है।
+- सादा HTML: पेज के बगल में रनटाइम स्क्रिप्ट लोड करें। [सादे HTML ऐप](/hi/guide/ui-strings/plain-html) देखें।
+- Astro: [Astro वेबसाइट](/hi/guide/ui-strings/astro-website) देखें।
 
 <a id="optional"></a>
 ## वैकल्पिक

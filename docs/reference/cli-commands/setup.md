@@ -40,6 +40,8 @@ Write a starter config file (includes `provider` / `providers`, `concurrency`, `
 | `ui-python-gettext` | Python UI strings with flat JSON and GNU `.po` / `.mo`, plus `i18n.py` |
 | `ui-python-django` | Django `gettext` / `{% blocktrans %}` catalogs (`flatOutput: false`, domain `django`, no `i18n.py`) |
 | `ui-python-flask` | Flask / Jinja catalogs under `translations/` (`flatOutput: false`) plus `i18n.py` |
+| `ui-dotnet` | .NET UI strings, flat JSON keyed by the source-language string, and `I18n.cs` |
+| `ui-dotnet-resx` | .NET UI strings as `.resx` satellites (`flatOutput: false`) and `I18nResx.cs` |
 
 `--with-readme` appends a `README.md` docs block (`outputDir` `translated-docs`, `docsOutput.style` `"flat"`, a `languageListBlock`) and sets `features.translateDocs` to true. It does nothing when a docs block already lists `README.md`, which is the case for `ui-markdown` and `docs-markdown`. It writes the config only. It prints the marker line to paste into `README.md` and warns when that file is missing. Guide: [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 
@@ -50,9 +52,11 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` creates a starter `.translate-ignore` (including Python virtualenv and cache directories).
 
-`ui-python`, `ui-python-gettext`, and `ui-python-flask` also write `i18n.py` when that file is missing. Django projects keep Django's own gettext runtime, so `ui-python-django` does not write `i18n.py`.
+`ui-python`, `ui-python-gettext`, and `ui-python-flask` also write `i18n.py` when that file is missing. Django projects keep Django's own gettext runtime, so `ui-python-django` does not write `i18n.py`. `ui-dotnet` writes `I18n.cs` when that file is missing and prints the `EmbeddedResource` item to add to the `.csproj`. `ui-dotnet-resx` writes `I18nResx.cs` instead and points `ui.resx` at `Resources/SharedResource.<culture>.resx`. `--namespace` overrides the C# namespace. Guide: [.NET applications](/guide/ui-strings/dotnet) and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager).
 
-`migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) into lookup-before-format calls. The default is a dry run. Pass `--write` to edit files, and read `migrate-python-i18n-report.md` for review notes. Generated `i18n.py` files are skipped.
+`migrate-python-i18n` rewrites unsafe pre-evaluated calls (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) into lookup-before-format calls. The default is a dry run. Pass `--write` to edit files, and read `migrate-python-i18n-report.md` for review notes. A complex expression is named from the expression when that is stable (`start.isoformat()` becomes `{start}`, `len(rows)` becomes `{rows_count}`). A leftover `{value_1}` is reported so it can be renamed. Generated `i18n.py` files are skipped. A clean report does not mean unwrapped f-strings were covered.
+
+`migrate-dotnet-i18n` does the same for `T($"...")`, concatenation, and `string.Format` inside `T()`. `--wrap` also marks unmarked XAML labels and high-confidence C# sinks; without `--write` that is an audit. The report is `migrate-dotnet-i18n-report.md`. Generated `I18n.cs` and `I18nResx.cs` are skipped. Guide: [.NET applications](/guide/ui-strings/dotnet#migrate).
 
 ---
 
@@ -61,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 **Synopsis:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
 
-Check that the project is ready to translate. The report covers config syntax and schema, business rules, the installed version, source and output paths, UI catalog files, cache statistics, configured providers, supported environment variables that are set, and model ids.
+Check that the project is ready to translate. The report covers config syntax and schema, business rules, the installed version, source and output paths, UI catalog files, placeholder mismatches in those catalogs, cache statistics, configured providers, supported environment variables that are set, and model ids. A catalog with a renamed, dropped, or rewritten placeholder is a warning and names one example.
 
 By default, `doctor` also checks configured model ids against the active provider's catalog and compares the installed version with the latest GitHub release. `--local` skips both network calls. A newer release, or a GitHub request that fails, is a warning. A missing or expired model id fails the command. `--strict` exits with an error when any check warns.
 

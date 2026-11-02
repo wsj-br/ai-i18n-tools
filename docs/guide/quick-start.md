@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Quick start
 
-This page guides a single-language project to its first translated files. It is for a JS/TS app, a Python app, a website or documentation site, or a repository README and other Markdown files. It assumes:
+This page guides a single-language project to its first translated files. It is for a JS/TS app, a Python app, a .NET app, a website or documentation site, or a repository README and other Markdown files. It assumes:
 
 - Node.js `>=22.16.0`, or the [standalone executable](/guide/installation#standalone-executables) for a Python project.
 - An API key for an LLM provider, or a local Ollama install.
@@ -75,6 +75,16 @@ Then follow [Add i18n to a Python app](/guide/add-i18n-to-python).
 
 A Django app, Flask with Flask-Babel catalogs, or an app that already calls `gettext` keeps those calls. Scaffold with `ui-python-django`, `ui-python-flask`, or `ui-python-gettext` instead, then follow [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext).
 
+<a id="a-dotnet-app"></a>
+### A .NET app
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+Then follow [Add i18n to a .NET app](/guide/add-i18n-to-dotnet). An app that already uses `ResourceManager` or `IStringLocalizer` uses `ui-dotnet-resx` instead, then [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager). `migrate-dotnet-i18n` rewrites `T($"…")` into numbered `{0}` calls. `--wrap` audits unmarked XAML and C# labels. The report lists named resx keys, such as `Resources.LoginButton`, as suggestions and does not edit those lines.
+
 <a id="a-website-or-documentation-site"></a>
 ### A website or documentation site
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-Then follow [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Paste the language-list marker into `README.md` before `sync`. The app path, when you have one, is still [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python).
+Then follow [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). Paste the language-list marker into `README.md` before `sync`. The app path, when you have one, is still [Add i18n to a JS/TS app](/guide/add-i18n-to-js), [Add i18n to a Python app](/guide/add-i18n-to-python), or [Add i18n to a .NET app](/guide/add-i18n-to-dotnet).
 
 <a id="something-else"></a>
 ### Something else

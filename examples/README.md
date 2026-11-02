@@ -40,6 +40,8 @@ Python examples (`python-streamlit`, `python-flask`, `python-fastapi`, `python-g
 | [python-flask](./python-flask/) | `npx degit wsj-br/ai-i18n-tools/examples/python-flask python-flask` |
 | [python-fastapi](./python-fastapi/) | `npx degit wsj-br/ai-i18n-tools/examples/python-fastapi python-fastapi` |
 | [python-gettext](./python-gettext/) | `npx degit wsj-br/ai-i18n-tools/examples/python-gettext python-gettext` |
+| [dotnet-console](./dotnet-console/) | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-console dotnet-console` |
+| [dotnet-resx](./dotnet-resx/) | `npx degit wsj-br/ai-i18n-tools/examples/dotnet-resx dotnet-resx` |
 
 ### From the full ai-i18n-tools repository
 
@@ -72,6 +74,8 @@ Examples listed as **workspace packages** in [`pnpm-workspace.yaml`](../pnpm-wor
 | [python-flask](./python-flask/) | Python app | UI strings, `t()` / `_()`, Jinja, English-key JSON | Flask |
 | [python-fastapi](./python-fastapi/) | Python app | UI strings, `t()` / `_()`, English-key JSON | FastAPI |
 | [python-gettext](./python-gettext/) | Python app | Existing GNU gettext CLI, `.po` / `.mo` | stdlib `gettext` |
+| [dotnet-console](./dotnet-console/) | .NET test project | `I18n.cs` helper (no LLM catalogs) | xUnit on .NET 10 |
+| [dotnet-resx](./dotnet-resx/) | .NET test project | `I18nResx.cs` and `.resx` satellites | xUnit on .NET 10 |
 
 Each example has its own README with setup, commands, and project layout. Use the links above for full walkthroughs.
 
@@ -86,6 +90,10 @@ pip install -r requirements.txt
 ```
 
 To re-run extraction without Node.js, install the standalone command. Linux and macOS: `curl -fsSL https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.sh | bash`. Windows PowerShell: `irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | iex`. Then run `ai-i18n-tools` from the example directory. The same four directories are attached as `ai-i18n-tools-python-examples.zip`. They are not inside the npm tarball or the executable. From this repository, `node ../../bin/ai-i18n-tools.mjs` works after `pnpm build`. `pnpm update-all` does not run `cleanup` / `sync` inside these directories, so it will not call the translation API on the committed catalogs.
+
+### .NET example
+
+`dotnet-console` is an xUnit project that compiles the shipped `assets/dotnet/I18n.cs`. `dotnet-resx` compiles `I18nResx.cs` and checks `ResourceManager` against source-string `.resx` keys. Neither calls a translation API. From the repository root, `pnpm test:dotnet` runs both and skips when `dotnet` is not on `PATH`.
 
 ---
 

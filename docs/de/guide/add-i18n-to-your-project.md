@@ -20,10 +20,10 @@ Die Anleitungen geben an, welche Quelltextänderungen Sie vornehmen müssen. Hin
 Jede Anleitung folgt der gleichen Reihenfolge. Die von Ihnen gewählte Seite ergänzt die Details.
 
 1. Installieren Sie die CLI und legen Sie den API-Schlüssel Ihres Anbieters fest. Ollama benötigt keinen Schlüssel. [Installation](/de/guide/installation) und [Anbieter und API-Schlüssel](/de/guide/quick-start#provider-and-api-key).
-2. Führen Sie `init` mit der Vorlage aus, die auf dieser Seite genannt wird. Dadurch wird `ai-i18n-tools.config.json` geschrieben.
-3. Bereiten Sie das Projekt vor, damit das Tool den Text sehen kann. Verwenden Sie den Agent-Prompt dieser Seite oder die manuellen Schritte auf derselben Seite.
-4. Führen Sie `ai-i18n-tools sync` aus, dann `ai-i18n-tools status`.
-5. Laden Sie die Ausgabe, prüfen Sie eine Zielsprache und führen Sie `sync` erneut aus, wenn sich die Quelle ändert. Der Cache sendet nur neuen oder geänderten Text an das Modell.
+2. Führen Sie `init` mit der auf dieser Seite genannten Vorlage aus. Dadurch wird `ai-i18n-tools.config.json` geschrieben.
+3. Bereiten Sie das Projekt so vor, dass das Tool den Text sehen kann. Verwenden Sie den Agent-Prompt dieser Seite oder die manuellen Schritte auf derselben Seite.
+4. Überprüfen oder erstellen Sie das Benutzerglossar, führen Sie dann `ai-i18n-tools sync` und `ai-i18n-tools status` aus. Ein sauberer Extrakt ist kein Beweis dafür, dass jeder sichtbare Satz umschlossen ist.
+5. Laden Sie die Ausgabe, überprüfen Sie eine Zielsprache und führen Sie `sync` erneut aus, wenn sich die Quelle ändert. Der Cache sendet nur neuen oder geänderten Text an das Modell. Ein normaler Durchlauf lässt `user-edited`-Zeilen unverändert. `--force` übersetzt sie erneut.
 
 <a id="pages-in-this-section"></a>
 ## Seiten in diesem Abschnitt
@@ -32,6 +32,8 @@ Jede Anleitung folgt der gleichen Reihenfolge. Die von Ihnen gewählte Seite erg
 | --- | --- | --- |
 | Eine JS/TS-App (React, Next.js, Node, CLI), deren Schaltflächen und Nachrichten noch Klartext sind | [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) | i18next installieren, den Bootstrap hinzufügen, Literale in `t()` umschließen und einen Sprachumschalter hinzufügen, dann `extract` und `translate-ui` |
 | Eine Python-App (Streamlit, FastAPI, Flask, Desktop, Skripte) | [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) | Den `i18n.py`-Helfer platzieren, `t()` oder `_()` umschließen, einen Sprachumschalter hinzufügen. Die CLI kann als eigenständige ausführbare Datei ohne Node.js-Installation ausgeführt werden |
+| Eine .NET-App (Avalonia, WPF, MAUI, ASP.NET, Blazor, Konsole) | [i18n zu einer .NET-App hinzufügen](/de/guide/add-i18n-to-dotnet) | `I18n.cs` platzieren. `T()` umschließen oder `migrate-dotnet-i18n` ausführen. `locales/*.json` einbetten und einen Sprachwechsler hinzufügen |
+| Eine .NET-Anwendung, die bereits `ResourceManager` oder `IStringLocalizer` verwendet | [i18n zu einer .NET-ResourceManager-Anwendung hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager) | Behalten Sie diesen Loader bei. Platzieren Sie `I18nResx.cs` und schreiben Sie `.resx`-Satelliten aus demselben `T()`-Katalog. |
 | Eine Django-App, Flask mit Flask-Babel-Katalogen oder jede App, die bereits GNU gettext verwendet | [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext) | Behalten Sie Ihre `gettext`-, `{% blocktranslate %}`- und `.po`-Dateien bei. Das Tool füllt und kompiliert die Kataloge |
 | Eine Dokumentations- oder Marketing-Website (VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, reines HTML) | [i18n zu einer Website oder Dokumentationsseite hinzufügen](/de/guide/add-i18n-to-website) | Aktivieren Sie die i18n des Frameworks mit dem Agent-Prompt der Seite, dann `sync`, um Seiten und Theme-Labels zu übersetzen |
 | Eine Repository-README-Datei und andere Markdown-Dateien, normalerweise neben einer App | [i18n zu Ihrer README-Datei und Markdown-Dokumentation hinzufügen](/de/guide/add-i18n-to-readme) | Eine Datei pro Sprache (`translated-docs/README.de.md`) und eine Sprachzeile in der README-Datei. `init --with-readme` fügt diesen Block zu jeder Vorlage hinzu |

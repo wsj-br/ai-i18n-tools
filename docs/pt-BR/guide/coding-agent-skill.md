@@ -48,6 +48,7 @@ A habilidade compartilhada `ai-i18n-tools` permanece disponível para o agente. 
 | --- | --- |
 | `/ai-i18n-js` | UI de string de origem JavaScript ou TypeScript |
 | `/ai-i18n-python` | Auxiliar Python gerado e catálogos JSON planos |
+| `/ai-i18n-dotnet` | Gerado `I18n.cs` ou `I18nResx.cs`, mais `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel ou gettext simples |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Documentos Astro Starlight |

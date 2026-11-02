@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # Auxiliares de tempo de execução
 
-Esses helpers são exportados de `'ai-i18n-tools/runtime'` e funcionam em qualquer ambiente JavaScript (navegador, Node.js, Deno, Edge). Eles **não** importam de `i18next` ou `react-i18next`. Aplicações Python usam o módulo `i18n.py` gerado. Suas funções estão listadas em [Programmatic API — Python runtime](/pt-BR/reference/programmatic-api#python-runtime).
+Esses auxiliares são exportados de `'ai-i18n-tools/runtime'` e funcionam em qualquer ambiente JavaScript (navegador, Node.js, Deno, Edge). Eles **não** importam de `i18next` ou `react-i18next`. Aplicações Python usam o módulo `i18n.py` gerado. Suas funções estão listadas em [API Programática — runtime Python](/pt-BR/reference/programmatic-api#python-runtime). Aplicações .NET usam o arquivo `I18n.cs` ou `I18nResx.cs` gerado. Esses membros estão listados em [API Programática — runtime .NET](/pt-BR/reference/programmatic-api#dotnet-runtime-i18ncs).
 
 Use-os na inicialização do seu aplicativo (`src/i18n.js`), no seletor de idioma e em qualquer código não-React que precise de utilitários de direção ou string. Para conexão de ponta a ponta, comece com [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime); para menus de idioma e RTL, consulte [Seletor de idioma e RTL](/pt-BR/guide/ui-strings/language-switcher).
 

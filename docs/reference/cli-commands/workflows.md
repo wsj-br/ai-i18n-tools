@@ -19,7 +19,7 @@ Extract (if enabled), then UI translation, then `translate-svg` when `features.t
 
 **Synopsis:** `ai-i18n-tools status [--max-columns <n>]`
 
-When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Total`). Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). When `features.translateJson` is on and `json[]` is configured, also prints JSON bundle status per block. Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.
+When `features.translateUIStrings` is on, prints UI coverage per locale (`Translated` / `Missing` / `Placeholder issues` / `Total`). `Placeholder issues` counts rows whose stored translation renames, drops, invents, or retargets a placeholder. Then prints markdown translation status per file × locale (no `--locale` filter; locales come from config). When `features.translateJson` is on and `json[]` is configured, also prints JSON bundle status per block. Large locale lists are split into repeated tables of up to `n` locale columns (default **9**) so lines stay narrow in the terminal.
 
 **Key options:** `--max-columns`
 

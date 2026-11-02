@@ -19,6 +19,8 @@
 | UI 카탈로그 | `ui[].uiGlossary`(부울, 기본값 `true`) — 해당 블록의 `stringsJson` | `translate-docs`, `translate-json`, `translate-svg` |
 | 사용자 CSV | `glossary.userGlossary` | `translate-ui`, `proofread-ui`, `translate-docs`, `translate-json`, `translate-svg` |
 
+`init`는 `glossary.userGlossary`이 `glossary-user.csv`를 가리키도록 하며 해당 파일을 생성하지 않습니다. `glossary-generate`이(가) 없을 때 실행하고, 첫 번째 `translate-ui` 앞에 도메인 용어를 넣으세요. 변경되지 않은 문자열의 두 번째 번역은 다르게 표현될 수 있습니다. 용어집이 두 번의 실행을 일치시킵니다.
+
 `uiGlossary: true`이(가) 포함된 블록은 `strings.json`에 이미 저장된 번역을 힌트로 재사용하므로 문서, JSON 및 SVG가 UI와 일관성을 유지합니다. `translate-ui` 및 `proofread-ui`은(는) 해당 카탈로그를 읽지 않고 사용자 CSV에서만 힌트를 가져오므로, 잘못된 UI 번역이 선호 용어로 다시 반영되지 않습니다. 다른 파이프라인에 영향을 주지 않아야 하는 블록에서는 `uiGlossary`을(를) `false`(으)로 설정합니다. 여러 블록이 소스 용어를 공유하는 경우, 앞선 블록이 로케일을 채우고 뒤이어 오는 블록은 아직 누락된 로케일만 추가합니다. 사용자 CSV가 모든 UI 카탈로그보다 우선합니다. `locale`이(가) 특정 코드인 행은 해당 로케일에 대한 `*` 행과 UI 카탈로그 번역을 모두 대체합니다. `locale`이(가) `*`인 경우 UI 카탈로그의 번역이 아직 없는 모든 대상 로케일에 동일한 번역을 적용합니다.
 
 간결한 UI 레이블 약어(`Alm.`과(와) 같은 후행 점 또는 `Size` → `Tam`과(와) 같은 짧은 단일 토큰 압축)는 UI 번역에 계속 사용할 수 있습니다. 문서 프롬프트는 이를 건너뛰므로, 모델이 마크다운이나 MDX에서 <code v-pre>{{…}}</code> 토큰을 임의로 생성하도록 유도하지 않습니다.

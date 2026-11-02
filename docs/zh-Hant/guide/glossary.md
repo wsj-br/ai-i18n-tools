@@ -19,6 +19,8 @@
 | UI 目錄 | `ui[].uiGlossary`（布林值，預設為 `true`）— 該區塊的 `stringsJson` | `translate-docs`、`translate-json`、`translate-svg` |
 | 使用者 CSV | `glossary.userGlossary` | `translate-ui`、`proofread-ui`、`translate-docs`、`translate-json`、`translate-svg` |
 
+`init` 將 `glossary.userGlossary` 指向 `glossary-user.csv`，且不會建立該檔案。當該檔案遺失時，請執行 `glossary-generate`，並在第一個 `translate-ui` 之前將領域術語放入其中。即使是未更改的字串，第二次翻譯也可能產生不同的措辭。詞彙表正是讓兩次執行結果保持一致的關鍵。
+
 具有 `uiGlossary: true` 的區塊會重複使用已儲存在其 `strings.json` 中的翻譯作為提示，使文件、JSON 和 SVG 與 UI 保持一致。`translate-ui` 和 `proofread-ui` 不會讀取這些目錄 — 它們僅從使用者 CSV 取得提示，因此錯誤的 UI 翻譯不會被回饋為首選術語。對於不應引導其他管線的區塊，請將 `uiGlossary` 設定為 `false`。當多個區塊共用同一個來源術語時，較早的區塊會填入某個語言區域，而較晚的區塊僅新增仍然缺少的語言區域。使用者 CSV 的優先順序高於所有 UI 目錄。若某列的 `locale` 為特定代碼，則會同時取代該語言區域的 `*` 列和 UI 目錄翻譯。若 `locale` 為 `*`，則會將相同的翻譯套用於所有尚未從 UI 目錄取得翻譯的目標語言區域。
 
 精簡的 UI 標籤縮寫（例如結尾帶點的 `Alm.`，或簡短的單一權杖壓縮如 `Size` → `Tam`）仍可用於 UI 翻譯。文件提示會略過它們，因此不會促使模型在 markdown 或 MDX 中產生虛構的 <code v-pre>{{…}}</code> 權杖。

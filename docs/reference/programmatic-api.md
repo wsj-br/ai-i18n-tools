@@ -80,3 +80,23 @@ Call shapes, unsafe f-strings, and per-framework locale wiring: [Python applicat
 | `ngettext(singular, plural, n, **values)` | Plural lookup, then interpolate. `count` is available to the format string. |
 | `pgettext(context, message, **values)` | Context lookup (`msgctxt`, or `context` + U+0004 + the source-language string in flat JSON), then interpolate. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit select box. Writes `st.session_state.locale` and `st.query_params["lang"]`, calls `set_locale`, and returns the chosen code. |
+
+<a id="dotnet-runtime-i18ncs"></a>
+## .NET runtime (`I18n.cs`)
+
+`init -t ui-dotnet` copies `assets/dotnet/I18n.cs` into the project when `I18n.cs` is missing. It is a dependency-free helper for .NET 6 or newer. The members below are separate from the Node exports in the table above. Call shapes and XAML markup: [.NET applications](/guide/ui-strings/dotnet).
+
+| Member | Behaviour |
+| --- | --- |
+| `SetLocale(locale)` | Load that locale's flat JSON, walking `CultureInfo.Parent` when the exact file is missing. Raises `LocaleChanged`. |
+| `T(source, args)` | Look up the trimmed literal, format with `string.Format`, and put the source's leading and trailing whitespace back. |
+| `Tn(singular, plural, count, args)` | Plural lookup. `{0}` is the count. The catalog key is the MD5-8 of the trimmed singular plus `_` and the CLDR form. |
+| `Tp(context, source, args)` | Look up context + U+0004 + source, then format. |
+| `N(source)` | Return `source`. Extracted so static labels can be catalogued. |
+| `Loc[source]` | Indexer that calls `T`. `Loc` is a static field of type `StringSourceLocalizer`. |
+| `Configure(options)` | Set the source locale, strict missing-key mode, a directory or stream loader, and the language list. |
+| `SupportedLocales` | Locales stamped by `init`, with native and English names. |
+| `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
+| `PluralForm(locale, n)` | CLDR form name from the same GNU rules as `.po` files. |
+
+`init -t ui-dotnet-resx` copies `I18nResx.cs` instead. `T`, `Tn`, and `Tp` call `ResourceManager` with the same source-string keys. `SetLocale` sets `CurrentUICulture` and `CurrentCulture`. Details: [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager).

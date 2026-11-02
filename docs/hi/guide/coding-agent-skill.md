@@ -48,6 +48,7 @@ npx skills use wsj-br/ai-i18n-tools@ai-i18n-tools
 | --- | --- |
 | `/ai-i18n-js` | जावास्क्रिप्ट या टाइपस्क्रिप्ट सोर्स-स्ट्रिंग यूआई |
 | `/ai-i18n-python` | जनरेटेड पायथन हेल्पर और फ़्लैट JSON कैटलॉग |
+| `/ai-i18n-dotnet` | जनरेट किया गया `I18n.cs` या `I18nResx.cs`, साथ ही `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel, या प्लेन गेटटेक्स्ट |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight डॉक्स |

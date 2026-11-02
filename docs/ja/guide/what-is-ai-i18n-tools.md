@@ -12,7 +12,7 @@
 | ユーザー向けテキストをツールから見えるようにする: アプリコード内の `t()` 呼び出し、サイト用フレームワーク標準の国際化機能、またはREADME内の言語リストマーカー | 翻訳をキャッシュし、再実行のたびに再利用する |
 | 結果をアプリ、サイトのルーティング、またはREADMEの言語行に接続します | 進捗を表示し、ダッシュボードで翻訳を確認できます |
 
-このツールはソースを書き換えません。ラップ手順用に、コーディングエージェント向けのプロンプトが提供されています。i18next やサイト用フレームワークの国際化機能はインストールせず、言語切り替え機能も構築しませんが、そのための実行時ヘルパーは提供されています。
+ツールは、`migrate-python-i18n` または `migrate-dotnet-i18n` を `--write` と一緒に実行しない限り、ソースを書き換えません。ラッピングステップのために、コーディングエージェントのプロンプトが提供されます。i18next やサイトフレームワークの i18n をインストールしたり、言語スイッチャーを構築したりすることはありませんが、そのためのランタイムヘルパーは提供されます。
 
 <a id="where-do-i-start"></a>
 ## どこから始めればよいですか？
@@ -23,6 +23,8 @@
 | --- | --- |
 | ソース内にプレーンテキストがあるジェイエス／ティーエスアプリ（React、Next.js、Node、コマンドラインインターフェイス） | [ジェイエス／ティーエスアプリに国際化を追加する](/ja/guide/add-i18n-to-js) |
 | Pythonアプリ (Streamlit、FastAPI、Flask、デスクトップ、スクリプト) | [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python) |
+| .NET アプリ (Avalonia、WPF、MAUI、ASP.NET、Blazor、コンソール) | [.NET アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet) |
+| すでに `ResourceManager` または `IStringLocalizer` を使用している .NET アプリ | [.NET ResourceManager アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager) |
 | Djangoアプリ、Flask-Babelカタログ、またはGNU gettextを既に利用しているアプリ | [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext) |
 | ウェブサイトまたはドキュメントサイト（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、プレーンHTML） | [ウェブサイトまたはドキュメントサイトに国際化を追加する](/ja/guide/add-i18n-to-website) |
 | リポジトリのREADMEとその他のマークダウン形式ファイル（通常はアプリの隣） | [READMEとマークダウン形式のドキュメントに国際化を追加する](/ja/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@
 
 内部では、ツールは4つのパイプラインを実行します。設定で必要なものを有効にし、`sync` がそれらを順番に実行します。
 
-- ユーザーインターフェイス文字列 — ジェイエス／ティーエスおよびパイソンのソースから `t("…")` と `_()` の呼び出し（GNU gettext などの同様のマーカーを含む）を抽出し、ロケールごとのフラットなJSON、または `.po` / `.mo` カタログを書き込みます。コマンド: `extract`、`translate-ui`。ガイド: [ユーザーインターフェイス文字列](/ja/guide/ui-strings/)。パイソン: [パイソンアプリケーション](/ja/guide/ui-strings/python)。
-- ドキュメント — `docs[].contentPaths` に列挙されたマークダウン、MDX、`.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、その他の静的ドキュメントサイト、およびリポジトリREADME（`flat` の `docsOutput.style`）で動作します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/) および [READMEとマークダウン形式のドキュメントに国際化を追加する](/ja/guide/add-i18n-to-readme)。
-- JSON — トップレベルの `json[]` で定義された、ネストされたJSONロケールバンドル（テーマラベル、国際化の上書き、ソース内にないアプリ文言）を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
-- SVG — SVGイラスト内の表示テキスト（`<text>`、`<title>`、`<desc>`）を翻訳し、ロケールごとに1つの出力ファイルを書き込みます。ドキュメント翻訳とは別です。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
+- UI文字列 — JS/TS および Python から `t("…")` および `_()` の呼び出しを抽出し、C# および XAML から `T("…")` / `{loc:Tr '…'}` を抽出し (GNU gettext および .NET `.resx` サテライトを含む)、フラットなロケールごとの JSON、`.po` / `.mo`、または `.resx` を書き込みます。コマンド: `extract`、`translate-ui`、`migrate-dotnet-i18n`。ガイド: [UI文字列](/ja/guide/ui-strings/)。Python: [Pythonアプリケーション](/ja/guide/ui-strings/python)。.NET: [.NETアプリケーション](/ja/guide/ui-strings/dotnet) および [.NET ResourceManager アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)。
+- ドキュメント — `docs[].contentPaths` にリストされている Markdown、MDX、および `.astro` ページを翻訳します。VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、およびその他の静的ドキュメントサイト、ならびにリポジトリの README (`docsOutput.style` の `flat`) と連携します。コマンド: `translate-docs`。ガイド: [ドキュメント](/ja/guide/documents/) および [README と Markdown ドキュメントに i18n を追加する](/ja/guide/add-i18n-to-readme)。
+- JSON — トップレベルの `json[]` で定義されているネストされた JSON ロケールバンドル (テーマラベル、i18n オーバーライド、ソースにないアプリコピー) を翻訳します。コマンド: `translate-json`。ガイド: [JSON](/ja/guide/json)。
+- SVG — SVG イラスト内の表示テキスト (`<text>`、`<title>`、`<desc>`) を翻訳し、ロケールごとに1つの出力ファイルを書き込みます。ドキュメント翻訳とは別です。コマンド: `translate-svg`。ガイド: [SVG翻訳](/ja/guide/svg-translation/)。
 
 多くのプロジェクトではモードを組み合わせて使用します。一般的な組み合わせは、UI文字列とリポジトリのREADMEです。VitePressなどのドキュメントサイトも、よくある組み合わせです。詳しくは、[パイプラインの組み合わせ](/ja/guide/combining-pipelines)と[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)をご覧ください。
 
@@ -62,6 +64,7 @@
 | JS/TSアプリ | [console-app](/ja/examples#console-app), [nextjs-app](/ja/examples#nextjs-app) |
 | アプリに付随するリポジトリのREADME | [console-app](/ja/examples#console-app), [nextjs-app](/ja/examples#nextjs-app) |
 | Pythonアプリ | [python-streamlit](/ja/examples#python-streamlit), [python-fastapi](/ja/examples#python-fastapi), [python-gettext](/ja/examples#python-gettext) |
+| .NET ヘルパー | [dotnet-console](/ja/examples#dotnet-console)、[dotnet-resx](/ja/examples#dotnet-resx) |
 | ドキュメントサイト | [docusaurus-docs](/ja/examples#docusaurus-docs), [vitepress-docs](/ja/examples#vitepress-docs), [astro-docs](/ja/examples#astro-docs) |
 | ウェブサイトまたはプレーンHTML | [astro-website](/ja/examples#astro-website), [plain-html](/ja/examples#plain-html) |
 

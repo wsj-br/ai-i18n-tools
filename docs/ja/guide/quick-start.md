@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # クイックスタート
 
-このページでは、単一言語プロジェクトが最初の翻訳ファイルを作成するまでの手順を案内します。対象となるのは、JS/TSアプリ、Pythonアプリ、ウェブサイトまたはドキュメントサイト、リポジトリのREADME、およびその他のMarkdownファイルです。以下を前提とします:
+このページでは、単一言語プロジェクトを最初の翻訳ファイルに導きます。これは、JS/TSアプリ、Pythonアプリ、.NETアプリ、ウェブサイトまたはドキュメントサイト、あるいはリポジトリのREADMEやその他のMarkdownファイル向けです。前提条件は次のとおりです。
 
 - Node.js `>=22.16.0`、またはPythonプロジェクトの場合は[スタンドアロン実行可能ファイル](/ja/guide/installation#standalone-executables)。
 - LLMプロバイダーのAPIキー、またはローカルのOllamaインストール。
@@ -75,6 +75,16 @@ ai-i18n-tools suggest-models --apply
 
 Djangoアプリ、Flask-Babelカタログを使用するFlask、またはすでに`gettext`を呼び出しているアプリは、それらの呼び出しを保持します。代わりに、`ui-python-django`、`ui-python-flask`、または`ui-python-gettext`でスキャフォールドし、その後、[Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext)に従ってください。
 
+<a id="a-dotnet-app"></a>
+### .NETアプリ
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+次に、[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)に従ってください。すでに`ResourceManager`または`IStringLocalizer`を使用しているアプリは、代わりに`ui-dotnet-resx`を使用し、次に[.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager)に従ってください。`migrate-dotnet-i18n`は、`T($"…")`を番号付きの`{0}`呼び出しに書き換えます。`--wrap`は、マークされていないXAMLおよびC#ラベルを監査します。レポートには、`Resources.LoginButton`などの名前付きresxキーが提案としてリストされ、それらの行は編集されません。
+
 <a id="a-website-or-documentation-site"></a>
 ### ウェブサイトまたはドキュメントサイト
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-その後、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)に従ってください。言語リストマーカーを`sync`の前に`README.md`に貼り付けます。アプリのパスがある場合は、引き続き[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)または[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)に従います。
+次に、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)に従ってください。言語リストマーカーを`sync`の前に`README.md`に貼り付けます。アプリパスがある場合は、引き続き[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)、または[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)です。
 
 <a id="something-else"></a>
 ### その他

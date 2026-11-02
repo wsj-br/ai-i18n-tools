@@ -25,7 +25,7 @@ export interface PythonInterpolation {
   debug: boolean;
   dynamicSpec: boolean;
   simple: boolean;
-  /** Name used in the normalized template (`name` or `value_1`). */
+  /** Name used in the normalized template (`start`, `rows_count`, or `value_1`). */
   placeholderName: string;
 }
 
@@ -60,6 +60,7 @@ interface LineCounter {
 
 interface ValueCounter {
   n: number;
+  used: Set<string>;
 }
 
 /** True for the scaffolded helper, which must not be extracted as user copy. */
@@ -88,7 +89,7 @@ export function lexPython(content: string): PyToken[] {
       }
       continue;
     }
-    const str = tryReadString(content, i, line, { n: 0 });
+    const str = tryReadString(content, i, line, { n: 0, used: new Set() });
     if (str) {
       tokens.push(str);
       i = str.end;
@@ -250,7 +251,7 @@ function tryReadString(
         continue;
       }
       interps.push(rep.interp);
-      decoded += rep.placeholder;
+      decoded += `\uE000${interps.length - 1}\uE001`;
       i = rep.end;
       continue;
     }
@@ -259,6 +260,10 @@ function tryReadString(
     }
     decoded += src[i]!;
     i++;
+  }
+
+  if (interps.length > 0) {
+    decoded = assignInterpolationNames(decoded, interps, counter);
   }
 
   return {
@@ -399,9 +404,14 @@ function readReplacement(
     return null;
   }
   const simple = /^[A-Za-z_][A-Za-z0-9_]*$/.test(expr.expr) && !debug && !dynamicSpec;
-  const placeholderName = simple ? expr.expr : `value_${++counter.n}`;
-  const placeholder = simple
-    ? `{${expr.expr}${conversion}${spec.length > 0 ? `:${spec}` : ""}}`
+  const preferred = simple || debug || dynamicSpec ? null : inferPythonPlaceholderName(expr.expr);
+  const placeholderName = simple ? expr.expr : allocatePlaceholderName(counter, preferred);
+  if (simple) {
+    counter.used.add(expr.expr);
+  }
+  const keepSpec = (simple || preferred !== null) && !dynamicSpec;
+  const placeholder = keepSpec
+    ? `{${placeholderName}${conversion}${spec.length > 0 ? `:${spec}` : ""}}`
     : `{${placeholderName}}`;
   return {
     end: i + 1,
@@ -416,6 +426,93 @@ function readReplacement(
       placeholderName,
     },
   };
+}
+
+const PYTHON_IDENT = "[A-Za-z_][A-Za-z0-9_]*";
+
+/**
+ * A name the translator can keep. `start.isoformat()` → `start`, `obj.attr` → `attr`,
+ * `len(rows)` → `rows_count`, `", ".join(selected)` → `selected`.
+ * Returns null when the expression has no stable name (`items[0]`, `a + b`).
+ */
+export function inferPythonPlaceholderName(expr: string): string | null {
+  const trimmed = expr.trim();
+  if (trimmed === "" || trimmed.length > 120) {
+    return null;
+  }
+  const method = trimmed.match(new RegExp(`^(${PYTHON_IDENT})\\.${PYTHON_IDENT}\\(\\)$`));
+  if (method) {
+    return method[1]!;
+  }
+  if (new RegExp(`^${PYTHON_IDENT}(?:\\.${PYTHON_IDENT})+$`).test(trimmed)) {
+    const parts = trimmed.split(".");
+    return parts[parts.length - 1]!;
+  }
+  const length = trimmed.match(new RegExp(`^len\\(\\s*(${PYTHON_IDENT})\\s*\\)$`));
+  if (length) {
+    return `${length[1]!}_count`;
+  }
+  const joined = trimmed.match(
+    new RegExp(`^(?:'(?:\\\\'|[^'])*'|"(?:\\\\"|[^"])*")\\.join\\(\\s*(${PYTHON_IDENT})\\s*\\)$`)
+  );
+  if (joined) {
+    return joined[1]!;
+  }
+  return null;
+}
+
+/** Claim simple names first, then inferred names, so `{start}` wins over `start.isoformat()`. */
+function assignInterpolationNames(
+  decoded: string,
+  interps: PythonInterpolation[],
+  counter: ValueCounter
+): string {
+  counter.used.clear();
+  counter.n = 0;
+  for (const interp of interps) {
+    if (interp.simple) {
+      counter.used.add(interp.expr);
+    }
+  }
+  let next = decoded;
+  interps.forEach((interp, index) => {
+    const inferred =
+      interp.simple || interp.debug || interp.dynamicSpec
+        ? null
+        : inferPythonPlaceholderName(interp.expr);
+    const name = interp.simple ? interp.expr : allocatePlaceholderName(counter, inferred);
+    interp.placeholderName = name;
+    const withSpec = (interp.simple || inferred !== null) && !interp.dynamicSpec;
+    const body = withSpec
+      ? `{${name}${interp.conversion}${interp.spec.length > 0 ? `:${interp.spec}` : ""}}`
+      : `{${name}}`;
+    next = next.replace(`\uE000${index}\uE001`, body);
+  });
+  return next;
+}
+
+function allocatePlaceholderName(counter: ValueCounter, preferred: string | null): string {
+  if (preferred && !counter.used.has(preferred)) {
+    counter.used.add(preferred);
+    return preferred;
+  }
+  if (preferred) {
+    let n = 2;
+    while (counter.used.has(`${preferred}_${n}`)) {
+      n++;
+    }
+    const name = `${preferred}_${n}`;
+    counter.used.add(name);
+    return name;
+  }
+  let n = counter.n + 1;
+  while (counter.used.has(`value_${n}`)) {
+    n++;
+  }
+  counter.n = n;
+  const name = `value_${n}`;
+  counter.used.add(name);
+  return name;
 }
 
 function readFormatSpec(
@@ -462,7 +559,7 @@ function readExpr(
   while (i < src.length) {
     const c = src[i]!;
     if (c === "'" || c === '"') {
-      const nested = tryReadString(src, i, line, { n: 0 });
+      const nested = tryReadString(src, i, line, { n: 0, used: new Set() });
       if (nested) {
         i = nested.end;
         continue;
@@ -835,14 +932,24 @@ function buildFStringReplacement(
       : quotePython(msg.quote ?? '"', msg.value);
   const kwargs = keywordList(interps);
   const args = kwargs.length > 0 ? `${quoted}, ${kwargs}` : quoted;
+  const generic = [
+    ...new Set(
+      interps
+        .map((item) => item.placeholderName)
+        .filter((name) => name === "value" || /^value_\d+$/.test(name))
+    ),
+  ];
+  let review: string | undefined;
+  if (generic.length > 0) {
+    const shown = generic.map((name) => `{${name}}`).join(", ");
+    review = `generated placeholder ${shown} is generic; rename it for the translator`;
+  } else if (!simple) {
+    review =
+      "a complex expression was bound to a generated placeholder; confirm the name before shipping";
+  }
   return {
     replacement: `t(${args})`,
-    ...(simple
-      ? {}
-      : {
-          review:
-            "a complex expression was bound to a generated placeholder; confirm the name before shipping",
-        }),
+    ...(review ? { review } : {}),
   };
 }
 

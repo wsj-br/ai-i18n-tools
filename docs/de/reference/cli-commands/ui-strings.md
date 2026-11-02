@@ -81,6 +81,8 @@ Schreibt `ui-languages.json` nach `languagesManifestPath` (Standard: `{ui.flatOu
 
 `-l` / `--locale`: kommagetrennte Ziellokale (Standard: Konfiguration `targetLocales` minus `sourceLocale`). `--force`: alle Einträge pro Lokale neu übersetzen (bestehende Übersetzungen ignorieren). `--dry-run`: keine Schreibvorgänge, keine API-Aufrufe. `-j` parallelisiert **Lokale**; innerhalb jeder Lokale parallelisiert die Konfiguration `uiBatchConcurrency` (Standard **2**) LLM-Batches (Blöcke von 50 Zeichenketten, dann Pluralgruppen). Es gibt kein CLI-Flag für `uiBatchConcurrency`.
 
+Eine gespeicherte Übersetzung, deren Platzhalter nicht mit ihrer Quelle übereinstimmen, wird erneut übersetzt. Die Prüfung umfasst einen umbenannten Namen (`{schedule}` wird zu `{cronograma}`), ein gelöschtes oder erfundenes Token und eine Änderung der Formatspezifikation (`{price:,.2f}` wird zu `{price}`). Die Anzahl wird vor dem Batch ausgegeben, einschließlich auf `--dry-run`. Eine Zeile, deren Modell `user-edited` ist, bleibt bestehen und es wird nur davor gewarnt. Eine Zeichenfolge, die nur aus Platzhaltern und Satzzeichen besteht, wie z.B. `{state} · {title}`, wird kopiert und nicht an ein Modell gesendet. Ein Batch, der einen Platzhalter umbenennt, wird abgelehnt, und das nächste Modell in der Kette wird mit angehängtem Fehler versucht. Das Dashboard kennzeichnet dieselben Zeilen und fragt vor dem Speichern einer Übersetzung, die einen Platzhalter beschädigt.
+
 ---
 
 <a id="sync-ui"></a>

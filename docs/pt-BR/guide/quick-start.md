@@ -1,7 +1,7 @@
 <a id="quick-start"></a>
 # Início rápido
 
-Esta página orienta um projeto monolíngue aos seus primeiros arquivos traduzidos. Destina-se a um aplicativo JS/TS, um aplicativo Python, um site ou site de documentação, ou um README de repositório e outros arquivos Markdown. Pressupõe:
+Esta página guia um projeto de idioma único para seus primeiros arquivos traduzidos. É para um aplicativo JS/TS, um aplicativo Python, um aplicativo .NET, um site ou site de documentação, ou um README de repositório e outros arquivos Markdown. Ela assume:
 
 - Node.js `>=22.16.0` ou o [executável autônomo](/pt-BR/guide/installation#standalone-executables) para um projeto Python.
 - Uma chave de API para um provedor de LLM ou uma instalação local do Ollama.
@@ -75,6 +75,16 @@ Em seguida, siga [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-t
 
 Um aplicativo Django, Flask com catálogos Flask-Babel, ou um aplicativo que já chama `gettext` mantém essas chamadas. Estruture com `ui-python-django`, `ui-python-flask` ou `ui-python-gettext` em vez disso, e então siga [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext).
 
+<a id="a-dotnet-app"></a>
+### Um aplicativo .NET
+
+```bash
+ai-i18n-tools init -t ui-dotnet -P openrouter
+ai-i18n-tools suggest-models --apply
+```
+
+Em seguida, siga [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet). Um aplicativo que já usa `ResourceManager` ou `IStringLocalizer` usa `ui-dotnet-resx` em vez disso, então [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager). `migrate-dotnet-i18n` reescreve `T($"…")` em chamadas `{0}` numeradas. `--wrap` audita rótulos XAML e C# não marcados. O relatório lista chaves resx nomeadas, como `Resources.LoginButton`, como sugestões e não edita essas linhas.
+
 <a id="a-website-or-documentation-site"></a>
 ### Um site ou site de documentação
 
@@ -107,7 +117,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 ai-i18n-tools init -t docs-markdown -P openrouter
 ```
 
-Depois, siga [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme). Cole o marcador da lista de idiomas em `README.md` antes de `sync`. O caminho do aplicativo, quando você tiver um, ainda é [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js) ou [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python).
+Em seguida, siga [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme). Cole o marcador da lista de idiomas em `README.md` antes de `sync`. O caminho do aplicativo, se você tiver um, ainda é [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js), [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), ou [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet).
 
 <a id="something-else"></a>
 ### Outros

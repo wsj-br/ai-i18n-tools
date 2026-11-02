@@ -48,6 +48,7 @@ La compétence partagée `ai-i18n-tools` reste disponible pour l'agent. Les autr
 | --- | --- |
 | `/ai-i18n-js` | Interface utilisateur de chaînes sources JavaScript ou TypeScript |
 | `/ai-i18n-python` | Assistant Python généré et catalogues JSON plats |
+| `/ai-i18n-dotnet` | Généré `I18n.cs` ou `I18nResx.cs`, plus `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel, ou gettext simple |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Documentation Astro Starlight |

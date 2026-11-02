@@ -3,11 +3,24 @@
  * and Python `%` / `{field}` / `%{name}` tokens.
  */
 
+export type UiPlaceholderIssueKind = "renamed" | "dropped" | "invented" | "spec-changed";
+
+/** One placeholder mismatch between a source string and its translation. */
+export interface UiTranslationPlaceholderIssue {
+  kind: UiPlaceholderIssueKind;
+  /** Family key from the source when the issue is about a source token. */
+  family: string;
+  /** Family key from the translation when one was paired or invented. */
+  translatedFamily?: string;
+  message: string;
+}
+
 /** Thrown when a UI batch translation drops, invents, or rewrites a placeholder. */
 export class UiBatchPlaceholderError extends Error {
   constructor(
     message: string,
-    public readonly rawResponse: string
+    public readonly rawResponse: string,
+    public readonly issues: UiTranslationPlaceholderIssue[] = []
   ) {
     super(message);
     this.name = "UiBatchPlaceholderError";
@@ -235,13 +248,133 @@ function tryParsePercent(
   if (next !== undefined && /[A-Za-z0-9_]/.test(next)) {
     return null;
   }
+  // French prose such as "% d'appels" is a percent sign plus a word, not "%d".
+  if (next === "'" || next === "\u2019") {
+    return null;
+  }
   j++;
   const raw = text.slice(start, j);
   return { placeholder: { raw, family: raw, end: j }, end: j };
 }
 
-/** Walk `text` and return placeholders in source order. `%%` is a literal percent. */
-export function scanUiPlaceholders(text: string): ScannedPlaceholder[] {
+/** `default` keeps mustache, Python format fields, and printf. `dotnet` is composite format only. */
+export type UiPlaceholderStyle = "default" | "dotnet";
+
+/**
+ * .NET composite item: `{index}`, `{index,alignment}`, `{index:format}`, `{index,alignment:format}`.
+ * A `{name}` field is recorded so extract can reject it; `string.Format` would throw at runtime.
+ * `{{` / `}}` are literal braces. `{{GLS_N}}` stays one token so forced glossary terms still restore.
+ */
+function tryParseDotnetField(text: string, start: number): ScannedPlaceholder | null {
+  if (text[start] !== "{") {
+    return null;
+  }
+  if (text[start + 1] === "{") {
+    const glossary = text.slice(start).match(/^\{\{GLS_\d+\}\}/);
+    if (glossary) {
+      const raw = glossary[0];
+      return { raw, family: raw, end: start + raw.length };
+    }
+    return { raw: "{{", family: "{{", end: start + 2 };
+  }
+  let j = start + 1;
+  if (!isDigit(text[j]) && !isIdentStart(text[j])) {
+    return null;
+  }
+  const named = isIdentStart(text[j]);
+  while (isDigit(text[j]) || (named && isIdentChar(text[j]))) {
+    j++;
+  }
+  if (!named && text[j] === ",") {
+    j++;
+    if (text[j] === "-") {
+      j++;
+    }
+    if (!isDigit(text[j])) {
+      return null;
+    }
+    while (isDigit(text[j])) {
+      j++;
+    }
+  }
+  if (text[j] === ":") {
+    j++;
+    while (j < text.length && text[j] !== "}" && text[j] !== "{") {
+      j++;
+    }
+  }
+  if (text[j] !== "}") {
+    return null;
+  }
+  const raw = text.slice(start, j + 1);
+  return { raw, family: raw, end: j + 1 };
+}
+
+function scanDotnetPlaceholders(text: string): ScannedPlaceholder[] {
+  const found: ScannedPlaceholder[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const ch = text[i]!;
+    if (ch === "}" && text[i + 1] === "}") {
+      found.push({ raw: "}}", family: "}}", end: i + 2 });
+      i += 2;
+      continue;
+    }
+    if (ch === "{") {
+      const field = tryParseDotnetField(text, i);
+      if (field) {
+        found.push(field);
+        i = field.end;
+        continue;
+      }
+    }
+    i++;
+  }
+  return found;
+}
+
+/** True when a .NET catalog string contains a `{name}` item instead of `{0}`. */
+export function hasDotnetNamedPlaceholder(text: string): boolean {
+  for (const token of scanDotnetPlaceholders(text)) {
+    if (/^\{[A-Za-z_]/.test(token.family)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * True when every letter and digit sits inside a placeholder.
+ * `{state} · {title}` is copied as-is. `Hello {name}` is not.
+ * A string with no placeholder is not placeholder-only.
+ */
+export function isPlaceholderOnlyUiString(
+  text: string,
+  style: UiPlaceholderStyle = "default"
+): boolean {
+  const tokens = scanUiPlaceholders(text, style);
+  if (tokens.length === 0) {
+    return false;
+  }
+  let cursor = 0;
+  let outside = "";
+  for (const token of tokens) {
+    const start = token.end - token.raw.length;
+    outside += text.slice(cursor, start);
+    cursor = token.end;
+  }
+  outside += text.slice(cursor);
+  return !/[\p{L}\p{N}]/u.test(outside);
+}
+
+/** Walk `text` and return placeholders in source order. `%%` is a literal percent in the default style. */
+export function scanUiPlaceholders(
+  text: string,
+  style: UiPlaceholderStyle = "default"
+): ScannedPlaceholder[] {
+  if (style === "dotnet") {
+    return scanDotnetPlaceholders(text);
+  }
   const found: ScannedPlaceholder[] = [];
   let i = 0;
   while (i < text.length) {
@@ -278,10 +411,13 @@ export function scanUiPlaceholders(text: string): ScannedPlaceholder[] {
 }
 
 /** Extract unique placeholder substrings that must survive any suggested rewrite (proofread). */
-export function extractUiPlaceholderTokens(original: string): string[] {
+export function extractUiPlaceholderTokens(
+  original: string,
+  style: UiPlaceholderStyle = "default"
+): string[] {
   const found: string[] = [];
   const seen = new Set<string>();
-  for (const token of scanUiPlaceholders(original)) {
+  for (const token of scanUiPlaceholders(original, style)) {
     if (seen.has(token.raw)) {
       continue;
     }
@@ -298,8 +434,11 @@ export function extractUiPlaceholderTokens(original: string): string[] {
  * - `{name}` / `{price:,.2f}` / `{name!r}` stay distinct
  * - `%s`, `%.2f`, `%(name)s`, `%{name}` stay distinct
  */
-export function canonicalPlaceholderFamily(rawToken: string): string {
-  const scanned = scanUiPlaceholders(rawToken);
+export function canonicalPlaceholderFamily(
+  rawToken: string,
+  style: UiPlaceholderStyle = "default"
+): string {
+  const scanned = scanUiPlaceholders(rawToken, style);
   if (scanned.length === 1 && scanned[0]!.raw === rawToken) {
     return scanned[0]!.family;
   }
@@ -323,9 +462,12 @@ export function canonicalPlaceholderFamily(rawToken: string): string {
  * Python format specs and conversions are part of the family, so reordering is
  * allowed but `{price:,.2f}` is not interchangeable with `{price}`.
  */
-export function collectPlaceholderFamilies(text: string): Map<string, number> {
+export function collectPlaceholderFamilies(
+  text: string,
+  style: UiPlaceholderStyle = "default"
+): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const token of scanUiPlaceholders(text)) {
+  for (const token of scanUiPlaceholders(text, style)) {
     if (token.family === "") {
       continue;
     }
@@ -347,7 +489,7 @@ export function isQuantityPlaceholderFamily(family: string): boolean {
   ) {
     return true;
   }
-  if (/^\{[0-9]+\}$/.test(family)) {
+  if (/^\{[0-9]+\}$/.test(family) || /^\{0(?:,-?\d+)?(?::[^}]*)?\}$/.test(family)) {
     return true;
   }
   if (/^\{(?:count|n)(?:![rsa])?(?::[^}]*)?\}$/.test(family)) {
@@ -360,17 +502,214 @@ export function isQuantityPlaceholderFamily(family: string): boolean {
 }
 
 /** True when the source has no quantity placeholder and no ASCII digit. */
-export function isNounOnlyPluralSource(source: string): boolean {
+export function isNounOnlyPluralSource(
+  source: string,
+  style: UiPlaceholderStyle = "default"
+): boolean {
   if (/[0-9]/.test(source)) {
     return false;
   }
-  for (const family of collectPlaceholderFamilies(source).keys()) {
+  for (const family of collectPlaceholderFamilies(source, style).keys()) {
     if (isQuantityPlaceholderFamily(family)) {
       return false;
     }
   }
   return true;
 }
+
+interface PlaceholderFamilyShape {
+  family: string;
+  /** Pairing bucket. Positional printf and literal braces are not name renames. */
+  group:
+    "brace" | "index" | "printf-named" | "printf-pos" | "percent-brace" | "mustache" | "literal";
+  name: string;
+  suffix: string;
+}
+
+/** Split a family key into the name a translator might rewrite and the spec that must stay. */
+function placeholderFamilyShape(family: string): PlaceholderFamilyShape {
+  const brace = family.match(
+    /^\{([A-Za-z_][A-Za-z0-9_.]*(?:\[[^\]]*\])*)((?:![rsa])?(?::[\s\S]*)?)\}$/
+  );
+  if (brace) {
+    return { family, group: "brace", name: brace[1]!, suffix: brace[2] ?? "" };
+  }
+  const index = family.match(/^\{(\d+)((?:,-?\d+)?(?::[\s\S]*)?)\}$/);
+  if (index) {
+    return { family, group: "index", name: index[1]!, suffix: index[2] ?? "" };
+  }
+  const namedPrintf = family.match(/^%\(([^)]+)\)([\s\S]*)$/);
+  if (namedPrintf) {
+    return {
+      family,
+      group: "printf-named",
+      name: namedPrintf[1]!,
+      suffix: namedPrintf[2] ?? "",
+    };
+  }
+  const percentBrace = family.match(/^%\{([^}]+)\}$/);
+  if (percentBrace) {
+    return { family, group: "percent-brace", name: percentBrace[1]!, suffix: "" };
+  }
+  if (family.startsWith("%")) {
+    return { family, group: "printf-pos", name: family, suffix: family };
+  }
+  if (family === "{{" || family === "}}") {
+    return { family, group: "literal", name: family, suffix: "" };
+  }
+  return { family, group: "mustache", name: family, suffix: "" };
+}
+
+function takeUnpaired(
+  extra: PlaceholderFamilyShape[],
+  used: Set<number>,
+  pred: (shape: PlaceholderFamilyShape) => boolean
+): number {
+  for (let i = 0; i < extra.length; i++) {
+    if (used.has(i)) {
+      continue;
+    }
+    if (pred(extra[i]!)) {
+      used.add(i);
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Compare placeholder families in `translated` with `source`.
+ * Order may change. A renamed name (`{schedule}` → `{cronograma}`), a dropped or
+ * invented token, or a format-spec change is reported. Equal families return `[]`.
+ */
+export function uiTranslationPlaceholderIssues(
+  source: string,
+  translated: string,
+  style: UiPlaceholderStyle = "default"
+): UiTranslationPlaceholderIssue[] {
+  const src = collectPlaceholderFamilies(source, style);
+  const dst = collectPlaceholderFamilies(translated, style);
+  const missing: PlaceholderFamilyShape[] = [];
+  const extra: PlaceholderFamilyShape[] = [];
+  const families = new Set<string>([...src.keys(), ...dst.keys()]);
+  for (const family of families) {
+    const sourceCount = src.get(family) ?? 0;
+    const translatedCount = dst.get(family) ?? 0;
+    const shape = placeholderFamilyShape(family);
+    for (let i = 0; i < sourceCount - translatedCount; i++) {
+      missing.push(shape);
+    }
+    for (let i = 0; i < translatedCount - sourceCount; i++) {
+      extra.push(shape);
+    }
+  }
+  if (missing.length === 0 && extra.length === 0) {
+    return [];
+  }
+
+  const usedExtra = new Set<number>();
+  const issues: UiTranslationPlaceholderIssue[] = [];
+  const unmatched: PlaceholderFamilyShape[] = [];
+  const nameGroups = new Set(["brace", "printf-named", "percent-brace", "mustache"]);
+
+  for (const item of missing) {
+    const renamed = takeUnpaired(
+      extra,
+      usedExtra,
+      (candidate) =>
+        candidate.group === item.group &&
+        candidate.suffix === item.suffix &&
+        candidate.name !== item.name &&
+        nameGroups.has(item.group)
+    );
+    if (renamed >= 0) {
+      const translatedFamily = extra[renamed]!.family;
+      issues.push({
+        kind: "renamed",
+        family: item.family,
+        translatedFamily,
+        message: `placeholder "${item.family}" was renamed to "${translatedFamily}"`,
+      });
+      continue;
+    }
+    const specChanged = takeUnpaired(
+      extra,
+      usedExtra,
+      (candidate) =>
+        candidate.group === item.group &&
+        candidate.name === item.name &&
+        candidate.suffix !== item.suffix
+    );
+    if (specChanged >= 0) {
+      const translatedFamily = extra[specChanged]!.family;
+      issues.push({
+        kind: "spec-changed",
+        family: item.family,
+        translatedFamily,
+        message: `placeholder "${item.family}" changed its format spec to "${translatedFamily}"`,
+      });
+      continue;
+    }
+    const renamedAndSpec = takeUnpaired(
+      extra,
+      usedExtra,
+      (candidate) =>
+        candidate.group === item.group && candidate.name !== item.name && nameGroups.has(item.group)
+    );
+    if (renamedAndSpec >= 0) {
+      const translatedFamily = extra[renamedAndSpec]!.family;
+      issues.push({
+        kind: "renamed",
+        family: item.family,
+        translatedFamily,
+        message: `placeholder "${item.family}" was renamed to "${translatedFamily}"`,
+      });
+      continue;
+    }
+    if (item.group === "printf-pos") {
+      const swapped = takeUnpaired(
+        extra,
+        usedExtra,
+        (candidate) => candidate.group === "printf-pos" && candidate.family !== item.family
+      );
+      if (swapped >= 0) {
+        const translatedFamily = extra[swapped]!.family;
+        issues.push({
+          kind: "spec-changed",
+          family: item.family,
+          translatedFamily,
+          message: `placeholder "${item.family}" changed its format spec to "${translatedFamily}"`,
+        });
+        continue;
+      }
+    }
+    unmatched.push(item);
+  }
+
+  for (const item of unmatched) {
+    issues.push({
+      kind: "dropped",
+      family: item.family,
+      message: `placeholder "${item.family}" is missing from the translation`,
+    });
+  }
+  for (let i = 0; i < extra.length; i++) {
+    if (usedExtra.has(i)) {
+      continue;
+    }
+    const invented = extra[i]!.family;
+    issues.push({
+      kind: "invented",
+      family: invented,
+      translatedFamily: invented,
+      message: `translation invented placeholder "${invented}"`,
+    });
+  }
+  return issues;
+}
+
+const PLACEHOLDER_RETRY_HINT =
+  "Copy every placeholder name and format spec unchanged. Do not translate names inside braces.";
 
 /**
  * Require each translation to carry the same placeholder families, with the same
@@ -380,30 +719,28 @@ export function isNounOnlyPluralSource(source: string): boolean {
 export function assertUIBatchPlaceholders(
   sources: string[],
   translations: string[],
-  rawResponse = ""
+  rawResponse = "",
+  style: UiPlaceholderStyle = "default"
 ): void {
-  const issues: string[] = [];
+  const lines: string[] = [];
+  const issues: UiTranslationPlaceholderIssue[] = [];
   const count = Math.min(sources.length, translations.length);
   for (let i = 0; i < count; i++) {
-    const src = collectPlaceholderFamilies(sources[i] ?? "");
-    const dst = collectPlaceholderFamilies(translations[i] ?? "");
-    for (const [family, expected] of src) {
-      const got = dst.get(family) ?? 0;
-      if (got !== expected) {
-        issues.push(`index ${i}: placeholder "${family}" count ${got}, expected ${expected}`);
-      }
-    }
-    for (const family of dst.keys()) {
-      if (!src.has(family)) {
-        issues.push(`index ${i}: invented placeholder "${family}"`);
-      }
+    for (const issue of uiTranslationPlaceholderIssues(
+      sources[i] ?? "",
+      translations[i] ?? "",
+      style
+    )) {
+      lines.push(`index ${i}: ${issue.message}`);
+      issues.push(issue);
     }
   }
-  if (issues.length === 0) {
+  if (lines.length === 0) {
     return;
   }
   throw new UiBatchPlaceholderError(
-    `UI batch placeholder validation failed: ${issues.join("; ")}`,
-    rawResponse
+    `UI batch placeholder validation failed: ${lines.join("; ")}. ${PLACEHOLDER_RETRY_HINT}`,
+    rawResponse,
+    issues
   );
 }

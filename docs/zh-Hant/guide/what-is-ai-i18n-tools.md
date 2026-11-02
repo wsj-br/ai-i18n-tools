@@ -12,7 +12,7 @@
 | 讓面向使用者的文字對工具可見：應用程式碼中的 `t()` 呼叫、網站框架自身的 i18n，或 README 中的語言清單標記 | 快取翻譯並在每次重新執行時重複使用 |
 | 將結果連接到應用程式、網站的路由或 README 的語言列 | 顯示進度並讓您在儀表板中檢閱翻譯 |
 
-此工具不會重寫您的原始碼。提供了用於包裝步驟的編碼代理提示。它不會安裝 i18next 或您網站框架的 i18n，也不會建置您的語言切換器，儘管為此提供了執行階段輔助程式。
+該工具不會重寫您的原始碼，除非您執行 `migrate-python-i18n` 或 `migrate-dotnet-i18n` 並搭配 `--write`。包裝步驟會提供程式碼代理提示。它不會安裝 i18next 或您網站框架的 i18n，也不會建立您的語言切換器，儘管為此提供了執行階段輔助工具。
 
 <a id="where-do-i-start"></a>
 ## 我該從何開始？
@@ -23,6 +23,8 @@
 | --- | --- |
 | 原始碼中帶有純文字的 JS/TS 應用程式 (React、Next.js、Node、CLI) | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) |
 | 一個 Python 應用程式 (Streamlit、FastAPI、Flask、桌面應用程式、指令碼) | [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) |
+| .NET 應用程式 (Avalonia、WPF、MAUI、ASP.NET、Blazor、主控台) | [將 i18n 新增至 .NET 應用程式](/zh-Hant/guide/add-i18n-to-dotnet) |
+| 已使用 `ResourceManager` 或 `IStringLocalizer` 的 .NET 應用程式 | [將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager) |
 | 一個 Django 應用程式、Flask-Babel 目錄，或已使用 GNU gettext 的應用程式 | [為 Django / Python gettext 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-django-gettext) |
 | 一個網站或文件網站 (VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、純 HTML) | [為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website) |
 | 一個儲存庫 README 和其他 Markdown 檔案，通常與應用程式放在一起 | [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@
 
 在底層，此工具執行四個管線。您的設定會啟用您需要的管線，而 `sync` 會依序執行它們。
 
-- UI 字串 — 從 JS/TS 和 Python 原始碼中擷取 `t("…")` 和 `_()` 呼叫 (以及類似的標記，包含 GNU gettext)，並寫入每個語系的扁平 JSON 或 `.po` / `.mo` 目錄。指令：`extract`、`translate-ui`。指南：[UI 字串](/zh-Hant/guide/ui-strings/)。Python：[Python 應用程式](/zh-Hant/guide/ui-strings/python)。
-- 文件 — 翻譯列在 `docs[].contentPaths` 中的 Markdown、MDX 和 `.astro` 頁面。適用於 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 及其他靜態文件網站，以及儲存庫 README (`flat` 的 `docsOutput.style`)。指令：`translate-docs`。指南：[文件](/zh-Hant/guide/documents/) 和 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
-- JSON — 翻譯在頂層 `json[]` 中定義的巢狀 JSON 語系套件 (主題標籤、i18n 覆寫、不在原始碼中的應用程式文案)。指令：`translate-json`。指南：[JSON](/zh-Hant/guide/json)。
-- SVG — 翻譯 SVG 插圖 (`<text>`、`<title>`、`<desc>`) 內的可見文字，並為每個語系寫入一個輸出檔案。與文件翻譯分開。指令：`translate-svg`。指南：[SVG 翻譯](/zh-Hant/guide/svg-translation/)。
+- UI 字串 — 從 JS/TS 和 Python 擷取 `t("…")` 和 `_()` 呼叫，以及從 C# 和 XAML 擷取 `T("…")` / `{loc:Tr '…'}` (包括 GNU gettext 和 .NET `.resx` 附屬元件)，並寫入每個地區設定的平面 JSON、`.po` / `.mo` 或 `.resx`。命令：`extract`、`translate-ui`、`migrate-dotnet-i18n`。指南：[UI 字串](/zh-Hant/guide/ui-strings/)。Python：[Python 應用程式](/zh-Hant/guide/ui-strings/python)。.NET：[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet) 和 [將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。
+- 文件 — 翻譯 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 頁面。適用於 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 及其他靜態文件網站，以及儲存庫 README (`flat` 的 `docsOutput.style`)。命令：`translate-docs`。指南：[文件](/zh-Hant/guide/documents/) 和 [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme)。
+- JSON — 翻譯頂層 `json[]` 中定義的巢狀 JSON 地區設定套件 (主題標籤、i18n 覆寫、非原始碼中的應用程式內容)。命令：`translate-json`。指南：[JSON](/zh-Hant/guide/json)。
+- SVG — 翻譯 SVG 插圖 (`<text>`、`<title>`、`<desc>`) 內的可見文字，並為每個地區設定寫入一個輸出檔案。與文件翻譯分開。命令：`translate-svg`。指南：[SVG 翻譯](/zh-Hant/guide/svg-translation/)。
 
 許多專案會結合多種模式。常見的組合是 UI 字串加上儲存庫的 README。像 VitePress 這樣的文件網站是另一種常見的組合。請參閱 [結合管線](/zh-Hant/guide/combining-pipelines) 和 [為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)。
 
@@ -62,6 +64,7 @@
 | JS/TS 應用程式 | [console-app](/zh-Hant/examples#console-app), [nextjs-app](/zh-Hant/examples#nextjs-app) |
 | 應用程式旁的儲存庫 README | [console-app](/zh-Hant/examples#console-app), [nextjs-app](/zh-Hant/examples#nextjs-app) |
 | Python 應用程式 | [python-streamlit](/zh-Hant/examples#python-streamlit), [python-fastapi](/zh-Hant/examples#python-fastapi), [python-gettext](/zh-Hant/examples#python-gettext) |
+| .NET 輔助工具 | [dotnet-console](/zh-Hant/examples#dotnet-console)、[dotnet-resx](/zh-Hant/examples#dotnet-resx) |
 | 文件網站 | [docusaurus-docs](/zh-Hant/examples#docusaurus-docs), [vitepress-docs](/zh-Hant/examples#vitepress-docs), [astro-docs](/zh-Hant/examples#astro-docs) |
 | 網站或純 HTML | [astro-website](/zh-Hant/examples#astro-website), [plain-html](/zh-Hant/examples#plain-html) |
 

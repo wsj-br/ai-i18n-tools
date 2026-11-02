@@ -12,7 +12,7 @@
 | उपयोगकर्ता-सामने वाले टेक्स्ट को टूल के लिए दृश्यमान बनाएं: ऐप कोड में `t()` कॉल, किसी साइट के लिए आपके फ्रेमवर्क का अपना i18n, या README में एक भाषा-सूची मार्कर | अनुवादों को कैश करता है और हर बार दोबारा चलाने पर उनका पुन: उपयोग करता है |
 | परिणाम को ऐप, साइट की रूटिंग, या README की भाषा पंक्ति से कनेक्ट करें | प्रगति दिखाता है और आपको डैशबोर्ड में अनुवादों की समीक्षा करने देता है |
 
-टूल आपके स्रोत को फिर से नहीं लिखता है। रैपिंग चरण के लिए कोडिंग-एजेंट प्रॉम्प्ट प्रदान किए जाते हैं। यह i18next या आपकी साइट फ्रेमवर्क का i18n इंस्टॉल नहीं करता है, और यह आपका भाषा स्विचर नहीं बनाता है, हालांकि उसके लिए रनटाइम हेल्पर प्रदान किए जाते हैं।
+उपकरण आपके स्रोत कोड को फिर से नहीं लिखता है जब तक आप `migrate-python-i18n` या `migrate-dotnet-i18n` को `--write` के साथ नहीं चलाते हैं। रैपिंग चरण के लिए कोडिंग-एजेंट प्रॉम्प्ट प्रदान किए जाते हैं। यह i18next या आपके साइट फ्रेमवर्क का i18n स्थापित नहीं करता है, और यह आपका भाषा स्विचर नहीं बनाता है, हालांकि उसके लिए रनटाइम हेल्पर प्रदान किए जाते हैं।
 
 <a id="where-do-i-start"></a>
 ## मैं कहाँ से शुरू करूँ?
@@ -23,6 +23,8 @@
 | --- | --- |
 | स्रोत में सादे टेक्स्ट वाला एक JS/TS ऐप (React, Next.js, Node, CLI) | [एक JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) |
 | एक पायथन ऐप (स्ट्रीमलेट, फास्टएपीआई, फ्लास्क, डेस्कटॉप, स्क्रिप्ट) | [पायथन ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) |
+| एक .NET ऐप (Avalonia, WPF, MAUI, ASP.NET, Blazor, कंसोल) | [.NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) |
+| एक .NET ऐप जो पहले से ही `ResourceManager` या `IStringLocalizer` का उपयोग करता है | [.NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager) |
 | एक जैंगो ऐप, फ्लास्क-बैबेल कैटलॉग, या एक ऐसा ऐप जो पहले से जीएनयू गेटटेक्स्ट का उपयोग करता है | [जैंगो / पायथन गेटटेक्स्ट ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) |
 | एक वेबसाइट या दस्तावेज़ साइट (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, सादा HTML) | [एक वेबसाइट या दस्तावेज़ साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) |
 | एक रिपॉजिटरी README और अन्य Markdown फ़ाइलें, आमतौर पर एक ऐप के बगल में | [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@
 
 अंदरूनी तौर पर, टूल चार पाइपलाइन चलाता है। आपकी कॉन्फ़िग आपको आवश्यक पाइपलाइन को सक्षम करती है, और `sync` उन्हें क्रम में चलाता है।
 
-- UI स्ट्रिंग — JS/TS और Python स्रोत से `t("…")` और `_()` कॉल (और GNU gettext सहित समान मार्कर) निकालें और प्रति-लोकेल फ्लैट JSON या `.po` / `.mo` कैटलॉग लिखें। कमांड: `extract`, `translate-ui`। गाइड: [UI स्ट्रिंग](/hi/guide/ui-strings/)। Python: [Python एप्लिकेशन](/hi/guide/ui-strings/python)।
-- दस्तावेज़ — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX, और `.astro` पेजों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और अन्य स्टैटिक डॉक साइटों के साथ, और एक रिपॉजिटरी README (`docsOutput.style` का `flat`) के साथ काम करता है। कमांड: `translate-docs`। गाइड: [दस्तावेज़](/hi/guide/documents/) और [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
-- JSON — टॉप-लेवल `json[]` में परिभाषित नेस्टेड JSON लोकल बंडलों (थीम लेबल, i18n ओवरराइड, स्रोत में नहीं ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। गाइड: [JSON](/hi/guide/json)।
-- SVG — SVG चित्रों (`<text>`, `<title>`, `<desc>`) के अंदर दृश्यमान टेक्स्ट का अनुवाद करें और प्रति लोकेल एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग। कमांड: `translate-svg`। गाइड: [SVG अनुवाद](/hi/guide/svg-translation/)।
+- UI स्ट्रिंग्स — JS/TS और Python से `t("…")` और `_()` कॉल, और C# और XAML से `T("…")` / `{loc:Tr '…'}` (GNU gettext और .NET `.resx` सैटेलाइट सहित) निकालें और प्रति-स्थानिक JSON, `.po` / `.mo`, या `.resx` लिखें। कमांड: `extract`, `translate-ui`, `migrate-dotnet-i18n`। गाइड: [UI स्ट्रिंग्स](/hi/guide/ui-strings/)। Python: [Python एप्लिकेशन](/hi/guide/ui-strings/python)। .NET: [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet) और [.NET ResourceManager ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet-resourcemanager)।
+- दस्तावेज़ — `docs[].contentPaths` में सूचीबद्ध Markdown, MDX, और `.astro` पृष्ठों का अनुवाद करें। VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, और अन्य स्थिर दस्तावेज़ साइटों के साथ, और एक रिपॉजिटरी README (`docsOutput.style` का `flat`) के साथ काम करता है। कमांड: `translate-docs`। गाइड: [दस्तावेज़](/hi/guide/documents/) और [अपने README और Markdown दस्तावेज़ों में i18n जोड़ें](/hi/guide/add-i18n-to-readme)।
+- JSON — शीर्ष-स्तरीय `json[]` में परिभाषित नेस्टेड JSON स्थानीय बंडलों (थीम लेबल, i18n ओवरराइड, स्रोत में नहीं ऐप कॉपी) का अनुवाद करें। कमांड: `translate-json`। गाइड: [JSON](/hi/guide/json)।
+- SVG — SVG चित्रों (`<text>`, `<title>`, `<desc>`) के अंदर दृश्यमान टेक्स्ट का अनुवाद करें और प्रति-स्थानिक एक आउटपुट फ़ाइल लिखें। दस्तावेज़ अनुवाद से अलग। कमांड: `translate-svg`। गाइड: [SVG अनुवाद](/hi/guide/svg-translation/)।
 
 कई प्रोजेक्ट मोड को जोड़ते हैं। सामान्य जोड़ी UI स्ट्रिंग और रिपॉजिटरी README है। VitePress जैसी डॉक्स साइट दूसरी अक्सर उपयोग की जाने वाली जोड़ी है। [पाइपलाइन को संयोजित करना](/hi/guide/combining-pipelines) और [अपनी README और मार्कडाउन डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) देखें।
 
@@ -62,6 +64,7 @@
 | एक JS/TS ऐप | [console-app](/hi/examples#console-app), [nextjs-app](/hi/examples#nextjs-app) |
 | एक ऐप के बगल में एक रिपॉजिटरी README | [console-app](/hi/examples#console-app), [nextjs-app](/hi/examples#nextjs-app) |
 | एक Python ऐप | [python-streamlit](/hi/examples#python-streamlit), [python-fastapi](/hi/examples#python-fastapi), [python-gettext](/hi/examples#python-gettext) |
+| एक .NET हेल्पर | [dotnet-console](/hi/examples#dotnet-console), [dotnet-resx](/hi/examples#dotnet-resx) |
 | एक डॉक्स साइट | [docusaurus-docs](/hi/examples#docusaurus-docs), [vitepress-docs](/hi/examples#vitepress-docs), [astro-docs](/hi/examples#astro-docs) |
 | एक वेबसाइट या सादा HTML | [astro-website](/hi/examples#astro-website), [plain-html](/hi/examples#plain-html) |
 

@@ -286,26 +286,32 @@ Os caminhos resolvidos de `stringsJson`, `flatOutputDir` e de manifesto devem se
 - `flatOutputDir`
   Diretório onde os arquivos JSON por localidade deste bloco são gravados (`de.json`, etc.).
 - `flatOutput`
-  Quando `true` (o padrão), `translate-ui` grava um arquivo JSON plano por localidade. Defina `false` para um bloco somente gettext. Um bloco com `flatOutput: false` deve definir `gettext`.
+  Quando `true` (o padrão), `translate-ui` grava um arquivo JSON plano por localidade. Defina `false` para emitir apenas gettext ou resx. Um bloco com `flatOutput: false` deve definir `gettext` ou `resx`.
+- `resx`
+  Saída opcional .NET `.resx`. `outputDir` (padrão `Resources`) e `baseName` (padrão `SharedResource`) gravam `{baseName}.resx` mais `{baseName}.{culture}.resx`. `writeNeutral` (padrão true) coloca o texto fonte no arquivo neutro para que `ResourceManager` possa retornar. `localeFormat` é `bcp47` (padrão, `pt-BR`) ou `posix` (`pt_BR`). `ingestExistingResx` (padrão true) lê satélites durante a `extract`. `neutralFile` mapeia chaves nomeadas legadas como `LoginButton` através do valor neutro. As chaves de contexto usam U+2404. As formas plurais são entradas separadas nomeadas `{singular}[{form}]`. Um bloco com `flatOutput: false` deve definir `gettext` ou `resx`.
 - `gettext`
-  Saída GNU gettext opcional para este bloco. `outputDir` (padrão `./locales`) recebe `<locale>/LC_MESSAGES/<domain>.po` e, quando `compileMo` é true (o padrão), o `.mo` correspondente. `domain` usa `messages` como padrão. `potPath` é o catálogo de modelo. `ingestExistingPo` (padrão `true`) preenche campos `strings.json` vazios com valores `msgstr` não fuzzy durante `extract` e não substitui uma tradução não vazia ou editada pelo usuário. `localeFormat` é `posix` (padrão, `pt_BR`) ou `bcp47` (`pt-BR`). Linhas contextuais usam o separador `\u0004` do gettext. A mesma string no idioma de origem em dois contextos não compartilha um ID de catálogo.
+  Saída opcional GNU gettext para este bloco. `outputDir` (padrão `./locales`) recebe `<locale>/LC_MESSAGES/<domain>.po` e, quando `compileMo` é true (o padrão), o `.mo` correspondente. `domain` assume como padrão `messages`. `potPath` é o catálogo de modelo. `ingestExistingPo` (padrão `true`) preenche slots `strings.json` vazios com valores `msgstr` não-fuzzy durante a `extract` e não substitui uma tradução não vazia ou editada pelo usuário. `localeFormat` é `posix` (padrão, `pt_BR`) ou `bcp47` (`pt-BR`). As linhas contextuais usam o separador `\u0004` do gettext. A mesma string de idioma de origem em dois contextos não compartilha um ID de catálogo.
 - `targetLocales`
-  Lista de localidades opcional para este bloco. Quando omitida ou vazia, o bloco usa `targetLocales` na raiz.
+  Lista de localidades opcional para este bloco. Quando omitido ou vazio, o bloco usa a `targetLocales` raiz.
 - `languagesManifestPath`
-  Caminho opcional onde `extract` e `generate-ui-languages` gravam o `ui-languages.json` deste bloco. Quando omitido, o bloco 0 usa `languagesManifestPath` na raiz (que, por sua vez, usa `{flatOutputDir}/ui-languages.json` deste bloco como padrão). Blocos posteriores usam `{flatOutputDir}/ui-languages.json` como padrão.
+  Caminho opcional onde `extract` e `generate-ui-languages` gravam a `ui-languages.json` deste bloco. Quando omitido, o bloco 0 usa o `languagesManifestPath` raiz (que por si só assume como padrão o `{flatOutputDir}/ui-languages.json` deste bloco). Blocos posteriores assumem como padrão `{flatOutputDir}/ui-languages.json`.
 - `uiGlossary`
-  Quando `true` (o padrão), o `strings.json` deste bloco é uma fonte de dica de glossário para `translate-docs`, `translate-json` e `translate-svg`. `translate-ui`, `proofread-ui` e a verificação de lint da fonte usam apenas `glossary.userGlossary`. Defina `false` para manter um catálogo fora dessas dicas (por exemplo, um catálogo de strings de CLI que não deve orientar a documentação).
+  Quando `true` (o padrão), o `strings.json` deste bloco é uma fonte de dicas de glossário para `translate-docs`, `translate-json` e `translate-svg`. `translate-ui`, `proofread-ui` e a linting de origem usam apenas `glossary.userGlossary`. Defina `false` para manter um catálogo fora dessas dicas (por exemplo, um catálogo de strings CLI que não deve direcionar a documentação).
 - `uiExtractor.funcNames` (ou legado `reactExtractor.funcNames`)
-  Nomes de funções adicionais para verificar (padrão: `["t", "i18n.t"]`).
+  Nomes de funções adicionais para varrer (padrão: `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (ou legado `reactExtractor.extensions`)
-  Extensões de arquivo para incluir (padrão: `[".js", ".jsx", ".ts", ".tsx"]`). Adicione `.astro` para frontmatter e expressões de modelo do Astro.
+  Extensões de arquivo a serem incluídas (padrão: `[".js", ".jsx", ".ts", ".tsx"]`). Adicione `.astro` para frontmatter e expressões de modelo Astro.
 - `uiExtractor.includePackageDescription` (ou legado `reactExtractor.includePackageDescription`)
-  Quando `true` (padrão), `extract` também inclui `package.json` `description` como uma string de interface do usuário quando presente. Defina `false` em blocos extras para que a mesma descrição não seja extraída para todos os catálogos.
+  Quando `true` (padrão), `extract` também inclui `package.json` `description` como uma string de UI quando presente. Defina `false` em blocos extras para que a mesma descrição não seja extraída em todos os catálogos.
 - `uiExtractor.packageJsonPath` (ou legado `reactExtractor.packageJsonPath`)
-  Caminho personalizado para o arquivo `package.json` usado para essa extração de descrição opcional.
+  Caminho personalizado para o arquivo `package.json` usado para essa extração opcional de descrição.
 - `uiExtractor.includeUiLanguageEnglishNames` (ou legado `reactExtractor.includeUiLanguageEnglishNames`)
 
-Quando `true` (padrão `false`), `extract` também adiciona cada `englishName` do catálogo mestre de ui-languages empacotado (criado a partir de `sourceLocale` + a `targetLocales` efetiva do bloco) a `strings.json` quando ainda não estiver presente na verificação da fonte (mesmas chaves de hash). Não lê `languagesManifestPath`.
+Quando `true` (padrão `false`), `extract` também adiciona cada `englishName` do catálogo mestre de ui-languages empacotado (construído a partir de `sourceLocale` + as `targetLocales` efetivas do bloco) à `strings.json` quando ainda não presente na varredura de origem (mesmas chaves hash). Não lê `languagesManifestPath`.
+- `uiExtractor.placeholderStyle`
+  `default` (mustache, campos de formato Python e printf) ou `dotnet` (apenas `{0}`, `{0,-10}`, `{0:format}`). No estilo `dotnet`, um sinal de porcentagem é texto literal e chaves duplas são chaves literais. O modelo `ui-dotnet` define `dotnet`.
+- `uiExtractor.exclude`
+  Padrões Minimatch, relativos à raiz do projeto, descartados após a varredura. `bin`, `obj`, `.vs`, `TestResults` e `packages` já são ignorados pelo nome do diretório. O modelo `ui-dotnet` exclui `**/Tests/**` e `**/*.Tests/**`.
 
 `glossary.uiGlossary` e `glossary.uiGlossaryFromStringsJson` não são mais aceitos. O carregamento da configuração falha e o erro explica a substituição: exclua a chave. As dicas agora vêm da flag `uiGlossary` de cada bloco (padrão `true`).
 

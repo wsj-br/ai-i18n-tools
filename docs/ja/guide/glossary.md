@@ -19,6 +19,8 @@
 | UIカタログ | `ui[].uiGlossary`（ブール値、デフォルトは`true`）— そのブロックの`stringsJson` | `translate-docs`、`translate-json`、`translate-svg` |
 | ユーザーCSV | `glossary.userGlossary` | `translate-ui`、`proofread-ui`、`translate-docs`、`translate-json`、`translate-svg` |
 
+`init` は `glossary.userGlossary` を `glossary-user.csv` に指定しますが、そのファイルは作成しません。そのファイルが存在しない場合は `glossary-generate` を実行し、最初の `translate-ui` の前にドメイン用語を記述してください。変更されていない文字列を再度翻訳すると、異なる表現になる可能性があります。用語集を使用することで、2回の実行で一致させることができます。
+
 `uiGlossary: true`が設定されたブロックは、その`strings.json`にすでに保存されている翻訳をヒントとして再利用するため、ドキュメント、JSON、SVGがUIと整合性を保ちます。`translate-ui`と`proofread-ui`はこれらのカタログを読み取らず、ユーザーCSVからのみヒントを取得するため、不適切なUI翻訳が優先用語としてフィードバックされることはありません。他のパイプラインを誘導しないようにするブロックでは、`uiGlossary`を`false`に設定します。複数のブロックが1つのソース用語を共有する場合、先行するブロックがロケールを埋め、後続のブロックはまだ不足しているロケールのみを追加します。ユーザーCSVはすべてのUIカタログに優先します。`locale`が特定のコードである行は、そのロケールにおける`*`行とUIカタログの翻訳の両方を置き換えます。`*`の`locale`は、UIカタログからの翻訳がまだ存在しないすべてのターゲットロケールに同じ翻訳を適用します。
 
 簡潔なUIラベル略語（`Alm.`のような末尾のドット、または`Size` → `Tam`のような短い単一トークン圧縮）は、UI翻訳で引き続き使用できます。ドキュメントプロンプトはこれらをスキップするため、モデルがmarkdownやMDXで<code v-pre>{{…}}</code>トークンを勝手に生成する方向に誘導されることはありません。

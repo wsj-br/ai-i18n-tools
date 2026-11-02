@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # इंटीग्रेशन
 
-फ्रेमवर्क इंटीग्रेशन के लिए संदर्भ: वे क्या साझा करते हैं और उनकी शेल स्ट्रिंग कैसे भिन्न होती हैं। किसी साइट में भाषाएँ जोड़ने के लिए, [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) से शुरू करें। किसी ऐप के लिए, [किसी JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js) या [किसी Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python) से शुरू करें। किसी रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए, [अपनी README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) से शुरू करें।
+फ्रेमवर्क एकीकरण के लिए संदर्भ: वे क्या साझा करते हैं और उनकी शेल स्ट्रिंग कैसे भिन्न होती हैं। किसी साइट में भाषाएँ जोड़ने के लिए, [किसी वेबसाइट या डॉक्स साइट में i18n जोड़ें](/hi/guide/add-i18n-to-website) से शुरू करें। किसी ऐप के लिए, [किसी JS/TS ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-js), [किसी Python ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-python), या [किसी .NET ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-dotnet) से शुरू करें। किसी रिपॉजिटरी README और अन्य Markdown फ़ाइलों के लिए, [अपनी README और Markdown डॉक्स में i18n जोड़ें](/hi/guide/add-i18n-to-readme) से शुरू करें।
 
 डॉक्यूमेंटेशन इंटीग्रेशन पेज सामग्री के लिए [डॉक्यूमेंट्स](/hi/guide/documents/) पाइपलाइन (`translate-docs` / `sync`) का उपयोग करते हैं; शेल स्ट्रिंग (नेविगेशन, साइडबार, थीम) को उसी पाइपलाइन के भीतर संभाला जाता है जहाँ उल्लेख किया गया है — अलग [JSON](/hi/guide/json) पाइपलाइन के माध्यम से नहीं। Python एप्लिकेशन [UI स्ट्रिंग](/hi/guide/ui-strings/python) पाइपलाइन (`extract` / `translate-ui`) का उपयोग करते हैं।
 
@@ -49,3 +49,5 @@
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| .NET JSON हेल्पर | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| .NET ResourceManager हेल्पर | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

@@ -20,10 +20,10 @@
 すべてのウォークスルーは同じ順序で進みます。選択したページで詳細が説明されます。
 
 1. CLIをインストールし、プロバイダーのAPIキーを設定します。Ollamaはキーを必要としません。[インストール](/ja/guide/installation)と[プロバイダーとAPIキー](/ja/guide/quick-start#provider-and-api-key)。
-2. そのページで指定されているテンプレートを使って`init`を実行します。これにより`ai-i18n-tools.config.json`が書き込まれます。
-3. ツールがテキストを認識できるようにプロジェクトを準備します。そのページの「エージェントプロンプト」を使用するか、同じページの手動手順に従ってください。
-4. `ai-i18n-tools sync`を実行し、次に`ai-i18n-tools status`を実行します。
-5. 出力をロードし、1つのターゲット言語を確認し、ソースが変更されたら`sync`を再実行します。キャッシュは、新規または変更されたテキストのみをモデルに送信します。
+2. そのページで指定されているテンプレートを使用して`init`を実行します。これにより`ai-i18n-tools.config.json`が書き込まれます。
+3. ツールがテキストを認識できるようにプロジェクトを準備します。そのページのエージェントプロンプト、または同じページの手動手順を使用します。
+4. ユーザーグロッサリーを確認または作成し、その後`ai-i18n-tools sync`と`ai-i18n-tools status`を実行します。クリーンな抽出は、すべての可視文がラップされていることの証明ではありません。
+5. 出力をロードし、1つのターゲット言語を確認し、ソースが変更されたら`sync`を再実行します。キャッシュは、新しいまたは変更されたテキストのみをモデルに送信します。通常の実行では、`user-edited`行はそのまま残されます。`--force`はそれらを再度翻訳します。
 
 <a id="pages-in-this-section"></a>
 ## このセクションのページ
@@ -32,6 +32,8 @@
 | --- | --- | --- |
 | ボタンやメッセージがまだプレーンテキストのJS/TSアプリ（React、Next.js、Node、CLI） | [JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js) | i18nextをインストールし、ブートストラップを追加し、リテラルを`t()`で囲み、言語切り替えを追加します。その後、`extract`と`translate-ui`を実行します |
 | Pythonアプリ（Streamlit、FastAPI、Flask、デスクトップ、スクリプト） | [Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python) | `i18n.py`ヘルパーを配置し、`t()`または`_()`をラップし、言語切り替えを追加します。CLIはNode.jsをインストールせずにスタンドアロンの実行可能ファイルから実行できます |
+| .NET アプリ (Avalonia、WPF、MAUI、ASP.NET、Blazor、コンソール) | [.NET アプリに i18n を追加する](/ja/guide/add-i18n-to-dotnet) | `I18n.cs` を配置します。`T()` をラップします。または `migrate-dotnet-i18n` を実行します。`locales/*.json` を埋め込み、言語切り替えを追加します。 |
+| すでに`ResourceManager`または`IStringLocalizer`を使用している.NETアプリ | [.NET ResourceManagerアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet-resourcemanager) | そのローダーを維持します。`I18nResx.cs`を配置し、同じ`T()`カタログから`.resx`サテライトを書き込みます。 |
 | Djangoアプリ、Flask-Babelカタログを使用するFlask、またはすでにGNU gettextを使用している任意のアプリ | [Django / Python gettextアプリにi18nを追加する](/ja/guide/add-i18n-to-django-gettext) | `gettext`、`{% blocktranslate %}`、および`.po`ファイルを保持します。ツールがカタログを埋め、コンパイルします |
 | ドキュメントサイトまたはマーケティングサイト（VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro、プレーンHTML） | [ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website) | そのページのエージェントプロンプトでフレームワークのi18nを有効にし、その後`sync`を実行してページとテーマのラベルを翻訳します |
 | リポジトリのREADMEおよびその他のMarkdownファイル（通常はアプリの隣） | [READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme) | 言語ごとに1つのファイル（`translated-docs/README.de.md`）とREADME内の言語行。`init --with-readme`は、そのブロックを任意のテンプレートに追加します |

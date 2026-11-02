@@ -48,6 +48,7 @@ CLI 會偵測機器上安裝的程式碼代理程式。每個代理程式的安�
 | --- | --- |
 | `/ai-i18n-js` | JavaScript 或 TypeScript 原始字串 UI |
 | `/ai-i18n-python` | 產生的 Python 輔助程式和平面 JSON 目錄 |
+| `/ai-i18n-dotnet` | 產生 `I18n.cs` 或 `I18nResx.cs`，以及 `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django、Flask-Babel 或純 gettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight 文件 |

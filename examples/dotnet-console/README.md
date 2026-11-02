@@ -1,0 +1,13 @@
+# dotnet-console
+
+xUnit checks for the shipped `I18n.cs` helper: embedded locale JSON, culture fallback, whitespace, `{0}` formatting, plurals, and the GNU plural-form table.
+
+This directory is not an app to translate. It does not need an API key.
+
+```bash
+dotnet test
+```
+
+From the ai-i18n-tools repository root, `pnpm test:dotnet` runs the same command and exits 0 when `dotnet` is not installed.
+
+The helper source is `../../assets/dotnet/I18n.cs`. `init -t ui-dotnet` copies that file into a real app. See [Add i18n to a .NET app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-dotnet).

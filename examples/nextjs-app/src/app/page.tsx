@@ -2,7 +2,8 @@
 
 import uiLanguages from "../../locales/ui-languages.json";
 import i18n, { loadLocale, SOURCE_LOCALE } from "@/lib/i18n";
-import { Suspense, useCallback, useLayoutEffect, useState } from "react";
+import { isCurrentRequest, pickLocale } from "@/lib/locale-gate";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
@@ -27,24 +28,33 @@ function HomePageContent() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [locale, setLocale] = useState(() => {
-    const param = searchParams.get("locale");
-    return param && VALID_LOCALES.has(param) ? param : SOURCE_LOCALE;
-  });
+  const requested = pickLocale(searchParams.get("locale"), VALID_LOCALES, SOURCE_LOCALE);
+  const [locale, setLocale] = useState(requested);
+  const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
+  const [loadError, setLoadError] = useState("");
+  const requestTicket = useRef(0);
 
   const applyLocale = useCallback(async (next: string) => {
-    setLocale(next);
-    await loadLocale(next);
-    await i18n.changeLanguage(next);
+    const mine = ++requestTicket.current;
+    setPhase("loading");
+    setLoadError("");
+    try {
+      await loadLocale(next);
+      if (!isCurrentRequest(mine, requestTicket.current)) return;
+      await i18n.changeLanguage(next);
+      if (!isCurrentRequest(mine, requestTicket.current)) return;
+      setLocale(next);
+      setPhase("ready");
+    } catch (error) {
+      if (!isCurrentRequest(mine, requestTicket.current)) return;
+      setLoadError(error instanceof Error ? error.message : String(error));
+      setPhase("error");
+    }
   }, []);
 
-  useLayoutEffect(() => {
-    const param = searchParams.get("locale");
-    const target =
-      param && VALID_LOCALES.has(param) ? param : SOURCE_LOCALE;
-    if (target === i18n.language) return;
-    void applyLocale(target);
-  }, [applyLocale, searchParams]);
+  useEffect(() => {
+    void applyLocale(requested);
+  }, [applyLocale, requested]);
 
   const onLocaleChange = useCallback(
     async (next: string) => {
@@ -59,12 +69,11 @@ function HomePageContent() {
 
   return (
     <main>
-      <h1>{t("ai-i18n-tools: Next.js example app")}</h1>
       <div className="locale-row">
         <label htmlFor="locale">Locale</label>
         <select
           id="locale"
-          value={locale}
+          value={requested}
           onChange={(e) => void onLocaleChange(e.target.value)}
         >
           {locales.map((entry) => (
@@ -75,6 +84,11 @@ function HomePageContent() {
         </select>
       </div>
       <hr />
+      {phase === "loading" ? <p>Loading…</p> : null}
+      {phase === "error" ? <p role="alert">{loadError}</p> : null}
+      {phase === "ready" ? (
+      <>
+      <h1>{t("ai-i18n-tools: Next.js example app")}</h1>
       <div className="lines">
         <p>{t("Hello World!")}</p>
         <p>{t("This line will be translated to multiple languages.")}</p>
@@ -112,6 +126,8 @@ function HomePageContent() {
           </p>
         </div>
       </div>
+      </>
+      ) : null}
     </main>
   );
 }

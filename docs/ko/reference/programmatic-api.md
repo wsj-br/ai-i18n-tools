@@ -80,3 +80,23 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `ngettext(singular, plural, n, **values)` | 복수형 조회 후 보간합니다. `count`은(는) 형식 문자열에서 사용할 수 있습니다. |
 | `pgettext(context, message, **values)` | 컨텍스트 조회(`msgctxt` 또는 `context` + U+0004 + 플랫 JSON의 소스 언어 문자열) 후 보간합니다. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 선택 상자입니다. `st.session_state.locale` 및 `st.query_params["lang"]`을(를) 작성하고, `set_locale`을(를) 호출하며, 선택한 코드를 반환합니다. |
+
+<a id="dotnet-runtime-i18ncs"></a>
+## .NET 런타임 (`I18n.cs`)
+
+`I18n.cs`가 누락된 경우 `init -t ui-dotnet`는 `assets/dotnet/I18n.cs`을 프로젝트에 복사합니다. 이는 .NET 6 이상 버전용 종속성 없는 도우미입니다. 아래 멤버는 위 표의 Node 내보내기와 별개입니다. 호출 형태 및 XAML 마크업: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet).
+
+| 멤버 | 동작 |
+| --- | --- |
+| `SetLocale(locale)` | 정확한 파일이 누락된 경우 `CultureInfo.Parent`을 탐색하여 해당 로케일의 플랫 JSON을 로드합니다. `LocaleChanged`를 발생시킵니다. |
+| `T(source, args)` | 잘라낸 리터럴을 찾아 `string.Format`로 서식을 지정하고, 원본의 선행 및 후행 공백을 다시 넣습니다. |
+| `Tn(singular, plural, count, args)` | 복수형 조회. `{0}`은 개수입니다. 카탈로그 키는 잘라낸 단수형의 MD5-8에 `_`와 CLDR 형식을 더한 값입니다. |
+| `Tp(context, source, args)` | 컨텍스트 + U+0004 + 소스를 조회한 다음 서식을 지정합니다. |
+| `N(source)` | `source`을 반환합니다. 정적 레이블을 카탈로그화할 수 있도록 추출되었습니다. |
+| `Loc[source]` | `T`을 호출하는 인덱서. `Loc`는 `StringSourceLocalizer` 형식의 정적 필드입니다. |
+| `Configure(options)` | 원본 로케일, 엄격한 키 누락 모드, 디렉터리 또는 스트림 로더, 언어 목록을 설정합니다. |
+| `SupportedLocales` | `init`로 스탬프 처리된 로케일(기본 이름 및 영어 이름 포함). |
+| `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`. |
+| `PluralForm(locale, n)` | `.po` 파일과 동일한 GNU 규칙에서 가져온 CLDR 형식 이름. |
+
+`init -t ui-dotnet-resx`는 대신 `I18nResx.cs`을 복사합니다. `T`, `Tn`, `Tp`는 동일한 원본 문자열 키로 `ResourceManager`를 호출합니다. `SetLocale`는 `CurrentUICulture` 및 `CurrentCulture`을 설정합니다. 세부 정보: [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager).

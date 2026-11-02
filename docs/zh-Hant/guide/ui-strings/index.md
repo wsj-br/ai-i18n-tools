@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # UI 字串
 
-`extract` 與 `translate-ui` 的參考文件，這個管線會將 `t()` 呼叫轉換為各語系的目錄。首次為應用程式新增 i18n 嗎？請從 [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) 或 [為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) 開始。這些文件涵蓋了包裝步驟，然後會引導您回到這裡完成第 2 至 4 步。
+`extract` 和 `translate-ui` 的參考資料，這是將 `t()` 呼叫轉換為每個語系目錄的管道。首次為應用程式新增 i18n 嗎？請從[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js)、[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python) 或[為 .NET 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet) 開始。它們涵蓋了包裝步驟，然後會引導您回到這裡進行步驟 2 至 4。
 
-此管線適用於 JS/TS 專案（React、Next.js 客戶端與伺服器元件、Node.js 服務、純 HTML、Astro 網站及 CLI 工具）和 Python 應用程式。在原始碼呼叫 `t()` 後，JS/TS 會使用 i18next 查詢字串。Python 透過一個產生的 `i18n.py` 來呼叫 `t()` 或 gettext（Django 保留 Django 的 gettext）。
+此管道支援 JS/TS 專案 (React、Next.js 用戶端和伺服器元件、Node.js 服務、純 HTML、Astro 網站和 CLI 工具)、Python 應用程式和 .NET 應用程式。JS/TS 在原始碼呼叫 `t()` 後，會使用 i18next 查詢字串。Python 透過產生的 `i18n.py` 呼叫 `t()` 或 gettext (Django 保留 Django 的 gettext)。.NET 透過產生的 `I18n.cs` 呼叫 `T()`。
 
 <a id="which-guide-to-read"></a>
 ## 閱讀哪份指南
@@ -13,6 +13,7 @@
 | 含有寫死原始碼字串的 JS/TS，尚未使用 `t()` | [為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js) |
 | React / Next.js / Node，原始碼中已有 `t()` | [串接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) |
 | Python (`t()`、`_()`、gettext、Jinja、Django) | [Python 應用程式](/zh-Hant/guide/ui-strings/python)。初始化：`ui-python`、`ui-python-gettext`、`ui-python-flask` 或 `ui-python-django`。輔助工具：`i18n.py`。若要將地區設定新增至現有應用程式，請參閱[將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python)，或在應用程式使用 gettext 時參閱[將 i18n 新增至 Django / Python gettext 應用程式](/zh-Hant/guide/add-i18n-to-django-gettext)。 |
+| .NET (`T()`、`Tn`、`Tp`、XAML `loc:Tr`) | [.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet)。初始化：`ui-dotnet` (`I18n.cs`) 或 `ui-dotnet-resx` ([為 .NET ResourceManager 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager))。若要為現有應用程式新增語系，請參閱[為 .NET 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet)。 |
 | 純 HTML (標記中沒有 `t()`) | [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html) |
 | Astro 行銷網站 (混合) | [Astro 網站](/zh-Hant/guide/ui-strings/astro-website) |
 | `t()` 規則、插值、複數 | [t() 呼叫與複數](/zh-Hant/guide/ui-strings/t-calls-and-plurals) |
@@ -79,10 +80,11 @@ ai-i18n-tools translate-ui
 
 `translate-ui` 只會寫入檔案。應用程式必須載入這些檔案。
 
-- JS/TS：設定 i18next 並搭配執行階段輔助程式，載入使用者選擇的地區設定檔案，並新增語言切換器。請參閱 [連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 和 [語言切換器與 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
-- Python：使用產生的 `i18n.py` 或您的 gettext 目錄。請參閱 [Python 應用程式](/zh-Hant/guide/ui-strings/python)。
-- 純 HTML：在頁面旁載入執行階段指令碼。請參閱 [純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)。
-- Astro：請參閱 [Astro 網站](/zh-Hant/guide/ui-strings/astro-website)。
+- JS/TS：使用執行階段輔助程式設定 i18next，載入使用者選擇的語系檔案，並新增語言切換器。請參閱[連接 i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 和[語言切換器和 RTL](/zh-Hant/guide/ui-strings/language-switcher)。
+- Python：使用產生的 `i18n.py` 或您的 gettext 目錄。請參閱[Python 應用程式](/zh-Hant/guide/ui-strings/python)。
+- .NET：使用產生的 `I18n.cs`，或在應用程式已使用 `ResourceManager` 時使用 `I18nResx.cs`。請參閱[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet) 和[為 .NET ResourceManager 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。`migrate-dotnet-i18n` 會重寫不安全的 `T()` 引數。`--wrap` 會稽核未標記的標籤。
+- 純 HTML：在頁面旁邊載入執行階段指令碼。請參閱[純 HTML 應用程式](/zh-Hant/guide/ui-strings/plain-html)。
+- Astro：請參閱[Astro 網站](/zh-Hant/guide/ui-strings/astro-website)。
 
 <a id="optional"></a>
 ## 選用

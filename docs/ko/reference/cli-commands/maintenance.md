@@ -38,7 +38,7 @@
 
 **개요:** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-`translations`, `file_tracking` 및 `translation_failures`에서 지정된 로케일에 대한 모든 캐시된 행과 해당 로케일에 대해 생성된 아티팩트(번역된 문서(`docs[]`에서 확인된 `.md` / `.mdx` / `.astro` 출력, 소스가 제거된 고아 출력 포함 — 사용자 지정 `pathTemplate`이(가) 구성된 경우를 제외하고 각 블록의 출력 트리를 스캔하여 찾음), 로케일별 플랫 UI 파일(`<flatOutputDir>/<locale>.json`) 및 `strings.json`에 있는 로케일의 항목)를 삭제합니다.
+`translations`, `file_tracking`, 및 `translation_failures`에서 지정된 로케일(들)에 대한 모든 캐시된 행과 해당 로케일에 대해 생성된 아티팩트를 삭제합니다. 해당 아티팩트에는 다음이 포함됩니다: 번역된 문서(`docs[]`에서 확인된 `.md` / `.mdx` / `.astro` 출력, 소스가 제거된 고아 출력 포함 — 사용자 지정 `pathTemplate`이 구성된 경우를 제외하고 각 블록의 출력 트리를 스위핑하여 찾음), 로케일별 플랫 UI 파일(`<flatOutputDir>/<locale>.json`), 구성된 경우 로케일의 Gettext `.po` / `.mo`, 로케일의 `.resx` 위성(`{baseName}.{culture}.resx`; 중립 `{baseName}.resx`은 유지됨), 그리고 `strings.json`에 있는 로케일의 항목.
 
 로케일은 반복 가능한 `-l` / `--locale`을(를) 통해 전달됩니다(BCP-47로 정규화됨). 로케일별 개수(캐시 행, 문서, `strings.json` 항목, 플랫 파일)를 출력합니다. 제거할 항목이 없는 로케일에 대해서는 경고합니다(오류는 아님). `-y` / `--yes` / `-f` / `--force`이(가) 아닌 경우 확인을 요청합니다. `--dry-run`: 개수와 제거될 파일을 보고하고 아무것도 삭제하지 않습니다. `--keep-files`: SQLite 캐시만 제거하고 생성된 파일과 `strings.json`는 그대로 둡니다. `--backup <path>`이(가) 전달되지 않으면 SQLite 백업이 생성되지 않으며, 이 경우 삭제 전에 해당 경로에 백업을 작성합니다.
 

@@ -9,7 +9,7 @@ import {
   type UIPromptStrings,
   type ProofreadUIPromptStrings,
 } from "./prompts.js";
-import { extractUiPlaceholderTokens } from "./ui-placeholders.js";
+import { extractUiPlaceholderTokens, type UiPlaceholderStyle } from "./ui-placeholders.js";
 import {
   buildDocumentCoreRules,
   buildMarkdownExample,
@@ -74,8 +74,26 @@ export interface PromptBuilderOptions {
  * Instance-specific PLACEHOLDERS constraint for plural Step 0 / Pass B user messages.
  * Lists every token in the original developer string, or states noun-only when none.
  */
-export function buildPluralPlaceholderConstraint(originalLiteral: string): string {
-  const tokens = extractUiPlaceholderTokens(originalLiteral);
+export function buildPluralPlaceholderConstraint(
+  originalLiteral: string,
+  style: UiPlaceholderStyle = "default"
+): string {
+  const tokens = extractUiPlaceholderTokens(originalLiteral, style);
+  if (style === "dotnet") {
+    if (tokens.length === 0) {
+      return (
+        "PLACEHOLDERS in the original string: none. These would be .NET composite format items. " +
+        "Noun-only inflection: do not insert {0} or any digit. Runtime count only selects the category."
+      );
+    }
+    const listed = tokens.join(", ");
+    return (
+      "PLACEHOLDERS in the original string are .NET composite format items ({0}, {0,-10}, {0:C}, {0,-10:C}). " +
+      'Copy each one character-for-character into EVERY category value, including "one". ' +
+      "Copy doubled braces exactly: {{ and }} are literal braces, and {{GLS_N}} is a glossary token. " +
+      `Do not add {name}, %s, or any new format item: ${listed}`
+    );
+  }
   if (tokens.length === 0) {
     return (
       "PLACEHOLDERS in the original string: none. Noun-only inflection: do not insert {{count}}, {{n}}, %d, {0}, {count}, %(count)d, " +
@@ -295,9 +313,14 @@ export function buildUIPromptMessages(
     /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
     targetLocale?: string;
     translationContext?: string;
+    placeholderStyle?: UiPlaceholderStyle;
   }
 ): { systemPrompt: string; userContent: string } {
-  const systemBase = PROMPTS.ui.systemPrompt.join("\n");
+  const dotnetNote =
+    opts.placeholderStyle === "dotnet"
+      ? "\n- Placeholders in these strings are .NET composite format items. Keep {0}, {1}, alignment ({0,-10}), and format specifiers ({0:C}) unchanged. {{ and }} are literal braces. A percent sign is literal text, not a printf placeholder. Do not invent {name} items.\n"
+      : "";
+  const systemBase = PROMPTS.ui.systemPrompt.join("\n") + dotnetNote;
   const jobBlock = PROMPTS.ui.translationJobLines
     .join("\n")
     .replace(/\{\{SOURCE_LANG\}\}/g, opts.sourceLanguageLabel)
@@ -329,6 +352,7 @@ export function buildPluralStep0Prompt(opts: {
   /** Source BCP-47 locale; when it has an effective script, a script directive is prepended. */
   sourceLocale?: string;
   translationContext?: string;
+  placeholderStyle?: UiPlaceholderStyle;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
@@ -346,7 +370,10 @@ export function buildPluralStep0Prompt(opts: {
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
       ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
       : "";
-  const placeholderConstraint = buildPluralPlaceholderConstraint(opts.originalLiteral);
+  const placeholderConstraint = buildPluralPlaceholderConstraint(
+    opts.originalLiteral,
+    opts.placeholderStyle
+  );
 
   const userContent = `Language — write every output string in this language: ${opts.sourceLanguageLabel}
 
@@ -382,6 +409,7 @@ export function buildPluralPassBPrompt(opts: {
   /** Target BCP-47 locale; when it has an effective script (e.g. `hi-Latn`, bare `hi` → Deva) a script directive is prepended. */
   targetLocale?: string;
   translationContext?: string;
+  placeholderStyle?: UiPlaceholderStyle;
 }): { systemPrompt: string; userContent: string } {
   const glossaryBlock = buildGlossaryBlock(
     opts.glossaryHints ?? [],
@@ -395,7 +423,10 @@ export function buildPluralPassBPrompt(opts: {
     opts.intlPluralLocaleTag !== undefined && opts.intlPluralLocaleTag.trim() !== ""
       ? `\n${pluralCategoryExamplesHint(opts.intlPluralLocaleTag)}\n`
       : "";
-  const placeholderConstraint = buildPluralPlaceholderConstraint(opts.originalLiteral);
+  const placeholderConstraint = buildPluralPlaceholderConstraint(
+    opts.originalLiteral,
+    opts.placeholderStyle
+  );
 
   const userContent = `Translate cardinal plural UI strings from ${opts.sourceLanguageLabel} to ${opts.targetLanguageLabel}.
 

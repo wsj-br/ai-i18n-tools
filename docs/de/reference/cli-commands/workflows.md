@@ -19,7 +19,7 @@ Extraktion (falls aktiviert), dann UI-Übersetzung, dann `translate-svg`, wenn `
 
 **Übersicht:** `ai-i18n-tools status [--max-columns <n>]`
 
-Wenn `features.translateUIStrings` aktiviert ist, wird die UI-Abdeckung pro Gebietsschema ausgegeben (`Translated` / `Missing` / `Total`). Anschließend wird der Markdown-Übersetzungsstatus pro Datei × Gebietsschema ausgegeben (kein `--locale`-Filter; Gebietsschemas stammen aus der Konfiguration). Wenn `features.translateJson` aktiviert ist und `json[]` konfiguriert ist, wird auch der JSON-Bundle-Status pro Block ausgegeben. Große Gebietsschema-Listen werden in wiederholte Tabellen mit bis zu `n` Gebietsschema-Spalten (Standard **9**) aufgeteilt, damit die Zeilen im Terminal schmal bleiben.
+Wenn `features.translateUIStrings` aktiviert ist, wird die UI-Abdeckung pro Locale ausgegeben (`Translated` / `Missing` / `Placeholder issues` / `Total`). `Placeholder issues` zählt Zeilen, deren gespeicherte Übersetzung einen Platzhalter umbenennt, entfernt, erfindet oder neu ausrichtet. Dann wird der Markdown-Übersetzungsstatus pro Datei × Locale ausgegeben (kein `--locale`-Filter; die Locales stammen aus der Konfiguration). Wenn `features.translateJson` aktiviert ist und `json[]` konfiguriert ist, wird auch der JSON-Bundle-Status pro Block ausgegeben. Große Locale-Listen werden in wiederholte Tabellen mit bis zu `n` Locale-Spalten aufgeteilt (Standard **9**), damit die Zeilen im Terminal schmal bleiben.
 
 **Wichtige Optionen:** `--max-columns`
 

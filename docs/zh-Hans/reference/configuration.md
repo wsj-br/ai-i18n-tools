@@ -286,26 +286,32 @@
 - `flatOutputDir`
   写入此区块的各语言区域 JSON 文件的目录（`de.json` 等）。
 - `flatOutput`
-  当为 `true`（默认值）时，`translate-ui` 会为每个区域设置写入一个扁平化的 JSON 文件。对于仅使用 gettext 的块，请设置为 `false`。带有 `flatOutput: false` 的块必须设置 `gettext`。
+  当 `true`（默认值）时，`translate-ui` 为每个区域设置写入一个扁平 JSON 文件。将 `false` 设置为仅输出 gettext 或 resx。包含 `flatOutput: false` 的块必须设置 `gettext` 或 `resx`。
+- `resx`
+  可选的 .NET `.resx` 输出。`outputDir`（默认值 `Resources`）和 `baseName`（默认值 `SharedResource`）写入 `{baseName}.resx` 和 `{baseName}.{culture}.resx`。`writeNeutral`（默认值为 true）将源文本放入中性文件，以便 `ResourceManager` 可以回退。`localeFormat` 是 `bcp47`（默认值，`pt-BR`）或 `posix`（`pt_BR`）。`ingestExistingResx`（默认值为 true）在 `extract` 期间读取附属文件。`neutralFile` 通过中性值映射旧版命名键，例如 `LoginButton`。上下文键使用 U+2404。复数形式是名为 `{singular}[{form}]` 的单独条目。包含 `flatOutput: false` 的块必须设置 `gettext` 或 `resx`。
 - `gettext`
-  此块的可选 GNU gettext 输出。`outputDir`（默认为 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，并且当 `compileMo` 为 true（默认值）时，接收匹配的 `.mo`。`domain` 默认为 `messages`。`potPath` 是模板目录。`ingestExistingPo`（默认为 `true`）在 `extract` 期间使用非模糊的 `msgstr` 值填充空的 `strings.json` 槽位，并且不会替换非空或用户编辑过的翻译。`localeFormat` 为 `posix`（默认值，`pt_BR`）或 `bcp47`（`pt-BR`）。上下文行使用 gettext `\u0004` 分隔符。在两个上下文中的相同源语言字符串不共享目录 ID。
+  此块的可选 GNU gettext 输出。`outputDir`（默认值 `./locales`）接收 `<locale>/LC_MESSAGES/<domain>.po`，并且当 `compileMo` 为 true（默认值）时，接收匹配的 `.mo`。`domain` 默认为 `messages`。`potPath` 是模板目录。`ingestExistingPo`（默认值 `true`）在 `extract` 期间从非模糊的 `msgstr` 值填充空的 `strings.json` 槽位，并且不会替换非空或用户编辑的翻译。`localeFormat` 是 `posix`（默认值，`pt_BR`）或 `bcp47`（`pt-BR`）。上下文行使用 gettext `\u0004` 分隔符。两个上下文中相同的源语言字符串不共享目录 ID。
 - `targetLocales`
-  此块的可选区域设置列表。如果省略或为空，该块将使用根 `targetLocales`。
+  此块的可选区域设置列表。当省略或为空时，该块使用根 `targetLocales`。
 - `languagesManifestPath`
-  `extract` 和 `generate-ui-languages` 写入此块的 `ui-languages.json` 的可选路径。如果省略，块 0 将使用根 `languagesManifestPath`（其本身默认为此块的 `{flatOutputDir}/ui-languages.json`）。后续块默认为 `{flatOutputDir}/ui-languages.json`。
+  `extract` 和 `generate-ui-languages` 写入此块的 `ui-languages.json` 的可选路径。当省略时，块 0 使用根 `languagesManifestPath`（其本身默认为此块的 `{flatOutputDir}/ui-languages.json`）。后续块默认为 `{flatOutputDir}/ui-languages.json`。
 - `uiGlossary`
-  当 `true`（默认值）时，此块的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的词汇表提示源。`translate-ui`、`proofread-ui` 和源 linting 仅使用 `glossary.userGlossary`。设置 `false` 以将目录排除在这些提示之外（例如，不应引导文档的 CLI 字符串目录）。
+  当 `true`（默认值）时，此块的 `strings.json` 是 `translate-docs`、`translate-json` 和 `translate-svg` 的词汇表提示源。`translate-ui`、`proofread-ui` 和源代码 linting 仅使用 `glossary.userGlossary`。设置 `false` 以将目录排除在这些提示之外（例如，不应指导文档的 CLI 字符串目录）。
 - `uiExtractor.funcNames`（或旧版 `reactExtractor.funcNames`）
-  要扫描的其他函数名称（默认值：`["t", "i18n.t"]`）。
+  要扫描的附加函数名称（默认值：`["t", "i18n.t"]`）。
 - `uiExtractor.extensions`（或旧版 `reactExtractor.extensions`）
   要包含的文件扩展名（默认值：`[".js", ".jsx", ".ts", ".tsx"]`）。为 Astro frontmatter 和模板表达式添加 `.astro`。
 - `uiExtractor.includePackageDescription`（或旧版 `reactExtractor.includePackageDescription`）
-  当 `true`（默认值）时，如果存在，`extract` 还会将 `package.json` `description` 作为 UI 字符串包含在内。在额外的块上设置 `false`，这样相同的描述就不会被提取到每个目录中。
+  当 `true`（默认值）时，如果存在，`extract` 还会将 `package.json` `description` 作为 UI 字符串包含在内。在额外块上设置 `false`，以便相同的描述不会被提取到每个目录中。
 - `uiExtractor.packageJsonPath`（或旧版 `reactExtractor.packageJsonPath`）
-  用于可选描述提取的 `package.json` 文件的自定义路径。
+  用于该可选描述提取的 `package.json` 文件的自定义路径。
 - `uiExtractor.includeUiLanguageEnglishNames`（或旧版 `reactExtractor.includeUiLanguageEnglishNames`）
 
-当为 `true`（默认 `false`）时，如果源扫描中尚未存在（相同的哈希键），`extract` 还会将捆绑的 ui-languages 主目录（由 `sourceLocale` + 区块的有效 `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`。不读取 `languagesManifestPath`。
+当 `true`（默认值 `false`）时，如果源扫描中尚未存在（哈希键相同），`extract` 还会将捆绑的 UI 语言主目录（由 `sourceLocale` + 块的有效 `targetLocales` 构建）中的每个 `englishName` 添加到 `strings.json`。不读取 `languagesManifestPath`。
+- `uiExtractor.placeholderStyle`
+  `default`（mustache、Python 格式字段和 printf）或 `dotnet`（仅限 `{0}`、`{0,-10}`、`{0:format}`）。在 `dotnet` 样式中，百分号是字面文本，双大括号是字面大括号。`ui-dotnet` 模板设置 `dotnet`。
+- `uiExtractor.exclude`
+  相对于项目根目录的 Minimatch 模式，在扫描后被丢弃。`bin`、`obj`、`.vs`、`TestResults` 和 `packages` 已按目录名跳过。`ui-dotnet` 模板排除 `**/Tests/**` 和 `**/*.Tests/**`。
 
 不再接受 `glossary.uiGlossary` 和 `glossary.uiGlossaryFromStringsJson`。配置加载将失败，并且错误会说明替换方法：删除该键。提示现在来自每个区块的 `uiGlossary` 标志（默认 `true`）。
 

@@ -81,6 +81,8 @@ Traduce solo las cadenas de la interfaz de usuario (`strings.json` → JSON de i
 
 `-l` / `--locale`: configuraciones regionales de destino separadas por comas (predeterminado: la configuración `targetLocales` menos `sourceLocale`). `--force`: volver a traducir todas las entradas por configuración regional (ignorar las traducciones existentes). `--dry-run`: sin escrituras, sin llamadas a la API. `-j` paraleliza las **configuraciones regionales**; dentro de cada configuración regional, la configuración `uiBatchConcurrency` (predeterminado **2**) paraleliza los lotes de LLM (fragmentos de 50 cadenas, luego grupos plurales). No hay un indicador de CLI para `uiBatchConcurrency`.
 
+Una traducción almacenada cuyos marcadores de posición no coinciden con su origen se vuelve a traducir. La comprobación cubre un nombre renombrado (`{schedule}` que se convierte en `{cronograma}`), un token eliminado o inventado, y un cambio en la especificación de formato (`{price:,.2f}` que se convierte en `{price}`). El recuento se imprime antes del lote, incluso en `--dry-run`. Una fila cuyo modelo es `user-edited` se deja en su lugar y solo se advierte sobre ella. Una cadena que solo contiene marcadores de posición y puntuación, como `{state} · {title}`, se copia y no se envía a un modelo. Un lote que renombra un marcador de posición se rechaza y se intenta con el siguiente modelo en la cadena con ese error adjuntado. El panel marca las mismas filas y pregunta antes de guardar una traducción que rompe un marcador de posición.
+
 ---
 
 <a id="sync-ui"></a>

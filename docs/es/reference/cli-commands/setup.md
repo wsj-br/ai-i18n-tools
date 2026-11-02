@@ -40,6 +40,8 @@ Escriba un archivo de configuración inicial (incluye `provider` / `providers`, 
 | `ui-python-gettext` | Cadenas de interfaz de usuario de Python con JSON plano y `.po` / `.mo` de GNU, además de `i18n.py` |
 | `ui-python-django` | Catálogos de `gettext` / `{% blocktrans %}` de Django (`flatOutput: false`, dominio `django`, sin `i18n.py`) |
 | `ui-python-flask` | Catálogos de Flask / Jinja bajo `translations/` (`flatOutput: false`) además de `i18n.py` |
+| `ui-dotnet` | Cadenas de interfaz de usuario de .NET, JSON plano con claves basadas en la cadena del idioma de origen, y `I18n.cs` |
+| `ui-dotnet-resx` | Cadenas de interfaz de usuario de .NET como satélites `.resx` (`flatOutput: false`) y `I18nResx.cs` |
 
 `--with-readme` añade un bloque de documentación `README.md` (`outputDir` `translated-docs`, `docsOutput.style` `"flat"`, un `languageListBlock`) y establece `features.translateDocs` en true. No hace nada cuando un bloque de documentación ya lista `README.md`, lo cual ocurre con `ui-markdown` y `docs-markdown`. Solo escribe la configuración. Imprime la línea de marcador para pegar en `README.md` y advierte si falta ese archivo. Guía: [Añadir i18n a tus documentos README y Markdown](/es/guide/add-i18n-to-readme).
 
@@ -50,9 +52,11 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `--with-translate-ignore` crea un `.translate-ignore` inicial (incluyendo el entorno virtual de Python y los directorios de caché).
 
-`ui-python`, `ui-python-gettext` y `ui-python-flask` también escriben `i18n.py` cuando falta ese archivo. Los proyectos de Django mantienen el tiempo de ejecución gettext propio de Django, por lo que `ui-python-django` no escribe `i18n.py`.
+`ui-python`, `ui-python-gettext` y `ui-python-flask` también escriben `i18n.py` cuando ese archivo falta. Los proyectos de Django mantienen su propio tiempo de ejecución de gettext de Django, por lo que `ui-python-django` no escribe `i18n.py`. `ui-dotnet` escribe `I18n.cs` cuando ese archivo falta e imprime el elemento `EmbeddedResource` para añadir a `.csproj`. `ui-dotnet-resx` escribe `I18nResx.cs` en su lugar y apunta `ui.resx` a `Resources/SharedResource.<culture>.resx`. `--namespace` anula el espacio de nombres de C#. Guía: [Aplicaciones .NET](/es/guide/ui-strings/dotnet) y [Añadir i18n a una aplicación .NET ResourceManager](/es/guide/add-i18n-to-dotnet-resourcemanager).
 
-`migrate-python-i18n` reescribe las llamadas preevaluadas no seguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) en llamadas de búsqueda antes de formato. El valor predeterminado es una ejecución de prueba. Pase `--write` para editar archivos y lea `migrate-python-i18n-report.md` para ver las notas de revisión. Los archivos `i18n.py` generados se omiten.
+`migrate-python-i18n` reescribe las llamadas preevaluadas no seguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) en llamadas de búsqueda antes de formato. El valor predeterminado es una ejecución de prueba. Pase `--write` para editar archivos y lea `migrate-python-i18n-report.md` para notas de revisión. Una expresión compleja se nombra a partir de la expresión cuando esta es estable (`start.isoformat()` se convierte en `{start}`, `len(rows)` se convierte en `{rows_count}`). Se informa de un `{value_1}` restante para que pueda ser renombrado. Los archivos `i18n.py` generados se omiten. Un informe limpio no significa que las f-strings desenvueltas estuvieran cubiertas.
+
+`migrate-dotnet-i18n` hace lo mismo para `T($"...")`, la concatenación y `string.Format` dentro de `T()`. `--wrap` también marca las etiquetas XAML sin marcar y los sumideros de C# de alta confianza; sin `--write` eso es una auditoría. El informe es `migrate-dotnet-i18n-report.md`. Se omiten los `I18n.cs` y `I18nResx.cs` generados. Guía: [Aplicaciones .NET](/es/guide/ui-strings/dotnet#migrate).
 
 ---
 
@@ -61,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 **Sinopsis:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
 
-Verifica que el proyecto esté listo para traducir. El informe cubre la sintaxis y el esquema de configuración, las reglas de negocio, la versión instalada, las rutas de origen y de salida, los archivos de catálogo de UI, las estadísticas de caché, los proveedores configurados, las variables de entorno compatibles que están establecidas y los ID de modelo.
+Compruebe que el proyecto está listo para traducir. El informe cubre la sintaxis y el esquema de configuración, las reglas de negocio, la versión instalada, las rutas de origen y de salida, los archivos de catálogo de la interfaz de usuario, las discrepancias de marcadores de posición en esos catálogos, las estadísticas de caché, los proveedores configurados, las variables de entorno compatibles que están establecidas y los ID de modelo. Un catálogo con un marcador de posición renombrado, eliminado o reescrito es una advertencia y nombra un ejemplo.
 
 De forma predeterminada, `doctor` también verifica los ID de modelo configurados con el catálogo del proveedor activo y compara la versión instalada con la última versión de GitHub. `--local` omite ambas llamadas de red. Una versión más reciente, o una solicitud de GitHub que falla, es una advertencia. Un ID de modelo faltante o caducado hace que el comando falle. `--strict` sale con un error cuando alguna verificación emite una advertencia.
 

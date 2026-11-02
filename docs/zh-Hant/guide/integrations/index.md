@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # 整合
 
-框架整合參考：它們的共通點以及其外殼字串的差異。若要將語言新增至網站，請從 [將 i18n 新增至網站或文件網站](/zh-Hant/guide/add-i18n-to-website) 開始。若為應用程式，請從 [將 i18n 新增至 JS/TS 應用程式](/zh-Hant/guide/add-i18n-to-js) 或 [將 i18n 新增至 Python 應用程式](/zh-Hant/guide/add-i18n-to-python) 開始。若為儲存庫 README 和其他 Markdown 檔案，請從 [將 i18n 新增至您的 README 和 Markdown 文件](/zh-Hant/guide/add-i18n-to-readme) 開始。
+框架整合參考資料：它們的共通點以及 shell 字串的差異。若要為網站新增語言，請從[為網站或文件網站新增 i18n](/zh-Hant/guide/add-i18n-to-website)開始。若要為應用程式新增語言，請從[為 JS/TS 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-js)、[為 Python 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-python)或[為 .NET 應用程式新增 i18n](/zh-Hant/guide/add-i18n-to-dotnet)開始。若要為儲存庫的 README 和其他 Markdown 檔案新增語言，請從[為您的 README 和 Markdown 文件新增 i18n](/zh-Hant/guide/add-i18n-to-readme)開始。
 
 文件整合使用 [文件](/zh-Hant/guide/documents/) 管線 (`translate-docs` / `sync`) 來處理頁面內容；在註明之處，外殼字串 (導覽、側邊欄、主題) 會於同一個管線內處理 — 而非透過獨立的 [JSON](/zh-Hant/guide/json) 管線。Python 應用程式使用 [UI 字串](/zh-Hant/guide/ui-strings/python) 管線 (`extract` / `translate-ui`)。
 
@@ -49,3 +49,5 @@
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| .NET JSON 輔助程式 | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| .NET ResourceManager 輔助程式 | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

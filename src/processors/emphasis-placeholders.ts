@@ -98,6 +98,11 @@ function findPlaceholderEnd(text: string, start: number): number {
   }
   let i = start + 2;
   while (i < text.length - 1) {
+    // A backtick is an inline-code delimiter. Pairing across it swallows the span, as in
+    // `<code v-pre>{{</code> and `}}``, and the leftover tick is reported as unclosed.
+    if (text[i] === "`") {
+      return -1;
+    }
     if (text[i] === "}" && text[i + 1] === "}") {
       return i + 2;
     }

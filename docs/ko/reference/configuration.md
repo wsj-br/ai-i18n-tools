@@ -286,26 +286,32 @@
 - `flatOutputDir`
   이 블록의 로캘별 JSON 파일이 기록되는 디렉터리입니다(`de.json` 등).
 - `flatOutput`
-  `true`(기본값)인 경우, `translate-ui`는 로케일당 하나의 플랫 JSON 파일을 작성합니다. gettext 전용 블록의 경우 `false`으로 설정합니다. `flatOutput: false`가 있는 블록은 `gettext`를 설정해야 합니다.
+  ``true``일 때 (기본값), ``translate-ui``는 로케일당 하나의 플랫 JSON 파일을 작성합니다. gettext 또는 resx만 내보내려면 ``false``을(를) 설정하세요. ``flatOutput: false``가 있는 블록은 ``gettext`` 또는 ``resx``을(를) 설정해야 합니다.
+- `resx`
+  선택적 .NET ``.resx`` 출력. ``outputDir`` (기본값 ``Resources``) 및 ``baseName`` (기본값 ``SharedResource``)은(는) ``{baseName}.resx``과(와) ``{baseName}.{culture}.resx``를 작성합니다. ``writeNeutral`` (기본값 true)는 ``ResourceManager``이(가) 대체할 수 있도록 원본 텍스트를 중립 파일에 넣습니다. ``localeFormat``은(는) ``bcp47`` (기본값, ``pt-BR``) 또는 ``posix`` (``pt_BR``)입니다. ``ingestExistingResx`` (기본값 true)는 ``extract`` 동안 위성 어셈블리를 읽습니다. ``neutralFile``는 ``LoginButton``와(과) 같은 레거시 명명 키를 중립 값을 통해 매핑합니다. 컨텍스트 키는 U+2404를 사용합니다. 복수형은 ``{singular}[{form}]``이라는 별도의 항목입니다. ``flatOutput: false``이(가) 있는 블록은 ``gettext`` 또는 ``resx``을(를) 설정해야 합니다.
 - `gettext`
-  이 블록에 대한 선택적 GNU gettext 출력입니다. `outputDir`(기본값 `./locales`)은 `<locale>/LC_MESSAGES/<domain>.po`를 수신하며, `compileMo`이 true(기본값)인 경우 일치하는 `.mo`도 수신합니다. `domain`의 기본값은 `messages`입니다. `potPath`는 템플릿 카탈로그입니다. `ingestExistingPo`(기본값 `true`)는 `extract` 중에 퍼지(fuzzy)가 아닌 `msgstr` 값으로 비어 있는 `strings.json` 슬롯을 채우며, 비어 있지 않거나 사용자가 편집한 번역은 대체하지 않습니다. `localeFormat`은 `posix`(기본값, `pt_BR`) 또는 `bcp47`(`pt-BR`)입니다. 컨텍스트 행은 gettext `\u0004` 구분 기호를 사용합니다. 두 컨텍스트에 있는 동일한 소스 언어 문자열은 카탈로그 ID를 공유하지 않습니다.
+  이 블록에 대한 선택적 GNU gettext 출력. ``outputDir`` (기본값 ``./locales``)은(는) ``<locale>/LC_MESSAGES/<domain>.po``을(를) 받으며, ``compileMo``가 true(기본값)일 때 일치하는 ``.mo``를 받습니다. ``domain``의 기본값은 ``messages``입니다. ``potPath``은(는) 템플릿 카탈로그입니다. ``ingestExistingPo`` (기본값 ``true``)은(는) ``extract`` 동안 비어 있는 ``strings.json`` 슬롯을 비퍼지(non-fuzzy) ``msgstr`` 값으로 채우며, 비어 있지 않거나 사용자가 편집한 번역은 대체하지 않습니다. ``localeFormat``은(는) ``posix`` (기본값, ``pt_BR``) 또는 ``bcp47`` (``pt-BR``)입니다. 컨텍스트 행은 gettext ``\u0004`` 구분 기호를 사용합니다. 두 컨텍스트에서 동일한 원본 언어 문자열은 카탈로그 ID를 공유하지 않습니다.
 - `targetLocales`
-  이 블록에 대한 선택적 로케일 목록입니다. 생략되거나 비어 있는 경우, 블록은 루트 `targetLocales`을 사용합니다.
+  이 블록에 대한 선택적 로케일 목록. 생략되거나 비어 있는 경우, 블록은 루트 ``targetLocales``을(를) 사용합니다.
 - `languagesManifestPath`
-  `extract` 및 `generate-ui-languages`이 이 블록의 `ui-languages.json`을 작성하는 선택적 경로입니다. 생략된 경우, 블록 0은 루트 `languagesManifestPath`(기본값은 이 블록의 `{flatOutputDir}/ui-languages.json`)를 사용합니다. 이후 블록의 기본값은 `{flatOutputDir}/ui-languages.json`입니다.
+  `extract` 및 `generate-ui-languages`가 이 블록의 `ui-languages.json`을(를) 작성하는 선택적 경로. 생략되면 블록 0은 루트 `languagesManifestPath`를 사용하며 (이는 이 블록의 `{flatOutputDir}/ui-languages.json`로 기본 설정됨), 이후 블록은 `{flatOutputDir}/ui-languages.json`으로 기본 설정됩니다.
 - `uiGlossary`
-  `true`(기본값)인 경우, 이 블록의 `strings.json`는 `translate-docs`, `translate-json`, `translate-svg`를 위한 용어집 힌트 소스가 됩니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 해당 힌트에서 제외하려면(예: 문서화를 유도해서는 안 되는 CLI 문자열 카탈로그) `false`를 설정하십시오.
+  `true`일 때 (기본값), 이 블록의 `strings.json`는 `translate-docs`, `translate-json` 및 `translate-svg`에 대한 용어집 힌트 소스입니다. `translate-ui`, `proofread-ui` 및 소스 린팅은 `glossary.userGlossary`만 사용합니다. 카탈로그를 해당 힌트에서 제외하려면 `false`을(를) 설정하세요 (예: 문서에 영향을 주지 않아야 하는 CLI 문자열 카탈로그).
 - `uiExtractor.funcNames` (또는 레거시 `reactExtractor.funcNames`)
-  스캔할 추가 함수 이름(기본값: `["t", "i18n.t"]`).
+  스캔할 추가 함수 이름 (기본값: `["t", "i18n.t"]`).
 - `uiExtractor.extensions` (또는 레거시 `reactExtractor.extensions`)
-  포함할 파일 확장자(기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프런트매터 및 템플릿 표현식을 위해 `.astro`을 추가하십시오.
+  포함할 파일 확장자 (기본값: `[".js", ".jsx", ".ts", ".tsx"]`). Astro 프런트매터 및 템플릿 표현식을 위해 `.astro`을(를) 추가하세요.
 - `uiExtractor.includePackageDescription` (또는 레거시 `reactExtractor.includePackageDescription`)
-  `true`(기본값)인 경우, `extract`은 존재할 때 `package.json` `description`를 UI 문자열로도 포함합니다. 동일한 설명이 모든 카탈로그로 추출되지 않도록 추가 블록에 `false`을 설정하십시오.
+  `true`일 때 (기본값), `extract`은(는) `package.json` `description`가 존재할 경우 UI 문자열로도 포함합니다. 모든 카탈로그에 동일한 설명이 추출되지 않도록 추가 블록에 `false`을(를) 설정하세요.
 - `uiExtractor.packageJsonPath` (또는 레거시 `reactExtractor.packageJsonPath`)
-  해당 선택적 설명 추출에 사용되는 `package.json` 파일에 대한 사용자 지정 경로입니다.
+  해당 선택적 설명 추출에 사용되는 `package.json` 파일의 사용자 지정 경로.
 - `uiExtractor.includeUiLanguageEnglishNames` (또는 레거시 `reactExtractor.includeUiLanguageEnglishNames`)
 
-`true`(기본값 `false`)이면 `extract`은(는) 번들된 ui-languages 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`에서 빌드됨)의 각 `englishName`도 소스 검색에서 아직 없는 경우(동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`은(는) 읽지 않습니다.
+`true` (기본값 `false`)일 때, `extract`는 번들된 UI 언어 마스터 카탈로그(`sourceLocale` + 블록의 유효 `targetLocales`로 빌드됨)에서 각 `englishName`을(를) 소스 스캔에서 이미 존재하지 않는 경우 (동일한 해시 키) `strings.json`에 추가합니다. `languagesManifestPath`을(를) 읽지 않습니다.
+- `uiExtractor.placeholderStyle`
+  `default` (mustache, Python 형식 필드 및 printf) 또는 `dotnet` (`{0}`, `{0,-10}`, `{0:format}`만 해당). `dotnet` 스타일에서는 퍼센트 기호가 리터럴 텍스트이고 이중 중괄호는 리터럴 중괄호입니다. `ui-dotnet` 템플릿은 `dotnet`을(를) 설정합니다.
+- `uiExtractor.exclude`
+  프로젝트 루트를 기준으로 하는 Minimatch 패턴은 스캔 후 삭제됩니다. `bin`, `obj`, `.vs`, `TestResults` 및 `packages`는 디렉터리 이름으로 이미 건너뛰어집니다. `ui-dotnet` 템플릿은 `**/Tests/**` 및 `**/*.Tests/**`을(를) 제외합니다.
 
 `glossary.uiGlossary` 및 `glossary.uiGlossaryFromStringsJson`은(는) 더 이상 허용되지 않습니다. 구성 로드가 실패하며, 오류 메시지에 대체 방법이 안내됩니다. 해당 키를 삭제하십시오. 이제 힌트는 각 블록의 `uiGlossary` 플래그(기본값 `true`)에서 가져옵니다.
 

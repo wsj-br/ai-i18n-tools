@@ -5,8 +5,10 @@ import {
   collectPlaceholderFamilies,
   isQuantityPlaceholderFamily,
 } from "../core/ui-placeholders.js";
+import { extractCSharpUiCalls, isCSharpUiFile } from "./csharp-string-extractor.js";
 import { extractPythonUiCalls } from "./python-string-extractor.js";
 import { extractQtUiCalls, isQtUiFile } from "./qt-ui-extractor.js";
+import { extractXamlMarkupCalls, isXamlUiFile } from "./xaml-markup-extractor.js";
 import { extractTemplateI18nCalls, isTemplateI18nFile } from "./template-i18n-extractor.js";
 
 export interface UiExtractedCall {
@@ -20,10 +22,27 @@ export interface UiExtractedCall {
   /** Gettext `msgctxt` / `pgettext` / Qt context. */
   context?: string;
   /**
-   * True when Python evaluates the string before lookup (`_(f"...")`, `_("..." % x)`,
-   * `_("...".format(...))`). The template is still extracted so it can be migrated.
+   * True when the runtime evaluates the string before lookup (`_(f"...")`, `$"..."`,
+   * concatenation, or `string.Format` inside the call). Python still catalogs the
+   * template. C# and XAML set `skipCatalog` so the evaluated text is not a key.
    */
   unsafe?: boolean;
+  /** Do not write this call into `strings.json`. */
+  skipCatalog?: boolean;
+  /** First argument is not a string literal (`T(variable)`). */
+  nonLiteral?: boolean;
+  /** Literal has leading or trailing whitespace. The helper reapplies it after lookup. */
+  edgeWhitespace?: boolean;
+  /** `{name}` in a .NET composite string. `string.Format` cannot bind it. */
+  namedPlaceholders?: boolean;
+  /** Start offset of the call in the source file. */
+  start?: number;
+  /** End offset of the call in the source file (exclusive). */
+  end?: number;
+  /** Start offset of the first rewritten argument. */
+  argStart?: number;
+  /** End offset of the first rewritten argument (exclusive). */
+  argEnd?: number;
 }
 
 function isAstNode(x: unknown): x is Node {
@@ -322,6 +341,14 @@ export function extractUiCallsFromFileContent(
   funcNames: string[]
 ): UiExtractedCall[] {
   const ext = path.extname(relPath).toLowerCase();
+  if (isCSharpUiFile(relPath)) {
+    return extractCSharpUiCalls(content, relPath, funcNames, {
+      razor: ext === ".razor" || ext === ".cshtml",
+    });
+  }
+  if (isXamlUiFile(relPath)) {
+    return extractXamlMarkupCalls(content, relPath, funcNames);
+  }
   if (ext === ".py") {
     return extractPythonUiCalls(content, relPath, funcNames);
   }

@@ -381,6 +381,7 @@ Das ist der letzte manuelle Schritt. Fahren Sie fort unter [Modelle auswählen u
 | --- | --- |
 | UI-Strings der App | [i18n zu einer JS/TS-App hinzufügen](/de/guide/add-i18n-to-js) oder [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-python) |
 | Django, Flask-Babel-Kataloge oder eine App, die bereits GNU gettext verwendet | [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext) |
+| Eine .NET-App | [i18n zu einer .NET-App hinzufügen](/de/guide/add-i18n-to-dotnet) oder [i18n zu einer .NET ResourceManager-App hinzufügen](/de/guide/add-i18n-to-dotnet-resourcemanager) |
 | Eine Repository-README neben der Website oder Markdown-Dateien ohne Website-Framework | [i18n zu Ihren README- und Markdown-Dokumenten hinzufügen](/de/guide/add-i18n-to-readme). `init … --with-readme` fügt diesen Block neben einer Website-Vorlage hinzu |
 | Eigenständiges verschachteltes Gebietsschema-JSON | [JSON](/de/guide/json) |
 | Eine Website und App-Strings in einer Konfiguration | [Pipelines kombinieren](/de/guide/combining-pipelines) |

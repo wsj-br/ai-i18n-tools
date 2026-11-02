@@ -12,7 +12,7 @@ You have an app, a website, a documentation site, or a repository README in one 
 | Make user-facing text visible to the tool: `t()` calls in app code, your framework's own i18n for a site, or a language-list marker in a README | Caches translations and reuses them on every rerun |
 | Connect the result to the app, the site's routing, or the README's language row | Shows progress and lets you review translations in the dashboard |
 
-The tool does not rewrite your source. Coding-agent prompts are provided for the wrapping step. It does not install i18next or your site framework's i18n, and it does not build your language switcher, although runtime helpers are provided for that.
+The tool does not rewrite your source unless you run `migrate-python-i18n` or `migrate-dotnet-i18n` with `--write`. Coding-agent prompts are provided for the wrapping step. It does not install i18next or your site framework's i18n, and it does not build your language switcher, although runtime helpers are provided for that.
 
 <a id="where-do-i-start"></a>
 ## Where do I start?
@@ -23,6 +23,8 @@ The walkthroughs are grouped in [Add i18n to your project](/guide/add-i18n-to-yo
 | --- | --- |
 | A JS/TS app (React, Next.js, Node, CLI) with plain text in the source | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
 | A Python app (Streamlit, FastAPI, Flask, desktop, scripts) | [Add i18n to a Python app](/guide/add-i18n-to-python) |
+| A .NET app (Avalonia, WPF, MAUI, ASP.NET, Blazor, console) | [Add i18n to a .NET app](/guide/add-i18n-to-dotnet) |
+| A .NET app that already uses `ResourceManager` or `IStringLocalizer` | [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager) |
 | A Django app, Flask-Babel catalogs, or an app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) |
 | A website or documentation site (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, plain HTML) | [Add i18n to a website or docs site](/guide/add-i18n-to-website) |
 | A repository README and other Markdown files, usually next to an app | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme) |
@@ -45,7 +47,7 @@ The walkthroughs are grouped in [Add i18n to your project](/guide/add-i18n-to-yo
 
 Under the hood, the tool runs four pipelines. Your config enables the ones you need, and `sync` runs them in order.
 
-- UI strings — Extract `t("…")` and `_()` calls from JS/TS and Python source (and similar markers, including GNU gettext) and write flat per-locale JSON or `.po` / `.mo` catalogs. Commands: `extract`, `translate-ui`. Guide: [UI strings](/guide/ui-strings/). Python: [Python applications](/guide/ui-strings/python).
+- UI strings — Extract `t("…")` and `_()` calls from JS/TS and Python, and `T("…")` / `{loc:Tr '…'}` from C# and XAML (including GNU gettext and .NET `.resx` satellites) and write flat per-locale JSON, `.po` / `.mo`, or `.resx`. Commands: `extract`, `translate-ui`, `migrate-dotnet-i18n`. Guide: [UI strings](/guide/ui-strings/). Python: [Python applications](/guide/ui-strings/python). .NET: [.NET applications](/guide/ui-strings/dotnet) and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager).
 - Documents — Translate Markdown, MDX, and `.astro` pages listed in `docs[].contentPaths`. Works with VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and other static doc sites, and with a repository README (`docsOutput.style` of `flat`). Command: `translate-docs`. Guides: [Documents](/guide/documents/) and [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme).
 - JSON — Translate nested JSON locale bundles (theme labels, i18n overrides, app copy not in source) defined in top-level `json[]`. Command: `translate-json`. Guide: [JSON](/guide/json).
 - SVG — Translate visible text inside SVG illustrations (`<text>`, `<title>`, `<desc>`) and write one output file per locale. Separate from document translation. Command: `translate-svg`. Guide: [SVG translation](/guide/svg-translation/).
@@ -62,6 +64,7 @@ The repository ships runnable example projects under `examples/`, each with its 
 | A JS/TS app | [console-app](/examples#console-app), [nextjs-app](/examples#nextjs-app) |
 | A repository README next to an app | [console-app](/examples#console-app), [nextjs-app](/examples#nextjs-app) |
 | A Python app | [python-streamlit](/examples#python-streamlit), [python-fastapi](/examples#python-fastapi), [python-gettext](/examples#python-gettext) |
+| A .NET helper | [dotnet-console](/examples#dotnet-console), [dotnet-resx](/examples#dotnet-resx) |
 | A docs site | [docusaurus-docs](/examples#docusaurus-docs), [vitepress-docs](/examples#vitepress-docs), [astro-docs](/examples#astro-docs) |
 | A website or plain HTML | [astro-website](/examples#astro-website), [plain-html](/examples#plain-html) |
 

@@ -1,6 +1,6 @@
 ---
 name: ai-i18n-tools
-description: Installs and maintains ai-i18n-tools internationalization in consumer projects. Use when adding languages, configuring ai-i18n-tools.config.json, or translating JavaScript, TypeScript, Python, Django, gettext, VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro websites, plain HTML, README or Markdown, JSON bundles, or SVG assets. For migrating off Intlayer or translating Intlayer dictionaries in place, use the ai-i18n-migrate-intlayer or ai-i18n-translate-intlayer skill.
+description: Installs and maintains ai-i18n-tools internationalization in consumer projects. Use when adding languages, configuring ai-i18n-tools.config.json, or translating JavaScript, TypeScript, Python, .NET, Django, gettext, VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro websites, plain HTML, README or Markdown, JSON bundles, or SVG assets. For migrating off Intlayer or translating Intlayer dictionaries in place, use the ai-i18n-migrate-intlayer or ai-i18n-translate-intlayer skill.
 ---
 
 # ai-i18n-tools for consumer projects
@@ -14,6 +14,7 @@ Read these files relative to this skill directory, not the project working direc
 
 - [JavaScript / TypeScript](references/javascript.md): literal UI messages, i18next, browser/SSR wiring, HTML markers.
 - [Python](references/python.md): generated helper, gettext, Django, Flask-Babel, deployment.
+- [.NET](references/dotnet.md): generated `I18n.cs`, C# and XAML calls, embedded flat JSON.
 - [Documentation](references/documentation.md): README, docs frameworks, static pages, framework shell catalogs.
 - [Assets, links, and SVG](references/assets-and-links.md): localized media, SVG labels, anchors, broken translated links.
 - [JSON](references/json.md): nested source-locale JSON, i18next namespaces, key policies and output layouts.
@@ -31,6 +32,7 @@ Installed workflow skills are explicit slash commands. Follow this skill first, 
 | --- | --- |
 | `ai-i18n-js` | `references/javascript.md` |
 | `ai-i18n-python` | `references/python.md`, generated-helper sections |
+| `ai-i18n-dotnet` | `references/dotnet.md` |
 | `ai-i18n-django` | `references/python.md`, gettext, Django, and Flask-Babel sections |
 | `ai-i18n-vitepress`, `ai-i18n-starlight`, `ai-i18n-docusaurus`, `ai-i18n-nextra`, `ai-i18n-fumadocs`, `ai-i18n-readme`, `ai-i18n-plain-html-docs` | `references/documentation.md`, that workflow's section |
 | `ai-i18n-plain-html` | `references/javascript.md`, HTML marker section |
@@ -70,7 +72,7 @@ Keep source content transmission and provider costs within the user's authorizat
 
 ## 3. Choose pipelines and prepare sources
 
-- `ui`: literal translation calls in JS/TS/Python or HTML `data-i18n*` markers; generates the catalog and runtime outputs.
+- `ui`: literal translation calls in JS/TS/Python/.NET or HTML `data-i18n*` markers; generates the catalog and runtime outputs.
 - `docs[]`: Markdown/MDX/Astro/HTML pages and supported documentation-framework shell catalogs.
 - `json[]`: standalone nested locale JSON, not generated UI flat bundles or framework shell catalogs.
 - `svg`: human-readable SVG text labels, not raster text or outlined paths.
@@ -101,6 +103,16 @@ Use `--no-ui`, `--no-svg`, `--no-docs`, or `--no-json` only for an explicitly na
 Do not substitute `translate-ui` and assume it extracts first; individual commands belong in targeted diagnosis.
 
 ## 5. Verify and maintain
+
+A clean extract, a clean migration report, or a second migration that changes nothing proves call shape, not coverage.
+
+- Audit every surface a person reads: returned labels, validation and error text shown in the UI, progress and status, accessibility text, tables, menus, and labels stored in a variable. Leave diagnostic logs and machine or API contracts unchanged.
+- Report remaining candidates with file, line, surface, and one of wrapped, intentionally skipped, or unresolved, plus the skip reason. On a rewrap, name the previous source message. A sentence skeleton is a review aid only. Do not merge keys or reuse a translation because two sentences share a skeleton.
+- Keep stored codes, enum values, and comparisons in the source language. Translate the label when it is shown.
+- Review or create `glossary-user.csv` before the first authorized translation. Ordinary rows steer wording. Force copies a matched term. Neither makes a whole sentence deterministic. A normal `translate-ui` skips cached and `user-edited` rows. `--force` retranslates them on purpose.
+- Keep text sent to a model in the language that model should read, even when the prompt is built from labels. Use a source-locale translator for that operation. Do not switch a process-global locale around asynchronous work.
+- `translate-ui` checks UI placeholder counts. `status`, `doctor`, and `translate-ui --dry-run` report stored mismatches. The check is not a complete parser for every runtime, and it does not prove that positional tokens stayed in order. Document-cache edits are not judged with the UI placeholder rules.
+- Require one deterministic target-locale fixture: a validation message, a returned label, and an option caption change, the stored value does not, interpolation works, and the source locale comes back. Locale-selection tests alone are not enough. Check the packaged artifact.
 
 - Review the diff: intended source/config changes and generated artifacts only; no secrets or accidental locale-path churn.
 - Test source fallback, at least one target locale, interpolation/plurals where used, and RTL where supported.

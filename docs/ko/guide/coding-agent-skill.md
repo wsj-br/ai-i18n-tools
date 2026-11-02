@@ -48,6 +48,7 @@ CLI는 머신에 설치된 코딩 에이전트를 감지합니다. 각 에이전
 | --- | --- |
 | `/ai-i18n-js` | JavaScript 또는 TypeScript 소스 문자열 UI |
 | `/ai-i18n-python` | 생성된 Python 도우미 및 플랫 JSON 카탈로그 |
+| `/ai-i18n-dotnet` | 생성된 `I18n.cs` 또는 `I18nResx.cs`, 및 `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel 또는 일반 gettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight 문서 |

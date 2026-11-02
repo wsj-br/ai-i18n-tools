@@ -12,7 +12,7 @@ Você tem um app, um site, um site de documentação ou um README de repositóri
 | Torna o texto visível ao usuário visível para a ferramenta: chamadas `t()` no código do app, o i18n próprio do seu framework para um site ou um marcador de lista de idiomas em um README | Armazena traduções em cache e as reutiliza em cada nova execução |
 | Conecte o resultado ao aplicativo, ao roteamento do site ou à linha de idioma do README | Mostra o progresso e permite que você revise as traduções no painel |
 
-A ferramenta não reescreve seu código-fonte. Prompts para agentes de codificação são fornecidos para a etapa de encapsulamento. Ela não instala i18next nem o i18n do framework do seu site e não cria seu seletor de idioma, embora auxiliares de tempo de execução sejam fornecidos para isso.
+A ferramenta não reescreve seu código-fonte a menos que você execute `migrate-python-i18n` ou `migrate-dotnet-i18n` com `--write`. Prompts do agente de codificação são fornecidos para a etapa de encapsulamento. Ela não instala o i18next ou o i18n do framework do seu site, e não constrói seu seletor de idioma, embora auxiliares de tempo de execução sejam fornecidos para isso.
 
 <a id="where-do-i-start"></a>
 ## Por onde começo?
@@ -23,6 +23,8 @@ Os passo a passo estão agrupados em [Adicionar i18n ao seu projeto](/pt-BR/guid
 | --- | --- |
 | Um app JS/TS (React, Next.js, Node, CLI) com texto simples no código-fonte | [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js) |
 | Um aplicativo Python (Streamlit, FastAPI, Flask, desktop, scripts) | [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python) |
+| Um aplicativo .NET (Avalonia, WPF, MAUI, ASP.NET, Blazor, console) | [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet) |
+| Um aplicativo .NET que já usa `ResourceManager` ou `IStringLocalizer` | [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager) |
 | Um aplicativo Django, catálogos Flask-Babel ou um aplicativo que já usa GNU gettext | [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext) |
 | Um site ou site de documentação (VitePress, Docusaurus, Starlight, Nextra, Fumadocs, Astro, HTML simples) | [Adicionar i18n a um site ou site de docs](/pt-BR/guide/add-i18n-to-website) |
 | Um README de repositório e outros arquivos Markdown, geralmente junto a um app | [Adicionar i18n ao seu README e à documentação em Markdown](/pt-BR/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@ Os passo a passo estão agrupados em [Adicionar i18n ao seu projeto](/pt-BR/guid
 
 Por baixo dos panos, a ferramenta executa quatro pipelines. Sua configuração habilita os que você precisa, e `sync` os executa em ordem.
 
-- Strings da UI — Extrai chamadas `t("…")` e `_()` do código-fonte JS/TS e Python (e marcadores semelhantes, incluindo GNU gettext) e grava JSON plano por locale ou catálogos `.po` / `.mo`. Comandos: `extract`, `translate-ui`. Guia: [Strings da UI](/pt-BR/guide/ui-strings/). Python: [Aplicações Python](/pt-BR/guide/ui-strings/python).
-- Documentos — Traduz páginas Markdown, MDX e `.astro` listadas em `docs[].contentPaths`. Funciona com VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro e outros sites de documentação estática, além de README de repositório (`docsOutput.style` de `flat`). Comando: `translate-docs`. Guias: [Documentos](/pt-BR/guide/documents/) e [Adicionar i18n ao seu README e à documentação em Markdown](/pt-BR/guide/add-i18n-to-readme).
-- JSON — Traduz pacotes de locale JSON aninhados (rótulos de tema, substituições de i18n, texto do app que não está no código-fonte) definidos em `json[]` no nível superior. Comando: `translate-json`. Guia: [JSON](/pt-BR/guide/json).
-- SVG — Traduz o texto visível dentro de ilustrações SVG (`<text>`, `<title>`, `<desc>`) e grava um arquivo de saída por locale. Separado da tradução de documentos. Comando: `translate-svg`. Guia: [Tradução de SVG](/pt-BR/guide/svg-translation/).
+- Strings da UI — Extraia chamadas `t("…")` e `_()` de JS/TS e Python, e `T("…")` / `{loc:Tr '…'}` de C# e XAML (incluindo GNU gettext e satélites .NET `.resx`) e grave JSON plano por localidade, `.po` / `.mo`, ou `.resx`. Comandos: `extract`, `translate-ui`, `migrate-dotnet-i18n`. Guia: [Strings da UI](/pt-BR/guide/ui-strings/). Python: [Aplicativos Python](/pt-BR/guide/ui-strings/python). .NET: [Aplicativos .NET](/pt-BR/guide/ui-strings/dotnet) e [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager).
+- Documentos — Traduza páginas Markdown, MDX e `.astro` listadas em `docs[].contentPaths`. Funciona com VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro e outros sites de documentação estáticos, e com um README de repositório (`docsOutput.style` de `flat`). Comando: `translate-docs`. Guias: [Documentos](/pt-BR/guide/documents/) e [Adicionar i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
+- JSON — Traduza pacotes de localidade JSON aninhados (rótulos de tema, substituições de i18n, cópia de aplicativo não no código-fonte) definidos em `json[]` de nível superior. Comando: `translate-json`. Guia: [JSON](/pt-BR/guide/json).
+- SVG — Traduza texto visível dentro de ilustrações SVG (`<text>`, `<title>`, `<desc>`) e grave um arquivo de saída por localidade. Separado da tradução de documentos. Comando: `translate-svg`. Guia: [Tradução de SVG](/pt-BR/guide/svg-translation/).
 
 Muitos projetos combinam modos. A combinação comum é de strings de UI com o README do repositório. Um site de documentação, como o VitePress, é a outra combinação frequente. Consulte [Combinando pipelines](/pt-BR/guide/combining-pipelines) e [Adicione i18n ao seu README e documentos Markdown](/pt-BR/guide/add-i18n-to-readme).
 
@@ -62,6 +64,7 @@ O repositório inclui projetos de exemplo executáveis em `examples/`, cada um c
 | Um aplicativo JS/TS | [console-app](/pt-BR/examples#console-app), [nextjs-app](/pt-BR/examples#nextjs-app) |
 | Um README de repositório junto com um aplicativo | [console-app](/pt-BR/examples#console-app), [nextjs-app](/pt-BR/examples#nextjs-app) |
 | Um aplicativo Python | [python-streamlit](/pt-BR/examples#python-streamlit), [python-fastapi](/pt-BR/examples#python-fastapi), [python-gettext](/pt-BR/examples#python-gettext) |
+| Um auxiliar .NET | [dotnet-console](/pt-BR/examples#dotnet-console), [dotnet-resx](/pt-BR/examples#dotnet-resx) |
 | Um site de documentação | [docusaurus-docs](/pt-BR/examples#docusaurus-docs), [vitepress-docs](/pt-BR/examples#vitepress-docs), [astro-docs](/pt-BR/examples#astro-docs) |
 | Um site ou HTML puro | [astro-website](/pt-BR/examples#astro-website), [plain-html](/pt-BR/examples#plain-html) |
 

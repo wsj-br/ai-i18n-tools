@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="1 sample[one]" xml:space="preserve"><value>1 Probe</value></data>
+  <data name="1 sample[other]" xml:space="preserve"><value>{0} Proben</value></data>
+  <data name="Line1&#xA;Line2" xml:space="preserve"><value>Zeile1
+Zeile2</value></data>
+  <data name="menu&#x2404;Open" xml:space="preserve"><value>Öffnen</value></data>
+  <data name="Saved to {0}" xml:space="preserve"><value>Gespeichert unter {0}</value></data>
+  <data name="Say &quot;hi&quot; &amp; bye" xml:space="preserve"><value>Sag &quot;hallo&quot; &amp; tschüss</value></data>
+  <data name="Sign in" xml:space="preserve"><value>Anmelden</value></data>
+</root>

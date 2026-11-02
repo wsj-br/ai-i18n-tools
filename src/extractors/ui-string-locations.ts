@@ -51,6 +51,9 @@ export function collectUiStringLocationsFromSource(
   const seen = new Set<string>();
   const relNorm = relPath.replace(/\\/g, "/");
   for (const call of calls) {
+    if (call.skipCatalog) {
+      continue;
+    }
     const str = call.literal.trim();
     if (!str) {
       continue;

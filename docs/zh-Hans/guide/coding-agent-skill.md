@@ -48,6 +48,7 @@ CLI 会检测机器上安装的编码代理。每个代理的安装路径都在[
 | --- | --- |
 | `/ai-i18n-js` | JavaScript 或 TypeScript 源字符串 UI |
 | `/ai-i18n-python` | 生成的 Python 助手和平面 JSON 目录 |
+| `/ai-i18n-dotnet` | 生成的 `I18n.cs` 或 `I18nResx.cs`，以及 `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django、Flask-Babel 或纯 gettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight 文档 |

@@ -158,7 +158,7 @@ function collectTranslatedDocOutputs(
   return [...found];
 }
 
-function flatLocaleFiles(
+export function flatLocaleFiles(
   config: I18nConfig,
   projectRoot: string,
   locale: string,
@@ -189,6 +189,14 @@ function flatLocaleFiles(
         if (fs.existsSync(candidate)) {
           files.push(candidate);
         }
+      }
+    }
+    const resx = item.block.resx;
+    if (resx) {
+      const culture = toGettextLocale(locale, resx.localeFormat);
+      const candidate = path.join(projectRoot, resx.outputDir, `${resx.baseName}.${culture}.resx`);
+      if (fs.existsSync(candidate)) {
+        files.push(candidate);
       }
     }
   }

@@ -1,7 +1,7 @@
 <a id="integrations"></a>
 # インテグレーション
 
-フレームワーク統合のリファレンスです。共通点とシェル文字列の違いについて説明します。サイトに言語を追加するには、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)から始めてください。アプリの場合は、[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)または[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)から始めてください。リポジトリのREADMEやその他のMarkdownファイルの場合は、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)から始めてください。
+フレームワーク連携のリファレンス：共通点とシェル文字列の違い。サイトに言語を追加するには、[ウェブサイトまたはドキュメントサイトにi18nを追加する](/ja/guide/add-i18n-to-website)から始めます。アプリケーションの場合は、[JS/TSアプリにi18nを追加する](/ja/guide/add-i18n-to-js)、[Pythonアプリにi18nを追加する](/ja/guide/add-i18n-to-python)、または[.NETアプリにi18nを追加する](/ja/guide/add-i18n-to-dotnet)から始めます。リポジトリのREADMEやその他のMarkdownファイルの場合は、[READMEとMarkdownドキュメントにi18nを追加する](/ja/guide/add-i18n-to-readme)から始めます。
 
 ドキュメント統合では、ページコンテンツ用に[ドキュメント](/ja/guide/documents/)パイプライン（`translate-docs` / `sync`）を使用します。シェル文字列（ナビゲーション、サイドバー、テーマ）は、注記がある場合は、別の[JSON](/ja/guide/json)パイプライン経由ではなく、同じパイプライン内で処理されます。Pythonアプリケーションでは、[UI文字列](/ja/guide/ui-strings/python)パイプライン（`extract` / `translate-ui`）を使用します。
 
@@ -49,3 +49,5 @@
 | Flask | [examples/python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask) |
 | FastAPI | [examples/python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi) |
 | GNU gettext | [examples/python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext) |
+| .NET JSONヘルパー | [examples/dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) |
+| .NET ResourceManagerヘルパー | [examples/dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) |

@@ -186,6 +186,26 @@ comments.
 - Plurals: `t("{{count}} items", { plurals: true, count })`. Do not invent
   `_one` / `_other` keys.
 - One `t()` per sentence. Split only where the text already branches.
+- Also wrap text a person reads that is not a component: validation messages
+  shown in the UI, returned labels, progress and status, accessibility text,
+  table cells, and a button whose label is a variable. Leave diagnostic logs
+  and machine-readable error codes. Translate the message at the screen.
+- A stored option keeps its source value. Translate the caption when it is
+  shown, inside render or a function that runs after the locale is loaded:
+
+```js
+const ranges = [
+  { value: "last12", label: t("Last 12 months") },
+];
+```
+
+- Name placeholders for the translator (`{{when}}`, `{{counts}}`). Do not emit
+  `{{value}}`. The translation must copy every placeholder name. `status` and
+  `translate-ui --dry-run` report a stored mismatch. The check counts tokens.
+  It does not prove that positional tokens stayed in order.
+- Text sent to a model stays in the source locale even when it is built from
+  labels. Use a translator bound to that locale for the operation. Do not
+  change a shared i18next language around asynchronous work.
 
 Before:
 
@@ -242,10 +262,13 @@ The project's build, type check, and tests pass. `extract` writes a non-empty
 catalog of the sentences you wrapped. With the source locale, the output is
 unchanged.
 
-Report the files changed, each string you skipped with a one-line reason, the
-same word used with different meanings, sentences built from translated pieces,
-plurals that still need `sourcePluralFlatBundle` after the user translates,
-and any `t()` that runs at import time. Then list the commands for the user,
+Report the files changed, each string you skipped with file, line, surface, and
+reason, the same word used with different meanings, sentences built from
+translated pieces, plurals that still need `sourcePluralFlatBundle` after the
+user translates, and any `t()` that runs at import time. With a locale fixture
+present, one test sets a target locale and asserts that a validation message,
+a returned label, and an option caption change, while the stored option value
+stays in the source language. Then list the commands for the user,
 and do not run them: `ai-i18n-tools suggest-models` (optional),
 `ai-i18n-tools translate-ui`, then reload the app.
 ````
@@ -433,6 +456,8 @@ ai-i18n-tools에는 자체 문자열 추출기가 포함되어 있습니다. `i1
 | 문서 사이트 또는 Astro 페이지 HTML | [웹사이트 또는 문서 사이트에 i18n 추가](/ko/guide/add-i18n-to-website) 및 [Astro 웹사이트](/ko/guide/ui-strings/astro-website). `t()`는 공유 데이터 및 프런트매터에만 해당됩니다. |
 | Python 앱 | [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python) |
 | Django, Flask-Babel 카탈로그 또는 이미 GNU gettext를 사용하는 앱 | [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext) |
+| .NET 앱 | [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) |
+| `ResourceManager` 또는 ASP.NET `IStringLocalizer` | [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager) |
 | 리포지토리 README 또는 기타 마크다운 파일 | [README 및 마크다운 문서에 i18n 추가](/ko/guide/add-i18n-to-readme) |
 
 <a id="examples"></a>

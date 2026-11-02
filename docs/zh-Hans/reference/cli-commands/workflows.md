@@ -19,7 +19,7 @@
 
 **概要：** `ai-i18n-tools status [--max-columns <n>]`
 
-当 `features.translateUIStrings` 开启时，按区域设置打印 UI 覆盖率（`Translated` / `Missing` / `Total`）。然后按文件 × 区域设置打印 markdown 翻译状态（无 `--locale` 过滤器；区域设置来自配置）。当 `features.translateJson` 开启且配置了 `json[]` 时，还会按区块打印 JSON 包状态。大型区域设置列表会被拆分为最多包含 `n` 个区域设置列的重复表格（默认 **9**），以便在终端中保持行宽较窄。
+当 `features.translateUIStrings` 开启时，会按区域设置打印 UI 覆盖率 (`Translated` / `Missing` / `Placeholder issues` / `Total`)。`Placeholder issues` 会统计其存储的翻译重命名、删除、创建或重新定位了占位符的行。然后，会按文件 × 区域设置打印 Markdown 翻译状态（无 `--locale` 筛选；区域设置来自配置）。当 `features.translateJson` 开启且 `json[]` 已配置时，还会按块打印 JSON 捆绑包状态。大型区域设置列表会被拆分为重复的表格，每个表格最多包含 `n` 个区域设置列（默认值 **9**），以便终端中的行保持窄幅。
 
 **主要选项：** `--max-columns`
 

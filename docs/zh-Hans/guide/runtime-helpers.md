@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # 运行时辅助函数
 
-这些辅助程序从 `'ai-i18n-tools/runtime'` 导出，可在任何 JavaScript 环境（浏览器、Node.js、Deno、Edge）中运行。它们 **不会** 从 `i18next` 或 `react-i18next` 导入。Python 应用程序使用生成的 `i18n.py` 模块。其函数列在 [Programmatic API — Python runtime](/zh-Hans/reference/programmatic-api#python-runtime) 中。
+这些辅助函数从 `'ai-i18n-tools/runtime'` 导出，可在任何 JavaScript 环境（浏览器、Node.js、Deno、Edge）中运行。它们**不**从 `i18next` 或 `react-i18next` 导入。Python 应用程序使用生成的 `i18n.py` 模块。其函数列在 [程序化 API — Python 运行时](/zh-Hans/reference/programmatic-api#python-runtime) 中。.NET 应用程序使用生成的 `I18n.cs` 或 `I18nResx.cs` 文件。这些成员列在 [程序化 API — .NET 运行时](/zh-Hans/reference/programmatic-api#dotnet-runtime-i18ncs) 中。
 
 在应用引导（`src/i18n.js`）、语言切换器以及任何需要方向或字符串工具的非 React 代码中使用它们。如需端到端连接，请从 [连接 i18next](/zh-Hans/guide/ui-strings/i18next-runtime) 开始；如需语言菜单和 RTL，请参阅 [语言切换器与 RTL](/zh-Hans/guide/ui-strings/language-switcher)。
 

@@ -12,7 +12,7 @@
 | 让面向用户的文本对工具可见：应用代码中的 `t()` 调用、网站框架自身的 i18n，或自述文件中的语言列表标记 | 缓存翻译并在每次重新运行时重用它们 |
 | 将结果连接到应用、网站路由或 README 的语言行 | 显示进度，并允许您在仪表板中审阅译文 |
 
-该工具不会重写你的源代码。为包装步骤提供了编码代理提示。它不会安装 i18next 或你的网站框架的 i18n，也不会构建你的语言切换器，不过为此提供了运行时帮助程序。
+该工具不会重写您的源代码，除非您使用 `--write` 运行 `migrate-python-i18n` 或 `migrate-dotnet-i18n`。包装步骤提供了编码代理提示。它不会安装 i18next 或您的站点框架的 i18n，也不会构建您的语言切换器，尽管为此提供了运行时帮助程序。
 
 <a id="where-do-i-start"></a>
 ## 从何开始？
@@ -23,6 +23,8 @@
 | --- | --- |
 | 源代码中包含纯文本的 JS/TS 应用（React、Next.js、Node、CLI） | [为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) |
 | Python 应用（Streamlit、FastAPI、Flask、桌面应用、脚本） | [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) |
+| 一个 .NET 应用程序 (Avalonia, WPF, MAUI, ASP.NET, Blazor, 控制台) | [为 .NET 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet) |
+| 一个已使用 `ResourceManager` 或 `IStringLocalizer` 的 .NET 应用程序 | [为 .NET ResourceManager 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager) |
 | Django 应用、Flask-Babel 目录或已使用 GNU gettext 的应用 | [为 Django / Python gettext 应用添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext) |
 | 网站或文档站点（VitePress、Docusaurus、Starlight、Nextra、Fumadocs、Astro、纯 HTML） | [为网站或文档站点添加 i18n](/zh-Hans/guide/add-i18n-to-website) |
 | 仓库自述文件和其他 Markdown 文件，通常与应用放在一起 | [为你的自述文件和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme) |
@@ -45,10 +47,10 @@
 
 在底层，该工具运行四个流水线。你的配置会启用你需要的流水线，`sync` 会按顺序运行它们。
 
-- UI 字符串 — 从 JS/TS 和 Python 源代码中提取 `t("…")` 和 `_()` 调用（以及类似的标记，包括 GNU gettext），并写入每个区域设置的扁平化 JSON 或 `.po` / `.mo` 目录。命令：`extract`、`translate-ui`。指南：[UI 字符串](/zh-Hans/guide/ui-strings/)。Python：[Python 应用](/zh-Hans/guide/ui-strings/python)。
-- 文档 — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 和其他静态文档站点，以及仓库自述文件（`flat` 的 `docsOutput.style`）。命令：`translate-docs`。指南：[文档](/zh-Hans/guide/documents/) 和 [为你的自述文件和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
-- JSON — 翻译在顶层 `json[]` 中定义的嵌套 JSON 区域设置包（主题标签、i18n 覆盖、不在源代码中的应用文案）。命令：`translate-json`。指南：[JSON](/zh-Hans/guide/json)。
-- SVG — 翻译 SVG 插图（`<text>`、`<title>`、`<desc>`）内的可见文本，并为每个区域设置写入一个输出文件。与文档翻译分开。命令：`translate-svg`。指南：[SVG 翻译](/zh-Hans/guide/svg-translation/)。
+- UI 字符串 — 从 JS/TS 和 Python 中提取 `t("…")` 和 `_()` 调用，以及从 C# 和 XAML 中提取 `T("…")` / `{loc:Tr '…'}`（包括 GNU gettext 和 .NET `.resx` 卫星程序集），并写入扁平的每个区域设置 JSON、`.po` / `.mo` 或 `.resx`。命令：`extract`、`translate-ui`、`migrate-dotnet-i18n`。指南：[UI 字符串](/zh-Hans/guide/ui-strings/)。Python：[Python 应用程序](/zh-Hans/guide/ui-strings/python)。.NET：[.NET 应用程序](/zh-Hans/guide/ui-strings/dotnet) 和 [为 .NET ResourceManager 应用程序添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)。
+- 文档 — 翻译 `docs[].contentPaths` 中列出的 Markdown、MDX 和 `.astro` 页面。适用于 VitePress、Starlight、Docusaurus、Nextra、Fumadocs、Astro 和其他静态文档站点，以及存储库 README（`flat` 的 `docsOutput.style`）。命令：`translate-docs`。指南：[文档](/zh-Hans/guide/documents/) 和 [为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
+- JSON — 翻译在顶级 `json[]` 中定义的嵌套 JSON 区域设置包（主题标签、i18n 覆盖、不在源代码中的应用程序文本）。命令：`translate-json`。指南：[JSON](/zh-Hans/guide/json)。
+- SVG — 翻译 SVG 插图（`<text>`、`<title>`、`<desc>`）中的可见文本，并为每个区域设置写入一个输出文件。与文档翻译分开。命令：`translate-svg`。指南：[SVG 翻译](/zh-Hans/guide/svg-translation/)。
 
 许多项目会组合多种模式。常见的组合是 UI 字符串加上仓库的 README。像 VitePress 这样的文档网站是另一种常见的组合。请参阅[组合管道](/zh-Hans/guide/combining-pipelines)和[为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。
 
@@ -62,6 +64,7 @@
 | 一个 JS/TS 应用 | [console-app](/zh-Hans/examples#console-app), [nextjs-app](/zh-Hans/examples#nextjs-app) |
 | 一个与应用并存的仓库 README | [console-app](/zh-Hans/examples#console-app), [nextjs-app](/zh-Hans/examples#nextjs-app) |
 | 一个 Python 应用 | [python-streamlit](/zh-Hans/examples#python-streamlit), [python-fastapi](/zh-Hans/examples#python-fastapi), [python-gettext](/zh-Hans/examples#python-gettext) |
+| 一个 .NET 帮助程序 | [dotnet-console](/zh-Hans/examples#dotnet-console), [dotnet-resx](/zh-Hans/examples#dotnet-resx) |
 | 一个文档网站 | [docusaurus-docs](/zh-Hans/examples#docusaurus-docs), [vitepress-docs](/zh-Hans/examples#vitepress-docs), [astro-docs](/zh-Hans/examples#astro-docs) |
 | 一个网站或纯 HTML | [astro-website](/zh-Hans/examples#astro-website), [plain-html](/zh-Hans/examples#plain-html) |
 

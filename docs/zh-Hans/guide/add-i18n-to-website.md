@@ -381,6 +381,7 @@ ai-i18n-tools sync
 | --- | --- |
 | 应用 UI 字符串 | [为 JS/TS 应用添加 i18n](/zh-Hans/guide/add-i18n-to-js) 或 [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) |
 | Django、Flask-Babel 目录，或已使用 GNU gettext 的应用程序 | [将 i18n 添加到 Django / Python gettext 应用程序](/zh-Hans/guide/add-i18n-to-django-gettext) |
+| .NET 应用 | [为 .NET 应用添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet) 或 [为 .NET ResourceManager 应用添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager) |
 | 站点旁边的仓库 README，或 Markdown 文件且无站点框架 | [为您的 README 和 Markdown 文档添加 i18n](/zh-Hans/guide/add-i18n-to-readme)。`init … --with-readme` 在站点模板旁边添加该块 |
 | 独立的嵌套区域设置 JSON | [JSON](/zh-Hans/guide/json) |
 | 一个配置中的站点和应用字符串 | [组合管道](/zh-Hans/guide/combining-pipelines) |

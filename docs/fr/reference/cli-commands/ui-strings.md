@@ -81,6 +81,8 @@ Traduit uniquement les chaînes d'interface utilisateur (`strings.json` → JSON
 
 `-l` / `--locale` : locales cibles séparées par des virgules (par défaut : `targetLocales` de la configuration moins `sourceLocale`). `--force` : retraduit toutes les entrées par locale (ignore les traductions existantes). `--dry-run` : pas d'écritures, pas d'appels API. `-j` parallélise les **locales** ; au sein de chaque locale, la configuration `uiBatchConcurrency` (par défaut **2**) parallélise les lots LLM (morceaux de 50 chaînes, puis groupes de pluriels). Il n'y a pas d'option CLI pour `uiBatchConcurrency`.
 
+Une traduction stockée dont les espaces réservés ne correspondent pas à sa source est traduite à nouveau. La vérification couvre un nom renommé (`{schedule}` devenant `{cronograma}`), un jeton supprimé ou inventé, et un changement de spécification de format (`{price:,.2f}` devenant `{price}`). Le compte est affiché avant le lot, y compris sur `--dry-run`. Une ligne dont le modèle est `user-edited` est laissée en place et fait seulement l'objet d'un avertissement. Une chaîne qui ne contient que des espaces réservés et de la ponctuation, telle que `{state} · {title}`, est copiée et n'est pas envoyée à un modèle. Un lot qui renomme un espace réservé est rejeté et le modèle suivant de la chaîne est essayé avec cette erreur ajoutée. Le tableau de bord signale les mêmes lignes et demande confirmation avant d'enregistrer une traduction qui rompt un espace réservé.
+
 ---
 
 <a id="sync-ui"></a>

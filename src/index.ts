@@ -196,7 +196,20 @@ export {
   canonicalPlaceholderFamily,
   isNounOnlyPluralSource,
   isQuantityPlaceholderFamily,
+  hasDotnetNamedPlaceholder,
+  uiTranslationPlaceholderIssues,
+  assertUIBatchPlaceholders,
+  isPlaceholderOnlyUiString,
+  UiBatchPlaceholderError,
+  type UiPlaceholderStyle,
+  type UiPlaceholderIssueKind,
+  type UiTranslationPlaceholderIssue,
 } from "./core/ui-placeholders.js";
+export {
+  catalogPlaceholderHits,
+  translationValuePlaceholderMessages,
+  type CatalogPlaceholderHit,
+} from "./core/ui-placeholder-audit.js";
 
 export { computeSegmentHash } from "./utils/hash.js";
 

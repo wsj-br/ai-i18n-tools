@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # Strings da UI
 
-Referência para `extract` e `translate-ui`, o pipeline que transforma chamadas `t()` em catálogos por localidade. Adicionando i18n a um app pela primeira vez? Comece em [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js) ou [Adicionar i18n a um app Python](/pt-BR/guide/add-i18n-to-python). Eles abordam a etapa de encapsulamento e depois trazem você de volta para cá para as Etapas 2 a 4.
+Referência para `extract` e `translate-ui`, o pipeline que transforma chamadas `t()` em catálogos por localidade. Adicionando i18n a um aplicativo pela primeira vez? Comece em [Adicionar i18n a um aplicativo JS/TS](/pt-BR/guide/add-i18n-to-js), [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python) ou [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet). Eles cobrem a etapa de encapsulamento e, em seguida, o enviam de volta aqui para as Etapas 2 a 4.
 
-Este pipeline atende projetos JS/TS (React, componentes cliente e servidor do Next.js, serviços Node.js, HTML puro, sites Astro e ferramentas CLI) e aplicações Python. JS/TS procura strings com i18next depois que o código-fonte chama `t()`. Python chama `t()` ou gettext por meio de um `i18n.py` gerado (Django mantém o gettext do Django).
+Este pipeline atende a projetos JS/TS (React, componentes de cliente e servidor Next.js, serviços Node.js, HTML simples, sites Astro e ferramentas CLI), aplicativos Python e aplicativos .NET. JS/TS pesquisa strings com i18next depois que o código-fonte chama `t()`. Python chama `t()` ou gettext por meio de um `i18n.py` gerado (Django mantém o gettext do Django). .NET chama `T()` por meio de um `I18n.cs` gerado.
 
 <a id="which-guide-to-read"></a>
 ## Qual guia ler
@@ -13,6 +13,7 @@ Este pipeline atende projetos JS/TS (React, componentes cliente e servidor do Ne
 | JS/TS com strings de origem codificadas diretamente, ainda sem `t()` | [Adicionar i18n a um app JS/TS](/pt-BR/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` já no código-fonte | [Conectar o i18next](/pt-BR/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [Aplicações Python](/pt-BR/guide/ui-strings/python). Inicialização: `ui-python`, `ui-python-gettext`, `ui-python-flask`, ou `ui-python-django`. Auxiliar: `i18n.py`. Para adicionar localidades a um aplicativo existente, consulte [Adicionar i18n a um aplicativo Python](/pt-BR/guide/add-i18n-to-python), ou [Adicionar i18n a um aplicativo Django / Python gettext](/pt-BR/guide/add-i18n-to-django-gettext) quando o aplicativo usa gettext. |
+| .NET (`T()`, `Tn`, `Tp`, XAML `loc:Tr`) | [Aplicativos .NET](/pt-BR/guide/ui-strings/dotnet). Inicialização: `ui-dotnet` (`I18n.cs`) ou `ui-dotnet-resx` ([Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager)). Para adicionar localidades a um aplicativo existente, consulte [Adicionar i18n a um aplicativo .NET](/pt-BR/guide/add-i18n-to-dotnet). |
 | HTML puro (sem `t()` na marcação) | [Aplicativos HTML puros](/pt-BR/guide/ui-strings/plain-html) |
 | Site de marketing Astro (híbrido) | [Site Astro](/pt-BR/guide/ui-strings/astro-website) |
 | Regras de `t()`, interpolação, plurais | [Chamadas t() e plurais](/pt-BR/guide/ui-strings/t-calls-and-plurals) |
@@ -81,7 +82,8 @@ Para cada entrada, `translate-ui` armazena o **ID do modelo do provedor ativo** 
 
 - JS/TS: configure o i18next com os auxiliares de tempo de execução, carregue o arquivo de localidade que o usuário escolher e adicione um seletor de idioma. Consulte [Conectar i18next](/pt-BR/guide/ui-strings/i18next-runtime) e [Seletor de idioma e RTL](/pt-BR/guide/ui-strings/language-switcher).
 - Python: use o `i18n.py` gerado ou seus catálogos gettext. Consulte [Aplicativos Python](/pt-BR/guide/ui-strings/python).
-- HTML Simples: carregue o script de tempo de execução ao lado da página. Consulte [Aplicativos HTML Simples](/pt-BR/guide/ui-strings/plain-html).
+- .NET: use o `I18n.cs` gerado, ou `I18nResx.cs` quando o aplicativo já usa `ResourceManager`. Consulte [Aplicativos .NET](/pt-BR/guide/ui-strings/dotnet) e [Adicionar i18n a um aplicativo .NET ResourceManager](/pt-BR/guide/add-i18n-to-dotnet-resourcemanager). `migrate-dotnet-i18n` reescreve argumentos `T()` inseguros. `--wrap` audita rótulos não marcados.
+- HTML simples: carregue o script de tempo de execução ao lado da página. Consulte [Aplicativos HTML simples](/pt-BR/guide/ui-strings/plain-html).
 - Astro: consulte [Site Astro](/pt-BR/guide/ui-strings/astro-website).
 
 <a id="optional"></a>

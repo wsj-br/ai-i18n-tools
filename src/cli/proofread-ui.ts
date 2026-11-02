@@ -14,7 +14,11 @@ import { MODELS_ALL_UNKNOWN_AFTER_FILTER } from "./openrouter-catalog-model-filt
 import { TranslationCache } from "../core/cache.js";
 import { createUsageRecorder } from "../core/usage-recorder.js";
 import type { ProofreadUIIssue } from "../core/prompt-builder.js";
-import { collectPlaceholderFamilies, extractUiPlaceholderTokens } from "../core/ui-placeholders.js";
+import {
+  collectPlaceholderFamilies,
+  extractUiPlaceholderTokens,
+  type UiPlaceholderStyle,
+} from "../core/ui-placeholders.js";
 import { resolveStringsJsonPath } from "./helpers.js";
 import { runExtract } from "./extract-strings.js";
 import { formatUiBlockLabel, selectUiBlocks } from "../core/ui-blocks.js";
@@ -42,10 +46,11 @@ export { extractUiPlaceholderTokens };
 /** Returns true if `suggested` has the same placeholder families, with the same counts, as `original`. */
 export function proofreadSuggestionPreservesPlaceholders(
   original: string,
-  suggested: string
+  suggested: string,
+  style: UiPlaceholderStyle = "default"
 ): boolean {
-  const orig = collectPlaceholderFamilies(original);
-  const next = collectPlaceholderFamilies(suggested);
+  const orig = collectPlaceholderFamilies(original, style);
+  const next = collectPlaceholderFamilies(suggested, style);
   if (orig.size !== next.size) {
     return false;
   }
@@ -112,7 +117,11 @@ function countReviewedSlots(reviewed: boolean[]): number {
   return n;
 }
 
-function cleanProofreadIssues(unitText: string, rawIssues: ProofreadUIIssue[]): ProofreadUIIssue[] {
+function cleanProofreadIssues(
+  unitText: string,
+  rawIssues: ProofreadUIIssue[],
+  style: UiPlaceholderStyle = "default"
+): ProofreadUIIssue[] {
   const cleaned: ProofreadUIIssue[] = [];
   for (const iss of rawIssues) {
     const st = iss.suggestedText;
@@ -122,7 +131,7 @@ function cleanProofreadIssues(unitText: string, rawIssues: ProofreadUIIssue[]): 
     if (!suggestionRewritesSource(unitText, st)) {
       continue;
     }
-    if (!proofreadSuggestionPreservesPlaceholders(unitText, st)) {
+    if (!proofreadSuggestionPreservesPlaceholders(unitText, st, style)) {
       cleaned.push({
         severity: iss.severity,
         message: `${iss.message} (Suggested rewrite omitted: would break placeholders.)`,
@@ -692,7 +701,11 @@ export async function runProofreadUI(
           }
           pairs.push({
             unit,
-            issues: cleanProofreadIssues(unit.text, batch.slots[i]?.issues ?? []),
+            issues: cleanProofreadIssues(
+              unit.text,
+              batch.slots[i]?.issues ?? [],
+              activeBlock.uiExtractor?.placeholderStyle ?? "default"
+            ),
           });
         }
         const ok: BatchOk = {

@@ -381,6 +381,7 @@ Astro의 `i18n.locales`를 켜고, 페이지 HTML을 번역해야 하는 경우 
 | --- | --- |
 | 앱 UI 문자열 | [JS/TS 앱에 i18n 추가](/ko/guide/add-i18n-to-js) 또는 [Python 앱에 i18n 추가](/ko/guide/add-i18n-to-python) |
 | Django, Flask-Babel 카탈로그 또는 이미 GNU gettext를 사용하는 앱 | [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext) |
+| .NET 앱 | [.NET 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet) 또는 [.NET ResourceManager 앱에 i18n 추가](/ko/guide/add-i18n-to-dotnet-resourcemanager) |
 | 사이트 옆의 리포지토리 README 또는 마크다운 파일(사이트 프레임워크 없음) | [README 및 마크다운 문서에 i18n 추가](/ko/guide/add-i18n-to-readme). `init … --with-readme`은(는) 사이트 템플릿 옆에 해당 블록을 추가합니다. |
 | 독립형 중첩 로케일 JSON | [JSON](/ko/guide/json) |
 | 단일 구성의 사이트 및 앱 문자열 | [파이프라인 결합](/ko/guide/combining-pipelines) |

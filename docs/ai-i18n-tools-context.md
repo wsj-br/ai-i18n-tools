@@ -8,6 +8,7 @@ Read the [consumer skill](https://github.com/wsj-br/ai-i18n-tools/blob/main/skil
 
 - [JavaScript / TypeScript](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/javascript.md): source-string UI, i18next, browser/SSR runtime, and HTML markers.
 - [Python](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/python.md): generated helper or existing gettext, Django, and Flask-Babel.
+- [.NET](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/dotnet.md): generated `I18n.cs` or `I18nResx.cs`, C# and XAML source strings, embedded JSON or `.resx` satellites, and `migrate-dotnet-i18n`.
 - [Documentation](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/documentation.md): README, documentation frameworks, static pages, and shell catalogs.
 - [Assets, links, and SVG](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/assets-and-links.md): localised images, anchors, link rewriting, and SVG labels.
 - [JSON](https://github.com/wsj-br/ai-i18n-tools/blob/main/skills/ai-i18n-tools/references/json.md): nested locale bundles and namespaces.
@@ -24,6 +25,7 @@ Type one command, or name it in the request. Each command follows the shared ski
 | --- | --- |
 | `/ai-i18n-js` | JavaScript or TypeScript source-string UI |
 | `/ai-i18n-python` | Generated Python helper and flat JSON catalogs |
+| `/ai-i18n-dotnet` | Generated `I18n.cs` or `I18nResx.cs`, and `migrate-dotnet-i18n` |
 | `/ai-i18n-django` | Django, Flask-Babel, or plain gettext |
 | `/ai-i18n-vitepress` | VitePress |
 | `/ai-i18n-starlight` | Astro Starlight docs |
@@ -46,6 +48,7 @@ Follow the walkthrough that matches the project. Start at [Add i18n to your proj
 - [Add i18n to a JS/TS app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-js) — [console-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/console-app) (smallest `t()` app) and [nextjs-app](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextjs-app) (React, plurals, docs, and SVG).
 - [Add i18n to a Python app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-python) — [python-fastapi](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-fastapi), [python-flask](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-flask), and [python-streamlit](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-streamlit).
 - [Add i18n to a Django / Python gettext app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-django-gettext) — [python-gettext](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/python-gettext). There is no Django example directory.
+- [Add i18n to a .NET app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-dotnet) — [dotnet-console](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-console) (`I18n.cs`) and [dotnet-resx](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/dotnet-resx) (`I18nResx.cs`). An app that already uses `ResourceManager` or `IStringLocalizer`: [Add i18n to a .NET ResourceManager app](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-dotnet-resourcemanager). `migrate-dotnet-i18n` rewrites unsafe `T()` arguments and lists named keys such as `Resources.LoginButton` as suggestions.
 - [Add i18n to a website or docs site](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-website) — [vitepress-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/vitepress-docs), [docusaurus-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/docusaurus-docs), [astro-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-docs), [nextra-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/nextra-docs), [fumadocs-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/fumadocs-docs), [astro-website](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website), [plain-html](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html), and [plain-html-docs](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/plain-html-docs).
 - [Add i18n to your README and Markdown docs](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-readme) — `console-app` and `nextjs-app` also translate a README.
 
@@ -54,13 +57,13 @@ The [examples index](https://wsj-br.github.io/ai-i18n-tools/examples) lists the 
 ## Essential contract
 
 1. Inspect the existing version, configuration, runtime, and source/target locales before changing anything. `init -P <provider> -t <template>` scaffolds a new project but overwrites the selected config; do not rerun it over an existing setup.
-2. Select pipelines by content, not application language: literal `t()`/gettext calls or HTML markers use `ui`; pages and framework shell catalogs use `docs[]`; standalone nested locale bundles use `json[]`; SVG text labels use `svg`.
+2. Select pipelines by content, not application language: literal `t()` / `T()` / gettext calls, XAML `loc:Tr`, or HTML markers use `ui`; pages and framework shell catalogs use `docs[]`; standalone nested locale bundles use `json[]`; SVG text labels use `svg`. .NET apps that already use `ResourceManager` set `ui.resx` (`init -t ui-dotnet-resx`).
 3. Configure the selected pipelines and run `ai-i18n-tools sync`. It handles UI extraction/translation, SVG, documents, and JSON in that order when configured/enabled. No separate extraction step is needed. Use skip flags only for explicitly narrower scope or project policy.
 4. Match config `sourceLocale` to the runtime's actual source locale. Preserve the project's locale identifiers, routing, and existing translation system.
 5. `strings.json` is the extraction/translation catalog, not a flat runtime bundle. Ordinary flat bundles use source-language text keys, not MD5 IDs; gettext context and plural entries have specialized forms described in the references.
 6. Use extractable literal messages and interpolate after lookup. Do not repair dynamic keys by hand-adding catalog rows: extraction can prune those rows. Do not hand-edit generated locale outputs; fix source/configuration and regenerate.
 7. Translation can send source content to the configured provider and incur charges. Honor the requested scope and project policy; an authorized sync needs no redundant approval. Never expose or commit API keys.
-8. Review generated changes, test source and target locales, and verify the app/docs build and packaged assets. Keep CLI and copied skill versions aligned when upgrading; preserve customized helpers and configuration.
+8. Review generated changes, test source and target locales, and verify the app/docs build and packaged assets. A clean extract or migration report is not coverage. Check returned labels, shown errors, and stable stored values, and assert one target locale changes the visible text. Fill the user glossary before the first translation. Keep CLI and copied skill versions aligned when upgrading; preserve customized helpers and configuration. The shared skill has the full checklist.
 
 ## Installation and fallback
 

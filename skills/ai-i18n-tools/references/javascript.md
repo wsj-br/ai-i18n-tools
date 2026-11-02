@@ -8,8 +8,10 @@ Read this for source-string UI or HTML markers. Preserve an existing nested-key 
 - For new configuration, choose the appropriate template: `ui-markdown` includes UI and README, `ui-astro-website` is UI-only, and `ui-plain-html` is for HTML markers. Inspect template output before syncing. Never overwrite existing config with `init`.
 - Configure `ui.sourceRoots`, `ui.stringsJson`, and `ui.flatOutputDir`. `ui` can be one block or an array of independent catalogs.
 - Wrap user-facing strings with literal `t("Save")` / `i18n.t("Save")`. Custom function names belong in `ui.uiExtractor.funcNames`; include source extensions in `ui.uiExtractor.extensions`.
-- Use `t("Hello {{name}}", { name })`, not a template literal evaluated before lookup. Translate option lists when rendered or recomputed for the current locale, not once at module initialization.
-- Do not wrap paths, IDs, machine values, or already translated content. Variables passed as keys are not discovered automatically.
+- Use `t("Hello {{name}}", { name })`, not a template literal evaluated before lookup. Translate option lists when rendered or recomputed for the current locale, not once at module initialization. A stored choice stays `value: "last12"`; the caption is `t("Last 12 months")`.
+- Also wrap shown validation text, returned labels, progress, accessibility text, and variable-backed captions. Leave diagnostic logs and machine-readable codes. A clean extract is not coverage.
+- Do not wrap paths, IDs, machine values, or already translated content. Variables passed as keys are not discovered automatically. Name placeholders (`{{when}}`). `status` and `translate-ui --dry-run` report a count mismatch. The check does not prove positional order.
+- Keep model-bound text on a source-locale translator. Do not change a shared instance around asynchronous work.
 
 Run the configured workflow:
 

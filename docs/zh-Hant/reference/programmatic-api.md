@@ -80,3 +80,23 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `ngettext(singular, plural, n, **values)` | 複數查閱，然後進行插值。`count` 可用於格式化字串。 |
 | `pgettext(context, message, **values)` | 脈絡查詢（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 中的來源語言字串），然後內插。 |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 選擇方塊。寫入 `st.session_state.locale` 和 `st.query_params["lang"]`，呼叫 `set_locale`，並傳回選擇的代碼。 |
+
+<a id="dotnet-runtime-i18ncs"></a>
+## .NET 執行階段 (`I18n.cs`)
+
+當 `I18n.cs` 遺失時，`init -t ui-dotnet` 會將 `assets/dotnet/I18n.cs` 複製到專案中。它是適用於 .NET 6 或更新版本的無依賴輔助工具。下列成員與上表中 Node 匯出的內容是分開的。呼叫形式和 XAML 標記：[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet)。
+
+| 成員 | 行為 |
+| --- | --- |
+| `SetLocale(locale)` | 載入該地區設定的平面 JSON，當確切檔案遺失時，遍歷 `CultureInfo.Parent`。引發 `LocaleChanged`。 |
+| `T(source, args)` | 查詢修剪後的字面值，使用 `string.Format` 格式化，並將來源的前導和尾隨空白字元還原。 |
+| `Tn(singular, plural, count, args)` | 複數查詢。`{0}` 是計數。目錄鍵是修剪後的單數形式的 MD5-8，加上 `_` 和 CLDR 形式。 |
+| `Tp(context, source, args)` | 查詢上下文 + U+0004 + 來源，然後格式化。 |
+| `N(source)` | 傳回 `source`。提取出來以便靜態標籤可以被編目。 |
+| `Loc[source]` | 呼叫 `T` 的索引器。`Loc` 是類型為 `StringSourceLocalizer` 的靜態欄位。 |
+| `Configure(options)` | 設定來源地區設定、嚴格的遺失鍵模式、目錄或串流載入器，以及語言列表。 |
+| `SupportedLocales` | 由 `init` 標記的地區設定，帶有本地名稱和英文名稱。 |
+| `IsRightToLeft(locale)` | `CultureInfo.TextInfo.IsRightToLeft`。 |
+| `PluralForm(locale, n)` | 來自與 `.po` 檔案相同的 GNU 規則的 CLDR 形式名稱。 |
+
+`init -t ui-dotnet-resx` 改為複製 `I18nResx.cs`。`T`、`Tn` 和 `Tp` 使用相同的來源字串鍵呼叫 `ResourceManager`。`SetLocale` 設定 `CurrentUICulture` 和 `CurrentCulture`。詳細資訊：[將 i18n 新增至 .NET ResourceManager 應用程式](/zh-Hant/guide/add-i18n-to-dotnet-resourcemanager)。

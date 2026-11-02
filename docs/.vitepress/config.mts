@@ -62,6 +62,11 @@ function guideSidebar(t: ThemeCatalog) {
         { text: t.sidebar.overview, link: "/guide/add-i18n-to-your-project" },
         { text: t.sidebar.addI18nToJs, link: "/guide/add-i18n-to-js" },
         { text: t.sidebar.addI18nToPython, link: "/guide/add-i18n-to-python" },
+        { text: t.sidebar.addI18nToDotnet ?? "Add i18n to a .NET app", link: "/guide/add-i18n-to-dotnet" },
+        {
+          text: t.sidebar.addI18nToDotnetResourceManager ?? "Add i18n to a .NET ResourceManager app",
+          link: "/guide/add-i18n-to-dotnet-resourcemanager",
+        },
         {
           text: t.sidebar.addI18nToDjango ?? "Add i18n to a Django / Python gettext app",
           link: "/guide/add-i18n-to-django-gettext",
@@ -84,6 +89,7 @@ function guideSidebar(t: ThemeCatalog) {
             { text: t.sidebar.overview, link: "/guide/ui-strings/" },
             { text: t.sidebar.uiStringsPlainHtml, link: "/guide/ui-strings/plain-html" },
             { text: t.sidebar.python ?? "Python", link: "/guide/ui-strings/python" },
+            { text: t.sidebar.dotnet ?? ".NET", link: "/guide/ui-strings/dotnet" },
             { text: t.sidebar.uiStringsAstroWebsite, link: "/guide/ui-strings/astro-website" },
             { text: t.sidebar.uiStringsWireI18next, link: "/guide/ui-strings/i18next-runtime" },
             {

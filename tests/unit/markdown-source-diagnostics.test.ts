@@ -123,6 +123,45 @@ describe("collectMarkdownSourceIssues", () => {
     ).toBe(1);
   });
 
+  it("does not treat `}}` after a raw {{ in <code v-pre> as an unclosed code span", () => {
+    const samples = [
+      "Placeholders stay in .NET form: `{0}`, `{0,-10}`, `{0:C}`. `%` is ordinary text, so a translation such as `10% off` is not a printf token. Doubled braces (<code v-pre>{{</code> and `}}`) are literal braces and must be copied unchanged.",
+      "`ui-dotnet` sets `uiExtractor.placeholderStyle` to `dotnet`. That style keeps `{0}`, `{0,-10}`, `{0:C}`, and `{0,-10:C}`. `%` is ordinary text, so a translation such as `10% e 20%` is not treated as a printf token. Doubled braces (<code v-pre>{{</code> and `}}`) are literal braces and must be copied unchanged. `{name}` is an error at extract time.",
+    ];
+    for (const md of samples) {
+      const issues = collectMarkdownSourceIssues(md);
+      expect(
+        issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE)
+      ).toEqual([]);
+    }
+  });
+
+  it("still flags strong wrapping a link between a raw {{ and a later code span", () => {
+    const issues = collectMarkdownSourceIssues(
+      "(<code v-pre>{{</code> **[home](https://example.com)** and `}}`)",
+      { segmentStartLine: 1 }
+    );
+    expect(issues.some((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.STRONG_OUTSIDE_LINK)).toBe(
+      true
+    );
+    expect(
+      issues.filter((i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE)
+    ).toEqual([]);
+  });
+
+  it("still flags a backtick left open after a closed placeholder", () => {
+    const issues = collectMarkdownSourceIssues("See {{TOKEN}} then `open");
+    const unclosed = issues.filter(
+      (i) => i.code === MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE
+    );
+    expect(unclosed).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.UNCLOSED_INLINE_CODE,
+        line1: 1,
+      }),
+    ]);
+  });
+
   it("skips closed {{placeholder}} spans before scanning for strong-outside-link", () => {
     const issues = collectMarkdownSourceIssues("{{TOKEN}} **[link](https://x.test)**", {
       segmentStartLine: 1,

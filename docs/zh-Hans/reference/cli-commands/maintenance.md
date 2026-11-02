@@ -38,7 +38,7 @@
 
 **概要：** `ai-i18n-tools purge-locale -l <code> [-l <code> …] [options]`
 
-从 `translations`、`file_tracking` 和 `translation_failures` 中删除给定语言环境的所有缓存行，以及该语言环境的生成工件：翻译文档（从 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 输出，包括源已删除的孤立输出——通过扫描每个块的输出树找到，除非配置了自定义 `pathTemplate`），每个语言环境的平面 UI 文件（`<flatOutputDir>/<locale>.json`），以及该语言环境在 `strings.json` 中的条目。
+删除针对给定语言环境的所有缓存行，这些行来自 `translations`、`file_tracking` 和 `translation_failures`，以及该语言环境生成的工件：翻译文档（从 `docs[]` 解析的 `.md` / `.mdx` / `.astro` 输出，包括源已删除的孤立输出——通过扫描每个块的输出树找到，除非配置了自定义 `pathTemplate`）、每个语言环境的平面 UI 文件 (`<flatOutputDir>/<locale>.json`)、配置后该语言环境的 Gettext `.po` / `.mo`、该语言环境的 `.resx` 卫星 (`{baseName}.{culture}.resx`；中性 `{baseName}.resx` 保留)，以及该语言环境在 `strings.json` 中的条目。
 
 语言环境通过可重复的 `-l` / `--locale` 传递（标准化为 BCP-47）。打印每个语言环境的计数（缓存行、文档、`strings.json` 条目、平面文件）；对没有可清除内容的语言环境发出警告（不报错）。除非 `-y` / `--yes` / `-f` / `--force`，否则会提示确认。`--dry-run`：报告计数和将要删除的文件，不执行删除。`--keep-files`：仅清除 SQLite 缓存，不触及生成的文件和 `strings.json`。除非传递 `--backup <path>`，否则不创建 SQLite 备份，传递后会在删除前将备份写入该路径。
 

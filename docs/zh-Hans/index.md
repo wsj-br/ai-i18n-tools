@@ -3,8 +3,8 @@ layout: home
 title: ai-i18n-tools
 pageClass: home-onboarding
 description: >-
-  通过引导式设置、AI 翻译和缓存复用，将您的单语言应用、网站或仓库文档变为多语言。可以从 JavaScript、TypeScript、Python 或
-  README 开始。
+  将您的单语言应用、网站或仓库文档通过引导式设置、AI 翻译和缓存重跑实现多语言化。从 JavaScript、TypeScript、Python、.NET 或
+  README 文件开始。
 hero:
   name: ai-i18n-tools
   text: 将您的单语言项目变为多语言。
@@ -67,6 +67,22 @@ React · Next.js · Node.js · CLI
 Streamlit · FastAPI · Flask · Django · CLI
 
 [为 Python 应用添加 i18n](/zh-Hans/guide/add-i18n-to-python) · [为 Django / Python gettext 应用添加 i18n](/zh-Hans/guide/add-i18n-to-django-gettext)
+
+</article>
+<article class="home-card">
+
+<div class="home-card-logos">
+<img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
+</div>
+
+<a id="dotnet-app"></a>
+### .NET 应用
+
+封装 C# 和 XAML 文本，并从嵌入式 JSON 加载翻译，或者保留 `ResourceManager` 并编写 `.resx` 附属程序集。空运行命令将插值转换为 `T()` 调用，并列出命名资源键，例如 `Resources.LoginButton`，供您转换。
+
+Avalonia · WPF · MAUI · ASP.NET · Blazor
+
+[为 .NET 应用添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet) · [为 .NET ResourceManager 应用添加 i18n](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">
@@ -287,7 +303,7 @@ t("Save changes");
 </article>
 </div>
 
-[浏览所有可运行的示例](/zh-Hans/examples)，包括纯 HTML、其他框架和现有的 i18n 工作流程。
+[浏览所有可运行示例](/zh-Hans/examples)，包括 .NET 助手、纯 HTML、其他框架和现有 i18n 工作流。
 
 <a id="already-have-i18n-keep-what-works"></a>
 ## 已有 i18n？保留有效的部分。
@@ -306,7 +322,7 @@ t("Save changes");
 
 保留项目中已有的 `t()` 和 gettext 调用。
 
-[JS/TS UI 字符串](/zh-Hans/guide/ui-strings/) · [Python 和 gettext](/zh-Hans/guide/ui-strings/python)
+[JS/TS UI 字符串](/zh-Hans/guide/ui-strings/) · [Python 和 gettext](/zh-Hans/guide/ui-strings/python) · [.NET](/zh-Hans/guide/ui-strings/dotnet) · [ResourceManager](/zh-Hans/guide/add-i18n-to-dotnet-resourcemanager)
 
 </article>
 <article class="home-card">

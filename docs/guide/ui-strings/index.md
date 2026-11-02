@@ -1,9 +1,9 @@
 <a id="ui-strings"></a>
 # UI strings
 
-Reference for `extract` and `translate-ui`, the pipeline that turns `t()` calls into per-locale catalogs. Adding i18n to an app for the first time? Start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python). They cover the wrapping step, then send you back here for Steps 2 to 4.
+Reference for `extract` and `translate-ui`, the pipeline that turns `t()` calls into per-locale catalogs. Adding i18n to an app for the first time? Start at [Add i18n to a JS/TS app](/guide/add-i18n-to-js), [Add i18n to a Python app](/guide/add-i18n-to-python), or [Add i18n to a .NET app](/guide/add-i18n-to-dotnet). They cover the wrapping step, then send you back here for Steps 2 to 4.
 
-This pipeline serves JS/TS projects (React, Next.js client and server components, Node.js services, plain HTML, Astro websites, and CLI tools) and Python applications. JS/TS looks up strings with i18next after the source calls `t()`. Python calls `t()` or gettext through a generated `i18n.py` (Django keeps Django's gettext).
+This pipeline serves JS/TS projects (React, Next.js client and server components, Node.js services, plain HTML, Astro websites, and CLI tools), Python applications, and .NET applications. JS/TS looks up strings with i18next after the source calls `t()`. Python calls `t()` or gettext through a generated `i18n.py` (Django keeps Django's gettext). .NET calls `T()` through a generated `I18n.cs`.
 
 <a id="which-guide-to-read"></a>
 ## Which guide to read
@@ -13,6 +13,7 @@ This pipeline serves JS/TS projects (React, Next.js client and server components
 | JS/TS with hardcoded source strings, no `t()` yet | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) |
 | React / Next.js / Node, `t()` already in the source | [Wire i18next](/guide/ui-strings/i18next-runtime) |
 | Python (`t()`, `_()`, gettext, Jinja, Django) | [Python applications](/guide/ui-strings/python). Init: `ui-python`, `ui-python-gettext`, `ui-python-flask`, or `ui-python-django`. Helper: `i18n.py`. To add locales to an existing app, see [Add i18n to a Python app](/guide/add-i18n-to-python), or [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) when the app uses gettext. |
+| .NET (`T()`, `Tn`, `Tp`, XAML `loc:Tr`) | [.NET applications](/guide/ui-strings/dotnet). Init: `ui-dotnet` (`I18n.cs`) or `ui-dotnet-resx` ([Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager)). To add locales to an existing app, see [Add i18n to a .NET app](/guide/add-i18n-to-dotnet). |
 | Plain HTML (no `t()` in markup) | [Plain HTML apps](/guide/ui-strings/plain-html) |
 | Astro marketing site (hybrid) | [Astro website](/guide/ui-strings/astro-website) |
 | `t()` rules, interpolation, plurals | [t() calls & plurals](/guide/ui-strings/t-calls-and-plurals) |
@@ -81,6 +82,7 @@ For each entry, `translate-ui` stores the **model id from the active provider** 
 
 - JS/TS: set up i18next with the runtime helpers, load the locale file the user picks, and add a language switcher. See [Wire i18next](/guide/ui-strings/i18next-runtime) and [Language switcher and RTL](/guide/ui-strings/language-switcher).
 - Python: use the generated `i18n.py` or your gettext catalogs. See [Python applications](/guide/ui-strings/python).
+- .NET: use the generated `I18n.cs`, or `I18nResx.cs` when the app already uses `ResourceManager`. See [.NET applications](/guide/ui-strings/dotnet) and [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager). `migrate-dotnet-i18n` rewrites unsafe `T()` arguments. `--wrap` audits unmarked labels.
 - Plain HTML: load the runtime script next to the page. See [Plain HTML apps](/guide/ui-strings/plain-html).
 - Astro: see [Astro website](/guide/ui-strings/astro-website).
 

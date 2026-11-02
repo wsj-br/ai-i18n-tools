@@ -269,6 +269,77 @@ describe("createTranslationDashboardApp", () => {
     });
   });
 
+  it("PATCH /api/translations keeps document prose that resembles a placeholder", async () => {
+    cache = new TranslationCache(":memory:");
+    cache.setSegment("ph1", "fr", "% of calls", "% of calls", "m", "f.md", 1);
+    const app = createTranslationDashboardApp(cache, {
+      cwd: "/tmp",
+      sourceLocale: "en",
+      targetLocales: ["fr"],
+    });
+    await withHttpServer(app, async (base) => {
+      const res = await fetch(`${base}/api/translations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_hash: "ph1",
+          locale: "fr",
+          translated_text: "% d'appels",
+        }),
+      });
+      expect(res.ok).toBe(true);
+      expect(cache.getSegment("ph1", "fr")).toBe("% d'appels");
+    });
+  });
+
+  it("GET /api/ui-strings flags a renamed placeholder and PATCH requires confirmation", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-ui-ph-"));
+    const sj = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      sj,
+      JSON.stringify({
+        h1: {
+          source: "Field: {name}",
+          translated: { "pt-BR": "Campo: {nome}" },
+          models: { "pt-BR": "model-a" },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const app = createTranslationDashboardApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["pt-BR"],
+        stringsJsonPath: "strings.json",
+      });
+      await withHttpServer(app, async (base) => {
+        const listed = await fetch(`${base}/api/ui-strings`);
+        const data = (await listed.json()) as {
+          entries: Array<{ id: string; placeholderIssuesByLocale?: Record<string, string[]> }>;
+        };
+        expect(data.entries[0]?.placeholderIssuesByLocale?.["pt-BR"]?.[0]).toMatch(/renamed/);
+        const rejected = await fetch(`${base}/api/ui-strings/h1`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ translated: { "pt-BR": "Campo: {nome}" } }),
+        });
+        expect(rejected.status).toBe(409);
+        const saved = await fetch(`${base}/api/ui-strings/h1`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            translated: { "pt-BR": "Campo: {name}" },
+          }),
+        });
+        expect(saved.ok).toBe(true);
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it("PATCH /api/translations accepts native-script text for a script-enforced locale", async () => {
     cache = new TranslationCache(":memory:");
     cache.setSegment("hi1", "hi", "Hello world", "पुराना", "m", "f.md", 1);
@@ -500,7 +571,7 @@ describe("createTranslationDashboardApp", () => {
         const patch = await fetch(`${base}/api/ui-strings/pg`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ translated: { de: { other: "ANDERE" } } }),
+          body: JSON.stringify({ translated: { de: { other: "ANDERE {{count}}" } } }),
         });
         expect(patch.ok).toBe(true);
         const doc = JSON.parse(fs.readFileSync(sj, "utf8")) as {
@@ -514,7 +585,7 @@ describe("createTranslationDashboardApp", () => {
         expect(doc.pg.plural).toBe(true);
         expect(doc.pg.zeroDigit).toBe(false);
         expect(doc.pg.translated.de.one).toBe("{{count}} thing");
-        expect(doc.pg.translated.de.other).toBe("ANDERE");
+        expect(doc.pg.translated.de.other).toBe("ANDERE {{count}}");
         expect(doc.pg.models?.de).toBe(USER_EDITED_MODEL);
       });
     } finally {

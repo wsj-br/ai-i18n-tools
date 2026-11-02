@@ -381,6 +381,7 @@ That is the last manual step. Continue at [Choose models and translate](#choose-
 | --- | --- |
 | App UI strings | [Add i18n to a JS/TS app](/guide/add-i18n-to-js) or [Add i18n to a Python app](/guide/add-i18n-to-python) |
 | Django, Flask-Babel catalogs, or an app that already uses GNU gettext | [Add i18n to a Django / Python gettext app](/guide/add-i18n-to-django-gettext) |
+| A .NET app | [Add i18n to a .NET app](/guide/add-i18n-to-dotnet) or [Add i18n to a .NET ResourceManager app](/guide/add-i18n-to-dotnet-resourcemanager) |
 | A repository README next to the site, or Markdown files and no site framework | [Add i18n to your README and Markdown docs](/guide/add-i18n-to-readme). `init … --with-readme` adds that block beside a site template |
 | Standalone nested locale JSON | [JSON](/guide/json) |
 | A site and app strings in one config | [Combining pipelines](/guide/combining-pipelines) |
