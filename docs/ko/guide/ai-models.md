@@ -15,6 +15,7 @@
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 열은 순위, 모델 ID, 지수, 측정된 ChrF, 측정된 Arena Score, 1백만 토큰당 입출력 가격(USD)입니다. 측정값이 없는 경우는 `—`입니다. 지수는 가중 점수에 100을 곱한 값입니다. 품질 순위에서는 지수가 높을수록 이 프로젝트에 더 적합합니다.
@@ -22,7 +23,8 @@ ai-i18n-tools suggest-models
 표가 올바르게 보이면 해당 후보 목록을 구성에 작성하세요.
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply`는 `providers.<active>.translationModels`을 대체합니다. 먼저 현재 구성을 형제 파일인 `ai-i18n-tools.config.{timestamp}.backup.json`에 복사합니다. `uiModels` 및 `localeModels`는 그대로 유지됩니다. `--top`(기본값 8)는 표와 `--apply`에 포함할 ID의 수입니다. 첫 번째 ID는 번역 시 가장 먼저 시도되는 ID입니다.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 **모델**을 엽니다. **품질** 또는 **가격**을 선택합니다. 원하는 행을 선택합니다. 선택된 행은 위에서 아래 순서로 번역 시 시도됩니다. **구성 업데이트**는 확인을 요청하고 동일한 종류의 백업을 작성한 다음 해당 순서를 `translationModels`에 저장합니다. 직접 붙여넣고 싶을 때는 **JSON 복사**를 사용하여 `{ "translationModels": [...] }` 조각을 클립보드에 복사할 수 있습니다.
 
-**최대 출력 가격** 및 **최소 지수 델타**는 `suggest-models --max-output-price` 및 `--min-delta`과 일치합니다. 컨트롤 및 열: [모델 탭](/ko/guide/translation-dashboard/models).
+**최대 출력 가격**과 **최소 인덱스 델타**는 `suggest-models --max-price` 및 `--min-delta`과(와) 일치합니다. 컨트롤 및 열: [모델 탭](/ko/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### 순위 선택 방식

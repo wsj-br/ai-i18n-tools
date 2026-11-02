@@ -28,7 +28,7 @@
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**概要：** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**概要:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 对活跃提供商的聊天模型进行排名，并打印排名靠前的模型（默认为 8 个）。表格列的顺序为：排名、模型 ID、指数（加权分数乘以 100，保留一位小数）、测量的 languagebench ChrF、测量的 Arena 分数，以及每 100 万个 token 的输入和输出价格（美元）。缺失的测量值为 `—`。该命令需要该提供商的 API 密钥（对于 Ollama 等无密钥提供商则不需要）。活跃提供商遵循配置 `provider`；使用 `-P` / `--provider` 覆盖它。
 
@@ -46,7 +46,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值�
 
 `--list` 为活跃提供商配置的 `translationModels` 打印相同的列（按该顺序），并忽略 `--top`。排名列仍为每个模型在完整排名中的位置。配置中存在但目录中缺失、已过期或非聊天模型的 ID 仍会列出，测量值显示为 `—`。`--list` 不能与 `--apply` 结合使用。
 
-`--max-output-price` 保留每百万 token 输出价格小于或等于该金额（美元）的模型。没有输出价格的模型将被排除。`--min-delta` 随后遍历剩余行，仅当模型的索引比上一个保留模型的索引低至少该点数时才保留该模型。第一个剩余模型始终被保留。增量为 `0` 时不会丢弃行。当增量大于 `0` 时，没有索引的行将被排除。排名数字保持完整列表中的数字。使用 `--list` 时，遍历遵循 `translationModels` 顺序。这两个过滤器也适用于 `--json` 和 `--apply`。[Models tab](/zh-Hans/guide/translation-dashboard/models) 具有相同的两个控件。
+`--max-price` 会保留每百万 token 输出价格小于或等于指定美元金额的模型。没有输出价格的模型将被排除。`--min-delta` 随后遍历剩余行，仅当模型的索引至少比上一个保留的模型低指定点数时才保留该模型。第一个剩余模型始终保留。`0` 的增量不会删除行。当增量大于 `0` 时，没有索引的行将被排除。排名保持与完整列表中的一致。使用 `--list` 时，遍历将遵循 `translationModels` 顺序。这两个筛选器也适用于 `--json` 和 `--apply`。[模型选项卡](/zh-Hans/guide/translation-dashboard/models) 具有相同的两个控件。
 
 `--json` 将此对象写入 stdout（将其粘贴到提供商块内），并将表格和归属页脚发送到 stderr：
 
@@ -62,7 +62,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 行的平均值�
 
 页脚注明了 languagebench (CC BY-SA 4.0)、LMArena 竞技场评分 (CC BY 4.0) 和 models.dev (MIT)。
 
-**主要选项：** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
+**关键选项:** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
 **另请参阅：**[AI 模型](/zh-Hans/guide/ai-models)、[“模型”选项卡](/zh-Hans/guide/translation-dashboard/models)
 

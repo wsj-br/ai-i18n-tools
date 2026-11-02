@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # .NET 應用程式
 
 `ai-i18n-tools` 會從 C#、Razor、cshtml、XAML 和 AXAML 提取 UI 字串，然後寫入以原始語言字串為鍵的扁平 JSON。`sourceLocale` 可以是任何語言。執行階段輔助程式是 `I18n.cs`（.NET 6 或更新版本，無需 NuGet 套件）。Avalonia、WPF、MAUI、WinForms、ASP.NET、Blazor 和主控台應用程式都會呼叫該輔助程式。.NET Framework 4.8 需要 `System.Text.Json` 套件，檔案才能編譯。
@@ -123,7 +123,7 @@ WPF 和 MAUI 使用相同的概念，但有其自己的屬性類型。僅限 Ava
 
 格式化的句子保留在 C# (`T("Cursor {0}", value)`) 中，這會使提取器保持在單一文字上。繫結上的 `StringFormat` 是不可見的。相同的呼叫適用於檢視模型、系統匣工具提示和對話方塊。列舉組合會保留列舉，從其標題傳回 `T("Light")`，並在 `LocaleChanged` 上重建項目。系統匣項目使用 `Tp("tray", "Open")` 和穩定的 `CommandParameter`。匹配參數，而不是標頭。服務儲存英文錯誤句子，顯示網站透過 `T` 對應已知句子。Linux `.desktop`、`Name=` 和 `Comment=` 保留在原始語言中。進行比較的持續時間權杖 (`2d`、`7h 47m`) 保持不翻譯。在顯示網站翻譯 `T("now")` 和 `T("in {0}", duration)`。文字上的前導或尾隨空格仍然是提取警告。將其移至格式字串或版面配置中。`Tn` 可能會更正始終為複數的原始句子 (`1 samples`)。
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## 重寫不安全的呼叫
 
 `migrate-dotnet-i18n` 是一個試運行，直到您傳遞 `--write` 為止。它會重寫在查詢前建構的 `T`、`Tn` 和 `Tp` 的參數：

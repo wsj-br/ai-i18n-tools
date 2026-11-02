@@ -75,8 +75,8 @@ ai-i18n-tools suggest-models --apply
 
 एक Django ऐप, Flask-Babel कैटलॉग के साथ Flask, या एक ऐप जो पहले से ही `gettext` को कॉल करता है, उन कॉलों को बनाए रखता है। इसके बजाय `ui-python-django`, `ui-python-flask`, या `ui-python-gettext` के साथ स्कैफोल्ड करें, फिर [एक Django / Python gettext ऐप में i18n जोड़ें](/hi/guide/add-i18n-to-django-gettext) का पालन करें।
 
-<a id="a-dotnet-app"></a>
-### एक .NET ऐप
+<a id="a-net-app"></a>
+### .NET ऐप
 
 ```bash
 ai-i18n-tools init -t ui-dotnet -P openrouter

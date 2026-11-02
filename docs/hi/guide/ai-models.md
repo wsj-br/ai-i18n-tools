@@ -15,6 +15,7 @@
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 कॉलम रैंक, मॉडल आईडी, इंडेक्स, मापा गया ChrF, मापा गया एरीना स्कोर, और प्रति 1M टोकन USD में इनपुट और आउटपुट कीमत हैं। एक छूटा हुआ माप `—` है। इंडेक्स भारित स्कोर का 100 गुना है। क्वालिटी रैंकिंग पर, एक उच्च इंडेक्स इस प्रोजेक्ट के लिए एक मज़बूत मैच है।
@@ -22,7 +23,8 @@ ai-i18n-tools suggest-models
 जब तालिका सही लगे तो उस शॉर्टलिस्ट को कॉन्फ़िग में लिखें:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply`, `providers.<active>.translationModels` को बदल देता है। यह पहले वर्तमान कॉन्फ़िग को एक सिबलिंग `ai-i18n-tools.config.{timestamp}.backup.json` में कॉपी करता है। `uiModels` और `localeModels` वैसे ही रहते हैं। `--top` (डिफ़ॉल्ट 8) यह बताता है कि तालिका और `--apply` में कितनी आईडी शामिल हैं। पहली आईडी वह है जिसे अनुवाद पहले आज़माता है।
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 **मॉडल** खोलें। **क्वालिटी** या **कीमत** चुनें। अपनी इच्छित पंक्तियों को चेक करें। चेक की गई पंक्तियाँ, ऊपर से नीचे तक, वह क्रम हैं जिसे अनुवाद आज़माएगा। **कॉन्फ़िग अपडेट करें** पुष्टि के लिए पूछता है, उसी तरह का बैकअप लिखता है, और उस क्रम को `translationModels` में सहेजता है। **JSON कॉपी करें** `{ "translationModels": [...] }` फ़्रैगमेंट को क्लिपबोर्ड पर डालता है जब आप इसे स्वयं पेस्ट करना पसंद करते हैं।
 
-**अधिकतम आउटपुट कीमत** और **न्यूनतम इंडेक्स डेल्टा** `suggest-models --max-output-price` और `--min-delta` से मेल खाते हैं। नियंत्रण और कॉलम: [मॉडल टैब](/hi/guide/translation-dashboard/models)।
+**अधिकतम आउटपुट मूल्य** और **न्यूनतम इंडेक्स डेल्टा** `suggest-models --max-price` और `--min-delta` से मेल खाते हैं। नियंत्रण और कॉलम: [मॉडल टैब](/hi/guide/translation-dashboard/models)।
 
 <a id="how-the-ranking-chooses"></a>
 ### रैंकिंग कैसे चुनती है

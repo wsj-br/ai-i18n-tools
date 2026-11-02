@@ -1078,7 +1078,7 @@ export function createTranslationDashboardApp(
     const priority = priorityRaw === "price" ? "price" : "quality";
     const maxOutputPrice = optionalNonNegativeQuery(req.query.maxOutputPrice);
     if (!maxOutputPrice.ok) {
-      res.status(400).json({ error: "--max-output-price must be a number >= 0." });
+      res.status(400).json({ error: "--max-price must be a number >= 0." });
       return;
     }
     const minDelta = optionalNonNegativeQuery(req.query.minDelta);

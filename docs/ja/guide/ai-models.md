@@ -15,6 +15,7 @@
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 列は、ランク、モデルID、インデックス、測定されたChrF、測定されたArenaスコア、および100万トークンあたりの入出力価格(USD)です。測定値がない場合は`—`になります。インデックスは、加重スコアを100倍したものです。品質ランキングでは、インデックスが高いほどこのプロジェクトにより強く一致することを示します。
@@ -22,7 +23,8 @@ ai-i18n-tools suggest-models
 テーブルが適切に表示されたら、そのショートリストを構成ファイルに書き込みます:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply`は`providers.<active>.translationModels`を置き換えます。まず、現在の構成を兄弟ファイルである`ai-i18n-tools.config.{timestamp}.backup.json`にコピーします。`uiModels`と`localeModels`はそのまま残ります。`--top`(デフォルトは8)は、テーブルと`--apply`に含めるIDの数です。最初のIDが、翻訳で最初に試行されるものです。
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 **モデル**を開きます。**品質**または**価格**を選択します。希望する行にチェックを入れます。チェックされた行が上から順に、翻訳が試行する順序になります。**構成を更新**をクリックすると確認が求められ、同様のバックアップが書き込まれ、その順序が`translationModels`に保存されます。自分で貼り付けたい場合は、**JSONをコピー**で`{ "translationModels": [...] }`のフラグメントをクリップボードにコピーできます。
 
-**最大出力価格**と**最小インデックス差分**は、`suggest-models --max-output-price`と`--min-delta`に対応します。コントロールと列: [モデルタブ](/ja/guide/translation-dashboard/models)。
+**最大出力価格**と**最小インデックスデルタ**は`suggest-models --max-price`および`--min-delta`に一致します。コントロールと列： [モデルタブ](/ja/guide/translation-dashboard/models)。
 
 <a id="how-the-ranking-chooses"></a>
 ### 順位付けの仕組み

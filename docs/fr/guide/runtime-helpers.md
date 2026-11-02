@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # Helpers d'exécution
 
-Ces utilitaires sont exportés de `'ai-i18n-tools/runtime'` et fonctionnent dans n'importe quel environnement JavaScript (navigateur, Node.js, Deno, Edge). Ils n'importent **pas** de `i18next` ou `react-i18next`. Les applications Python utilisent le module `i18n.py` généré. Ses fonctions sont répertoriées dans [API programmatique — Runtime Python](/fr/reference/programmatic-api#python-runtime). Les applications .NET utilisent le fichier `I18n.cs` ou `I18nResx.cs` généré. Ces membres sont répertoriés dans [API programmatique — Runtime .NET](/fr/reference/programmatic-api#dotnet-runtime-i18ncs).
+Ces fonctions utilitaires sont exportées de `'ai-i18n-tools/runtime'` et fonctionnent dans n'importe quel environnement JavaScript (navigateur, Node.js, Deno, Edge). Elles n'importent **pas** de `i18next` ou `react-i18next`. Les applications Python utilisent le module `i18n.py` généré. Ses fonctions sont listées dans [API programmatique — Environnement d'exécution Python](/fr/reference/programmatic-api#python-runtime). Les applications .NET utilisent le fichier `I18n.cs` ou `I18nResx.cs` généré. Ces membres sont listés dans [API programmatique — Environnement d'exécution .NET](/fr/reference/programmatic-api#net-runtime-i18ncs).
 
 Utilisez-les dans le démarrage de votre application (`src/i18n.js`), le sélecteur de langue et tout code non-React qui a besoin d'utilitaires de direction ou de chaîne. Pour un câblage de bout en bout, commencez par [Câbler i18next](/fr/guide/ui-strings/i18next-runtime) ; pour les menus de langue et le RTL, voir [Sélecteur de langue et RTL](/fr/guide/ui-strings/language-switcher).
 

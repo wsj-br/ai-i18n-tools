@@ -15,6 +15,7 @@ Choose the list for this project with `suggest-models`, or with the same ranking
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 The columns are rank, model id, index, measured ChrF, measured Arena Score, and input and output price in USD per 1M tokens. A missing measurement is `—`. The index is the weighted score times 100. On the quality ranking, a higher index is a stronger match for this project.
@@ -22,7 +23,8 @@ The columns are rank, model id, index, measured ChrF, measured Arena Score, and 
 Write that shortlist into config when the table looks right:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` replaces `providers.<active>.translationModels`. It copies the current config to a sibling `ai-i18n-tools.config.{timestamp}.backup.json` first. `uiModels` and `localeModels` stay as they are. `--top` (default 8) is how many ids the table and `--apply` include. The first id is the one translation tries first.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 Open **Models**. Choose **Quality** or **Price**. Check the rows you want. Checked rows, from top to bottom, are the order translation will try. **Update config** asks for confirmation, writes the same kind of backup, and saves that order to `translationModels`. **Copy JSON** puts the `{ "translationModels": [...] }` fragment on the clipboard when you would rather paste it yourself.
 
-**Max output price** and **Min index delta** match `suggest-models --max-output-price` and `--min-delta`. Controls and columns: [Models tab](/guide/translation-dashboard/models).
+**Max output price** and **Min index delta** match `suggest-models --max-price` and `--min-delta`. Controls and columns: [Models tab](/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### How the ranking chooses

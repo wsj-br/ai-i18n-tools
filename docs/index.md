@@ -77,7 +77,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-<a id="dotnet-app"></a>
+<a id="net-app"></a>
 ### .NET app
 
 Wrap C# and XAML text and load translations from embedded JSON, or keep `ResourceManager` and write `.resx` satellites. A dry-run command turns interpolation into `T()` calls and lists named resource keys, such as `Resources.LoginButton`, for you to convert.

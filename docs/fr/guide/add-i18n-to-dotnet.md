@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # Ajouter l'i18n à une application .NET
 
 Cette page prend une application .NET (Avalonia, WPF, MAUI, WinForms, Blazor, ASP.NET ou un outil console) qui a une seule langue et y ajoute des paramètres régionaux avec ai-i18n-tools. Elle suit un chemin unique : le modèle `ui-dotnet`, un petit utilitaire `I18n.cs` et des fichiers JSON de traductions. `extract` enregistre une chaîne d’interface utilisateur uniquement lorsqu’il s’agit d’un littéral de chaîne à l’intérieur de `T()`, `Tn`, `Tp`, `N` ou d’un `{loc:Tr '…'}` XAML, de sorte qu’un catalogue de texte source simple serait vide.
@@ -584,7 +584,7 @@ Exécutez à nouveau l'exécution à blanc. Arrêtez-vous lorsqu'il n'y a plus d
 
 `--wrap` marque également les attributs XAML non marqués `Text`, `Header`, `Content` et les autres attributs d'étiquette comme `{loc:Tr '…'}`, ainsi que les affectations C# dont le nom se termine par `Text`, `Title` ou `Message`, et `MessageBox.Show`. Sans `--write`, il s'agit d'un audit. Il ne modifie pas les journaux, les attributs, `nameof`, les comparaisons ou les appels `Path`.
 
-Un rapport sans modifications signifie que les appels encapsulés sont sûrs. Cela ne signifie pas que chaque phrase destinée à l'utilisateur a été encapsulée. Les étiquettes nues, les chaînes renvoyées et le contenu des éléments lui sont invisibles. Détails : [Réécrire les appels non sûrs](/fr/guide/ui-strings/dotnet#migrate).
+Un rapport sans modifications signifie que les appels encapsulés sont sûrs. Cela ne signifie pas que chaque phrase destinée à l'utilisateur a été encapsulée. Les libellés bruts, les chaînes de caractères renvoyées et le contenu des éléments lui sont invisibles. Détails : [Réécrire les appels non sécurisés](/fr/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 <a id="step-4-add-a-language-switch"></a>
 ## Étape 4 : Ajouter un sélecteur de langue

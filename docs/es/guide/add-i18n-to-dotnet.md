@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # Añadir i18n a una aplicación .NET
 
 Esta página toma una aplicación .NET (Avalonia, WPF, MAUI, WinForms, Blazor, ASP.NET o una herramienta de consola) que tiene un solo idioma y agrega configuraciones regionales con ai-i18n-tools. Sigue una ruta: la plantilla `ui-dotnet`, un pequeño asistente `I18n.cs` y archivos JSON de traducciones. `extract` registra una cadena de interfaz de usuario solo cuando es un literal de cadena dentro de `T()`, `Tn`, `Tp`, `N` o un `{loc:Tr '…'}` de XAML, por lo que un catálogo de texto fuente simple estaría vacío.
@@ -584,7 +584,7 @@ Ejecuta la prueba en seco de nuevo. Detente cuando no liste ediciones, luego eje
 
 `--wrap` también marca los XAML `Text`, `Header`, `Content` y los otros atributos de etiqueta sin marcar como `{loc:Tr '…'}`, además de las asignaciones de C# cuyo nombre termina en `Text`, `Title` o `Message`, y `MessageBox.Show`. Sin `--write` eso es una auditoría. No edita registros, atributos, `nameof`, comparaciones o llamadas a `Path`.
 
-Un informe sin ediciones significa que las llamadas envueltas son seguras. No significa que cada oración orientada al usuario haya sido envuelta. Las etiquetas simples, las cadenas devueltas y el contenido de los elementos son invisibles para él. Detalles: [Reescribir llamadas inseguras](/es/guide/ui-strings/dotnet#migrate).
+Un informe sin modificaciones significa que las llamadas encapsuladas son seguras. No significa que cada frase orientada al usuario haya sido encapsulada. Las etiquetas simples, las cadenas devueltas y el contenido de los elementos son invisibles para él. Detalles: [Reescribir llamadas no seguras](/es/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 <a id="step-4-add-a-language-switch"></a>
 ## Paso 4: Agregar un selector de idioma

@@ -28,7 +28,7 @@ Listet jedes Modell auf, das der aktive Anbieter über seine `GET /models`-Liste
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**Synopsis:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**Zusammenfassung:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 Stufen Sie die Chat-Modelle des aktiven Anbieters ein und geben Sie die besten (Standard 8) aus. Die Tabellenspalten sind der Reihe nach: Rang, Modell-ID, Index (der gewichtete Score mal 100, eine Dezimalstelle), gemessener Languagebench ChrF, gemessener Arena Score sowie Eingabe- und Ausgabepreis in USD pro 1 Mio. Tokens. Eine fehlende Messung ist `—`. Der Befehl benötigt den API-Schlüssel dieses Anbieters (keinen für Anbieter ohne API-Schlüssel wie Ollama). Der aktive Anbieter folgt der Konfiguration `provider`; überschreiben Sie diese mit `-P` / `--provider`.
 
@@ -46,7 +46,7 @@ Zeilen, die die Untergrenze überschreiten, stehen an erster Stelle, dann ein h�
 
 `--list` gibt dieselben Spalten für die konfigurierten `translationModels` des aktiven Providers in dieser Reihenfolge aus und ignoriert `--top`. Die Rangspalte ist weiterhin der Platz jedes Modells im Gesamtranking. Eine konfigurierte ID, die im Katalog fehlt, abgelaufen ist oder kein Chat-Modell ist, wird weiterhin mit `—` für Messwerte aufgelistet. `--list` kann nicht mit `--apply` kombiniert werden.
 
-`--max-output-price` behält Modelle bei, deren Ausgabepreis pro 1 Mio. Token kleiner oder gleich diesem USD-Betrag ist. Ein Modell ohne Ausgabepreis wird ausgeschlossen. `--min-delta` geht dann die verbleibenden Zeilen durch und behält ein Modell nur bei, wenn sein Index mindestens um diesen Wert unter dem vorherigen beibehaltenen Modell liegt. Das erste verbleibende Modell wird immer beibehalten. Ein Delta von `0` verwirft keine Zeilen. Zeilen ohne Index werden ausgeschlossen, wenn das Delta größer als `0` ist. Die Rangnummern bleiben die aus der vollständigen Liste. Mit `--list` folgt der Durchlauf der `translationModels`-Reihenfolge. Beide Filter gelten auch für `--json` und `--apply`. Der [Tab „Modelle“](/de/guide/translation-dashboard/models) verfügt über dieselben zwei Steuerelemente.
+`--max-price` behält Modelle bei, deren Ausgabepreis pro 1 Mio. Tokens kleiner oder gleich diesem USD-Betrag ist. Ein Modell ohne Ausgabepreis wird ausgeschlossen. `--min-delta` durchläuft dann die verbleibenden Zeilen und behält ein Modell nur dann bei, wenn sein Index mindestens so viele Punkte unter dem zuvor beibehaltenen Modell liegt. Das erste verbleibende Modell wird immer beibehalten. Ein Delta von `0` löscht keine Zeilen. Zeilen ohne Index werden ausgeschlossen, wenn das Delta größer ist als `0`. Die Rangnummern bleiben die der vollständigen Liste. Mit `--list` folgt der Durchlauf der `translationModels`-Reihenfolge. Beide Filter gelten auch für `--json` und `--apply`. Die [Registerkarte „Modelle“](/de/guide/translation-dashboard/models) verfügt über dieselben beiden Steuerelemente.
 
 `--json` schreibt dieses Objekt in stdout (fügen Sie es in den Provider-Block ein) und sendet die Tabelle sowie die Attributions-Fußzeile an stderr:
 
@@ -62,7 +62,7 @@ Benchmark-Daten werden für sieben Tage unter `<cacheDir>/benchmark-scores.json`
 
 Die Fußzeile nennt languagebench (CC BY-SA 4.0), den LMArena Arena Score (CC BY 4.0) und models.dev (MIT).
 
-**Wichtige Optionen:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
+**Wichtige Optionen:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
 **Siehe auch:** [KI-Modelle](/de/guide/ai-models), [Registerkarte „Modelle“](/de/guide/translation-dashboard/models)
 

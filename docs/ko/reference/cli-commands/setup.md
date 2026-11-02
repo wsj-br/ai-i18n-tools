@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `migrate-python-i18n`는 안전하지 않은 사전 평가된 호출(``_(f"...")``, ``_("..." % expr)``, ``_("...".format(...))``)을 조회 후 형식 지정 호출로 재작성합니다. 기본값은 시뮬레이션 실행입니다. 파일을 편집하려면 ``--write``를 전달하고, 검토 노트를 보려면 ``migrate-python-i18n-report.md``를 읽으십시오. 복잡한 표현식은 안정적일 때 해당 표현식에서 이름을 따옵니다(``start.isoformat()``은 ``{start}``이 되고, ``len(rows)``은 ``{rows_count}``이 됩니다). 남은 ``{value_1}``은 이름을 바꿀 수 있도록 보고됩니다. 생성된 ``i18n.py`` 파일은 건너뜁니다. 깨끗한 보고서가 래핑되지 않은 f-문자열이 처리되었음을 의미하지는 않습니다.
 
-`migrate-dotnet-i18n`는 `T()` 내에서 `T($"...")`, 연결, 및 `string.Format`에 대해서도 동일하게 수행합니다. `--wrap`는 표시되지 않은 XAML 레이블과 신뢰도 높은 C# 싱크도 표시합니다. `--write`가 없으면 이는 감사입니다. 보고서는 `migrate-dotnet-i18n-report.md`입니다. 생성된 `I18n.cs` 및 `I18nResx.cs`은(는) 건너뜁니다. 가이드: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet#migrate).
+``migrate-dotnet-i18n``는 ``T()`` 내에서 ``T($"...")``, 연결, ``string.Format``에 대해서도 동일하게 적용됩니다. ``--wrap``는 또한 표시되지 않은 XAML 레이블과 신뢰도 높은 C# 싱크를 표시합니다. ``--write``가 없으면 이는 감사가 됩니다. 보고서는 ``migrate-dotnet-i18n-report.md``입니다. 생성된 ``I18n.cs`` 및 ``I18nResx.cs``은 건너뜁니다. 가이드: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 ---
 

@@ -28,7 +28,7 @@
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**개요:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**개요:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 활성 공급자의 채팅 모델 순위를 매기고 상위 모델(기본값 8개)을 출력합니다. 테이블 열은 순서대로 순위, 모델 ID, 인덱스(가중치 점수 * 100, 소수점 이하 한 자리), 측정된 languagebench ChrF, 측정된 Arena 점수, 그리고 100만 토큰당 USD 기준 입력 및 출력 가격입니다. 누락된 측정값은 `—`입니다. 이 명령에는 해당 공급자의 API 키가 필요합니다(Ollama와 같은 키 없는 공급자의 경우 필요 없음). 활성 공급자는 구성 `provider`을 따릅니다. `-P` / `--provider`로 재정의할 수 있습니다.
 
@@ -46,7 +46,7 @@ ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. ChrF 또는
 
 `--list`은 활성 공급자의 구성된 `translationModels`에 대해 동일한 열을 해당 순서대로 출력하며 `--top`는 무시합니다. 순위 열은 여전히 전체 순위에서의 각 모델 위치를 나타냅니다. 카탈로그에서 누락되었거나, 만료되었거나, 채팅 모델이 아닌 구성된 ID도 측정값에 `—`을 표시하며 나열됩니다. `--list`는 `--apply`와 결합할 수 없습니다.
 
-`--max-output-price`은 100만 토큰당 출력 가격이 해당 USD 이하인 모델만 유지합니다. 출력 가격이 없는 모델은 제외됩니다. 그런 다음 `--min-delta`은 나머지 행을 순회하며 이전 유지 모델보다 지수가 최소 해당 포인트 이상 낮은 경우에만 모델을 유지합니다. 첫 번째 남은 모델은 항상 유지됩니다. 델타가 `0`인 경우 행을 삭제하지 않습니다. 델타가 `0`보다 클 때 지수가 없는 행은 제외됩니다. 순위 번호는 전체 목록의 번호를 유지합니다. `--list`를 사용하면 순회는 `translationModels` 순서를 따릅니다. 두 필터 모두 `--json` 및 `--apply`에도 적용됩니다. [모델 탭](/ko/guide/translation-dashboard/models)에도 동일한 두 가지 제어 기능이 있습니다.
+`--max-price`는 100만 토큰당 출력 가격이 해당 USD 금액 이하인 모델을 유지합니다. 출력 가격이 없는 모델은 제외됩니다. 그런 다음 `--min-delta`는 나머지 행을 탐색하며, 해당 모델의 인덱스가 이전에 유지된 모델보다 최소한 해당 점수만큼 낮은 경우에만 모델을 유지합니다. 첫 번째 남은 모델은 항상 유지됩니다. `0`의 델타는 행을 삭제하지 않습니다. 델타가 `0`보다 큰 경우 인덱스가 없는 행은 제외됩니다. 순위 번호는 전체 목록의 번호를 유지합니다. `--list`를 사용하면 탐색은 `translationModels` 순서를 따릅니다. 두 필터 모두 `--json` 및 `--apply`에도 적용됩니다. [모델 탭](/ko/guide/translation-dashboard/models)에는 동일한 두 가지 컨트롤이 있습니다.
 
 `--json`은 이 객체를 stdout에 기록하고(공급자 블록 내에 붙여넣기), 테이블과 속성 바닥글을 stderr로 보냅니다:
 
@@ -62,7 +62,7 @@ ChrF가 누락된 경우 품질 하한선 아래로 정렬됩니다. ChrF 또는
 
 바닥글은 languagebench(CC BY-SA 4.0), LMArena Arena 점수(CC BY 4.0) 및 models.dev(MIT)의 출처를 밝힙니다.
 
-**주요 옵션:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
+**주요 옵션:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
 **참고:** [AI 모델](/ko/guide/ai-models), [모델 탭](/ko/guide/translation-dashboard/models)
 

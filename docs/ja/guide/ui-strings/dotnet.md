@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # .NET アプリケーション
 
 `ai-i18n-tools` は C#、Razor、cshtml、XAML、および AXAML から UI 文字列を抽出し、ソース言語の文字列をキーとするフラットな JSON を書き込みます。`sourceLocale` は任意の言語にすることができます。ランタイムヘルパーは `I18n.cs` (.NET 6 以降、NuGet パッケージなし) です。Avalonia、WPF、MAUI、WinForms、ASP.NET、Blazor、およびコンソールアプリはそのヘルパーを呼び出します。.NET Framework 4.8 は、ファイルがコンパイルされる前に `System.Text.Json` パッケージを必要とします。
@@ -123,8 +123,8 @@ WPFとMAUIは、独自のプロパティ型で同じ考え方を使用します�
 
 フォーマットされた文はC#（`T("Cursor {0}", value)`）に残され、これにより抽出器は単一のリテラルに留まります。バインディング上の`StringFormat`は非表示です。同じ呼び出しが、ビューモデル、トレイツールチップ、およびダイアログから機能します。列挙型コンボは列挙型を保持し、そのキャプションから`T("Light")`を返し、`LocaleChanged`で項目を再構築します。トレイ項目は`Tp("tray", "Open")`と安定した`CommandParameter`を使用します。ヘッダーではなく、パラメーターを一致させます。サービスは英語のエラー文を保存し、表示サイトは既知の文を`T`を通じてマッピングします。Linuxの`.desktop`、`Name=`、および`Comment=`はソース言語のままです。比較される期間トークン（`2d`、`7h 47m`）は翻訳されません。`T("now")`と`T("in {0}", duration)`は表示サイトで翻訳します。リテラルの先頭または末尾のスペースは、依然として抽出警告です。それをフォーマット文字列またはレイアウトに移動してください。`Tn` は、常に複数形であったソース文（`1 samples`）を修正する場合があります。
 
-<a id="migrate"></a>
-## 安全でない呼び出しを書き換える
+<a id="rewrite-unsafe-calls"></a>
+## 不安全な呼び出しを書き換える
 
 `migrate-dotnet-i18n` は `--write` を渡すまではドライランです。これは、検索前に構築される `T`、`Tn`、および `Tp` の引数を書き換えます。
 

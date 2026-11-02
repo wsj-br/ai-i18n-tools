@@ -322,7 +322,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` substitui apenas `translationModels`. Use `--max-output-price` para excluir modelos cujo preço de saída excede um limite. Se você preferir uma GUI, use `ai-i18n-tools dashboard` para selecionar os [modelos](/pt-BR/guide/translation-dashboard/models).
+`--apply` substitui apenas `translationModels`. Use `--max-price` para excluir modelos cujo preço de saída excede um limite. Se você preferir uma GUI, use `ai-i18n-tools dashboard` para selecionar os [modelos](/pt-BR/guide/translation-dashboard/models).
 
 Preencha o glossário antes do primeiro `translate-ui`. `init` aponta `glossary.userGlossary` para `glossary-user.csv` e não cria o arquivo. `translate-ui` lê apenas aquele CSV. Se o arquivo estiver faltando, execute `ai-i18n-tools glossary-generate`, então adicione termos de domínio. Use **Forçar** para nomes que devem ser copiados inalterados (`Focus`, `CDI`, `Selic`). Use uma tradução preferencial para palavras que devem permanecer consistentes (`portfolio` → `carteira`). Um segundo `translate-ui` de uma string inalterada pode retornar com uma redação diferente. O glossário é o que faz as duas execuções concordarem. Verificar se cada chave tem um valor de destino não é uma revisão.
 

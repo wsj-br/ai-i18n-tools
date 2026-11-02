@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `migrate-python-i18n` は、安全でない事前評価済み呼び出し (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`) を、ルックアップ・ビフォー・フォーマット呼び出しに書き換えます。デフォルトはドライランです。ファイルを編集するには `--write` を渡し、レビューノートについては `migrate-python-i18n-report.md` をお読みください。複雑な式は、それが安定している場合にその式から命名されます (`start.isoformat()` は `{start}` に、`len(rows)` は `{rows_count}` になります)。残された `{value_1}` は、名前を変更できるように報告されます。生成された `i18n.py` ファイルはスキップされます。クリーンなレポートは、アンラップされた f-文字列がカバーされたことを意味しません。
 
-`migrate-dotnet-i18n`は、`T()`内の`T($"...")`、連結、および`string.Format`についても同様に処理します。`--wrap`は、未マークのXAMLラベルと信頼度の高いC#シンクもマークします。`--write`がない場合、それは監査です。レポートは`migrate-dotnet-i18n-report.md`です。生成された`I18n.cs`と`I18nResx.cs`はスキップされます。ガイド: [.NETアプリケーション](/ja/guide/ui-strings/dotnet#migrate)。
+`migrate-dotnet-i18n` は、`T()` 内の `T($"...")`、連結、および `string.Format` に対して同様の処理を行います。`--wrap` は、マークされていないXAMLラベルと信頼度の高いC#シンクもマークします。`--write` がないと、これは監査になります。レポートは `migrate-dotnet-i18n-report.md` です。生成された `I18n.cs` および `I18nResx.cs` はスキップされます。ガイド: [.NETアプリケーション](/ja/guide/ui-strings/dotnet#rewrite-unsafe-calls)。
 
 ---
 

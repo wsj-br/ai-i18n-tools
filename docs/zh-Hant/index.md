@@ -75,7 +75,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-<a id="dotnet-app"></a>
+<a id="net-app"></a>
 ### .NET 應用程式
 
 包裝 C# 和 XAML 文字，並從嵌入式 JSON 載入翻譯，或保留 `ResourceManager` 並編寫 `.resx` 附屬組件。乾跑命令會將插值轉換為 `T()` 呼叫，並列出具名資源鍵，例如 `Resources.LoginButton`，供您轉換。

@@ -28,7 +28,7 @@
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**概要：** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**概要：** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 對活躍供應商的聊天模型進行排名，並列印排名前幾的模型（預設為 8 個）。表格欄位依序為：排名、模型 ID、指數（加權分數乘以 100，一位小數）、測量的 languagebench ChrF、測量的 Arena 分數，以及每 1M 權杖的輸入和輸出價格（美元）。缺少測量值時為 `—`。此指令需要該供應商的 API 金鑰（對於無金鑰供應商，例如 Ollama，則不需要）。活躍供應商遵循設定 `provider`；可使用 `-P` / `--provider` 覆寫。
 
@@ -46,7 +46,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 列的平均值�
 
 `--list` 會為當前供應商已配置的 `translationModels` 列印相同的欄位（依該順序），並忽略 `--top`。排名欄位仍為每個模型在完整排名中的位置。若已配置的 ID 在目錄中缺失、已過期或非聊天模型，仍會列出，並顯示 `—` 作為測量值。`--list` 無法與 `--apply` 結合使用。
 
-`--max-output-price` 會保留每 100 萬個 token 輸出價格小於或等於該金額（美元）的模型。無輸出價格的模型將被排除。`--min-delta` 隨後會遍歷剩餘的列，僅在模型索引比前一個保留的模型低至少該數值時才保留該模型。第一個剩餘的模型永遠會被保留。增量為 `0` 時不會刪除列。當增量大於 `0` 時，無索引的列將被排除。排名數字保持完整清單中的數值。使用 `--list` 時，遍歷將遵循 `translationModels` 順序。這兩個篩選器也適用於 `--json` 與 `--apply`。[Models tab](/zh-Hant/guide/translation-dashboard/models) 具有相同的兩個控制項。
+`--max-price` 會保留其輸出價格每百萬個權杖小於或等於該數量的美元的模型。沒有輸出價格的模型會被捨棄。`--min-delta` 接著會遍歷其餘的列，並僅在模型的索引至少比上一個保留的模型低了該數量的點數時才保留該模型。第一個其餘的模型總是會被保留。`0` 的增量不會捨棄列。當增量大於 `0` 時，沒有索引的列會被捨棄。排名數字會保留完整清單中的數字。使用 `--list` 時，遍歷會依照 `translationModels` 順序。這兩個篩選器也適用於 `--json` 和 `--apply`。[模型分頁](/zh-Hant/guide/translation-dashboard/models) 具有相同的兩個控制項。
 
 `--json` 將此物件寫入 stdout（請貼上至供應商區塊內），並將表格與歸屬頁尾發送至 stderr：
 
@@ -62,7 +62,7 @@ ChrF 是 languagebench `translation_from` 和 `translation_to` 列的平均值�
 
 頁尾標註了 languagebench (CC BY-SA 4.0)、LMArena Arena Score (CC BY 4.0) 以及 models.dev (MIT)。
 
-**主要選項：** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
+**主要選項：** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
 **另請參閱：** [人工智慧模型](/zh-Hant/guide/ai-models)、[「模型」分頁](/zh-Hant/guide/translation-dashboard/models)
 

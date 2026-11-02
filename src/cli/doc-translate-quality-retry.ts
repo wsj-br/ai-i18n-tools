@@ -216,8 +216,12 @@ async function translateProtectedContent(
       segmentHash
     );
     const v = await validateDocTranslatePair(origSeg, restored);
-    const allErrors = [...preRestoreErrors, ...v.errors];
-    const ok = preRestoreErrors.length === 0 && v.ok;
+    const labelErrors =
+      contentType === "markdown"
+        ? glossary.missingLockedUiLabels(originalContent, restored, locale)
+        : [];
+    const allErrors = [...preRestoreErrors, ...v.errors, ...labelErrors];
+    const ok = preRestoreErrors.length === 0 && v.ok && labelErrors.length === 0;
     const nextIdx = models.indexOf(single.model) + 1;
     const line = perSegLine(params, ok, allErrors, partLabel);
     const checkSnapshots =

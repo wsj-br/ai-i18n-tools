@@ -28,7 +28,7 @@
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**概要:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**概要:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 アクティブなプロバイダーのチャットモデルをランク付けし、上位のものを表示します（デフォルトは8）。テーブルの列は、順に、ランク、モデルID、インデックス（重み付けされたスコアを100倍し、小数点以下1桁）、測定されたlanguagebench ChrF、測定されたArenaスコア、および入力と出力の価格（100万トークンあたり米ドル）です。測定値がない場合は`—`です。このコマンドにはそのプロバイダーのAPIキーが必要です（Ollamaのようなキーレスプロバイダーには不要です）。アクティブなプロバイダーは設定`provider`に従います。これを`-P` / `--provider`で上書きできます。
 
@@ -46,7 +46,7 @@ ChrF が欠落している場合、品質の最低基準を下回ってソート
 
 `--list`は、アクティブなプロバイダーの設定済み`translationModels`に対して同じ列をその順序で表示し、`--top`を無視します。ランク列は、完全なランキングにおける各モデルの順位のままです。カタログに存在しない、期限切れである、またはチャットモデルではない設定済みのIDもリストされますが、測定値には`—`が表示されます。`--list`を`--apply`と組み合わせることはできません。
 
-`--max-output-price`は、100万トークンあたりの出力価格が指定されたUSD以下のモデルを保持します。出力価格がないモデルは除外されます。`--min-delta`は残りの行を順に確認し、インデックスが直前に保持されたモデルより指定されたポイント数以上低い場合にのみモデルを保持します。最初に残ったモデルは常に保持されます。デルタが`0`の場合は行をドロップしません。デルタが`0`より大きい場合、インデックスのない行は除外されます。ランク番号は完全なリストのものが維持されます。`--list`を指定すると、確認は`translationModels`順に従います。両方のフィルターは`--json`および`--apply`にも適用されます。[Models tab](/ja/guide/translation-dashboard/models)にも同じ2つのコントロールがあります。
+`--max-price` は、100万トークンあたりの出力価格が指定されたUSD以下であるモデルを保持します。出力価格がないモデルは除外されます。次に、`--min-delta` は残りの行を走査し、そのインデックスが以前に保持されたモデルよりも少なくとも指定されたポイント数低い場合にのみモデルを保持します。最初に残ったモデルは常に保持されます。`0` のデルタでは行は削除されません。デルタが `0` より大きい場合、インデックスがない行は除外されます。ランク番号は、全リストのものが維持されます。`--list` を使用すると、走査は `translationModels` の順序に従います。両方のフィルターは `--json` と `--apply` にも適用されます。[モデルタブ](/ja/guide/translation-dashboard/models) には同じ2つのコントロールがあります。
 
 `--json`はこのオブジェクトをstdoutに書き出し（プロバイダーブロック内に貼り付けてください）、テーブルと属性フッターをstderrに送信します：
 
@@ -62,7 +62,7 @@ ChrF が欠落している場合、品質の最低基準を下回ってソート
 
 フッターには、languagebench (CC BY-SA 4.0)、LMArena Arena Score (CC BY 4.0)、およびmodels.dev (MIT)の帰属が記載されています。
 
-**主要なオプション:** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-output-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
+**主なオプション:** `--quality`、`--price`、`--top`、`--json`、`--apply`、`--list`、`--max-price`、`--min-delta`、`--refresh`、`-P` / `--provider`
 
 **関連項目:** [AI モデル](/ja/guide/ai-models)、[モデル タブ](/ja/guide/translation-dashboard/models)
 

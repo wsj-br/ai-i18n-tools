@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-resourcemanager-app"></a>
+<a id="add-i18n-to-a-net-resourcemanager-app"></a>
 # i18n zu einer .NET ResourceManager-App hinzufügen
 
 Diese Seite ist für eine .NET-Anwendung, die bereits Zeichenfolgen mit `ResourceManager` oder ASP.NET `IStringLocalizer` lädt oder dies in Zukunft tun wird. Sie behalten diesen Loader bei. ai-i18n-tools liest `T("…")` und `{loc:Tr '…'}`, übersetzt die Nachrichten und schreibt `.resx`-Satelliten, deren Schlüssel diese Quellzeichenfolgen sind. Der Helfer ist `I18nResx.cs`, kopiert von `init -t ui-dotnet-resx`.

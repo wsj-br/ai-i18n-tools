@@ -81,7 +81,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `pgettext(context, message, **values)` | コンテキスト (`msgctxt`、または `context` + U+0004 + フラットな JSON 内のソース言語の文字列) をルックアップし、補間します。 |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 選択ボックス。`st.session_state.locale` と `st.query_params["lang"]` を書き込み、`set_locale` を呼び出し、選択されたコードを返します。 |
 
-<a id="dotnet-runtime-i18ncs"></a>
+<a id="net-runtime-i18ncs"></a>
 ## .NET ランタイム (`I18n.cs`)
 
 `init -t ui-dotnet` は、`I18n.cs` がない場合に `assets/dotnet/I18n.cs` をプロジェクトにコピーします。これは、.NET 6 以降向けの依存関係のないヘルパーです。以下のメンバーは、上の表の Node のエクスポートとは別です。呼び出しの形式と XAML マークアップ: [.NET アプリケーション](/ja/guide/ui-strings/dotnet)。

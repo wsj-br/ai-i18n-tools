@@ -1,5 +1,5 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
-# .NET 앱에 i18n 추가
+<a id="add-i18n-to-a-net-app"></a>
+# .NET 앱에 i18n 적용
 
 이 페이지에서는 단일 언어를 사용하는 .NET 앱(Avalonia, WPF, MAUI, WinForms, Blazor, ASP.NET 또는 콘솔 도구)에 ai-i18n-tools를 사용하여 로케일을 추가하는 방법을 설명합니다. 이 방법은 `ui-dotnet` 템플릿, 작은 `I18n.cs` 헬퍼, 그리고 번역 JSON 파일을 따릅니다. `extract`는 `T()`, `Tn`, `Tp`, `N` 또는 XAML `{loc:Tr '…'}` 내의 문자열 리터럴인 경우에만 UI 문자열을 기록하므로, 일반 소스 텍스트 카탈로그는 비어 있을 것입니다.
 
@@ -584,7 +584,7 @@ ai-i18n-tools extract
 
 `--wrap`는 또한 표시되지 않은 XAML `Text`, `Header`, `Content` 및 다른 레이블 특성을 `{loc:Tr '…'}`로 표시하며, 이름이 `Text`, `Title` 또는 `Message`로 끝나는 C# 할당과 `MessageBox.Show`도 표시합니다. `--write`가 없으면 이는 감사입니다. 로그, 특성, `nameof`, 비교 또는 `Path` 호출은 편집하지 않습니다.
 
-편집 내용이 없는 보고서는 래핑된 호출이 안전하다는 것을 의미합니다. 모든 사용자 대면 문장이 래핑되었다는 의미는 아닙니다. 일반 레이블, 반환된 문자열 및 요소 콘텐츠는 보이지 않습니다. 세부 정보: [안전하지 않은 호출 다시 작성](/ko/guide/ui-strings/dotnet#migrate).
+수정 사항이 없는 보고서는 래핑된 호출이 안전하다는 것을 의미합니다. 이는 모든 사용자 대면 문장이 래핑되었다는 것을 의미하지는 않습니다. 원시 레이블, 반환된 문자열 및 요소 콘텐츠는 보고서에 표시되지 않습니다. 자세한 내용: [안전하지 않은 호출 다시 작성](/ko/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 <a id="step-4-add-a-language-switch"></a>
 ## 4단계: 언어 전환 추가

@@ -79,8 +79,8 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-<a id="dotnet-app"></a>
-### .NET ऐप
+<a id="net-app"></a>
+### .NET एप्लिकेशन
 
 C# और XAML टेक्स्ट को रैप करें और एम्बेडेड JSON से अनुवाद लोड करें, या `ResourceManager` रखें और `.resx` सैटेलाइट लिखें। एक ड्राई-रन कमांड इंटरपोलेशन को `T()` कॉल्स में बदल देता है और आपके बदलने के लिए `Resources.LoginButton` जैसी नामित संसाधन कुंजियों को सूचीबद्ध करता है।
 

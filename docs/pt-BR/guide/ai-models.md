@@ -15,6 +15,7 @@ Escolha a lista para este projeto com `suggest-models` ou com a mesma classifica
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 As colunas são classificação, ID do modelo, índice, ChrF medido, Arena Score medido e preço de entrada e saída em USD por 1 milhão de tokens. Uma medição ausente é `—`. O índice é a pontuação ponderada multiplicada por 100. Na classificação por qualidade, um índice mais alto indica uma correspondência mais forte para este projeto.
@@ -22,7 +23,8 @@ As colunas são classificação, ID do modelo, índice, ChrF medido, Arena Score
 Grave essa lista restrita na configuração quando a tabela parecer correta:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` substitui `providers.<active>.translationModels`. Primeiro, ele copia a configuração atual para um arquivo irmão `ai-i18n-tools.config.{timestamp}.backup.json`. `uiModels` e `localeModels` permanecem como estão. `--top` (padrão 8) é quantos IDs a tabela e `--apply` incluem. O primeiro ID é o que a tradução tenta primeiro.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 Abra **Modelos**. Escolha **Qualidade** ou **Preço**. Marque as linhas que você deseja. As linhas marcadas, de cima para baixo, definem a ordem que a tradução tentará. **Atualizar configuração** pede confirmação, grava o mesmo tipo de backup e salva essa ordem em `translationModels`. **Copiar JSON** coloca o fragmento `{ "translationModels": [...] }` na área de transferência quando você preferir colá-lo.
 
-**Preço máximo de saída** e **Delta mínimo do índice** correspondem a `suggest-models --max-output-price` e `--min-delta`. Controles e colunas: [Guia Modelos](/pt-BR/guide/translation-dashboard/models).
+**Preço máximo de saída** e **Delta mínimo do índice** correspondem a `suggest-models --max-price` e `--min-delta`. Controles e colunas: [Aba Modelos](/pt-BR/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### Como a classificação escolhe

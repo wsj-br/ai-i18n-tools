@@ -218,7 +218,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 
 计费的模型调用（已接受的翻译和已丢弃的重试）存储在 `api_calls` 中。在执行记录调用的命令后，超过 7 个 UTC 日历日的明细行将汇总到月度 `api_totals` 中。`usage` 和仪表板的“使用量与成本”视图会合并这两个表。请参阅[使用量与成本](/zh-Hans/guide/translation-dashboard/usage)。
 
-术语表 `Context` 注释和 `glossary.contextFiles` 会生成指纹（`prompt_context_hash`）并注入到 UI、文档、JSON、SVG 和校对提示中。更改此指引会导致在下次运行时使匹配的缓存段和文件跟踪行失效。仪表板 `user-edited` 缓存行将被保留。仅更改首选术语翻译会保留现有缓存，直至 `--force` / `--force-update`。
+术语表`Context`注释和`glossary.contextFiles`会经过指纹识别（`prompt_context_hash`），并注入到UI、文档、JSON、SVG和校对提示中。更改该指导会使下次运行中匹配的缓存段和文件跟踪行失效。仪表板`user-edited`缓存行会保留。仅更改非强制行上的首选术语表翻译，会保留现有缓存，直到`--force`/`--force-update`。当存储的文本尚未包含强制翻译时，`Force`行仅对源中包含该术语的段落未命中缓存，并且对于输出仍缺少该术语的文件，会拒绝跳过未更改的文件。在该行上将`Context`留空；上下文注释仍会刷新整个区域设置。Markdown 还会拒绝翻译的段落，如果该段落遗漏了引用的二至五词 UI 标签（目录键或预设的标签形前缀）。引用可以是粗体、行内代码、标题或仅包含该标签的行。句子中的首字母大写是提示，因此翻译可以变格/变位（印地语`Cursor account`可能会变成`कर्सर खाते`，而不是词典形式`कर्सर खाता`）。像`Sign in`这样的单个内容词标签仍然是提示。该检查会忽略翻译中的大小写，因此当源文本引用时，句子中的小写标签仍然有效。使用相同词语的普通散文可以对其进行变格/变位。预设前缀必须是首字母大写的标签，其共享翻译是不带占位符的短语；句子词干不预设。该检查会重试下一个模型，并且不拆分段落。
 
 `translate-docs` 命令还使用 **文件跟踪**，因此对于未更改且已有最新输出的源文件，可以完全跳过处理。`--check-cache` 会以预期的书写系统重新打开区域设置，从而重新验证缓存的片段；`--force-update` 会为每个区域设置重新运行文件处理，同时仍使用片段缓存；`--force` 会清除文件跟踪，并在进行 API 翻译时绕过片段缓存读取。当所有已配置的模型在某个 Markdown 片段上未能通过 AST 验证时，`translate-docs` 可以逐步拆分该片段并重试较小的部分（`docs[].segmentSplitting.qualityRetrySplit`，默认开启）。有关完整的标志表，请参阅[文档 — 缓存行为与标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 

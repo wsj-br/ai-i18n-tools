@@ -247,6 +247,12 @@ describe("collectDocumentPlaceholderKinds / buildDocumentCoreRules", () => {
 
   it("omits unused official types from coreRules", () => {
     const none = buildDocumentCoreRules(new Set());
+    expect(none).toContain("ordinary prose");
+    expect(none).toContain("Do not add **bold**");
+    expect(none).not.toContain("use that wording exactly");
+    expect(buildMarkdownPreservation(new Set())).toContain(
+      "Do not add **bold** or *italic* the source does not have."
+    );
     expect(none).toContain("This input has no internal {{…}} placeholders");
     expect(none).not.toContain("{{SE}}");
     expect(none).not.toContain("{{GLS_N}}");

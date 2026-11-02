@@ -10,7 +10,7 @@
 
 **主要選項：** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force` 會轉發至 UI 與 SVG 步驟以及 docs/JSON；`--force-update` 適用於 docs、JSON 與 SVG（不適用於 UI）。`--check-cache` 會轉發至 docs、JSON 與 SVG：即使檔案追蹤會跳過，它仍會針對強制使用原生文字的地區重新驗證快取區段。Docs 階段亦會轉發 `--emphasis-placeholders`（與 `translate-docs` 意義相同）。全域 `--debug-failed` 會在 `cacheDir` 下為每次被捨棄的模型嘗試（包括 SVG/docs 指令稿後備）寫入 `FAILED-TRANSLATION` 日誌，而非僅在鏈中所有模型皆失敗時才寫入。`--prompt-format` 並非 `sync` 旗標；docs 與 JSON 步驟使用內建預設值（`json-array`）。
+`--force` 會清除文件、JSON 和 SVG 區段快取以及檔案追蹤。它不會轉發到 UI 翻譯；請使用 `translate-ui --force` 或 `sync-ui --force` 重新翻譯 `strings.json`。`--force-update` 適用於文件、JSON 和 SVG (不適用於 UI)。`--no-ui`、`--no-svg`、`--no-docs` 和 `--no-json` 會在執行一次時跳過該步驟。`--file` 限制翻譯哪些檔案，並且仍然使用文件區塊中的每個 Markdown 檔案重寫平面同級連結。`--check-cache` 會轉發到文件、JSON 和 SVG：它會針對具有強制原生指令碼的地區設定重新驗證快取的區段，即使檔案追蹤會跳過。文件階段也會轉發 `--emphasis-placeholders` (與 `translate-docs` 意義相同)。全域 `--debug-failed` 會在 `cacheDir` 下為每個捨棄的模型嘗試 (包括 SVG/文件指令碼備用) 寫入 `FAILED-TRANSLATION` 記錄，而不僅僅是在鏈中的每個模型都失敗時。`--prompt-format` 不是 `sync` 旗標；文件和 JSON 步驟使用內建預設值 (`json-array`)。
 
 ---
 

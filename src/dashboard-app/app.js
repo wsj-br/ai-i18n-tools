@@ -3452,7 +3452,7 @@
     const maxOutputPrice = modelsOptionalNumber("models-max-output-price");
     const minDelta = modelsOptionalNumber("models-min-delta");
     if (!maxOutputPrice.ok) {
-      modelsSetStatus(t("--max-output-price must be a number >= 0."), true);
+      modelsSetStatus(t("--max-price must be a number >= 0."), true);
       return;
     }
     if (!minDelta.ok) {

@@ -15,6 +15,7 @@ Elige la lista para este proyecto con `suggest-models` o con la misma clasificac
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 Las columnas son la clasificación, el ID del modelo, el índice, el ChrF medido, la puntuación Arena medida y el precio de entrada y salida en USD por cada millón de tokens. Una medición que falta es `—`. El índice es la puntuación ponderada multiplicada por 100. En la clasificación por calidad, un índice más alto indica una mayor compatibilidad con este proyecto.
@@ -22,7 +23,8 @@ Las columnas son la clasificación, el ID del modelo, el índice, el ChrF medido
 Escribe esa preselección en la configuración cuando la tabla se vea bien:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` reemplaza a `providers.<active>.translationModels`. Primero, copia la configuración actual a un archivo `ai-i18n-tools.config.{timestamp}.backup.json` en el mismo directorio. `uiModels` y `localeModels` se mantienen como están. `--top` (8 por defecto) es el número de ID que incluyen la tabla y `--apply`. El primer ID es el que la traducción prueba primero.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 Abre **Modelos**. Elige **Calidad** o **Precio**. Marca las filas que quieras. Las filas marcadas, de arriba abajo, establecen el orden en que se probará la traducción. **Actualizar configuración** pide confirmación, escribe el mismo tipo de copia de seguridad y guarda ese orden en `translationModels`. **Copiar JSON** pone el fragmento `{ "translationModels": [...] }` en el portapapeles por si prefieres pegarlo tú mismo.
 
-**Precio máximo de salida** y **Delta de índice mínimo** se corresponden con `suggest-models --max-output-price` y `--min-delta`. Controles y columnas: [Pestaña Modelos](/es/guide/translation-dashboard/models).
+**Precio máximo de salida** y **Delta de índice mínimo** coinciden con `suggest-models --max-price` y `--min-delta`. Controles y columnas: [Pestaña Modelos](/es/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### Cómo elige la clasificación

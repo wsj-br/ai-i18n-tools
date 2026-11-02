@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 import { Command, InvalidArgumentError, type Help } from "commander";
+import {
+  SYNC_FORWARDS_FORCE_TO_UI,
+  dualNegativeCliOptionSet,
+  negatedCliOptionSet,
+} from "./negated-cli-flag.js";
 
 // node:sqlite emits an ExperimentalWarning on every startup even on Node 24+.
 // The module is unflagged but not yet formally stable (nodejs/node#57445).
@@ -682,7 +687,7 @@ program
     false
   )
   .option(
-    "--max-output-price <usd>",
+    "--max-price <usd>",
     t("Keep models whose output price per 1M tokens is at most this many USD")
   )
   .option(
@@ -704,7 +709,7 @@ program
         apply?: boolean;
         refresh?: boolean;
         list?: boolean;
-        maxOutputPrice?: string;
+        maxPrice?: string;
         minDelta?: string;
       },
       cmd: Command
@@ -720,8 +725,7 @@ program
         return;
       }
       const top = Number(opts.top);
-      const maxOutputPrice =
-        opts.maxOutputPrice === undefined ? undefined : Number(opts.maxOutputPrice);
+      const maxOutputPrice = opts.maxPrice === undefined ? undefined : Number(opts.maxPrice);
       const minDelta = opts.minDelta === undefined ? undefined : Number(opts.minDelta);
       try {
         const { exitCode } = await runSuggestModels(config, projectRoot, configPath, {
@@ -749,7 +753,7 @@ program
   ai-i18n-tools suggest-models --price --top 8 --json
   ai-i18n-tools suggest-models --quality --apply
   ai-i18n-tools suggest-models --list
-  ai-i18n-tools suggest-models --max-output-price 2 --min-delta 2
+  ai-i18n-tools suggest-models --max-price 2 --min-delta 2
   ai-i18n-tools suggest-models --refresh`)}\n`
   );
 
@@ -1674,12 +1678,12 @@ function buildTranslateOpts(
     force: Boolean(o.force),
     forceUpdate: Boolean(o.forceUpdate),
     checkCache: Boolean(o.checkCache),
-    noCache: Boolean(o.noCache),
+    noCache: negatedCliOptionSet(cmd, "cache"),
     verbose: Boolean(g.verbose),
     pathFilter: normalizePathFilterForProjectRoot(projectRoot, pathFilterRaw),
     typeFilter: o.type as TranslateRunOptions["typeFilter"],
     jsonOnly: Boolean(o.jsonOnly),
-    noJson: Boolean(o.noJson),
+    noJson: negatedCliOptionSet(cmd, "json"),
     logPath,
     concurrency:
       o.concurrency !== undefined ? parsePositiveInt("Concurrency (-j)", o.concurrency) : undefined,
@@ -1689,7 +1693,7 @@ function buildTranslateOpts(
         : undefined,
     promptFormat: parseTranslatePromptFormat(o.promptFormat),
     emphasisPlaceholdersCli: Boolean(o.emphasisPlaceholders),
-    noEmphasisPlaceholdersCli: Boolean(o.noEmphasisPlaceholders),
+    noEmphasisPlaceholdersCli: dualNegativeCliOptionSet(cmd, "emphasisPlaceholders"),
     debugFailed: Boolean(g.debugFailed),
   };
   return { locales, uiLocales, translateOpts };
@@ -1801,7 +1805,7 @@ async function runSyncPipeline(args: {
           locales: uiLocales,
           localeFilter,
           uiBlock,
-          force: sharedOpts.force,
+          force: SYNC_FORWARDS_FORCE_TO_UI,
           dryRun: sharedOpts.dryRun,
           verbose: sharedOpts.verbose,
           logPath: sharedOpts.logPath,
@@ -1910,7 +1914,13 @@ async function runSyncPipeline(args: {
           await runTranslate(
             view,
             { ...sharedOpts, documentationBlockIndex: bi },
-            { markdown: mdScoped, json: jsonScoped, astro: astroScoped, html: htmlScoped },
+            {
+              markdown: mdScoped,
+              markdownForLinkRewrite: md,
+              json: jsonScoped,
+              astro: astroScoped,
+              html: htmlScoped,
+            },
             jsonRoot
           );
         }
@@ -2183,7 +2193,13 @@ program
         const sum = await runTranslate(
           view,
           { ...translateOpts, documentationBlockIndex: bi },
-          { markdown: mdScoped, json: jsonScoped, astro: astroScoped, html: htmlScoped },
+          {
+            markdown: mdScoped,
+            markdownForLinkRewrite: md,
+            json: jsonScoped,
+            astro: astroScoped,
+            html: htmlScoped,
+          },
           jsonRoot
         );
         totalSkipped += sum.filesSkipped;
@@ -2675,7 +2691,7 @@ program
         config,
         pathFilter,
         json: Boolean(o.json),
-        noCache: Boolean(o.noCache),
+        noCache: negatedCliOptionSet(cmd, "cache"),
         verbose: Boolean(g.verbose),
       });
       process.exit(exitCode);
@@ -2833,15 +2849,11 @@ program
     const { configFlag, cwd, providerOverride } = withConfig(cmd);
     const { config, projectRoot } = loadConfigOrExit(configFlag, cwd, providerOverride);
     const syncOpts = cmd.opts() as {
-      noUi?: boolean;
-      noSvg?: boolean;
-      noDocs?: boolean;
-      noJson?: boolean;
       force?: boolean;
       forceUpdate?: boolean;
     };
-    const noDocs = Boolean(syncOpts.noDocs);
-    const noJson = Boolean(syncOpts.noJson);
+    const noDocs = negatedCliOptionSet(cmd, "docs");
+    const noJson = negatedCliOptionSet(cmd, "json");
     if (!noDocs && syncOpts.force && syncOpts.forceUpdate) {
       console.error(
         chalk.red(
@@ -2859,8 +2871,8 @@ program
       cmd.outputHelp();
       process.exit(1);
     }
-    const noUi = Boolean(syncOpts.noUi);
-    const noSvg = Boolean(syncOpts.noSvg);
+    const noUi = negatedCliOptionSet(cmd, "ui");
+    const noSvg = negatedCliOptionSet(cmd, "svg");
     const g = cmd.optsWithGlobals() as { writeLogs?: boolean | string };
     const cacheDir = path.join(projectRoot, config.cacheDir);
     const logPath = activateWriteLogs(g.writeLogs, cacheDir, "sync");

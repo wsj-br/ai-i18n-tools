@@ -81,7 +81,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `pgettext(context, message, **values)` | 上下文查找（`msgctxt`，或 `context` + U+0004 + 扁平化 JSON 格式的源语言字符串），然后进行插值。 |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 选择框。写入 `st.session_state.locale` 和 `st.query_params["lang"]`，调用 `set_locale`，并返回所选代码。 |
 
-<a id="dotnet-runtime-i18ncs"></a>
+<a id="net-runtime-i18ncs"></a>
 ## .NET 运行时 (`I18n.cs`)
 
 `init -t ui-dotnet` 在 `I18n.cs` 缺失时将 `assets/dotnet/I18n.cs` 复制到项目中。它是一个适用于 .NET 6 或更高版本的无依赖辅助工具。以下成员与上表中 Node 导出的内容是分开的。调用形式和 XAML 标记：[.NET 应用程序](/zh-Hans/guide/ui-strings/dotnet)。

@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # .NET 애플리케이션
 
 `ai-i18n-tools`은(는) C#, Razor, cshtml, XAML 및 AXAML에서 UI 문자열을 추출한 다음, 원본 언어 문자열을 키로 하는 플랫 JSON을 작성합니다. `sourceLocale`은(는) 어떤 언어든 될 수 있습니다. 런타임 헬퍼는 `I18n.cs`입니다(.NET 6 이상, NuGet 패키지 없음). Avalonia, WPF, MAUI, WinForms, ASP.NET, Blazor 및 콘솔 앱은 해당 헬퍼를 호출합니다. .NET Framework 4.8은 파일이 컴파일되기 전에 `System.Text.Json` 패키지가 필요합니다.
@@ -123,8 +123,8 @@ WPF와 MAUI는 자체 속성 유형으로 동일한 아이디어를 사용합니
 
 포맷된 문장은 C# (`T("Cursor {0}", value)`)에 유지되며, 이는 추출기가 단일 리터럴에 머무르도록 합니다. 바인딩의 `StringFormat`은 보이지 않습니다. 동일한 호출이 뷰 모델, 트레이 툴팁 및 대화 상자에서 작동합니다. 열거형 콤보는 열거형을 유지하고, 캡션에서 `T("Light")`를 반환하며, `LocaleChanged`에서 항목을 다시 빌드합니다. 트레이 항목은 `Tp("tray", "Open")`와 안정적인 `CommandParameter`를 사용합니다. 헤더가 아닌 매개변수를 일치시키십시오. 서비스는 영어 오류 문장을 저장하고, 표시 사이트는 `T`을(를) 통해 알려진 문장을 매핑합니다. Linux `.desktop` `Name=` 및 `Comment=`는 소스 언어로 유지됩니다. 비교되는 기간 토큰 (`2d`, `7h 47m`)은 번역되지 않은 상태로 유지됩니다. 표시 사이트에서 `T("now")`와 `T("in {0}", duration)`를 번역하십시오. 리터럴의 선행 또는 후행 공백은 여전히 추출 경고입니다. 이를 포맷 문자열 또는 레이아웃으로 이동하십시오. `Tn`는 항상 복수형이었던 소스 문장 (`1 samples`)을 수정할 수 있습니다.
 
-<a id="migrate"></a>
-## 안전하지 않은 호출 다시 작성
+<a id="rewrite-unsafe-calls"></a>
+## 안전하지 않은 호출 재작성
 
 `migrate-dotnet-i18n`는 `--write`를 전달할 때까지는 드라이 런(시험 실행)입니다. 조회 전에 빌드되는 `T`, `Tn`, `Tp`의 인수를 다시 작성합니다.
 

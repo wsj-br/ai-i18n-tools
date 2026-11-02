@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # i18n zu einer .NET-App hinzufügen
 
 Diese Seite beschreibt, wie man eine .NET-App (Avalonia, WPF, MAUI, WinForms, Blazor, ASP.NET oder ein Konsolentool), die eine einzelne Sprache verwendet, mit ai-i18n-tools um Lokalisierungen erweitert. Sie folgt einem Pfad: der `ui-dotnet`-Vorlage, einem kleinen `I18n.cs`-Hilfsprogramm und JSON-Dateien mit Übersetzungen. `extract` erfasst einen UI-String nur, wenn es sich um ein String-Literal innerhalb von `T()`, `Tn`, `Tp`, `N` oder einem XAML-`{loc:Tr '…'}` handelt, sodass ein Katalog mit reinem Quelltext leer wäre.
@@ -584,7 +584,7 @@ Führen Sie den Probelauf erneut aus. Halten Sie an, wenn keine Bearbeitungen au
 
 `--wrap` markiert auch unmarkiertes XAML `Text`, `Header`, `Content` und die anderen Beschriftungsattribute als `{loc:Tr '…'}`, plus C#-Zuweisungen, deren Name auf `Text`, `Title` oder `Message` endet, und `MessageBox.Show`. Ohne `--write` ist das ein Audit. Es bearbeitet keine Protokolle, Attribute, `nameof`, Vergleiche oder `Path`-Aufrufe.
 
-Ein Bericht ohne Bearbeitungen bedeutet, dass die umbrochenen Aufrufe sicher sind. Es bedeutet nicht, dass jeder benutzerorientierte Satz umbrochen wurde. Bare Labels, zurückgegebene Zeichenfolgen und Elementinhalte sind für ihn unsichtbar. Details: [Unsichere Aufrufe umschreiben](/de/guide/ui-strings/dotnet#migrate).
+Ein Bericht ohne Bearbeitungen bedeutet, dass die umschlossenen Aufrufe sicher sind. Das bedeutet nicht, dass jeder benutzeroberflächennahe Satz umschlossen wurde. Einzelne Bezeichnungen, zurückgegebene Zeichenfolgen und Elementinhalte sind für ihn unsichtbar. Details: [Unsichere Aufrufe umschreiben](/de/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 <a id="step-4-add-a-language-switch"></a>
 ## Schritt 4: Sprachumschalter hinzufügen

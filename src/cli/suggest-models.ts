@@ -179,7 +179,7 @@ export async function runSuggestModels(
     opts.maxOutputPrice !== undefined &&
     (!Number.isFinite(opts.maxOutputPrice) || opts.maxOutputPrice < 0)
   ) {
-    console.error(chalk.red(t("--max-output-price must be a number >= 0.")));
+    console.error(chalk.red(t("--max-price must be a number >= 0.")));
     return { exitCode: 1 };
   }
   if (opts.minDelta !== undefined && (!Number.isFinite(opts.minDelta) || opts.minDelta < 0)) {

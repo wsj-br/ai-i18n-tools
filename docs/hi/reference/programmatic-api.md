@@ -81,7 +81,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `pgettext(context, message, **values)` | कॉन्टेक्स्ट लुकअप (`msgctxt`, या `context` + U+0004 + फ़्लैट JSON में स्रोत-भाषा स्ट्रिंग), फिर इंटरपोलेट करें। |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit सिलेक्ट बॉक्स। `st.session_state.locale` और `st.query_params["lang"]` लिखता है, `set_locale` को कॉल करता है, और चुना गया कोड लौटाता है। |
 
-<a id="dotnet-runtime-i18ncs"></a>
+<a id="net-runtime-i18ncs"></a>
 ## .NET रनटाइम (`I18n.cs`)
 
 `init -t ui-dotnet` `assets/dotnet/I18n.cs` को प्रोजेक्ट में कॉपी करता है जब `I18n.cs` मौजूद नहीं होता है। यह .NET 6 या नए संस्करणों के लिए एक डिपेंडेंसी-मुक्त हेल्पर है। नीचे दिए गए सदस्य ऊपर दी गई तालिका में नोड एक्सपोर्ट्स से अलग हैं। कॉल शेप्स और XAML मार्कअप: [.NET एप्लिकेशन](/hi/guide/ui-strings/dotnet).

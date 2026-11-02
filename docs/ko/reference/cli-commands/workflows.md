@@ -10,7 +10,7 @@
 
 **주요 옵션:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
-`--force`은(는) UI 및 SVG 단계뿐 아니라 docs/JSON에도 전달됩니다. `--force-update`은(는) docs, JSON, SVG에 적용됩니다(UI는 제외). `--check-cache`은(는) docs, JSON, SVG에 전달됩니다: 파일 추적이 건너뛰더라도 네이티브 스크립트가 강제되는 로케일에 대해 캐시된 세그먼트를 재검증합니다. docs 단계는 `--emphasis-placeholders`도 전달합니다(`translate-docs`와 동일한 의미). 전역 `--debug-failed`은(는) 체인의 모든 모델이 실패할 때뿐만 아니라, 각 폐기된 모델 시도(SVG/docs 스크립트 폴백 포함)에 대해 `cacheDir` 아래에 `FAILED-TRANSLATION` 로그를 작성합니다. `--prompt-format`은(는) `sync` 플래그가 아닙니다. docs 및 JSON 단계는 기본 제공 기본값(`json-array`)을 사용합니다.
+`--force`은(는) 문서, JSON, SVG 세그먼트 캐시 및 파일 추적을 지웁니다. UI 번역으로 전달되지 않습니다. `strings.json`을(를) 다시 번역하려면 `translate-ui --force` 또는 `sync-ui --force`를(을) 사용하세요. `--force-update`는 문서, JSON, SVG에 적용됩니다(UI에는 적용되지 않음). `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`은(는) 한 번 실행할 때 해당 단계를 건너뜁니다. `--file`는 번역되는 파일을 제한하지만, 문서 블록의 모든 마크다운 파일을 사용하여 플랫 형제 링크를 여전히 다시 작성합니다. `--check-cache`은(는) 문서, JSON, SVG로 전달됩니다. 파일 추적이 건너뛸 경우에도 기본 스크립트가 강제 적용되는 로케일에 대해 캐시된 세그먼트를 다시 검증합니다. 문서 단계는 또한 `--emphasis-placeholders`(`translate-docs`와(과) 동일한 의미)을(를) 전달합니다. 전역 `--debug-failed`은(는) 체인의 모든 모델이 실패할 때뿐만 아니라, 폐기된 각 모델 시도(SVG/문서 스크립트 대체 포함)에 대해 `cacheDir` 아래에 `FAILED-TRANSLATION` 로그를 작성합니다. `--prompt-format`은(는) `sync` 플래그가 아닙니다. 문서 및 JSON 단계는 내장된 기본값(`json-array`)을(를) 사용합니다.
 
 ---
 

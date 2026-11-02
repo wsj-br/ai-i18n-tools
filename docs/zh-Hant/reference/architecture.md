@@ -218,7 +218,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 
 計費的模型呼叫（已接受的翻譯與已捨棄的重試）會儲存在 `api_calls` 中。在執行記錄呼叫的命令後，超過七個 UTC 曆日的詳細資料列會彙總至月度 `api_totals`。`usage` 與儀表板的「使用量與成本」檢視會合併這兩個資料表。請參閱[使用量與成本](/zh-Hant/guide/translation-dashboard/usage)。
 
-術語表 `Context` 備註與 `glossary.contextFiles` 會產生指紋 (`prompt_context_hash`)，並注入至 UI、文件、JSON、SVG 及校對提示詞中。變更該指引會使下次執行時相符的快取區段與檔案追蹤列失效。儀表板 `user-edited` 快取列會予以保留。僅變更偏好的術語表翻譯會維持現有快取不變，直到 `--force` / `--force-update`。
+詞彙表`Context`備註和`glossary.contextFiles`會被建立指紋(`prompt_context_hash`)，並注入到使用者介面、文件、JSON、SVG 和校對提示中。更改該指引會使下次執行時，相符的快取區段和檔案追蹤列失效。儀表板`user-edited`快取列會被保留。僅更改非強制列上的首選詞彙表翻譯，會保留現有快取，直到`--force`/`--force-update`。`Force`列僅在儲存的文字尚未包含強制翻譯時，對於來源包含該術語的區段會遺失快取，並且對於輸出仍缺少該術語的檔案，會拒絕未變更檔案跳過。將該列上的`Context`留空；上下文備註仍會重新整理整個地區設定。Markdown 也會拒絕遺漏引用之兩到五個字的使用者介面標籤 (目錄鍵或預設標籤形狀前綴) 的翻譯區段。引用可以是粗體、行內程式碼、標題，或僅包含該標籤的行。句子中的標題大小寫是一個提示，因此翻譯可以進行詞形變化 (印地語`Cursor account`可能會變成`कर्सर खाते`，而不是字典形式`कर्सर खाता`)。單一內容字詞標籤 (例如`Sign in`) 仍然是提示。該檢查會忽略翻譯中的大小寫，因此當來源引用時，句子中的小寫標籤仍然計數。使用相同字詞的普通散文可能會對其進行詞形變化。預設前綴必須是首字母大寫的標籤，其共享翻譯是一個不含佔位符的短語；句子詞幹不會被預設。該檢查會重試下一個模型，並且不會分割區段。
 
 `translate-docs` 指令也使用 **檔案追蹤**，因此對於未更改且已有最新輸出的來源，可以完全跳過工作。`--check-cache` 會以預期的書寫系統重新開啟語言環境，以便重新驗證快取的段落；`--force-update` 會對每個語言環境重新執行檔案處理，同時仍使用段落快取；`--force` 會清除檔案追蹤並繞過段落快取讀取以進行 API 翻譯。當每個已設定的模型在 Markdown 段落上未能通過 AST 驗證時，`translate-docs` 可以逐步分割段落並重試較小的部分（`docs[].segmentSplitting.qualityRetrySplit`，預設開啟）。請參閱[文件 — 快取行為與旗標](/zh-Hant/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)以取得完整的旗標表格。
 

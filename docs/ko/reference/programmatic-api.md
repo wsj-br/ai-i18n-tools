@@ -81,7 +81,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `pgettext(context, message, **values)` | 컨텍스트 조회(`msgctxt` 또는 `context` + U+0004 + 플랫 JSON의 소스 언어 문자열) 후 보간합니다. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit 선택 상자입니다. `st.session_state.locale` 및 `st.query_params["lang"]`을(를) 작성하고, `set_locale`을(를) 호출하며, 선택한 코드를 반환합니다. |
 
-<a id="dotnet-runtime-i18ncs"></a>
+<a id="net-runtime-i18ncs"></a>
 ## .NET 런타임 (`I18n.cs`)
 
 `I18n.cs`가 누락된 경우 `init -t ui-dotnet`는 `assets/dotnet/I18n.cs`을 프로젝트에 복사합니다. 이는 .NET 6 이상 버전용 종속성 없는 도우미입니다. 아래 멤버는 위 표의 Node 내보내기와 별개입니다. 호출 형태 및 XAML 마크업: [.NET 애플리케이션](/ko/guide/ui-strings/dotnet).

@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `migrate-python-i18n` 會將不安全的預先評估呼叫 (`_(f"...")`、`_("..." % expr)`、`_("...".format(...))`) 重寫為先查詢後格式化的呼叫。預設為模擬執行。傳遞 `--write` 以編輯檔案，並閱讀 `migrate-python-i18n-report.md` 以取得審閱備註。當複雜表達式穩定時，會從該表達式命名 (`start.isoformat()` 變成 `{start}`，`len(rows)` 變成 `{rows_count}`)。剩餘的 `{value_1}` 會被報告，以便重新命名。產生的 `i18n.py` 檔案會被跳過。乾淨的報告不代表未包裝的 f-string 已被涵蓋。
 
-`migrate-dotnet-i18n` 對於 `T($"...")`、串連以及 `T()` 內的 `string.Format` 也執行相同操作。`--wrap` 也會標記未標記的 XAML 標籤和高信賴度 C# 接收器；如果沒有 `--write`，這就是一項稽核。報告為 `migrate-dotnet-i18n-report.md`。產生的 `I18n.cs` 和 `I18nResx.cs` 會被跳過。指南：[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet#migrate)。
+`migrate-dotnet-i18n` 對於 ``T()`` 內部的 `T($"...")`、串聯以及 `string.Format` 執行相同的處理。`--wrap` 也會標記未標記的 XAML 標籤和高可信度 C# 接收器；如果沒有 `--write`，這將是一次審計。報告為 `migrate-dotnet-i18n-report.md`。生成的 `I18n.cs` 和 `I18nResx.cs` 會被跳過。指南：[.NET 應用程式](/zh-Hant/guide/ui-strings/dotnet#rewrite-unsafe-calls)。
 
 ---
 

@@ -112,14 +112,7 @@ export function buildPluralPlaceholderConstraint(
   );
 }
 
-const PLURAL_FORM_ORDER: readonly CldrPluralForm[] = [
-  "zero",
-  "one",
-  "two",
-  "few",
-  "many",
-  "other",
-];
+const PLURAL_FORM_ORDER: readonly CldrPluralForm[] = ["zero", "one", "two", "few", "many", "other"];
 
 const RESTORE_OMITTED_PLACEHOLDER =
   "If a source-language form omitted a listed placeholder, still restore it from this list in every target category value.";

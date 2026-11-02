@@ -26,12 +26,16 @@ A block with `uiGlossary: true` reuses translations already stored in its `strin
 
 Compact UI-label abbreviations (a trailing dot such as `Alm.`, or a short single-token compression such as `Size` → `Tam`) stay available for UI translation. Document prompts skip them, so they do not push models toward invented <code v-pre>{{…}}</code> tokens in markdown or MDX.
 
+A multi-word prefix shared by two or more catalog keys is added as its own term when that prefix is not already a key. For each locale, the translation is the shared start of those catalog translations, cut on a word boundary, and only when that shared start is at least four characters. `Cursor Models run out` and `Cursor Models at renewal` can yield `Cursor Models` when both German strings start with `Cursor-Modelle`. A user CSV row for the same source replaces that seeded translation.
+
 <a id="when-a-term-is-sent"></a>
 ### When a term is sent
 
 Matching is case-insensitive and stops at a word boundary (whitespace or punctuation). Longer terms are preferred, and overlapping matches are dropped. When a term matches the current batch, the prompt receives a hint like `"dashboard" → "Tableau"`. If that row has a **Context** note, the note is appended for that match only.
 
-**Context** is source-language usage guidance (what the term means, or how to use it). It is not a translation. Changing a **Context** note, or any `glossary.contextFiles` content, refreshes cached translations for the affected locale on the next run — you do not need `--force`. Changing only the preferred **Translation** keeps the existing cache until you pass `--force` or `--force-update`. Rows you edited in the dashboard stay as `user-edited`.
+**Context** is source-language usage guidance (what the term means, or how to use it). It is not a translation. Changing a **Context** note, or any `glossary.contextFiles` content, refreshes cached translations for the affected locale on the next run — you do not need `--force`. Changing only the preferred **Translation** on a row that is not **Force** keeps the existing cache until you pass `--force` or `--force-update`. A **Force** row (new, edited, or cleared) misses the cache only for segments whose source contains that term, and only when the stored text does not already include the forced translation. Leave **Context** empty on that row for this narrow refresh; a Context note still refreshes the whole locale. Rows you edited in the dashboard stay as `user-edited`.
+
+Markdown translation also rejects a segment when a matched UI label of two to five words is missing its catalog or seeded-prefix translation. Single-word hints may still be inflected. A user-CSV hint that is not also a UI label stays a hint. The check retries the next model and does not split the segment. Cached markdown is rechecked when the file is processed (`--force-update`); a file that file tracking skips is left as it is until a **Force** term in that file is missing from the output. A catalog translation that differs from the source is required wherever that label appears, including a translated product name. Keep the source spelling with a **Force** row whose translation equals the source.
 
 <a id="force"></a>
 ### Force

@@ -4,6 +4,7 @@ import type { I18nDocTranslateConfig } from "../../src/core/types.js";
 import {
   computeFlatLinkRewritePrefixes,
   computePerFileDepthPrefix,
+  markdownPathsForFlatLinkRewrite,
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
   rewriteOneRelativePathForFlatOutput,
@@ -193,6 +194,31 @@ describe("rewriteOneRelativePathForFlatOutput", () => {
         translatedMarkdownRelPaths: new Set(["README.md", "docs/page.md"]),
       })
     ).toBe("../README.es.md");
+  });
+
+  it("rewrites a sibling that is in the docs block but not in the --file subset", () => {
+    const c = cfg({
+      docs: [
+        {
+          contentPaths: ["README.md", "QUICKSTART.md"],
+          outputDir: "translated-docs",
+          docsOutput: { style: "flat", linkRewriteDocsRoot: "." },
+        },
+      ],
+    });
+    const translatedThisRun = ["README.md"];
+    const blockMarkdown = ["README.md", "QUICKSTART.md"];
+    const set = markdownPathsForFlatLinkRewrite(blockMarkdown);
+    expect(set.has("QUICKSTART.md")).toBe(true);
+    expect(translatedThisRun).toEqual(["README.md"]);
+    expect(
+      rewriteOneRelativePathForFlatOutput("QUICKSTART.md", "", "", "de", "", "../", {
+        cwd,
+        config: c,
+        currentSourceRelPath: "README.md",
+        translatedMarkdownRelPaths: set,
+      })
+    ).toBe("QUICKSTART.de.md");
   });
 
   it("default depth prefix for paths not in translated set", () => {

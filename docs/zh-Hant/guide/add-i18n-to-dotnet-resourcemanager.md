@@ -1,5 +1,5 @@
-<a id="add-i18n-to-a-dotnet-resourcemanager-app"></a>
-# 新增國際化到 .NET ResourceManager 應用程式
+<a id="add-i18n-to-a-net-resourcemanager-app"></a>
+# 將國際化新增至 .NET ResourceManager 應用程式
 
 此頁面適用於已使用 `ResourceManager` 或 ASP.NET `IStringLocalizer` 載入字串，或將會這樣做的 .NET 應用程式。您保留該載入器。ai-i18n-tools 會讀取 `T("…")` 和 `{loc:Tr '…'}`，翻譯訊息，並寫入 `.resx` 附屬組件，其索引鍵為那些來源字串。輔助程式是 `I18nResx.cs`，由 `init -t ui-dotnet-resx` 複製。
 

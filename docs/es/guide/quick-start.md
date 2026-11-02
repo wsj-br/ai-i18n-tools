@@ -75,7 +75,7 @@ Luego siga [Añada i18n a una aplicación Python](/es/guide/add-i18n-to-python).
 
 Una aplicación Django, Flask con catálogos Flask-Babel, o una aplicación que ya llama a `gettext` mantiene esas llamadas. Genere la estructura con `ui-python-django`, `ui-python-flask`, o `ui-python-gettext` en su lugar, luego siga [Añada i18n a una aplicación Django / Python gettext](/es/guide/add-i18n-to-django-gettext).
 
-<a id="a-dotnet-app"></a>
+<a id="a-net-app"></a>
 ### Una aplicación .NET
 
 ```bash

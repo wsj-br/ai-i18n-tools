@@ -1,5 +1,5 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
-# 為 .NET 應用程式新增國際化功能
+<a id="add-i18n-to-a-net-app"></a>
+# 為 .NET 應用程式新增國際化
 
 本頁介紹如何將 .NET 應用程式 (Avalonia、WPF、MAUI、WinForms、Blazor、ASP.NET 或主控台工具) 該應用程式目前只有單一語言，並使用 ai-i18n-tools 新增地區設定。它遵循一條路徑：`ui-dotnet` 範本、一個小型 `I18n.cs` 輔助程式以及翻譯的 JSON 檔案。`extract` 僅在 UI 字串是 `T()`、`Tn`、`Tp`、`N` 或 XAML `{loc:Tr '…'}` 內的字串常值時才記錄它，因此，純原始文字的目錄將會是空的。
 
@@ -584,7 +584,7 @@ ai-i18n-tools extract
 
 `--wrap` 也將未標記的 XAML `Text`、`Header`、`Content` 和其他標籤屬性標記為 `{loc:Tr '…'}`，加上名稱以 `Text`、`Title` 或 `Message` 結尾的 C# 賦值，以及 `MessageBox.Show`。沒有 `--write`，這是一個審核。它不會編輯日誌、屬性、`nameof`、比較或 `Path` 呼叫。
 
-沒有編輯的報告表示包裝的呼叫是安全的。這不表示每個面向使用者的句子都已包裝。裸標籤、返回的字串和元素內容對它來說是不可見的。詳細資訊：[重寫不安全的呼叫](/zh-Hant/guide/ui-strings/dotnet#migrate)。
+一份未經修改的報告表示已封裝的呼叫是安全的。這不表示每個使用者可見的句子都已封裝。未經封裝的標籤、傳回的字串以及元素內容，它都無法偵測到。詳細資訊：[重寫不安全的呼叫](/zh-Hant/guide/ui-strings/dotnet#rewrite-unsafe-calls)。
 
 <a id="step-4-add-a-language-switch"></a>
 ## 步驟 4：新增語言切換功能

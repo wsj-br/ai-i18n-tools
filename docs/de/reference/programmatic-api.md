@@ -81,8 +81,8 @@ Aufrufformen, unsichere f-Strings und frameworkspezifische Locale-Anbindung: [Py
 | `pgettext(context, message, **values)` | Kontextsuche (`msgctxt` oder `context` + U+0004 + den Quellsprachen-String in flachem JSON), dann interpolieren. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit-Auswahlfeld. Schreibt `st.session_state.locale` und `st.query_params["lang"]`, ruft `set_locale` auf und gibt den gewählten Code zurück. |
 
-<a id="dotnet-runtime-i18ncs"></a>
-## .NET Runtime (`I18n.cs`)
+<a id="net-runtime-i18ncs"></a>
+## .NET-Laufzeitumgebung (`I18n.cs`)
 
 `init -t ui-dotnet` kopiert `assets/dotnet/I18n.cs` in das Projekt, wenn `I18n.cs` fehlt. Es ist ein abhängigkeitsfreier Helfer für .NET 6 oder neuer. Die unten aufgeführten Mitglieder sind von den Node-Exporten in der obigen Tabelle getrennt. Aufrufstrukturen und XAML-Markup: [.NET-Anwendungen](/de/guide/ui-strings/dotnet).
 

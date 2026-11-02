@@ -98,7 +98,7 @@ ai-i18n-tools migrate-dotnet-i18n [--write] [--wrap] [--report <path>] [--ui-blo
 ai-i18n-tools help [command]
 ai-i18n-tools check-models
 ai-i18n-tools list-models
-ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]
+ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]
 ai-i18n-tools bench-models [--model <ids>] [--text <text>|--file <path>] [--source <locale>] [--target <locale>]
 ai-i18n-tools list-languages [search]
 ai-i18n-tools extract

@@ -44,7 +44,7 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
-import { Glossary } from "../glossary/glossary.js";
+import { Glossary, glossaryCacheMissErrors } from "../glossary/glossary.js";
 import {
   computeGuidanceFingerprint,
   loadTranslationContextFromConfig,
@@ -83,6 +83,7 @@ import { getTextDirection } from "../runtime/i18next-helpers.js";
 import {
   computeFlatLinkRewritePrefixes,
   computePerFileDepthPrefix,
+  markdownPathsForFlatLinkRewrite,
   normalizeMarkdownRelPath,
   rewriteDocLinksForFlatOutput,
 } from "../processors/flat-link-rewrite.js";
@@ -1505,8 +1506,11 @@ export async function translateSegmentsBatched(
         const origSeg = segmentOriginalContent(s, originalContentByHash);
         const preRestoreErrors = collectPreRestorePlaceholderErrors(st, raw, s.hash);
         const v = await validateDocTranslatePair(origSeg, restored);
-        const allErrors = [...preRestoreErrors, ...v.errors];
-        const ok = preRestoreErrors.length === 0 && v.ok;
+        const labelErrors = markdownQuality
+          ? glossary.missingLockedUiLabels(origSeg.content, restored, locale)
+          : [];
+        const allErrors = [...preRestoreErrors, ...v.errors, ...labelErrors];
+        const ok = preRestoreErrors.length === 0 && v.ok && labelErrors.length === 0;
         const docIdx0 = batchDocIndices[bi]?.[i];
         const label =
           docLog && docIdx0 !== undefined
@@ -1791,6 +1795,23 @@ function promptContextHashFor(
   return computeGuidanceFingerprint(glossary, locale, opts.translationContextFingerprint ?? "");
 }
 
+/** Unchanged-file skip is allowed when every forced term in the source is already in the output. */
+function forcedGlossaryOutputIsCurrent(
+  glossary: Glossary,
+  locale: string,
+  source: string,
+  outPath: string
+): boolean {
+  if (!glossary.sourceHasForcedTerm(source, locale)) {
+    return true;
+  }
+  if (!fs.existsSync(outPath)) {
+    return false;
+  }
+  const output = fs.readFileSync(outPath, "utf8");
+  return glossary.missingForcedTranslations(source, output, locale).length === 0;
+}
+
 export async function translateMarkdownFile(
   absSource: string,
   relPath: string,
@@ -1858,7 +1879,8 @@ export async function translateMarkdownFile(
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     fileTrackingMatches &&
-    translatedOutputIsCurrent(outPath, sourceFileMtime)
+    translatedOutputIsCurrent(outPath, sourceFileMtime) &&
+    forcedGlossaryOutputIsCurrent(glossary, locale, content, outPath)
   ) {
     if (opts.verbose) {
       console.log(
@@ -1939,7 +1961,15 @@ export async function translateMarkdownFile(
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
       const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
-      if (quality.ok && !scriptIssue) {
+      const glossaryErrors = glossaryCacheMissErrors(
+        glossary,
+        locale,
+        s.content,
+        cached.text,
+        cached.model,
+        true
+      );
+      if (quality.ok && !scriptIssue && glossaryErrors.length === 0) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
@@ -1960,9 +1990,11 @@ export async function translateMarkdownFile(
                 path: relPath,
                 locale,
                 hash: s.hash,
-                errors: [...quality.errors, ...(scriptIssue ? [scriptIssue.message] : [])].join(
-                  "; "
-                ),
+                errors: [
+                  ...quality.errors,
+                  ...glossaryErrors,
+                  ...(scriptIssue ? [scriptIssue.message] : []),
+                ].join("; "),
               }
             )
           )
@@ -2247,7 +2279,8 @@ export async function translateAstroFile(
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     fileTrackingMatches &&
-    translatedOutputIsCurrent(outPath, sourceFileMtime)
+    translatedOutputIsCurrent(outPath, sourceFileMtime) &&
+    forcedGlossaryOutputIsCurrent(glossary, locale, content, outPath)
   ) {
     if (opts.verbose) {
       console.log(
@@ -2328,7 +2361,15 @@ export async function translateAstroFile(
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
       const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
-      if (quality.ok && !scriptIssue) {
+      const glossaryErrors = glossaryCacheMissErrors(
+        glossary,
+        locale,
+        s.content,
+        cached.text,
+        cached.model,
+        true
+      );
+      if (quality.ok && !scriptIssue && glossaryErrors.length === 0) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
@@ -2349,9 +2390,11 @@ export async function translateAstroFile(
                 path: relPath,
                 locale,
                 hash: s.hash,
-                errors: [...quality.errors, ...(scriptIssue ? [scriptIssue.message] : [])].join(
-                  "; "
-                ),
+                errors: [
+                  ...quality.errors,
+                  ...glossaryErrors,
+                  ...(scriptIssue ? [scriptIssue.message] : []),
+                ].join("; "),
               }
             )
           )
@@ -2607,7 +2650,8 @@ export async function translateHtmlFile(
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     fileTrackingMatches &&
-    translatedOutputIsCurrent(outPath, sourceFileMtime)
+    translatedOutputIsCurrent(outPath, sourceFileMtime) &&
+    forcedGlossaryOutputIsCurrent(glossary, locale, content, outPath)
   ) {
     if (opts.verbose) {
       console.log(
@@ -2696,7 +2740,15 @@ export async function translateHtmlFile(
       const quality = await validateDocTranslatePair(s, cached.text);
       const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
       const tagIssue = compareHtmlTagKindSequences(s.content, cached.text);
-      if (quality.ok && !scriptIssue && !tagIssue) {
+      const glossaryErrors = glossaryCacheMissErrors(
+        glossary,
+        locale,
+        s.content,
+        cached.text,
+        cached.model,
+        false
+      );
+      if (quality.ok && !scriptIssue && !tagIssue && glossaryErrors.length === 0) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
@@ -2719,6 +2771,7 @@ export async function translateHtmlFile(
                 hash: s.hash,
                 errors: [
                   ...quality.errors,
+                  ...glossaryErrors,
                   ...(scriptIssue ? [scriptIssue.message] : []),
                   ...(tagIssue ? [tagIssue] : []),
                 ].join("; "),
@@ -2981,7 +3034,8 @@ export async function translateJsonFile(
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     fileTrackingMatchesJson &&
-    translatedOutputIsCurrent(outPath, sourceFileMtime)
+    translatedOutputIsCurrent(outPath, sourceFileMtime) &&
+    forcedGlossaryOutputIsCurrent(glossary, locale, content, outPath)
   ) {
     if (opts.verbose) {
       console.log(
@@ -3040,10 +3094,17 @@ export async function translateJsonFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, relPathFromCwd, undefined, promptContextHash)
+        cache.getSegmentDetails(s.hash, locale, relPathFromCwd, undefined, promptContextHash)
       );
-      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
-        translations.set(s.hash, { text: hit });
+      const glossaryErrors = hit
+        ? glossaryCacheMissErrors(glossary, locale, s.content, hit.text, hit.model, false)
+        : [];
+      if (
+        hit &&
+        translationScriptIssue(hit.text, locale, s.content) === null &&
+        glossaryErrors.length === 0
+      ) {
+        translations.set(s.hash, { text: hit.text });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
         if (failureTracker) {
@@ -3232,7 +3293,8 @@ export async function translateSvgAssetFile(
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
     fileTrackingMatchesSvg &&
-    translatedOutputIsCurrent(outPath, sourceFileMtime)
+    translatedOutputIsCurrent(outPath, sourceFileMtime) &&
+    forcedGlossaryOutputIsCurrent(glossary, locale, content, outPath)
   ) {
     if (opts.verbose) {
       console.log(
@@ -3316,14 +3378,27 @@ export async function translateSvgAssetFile(
     }
     if (!opts.force && cache && !opts.noCache) {
       const hit = await withCacheMutex(opts.cacheMutex, () =>
-        cache.getSegment(s.hash, locale, translationSvgFilepathMeta, undefined, promptContextHash)
+        cache.getSegmentDetails(
+          s.hash,
+          locale,
+          translationSvgFilepathMeta,
+          undefined,
+          promptContextHash
+        )
       );
-      if (hit && translationScriptIssue(hit, locale, s.content) === null) {
-        let t = hit;
+      const glossaryErrors = hit
+        ? glossaryCacheMissErrors(glossary, locale, s.content, hit.text, hit.model, false)
+        : [];
+      if (
+        hit &&
+        translationScriptIssue(hit.text, locale, s.content) === null &&
+        glossaryErrors.length === 0
+      ) {
+        let translatedText = hit.text;
         if (forceLc) {
-          t = t.toLowerCase();
+          translatedText = translatedText.toLowerCase();
         }
-        translations.set(s.hash, { text: t });
+        translations.set(s.hash, { text: translatedText });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
         if (failureTracker) {
@@ -3521,6 +3596,8 @@ export async function runTranslate(
   opts: TranslateRunOptions,
   files: {
     markdown: string[];
+    /** Every markdown path in the docs block. Flat links resolve against this, not the `--file` subset. */
+    markdownForLinkRewrite?: string[];
     json: string[];
     astro: string[];
     html?: string[];
@@ -3570,8 +3647,8 @@ export async function runTranslate(
     : undefined;
   const hitKeys = new Set<string>();
   const markdownHitKeys = new Set<string>();
-  const translatedMarkdownRelPaths = new Set(
-    files.markdown.map((r) => normalizeMarkdownRelPath(r))
+  const translatedMarkdownRelPaths = markdownPathsForFlatLinkRewrite(
+    files.markdownForLinkRewrite ?? files.markdown
   );
 
   const locales = opts.locales.map((l) => normalizeLocale(l));

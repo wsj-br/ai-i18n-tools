@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # 为 .NET 应用添加 i18n
 
 此页面介绍如何使用 ai-i18n-tools 为具有单一语言的 .NET 应用程序（Avalonia、WPF、MAUI、WinForms、Blazor、ASP.NET 或控制台工具）添加区域设置。它遵循一条路径：`ui-dotnet` 模板、一个小型 `I18n.cs` 帮助程序和 JSON 翻译文件。`extract` 仅在 UI 字符串是 `T()`、`Tn`、`Tp`、`N` 或 XAML `{loc:Tr '…'}` 中的字符串字面量时才记录它，因此纯源文本目录将为空。
@@ -584,7 +584,7 @@ ai-i18n-tools extract
 
 `--wrap` 还会将未标记的 XAML `Text`、`Header`、`Content` 和其他标签属性标记为 `{loc:Tr '…'}`，加上名称以 `Text`、`Title` 或 `Message` 结尾的 C# 赋值，以及 `MessageBox.Show`。没有 `--write`，这是一次审计。它不会编辑日志、属性、`nameof`、比较或 `Path` 调用。
 
-没有编辑的报告意味着包装的调用是安全的。这并不意味着每个面向用户的句子都被包装了。裸标签、返回的字符串和元素内容对其不可见。详细信息：[重写不安全的调用](/zh-Hans/guide/ui-strings/dotnet#migrate)。
+一份没有编辑的报告意味着包装的调用是安全的。这不意味着每个面向用户的句子都已包装。裸标签、返回的字符串和元素内容对它来说是不可见的。详情：[重写不安全的调用](/zh-Hans/guide/ui-strings/dotnet#rewrite-unsafe-calls)。
 
 <a id="step-4-add-a-language-switch"></a>
 ## 步骤 4：添加语言切换功能

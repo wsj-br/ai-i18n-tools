@@ -75,7 +75,7 @@ Befolgen Sie dann [i18n zu einer Python-App hinzufügen](/de/guide/add-i18n-to-p
 
 Eine Django-App, Flask mit Flask-Babel-Katalogen oder eine App, die bereits `gettext` aufruft, behält diese Aufrufe bei. Erstellen Sie stattdessen ein Gerüst mit `ui-python-django`, `ui-python-flask` oder `ui-python-gettext`, und befolgen Sie dann [i18n zu einer Django-/Python-gettext-App hinzufügen](/de/guide/add-i18n-to-django-gettext).
 
-<a id="a-dotnet-app"></a>
+<a id="a-net-app"></a>
 ### Eine .NET-App
 
 ```bash

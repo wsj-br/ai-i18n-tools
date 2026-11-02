@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isCurrentRequest,
-  pickLocale,
-} from "../../examples/nextjs-app/src/lib/locale-gate.js";
+import { isCurrentRequest, pickLocale } from "../../examples/nextjs-app/src/lib/locale-gate.js";
 
 const valid = new Set(["en-GB", "de", "pt-BR"]);
 

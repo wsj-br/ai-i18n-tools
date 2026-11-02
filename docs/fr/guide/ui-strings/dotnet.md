@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # Applications .NET
 
 `ai-i18n-tools` extrait les chaînes d'interface utilisateur de C#, Razor, cshtml, XAML et AXAML, puis écrit un JSON plat dont les clés sont les chaînes de la langue source. `sourceLocale` peut être n'importe quelle langue. La fonction d'aide à l'exécution est `I18n.cs` (.NET 6 ou version ultérieure, sans packages NuGet). Les applications Avalonia, WPF, MAUI, WinForms, ASP.NET, Blazor et les applications console appellent cette fonction d'aide. .NET Framework 4.8 nécessite le package `System.Text.Json` avant que le fichier ne puisse être compilé.
@@ -123,7 +123,7 @@ WPF et MAUI utilisent la même idée avec leurs propres types de propriétés. A
 
 Les phrases formatées restent en C# (`T("Cursor {0}", value)`), ce qui maintient l'extracteur sur un seul littéral. `StringFormat` sur une liaison est invisible. Le même appel fonctionne à partir d'un modèle de vue, d'une info-bulle de barre d'état système et d'une boîte de dialogue. Une liste déroulante d'énumération conserve l'énumération, renvoie `T("Light")` de sa légende et reconstruit les éléments sur `LocaleChanged`. Un élément de barre d'état système utilise `Tp("tray", "Open")` et un `CommandParameter` stable. Faites correspondre le paramètre, pas l'en-tête. Un service stocke la phrase d'erreur en anglais, et le site d'affichage mappe les phrases connues via `T`. Linux `.desktop` `Name=` et `Comment=` restent dans la langue source. Les jetons de durée qui sont comparés (`2d`, `7h 47m`) restent non traduits. Traduisez `T("now")` et `T("in {0}", duration)` sur le site d'affichage. Un espace de début ou de fin sur un littéral est toujours un avertissement d'extraction. Déplacez-le dans la chaîne de format ou la mise en page. `Tn` peut corriger une phrase source qui était toujours au pluriel (`1 samples`).
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## Réécrire les appels non sécurisés
 
 `migrate-dotnet-i18n` est une exécution à blanc jusqu'à ce que vous passiez `--write`. Il réécrit les arguments de `T`, `Tn` et `Tp` qui sont construits avant la recherche :

@@ -15,6 +15,7 @@ Choisissez la liste pour ce projet avec `suggest-models`, ou avec le même class
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 Les colonnes sont le rang, l'ID du modèle, l'indice, le ChrF mesuré, le score Arena mesuré, et le prix d'entrée et de sortie en USD par million de jetons. Une mesure manquante est `—`. L'indice est le score pondéré multiplié par 100. Dans le classement par qualité, un indice plus élevé correspond à une meilleure adéquation pour ce projet.
@@ -22,7 +23,8 @@ Les colonnes sont le rang, l'ID du modèle, l'indice, le ChrF mesuré, le score 
 Écrivez cette liste restreinte dans la configuration lorsque le tableau vous semble correct :
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` remplace `providers.<active>.translationModels`. Il copie d'abord la configuration actuelle dans un fichier `ai-i18n-tools.config.{timestamp}.backup.json` au même niveau. `uiModels` et `localeModels` restent inchangés. `--top` (8 par défaut) correspond au nombre d'ID que le tableau et `--apply` incluent. Le premier ID est celui que la traduction essaie en premier.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 Ouvrez **Modèles**. Choisissez **Qualité** ou **Prix**. Cochez les lignes que vous souhaitez. Les lignes cochées, de haut en bas, définissent l'ordre que la traduction essaiera. **Mettre à jour la configuration** demande une confirmation, écrit le même type de sauvegarde et enregistre cet ordre dans `translationModels`. **Copier le JSON** place le fragment `{ "translationModels": [...] }` dans le presse-papiers si vous préférez le coller vous-même.
 
-**Prix de sortie max.** et **Delta d'indice min.** correspondent à `suggest-models --max-output-price` et `--min-delta`. Contrôles et colonnes : [Onglet Modèles](/fr/guide/translation-dashboard/models).
+**Prix de sortie maximal** et **Delta d'indice minimal** correspondent à `suggest-models --max-price` et `--min-delta`. Contrôles et colonnes : [onglet Modèles](/fr/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### Fonctionnement du classement

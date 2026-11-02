@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `migrate-python-i18n` schreibt unsichere vorab ausgewertete Aufrufe (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) in Lookup-vor-Format-Aufrufe um. Standardmäßig wird ein Probelauf durchgeführt. Übergeben Sie `--write`, um Dateien zu bearbeiten, und lesen Sie `migrate-python-i18n-report.md` für Überprüfungshinweise. Ein komplexer Ausdruck wird nach dem Ausdruck benannt, wenn dieser stabil ist (`start.isoformat()` wird zu `{start}`, `len(rows)` wird zu `{rows_count}`). Ein übrig gebliebener `{value_1}` wird gemeldet, damit er umbenannt werden kann. Generierte `i18n.py`-Dateien werden übersprungen. Ein sauberer Bericht bedeutet nicht, dass nicht umbrochene f-Strings abgedeckt wurden.
 
-`migrate-dotnet-i18n` macht dasselbe für `T($"...")`, Verkettung und `string.Format` innerhalb von `T()`. `--wrap` markiert auch unmarkierte XAML-Labels und C#-Sinks mit hoher Konfidenz; ohne `--write` ist das ein Audit. Der Bericht ist `migrate-dotnet-i18n-report.md`. Generierte `I18n.cs` und `I18nResx.cs` werden übersprungen. Anleitung: [.NET-Anwendungen](/de/guide/ui-strings/dotnet#migrate).
+`migrate-dotnet-i18n` macht dasselbe für `T($"...")`, Verkettung und `string.Format` innerhalb von `T()`. `--wrap` markiert auch unmarkierte XAML-Labels und C#-Sinks mit hoher Konfidenz; ohne `--write` ist das ein Audit. Der Bericht ist `migrate-dotnet-i18n-report.md`. Generierte `I18n.cs` und `I18nResx.cs` werden übersprungen. Leitfaden: [.NET-Anwendungen](/de/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 ---
 

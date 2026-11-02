@@ -81,8 +81,8 @@ Formatos de chamada, f-strings inseguras e configuração de localidade por fram
 | `pgettext(context, message, **values)` | Consulta de contexto (`msgctxt` ou `context` + U+0004 + a string do idioma de origem em JSON simples), depois interpola. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Caixa de seleção do Streamlit. Grava `st.session_state.locale` e `st.query_params["lang"]`, chama `set_locale` e retorna o código escolhido. |
 
-<a id="dotnet-runtime-i18ncs"></a>
-## runtime .NET (`I18n.cs`)
+<a id="net-runtime-i18ncs"></a>
+## Runtime do .NET (`I18n.cs`)
 
 `init -t ui-dotnet` copia `assets/dotnet/I18n.cs` para o projeto quando `I18n.cs` está ausente. É um auxiliar sem dependências para .NET 6 ou mais recente. Os membros abaixo são separados das exportações do Node na tabela acima. Formatos de chamada e marcação XAML: [aplicativos .NET](/pt-BR/guide/ui-strings/dotnet).
 

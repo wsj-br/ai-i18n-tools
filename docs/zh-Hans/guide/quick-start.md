@@ -75,8 +75,8 @@ ai-i18n-tools suggest-models --apply
 
 Django 应用、使用 Flask-Babel 目录的 Flask 应用，或已调用 `gettext` 的应用会保留这些调用。而是使用 `ui-python-django`、`ui-python-flask` 或 `ui-python-gettext` 进行脚手架搭建，然后按照 [将 i18n 添加到 Django / Python gettext 应用](/zh-Hans/guide/add-i18n-to-django-gettext)。
 
-<a id="a-dotnet-app"></a>
-### .NET 应用
+<a id="a-net-app"></a>
+### 一个 .NET 应用
 
 ```bash
 ai-i18n-tools init -t ui-dotnet -P openrouter

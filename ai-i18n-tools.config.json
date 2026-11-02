@@ -50,7 +50,7 @@
         "gpt-5",
         "gpt-5.2"
       ],
-      "requestTimeout": 120
+      "requestTimeout": 150
     }
   },
   "features": {

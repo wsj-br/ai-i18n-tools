@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # .NET applications
 
 `ai-i18n-tools` extracts UI strings from C#, Razor, cshtml, XAML, and AXAML, then writes flat JSON keyed by the source-language string. `sourceLocale` can be any language. The runtime helper is `I18n.cs` (.NET 6 or newer, no NuGet packages). Avalonia, WPF, MAUI, WinForms, ASP.NET, Blazor, and console apps call that helper. .NET Framework 4.8 needs the `System.Text.Json` package before the file will compile.
@@ -123,7 +123,7 @@ WPF and MAUI use the same idea with their own property types. Avalonia only: ign
 
 Formatted sentences stay in C# (`T("Cursor {0}", value)`), which keeps the extractor on a single literal. `StringFormat` on a binding is invisible. The same call works from a view model, a tray tooltip, and a dialog. An enum combo keeps the enum, returns `T("Light")` from its caption, and rebuilds the items on `LocaleChanged`. A tray item uses `Tp("tray", "Open")` and a stable `CommandParameter`. Match the parameter, not the header. A service stores the English error sentence, and the display site maps known sentences through `T`. Linux `.desktop` `Name=` and `Comment=` stay in the source language. Duration tokens that are compared (`2d`, `7h 47m`) stay untranslated. Translate `T("now")` and `T("in {0}", duration)` at the display site. A leading or trailing space on a literal is still an extract warning. Move it into the format string or the layout. `Tn` may correct a source sentence that was always plural (`1 samples`).
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## Rewrite unsafe calls
 
 `migrate-dotnet-i18n` is a dry run until you pass `--write`. It rewrites arguments of `T`, `Tn`, and `Tp` that are built before lookup:

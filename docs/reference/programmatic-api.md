@@ -81,7 +81,7 @@ Call shapes, unsafe f-strings, and per-framework locale wiring: [Python applicat
 | `pgettext(context, message, **values)` | Context lookup (`msgctxt`, or `context` + U+0004 + the source-language string in flat JSON), then interpolate. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Streamlit select box. Writes `st.session_state.locale` and `st.query_params["lang"]`, calls `set_locale`, and returns the chosen code. |
 
-<a id="dotnet-runtime-i18ncs"></a>
+<a id="net-runtime-i18ncs"></a>
 ## .NET runtime (`I18n.cs`)
 
 `init -t ui-dotnet` copies `assets/dotnet/I18n.cs` into the project when `I18n.cs` is missing. It is a dependency-free helper for .NET 6 or newer. The members below are separate from the Node exports in the table above. Call shapes and XAML markup: [.NET applications](/guide/ui-strings/dotnet).

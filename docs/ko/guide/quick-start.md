@@ -75,7 +75,7 @@ ai-i18n-tools suggest-models --apply
 
 Django 앱, Flask-Babel 카탈로그를 사용하는 Flask, 또는 이미 `gettext`를 호출하는 앱은 해당 호출을 유지합니다. 대신 `ui-python-django`, `ui-python-flask`, 또는 `ui-python-gettext`로 스캐폴딩한 다음 [Django / Python gettext 앱에 i18n 추가](/ko/guide/add-i18n-to-django-gettext)를 따르세요.
 
-<a id="a-dotnet-app"></a>
+<a id="a-net-app"></a>
 ### .NET 앱
 
 ```bash

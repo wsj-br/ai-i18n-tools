@@ -15,6 +15,7 @@ Wählen Sie die Liste für dieses Projekt mit `suggest-models` aus oder mit ders
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 Die Spalten sind Rang, Modell-ID, Index, gemessener ChrF, gemessener Arena Score sowie Eingabe- und Ausgabepreis in USD pro 1 Mio. Token. Ein fehlender Messwert ist `—`. Der Index ist der gewichtete Score mal 100. In der Qualitätsrangliste bedeutet ein höherer Index eine bessere Übereinstimmung für dieses Projekt.
@@ -22,7 +23,8 @@ Die Spalten sind Rang, Modell-ID, Index, gemessener ChrF, gemessener Arena Score
 Schreiben Sie diese Shortlist in die Konfiguration, wenn die Tabelle korrekt aussieht:
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` ersetzt `providers.<active>.translationModels`. Zuerst wird die aktuelle Konfiguration in eine nebengeordnete `ai-i18n-tools.config.{timestamp}.backup.json`-Datei kopiert. `uiModels` und `localeModels` bleiben unverändert. `--top` (Standard: 8) gibt an, wie viele IDs die Tabelle und `--apply` enthalten. Die erste ID ist diejenige, die bei der Übersetzung zuerst versucht wird.
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 Öffnen Sie **Modelle**. Wählen Sie **Qualität** oder **Preis**. Aktivieren Sie die gewünschten Zeilen. Die aktivierten Zeilen bestimmen von oben nach unten die Reihenfolge, die bei der Übersetzung versucht wird. **Konfiguration aktualisieren** fordert eine Bestätigung an, schreibt dieselbe Art von Backup und speichert diese Reihenfolge in `translationModels`. **JSON kopieren** legt das `{ "translationModels": [...] }`-Fragment in die Zwischenablage, wenn Sie es lieber selbst einfügen möchten.
 
-**Max. Ausgabepreis** und **Min. Index-Delta** entsprechen `suggest-models --max-output-price` und `--min-delta`. Steuerelemente und Spalten: [Tab „Modelle“](/de/guide/translation-dashboard/models).
+**Maximaler Ausgabepreis** und **Minimales Index-Delta** entsprechen `suggest-models --max-price` und `--min-delta`. Steuerelemente und Spalten: [Registerkarte „Modelle“](/de/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### Wie die Rangfolge bestimmt wird

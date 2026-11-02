@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # .NET アプリに i18n を追加する
 
 このページでは、単一言語の.NETアプリ（Avalonia、WPF、MAUI、WinForms、Blazor、ASP.NET、またはコンソールツール）にai-i18n-toolsでロケールを追加します。これは1つのパスに従います。`ui-dotnet`テンプレート、小さな`I18n.cs`ヘルパー、および翻訳のJSONファイルです。`extract`は、`T()`、`Tn`、`Tp`、`N`、またはXAML `{loc:Tr '…'}`内の文字列リテラルである場合にのみUI文字列を記録するため、プレーンなソーステキストのカタログは空になります。
@@ -584,7 +584,7 @@ ai-i18n-tools extract
 
 `--wrap`は、マークされていないXAMLの`Text`、`Header`、`Content`、およびその他のラベル属性を`{loc:Tr '…'}`としてマークし、さらに、名前が`Text`、`Title`、または`Message`で終わるC#の代入と`MessageBox.Show`もマークします。`--write`がない場合、それは監査です。ログ、属性、`nameof`、比較、または`Path`呼び出しは編集しません。
 
-編集のないレポートは、ラップされた呼び出しが安全であることを意味します。それは、すべてのユーザー向け文がラップされたことを意味するわけではありません。ベアラベル、返された文字列、および要素コンテンツは、それには見えません。詳細: [安全でない呼び出しを書き換える](/ja/guide/ui-strings/dotnet#migrate)。
+編集なしのレポートは、ラップされた呼び出しが安全であることを意味します。それは、すべてのユーザー向け文言がラップされたことを意味するものではありません。生のラベル、返された文字列、および要素のコンテンツは、それからは見えません。詳細: [安全でない呼び出しを書き換える](/ja/guide/ui-strings/dotnet#rewrite-unsafe-calls)。
 
 <a id="step-4-add-a-language-switch"></a>
 ## ステップ4: 言語切り替えを追加する

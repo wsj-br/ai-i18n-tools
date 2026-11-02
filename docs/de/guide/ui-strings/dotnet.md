@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # .NET-Anwendungen
 
 `ai-i18n-tools` extrahiert UI-Strings aus C#, Razor, cshtml, XAML und AXAML und schreibt dann flaches JSON, dessen Schlüssel der Quellsprachen-String ist. `sourceLocale` kann jede beliebige Sprache sein. Der Laufzeit-Helfer ist `I18n.cs` (.NET 6 oder neuer, keine NuGet-Pakete). Avalonia-, WPF-, MAUI-, WinForms-, ASP.NET-, Blazor- und Konsolen-Apps rufen diesen Helfer auf. .NET Framework 4.8 benötigt das `System.Text.Json`-Paket, bevor die Datei kompiliert wird.
@@ -123,7 +123,7 @@ WPF und MAUI verwenden dieselbe Idee mit ihren eigenen Eigenschaftstypen. Nur Av
 
 Formatierte Sätze bleiben in C# (`T("Cursor {0}", value)`), was den Extraktor auf einem einzelnen Literal hält. `StringFormat` an einer Bindung ist unsichtbar. Derselbe Aufruf funktioniert von einem View-Model, einem Tray-Tooltip und einem Dialog aus. Eine Enum-Combo behält die Enum, gibt `T("Light")` aus ihrer Beschriftung zurück und baut die Elemente bei `LocaleChanged` neu auf. Ein Tray-Element verwendet `Tp("tray", "Open")` und ein stabiles `CommandParameter`. Passen Sie den Parameter an, nicht den Header. Ein Dienst speichert den englischen Fehlersatz, und die Anzeigestelle ordnet bekannte Sätze über `T` zu. Linux `.desktop` `Name=` und `Comment=` bleiben in der Quellsprache. Dauer-Tokens, die verglichen werden (`2d`, `7h 47m`), bleiben unübersetzt. Übersetzen Sie `T("now")` und `T("in {0}", duration)` an der Anzeigestelle. Ein führendes oder nachgestelltes Leerzeichen bei einem Literal ist immer noch eine Extraktionswarnung. Verschieben Sie es in den Formatstring oder das Layout. `Tn` kann einen Quellsatz korrigieren, der immer im Plural war (`1 samples`).
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## Unsichere Aufrufe umschreiben
 
 `migrate-dotnet-i18n` ist ein Probelauf, bis Sie `--write` übergeben. Es schreibt Argumente von `T`, `Tn` und `Tp` um, die vor der Suche erstellt werden:

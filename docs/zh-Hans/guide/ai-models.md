@@ -15,6 +15,7 @@
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 列包括排名、模型 ID、指数、测量的 ChrF、测量的 Arena 分数，以及每 100 万个令牌的输入和输出价格（以美元计）。缺失的测量值显示为 `—`。指数是加权分数乘以 100。在质量排名中，指数越高，表示与该项目的匹配度越高。
@@ -22,7 +23,8 @@ ai-i18n-tools suggest-models
 当表格看起来正确时，将该候选列表写入配置中：
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` 会替换 `providers.<active>.translationModels`。它会先将当前配置复制到同级的 `ai-i18n-tools.config.{timestamp}.backup.json` 文件中。`uiModels` 和 `localeModels` 保持不变。`--top`（默认为 8）是表格和 `--apply` 包含的 ID 数量。第一个 ID 是翻译功能首先尝试的 ID。
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 打开 **模型**。选择 **质量** 或 **价格**。选中您想要的行。选中行的顺序（从上到下）就是翻译功能将尝试的顺序。**更新配置** 会请求确认，写入同类备份，并将该顺序保存到 `translationModels`。当您希望自己粘贴时，**复制 JSON** 会将 `{ "translationModels": [...] }` 片段放到剪贴板上。
 
-**最高输出价格** 和 **最小指数增量** 与 `suggest-models --max-output-price` 和 `--min-delta` 相匹配。控件和列：[“模型”标签页](/zh-Hans/guide/translation-dashboard/models)。
+**最大输出价格**和**最小索引增量**匹配`suggest-models --max-price`和`--min-delta`。控件和列：[模型选项卡](/zh-Hans/guide/translation-dashboard/models)。
 
 <a id="how-the-ranking-chooses"></a>
 ### 排名选择方式

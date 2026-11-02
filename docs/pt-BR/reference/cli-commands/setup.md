@@ -56,7 +56,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 `migrate-python-i18n` reescreve chamadas pré-avaliadas inseguras (`_(f"...")`, `_("..." % expr)`, `_("...".format(...))`) em chamadas de pesquisa-antes-da-formatação. O padrão é uma execução de teste. Passe `--write` para editar arquivos e leia `migrate-python-i18n-report.md` para notas de revisão. Uma expressão complexa é nomeada a partir da expressão quando esta é estável (`start.isoformat()` torna-se `{start}`, `len(rows)` torna-se `{rows_count}`). Um `{value_1}` remanescente é relatado para que possa ser renomeado. Arquivos `i18n.py` gerados são ignorados. Um relatório limpo não significa que f-strings não encapsuladas foram cobertas.
 
-`migrate-dotnet-i18n` faz o mesmo para `T($"...")`, concatenação e `string.Format` dentro de `T()`. `--wrap` também marca rótulos XAML não marcados e sinks C# de alta confiança; sem `--write`, isso é uma auditoria. O relatório é `migrate-dotnet-i18n-report.md`. `I18n.cs` e `I18nResx.cs` gerados são ignorados. Guia: [aplicativos .NET](/pt-BR/guide/ui-strings/dotnet#migrate).
+`migrate-dotnet-i18n` faz o mesmo para `T($"...")`, concatenação e `string.Format` dentro de `T()`. `--wrap` também marca rótulos XAML não marcados e sinks C# de alta confiança; sem `--write`, isso é uma auditoria. O relatório é `migrate-dotnet-i18n-report.md`. `I18n.cs` e `I18nResx.cs` gerados são ignorados. Guia: [aplicativos .NET](/pt-BR/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 ---
 

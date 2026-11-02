@@ -222,11 +222,7 @@ function batchSegmentLabel(index: number, keys: readonly string[] | undefined): 
 }
 
 /** Per-item lines for `--debug-failed`, in the same shape translate-docs writes for a batch. */
-function uiCheckPerSegmentLines(
-  error: unknown,
-  count: number,
-  keys?: readonly string[]
-): string[] {
+function uiCheckPerSegmentLines(error: unknown, count: number, keys?: readonly string[]): string[] {
   if (error instanceof UiBatchPlaceholderError) {
     const byIndex = new Map<number, string[]>();
     for (const issue of error.issues) {

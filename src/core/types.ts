@@ -405,10 +405,18 @@ export interface ContentExtractor {
   reassemble(segments: Segment[], translations: Map<string, SegmentTranslationMapValue>): string;
 }
 
+/** Where a glossary row was introduced. User CSV rows that only add a new key stay hints. */
+export type GlossaryTermOrigin = "ui" | "prefix" | "user";
+
 export interface GlossaryTerm {
   english: string;
   translations: Record<string, string>;
   partOfSpeech: string;
+  /**
+   * `ui` — catalog or UI CSV. `prefix` — seeded from a shared catalog prefix.
+   * `user` — key first added by the user CSV. Omitted on legacy objects; treated as not lockable.
+   */
+  origin?: GlossaryTermOrigin;
   /** From user glossary CSV `force` column (per locale after * / exact merge). */
   forcedByLocale?: Record<string, boolean>;
   /** Source-language usage notes from user glossary CSV `Context` (per locale after * / exact merge). */

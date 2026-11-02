@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # 執行階段輔助工具
 
-這些輔助程式從 `'ai-i18n-tools/runtime'` 匯出，並可在任何 JavaScript 環境 (瀏覽器、Node.js、Deno、Edge) 中運作。它們**不會**從 `i18next` 或 `react-i18next` 匯入。Python 應用程式使用產生的 `i18n.py` 模組。其函數列於 [程式化 API — Python 執行階段](/zh-Hant/reference/programmatic-api#python-runtime)。.NET 應用程式使用產生的 `I18n.cs` 或 `I18nResx.cs` 檔案。這些成員列於 [程式化 API — .NET 執行階段](/zh-Hant/reference/programmatic-api#dotnet-runtime-i18ncs)。
+這些輔助程式從 `'ai-i18n-tools/runtime'` 匯出，並可在任何 JavaScript 環境（瀏覽器、Node.js、Deno、Edge）中運作。它們**不會**從 `i18next` 或 `react-i18next` 匯入。Python 應用程式使用產生的 `i18n.py` 模組。其函數列於 [程式化 API — Python 執行階段](/zh-Hant/reference/programmatic-api#python-runtime)。.NET 應用程式使用產生的 `I18n.cs` 或 `I18nResx.cs` 檔案。這些成員列於 [程式化 API — .NET 執行階段](/zh-Hant/reference/programmatic-api#net-runtime-i18ncs)。
 
 在應用程式啟動（`src/i18n.js`）、語言切換器，以及任何需要方向或字串工具的非 React 程式碼中使用它們。如需端對端接線，請從 [Wire i18next](/zh-Hant/guide/ui-strings/i18next-runtime) 開始；如需語言選單和 RTL，請參閱 [Language switcher & RTL](/zh-Hant/guide/ui-strings/language-switcher)。
 

@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # Laufzeit-Helfer
 
-Diese Hilfsfunktionen werden aus `'ai-i18n-tools/runtime'` exportiert und funktionieren in jeder JavaScript-Umgebung (Browser, Node.js, Deno, Edge). Sie importieren **nicht** aus `i18next` oder `react-i18next`. Python-Anwendungen verwenden das generierte `i18n.py`-Modul. Dessen Funktionen sind aufgeführt in [Programmatische API – Python-Laufzeit](/de/reference/programmatic-api#python-runtime). .NET-Anwendungen verwenden die generierte `I18n.cs`- oder `I18nResx.cs`-Datei. Diese Member sind aufgeführt in [Programmatische API – .NET-Laufzeit](/de/reference/programmatic-api#dotnet-runtime-i18ncs).
+Diese Hilfsfunktionen werden aus `'ai-i18n-tools/runtime'` exportiert und funktionieren in jeder JavaScript-Umgebung (Browser, Node.js, Deno, Edge). Sie importieren **nicht** aus `i18next` oder `react-i18next`. Python-Anwendungen verwenden das generierte `i18n.py`-Modul. Seine Funktionen sind aufgeführt in [Programmatische API – Python-Laufzeit](/de/reference/programmatic-api#python-runtime). .NET-Anwendungen verwenden die generierte `I18n.cs`- oder `I18nResx.cs`-Datei. Diese Member sind aufgeführt in [Programmatische API – .NET-Laufzeit](/de/reference/programmatic-api#net-runtime-i18ncs).
 
 Verwenden Sie sie in Ihrem App-Bootstrap (`src/i18n.js`), Sprachumschalter und jedem Nicht-React-Code, der Richtungs- oder String-Dienstprogramme benötigt. Für die End-to-End-Verkabelung beginnen Sie mit [i18next verdrahten](/de/guide/ui-strings/i18next-runtime); für Sprachmenüs und RTL siehe [Sprachumschalter & RTL](/de/guide/ui-strings/language-switcher).
 

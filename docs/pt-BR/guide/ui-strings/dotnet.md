@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # Aplicativos .NET
 
 `ai-i18n-tools` extrai strings de UI de C#, Razor, cshtml, XAML e AXAML, e então escreve JSON plano com chaves baseadas na string do idioma de origem. `sourceLocale` pode ser qualquer idioma. O helper de runtime é `I18n.cs` (.NET 6 ou mais recente, sem pacotes NuGet). Avalonia, WPF, MAUI, WinForms, ASP.NET, Blazor e aplicativos de console chamam esse helper. O .NET Framework 4.8 precisa do pacote `System.Text.Json` antes que o arquivo compile.
@@ -123,7 +123,7 @@ WPF e MAUI usam a mesma ideia com seus próprios tipos de propriedade. Somente A
 
 Frases formatadas permanecem em C# (`T("Cursor {0}", value)`), o que mantém o extrator em um único literal. `StringFormat` em uma ligação é invisível. A mesma chamada funciona a partir de um view model, uma dica de ferramenta da bandeja e um diálogo. Um combo de enumeração mantém a enumeração, retorna `T("Light")` de sua legenda e reconstrói os itens em `LocaleChanged`. Um item da bandeja usa `Tp("tray", "Open")` e um `CommandParameter` estável. Corresponda ao parâmetro, não ao cabeçalho. Um serviço armazena a frase de erro em inglês, e o local de exibição mapeia frases conhecidas através de `T`. Linux `.desktop` `Name=` e `Comment=` permanecem no idioma de origem. Tokens de duração que são comparados (`2d`, `7h 47m`) permanecem não traduzidos. Traduza `T("now")` e `T("in {0}", duration)` no local de exibição. Um espaço inicial ou final em um literal ainda é um aviso de extração. Mova-o para a string de formato ou para o layout. `Tn` pode corrigir uma frase de origem que sempre foi plural (`1 samples`).
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## Reescrever chamadas não seguras
 
 `migrate-dotnet-i18n` é uma execução de teste até que você passe `--write`. Ele reescreve argumentos de `T`, `Tn` e `Tp` que são construídos antes da pesquisa:

@@ -179,7 +179,7 @@ export function buildDocumentCoreRules(kinds: Set<DocumentPlaceholderKind>): str
     );
   }
   parts.push(
-    "If a <glossary> block appears below, you must preserve each suggested target wording when the source matches or contains that term (use that wording exactly; do not paraphrase or substitute synonyms). If a <translation-context> block appears, use it to choose accurate product meaning and register; it does not override glossary mappings or forced terms. Maintain coherence for all other phrasing."
+    "If a <glossary> block appears below, use each suggested target wording when the source cites that term as a UI label in bold, a heading, inline code, or a line that is only that label. Change only capitalization so the label fits the sentence. Title case inside a sentence is ordinary prose: translate it grammatically, and you may inflect and reorder (for example a Hindi oblique form). Do not copy the dictionary form into a sentence when grammar requires a different form. Do not add **bold** or *italic* the source does not have. If a <translation-context> block appears, use it to choose accurate product meaning and register; it does not override glossary mappings or forced terms. Maintain coherence for all other phrasing."
   );
   return parts.join(" ");
 }
@@ -203,7 +203,7 @@ export function buildMarkdownPreservation(kinds: Set<DocumentPlaceholderKind>): 
   const tokenClause =
     tokenBits.length > 0 ? ` ${tokenBits.join("; ")} \u2014 copy those tokens exactly.` : "";
   const rest =
-    " Keep **bold** and *italic* intact with balanced delimiters. Every **bold** span in the source must have a corresponding **bold** span in the translation \u2014 even when the bolded word translates to a short conjunction, particle, suffix, or single word in the target language; never remove bold to simplify the sentence. In [visible text](url), ![alt](path), and HTML like <img \u2026> / <a \u2026>, translate only the visible link text or alt; keep URLs, paths, angle-bracket links, and attribute names unchanged. Preserve GFM pipe tables (| cells |).";
+    " Keep **bold** and *italic* intact with balanced delimiters. Every **bold** span in the source must have a corresponding **bold** span in the translation \u2014 even when the bolded word translates to a short conjunction, particle, suffix, or single word in the target language; never remove bold to simplify the sentence. Do not add **bold** or *italic* the source does not have. In [visible text](url), ![alt](path), and HTML like <img \u2026> / <a \u2026>, translate only the visible link text or alt; keep URLs, paths, angle-bracket links, and attribute names unchanged. Preserve GFM pipe tables (| cells |).";
   return `${head}${tokenClause}${rest}`;
 }
 

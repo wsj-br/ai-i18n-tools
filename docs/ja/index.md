@@ -75,8 +75,8 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-<a id="dotnet-app"></a>
-### .NETアプリ
+<a id="net-app"></a>
+### .NET アプリ
 
 C#およびXAMLのテキストをラップし、埋め込みJSONから翻訳をロードするか、`ResourceManager`を保持して`.resx`サテライトを作成します。ドライランコマンドは、補間を`T()`呼び出しに変換し、変換するための`Resources.LoginButton`のような名前付きリソースキーをリストします。
 

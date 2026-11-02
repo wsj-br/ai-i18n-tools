@@ -1,4 +1,4 @@
-<a id="dotnet-applications"></a>
+<a id="net-applications"></a>
 # Aplicaciones .NET
 
 `ai-i18n-tools` extrae cadenas de la interfaz de usuario de C#, Razor, cshtml, XAML y AXAML, luego escribe JSON plano con claves basadas en la cadena del idioma de origen. `sourceLocale` puede ser cualquier idioma. El asistente en tiempo de ejecución es `I18n.cs` (.NET 6 o posterior, sin paquetes NuGet). Las aplicaciones Avalonia, WPF, MAUI, WinForms, ASP.NET, Blazor y de consola llaman a ese asistente. .NET Framework 4.8 necesita el paquete `System.Text.Json` antes de que el archivo compile.
@@ -123,7 +123,7 @@ WPF y MAUI utilizan la misma idea con sus propios tipos de propiedad. Solo Avalo
 
 Las oraciones formateadas permanecen en C# (`T("Cursor {0}", value)`), lo que mantiene el extractor en un solo literal. `StringFormat` en un enlace es invisible. La misma llamada funciona desde un modelo de vista, una información sobre herramientas de la bandeja y un cuadro de diálogo. Un combo de enumeración mantiene la enumeración, devuelve `T("Light")` de su título y reconstruye los elementos en `LocaleChanged`. Un elemento de la bandeja utiliza `Tp("tray", "Open")` y un `CommandParameter` estable. Coincide con el parámetro, no con el encabezado. Un servicio almacena la oración de error en inglés, y el sitio de visualización mapea las oraciones conocidas a través de `T`. Linux `.desktop` `Name=` y `Comment=` permanecen en el idioma de origen. Los tokens de duración que se comparan (`2d`, `7h 47m`) permanecen sin traducir. Traduce `T("now")` y `T("in {0}", duration)` en el sitio de visualización. Un espacio inicial o final en un literal sigue siendo una advertencia de extracción. Muévelo a la cadena de formato o al diseño. `Tn` puede corregir una oración de origen que siempre fue plural (`1 samples`).
 
-<a id="migrate"></a>
+<a id="rewrite-unsafe-calls"></a>
 ## Reescribir llamadas inseguras
 
 `migrate-dotnet-i18n` es una ejecución de prueba hasta que pase `--write`. Reescribe los argumentos de `T`, `Tn` y `Tp` que se construyen antes de la búsqueda:

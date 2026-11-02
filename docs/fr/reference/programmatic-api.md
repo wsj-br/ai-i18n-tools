@@ -81,8 +81,8 @@ Formes d'appel, f-strings non sécurisées et configuration des paramètres rég
 | `pgettext(context, message, **values)` | Recherche de contexte (`msgctxt`, ou `context` + U+0004 + la chaîne de caractères en langue source au format JSON plat), puis interpoler. |
 | `streamlit_language_selector(sidebar=True, key="lang_selector")` | Zone de sélection Streamlit. Écrit `st.session_state.locale` et `st.query_params["lang"]`, appelle `set_locale` et renvoie le code choisi. |
 
-<a id="dotnet-runtime-i18ncs"></a>
-## runtime .NET (`I18n.cs`)
+<a id="net-runtime-i18ncs"></a>
+## Runtime .NET (`I18n.cs`)
 
 `init -t ui-dotnet` copie `assets/dotnet/I18n.cs` dans le projet lorsque `I18n.cs` est manquant. Il s'agit d'un utilitaire autonome pour .NET 6 ou version ultérieure. Les membres ci-dessous sont distincts des exportations Node dans le tableau ci-dessus. Formes d'appel et balisage XAML : [applications .NET](/fr/guide/ui-strings/dotnet).
 

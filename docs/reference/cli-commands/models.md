@@ -28,7 +28,7 @@ List every model the active provider advertises via its `GET /models` list (sort
 <a id="suggest-models"></a>
 ### `suggest-models`
 
-**Synopsis:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-output-price <usd>] [--min-delta <points>] [--refresh]`
+**Synopsis:** `ai-i18n-tools suggest-models [--quality | --price] [--top <n>] [--json] [--apply] [--list] [--max-price <usd>] [--min-delta <points>] [--refresh]`
 
 Rank the active provider's chat models and print the top ones (default 8). The table columns, in order, are rank, model id, index (the weighted score times 100, one decimal), measured languagebench ChrF, measured Arena Score, and input and output price in USD per 1M tokens. A missing measurement is `—`. The command needs that provider's API key (none for keyless providers such as Ollama). The active provider follows config `provider`; override it with `-P` / `--provider`.
 
@@ -46,7 +46,7 @@ Rows that clear the floor come first, then higher index, then a cheaper blended 
 
 `--list` prints the same columns for the active provider's configured `translationModels`, in that order, and ignores `--top`. The rank column is still each model's place in the full ranking. A configured id that is missing from the catalog, expired, or not a chat model is still listed, with `—` for measurements. `--list` cannot be combined with `--apply`.
 
-`--max-output-price` keeps models whose output price per 1M tokens is less than or equal to that many USD. A model with no output price is left out. `--min-delta` then walks the remaining rows and keeps a model only when its index is at least that many points below the previous kept model. The first remaining model is always kept. A delta of `0` does not drop rows. Rows with no index are left out when the delta is greater than `0`. Rank numbers stay the ones from the full list. With `--list`, the walk follows `translationModels` order. Both filters also apply to `--json` and `--apply`. The [Models tab](/guide/translation-dashboard/models) has the same two controls.
+`--max-price` keeps models whose output price per 1M tokens is less than or equal to that many USD. A model with no output price is left out. `--min-delta` then walks the remaining rows and keeps a model only when its index is at least that many points below the previous kept model. The first remaining model is always kept. A delta of `0` does not drop rows. Rows with no index are left out when the delta is greater than `0`. Rank numbers stay the ones from the full list. With `--list`, the walk follows `translationModels` order. Both filters also apply to `--json` and `--apply`. The [Models tab](/guide/translation-dashboard/models) has the same two controls.
 
 `--json` writes this object to stdout (paste it inside the provider block) and sends the table and the attribution footer to stderr:
 
@@ -62,7 +62,7 @@ Benchmark data is cached at `<cacheDir>/benchmark-scores.json` (usually `.transl
 
 The footer attributes languagebench (CC BY-SA 4.0), the LMArena Arena Score (CC BY 4.0), and models.dev (MIT).
 
-**Key options:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-output-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
+**Key options:** `--quality`, `--price`, `--top`, `--json`, `--apply`, `--list`, `--max-price`, `--min-delta`, `--refresh`, `-P` / `--provider`
 
 **See also:** [AI Models](/guide/ai-models), [Models tab](/guide/translation-dashboard/models)
 

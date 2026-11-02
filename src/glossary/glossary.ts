@@ -1,5 +1,6 @@
 import fs from "fs";
 import type { GlossaryTerm, GlossaryTermHint } from "../core/types.js";
+import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { parseGlossaryCsv } from "./parse-glossary-csv.js";
 import { sanitizePromptSupplementaryText } from "./translation-context.js";
 
@@ -88,6 +89,304 @@ export function isUiLabelAbbreviation(english: string, translation: string): boo
   return enLen >= 4 && trLen <= 4 && trLen < enLen;
 }
 
+const MIN_SHARED_PREFIX_TOKENS = 2;
+const MIN_SHARED_TRANSLATION_CHARS = 4;
+const MIN_LOCKED_LABEL_TOKENS = 2;
+const MAX_LOCKED_LABEL_TOKENS = 5;
+/** Closed words that may stay lowercase inside a title-case UI label. */
+const LABEL_FUNCTION_WORDS = new Set([
+  "a",
+  "an",
+  "the",
+  "of",
+  "to",
+  "in",
+  "on",
+  "for",
+  "and",
+  "or",
+  "at",
+]);
+
+/** Whitespace, punctuation, or a backtick. Backtick is a symbol, not `\p{P}`, but it wraps inline code. */
+function isGlossaryBoundaryChar(ch: string): boolean {
+  return /[\s\p{P}`]/u.test(ch);
+}
+
+function isGlossaryWordBoundary(textLower: string, index: number, termLength: number): boolean {
+  const beforeChar = index > 0 ? textLower[index - 1]! : " ";
+  const afterChar = textLower[index + termLength] || " ";
+  return isGlossaryBoundaryChar(beforeChar) && isGlossaryBoundaryChar(afterChar);
+}
+
+function sourceTokenCount(english: string): number {
+  return english
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0).length;
+}
+
+function tokenPrefixes(english: string): string[] {
+  const tokens = english
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0);
+  const prefixes: string[] = [];
+  for (let count = MIN_SHARED_PREFIX_TOKENS; count < tokens.length; count++) {
+    prefixes.push(tokens.slice(0, count).join(" "));
+  }
+  return prefixes;
+}
+
+function isWordBoundaryPrefix(parent: string, prefix: string): boolean {
+  if (parent.length <= prefix.length) {
+    return false;
+  }
+  if (!parent.toLowerCase().startsWith(prefix.toLowerCase())) {
+    return false;
+  }
+  return /[\s\p{P}]/u.test(parent.charAt(prefix.length));
+}
+
+function lastWordBoundaryIndex(value: string): number {
+  for (let i = value.length - 1; i >= 0; i--) {
+    if (/[\s\p{P}]/u.test(value.charAt(i))) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/** Longest common prefix of `texts`, cut back to a word boundary when the cut lands mid-token. */
+function sharedTranslationPrefix(texts: readonly string[]): string {
+  if (texts.length < 2) {
+    return "";
+  }
+  let prefix = texts[0] ?? "";
+  for (let i = 1; i < texts.length; i++) {
+    const text = texts[i] ?? "";
+    const max = Math.min(prefix.length, text.length);
+    let n = 0;
+    while (n < max && prefix.charCodeAt(n) === text.charCodeAt(n)) {
+      n++;
+    }
+    prefix = prefix.slice(0, n);
+    if (!prefix) {
+      return "";
+    }
+  }
+  const endsOnBoundary = texts.every((text) => {
+    if (text.length < prefix.length) {
+      return false;
+    }
+    if (text.length === prefix.length) {
+      return true;
+    }
+    return /[\s\p{P}]/u.test(text.charAt(prefix.length));
+  });
+  if (!endsOnBoundary) {
+    const boundary = lastWordBoundaryIndex(prefix);
+    if (boundary <= 0) {
+      return "";
+    }
+    prefix = prefix.slice(0, boundary);
+  }
+  return prefix.replace(/[\s\p{P}]+$/u, "").trim();
+}
+
+function bareToken(token: string): string {
+  return token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+}
+
+function isCapitalizedToken(token: string): boolean {
+  const bare = bareToken(token);
+  if (!bare) {
+    return false;
+  }
+  const first = bare.charAt(0);
+  return first.toUpperCase() !== first.toLowerCase() && first === first.toUpperCase();
+}
+
+/**
+ * Title-case label such as "Cursor Models", not a sentence stem ("Could not", "Sign in to").
+ * At least two words are capitalized content words. Function words may be lowercase.
+ */
+function isLabelShapedEnglishPrefix(english: string): boolean {
+  if (english.includes("{")) {
+    return false;
+  }
+  const tokens = english
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0);
+  if (tokens.length < MIN_SHARED_PREFIX_TOKENS) {
+    return false;
+  }
+  const first = tokens[0];
+  if (!first || !isCapitalizedToken(first)) {
+    return false;
+  }
+  let contentWords = 0;
+  for (const token of tokens) {
+    const bare = bareToken(token);
+    if (!bare) {
+      return false;
+    }
+    if (LABEL_FUNCTION_WORDS.has(bare.toLowerCase())) {
+      continue;
+    }
+    if (!isCapitalizedToken(token)) {
+      return false;
+    }
+    contentWords++;
+  }
+  return contentWords >= 2;
+}
+
+/** Shared translation is a short label, not a clause or a placeholder cut mid-token. */
+function isSafeSharedTranslation(englishPrefix: string, shared: string): boolean {
+  if (shared.includes("{") || shared.length < MIN_SHARED_TRANSLATION_CHARS) {
+    return false;
+  }
+  return sourceTokenCount(shared) <= sourceTokenCount(englishPrefix) + 1;
+}
+
+function includesFold(haystack: string, needle: string): boolean {
+  return haystack.toLowerCase().includes(needle.trim().toLowerCase());
+}
+
+/** Content words, ignoring closed function words such as "in" and "to". */
+function contentWordCount(english: string): number {
+  let count = 0;
+  for (const token of english.trim().split(/\s+/)) {
+    const bare = bareToken(token);
+    if (!bare || LABEL_FUNCTION_WORDS.has(bare.toLowerCase())) {
+      continue;
+    }
+    count++;
+  }
+  return count;
+}
+
+type LabelSpan = { start: number; end: number };
+
+/** Bold and inline-code interiors. Markers themselves are outside the span. */
+function scanMarkdownLabelSpans(source: string): { bold: LabelSpan[]; code: LabelSpan[] } {
+  const bold: LabelSpan[] = [];
+  const code: LabelSpan[] = [];
+  let i = 0;
+  let boldStart: number | null = null;
+  while (i < source.length) {
+    if (source[i] === "`") {
+      let j = i;
+      while (j < source.length && source[j] === "`") {
+        j++;
+      }
+      const fence = "`".repeat(j - i);
+      const close = source.indexOf(fence, j);
+      if (close === -1) {
+        i = j;
+        continue;
+      }
+      code.push({ start: j, end: close });
+      i = close + fence.length;
+      continue;
+    }
+    if (source.startsWith("**", i)) {
+      if (boldStart === null) {
+        boldStart = i + 2;
+      } else {
+        bold.push({ start: boldStart, end: i });
+        boldStart = null;
+      }
+      i += 2;
+      continue;
+    }
+    i++;
+  }
+  return { bold, code };
+}
+
+function spanCovers(spans: readonly LabelSpan[], index: number, length: number): boolean {
+  const end = index + length;
+  return spans.some((span) => span.start <= index && end <= span.end);
+}
+
+/** The match is the whole segment or the whole line, so it is a label rather than a sentence. */
+function isStandaloneLabel(source: string, index: number, length: number): boolean {
+  const end = index + length;
+  const sourceStart = source.length - source.trimStart().length;
+  if (index === sourceStart && end === source.trimEnd().length) {
+    return true;
+  }
+  const lineStart = source.lastIndexOf("\n", index - 1) + 1;
+  const newline = source.indexOf("\n", index);
+  const lineEnd = newline === -1 ? source.length : newline;
+  const line = source.slice(lineStart, lineEnd);
+  const lineStartTrim = lineStart + (line.length - line.trimStart().length);
+  const lineEndTrim = lineStart + line.trimEnd().length;
+  return index === lineStartTrim && end === lineEndTrim;
+}
+
+function isAtxHeadingSpan(source: string, index: number, length: number): boolean {
+  const lineStart = source.lastIndexOf("\n", index - 1) + 1;
+  const newline = source.indexOf("\n", index);
+  const lineEnd = newline === -1 ? source.length : newline;
+  if (index + length > lineEnd) {
+    return false;
+  }
+  const line = source.slice(lineStart, lineEnd);
+  const match = /^(?:\s{0,3})#{1,6}[ \t]+(.*)$/.exec(line);
+  const content = match?.[1];
+  if (!match || content === undefined) {
+    return false;
+  }
+  const contentStart = lineStart + line.length - content.length;
+  return index >= contentStart && index + length <= lineEnd;
+}
+
+/**
+ * The match cites a UI label: a heading, bold, inline code, or a line that is only the label.
+ * Title case inside a sentence is prose. Hindi and similar languages inflect it
+ * (`Cursor account` → `कर्सर खाते`), so that occurrence stays a hint.
+ * `index` is into `source` only when `source.toLowerCase()` has the same length.
+ */
+function isLabelCitation(
+  source: string,
+  index: number,
+  english: string,
+  spans: { bold: LabelSpan[]; code: LabelSpan[] }
+): boolean {
+  const span = source.slice(index, index + english.length);
+  if (span.toLowerCase() !== english.toLowerCase()) {
+    return false;
+  }
+  return (
+    isAtxHeadingSpan(source, index, english.length) ||
+    spanCovers(spans.bold, index, english.length) ||
+    spanCovers(spans.code, index, english.length) ||
+    isStandaloneLabel(source, index, english.length)
+  );
+}
+
+function isLockedUiLabel(term: GlossaryTerm, translation: string): boolean {
+  if (term.origin !== "ui" && term.origin !== "prefix") {
+    return false;
+  }
+  const tokens = sourceTokenCount(term.english);
+  if (tokens < MIN_LOCKED_LABEL_TOKENS || tokens > MAX_LOCKED_LABEL_TOKENS) {
+    return false;
+  }
+  // "Sign in" is a verb plus a function word. It inflects, so it stays a hint.
+  if (contentWordCount(term.english) < 2) {
+    return false;
+  }
+  if (isUiLabelAbbreviation(term.english, translation)) {
+    return false;
+  }
+  return translation.trim().toLowerCase() !== term.english.trim().toLowerCase();
+}
+
 /**
  * Terminology for doc translation: `strings.json` and/or CSV, with user overrides.
  */
@@ -118,6 +417,7 @@ export class Glossary {
     }
 
     this._uiStringsTermCount = this.terms.size;
+    this.seedSharedUiPrefixes();
 
     const sizeBeforeUser = this.terms.size;
     if (glossaryUserPath && fs.existsSync(glossaryUserPath)) {
@@ -173,6 +473,7 @@ export class Glossary {
         english: source,
         translations,
         partOfSpeech: "unknown",
+        origin: "ui",
       });
       count++;
     }
@@ -192,6 +493,7 @@ export class Glossary {
         english,
         translations: {},
         partOfSpeech: "unknown",
+        origin: "ui",
       };
       for (const [col, val] of Object.entries(row)) {
         const c = col.trim();
@@ -264,7 +566,7 @@ export class Glossary {
       const key = english.toLowerCase();
       let term = this.terms.get(key);
       if (!term) {
-        term = { english, translations: {}, partOfSpeech: "unknown" };
+        term = { english, translations: {}, partOfSpeech: "unknown", origin: "user" };
         this.terms.set(key, term);
       }
       const fm = ensureForced(term);
@@ -285,7 +587,7 @@ export class Glossary {
       const key = english.toLowerCase();
       let term = this.terms.get(key);
       if (!term) {
-        term = { english, translations: {}, partOfSpeech: "unknown" };
+        term = { english, translations: {}, partOfSpeech: "unknown", origin: "user" };
         this.terms.set(key, term);
       }
       term.translations[locale] = translation;
@@ -298,6 +600,71 @@ export class Glossary {
 
     if (userOverrideRowCount > 0) {
       console.log(`✓ Loaded ${userOverrideRowCount} user glossary overrides`);
+    }
+  }
+
+  /**
+   * A label-shaped catalog prefix shared by two or more UI keys becomes its own term
+   * when those translations share a short word-boundary prefix. Sentence stems and
+   * placeholder fragments are not seeded. User CSV rows loaded afterwards still win.
+   */
+  private seedSharedUiPrefixes(): void {
+    const catalog = Array.from(this.terms.values()).filter((term) => term.origin === "ui");
+    const existingKeys = new Set(this.terms.keys());
+    const candidates = new Map<string, { english: string; parents: GlossaryTerm[] }>();
+
+    for (const term of catalog) {
+      for (const prefix of tokenPrefixes(term.english)) {
+        if (!isLabelShapedEnglishPrefix(prefix) || !isWordBoundaryPrefix(term.english, prefix)) {
+          continue;
+        }
+        const key = prefix.toLowerCase();
+        if (existingKeys.has(key)) {
+          continue;
+        }
+        let bucket = candidates.get(key);
+        if (!bucket) {
+          bucket = { english: prefix, parents: [] };
+          candidates.set(key, bucket);
+        }
+        bucket.parents.push(term);
+      }
+    }
+
+    for (const [key, bucket] of candidates) {
+      if (existingKeys.has(key) || bucket.parents.length < 2) {
+        continue;
+      }
+      const locales = new Set<string>();
+      for (const parent of bucket.parents) {
+        for (const locale of Object.keys(parent.translations)) {
+          locales.add(locale);
+        }
+      }
+      const translations: Record<string, string> = {};
+      for (const locale of locales) {
+        const texts = bucket.parents
+          .map((parent) => parent.translations[locale]?.trim() ?? "")
+          .filter((text) => text.length > 0);
+        if (texts.length < 2) {
+          continue;
+        }
+        const shared = sharedTranslationPrefix(texts);
+        if (!isSafeSharedTranslation(bucket.english, shared)) {
+          continue;
+        }
+        translations[locale] = shared;
+      }
+      if (Object.keys(translations).length === 0) {
+        continue;
+      }
+      this.terms.set(key, {
+        english: bucket.english,
+        translations,
+        partOfSpeech: "unknown",
+        origin: "prefix",
+      });
+      existingKeys.add(key);
     }
   }
 
@@ -325,11 +692,7 @@ export class Glossary {
 
       let index = 0;
       while ((index = textLower.indexOf(termLower, index)) !== -1) {
-        const beforeChar = index > 0 ? textLower[index - 1] : " ";
-        const afterChar = textLower[index + termLower.length] || " ";
-        const isWordBoundary = /[\s\p{P}]/u.test(beforeChar) && /[\s\p{P}]/u.test(afterChar);
-
-        if (!isWordBoundary) {
+        if (!isGlossaryWordBoundary(textLower, index, termLower.length)) {
           index++;
           continue;
         }
@@ -411,9 +774,141 @@ export class Glossary {
     return out;
   }
 
+  /**
+   * Cited UI labels (catalog or seeded prefix, 2–5 words) whose translation is
+   * absent from `translated`, ignoring capitalization. A citation is bold, inline
+   * code, a heading, or a line that is only that label. Title case inside a sentence
+   * is prose and may inflect. A single-content-word label such as "Sign in" is not locked.
+   * Single-word hints and user-CSV-only rows are not locked.
+   */
+  missingLockedUiLabels(source: string, translated: string, locale: string): string[] {
+    const errors: string[] = [];
+    const textLower = source.toLowerCase();
+    const caseStable = textLower.length === source.length;
+    const spans = caseStable ? scanMarkdownLabelSpans(source) : { bold: [], code: [] };
+    const sortedTerms = Array.from(this.terms.entries()).sort((a, b) => b[0].length - a[0].length);
+    const matchedPositions = new Set<number>();
+
+    for (const [termLower, term] of sortedTerms) {
+      const translation = term.translations[locale];
+      if (!translation) {
+        continue;
+      }
+      if (isUiLabelAbbreviation(term.english, translation)) {
+        continue;
+      }
+      if (!isLockedUiLabel(term, translation)) {
+        continue;
+      }
+      let cited = false;
+      let index = 0;
+      const haystack = caseStable ? textLower : source;
+      const needle = caseStable ? termLower : term.english;
+      while ((index = haystack.indexOf(needle, index)) !== -1) {
+        if (!isGlossaryWordBoundary(haystack, index, needle.length)) {
+          index++;
+          continue;
+        }
+        const positions = Array.from({ length: needle.length }, (_, i) => index + i);
+        if (positions.some((pos) => matchedPositions.has(pos))) {
+          index++;
+          continue;
+        }
+        positions.forEach((pos) => matchedPositions.add(pos));
+        if (
+          caseStable
+            ? isLabelCitation(source, index, term.english, spans)
+            : source.slice(index, index + term.english.length) === term.english
+        ) {
+          cited = true;
+        }
+        index += needle.length;
+      }
+      if (cited && !includesFold(translated, translation)) {
+        errors.push(`Glossary label missing: "${term.english}" should include "${translation}"`);
+      }
+    }
+    return errors;
+  }
+
+  /**
+   * Forced terms that occur in `source` whose current translation is absent from `translated`.
+   * Longest forced term wins, same word boundaries as placeholder protection.
+   */
+  missingForcedTranslations(source: string, translated: string, locale: string): string[] {
+    const errors: string[] = [];
+    for (const entry of this.matchedForcedTerms(source, locale)) {
+      if (!translated.includes(entry.replacement)) {
+        errors.push(
+          `Forced glossary term missing: "${entry.english}" should include "${entry.replacement}"`
+        );
+      }
+    }
+    return errors;
+  }
+
+  /** True when `source` contains at least one forced term for `locale`. */
+  sourceHasForcedTerm(source: string, locale: string): boolean {
+    return this.matchedForcedTerms(source, locale).length > 0;
+  }
+
+  private matchedForcedTerms(
+    source: string,
+    locale: string
+  ): Array<{ english: string; termLower: string; replacement: string }> {
+    const textLower = source.toLowerCase();
+    const matchedPositions = new Set<number>();
+    const matched: Array<{ english: string; termLower: string; replacement: string }> = [];
+    for (const entry of this.getForcedTermEntriesForLocale(locale)) {
+      let found = false;
+      let index = 0;
+      while ((index = textLower.indexOf(entry.termLower, index)) !== -1) {
+        if (!isGlossaryWordBoundary(textLower, index, entry.termLower.length)) {
+          index++;
+          continue;
+        }
+        const positions = Array.from({ length: entry.termLower.length }, (_, i) => index + i);
+        if (positions.some((pos) => matchedPositions.has(pos))) {
+          index++;
+          continue;
+        }
+        positions.forEach((pos) => matchedPositions.add(pos));
+        found = true;
+        index++;
+      }
+      if (found) {
+        matched.push(entry);
+      }
+    }
+    return matched;
+  }
+
   get size(): number {
     return this.terms.size;
   }
+}
+
+/**
+ * Dashboard edits stay. Other cached rows miss when a forced term in the source
+ * is not already present as its current translation, and markdown rows also miss
+ * when a locked UI label was dropped.
+ */
+export function glossaryCacheMissErrors(
+  glossary: Glossary,
+  locale: string,
+  source: string,
+  cachedText: string,
+  model: string | null,
+  checkLockedLabels: boolean
+): string[] {
+  if (model === USER_EDITED_MODEL) {
+    return [];
+  }
+  const errors = glossary.missingForcedTranslations(source, cachedText, locale);
+  if (checkLockedLabels) {
+    errors.push(...glossary.missingLockedUiLabels(source, cachedText, locale));
+  }
+  return errors;
 }
 
 /** Format one matched glossary term for the `<glossary>` prompt block. */

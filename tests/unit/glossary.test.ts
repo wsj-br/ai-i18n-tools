@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { Glossary, isUiLabelAbbreviation } from "../../src/glossary/glossary.js";
+import {
+  Glossary,
+  glossaryCacheMissErrors,
+  isUiLabelAbbreviation,
+} from "../../src/glossary/glossary.js";
+import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 
 describe("Glossary", () => {
   it("loads strings.json and finds terms", () => {
@@ -221,6 +226,316 @@ describe("Glossary", () => {
       const frForced = g.getForcedTermEntriesForLocale("fr");
       expect(frForced.length).toBe(1);
       expect(frForced[0]!.replacement).toBe("S");
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("seeds a shared UI prefix and locks that label in markdown", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-prefix-"));
+    const p = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        a: {
+          source: "Cursor Models run out",
+          translated: {
+            de: "Cursor-Modelle sind aufgebraucht",
+            es: "Se agotan los modelos de Cursor",
+          },
+        },
+        b: {
+          source: "Cursor Models at renewal",
+          translated: {
+            de: "Cursor-Modelle bei Verlängerung",
+            es: "Al renovar, modelos de Cursor",
+          },
+        },
+        c: { source: "Other Models", translated: { de: "Andere Modelle" } },
+        d: { source: "Save", translated: { de: "Speichern" } },
+        e: {
+          source: "This file is not a Cursor Pace backup.",
+          translated: { de: "Diese Datei ist kein Cursor Pace Backup." },
+        },
+        f: { source: "Cursor Pace", translated: { de: "Cursor Pace", es: "Ritmo del Cursor" } },
+      }),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(p, undefined, ["de", "es"]);
+      expect(g.getTranslation("Cursor Models", "de")).toBe("Cursor-Modelle");
+      expect(g.getTranslation("Cursor Models", "es")).toBeUndefined();
+      const prefixHint = g.findTermsInText("The chart shows Cursor Models today", "de");
+      expect(prefixHint.some((hint) => hint.includes("Cursor-Modelle"))).toBe(true);
+      const longer = g.findTermsInText("Cursor Models run out today", "de");
+      expect(longer.some((hint) => hint.includes("Cursor Models run out"))).toBe(true);
+      expect(longer.some((hint) => hint.includes('"Cursor Models"'))).toBe(false);
+
+      expect(
+        g.missingLockedUiLabels("See Other Models here", "Siehe Other Models hier", "de")
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels("See **Other Models** here", "Siehe Other Models hier", "de")
+      ).toEqual(['Glossary label missing: "Other Models" should include "Andere Modelle"']);
+      expect(
+        g.missingLockedUiLabels("See Other Models here", "Siehe Andere Modelle hier", "de")
+      ).toEqual([]);
+      expect(g.missingLockedUiLabels("Click Save now", "Klicken Sie auf Speichern", "de")).toEqual(
+        []
+      );
+      expect(
+        g.missingLockedUiLabels(
+          "This file is not a Cursor Pace backup.",
+          "Diese Datei ist keine Sicherung.",
+          "de"
+        )
+      ).toEqual([]);
+      expect(g.missingLockedUiLabels("Cursor Pace", "Cursor Pace", "de")).toEqual([]);
+      expect(g.missingLockedUiLabels("Cursor Pace", "Cursor Pace", "es")).toEqual([
+        'Glossary label missing: "Cursor Pace" should include "Ritmo del Cursor"',
+      ]);
+      expect(g.missingLockedUiLabels("The Cursor Models series", "Die Serie", "de")).toEqual([]);
+      expect(g.missingLockedUiLabels("The **Cursor Models** series", "Die Serie", "de")).toEqual([
+        'Glossary label missing: "Cursor Models" should include "Cursor-Modelle"',
+      ]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does not seed sentence stems or placeholder fragments", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-stem-"));
+    const p = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        a: {
+          source: "Could not read the file.",
+          translated: { fr: "Impossible de lire le fichier." },
+        },
+        b: {
+          source: "Could not sync with the server.",
+          translated: { fr: "Impossible de synchroniser avec le serveur." },
+        },
+        c: {
+          source: "There is no cycle data to export.",
+          translated: { fr: "Il n'y a pas de données de cycle à exporter." },
+        },
+        d: {
+          source: "There is no usage data to export.",
+          translated: { fr: "Il n'y a pas de données d'utilisation à exporter." },
+        },
+        e: {
+          source: "Other models: {0} left",
+          translated: { "pt-BR": "Outros modelos: {0} restantes" },
+        },
+        f: {
+          source: "Other models: {0} used",
+          translated: { "pt-BR": "Outros modelos: {0} usados" },
+        },
+      }),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(p, undefined, ["fr", "pt-BR"]);
+      expect(g.getTranslation("Could not", "fr")).toBeUndefined();
+      expect(g.getTranslation("There is", "fr")).toBeUndefined();
+      expect(g.getTranslation("There is no", "fr")).toBeUndefined();
+      expect(g.getTranslation("Other models:", "pt-BR")).toBeUndefined();
+      expect(g.findTermsInText("the module could not be found", "fr")).toEqual([]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("locks a cited UI label and ignores capitalization", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-cite-"));
+    const p = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        a: { source: "Sign in", translated: { de: "Anmelden", fr: "Se connecter" } },
+        b: { source: "Expected usage", translated: { "pt-BR": "Uso esperado" } },
+        c: { source: "Cycle start", translated: { fr: "Début du cycle" } },
+        d: {
+          source: "Sign in to Cursor",
+          translated: { fr: "Se connecter à Cursor" },
+        },
+        e: { source: "Cursor account", translated: { hi: "कर्सर खाता" } },
+      }),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(p, undefined, ["de", "fr", "pt-BR"]);
+      expect(
+        g.missingLockedUiLabels(
+          "You can sign in later from Settings.",
+          "Sie können sich später anmelden.",
+          "de"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "You can sign in later.",
+          "Vous pouvez vous connecter plus tard.",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels("Click **Sign in** to continue.", "Klicken Sie auf Login.", "de")
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "self-contained. **Sign in** also needs the runtime.",
+          "autonome. La **connexion** nécessite le runtime.",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "Desktop app. Sign in with your Cursor account.",
+          "Connectez-vous avec votre compte Cursor.",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels("5. Sign in to Cursor.", "5. Connectez-vous à Cursor.", "fr")
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "- Sign in to Cursor and refresh usage",
+          "- Connectez-vous à Cursor et actualisez",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "Then open Sign in to Cursor from the menu.",
+          "Puis ouvrez le menu.",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "Sign in with your Cursor account to pull usage.",
+          "उपयोग खींचने के लिए अपने कर्सर खाते से साइन इन करें।",
+          "hi"
+        )
+      ).toEqual([]);
+      expect(g.missingLockedUiLabels("Open **Cursor account**.", "खाता खोलें।", "hi")).toEqual([
+        'Glossary label missing: "Cursor account" should include "कर्सर खाता"',
+      ]);
+      expect(
+        g.missingLockedUiLabels(
+          "- **Expected usage** on the chart",
+          "- O **uso esperado** no gráfico",
+          "pt-BR"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels(
+          "The start stays at the cycle start.",
+          "Le début reste au début de cycle.",
+          "fr"
+        )
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels("Open Sign in from the menu.", "Ouvrez le menu.", "fr")
+      ).toEqual([]);
+      expect(
+        g.missingLockedUiLabels("See **Expected usage** on the chart.", "Veja o gráfico.", "pt-BR")
+      ).toEqual(['Glossary label missing: "Expected usage" should include "Uso esperado"']);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does not lock a multi-word hint that exists only in the user CSV", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-user-label-"));
+    const user = path.join(dir, "user.csv");
+    fs.writeFileSync(
+      user,
+      `"Original language string","locale","Translation","Force"
+"Other Models","de","Andere Modelle","false"
+`,
+      "utf8"
+    );
+    try {
+      const g = new Glossary(undefined, user, ["de"]);
+      expect(g.missingLockedUiLabels("Other Models", "Other Models", "de")).toEqual([]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("user CSV replaces a seeded prefix translation", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-prefix-user-"));
+    const ui = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      ui,
+      JSON.stringify({
+        a: { source: "Cursor Models run out", translated: { de: "Cursor-Modelle sind leer" } },
+        b: {
+          source: "Cursor Models at renewal",
+          translated: { de: "Cursor-Modelle bei Erneuerung" },
+        },
+      }),
+      "utf8"
+    );
+    const user = path.join(dir, "user.csv");
+    fs.writeFileSync(
+      user,
+      `"Original language string","locale","Translation","Force"
+"Cursor Models","de","Cursor Modelle","false"
+`,
+      "utf8"
+    );
+    try {
+      const g = new Glossary(ui, user, ["de"]);
+      expect(g.getTranslation("Cursor Models", "de")).toBe("Cursor Modelle");
+      expect(g.missingLockedUiLabels("Cursor Models", "Cursor-Modelle", "de")).toEqual([
+        'Glossary label missing: "Cursor Models" should include "Cursor Modelle"',
+      ]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("misses cache only for segments that contain a forced term", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-force-cache-"));
+    const ui = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      ui,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+        b: { source: "Sign in", translated: { de: "Anmelden" } },
+      }),
+      "utf8"
+    );
+    const user = path.join(dir, "user.csv");
+    fs.writeFileSync(
+      user,
+      `"Original language string","locale","Translation","Force"
+"Other Models","de","Andere Modelle","true"
+`,
+      "utf8"
+    );
+    try {
+      const g = new Glossary(ui, user, ["de"]);
+      const stale = "Die **Other Models** Linie";
+      const fresh = "Die **Andere Modelle** Linie";
+      const unrelated = "Bitte anmelden";
+      expect(g.missingForcedTranslations(stale, "Die **Other Models** Linie", "de")).toEqual([
+        'Forced glossary term missing: "Other Models" should include "Andere Modelle"',
+      ]);
+      expect(g.missingForcedTranslations(fresh, fresh, "de")).toEqual([]);
+      expect(g.sourceHasForcedTerm(unrelated, "de")).toBe(false);
+      expect(g.missingForcedTranslations(unrelated, unrelated, "de")).toEqual([]);
+      expect(glossaryCacheMissErrors(g, "de", unrelated, unrelated, null, true)).toEqual([]);
+      expect(glossaryCacheMissErrors(g, "de", stale, stale, null, false)).toEqual([
+        'Forced glossary term missing: "Other Models" should include "Andere Modelle"',
+      ]);
+      expect(glossaryCacheMissErrors(g, "de", stale, stale, USER_EDITED_MODEL, true)).toEqual([]);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

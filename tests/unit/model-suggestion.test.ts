@@ -334,7 +334,7 @@ describe("runSuggestModels flags", () => {
     expect(result.exitCode).toBe(1);
   });
 
-  it("rejects a negative --max-output-price and a negative --min-delta", async () => {
+  it("rejects a negative --max-price and a negative --min-delta", async () => {
     expect(
       (await runSuggestModels(config, process.cwd(), "unused.json", { maxOutputPrice: -1 }))
         .exitCode

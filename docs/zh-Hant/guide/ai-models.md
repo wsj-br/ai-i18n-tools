@@ -15,6 +15,7 @@
 
 ```bash
 ai-i18n-tools suggest-models
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 欄位包括排名、模型 ID、指數、測量的 ChrF、測量的 Arena 分數，以及每百萬個權杖的輸入和輸出價格 (美元)。若測量值缺失，則顯示為 `—`。指數是加權分數乘以 100。在品質排名中，指數越高，表示與此專案的匹配度越強。
@@ -22,7 +23,8 @@ ai-i18n-tools suggest-models
 當表格看起來正確時，將該候選清單寫入設定檔：
 
 ```bash
-ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply 
+ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
 `--apply` 會取代 `providers.<active>.translationModels`。它會先將目前的設定檔複製到同層級的 `ai-i18n-tools.config.{timestamp}.backup.json`。`uiModels` 和 `localeModels` 保持不變。`--top` (預設為 8) 是表格和 `--apply` 包含的 ID 數量。第一個 ID 是翻譯會最先嘗試的 ID。
@@ -40,7 +42,7 @@ ai-i18n-tools dashboard
 
 開啟 **模型**。選擇 **品質** 或 **價格**。勾選您想要的列。已勾選的列，由上至下，即為翻譯將嘗試的順序。**更新設定檔** 會要求確認，寫入同類型的備份，並將該順序儲存至 `translationModels`。當您想自行貼上時，**複製 JSON** 會將 `{ "translationModels": [...] }` 片段放到剪貼簿上。
 
-**最高輸出價格** 和 **最小指數差異** 分別對應 `suggest-models --max-output-price` 和 `--min-delta`。控制項和欄位：[模型標籤頁](/zh-Hant/guide/translation-dashboard/models)。
+**最大輸出價格** 和 **最小指數增量** 匹配 `suggest-models --max-price` 和 `--min-delta`。控制項與欄：[模型分頁](/zh-Hant/guide/translation-dashboard/models)。
 
 <a id="how-the-ranking-chooses"></a>
 ### 排名如何選擇

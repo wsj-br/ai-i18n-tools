@@ -1,4 +1,4 @@
-<a id="add-i18n-to-a-dotnet-app"></a>
+<a id="add-i18n-to-a-net-app"></a>
 # Add i18n to a .NET app
 
 This page takes a .NET app (Avalonia, WPF, MAUI, WinForms, Blazor, ASP.NET, or a console tool) that has a single language and adds locales with ai-i18n-tools. It follows one path: the `ui-dotnet` template, a small `I18n.cs` helper, and JSON files of translations. `extract` records a UI string only when it is a string literal inside `T()`, `Tn`, `Tp`, `N`, or a XAML `{loc:Tr '…'}`, so a catalog of plain source text would be empty.
@@ -584,7 +584,7 @@ Run the dry run again. Stop when it lists no edits, then run the project's tests
 
 `--wrap` also marks unmarked XAML `Text`, `Header`, `Content`, and the other label attributes as `{loc:Tr '…'}`, plus C# assignments whose name ends in `Text`, `Title`, or `Message`, and `MessageBox.Show`. Without `--write` that is an audit. It does not edit logs, attributes, `nameof`, comparisons, or `Path` calls.
 
-A report with no edits means the wrapped calls are safe. It does not mean every user-facing sentence was wrapped. Bare labels, returned strings, and element content are invisible to it. Details: [Rewrite unsafe calls](/guide/ui-strings/dotnet#migrate).
+A report with no edits means the wrapped calls are safe. It does not mean every user-facing sentence was wrapped. Bare labels, returned strings, and element content are invisible to it. Details: [Rewrite unsafe calls](/guide/ui-strings/dotnet#rewrite-unsafe-calls).
 
 <a id="step-4-add-a-language-switch"></a>
 ## Step 4: Add a language switch

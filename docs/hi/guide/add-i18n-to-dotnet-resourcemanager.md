@@ -1,5 +1,5 @@
-<a id="add-i18n-to-a-dotnet-resourcemanager-app"></a>
-# .NET ResourceManager ऐप में i18n जोड़ें
+<a id="add-i18n-to-a-net-resourcemanager-app"></a>
+# एक .NET ResourceManager ऐप में i18n जोड़ें
 
 यह पृष्ठ एक .NET एप्लिकेशन के लिए है जो पहले से ही `ResourceManager` या ASP.NET `IStringLocalizer` के साथ स्ट्रिंग लोड करता है, या ऐसा एप्लिकेशन जो करेगा। आप उस लोडर को बनाए रखते हैं। ai-i18n-tools `T("…")` और `{loc:Tr '…'}` पढ़ता है, संदेशों का अनुवाद करता है, और `.resx` सैटेलाइट लिखता है जिनकी कुंजियाँ वे स्रोत स्ट्रिंग हैं। हेल्पर `I18nResx.cs` है, जिसे `init -t ui-dotnet-resx` द्वारा कॉपी किया गया है।
 

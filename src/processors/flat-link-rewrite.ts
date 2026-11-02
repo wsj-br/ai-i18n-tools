@@ -12,6 +12,14 @@ export function normalizeMarkdownRelPath(relPath: string): string {
 }
 
 /**
+ * Flat link rewriting uses every markdown file in the docs block.
+ * `--file` still limits which files are translated; siblings stay in this set.
+ */
+export function markdownPathsForFlatLinkRewrite(blockMarkdown: readonly string[]): Set<string> {
+  return new Set(blockMarkdown.map((rel) => normalizeMarkdownRelPath(rel)));
+}
+
+/**
  * Context for rewriting relative links in flat markdown outputs using resolved source paths
  * and {@link resolveDocumentationOutputPath} as the layout source of truth.
  */

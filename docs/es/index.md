@@ -81,7 +81,7 @@ Streamlit · FastAPI · Flask · Django · CLI
 <img src="/icons/ui/terminal.svg" alt="" aria-hidden="true" width="26" height="26" />
 </div>
 
-<a id="dotnet-app"></a>
+<a id="net-app"></a>
 ### Aplicación .NET
 
 Envuelve el texto de C# y XAML y carga las traducciones desde JSON incrustado, o mantén `ResourceManager` y escribe satélites `.resx`. Un comando de simulación (dry-run) convierte la interpolación en llamadas a `T()` y enumera las claves de recursos con nombre, como `Resources.LoginButton`, para que las conviertas.

@@ -1,7 +1,7 @@
 <a id="runtime-helpers"></a>
 # रनटाइम हेल्पर
 
-ये हेल्पर `'ai-i18n-tools/runtime'` से निर्यात किए जाते हैं और किसी भी JavaScript परिवेश (ब्राउज़र, Node.js, Deno, Edge) में काम करते हैं। वे `i18next` या `react-i18next` से **आयात नहीं** करते हैं। Python एप्लिकेशन जेनरेट किए गए `i18n.py` मॉड्यूल का उपयोग करते हैं। इसके फ़ंक्शन [प्रोग्रामेटिक API — Python रनटाइम](/hi/reference/programmatic-api#python-runtime) में सूचीबद्ध हैं। .NET एप्लिकेशन जेनरेट की गई `I18n.cs` या `I18nResx.cs` फ़ाइल का उपयोग करते हैं। वे सदस्य [प्रोग्रामेटिक API — .NET रनटाइम](/hi/reference/programmatic-api#dotnet-runtime-i18ncs) में सूचीबद्ध हैं।
+ये हेल्पर `'ai-i18n-tools/runtime'` से एक्सपोर्ट किए जाते हैं और किसी भी जावास्क्रिप्ट एनवायरनमेंट (ब्राउज़र, Node.js, Deno, Edge) में काम करते हैं। वे `i18next` या `react-i18next` से इम्पोर्ट **नहीं** होते हैं। पायथन एप्लिकेशन जेनरेट किए गए `i18n.py` मॉड्यूल का उपयोग करते हैं। इसके फ़ंक्शन [प्रोग्रामेटिक API — पायथन रनटाइम](/hi/reference/programmatic-api#python-runtime) में सूचीबद्ध हैं। .NET एप्लिकेशन जेनरेट की गई `I18n.cs` या `I18nResx.cs` फ़ाइल का उपयोग करते हैं। वे सदस्य [प्रोग्रामेटिक API — .NET रनटाइम](/hi/reference/programmatic-api#net-runtime-i18ncs) में सूचीबद्ध हैं।
 
 इन्हें अपने ऐप बूटस्ट्रैप (`src/i18n.js`), भाषा स्विचर और किसी भी गैर-रिएक्ट कोड में उपयोग करें जिसे दिशा या स्ट्रिंग यूटिलिटी की आवश्यकता है। एंड-टू-एंड वायरिंग के लिए, [i18next वायर करें](/hi/guide/ui-strings/i18next-runtime) से शुरू करें; भाषा मेनू और RTL के लिए, [भाषा स्विचर और RTL](/hi/guide/ui-strings/language-switcher) देखें।
 
