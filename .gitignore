@@ -76,6 +76,11 @@ examples/**/.vitepress/cache/
 examples/**/.vitepress/dist/
 examples/**/.vitepress/.temp/
 
+# Local skills CLI install of this repo's own skills (source is skills/).
+# Do not ignore .agents/ entirely: .agents/plugins/marketplace.json is tracked.
+.agents/skills/
+skills-lock.json
+
 # References to other repositories
 references/
 # Consumer skill references are distributable source, not external checkouts.
