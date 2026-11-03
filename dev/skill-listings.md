@@ -28,17 +28,24 @@ An optional README badge, once installs have been counted:
 
 ## Cursor Marketplace
 
-This is the curated listing inside Cursor. It reviews the root `plugin.json` (Agent Plugins). This repository is one plugin, so it has no `.cursor-plugin/marketplace.json`. That file is for a repository that ships several plugins.
+[cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) is a plugin publisher application. The page title is "Publish a Cursor Marketplace Plugin" and the heading is "Become a plugin publisher". It does not list skills on their own. The form says a plugin can distribute skills, subagents, MCPs, hooks, and rules, and that Cursor reviews the public GitHub repository that contains the plugin.
 
-After `plugin.json` is on the public default branch:
+This repository is one Agent Plugin, declared by the root `plugin.json`. It has no `.cursor-plugin/marketplace.json`. That file is for a repository that ships several Cursor plugins. Have that manifest on the public default branch before applying.
 
-1. Open [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish).
-2. Submit `https://github.com/wsj-br/ai-i18n-tools`.
-3. Stop at the "Thanks for applying" screen. The form sends no email. That screen is the receipt.
+Sign in, then fill the application. The publisher is the person, and the plugin name stays `ai-i18n-tools` from the root `plugin.json`. Leave Organization name, Organization handle, Contact email, and Owner as the signed-in account filled them.
 
-Submit once. A second submission is a duplicate in the review queue. Review is manual and can take weeks. There is no status page. Questions go to marketplace-publishing@cursor.com.
+- Organization name: `wsj`
+- Organization handle: `wsj`
+- Contact email: `wsj@wsj.com.br`
+- Logotype URL: `https://wsj-br.github.io/ai-i18n-tools/ai-i18n-tools_logo.png` — the square `docs/public/ai-i18n-tools_logo.png`, dark plate included.
+- Description: `Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.`
+- GitHub repository: `https://github.com/wsj-br/ai-i18n-tools`
+- Owner: leave the read-only value. It shows the signed-in account, with the note "Submitting as an individual."
+- Website URL: `https://wsj-br.github.io/ai-i18n-tools/`
 
-Later changes to the skill are not published by submitting the form again. Ask Cursor to re-index the same repository, by emailing marketplace-publishing@cursor.com.
+Submit Application agrees to the [Publisher Terms](https://cursor.com/marketplace-publisher-terms). Submit the application once. Questions go to marketplace-publishing@cursor.com.
+
+The publisher terms say a later plugin update does not need another application. Email marketplace-publishing@cursor.com and ask Cursor to re-index the same repository.
 
 [Cursor Directory](https://cursor.directory/plugins/new) is a separate queue. A listing there does not appear in the official Cursor Marketplace, and an official submission does not appear on Cursor Directory.
 

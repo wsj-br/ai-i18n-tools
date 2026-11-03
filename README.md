@@ -11,7 +11,7 @@
 
 [![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Linux arm64](https://img.shields.io/badge/Linux-arm64-FCC624?logo=linux&logoColor=black)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS arm64](https://img.shields.io/badge/macOS-arm64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![macOS x64](https://img.shields.io/badge/macOS-x64-000000?logo=apple&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases) [![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6?logo=windows&logoColor=white)](https://github.com/wsj-br/ai-i18n-tools/releases)
 
-![skills.sh](https://skills.sh/b/wsj-br/ai-i18n-tools)](https://skills.sh/wsj-br/ai-i18n-tools)
+[![skills.sh](https://skills.sh/b/wsj-br/ai-i18n-tools)](https://skills.sh/wsj-br/ai-i18n-tools)
 
 **Translate your app, website, and docs with the models you choose on any LLM provider. One config, cached reruns.**
 
