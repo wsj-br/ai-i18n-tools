@@ -890,6 +890,8 @@ describe("runDoctor", () => {
     expect(warning?.message).toContain("!.translation-cache/cache.db");
     expect(warning?.message).toContain(".env");
     expect(warning?.message).toContain("*.backup.*");
+    expect(warning?.message).toContain("Run ai-i18n-tools doctor --fix-gitignore to add them.");
+    expect(fs.existsSync(path.join(root, ".gitignore"))).toBe(false);
 
     const strict = await runDoctor({
       cwd: root,
@@ -945,7 +947,7 @@ describe("runDoctor", () => {
     });
     const wrongText = messages(wrong);
     expect(wrongText).toContain(
-      ".gitignore for .i18n-cache is missing .i18n-cache/*, !.i18n-cache/cache.db"
+      ".gitignore for .i18n-cache is missing .i18n-cache/*, !.i18n-cache/cache.db. Run ai-i18n-tools doctor --fix-gitignore to add them."
     );
     expect(wrongText).not.toContain("missing .translation-cache/*");
 
@@ -994,6 +996,75 @@ describe("runDoctor", () => {
     expect(messages(result)).toContain(
       "warn:.i18n-cache/ ignores the cache directory, so !.i18n-cache/cache.db does not keep cache.db"
     );
+    expect(messages(result)).not.toContain("--fix-gitignore");
+  });
+
+  it("adds missing .gitignore lines with --fix-gitignore", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    const created = await runDoctor({
+      cwd: root,
+      local: true,
+      fixGitignore: true,
+      strict: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(created.exitCode).toBe(0);
+    expect(fs.readFileSync(path.join(root, ".gitignore"), "utf8")).toBe(DEFAULT_GITIGNORE_BLOCK);
+    expect(messages(created)).toContain("pass:Wrote .gitignore");
+    expect(messages(created)).toContain("pass:.gitignore for .translation-cache");
+    expect(messages(created)).not.toContain("--fix-gitignore");
+
+    const again = await runDoctor({
+      cwd: root,
+      local: true,
+      fixGitignore: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(fs.readFileSync(path.join(root, ".gitignore"), "utf8")).toBe(DEFAULT_GITIGNORE_BLOCK);
+    expect(messages(again)).not.toContain("Updated .gitignore");
+    expect(messages(again)).toContain("pass:.gitignore for .translation-cache");
+  });
+
+  it("appends only the configured cache lines with --fix-gitignore", async () => {
+    process.env.OPENROUTER_API_KEY = "k";
+    writeProject(root, uiConfig({ cacheDir: ".i18n-cache" }), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": "node_modules/\n\n.env\n",
+    });
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      fixGitignore: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const text = fs.readFileSync(path.join(root, ".gitignore"), "utf8");
+    expect(text).toBe(
+      [
+        "node_modules/",
+        "",
+        ".env",
+        "",
+        "# ai-i18n-tools doctor fix",
+        ".i18n-cache/*",
+        "!.i18n-cache/cache.db",
+        "benchmark-scores.json",
+        ".env.local",
+        ".env.*.local",
+        "*.tmp",
+        "*.backup.*",
+        "",
+      ].join("\n")
+    );
+    expect(result.exitCode).toBe(0);
+    expect(messages(result)).toContain("pass:Updated .gitignore");
+    expect(messages(result)).toContain("pass:.gitignore for .i18n-cache");
   });
 
   it("describes a standalone executable", () => {

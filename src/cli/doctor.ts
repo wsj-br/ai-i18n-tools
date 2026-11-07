@@ -7,6 +7,7 @@ import { resolveConfigFileLocation } from "./helpers.js";
 import {
   cacheDirectoryIgnorePatterns,
   cacheGitignorePatterns,
+  ensureProjectGitignore,
   gitignorePatternSet,
   normalizeCacheDir,
   requiredGitignorePatterns,
@@ -111,6 +112,8 @@ export interface RunDoctorOptions {
   local?: boolean;
   strict?: boolean;
   json?: boolean;
+  /** Append missing `.gitignore` lines, then report the file. */
+  fixGitignore?: boolean;
   sea?: boolean;
   execPath?: string;
   argv1?: string;
@@ -456,7 +459,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     fail,
     section.provider
   );
-  checkGitignore(config, projectRoot, pass, warn, section.git);
+  checkGitignore(config, projectRoot, options.fixGitignore === true, pass, warn, section.git);
   checkEnvironment(config, pass, section.environment);
 
   return finish();
@@ -1333,15 +1336,47 @@ function modelsExpiredInCatalogMessage(
   );
 }
 
+const FIX_GITIGNORE_COMMAND = "ai-i18n-tools doctor --fix-gitignore";
+/** Marker written above lines that `--fix-gitignore` appends. */
+const DOCTOR_GITIGNORE_COMMENT = "# ai-i18n-tools doctor fix";
+
+function missingGitignoreMessage(cacheDir: string, patterns: string[], suggestFix: boolean): string {
+  const listed = patterns.join(", ");
+  if (!suggestFix) {
+    return t(".gitignore for {{cacheDir}} is missing {{patterns}}", {
+      cacheDir,
+      patterns: listed,
+    });
+  }
+  return t(".gitignore for {{cacheDir}} is missing {{patterns}}. Run {{command}} to add them.", {
+    cacheDir,
+    patterns: listed,
+    command: FIX_GITIGNORE_COMMAND,
+  });
+}
+
 function checkGitignore(
   config: I18nConfig,
   projectRoot: string,
+  fixGitignore: boolean,
   pass: (section: string, message: string, note?: boolean, inlineItems?: string[]) => void,
   warn: (section: string, message: string) => void,
   section: string
 ): void {
   const cacheDir = normalizeCacheDir(config.cacheDir);
   const required = requiredGitignorePatterns(cacheDir);
+  if (fixGitignore) {
+    try {
+      const wrote = ensureProjectGitignore(projectRoot, cacheDir, DOCTOR_GITIGNORE_COMMENT);
+      if (wrote === "created") {
+        pass(section, t("Wrote .gitignore"));
+      } else if (wrote === "updated") {
+        pass(section, t("Updated .gitignore"));
+      }
+    } catch (e) {
+      warn(section, errorMessage(e));
+    }
+  }
   const file = path.join(projectRoot, ".gitignore");
   let text: string;
   try {
@@ -1349,13 +1384,7 @@ function checkGitignore(
   } catch (e) {
     const code = e instanceof Error && "code" in e ? (e as NodeJS.ErrnoException).code : undefined;
     if (code === "ENOENT") {
-      warn(
-        section,
-        t(".gitignore for {{cacheDir}} is missing {{patterns}}", {
-          cacheDir,
-          patterns: required.join(", "),
-        })
-      );
+      warn(section, missingGitignoreMessage(cacheDir, required, !fixGitignore));
       return;
     }
     warn(section, errorMessage(e));
@@ -1366,13 +1395,7 @@ function checkGitignore(
   if (missing.length === 0) {
     pass(section, t(".gitignore for {{cacheDir}}", { cacheDir }));
   } else {
-    warn(
-      section,
-      t(".gitignore for {{cacheDir}} is missing {{patterns}}", {
-        cacheDir,
-        patterns: missing.join(", "),
-      })
-    );
+    warn(section, missingGitignoreMessage(cacheDir, missing, !fixGitignore));
   }
   const blocking = cacheDirectoryIgnorePatterns(cacheDir).filter((pattern) => present.has(pattern));
   if (blocking.length > 0) {

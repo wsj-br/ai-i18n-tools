@@ -9,6 +9,8 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Added**: `doctor` — `--fix-gitignore` appends the missing cache, environment, and temporary-file lines to `.gitignore`, under a blank line and `# ai-i18n-tools doctor fix`. The missing-pattern warning names that command.
+
 ## [1.13.2] - 2026-11-02
 
 - **Added**: `init` — creates `.gitignore`, or appends the cache, environment, and temporary-file patterns that are not already there. A second run does not duplicate lines.

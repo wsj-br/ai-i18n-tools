@@ -65,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 <a id="doctor"></a>
 ### `doctor`
 
-**Synopsis:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+**Synopsis:** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
 Check that the project is ready to translate. The report covers config syntax and schema, business rules, the installed version, source and output paths, UI catalog files, placeholder mismatches in those catalogs, cache statistics, configured providers, supported environment variables that are set, and model ids. A catalog with a renamed, dropped, or rewritten placeholder is a warning and names one example.
 
@@ -73,15 +73,16 @@ By default, `doctor` also checks configured model ids against the active provide
 
 API key values are never printed. Set variables are listed in alphabetical order as `Configured variables: NAME, ...`. A variable that is not an API key includes its value.
 
-Missing input paths fail. Missing output directories are a note, because the first translation run creates them. `doctor` does not rewrite config, create directories, or send source text to a model.
+Missing input paths fail. Missing output directories are a note, because the first translation run creates them. `doctor` does not rewrite config, create directories, or send source text to a model. `--fix-gitignore` appends missing `.gitignore` lines and leaves every other file alone.
 
-`doctor` warns when `.gitignore` next to the config is missing a required pattern. The two cache patterns follow the configured `cacheDir`, so `.i18n-cache` needs `.i18n-cache/*` and `!.i18n-cache/cache.db` rather than the default `.translation-cache` lines. The other patterns are `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, and `*.backup.*`. A line that ignores the cache directory itself, such as `.i18n-cache/`, is also a warning, because Git will not track `cache.db` under an ignored directory. The warning fails the command only with `--strict`.
+`doctor` warns when `.gitignore` next to the config is missing a required pattern. The warning tells you to run `ai-i18n-tools doctor --fix-gitignore`. When `.gitignore` already exists, that appends a blank line, the comment `# ai-i18n-tools doctor fix`, and only the missing lines. It does not duplicate lines already present. A missing file is created with the same block `init` writes. The two cache patterns follow the configured `cacheDir`, so `.i18n-cache` needs `.i18n-cache/*` and `!.i18n-cache/cache.db` rather than the default `.translation-cache` lines. The other patterns are `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, and `*.backup.*`. A line that ignores the cache directory itself, such as `.i18n-cache/`, is also a warning, because Git will not track `cache.db` under an ignored directory. `--fix-gitignore` does not remove that line. The warning fails the command only with `--strict`.
 
-**Key options:** `--local`, `--strict`, `--json`
+**Key options:** `--local`, `--strict`, `--json`, `--fix-gitignore`
 
 ```bash
 ai-i18n-tools doctor
 ai-i18n-tools doctor --local
+ai-i18n-tools doctor --fix-gitignore
 ```
 
 ---

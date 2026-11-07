@@ -43,7 +43,7 @@ Migrating an app off Intlayer follows `ai-i18n-migrate-intlayer`: dry-run `ai-i1
 ## 1. Inspect before changing
 
 - Check the installed CLI version with `ai-i18n-tools --version` and inspect project scripts/lockfiles.
-- Run `ai-i18n-tools doctor` and fix failures before `sync`. Use `--local` when the provider catalog and the GitHub release check should be skipped.
+- Run `ai-i18n-tools doctor` and fix failures before `sync`. Use `--local` when the provider catalog and the GitHub release check should be skipped. A missing `.gitignore` pattern is a warning; `ai-i18n-tools doctor --fix-gitignore` appends those lines under `# ai-i18n-tools doctor fix`.
 - Locate `ai-i18n-tools.config.json` or the project's custom `-c <path>` configuration.
 - Identify source content, existing localization runtime, source locale, target locales, and deployment layout.
 - Preserve established gettext, i18next namespace JSON, routing, and provider choices rather than migrating them unnecessarily.

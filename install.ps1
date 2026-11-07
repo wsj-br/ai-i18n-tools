@@ -178,7 +178,9 @@
         Write-Host "ai-i18n-tools: installed $dest ($versionLine)"
 
         $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-        if (-not (Test-DirOnPath $userPath $installDir)) {
+        if (Test-DirOnPath $userPath $installDir) {
+            Write-Host "ai-i18n-tools: user Path already includes $installDir"
+        } else {
             if ([string]::IsNullOrEmpty($userPath)) {
                 $newUserPath = $installDir
             } else {
@@ -186,16 +188,14 @@
             }
             [Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
             Write-Host "ai-i18n-tools: added $installDir to the user Path"
-        } else {
-            Write-Host "ai-i18n-tools: user Path already includes $installDir"
         }
 
-        if (-not (Test-DirOnPath $env:Path $installDir)) {
+        if (Test-DirOnPath $env:Path $installDir) {
+            Write-Host "ai-i18n-tools: command is available in this session"
+        } else {
             $env:Path = "$installDir;$env:Path"
             Write-Host "ai-i18n-tools: open a new terminal so Path includes $installDir"
             Write-Host "ai-i18n-tools: this session can already run ai-i18n-tools"
-        } else {
-            Write-Host "ai-i18n-tools: command is available in this session"
         }
     } finally {
         if (Test-Path -LiteralPath $work) {

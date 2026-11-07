@@ -74,6 +74,33 @@ describe("ensureProjectGitignore", () => {
     expect(fs.readFileSync(file, "utf8")).toBe(text);
   });
 
+  it("writes cache lines for a configured cacheDir", () => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), "gitignore-"));
+    expect(ensureProjectGitignore(root, ".i18n-cache/")).toBe("created");
+    const text = fs.readFileSync(path.join(root, ".gitignore"), "utf8");
+    expect(text).toContain("# Cache\n.i18n-cache/*\n!.i18n-cache/cache.db\n");
+    expect(text).not.toContain(".translation-cache/");
+    expect(ensureProjectGitignore(root, ".i18n-cache")).toBe("unchanged");
+  });
+
+  it("appends one comment and the missing lines when appendComment is set", () => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), "gitignore-"));
+    const file = path.join(root, ".gitignore");
+    fs.writeFileSync(file, "dist/\r\n.env\r\n", "utf8");
+    expect(ensureProjectGitignore(root, ".translation-cache", "# ai-i18n-tools doctor fix")).toBe(
+      "updated"
+    );
+    const text = fs.readFileSync(file, "utf8");
+    expect(text.startsWith("dist/\r\n.env\r\n\r\n# ai-i18n-tools doctor fix\r\n")).toBe(true);
+    expect(text).toContain("\r\n.translation-cache/*\r\n!.translation-cache/cache.db\r\n");
+    expect(text).not.toContain("# Cache");
+    expect(text).not.toContain(".env.local\r\n.env\r\n");
+    expect(text.replace(/\r\n/g, "")).not.toContain("\n");
+    expect(ensureProjectGitignore(root, ".translation-cache", "# ai-i18n-tools doctor fix")).toBe(
+      "unchanged"
+    );
+  });
+
   it("keeps CRLF when appending", () => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), "gitignore-"));
     const file = path.join(root, ".gitignore");

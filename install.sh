@@ -210,28 +210,32 @@ main() {
   fi
   printf 'ai-i18n-tools: installed %s (%s)\n' "$dest" "$version"
 
-  changed=0
-  updated_rcs=""
-  found_rc=0
-  for rc in .bashrc .bash_profile .profile .zshrc; do
-    if [ -f "${HOME}/${rc}" ]; then
-      append_path_line "${HOME}/${rc}" "$path_line"
+  if echo ":${PATH:-}:" | grep -q ":${install_dir}:"; then
+    printf 'ai-i18n-tools: %s is already in PATH\n' "$install_dir"
+  else
+    changed=0
+    updated_rcs=""
+    found_rc=0
+    for rc in .bashrc .bash_profile .profile .zshrc; do
+      if [ -f "${HOME}/${rc}" ]; then
+        append_path_line "${HOME}/${rc}" "$path_line"
+        found_rc=1
+      fi
+    done
+    if [ -f "${HOME}/.config/fish/config.fish" ]; then
+      append_path_line "${HOME}/.config/fish/config.fish" "$fish_line"
       found_rc=1
     fi
-  done
-  if [ -f "${HOME}/.config/fish/config.fish" ]; then
-    append_path_line "${HOME}/.config/fish/config.fish" "$fish_line"
-    found_rc=1
-  fi
-  if [ "$found_rc" -eq 0 ]; then
-    append_path_line "${HOME}/.profile" "$path_line"
-  fi
-
-  if [ "$changed" -eq 1 ]; then
-    printf 'ai-i18n-tools: updated shell startup files:\n'
-    printf '%s\n' "$updated_rcs" | sed '/^$/d'
-  else
-    printf 'ai-i18n-tools: shell startup files already add the install directory to PATH\n'
+    if [ "$found_rc" -eq 1 ]; then
+      if [ "$changed" -eq 1 ]; then
+        printf 'ai-i18n-tools: updated shell startup files:\n'
+        printf '%s\n' "$updated_rcs" | sed '/^$/d'
+      else
+        printf 'ai-i18n-tools: shell startup files already add the install directory to PATH\n'
+      fi
+    else
+      printf 'ai-i18n-tools: no shell startup files modified\n'
+    fi
   fi
 
   case ":${PATH:-}:" in
