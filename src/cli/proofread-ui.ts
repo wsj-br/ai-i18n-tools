@@ -626,7 +626,9 @@ export async function runProofreadUI(
     const glossaryUser = config.glossary?.userGlossary
       ? path.join(cwd, config.glossary.userGlossary)
       : undefined;
-    const glossary = new Glossary(undefined, glossaryUser, [localeNorm]);
+    const glossary = new Glossary(undefined, glossaryUser, [localeNorm], {
+      labelCheckSkips: config.glossary?.labelCheckSkips,
+    });
 
     const chunks: ProofreadUIUnit[][] = [];
     for (let i = 0; i < units.length; i += chunkSize) {

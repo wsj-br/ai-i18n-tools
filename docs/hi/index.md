@@ -1,13 +1,13 @@
 ---
 layout: home
-title: एआई-आई18एन-टूल्स
+title: ai-i18n-tools
 pageClass: home-onboarding
 description: >-
   अपने एकल-भाषा ऐप, वेबसाइट या रिपॉजिटरी डॉक्स को निर्देशित सेटअप, एआई अनुवाद और
   कैश्ड रीरन्स के साथ बहुभाषी बनाएं। JavaScript, TypeScript, Python, .NET, या
   README से शुरू करें।
 hero:
-  name: एआई-आई18एन-टूल्स
+  name: ai-i18n-tools
   text: अपने एकल-भाषा प्रोजेक्ट को बहुभाषी बनाएं।
   tagline: >-
     गाइडेड सेटअप और AI अनुवाद के साथ अपने ऐप, वेबसाइट या रिपॉजिटरी डॉक्स में
@@ -15,7 +15,7 @@ hero:
     बढ़ता है, कैश्ड अनुवादों का फिर से इस्तेमाल करें।
   image:
     src: /ai-i18n-tools_logo.svg
-    alt: एआई-आई18एन-टूल्स लोगो
+    alt: ai-i18n-tools लोगो
   actions:
     - theme: brand
       text: अपना प्रोजेक्ट चुनें

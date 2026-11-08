@@ -640,6 +640,11 @@ describe("runDoctor", () => {
     const cache = new TranslationCache(cacheDir);
     cache.setSegment("hash", "de", "Hello", "Hallo", "m1", "src/main.ts");
     cache.setFileStatus("src/main.ts", "de", "abc");
+    // Detail rows older than seven UTC days are rolled up on close, so use a recent timestamp.
+    const recentCallAt = new Date(Date.now() - 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
     cache.recordApiCall({
       provider: "openrouter",
       model: "m1",
@@ -649,7 +654,7 @@ describe("runDoctor", () => {
       inputTokens: 3,
       outputTokens: 4,
       totalTokens: 7,
-      createdAt: "2026-10-28 21:04:11",
+      createdAt: recentCallAt,
     });
     cache.close();
     const dbFile = path.join(cacheDir, "cache.db");
@@ -669,7 +674,7 @@ describe("runDoctor", () => {
     const text = messages(result);
     expect(text).toContain("translation segments 1");
     expect(text).toContain("API calls 1");
-    expect(text).toContain("2026-10-28 21:04:11");
+    expect(text).toContain(recentCallAt);
     expect(text).toContain("tracked files");
 
     const after = new DatabaseSync(dbFile, { readOnly: true });

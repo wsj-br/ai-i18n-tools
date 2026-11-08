@@ -110,7 +110,9 @@ export async function translateNestedJsonFile(
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(projectRoot, config.glossary.userGlossary)
     : undefined;
-  const glossary = new Glossary(glossaryUi, glossaryUser, [locale]);
+  const glossary = new Glossary(glossaryUi, glossaryUser, [locale], {
+    labelCheckSkips: config.glossary?.labelCheckSkips,
+  });
   const promptContextHash = computeGuidanceFingerprint(
     glossary,
     locale,

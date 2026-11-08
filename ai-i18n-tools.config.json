@@ -57,6 +57,9 @@
     "translateDocs": true
   },
   "cacheDir": ".translation-cache",
+  "glossary": {
+    "userGlossary": "glossary-user.csv"
+  },
   "ui": {
     "description": "CLI and dashboard",
     "sourceRoots": [

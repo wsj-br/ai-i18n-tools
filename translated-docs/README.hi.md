@@ -136,7 +136,7 @@ irm https://raw.githubusercontent.com/wsj-br/ai-i18n-tools/main/install.ps1 | ie
 
 MIT — [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE) देखें।
 
-कॉपीराइट © 2026 वाल्डेमर स्कुडेलर जूनियर।
+कॉपीराइट Copyright © 2026 Waldemar Scudeller Jr.
 
 <br/>
 

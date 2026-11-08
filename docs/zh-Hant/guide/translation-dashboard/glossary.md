@@ -35,6 +35,13 @@
 
 變更將於下次 `translate-ui`、`proofread-ui`、`translate-docs` 或 `sync` 執行時生效。編輯 **Context** 註記（或設定中的 `glossary.contextFiles`）會自動重新整理受影響地區的快取翻譯 — 您無需 `--force`。
 
+<a id="label-check-skips"></a>
+## 標籤檢查略過
+
+在 CSV 表格下方，**標籤檢查略過** 會編輯專案設定中的 `glossary.labelCheckSkips`。每一列都會關閉針對一個英文詞彙和一個或多個地區設定的鎖定 UI 標籤檢查。選用的檔案 glob 模式會將略過限制為符合的文件。該詞彙仍會作為提示。
+
+從此面板新增一列，或在錯誤為 `Glossary label missing` 的「失敗」列上使用 **新增略過**。儲存會寫入設定並在其旁邊留下一個帶有時間戳記的 `.backup.json`。下一次 `translate-docs` 或 `sync` 執行會使用此清單。帶有標記的快取列會使用 `--recheck-glossary-warnings` 重新嘗試。
+
 請將上下文檔案保持為簡潔的 Markdown 或純文字簡述，並置於已翻譯的 `docs[]` 樹狀目錄之外。這些文字會在每次符合條件的請求時傳送給 LLM；請勿包含機密或個人資料。關於如何建立這些檔案與 CSV，請參閱[術語表](/zh-Hant/guide/glossary)。
 
 <a id="filters"></a>

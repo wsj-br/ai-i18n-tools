@@ -70,6 +70,8 @@ export function printTranslationRunSummary(
     labels?: TranslationSummaryLabels;
     showQualityMetrics?: boolean;
     allFromCacheCostNote?: string;
+    /** Printed after the quality metrics, before token totals. */
+    extraLines?: readonly string[];
   }
 ): void {
   const labels = options?.labels ?? DEFAULT_LABELS;
@@ -108,6 +110,9 @@ export function printTranslationRunSummary(
     console.log(
       t("   Quality split retries: {{count}}", { count: sum.segmentQualitySplitRetries ?? 0 })
     );
+  }
+  for (const line of options?.extraLines ?? []) {
+    console.log(line);
   }
   console.log(
     t("   Total tokens used:     {{tokens}}", {

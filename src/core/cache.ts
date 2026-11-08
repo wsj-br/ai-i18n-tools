@@ -68,7 +68,7 @@ const API_TOTALS_CREATE_SQL = `
         CREATE INDEX IF NOT EXISTS idx_api_totals_operation ON api_totals(operation);
 `;
 
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 /**
  * Bound parameters per statement. `node:sqlite` compiles SQLite with
  * `MAX_VARIABLE_NUMBER=32766` (older builds used 999). A full docs sync records
@@ -309,6 +309,13 @@ export class TranslationCache {
         ALTER TABLE translations ADD COLUMN prompt_context_hash TEXT NOT NULL DEFAULT '';
         ALTER TABLE file_tracking ADD COLUMN prompt_context_hash TEXT NOT NULL DEFAULT '';
       `);
+      this.db.exec("PRAGMA user_version = 6");
+    }
+    if (current < 7) {
+      this.db.exec(`
+        ALTER TABLE translations ADD COLUMN glossary_warning INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE translation_failures ADD COLUMN rejected_text TEXT;
+      `);
       this.db.exec(`PRAGMA user_version = ${SCHEMA_VERSION}`);
     }
     // Unpublished v5 caches created before `api_totals` still have user_version 5.
@@ -352,13 +359,19 @@ export class TranslationCache {
     filepath?: string,
     startLine?: number,
     promptContextHash?: string
-  ): { text: string; model: string | null } | null {
+  ): { text: string; model: string | null; glossaryWarning: boolean } | null {
     const selectStmt = this.db.prepare(`
-      SELECT translated_text, model, prompt_context_hash FROM translations
+      SELECT translated_text, model, prompt_context_hash, glossary_warning FROM translations
       WHERE source_hash = ? AND locale = ?
     `);
     const row = selectStmt.get(sourceHash, locale) as
-      { translated_text: string; model: string | null; prompt_context_hash: string } | undefined;
+      | {
+          translated_text: string;
+          model: string | null;
+          prompt_context_hash: string;
+          glossary_warning: number | null;
+        }
+      | undefined;
     if (!row) {
       return null;
     }
@@ -388,7 +401,11 @@ export class TranslationCache {
       .prepare(`UPDATE translations SET ${updates.join(", ")} WHERE source_hash = ? AND locale = ?`)
       .run(...params);
 
-    return { text: row.translated_text, model: row.model };
+    return {
+      text: row.translated_text,
+      model: row.model,
+      glossaryWarning: Number(row.glossary_warning) === 1,
+    };
   }
 
   getSegment(
@@ -424,7 +441,7 @@ export class TranslationCache {
       const chunk = sourceHashes.slice(i, i + hashChunkSize);
       const placeholders = chunk.map(() => "?").join(",");
       const stmt = this.db.prepare(`
-        SELECT source_hash, translated_text, model, prompt_context_hash
+        SELECT source_hash, translated_text, model, prompt_context_hash, glossary_warning
         FROM translations
         WHERE source_hash IN (${placeholders}) AND locale = ?
       `);
@@ -433,6 +450,7 @@ export class TranslationCache {
         translated_text: string;
         model: string | null;
         prompt_context_hash: string;
+        glossary_warning: number | null;
       }>;
 
       for (const row of rows) {
@@ -443,7 +461,11 @@ export class TranslationCache {
         ) {
           continue;
         }
-        result.set(row.source_hash, { text: row.translated_text, model: row.model });
+        result.set(row.source_hash, {
+          text: row.translated_text,
+          model: row.model,
+          glossaryWarning: Number(row.glossary_warning) === 1,
+        });
       }
     }
 
@@ -491,11 +513,12 @@ export class TranslationCache {
     model: string,
     filepath?: string,
     startLine?: number | null,
-    promptContextHash?: string
+    promptContextHash?: string,
+    glossaryWarning?: boolean
   ): void {
     const stmt = this.db.prepare(`
-      INSERT INTO translations (source_hash, locale, source_text, translated_text, model, filepath, created_at, last_hit_at, start_line, prompt_context_hash)
-      VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), ?, ?)
+      INSERT INTO translations (source_hash, locale, source_text, translated_text, model, filepath, created_at, last_hit_at, start_line, prompt_context_hash, glossary_warning)
+      VALUES (?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), ?, ?, ?)
       ON CONFLICT(source_hash, locale) DO UPDATE SET
         source_text = excluded.source_text,
         translated_text = excluded.translated_text,
@@ -503,7 +526,8 @@ export class TranslationCache {
         filepath = excluded.filepath,
         last_hit_at = datetime('now'),
         start_line = COALESCE(excluded.start_line, translations.start_line),
-        prompt_context_hash = excluded.prompt_context_hash
+        prompt_context_hash = excluded.prompt_context_hash,
+        glossary_warning = excluded.glossary_warning
     `);
     stmt.run(
       sourceHash,
@@ -513,8 +537,16 @@ export class TranslationCache {
       model,
       filepath ?? null,
       startLine ?? null,
-      promptContextHash ?? ""
+      promptContextHash ?? "",
+      glossaryWarning ? 1 : 0
     );
+  }
+
+  /** Clear the glossary-label warning flag without rewriting the translation. */
+  clearGlossaryWarning(sourceHash: string, locale: string): void {
+    this.db
+      .prepare("UPDATE translations SET glossary_warning = 0 WHERE source_hash = ? AND locale = ?")
+      .run(sourceHash, locale);
   }
 
   getFileHash(filepath: string, locale: string): string | null {
@@ -1285,8 +1317,8 @@ export class TranslationCache {
     }
     const stmt = this.db.prepare(
       `INSERT INTO translation_failures
-       (source_hash, locale, model, model_order, quality_error, error_message, fatal, created_at, filepath, source_text)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)`
+       (source_hash, locale, model, model_order, quality_error, error_message, fatal, created_at, filepath, source_text, rejected_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?, ?, ?)`
     );
     for (const row of rows) {
       stmt.run(
@@ -1298,7 +1330,8 @@ export class TranslationCache {
         row.errorMessage,
         row.fatal ? 1 : 0,
         row.filepath ?? null,
-        row.sourceText ?? null
+        row.sourceText ?? null,
+        row.rejectedText ?? null
       );
     }
   }
@@ -1373,7 +1406,8 @@ export class TranslationCache {
         MAX(f.created_at) as created_at,
         MAX(COALESCE(t.source_text, f.source_text)) as source_text,
         MAX(COALESCE(t.filepath, f.filepath)) as filepath,
-        MIN(t.start_line) as start_line
+        MIN(t.start_line) as start_line,
+        COALESCE(GROUP_CONCAT(NULLIF(f.rejected_text, ''), CHAR(10) || '---' || CHAR(10)), '') as rejected_text
       ${fromSql}
       ${whereClause}
       GROUP BY f.source_hash, f.locale`;
@@ -2371,7 +2405,8 @@ export class TranslationCache {
       entry.model,
       entry.filepath,
       entry.startLine ?? undefined,
-      entry.promptContextHash
+      entry.promptContextHash,
+      entry.glossaryWarning
     );
     return Promise.resolve();
   }

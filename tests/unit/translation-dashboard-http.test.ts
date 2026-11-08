@@ -2338,4 +2338,69 @@ describe("createTranslationDashboardApp", () => {
       });
     });
   });
+
+  it("reads and writes glossary.labelCheckSkips through the config file", async () => {
+    cache = new TranslationCache(":memory:");
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "te-label-skips-"));
+    const configPath = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      configPath,
+      `${JSON.stringify({ sourceLocale: "en", glossary: { userGlossary: "glossary-user.csv" } }, null, 2)}\n`,
+      "utf8"
+    );
+    try {
+      const app = createTranslationDashboardApp(cache, {
+        cwd: dir,
+        sourceLocale: "en",
+        targetLocales: ["uk"],
+        configPath,
+      });
+      await withHttpServer(app, async (base) => {
+        const empty = await fetch(`${base}/api/glossary-label-skips`);
+        expect(empty.ok).toBe(true);
+        expect(await empty.json()).toMatchObject({ skips: [] });
+
+        const created = await fetch(`${base}/api/glossary-label-skips`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            term: "Target language",
+            locales: ["uk"],
+            files: ["docs/transform.md"],
+            note: "Inflected",
+          }),
+        });
+        expect(created.ok).toBe(true);
+        const createdBody = (await created.json()) as { backupPath: string; skips: unknown[] };
+        expect(createdBody.skips).toHaveLength(1);
+        expect(fs.existsSync(createdBody.backupPath)).toBe(true);
+
+        const patched = await fetch(`${base}/api/glossary-label-skips/0`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ term: "Target language", locales: "uk,pl" }),
+        });
+        expect(patched.ok).toBe(true);
+
+        const listed = (await (await fetch(`${base}/api/glossary-label-skips`)).json()) as {
+          skips: Array<{ locales: string[] }>;
+        };
+        expect(listed.skips[0]?.locales).toEqual(["uk", "pl"]);
+
+        const removed = await fetch(`${base}/api/glossary-label-skips/0`, { method: "DELETE" });
+        expect(removed.ok).toBe(true);
+        const after = (await (await fetch(`${base}/api/glossary-label-skips`)).json()) as {
+          skips: unknown[];
+        };
+        expect(after.skips).toEqual([]);
+        const onDisk = JSON.parse(fs.readFileSync(configPath, "utf8")) as {
+          glossary: Record<string, unknown>;
+        };
+        expect(onDisk.glossary.labelCheckSkips).toBeUndefined();
+        expect(onDisk.glossary.userGlossary).toBe("glossary-user.csv");
+      });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
 });

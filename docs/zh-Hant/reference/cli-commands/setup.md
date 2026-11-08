@@ -65,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 <a id="doctor"></a>
 ### `doctor`
 
-**概要：** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+**概要：** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
 檢查專案是否已準備好進行翻譯。報告涵蓋設定語法與結構描述、業務規則、已安裝的版本、來源與輸出路徑、UI 目錄檔、這些目錄中的預留位置不符、快取統計、已配置的提供者、已設定的支援環境變數以及模型 ID。包含已重新命名、已捨棄或已重寫預留位置的目錄會發出警告，並列出一個範例。
 
@@ -73,15 +73,16 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 API 金鑰值絕不列印。已設定的變數會依字母順序列出，如 `Configured variables: NAME, ...` 所示。非 API 金鑰的變數會包含其值。
 
-遺失的輸入路徑會導致失敗。遺失的輸出目錄會是一個備註，因為第一次翻譯執行會建立它們。`doctor` 不會重寫配置、建立目錄或將來源文字傳送至模型。
+遺失的輸入路徑會導致失敗。遺失的輸出目錄僅為備註，因為首次翻譯執行會建立它們。`doctor` 不會重寫組態、建立目錄或將原始文字傳送至模型。`--fix-gitignore` 會附加遺失的 `.gitignore` 行，並保留所有其他檔案不變。
 
-`doctor` 會在設定檔旁的 `.gitignore` 缺少必要的模式時發出警告。這兩個快取模式遵循已設定的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是預設的 `.translation-cache` 行。其他模式是 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略快取目錄本身的行，例如 `.i18n-cache/`，也會發出警告，因為 Git 不會追蹤被忽略目錄下的 `cache.db`。此警告只會在 `--strict` 的情況下導致指令失敗。
+當組態旁的 `.gitignore` 遺失必要的模式時，`doctor` 會發出警告。該警告會指示您執行 `ai-i18n-tools doctor --fix-gitignore`。當 `.gitignore` 已存在時，它會附加一個空白行、註解 `# ai-i18n-tools doctor fix`，以及僅限遺失的行。它不會重複已存在的行。遺失的檔案會以 `init` 寫入的相同區塊建立。這兩個快取模式遵循已設定的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是預設的 `.translation-cache` 行。其他模式為 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略快取目錄本身的行，例如 `.i18n-cache/`，也是一個警告，因為 Git 不會在被忽略的目錄下追蹤 `cache.db`。`--fix-gitignore` 不會移除該行。該警告僅在搭配 `--strict` 時才會使命令失敗。
 
-**主要選項：** `--local`、`--strict`、`--json`
+**主要選項：** `--local`、`--strict`、`--json`、`--fix-gitignore`
 
 ```bash
 ai-i18n-tools doctor
 ai-i18n-tools doctor --local
+ai-i18n-tools doctor --fix-gitignore
 ```
 
 ---

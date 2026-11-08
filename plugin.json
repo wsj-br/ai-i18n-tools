@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "ai-i18n-tools",
-  "version": "1.13.2",
+  "version": "1.13.3",
   "description": "Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.",
   "author": {
     "name": "Waldemar Scudeller Jr."

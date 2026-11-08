@@ -580,7 +580,9 @@ async function runTranslateUIBody(
     }
   }
 
-  const glossary = new Glossary(undefined, glossaryUser, targets);
+  const glossary = new Glossary(undefined, glossaryUser, targets, {
+    labelCheckSkips: config.glossary?.labelCheckSkips,
+  });
   const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
   if (translationContext.truncated) {
     console.warn(

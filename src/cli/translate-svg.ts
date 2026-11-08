@@ -118,7 +118,9 @@ async function runTranslateSvgBody(
   const glossaryUser = config.glossary?.userGlossary
     ? path.join(opts.cwd, config.glossary.userGlossary)
     : undefined;
-  const glossary = new Glossary(glossaryUi, glossaryUser, locales);
+  const glossary = new Glossary(glossaryUi, glossaryUser, locales, {
+    labelCheckSkips: config.glossary?.labelCheckSkips,
+  });
   const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
   const noopHitKeys = new Set<string>();
 

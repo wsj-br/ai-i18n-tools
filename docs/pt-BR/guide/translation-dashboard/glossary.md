@@ -35,6 +35,13 @@ O arquivo CSV é criado na primeira adição, se ainda não existir.
 
 As alterações entram em vigor na próxima execução de `translate-ui`, `proofread-ui`, `translate-docs` ou `sync`. A edição de uma nota de **Contexto** (ou `glossary.contextFiles` na configuração) atualiza automaticamente as traduções em cache para a localidade afetada — você não precisa de `--force`.
 
+<a id="label-check-skips"></a>
+## Ignorar verificações de rótulo
+
+Abaixo da tabela CSV, **Ignorar verificações de rótulo** edita `glossary.labelCheckSkips` na configuração do projeto. Cada linha desativa a verificação de rótulo de UI bloqueado para um termo em inglês e uma ou mais localidades. Globs de arquivo opcionais limitam a omissão a documentos correspondentes. O termo permanece como uma dica de prompt.
+
+Adicione uma linha a partir deste painel, ou use **Adicionar ignorar** em uma linha de Falhas cujo erro é `Glossary label missing`. Salvar grava a configuração e deixa um `.backup.json` com carimbo de data/hora ao lado. A próxima execução de `translate-docs` ou `sync` usa a lista. Uma linha de cache sinalizada é repetida com `--recheck-glossary-warnings`.
+
 Mantenha os arquivos de contexto como resumos concisos em Markdown ou texto simples fora das árvores `docs[]` traduzidas. O texto é enviado ao LLM em cada requisição correspondente; não inclua segredos nem dados pessoais. Como esses arquivos e o CSV são criados é abordado no [Glossário](/pt-BR/guide/glossary).
 
 <a id="filters"></a>

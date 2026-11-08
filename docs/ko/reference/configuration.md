@@ -452,13 +452,13 @@ HTML 문서를 위한 선택적 언어 목록 및 hreflang입니다. 기본 주�
 **동작 및 메타데이터**
 
 - `translateFrontmatterFields`
-`docsOutput`와 동일한 수준입니다 (`docs[]` 블록당). 기본 `true`: Starlight/Docusaurus (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` 레이블)에 대한 사용자 대면 YAML 산문을 번역합니다. 전체 프런트 매터 블록을 변경하지 않으려면 `false`로 설정하십시오. 특정 점 경로로 제한하려면 문자열 배열을 전달하십시오.
+`docsOutput`과(와) 동일한 수준입니다 (`docs[]` 블록당). 기본값 `true`: Starlight/Docusaurus용 사용자 대면 YAML 산문(프론트 매터)을 번역합니다 (`title`, `description`, `sidebar.label`, `sidebar_label`, `keywords`, `hero.title`, `hero.tagline`, `hero.image.alt`, `hero.actions[].text`, `pagination_label`, `prev`/`next` 레이블). 전체 프론트 매터 블록을 변경하지 않으려면 `false`으로 설정하십시오. 특정 점 경로(dot-paths)로 제한하려면 문자열 배열을 전달하십시오.
 - `segmentSplitting`
-`docsOutput`와 동일한 수준입니다 (`docs[]` 블록당). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`. `enabled`가 `true`일 때 (`segmentSplitting`가 생략된 경우 기본값), 밀집된 단락, GFM 파이프 테이블 (첫 번째 청크에는 헤더, 구분 기호 및 첫 번째 데이터 행이 포함됨), 긴 목록이 분할됩니다. 하위 부분은 단일 줄 바꿈 (`tightJoinPrevious`)으로 다시 결합됩니다. 공백으로 구분된 본문 블록당 하나의 세그먼트만 사용하려면 `"enabled": false`으로 설정하십시오. `qualityRetrySplit`이 `true`일 때 (기본값), 모든 모델이 소진된 후 AST 유효성 검사에 실패한 마크다운 세그먼트는 점진적으로 분할되고 첫 번째 모델부터 다시 시도됩니다. `maxQualityRetrySplitDepth` (기본값 `3`)는 재귀 분할을 제한합니다.
+`docsOutput`과(와) 동일한 수준입니다 (`docs[]` 블록당). `translate-docs` 추출을 위한 선택적 세분화된 세그먼트: `{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`. `enabled`이(가) `true`일 때 (`segmentSplitting`이(가) 생략된 경우 기본값), 밀집된 단락, GFM 파이프 테이블(첫 번째 청크에는 헤더, 구분 기호 및 첫 번째 데이터 행이 포함됨) 및 긴 목록이 분할됩니다. 하위 부분은 단일 새 줄 문자(`tightJoinPrevious`)로 다시 결합됩니다. 공백 줄로 구분된 본문 블록당 하나의 세그먼트만 사용하려면 `"enabled": false`으로 설정하십시오. `qualityRetrySplit`이(가) `true`일 때 (기본값), 모델 목록이 중지된 후 AST 유효성 검사에 실패한 마크다운 세그먼트는 점진적으로 분할되고 첫 번째 모델부터 다시 시도됩니다. 동일한 품질 오류가 세 번 발생하면 목록이 조기에 중지됩니다. `maxQualityRetrySplitDepth` (기본값 `3`)은 재귀적 분할을 제한합니다.
 - `warnMarkdownSourceIssues`
-`true`일 때 (생략된 경우 기본값), 각 `translate-docs` 실행은 위험한 구분 기호/닫히지 않은 인라인 코드를 위해 마크다운 세그먼트를 다시 스캔하고, 터미널 경고를 인쇄하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 바꿉니다. 이 블록에 대한 경고 및 SQLite 업데이트를 건너뛰려면 `false`로 설정하십시오.
+`true`일 때 (생략된 경우 기본값), 각 `translate-docs` 실행은 위험한 구분 기호/닫히지 않은 인라인 코드를 찾기 위해 마크다운 세그먼트를 다시 스캔하고, 터미널 경고를 출력하며, 해당 파일의 캐시 파일 경로에 대한 `markdown_source_issues` 행을 바꿉니다. 이 블록에 대한 경고 및 SQLite 업데이트를 건너뛰려면 `false`으로 설정하십시오.
 - `addFrontmatter`
-`true`일 때 (생략된 경우 기본값), 번역된 마크다운 파일에는 YAML 키: `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`가 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있는 경우 `translation_models` (활성 공급자의 모델 ID 정렬 목록)가 포함됩니다. 건너뛰려면 `false`로 설정하십시오.
+`true`일 때 (생략된 경우 기본값), 번역된 마크다운 파일에는 YAML 키인 `translation_last_updated`, `source_file_mtime`, `source_file_hash`, `translation_language`, `source_file_path`가 포함되며, 하나 이상의 세그먼트에 모델 메타데이터가 있는 경우 `translation_models` (활성 공급자의 모델 ID 정렬 목록)도 포함됩니다. 건너뛰려면 `false`으로 설정하십시오.
 - `emphasisPlaceholders`
 `docs[]` 블록당. `true`일 때, 번역 전에 마크다운 강조 구분 기호를 플레이스홀더로 마스킹합니다. CJK 로케일 (`zh`, `ja`, `ko`) 및 `rtlLocales`에 나열된 로케일의 경우 기본값은 `true`입니다. 그렇지 않으면 기본값은 `false`입니다. CLI `--emphasis-placeholders` / `--no-emphasis-placeholders`를 통해 재정의할 수 있습니다.
 - `rtlLocales`
@@ -573,10 +573,11 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 | `autoAddUserEditedToGlossary` | `true`일 때, UI 문자열에 대한 대시보드 편집 내용을 사용자 용어집에 자동으로 추가할 수 있습니다. |
 | `contextFiles` | 선택적 cwd 상대 경로의 Markdown 또는 일반 텍스트 파일(`.md`, `.markdown`, `.txt`)로, 제품 또는 기능 설명을 포함합니다. 명령 시작 시 로드되어 UI, 문서, JSON, SVG 및 교정 프롬프트에 주입됩니다. 번역도 원할 경우에만 이 파일들을 `docs[].contentPaths`에 넣으세요. URL은 거부됩니다. 전체 텍스트는 구성된 LLM 프로바이더로 전송되며 `--debug-failed` 로그에 나타날 수 있으므로 — 비밀이나 PII를 포함하지 마세요. |
 | `contextMaxChars` | 모델로 전송되는 결합된 컨텍스트 파일 텍스트의 최대 문자 수(기본값 `12000`, 하드 캡 `100000`). 초과 텍스트는 경고와 함께 잘립니다. |
+| `labelCheckSkips` | 건너뛸 잠긴 UI 레이블 검사의 선택적 목록입니다. 각 항목에는 `term` (영어 용어집 용어), `locales` (대상 코드 또는 모든 로케일에 대한 `*`; 기본값 `*`), 선택적 `files` (cwd-상대 글로브), 그리고 선택적 `note`이(가) 있습니다. 이 용어는 프롬프트 힌트로 유지됩니다. 건너뛰기는 다음 `translate-docs` 실행 시 적용됩니다. |
 
 `translate-docs`, `translate-json` 및 `translate-svg`는 `uiGlossary`이(가) `true`(기본값)인 각 UI 블록에서도 힌트를 가져옵니다. 이는 해당 블록의 `strings.json`에 이미 저장된 번역을 재사용합니다. 블록에서 `uiGlossary`을(를) `false`(으)로 설정하여 제외할 수 있습니다. `translate-ui` 및 `proofread-ui`는 이러한 카탈로그를 힌트로 사용하지 않습니다. 문서 프롬프트가 생성된 <code v-pre>{{…}}</code> 토큰으로 유도되지 않도록 간결한 UI 레이블 약어(`Alm.`과(와) 같은 후행 점 형식 또는 `Size` → `Tam`과(와) 같은 짧은 단일 토큰 압축)는 건너뜁니다. 전체 제품 용어 및 약어가 아닌 UI 번역은 여전히 힌트로 제공됩니다.
 
-선택적 `Context` CSV 열은 해당 용어에 대한 원어 사용 지침(정의, 문법적 사용, 제품 의미)입니다. 이는 해당 용어가 현재 배치와 일치할 때만 포함됩니다. 용어의 `Context` 메모 또는 모든 `contextFiles` 콘텐츠를 변경하면 다음 실행 시 일치하는 로케일의 캐시된 세그먼트 및 파일 추적 행이 무효화되므로 번역이 자동으로 새로 고쳐집니다. 강제되지 않은 행에서 선호하는 `Translation`만 변경하는 경우, `--force` / `--force-update`를 전달하지 않는 한 기존 캐시를 계속 사용합니다. `Force` 행은 저장된 텍스트에 강제 번역이 이미 포함되어 있지 않은 경우, 소스에 해당 용어가 포함된 세그먼트만 누락합니다. 대시보드에서 사용자가 편집한 캐시 행은 유지됩니다. UI 카탈로그는 또한 공유 다중 단어 접두사가 대문자로 시작하는 레이블(최소 두 개의 내용 단어)이고 공유 번역이 자리 표시자 없는 짧은 구문인 경우, 해당 접두사를 자체 용어로 시드합니다. 마크다운 번역은 소스가 굵게, 인라인 코드, 제목 또는 해당 레이블만 있는 줄에 인용할 때, 2~5단어 UI 레이블이 카탈로그 번역을 유지하도록 요구합니다. 문장 내 제목 대소문자는 힌트이므로 번역은 굴절될 수 있습니다(힌디어 `Cursor account`는 사전 형태 `कर्सर खाता` 대신 `कर्सर खाते`이 될 수 있습니다). `Sign in`와 같은 단일 내용 단어를 가진 레이블은 힌트로 남습니다. 검사는 번역의 대소문자를 무시합니다.
+선택적 `Context` CSV 열은 해당 용어에 대한 원본 언어 사용 지침(정의, 문법적 사용, 제품 의미)입니다. 이것은 용어가 현재 배치와 일치할 때만 포함됩니다. 용어의 `Context` 노트 또는 `contextFiles` 콘텐츠를 변경하면 다음 실행 시 일치하는 로케일의 캐시된 세그먼트 및 파일 추적 행이 무효화되므로 번역이 자동으로 새로 고쳐집니다. 강제되지 않은 행에서 선호하는 `Translation`만 변경하는 경우에도 `--force` / `--force-update`를 전달하지 않으면 기존 캐시를 사용합니다. `Force` 행은 저장된 텍스트에 강제 번역이 이미 포함되어 있지 않은 경우, 원본에 해당 용어가 포함된 세그먼트만 놓칩니다. 대시보드에서 사용자가 편집한 캐시 행은 유지됩니다. UI 카탈로그는 또한 해당 접두사가 대문자로 시작하는 레이블(최소 두 개의 내용어)이고 공유 번역이 자리 표시자 없는 짧은 구문일 때 공유 다중 단어 접두사를 자체 용어로 시드합니다. 마크다운 번역은 원본이 전체 굵은 글씨 또는 인라인 코드 범위, 제목 또는 해당 레이블만 있는 줄로 인용할 때 카탈로그 번역을 유지하기 위해 2~5단어 UI 레이블이 필요합니다. 단순히 용어를 포함하는 더 긴 굵은 글씨 구문은 힌트입니다. 문장 내의 제목 대소문자는 힌트이므로 번역은 굴절될 수 있습니다 (힌디어 `Cursor account`은 사전 형태인 `कर्सर खाता` 대신 `कर्सर खाते`이 될 수 있습니다). `Sign in`과(와) 같이 내용어가 하나인 레이블은 힌트로 유지됩니다. 검사는 대소문자를 무시합니다. 여전히 카탈로그 문구를 부분 문자열로 요구하므로 문법적으로 굴절된 형태는 실패할 수 있습니다. 이 실패는 경고입니다. 해당 세그먼트는 작성되고 용어집 레이블 플래그와 함께 캐시되며, 실행 끝에 `cacheDir` 아래 `glossary-review-*.md`에 나열됩니다. 검토 후 `labelCheckSkips` 항목을 추가하거나 `--recheck-glossary-warnings`를 전달하십시오. `--force`는 플래그가 지정된 행을 다른 모든 세그먼트와 함께 다시 번역합니다.
 
 예시:
 
@@ -585,7 +586,15 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
   "glossary": {
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
-    "contextMaxChars": 12000
+    "contextMaxChars": 12000,
+    "labelCheckSkips": [
+      {
+        "term": "Target language",
+        "locales": ["uk"],
+        "files": ["website/src/content/docs/docs/transform.md"],
+        "note": "Inflected inside a bold phrase"
+      }
+    ]
   }
 }
 ```

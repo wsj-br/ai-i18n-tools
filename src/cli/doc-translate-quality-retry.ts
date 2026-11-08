@@ -11,7 +11,7 @@ import {
   type TranslationCheckSnapshot,
 } from "../processors/validator.js";
 import { collectPreRestorePlaceholderErrors } from "../processors/placeholder-integrity.js";
-import type { Glossary } from "../glossary/glossary.js";
+import type { Glossary, LockedUiLabelIssue } from "../glossary/glossary.js";
 import type { LlmClient } from "../api/llm-client.js";
 import { throwIfAbortSignal } from "../utils/run-interrupt.js";
 import { t } from "../i18n/index.js";
@@ -33,7 +33,8 @@ function restoreSegmentTranslation(
   return out;
 }
 
-export type DocQualityLogOutcome = "retrying_next_model" | "fatal" | "individual_success";
+export type DocQualityLogOutcome =
+  "retrying_next_model" | "fatal" | "individual_success" | "glossary_warning";
 
 export type DocQualityLogWriter = (opts: {
   segmentsLabel: string;
@@ -76,7 +77,8 @@ export type TranslateOneSegmentQualityRetryParams = {
     model: string,
     modelOrder: number | null,
     errors: readonly string[],
-    fatal: boolean
+    fatal: boolean,
+    rejectedText?: string
   ) => TranslationFailureInsert[];
   buildRuntimeFailureRow: (
     model: string | null,
@@ -98,7 +100,17 @@ export type TranslateOneSegmentQualityRetryParams = {
     detail: string,
     nextModelOrdinal: { index1Based: number; total: number }
   ) => void;
+  /**
+   * Quality errors from an earlier attempt on this same segment (the batch call).
+   * Counts as one identical failure. Ignored for split parts (`splitDepth > 0`).
+   */
+  priorIdenticalQualityErrors?: readonly string[];
   abortSignal?: AbortSignal;
+};
+
+export type GlossarySoftAccept = {
+  issues: LockedUiLabelIssue[];
+  candidates: Array<{ model: string; text: string; issues: LockedUiLabelIssue[] }>;
 };
 
 export type TranslateOneSegmentQualityRetryResult = {
@@ -110,6 +122,8 @@ export type TranslateOneSegmentQualityRetryResult = {
   validationFailures: number;
   individualCalls: number;
   qualitySplitRetries: number;
+  /** Set when the kept attempt missed only the locked-label check. */
+  glossaryWarning?: GlossarySoftAccept;
 };
 
 type ModelRetryFailure = {
@@ -123,6 +137,13 @@ type ModelRetryFailure = {
 };
 
 type ModelRetrySuccess = TranslateOneSegmentQualityRetryResult & { ok: true };
+
+/** Stop the model list once this many attempts fail with the same quality errors. */
+const IDENTICAL_QUALITY_FAILURE_LIMIT = 3;
+
+function qualityFailureSignature(errors: readonly string[]): string {
+  return [...errors].sort().join("\0");
+}
 
 function isModelRetryFailure(
   result: ModelRetrySuccess | ModelRetryFailure
@@ -183,6 +204,29 @@ async function translateProtectedContent(
   let cost = 0;
   let validationFailures = 0;
   let individualCalls = 0;
+  let bestSoft: { text: string; model: string; issues: LockedUiLabelIssue[] } | undefined;
+  const softCandidates: Array<{ model: string; text: string; issues: LockedUiLabelIssue[] }> = [];
+  const failureCounts = new Map<string, number>();
+  if (
+    params.splitDepth === 0 &&
+    params.priorIdenticalQualityErrors &&
+    params.priorIdenticalQualityErrors.length > 0
+  ) {
+    failureCounts.set(qualityFailureSignature(params.priorIdenticalQualityErrors), 1);
+  }
+
+  const softAccept = (): ModelRetrySuccess => ({
+    ok: true as const,
+    text: bestSoft!.text,
+    modelUsed: bestSoft!.model,
+    inTok,
+    outTok,
+    cost,
+    validationFailures,
+    individualCalls,
+    qualitySplitRetries: 0,
+    glossaryWarning: { issues: bestSoft!.issues, candidates: softCandidates },
+  });
 
   while (startIdx < models.length) {
     throwIfAbortSignal(params.abortSignal);
@@ -216,14 +260,35 @@ async function translateProtectedContent(
       segmentHash
     );
     const v = await validateDocTranslatePair(origSeg, restored);
-    const labelErrors =
+    const labelIssues =
       contentType === "markdown"
-        ? glossary.missingLockedUiLabels(originalContent, restored, locale)
+        ? glossary.missingLockedUiLabels(originalContent, restored, locale, docLog?.relativePath)
         : [];
-    const allErrors = [...preRestoreErrors, ...v.errors, ...labelErrors];
-    const ok = preRestoreErrors.length === 0 && v.ok && labelErrors.length === 0;
+    const labelErrors = labelIssues.map((issue) => issue.message);
+    const hardErrors = [...preRestoreErrors, ...v.errors];
+    const allErrors = [...hardErrors, ...labelErrors];
+    const softOnly = hardErrors.length === 0 && labelIssues.length > 0;
+    const ok = hardErrors.length === 0 && labelIssues.length === 0;
     const nextIdx = models.indexOf(single.model) + 1;
+    let repeatedIdentical = false;
+    if (!ok) {
+      const signature = qualityFailureSignature(allErrors);
+      const seen = (failureCounts.get(signature) ?? 0) + 1;
+      failureCounts.set(signature, seen);
+      repeatedIdentical = seen >= IDENTICAL_QUALITY_FAILURE_LIMIT;
+    }
+    const modelsExhausted = nextIdx >= models.length;
+    const stopRetrying = modelsExhausted || repeatedIdentical;
     const line = perSegLine(params, ok, allErrors, partLabel);
+    const logOutcome: DocQualityLogOutcome = ok
+      ? "individual_success"
+      : softOnly
+        ? stopRetrying
+          ? "glossary_warning"
+          : "retrying_next_model"
+        : stopRetrying
+          ? "fatal"
+          : "retrying_next_model";
     const checkSnapshots =
       failureLogDirAbs && docLog
         ? [await buildTranslationCheckSnapshot(originalContent, restored)]
@@ -232,13 +297,9 @@ async function translateProtectedContent(
     if (failureLogDirAbs && docLog && writeDebugLog) {
       const debugLogPath = writeDebugLog({
         segmentsLabel: segLabelSingle || "(segment range unknown)",
-        outcome: ok
-          ? "individual_success"
-          : nextIdx >= models.length
-            ? "fatal"
-            : "retrying_next_model",
+        outcome: logOutcome,
         failedModel: single.model,
-        nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
+        nextModel: stopRetrying ? undefined : models[nextIdx]!,
         qualityErrors: allErrors,
         perSegmentLines: [line],
         systemPrompt: single.debugPrompt?.systemPrompt ?? "",
@@ -269,21 +330,29 @@ async function translateProtectedContent(
 
     validationFailures++;
     remainingErrors = allErrors;
+    if (softOnly) {
+      const candidate = { text: restored, model: single.model, issues: labelIssues };
+      softCandidates.push(candidate);
+      if (!bestSoft || labelIssues.length < bestSoft.issues.length) {
+        bestSoft = candidate;
+      }
+    }
     await recordFailures(
       buildQualityFailureRows(
         single.model,
         modelOrder1Based(single.model),
         allErrors,
-        nextIdx >= models.length
+        softOnly ? false : stopRetrying,
+        restored
       )
     );
 
     if (failureLogDirAbs && docLog && writeFailureLog) {
       const failureLogPath = writeFailureLog({
         segmentsLabel: segLabelSingle || "(segment range unknown)",
-        outcome: nextIdx >= models.length ? "fatal" : "retrying_next_model",
+        outcome: logOutcome,
         failedModel: single.model,
-        nextModel: nextIdx < models.length ? models[nextIdx]! : undefined,
+        nextModel: stopRetrying ? undefined : models[nextIdx]!,
         qualityErrors: allErrors,
         perSegmentLines: [line],
         systemPrompt: single.debugPrompt?.systemPrompt ?? "",
@@ -298,7 +367,27 @@ async function translateProtectedContent(
       }
     }
 
-    if (nextIdx >= models.length) {
+    if (stopRetrying) {
+      if (repeatedIdentical && !modelsExhausted) {
+        const loc = docLog?.relativePath ? `${locale} ${docLog.relativePath}` : locale;
+        const seg = params.segLabelSingle ? `: ${params.segLabelSingle}` : "";
+        console.warn(
+          chalk.yellow(
+            t(
+              "  ⚠️  {{loc}}{{seg}}: stopping after {{count}} identical quality failures ({{detail}}).",
+              {
+                loc,
+                seg,
+                count: String(IDENTICAL_QUALITY_FAILURE_LIMIT),
+                detail: allErrors.join("; "),
+              }
+            )
+          )
+        );
+      }
+      if (bestSoft) {
+        return softAccept();
+      }
       break;
     }
 

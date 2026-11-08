@@ -1,3 +1,6 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import { describe, expect, it, vi } from "vitest";
 import type { Segment } from "../../src/core/types.js";
 import { translateOneSegmentWithQualityRetry } from "../../src/cli/doc-translate-quality-retry.js";
@@ -348,5 +351,504 @@ describe("translateOneSegmentWithQualityRetry split fallback", () => {
         segLabelSingle: "",
       })
     ).rejects.toThrow(/Doc translation quality failed/);
+  });
+
+  it("accepts the earliest glossary-label candidate when every model misses the label", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-soft-"));
+    const strings = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      strings,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+      }),
+      "utf8"
+    );
+    const source = "See **Other Models** here.";
+    const models = ["model-a", "model-b"];
+    const glossary = new Glossary(strings, undefined, ["de"]);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const misses = ["Siehe **Hier** bitte.", "Siehe **Dort** bitte."];
+    const recorded: Array<{ fatal: boolean; errors: readonly string[]; rejected?: string }> = [];
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          const idx = opts?.startModelIndex ?? 0;
+          const model = models[idx]!;
+          return {
+            content: misses[idx]!,
+            model,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: misses[idx]!,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+
+    try {
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale: "de",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: true,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: (model, _order, errors, fatal, rejectedText) => {
+          recorded.push({ fatal, errors, rejected: rejectedText });
+          return [];
+        },
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "de",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+        }),
+        modelOrder1Based: (model) => (model ? models.indexOf(model) + 1 : null),
+        segLabelSingle: "segment 1/1",
+      });
+      expect(result.text).toBe(misses[0]);
+      expect(result.modelUsed).toBe("model-a");
+      expect(result.glossaryWarning?.issues.map((issue) => issue.term)).toEqual(["Other Models"]);
+      expect(result.glossaryWarning?.candidates.map((candidate) => candidate.model)).toEqual(
+        models
+      );
+      expect(recorded.every((row) => row.fatal === false)).toBe(true);
+      expect(recorded.map((row) => row.rejected)).toEqual(misses);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("drops a hard-error attempt and keeps an earlier glossary-label candidate", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-soft-hard-"));
+    const strings = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      strings,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+      }),
+      "utf8"
+    );
+    const source = "See **Other Models** here.";
+    const models = ["model-a", "model-b"];
+    const glossary = new Glossary(strings, undefined, ["de"]);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const labelMiss = "Siehe **Hier** bitte.";
+    const astMiss = "Siehe hier bitte.";
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          const idx = opts?.startModelIndex ?? 0;
+          const model = models[idx]!;
+          const content = model === "model-a" ? labelMiss : astMiss;
+          return {
+            content,
+            model,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: content,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+
+    try {
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale: "de",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: false,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: () => [],
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "de",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+        }),
+        modelOrder1Based: (model) => (model ? models.indexOf(model) + 1 : null),
+        segLabelSingle: "",
+      });
+      expect(result.text).toBe(labelMiss);
+      expect(result.modelUsed).toBe("model-a");
+      expect(result.glossaryWarning?.candidates).toHaveLength(1);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("stops after three identical glossary-label failures and keeps the earliest candidate", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-failfast-"));
+    const strings = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      strings,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+      }),
+      "utf8"
+    );
+    const source = "See **Other Models** here.";
+    const models = ["model-a", "model-b", "model-c", "model-d", "model-e"];
+    const glossary = new Glossary(strings, undefined, ["de"]);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const miss = "Siehe **Hier** bitte.";
+    let calls = 0;
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          calls++;
+          const idx = opts?.startModelIndex ?? 0;
+          const model = models[idx]!;
+          const content = idx < 3 ? miss : "Siehe **Andere Modelle** hier.";
+          return {
+            content,
+            model,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: content,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale: "de",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: true,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: () => [],
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "de",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+        }),
+        modelOrder1Based: (model) => (model ? models.indexOf(model) + 1 : null),
+        segLabelSingle: "segment 1/1",
+      });
+      expect(calls).toBe(3);
+      expect(result.text).toBe(miss);
+      expect(result.modelUsed).toBe("model-a");
+      expect(result.glossaryWarning?.candidates.map((candidate) => candidate.model)).toEqual([
+        "model-a",
+        "model-b",
+        "model-c",
+      ]);
+      expect(
+        warn.mock.calls.some((call) => String(call[0]).includes("identical quality failures"))
+      ).toBe(true);
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("stops after three identical hard failures without calling the remaining models", async () => {
+    const models = ["model-a", "model-b", "model-c", "model-d", "model-e"];
+    let calls = 0;
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          calls++;
+          const idx = opts?.startModelIndex ?? 0;
+          return {
+            content: text.replace(/\{\{SE\}\}/g, ""),
+            model: models[idx]!,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: "",
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+    const glossary = new Glossary(undefined, undefined);
+    const short = "Use **bold** and **more** here.";
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "ko", true, true);
+    const protectedShort = protectForPart(short);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      await expect(
+        translateOneSegmentWithQualityRetry({
+          client,
+          locale: "ko",
+          glossary,
+          contentType: "markdown",
+          models,
+          original: seg(short),
+          protectedContent: protectedShort.text,
+          protectState: protectedShort.state,
+          startModelIndex: 0,
+          splitDepth: 0,
+          qualityRetrySplit: false,
+          maxQualityRetrySplitDepth: 3,
+          protectForTranslation: protectForPart,
+          segmentHash: "abc123",
+          failureFp: null,
+          recordFailures: async () => {},
+          buildQualityFailureRows: () => [],
+          buildRuntimeFailureRow: () => ({
+            sourceHash: "abc123",
+            locale: "ko",
+            model: null,
+            modelOrder: null,
+            qualityError: "runtime",
+            errorMessage: "",
+            fatal: true,
+            filepath: null,
+            sourceText: short,
+          }),
+          modelOrder1Based: () => null,
+          segLabelSingle: "",
+        })
+      ).rejects.toThrow(/Doc translation quality failed/);
+      expect(calls).toBe(3);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("keeps trying when quality errors are not the same three times", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-mixed-"));
+    const strings = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      strings,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+      }),
+      "utf8"
+    );
+    const source = "See **Other Models** here.";
+    const models = ["model-a", "model-b", "model-c", "model-d"];
+    const glossary = new Glossary(strings, undefined, ["de"]);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const labelMiss = "Siehe **Hier** bitte.";
+    const astMiss = "Siehe hier bitte.";
+    let calls = 0;
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          calls++;
+          const idx = opts?.startModelIndex ?? 0;
+          const content = idx % 2 === 0 ? labelMiss : astMiss;
+          return {
+            content,
+            model: models[idx]!,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: content,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+
+    try {
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale: "de",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: false,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: () => [],
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "de",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+        }),
+        modelOrder1Based: () => null,
+        segLabelSingle: "",
+      });
+      expect(calls).toBe(4);
+      expect(result.modelUsed).toBe("model-a");
+      expect(result.glossaryWarning?.candidates).toHaveLength(2);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("counts a prior batch failure toward the three identical failures", async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-prior-"));
+    const strings = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      strings,
+      JSON.stringify({
+        a: { source: "Other Models", translated: { de: "Andere Modelle" } },
+      }),
+      "utf8"
+    );
+    const source = "See **Other Models** here.";
+    const models = ["model-a", "model-b", "model-c", "model-d"];
+    const glossary = new Glossary(strings, undefined, ["de"]);
+    const protectForPart = (raw: string) =>
+      protectSegmentForTranslation(raw, glossary, "de", true, false);
+    const protectedSeg = protectForPart(source);
+    const miss = "Siehe **Hier** bitte.";
+    const prior = glossary.missingLockedUiLabels(source, miss, "de").map((issue) => issue.message);
+    let calls = 0;
+    const client = {
+      getConfiguredModels: () => models,
+      translateDocumentSegment: vi.fn(
+        async (
+          _text: string,
+          _locale: string,
+          _hints: unknown,
+          opts?: { startModelIndex?: number }
+        ) => {
+          calls++;
+          const idx = opts?.startModelIndex ?? 0;
+          return {
+            content: miss,
+            model: models[idx]!,
+            usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+            cost: 0,
+            debugPrompt: { systemPrompt: "", userContent: "" },
+            rawAssistantContent: miss,
+          };
+        }
+      ),
+    } as unknown as LlmClient;
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      const result = await translateOneSegmentWithQualityRetry({
+        client,
+        locale: "de",
+        glossary,
+        contentType: "markdown",
+        models,
+        original: seg(source),
+        protectedContent: protectedSeg.text,
+        protectState: protectedSeg.state,
+        startModelIndex: 0,
+        splitDepth: 0,
+        qualityRetrySplit: false,
+        maxQualityRetrySplitDepth: 3,
+        protectForTranslation: protectForPart,
+        segmentHash: "abc123",
+        failureFp: null,
+        recordFailures: async () => {},
+        buildQualityFailureRows: () => [],
+        buildRuntimeFailureRow: () => ({
+          sourceHash: "abc123",
+          locale: "de",
+          model: null,
+          modelOrder: null,
+          qualityError: "runtime",
+          errorMessage: "",
+          fatal: true,
+        }),
+        modelOrder1Based: () => null,
+        segLabelSingle: "",
+        priorIdenticalQualityErrors: prior,
+      });
+      expect(calls).toBe(2);
+      expect(result.glossaryWarning?.candidates).toHaveLength(2);
+    } finally {
+      warn.mockRestore();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

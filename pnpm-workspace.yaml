@@ -54,8 +54,8 @@ minimumReleaseAgeExclude:
   - "@ai-sdk/gateway@4.0.74"
   - ai@7.0.92
   - ignore@7.0.8
-  - fumadocs-core@16.15.5 || 16.15.13 || 16.16.0
-  - fumadocs-ui@16.15.5 || 16.15.13 || 16.16.0
+  - fumadocs-core@16.15.5 || 16.15.13 || 16.16.0 || 16.18.3
+  - fumadocs-ui@16.15.5 || 16.15.13 || 16.16.0 || 16.18.3
   - "@docusaurus/babel@3.10.2"
   - "@docusaurus/bundler@3.10.2"
   - "@docusaurus/core@3.10.2"
@@ -102,12 +102,14 @@ minimumReleaseAgeExclude:
   - "@next/swc-win32-arm64-msvc@16.3.6"
   - "@next/swc-win32-x64-msvc@16.3.6"
   - next@16.3.6
-  - react-i18next@17.0.15 || 17.1.1 || 17.1.10
+  - react-i18next@17.0.15 || 17.1.1 || 17.1.10 || 18.0.1
   - mdast-util-from-markdown@2.1.0
   - "@astrojs/markdown-satteri@0.4.5"
   - "@astrojs/prism@4.1.1"
   - "@astrojs/telemetry@3.4.1"
   - globals@17.14.0
+  - hyparquet@1.33.0
+  - fumadocs-mdx@15.5.2
 overrides:
   ai-i18n-tools: workspace:*
   # Tailwind 4.3 pins lightningcss 1.32, which warns on the CSS Custom Highlight
@@ -158,6 +160,13 @@ overrides:
   glob@>=9.0.0 <=14.0.1: ^14.0.2
   joi@>=17.1.1 <17.13.9: ^17.13.9
   minimatch@<11.0.1: ^11.0.1
+# zod-to-ts@2.1.0 peers typescript ^5 || ^6 but resolved TypeScript 7 from the
+# intlayer-translate example, whose native compiler has no JS `factory` API.
+# Give @intlayer/engine its own TypeScript 6 so zod-to-ts resolves a working one.
+packageExtensions:
+  "@intlayer/engine":
+    dependencies:
+      typescript: ^6.0.3
 patchedDependencies:
   nextra-theme-docs@4.6.1: patches/nextra-theme-docs@4.6.1.patch
   # No release past braces <=3.0.3 (GHSA-vfj7-8cjw-p6xm). The patch is the fix.
@@ -165,6 +174,10 @@ patchedDependencies:
   http-cache-semantics@4.3.0: patches/http-cache-semantics@4.3.0.patch
 # braces has no release outside the advisory range. The patch above is the fix;
 # ignore the GHSA so `pnpm audit` does not keep matching the version.
+# deepmerge <=4.3.1 has no patched release (GHSA-gcqx-w48m-w2h4, low). It is only
+# declared by @svgr/plugin-svgo@8.1.0 (Docusaurus examples) and never imported
+# by its dist, so the vulnerable mergeObject() is unreachable.
 auditConfig:
   ignoreGhsas:
     - GHSA-vfj7-8cjw-p6xm
+    - GHSA-gcqx-w48m-w2h4

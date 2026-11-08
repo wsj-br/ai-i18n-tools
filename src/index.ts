@@ -7,6 +7,8 @@ export {
   type OpenRouterConfig,
   type FeaturesConfig,
   type GlossaryConfig,
+  type GlossaryLabelCheckSkip,
+  glossaryLabelCheckSkipSchema,
   type UIStringExtractorConfig,
   type ReactExtractorConfig,
   type SvgExtractorConfig,

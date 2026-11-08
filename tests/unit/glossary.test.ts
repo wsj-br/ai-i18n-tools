@@ -9,6 +9,16 @@ import {
 } from "../../src/glossary/glossary.js";
 import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 
+function labelMessages(
+  g: Glossary,
+  source: string,
+  translated: string,
+  locale: string,
+  relPath?: string
+): string[] {
+  return g.missingLockedUiLabels(source, translated, locale, relPath).map((issue) => issue.message);
+}
+
 describe("Glossary", () => {
   it("loads strings.json and finds terms", () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-"));
@@ -271,31 +281,30 @@ describe("Glossary", () => {
       expect(longer.some((hint) => hint.includes("Cursor Models run out"))).toBe(true);
       expect(longer.some((hint) => hint.includes('"Cursor Models"'))).toBe(false);
 
-      expect(
-        g.missingLockedUiLabels("See Other Models here", "Siehe Other Models hier", "de")
-      ).toEqual([]);
-      expect(
-        g.missingLockedUiLabels("See **Other Models** here", "Siehe Other Models hier", "de")
-      ).toEqual(['Glossary label missing: "Other Models" should include "Andere Modelle"']);
-      expect(
-        g.missingLockedUiLabels("See Other Models here", "Siehe Andere Modelle hier", "de")
-      ).toEqual([]);
-      expect(g.missingLockedUiLabels("Click Save now", "Klicken Sie auf Speichern", "de")).toEqual(
+      expect(labelMessages(g, "See Other Models here", "Siehe Other Models hier", "de")).toEqual(
         []
       );
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(g, "See **Other Models** here", "Siehe Other Models hier", "de")
+      ).toEqual(['Glossary label missing: "Other Models" should include "Andere Modelle"']);
+      expect(labelMessages(g, "See Other Models here", "Siehe Andere Modelle hier", "de")).toEqual(
+        []
+      );
+      expect(labelMessages(g, "Click Save now", "Klicken Sie auf Speichern", "de")).toEqual([]);
+      expect(
+        labelMessages(
+          g,
           "This file is not a Cursor Pace backup.",
           "Diese Datei ist keine Sicherung.",
           "de"
         )
       ).toEqual([]);
-      expect(g.missingLockedUiLabels("Cursor Pace", "Cursor Pace", "de")).toEqual([]);
-      expect(g.missingLockedUiLabels("Cursor Pace", "Cursor Pace", "es")).toEqual([
+      expect(labelMessages(g, "Cursor Pace", "Cursor Pace", "de")).toEqual([]);
+      expect(labelMessages(g, "Cursor Pace", "Cursor Pace", "es")).toEqual([
         'Glossary label missing: "Cursor Pace" should include "Ritmo del Cursor"',
       ]);
-      expect(g.missingLockedUiLabels("The Cursor Models series", "Die Serie", "de")).toEqual([]);
-      expect(g.missingLockedUiLabels("The **Cursor Models** series", "Die Serie", "de")).toEqual([
+      expect(labelMessages(g, "The Cursor Models series", "Die Serie", "de")).toEqual([]);
+      expect(labelMessages(g, "The **Cursor Models** series", "Die Serie", "de")).toEqual([
         'Glossary label missing: "Cursor Models" should include "Cursor-Modelle"',
       ]);
     } finally {
@@ -368,82 +377,79 @@ describe("Glossary", () => {
     try {
       const g = new Glossary(p, undefined, ["de", "fr", "pt-BR"]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "You can sign in later from Settings.",
           "Sie können sich später anmelden.",
           "de"
         )
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
-          "You can sign in later.",
-          "Vous pouvez vous connecter plus tard.",
-          "fr"
-        )
+        labelMessages(g, "You can sign in later.", "Vous pouvez vous connecter plus tard.", "fr")
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels("Click **Sign in** to continue.", "Klicken Sie auf Login.", "de")
+        labelMessages(g, "Click **Sign in** to continue.", "Klicken Sie auf Login.", "de")
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "self-contained. **Sign in** also needs the runtime.",
           "autonome. La **connexion** nécessite le runtime.",
           "fr"
         )
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "Desktop app. Sign in with your Cursor account.",
           "Connectez-vous avec votre compte Cursor.",
           "fr"
         )
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels("5. Sign in to Cursor.", "5. Connectez-vous à Cursor.", "fr")
+        labelMessages(g, "5. Sign in to Cursor.", "5. Connectez-vous à Cursor.", "fr")
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "- Sign in to Cursor and refresh usage",
           "- Connectez-vous à Cursor et actualisez",
           "fr"
         )
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
-          "Then open Sign in to Cursor from the menu.",
-          "Puis ouvrez le menu.",
-          "fr"
-        )
+        labelMessages(g, "Then open Sign in to Cursor from the menu.", "Puis ouvrez le menu.", "fr")
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "Sign in with your Cursor account to pull usage.",
           "उपयोग खींचने के लिए अपने कर्सर खाते से साइन इन करें।",
           "hi"
         )
       ).toEqual([]);
-      expect(g.missingLockedUiLabels("Open **Cursor account**.", "खाता खोलें।", "hi")).toEqual([
+      expect(labelMessages(g, "Open **Cursor account**.", "खाता खोलें।", "hi")).toEqual([
         'Glossary label missing: "Cursor account" should include "कर्सर खाता"',
       ]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "- **Expected usage** on the chart",
           "- O **uso esperado** no gráfico",
           "pt-BR"
         )
       ).toEqual([]);
       expect(
-        g.missingLockedUiLabels(
+        labelMessages(
+          g,
           "The start stays at the cycle start.",
           "Le début reste au début de cycle.",
           "fr"
         )
       ).toEqual([]);
+      expect(labelMessages(g, "Open Sign in from the menu.", "Ouvrez le menu.", "fr")).toEqual([]);
       expect(
-        g.missingLockedUiLabels("Open Sign in from the menu.", "Ouvrez le menu.", "fr")
-      ).toEqual([]);
-      expect(
-        g.missingLockedUiLabels("See **Expected usage** on the chart.", "Veja o gráfico.", "pt-BR")
+        labelMessages(g, "See **Expected usage** on the chart.", "Veja o gráfico.", "pt-BR")
       ).toEqual(['Glossary label missing: "Expected usage" should include "Uso esperado"']);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
@@ -462,7 +468,7 @@ describe("Glossary", () => {
     );
     try {
       const g = new Glossary(undefined, user, ["de"]);
-      expect(g.missingLockedUiLabels("Other Models", "Other Models", "de")).toEqual([]);
+      expect(labelMessages(g, "Other Models", "Other Models", "de")).toEqual([]);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -493,7 +499,7 @@ describe("Glossary", () => {
     try {
       const g = new Glossary(ui, user, ["de"]);
       expect(g.getTranslation("Cursor Models", "de")).toBe("Cursor Modelle");
-      expect(g.missingLockedUiLabels("Cursor Models", "Cursor-Modelle", "de")).toEqual([
+      expect(labelMessages(g, "Cursor Models", "Cursor-Modelle", "de")).toEqual([
         'Glossary label missing: "Cursor Models" should include "Cursor Modelle"',
       ]);
     } finally {
@@ -536,6 +542,88 @@ describe("Glossary", () => {
         'Forced glossary term missing: "Other Models" should include "Andere Modelle"',
       ]);
       expect(glossaryCacheMissErrors(g, "de", stale, stale, USER_EDITED_MODEL, true)).toEqual([]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("does not lock a glossary term inside a longer bold phrase", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-phrase-"));
+    const p = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        a: { source: "Target language", translated: { uk: "Цільова мова" } },
+        b: { source: "No data", translated: { pl: "Brak danych" } },
+        c: { source: "Detect Language", translated: { "zh-Hant": "偵測語言" } },
+      }),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(p, undefined, ["uk", "pl", "zh-Hant"]);
+      const source = "- **Ask for target language** — adds a language selector";
+      const translated = "- **Запитати цільову мову** — додає селектор мови";
+      expect(labelMessages(g, source, translated, "uk")).toEqual([]);
+      expect(labelMessages(g, "**Target language**", "**Мова**", "uk")).toEqual([
+        'Glossary label missing: "Target language" should include "Цільова мова"',
+      ]);
+      expect(labelMessages(g, "**Target language**", "**Цільову мову**", "uk")).toEqual([
+        'Glossary label missing: "Target language" should include "Цільова мова"',
+      ]);
+      const heading = "## Dashboard shows no data for other users (web)";
+      expect(
+        labelMessages(
+          g,
+          heading,
+          "## Panel pokazuje brak danych dla innych użytkowników (web)",
+          "pl"
+        )
+      ).toEqual([]);
+      expect(labelMessages(g, heading, "## Panel nie ma informacji", "pl")).toEqual([
+        'Glossary label missing: "No data" should include "Brak danych"',
+      ]);
+      expect(labelMessages(g, "or **Detect Language**.", "或**偵測語言**。", "zh-Hant")).toEqual(
+        []
+      );
+      expect(labelMessages(g, "or **Detect Language**.", "或**其他**。", "zh-Hant")).toEqual([
+        'Glossary label missing: "Detect Language" should include "偵測語言"',
+      ]);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("skips a locked label check for a term, locale, and file glob", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-gloss-skip-"));
+    const p = path.join(dir, "strings.json");
+    fs.writeFileSync(
+      p,
+      JSON.stringify({
+        a: { source: "Target language", translated: { uk: "Цільова мова", pl: "Język docelowy" } },
+      }),
+      "utf8"
+    );
+    try {
+      const g = new Glossary(p, undefined, ["uk", "pl"], {
+        labelCheckSkips: [
+          {
+            term: "Target language",
+            locales: ["uk"],
+            files: ["website/src/content/docs/docs/transform.md"],
+          },
+        ],
+      });
+      const source = "**Target language**";
+      const translated = "**Мова**";
+      expect(
+        labelMessages(g, source, translated, "uk", "website/src/content/docs/docs/transform.md")
+      ).toEqual([]);
+      expect(
+        labelMessages(g, source, translated, "uk", "website/src/content/docs/docs/other.md")
+      ).toEqual(['Glossary label missing: "Target language" should include "Цільова мова"']);
+      expect(labelMessages(g, source, "**Inny**", "pl")).toEqual([
+        'Glossary label missing: "Target language" should include "Język docelowy"',
+      ]);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

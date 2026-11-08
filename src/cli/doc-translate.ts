@@ -44,7 +44,17 @@ import {
   restoreGlossaryForcedTerms,
 } from "../processors/glossary-force-placeholders.js";
 import { splitTranslatableIntoBatches } from "../processors/batch-processor.js";
-import { Glossary, glossaryCacheMissErrors } from "../glossary/glossary.js";
+import {
+  Glossary,
+  glossaryCacheMissErrors,
+  unknownLabelCheckSkipLocales,
+} from "../glossary/glossary.js";
+import {
+  GlossaryWarningCollector,
+  glossaryWarningSummaryLines,
+  renderGlossaryReviewPrompt,
+  type GlossaryReviewItem,
+} from "../glossary/glossary-review-report.js";
 import {
   computeGuidanceFingerprint,
   loadTranslationContextFromConfig,
@@ -211,6 +221,13 @@ export interface TranslateRunOptions {
    * `forceUpdate`. Locales without an enforced script still skip when tracking matches.
    */
   checkCache?: boolean;
+  /**
+   * Re-translate markdown segments whose cache row is flagged with a glossary label warning.
+   * Unflagged rows stay cached. A flagged row whose label check now passes is kept and unflagged.
+   */
+  recheckGlossaryWarnings?: boolean;
+  /** Filled by `runTranslate` so markdown retries can record soft glossary-label accepts. */
+  glossaryWarningCollector?: GlossaryWarningCollector;
   noCache: boolean;
   verbose: boolean;
   pathFilter?: string;
@@ -1018,6 +1035,9 @@ function summarizeQualityError(errorMessage: string): string {
   if (errorMessage.startsWith("Unexpected {{…}} token in translation")) {
     return "placeholderInvented";
   }
+  if (errorMessage.startsWith("Glossary label missing:")) {
+    return "glossaryLabel";
+  }
   return "validation";
 }
 
@@ -1029,7 +1049,8 @@ function buildQualityFailureRows(
   errors: readonly string[],
   fatal: boolean,
   filepath: string | null,
-  sourceText: string
+  sourceText: string,
+  rejectedText?: string
 ): TranslationFailureInsert[] {
   return errors.map((errorMessage) => {
     const cleanMessage = sanitizeFailureMessage(errorMessage);
@@ -1043,6 +1064,7 @@ function buildQualityFailureRows(
       fatal,
       filepath,
       sourceText,
+      rejectedText: rejectedText ?? null,
     };
   });
 }
@@ -1107,6 +1129,7 @@ export async function translateSegmentsBatched(
     maxQualityRetrySplitDepth: number;
     emphasisPlaceholders: boolean;
     expressionProtection?: ExpressionProtectionOptions;
+    onGlossaryWarning?: (item: GlossaryReviewItem) => void;
   },
   abortSignal?: AbortSignal
 ): Promise<{
@@ -1388,6 +1411,7 @@ export async function translateSegmentsBatched(
       startModelIndex: number;
       batchSegIndex: number;
       docIdx0: number | undefined;
+      priorQualityErrors?: readonly string[];
     }): Promise<DocSegmentTranslation> => {
       const segLabelSingle =
         docLog && args.docIdx0 !== undefined
@@ -1420,7 +1444,7 @@ export async function translateSegmentsBatched(
         segmentHash: args.segment.hash,
         failureFp,
         recordFailures,
-        buildQualityFailureRows: (model, modelOrder, errors, fatal) =>
+        buildQualityFailureRows: (model, modelOrder, errors, fatal, rejectedText) =>
           buildQualityFailureRows(
             args.segment.hash,
             locale,
@@ -1429,7 +1453,8 @@ export async function translateSegmentsBatched(
             errors,
             fatal,
             failureFp,
-            args.original.content
+            args.original.content,
+            rejectedText
           ),
         buildRuntimeFailureRow: (model, modelOrder, message, fatal) =>
           buildRuntimeFailureRow(
@@ -1460,6 +1485,7 @@ export async function translateSegmentsBatched(
             segLabelSingle || undefined,
             ord
           ),
+        priorIdenticalQualityErrors: args.priorQualityErrors,
       });
       localIn += result.inTok;
       localOut += result.outTok;
@@ -1467,7 +1493,22 @@ export async function translateSegmentsBatched(
       localSegmentValidationFailures += result.validationFailures;
       localIndividualSegmentTranslations += result.individualCalls;
       localSegmentQualitySplitRetries += result.qualitySplitRetries;
-      return { text: result.text, modelUsed: result.modelUsed };
+      if (result.glossaryWarning) {
+        qualityRetryOpts?.onGlossaryWarning?.({
+          locale,
+          relPath: docLog?.relativePath ?? failureDocMeta?.filepath ?? "",
+          sourceText: args.original.content,
+          chosenModel: result.modelUsed,
+          chosenText: result.text,
+          issues: result.glossaryWarning.issues,
+          candidates: result.glossaryWarning.candidates,
+        });
+      }
+      return {
+        text: result.text,
+        modelUsed: result.modelUsed,
+        ...(result.glossaryWarning ? { glossaryWarning: true } : {}),
+      };
     };
 
     const ph = new PlaceholderHandler();
@@ -1506,11 +1547,13 @@ export async function translateSegmentsBatched(
         const origSeg = segmentOriginalContent(s, originalContentByHash);
         const preRestoreErrors = collectPreRestorePlaceholderErrors(st, raw, s.hash);
         const v = await validateDocTranslatePair(origSeg, restored);
-        const labelErrors = markdownQuality
-          ? glossary.missingLockedUiLabels(origSeg.content, restored, locale)
+        const labelIssues = markdownQuality
+          ? glossary.missingLockedUiLabels(origSeg.content, restored, locale, docLog?.relativePath)
           : [];
+        const labelErrors = labelIssues.map((issue) => issue.message);
         const allErrors = [...preRestoreErrors, ...v.errors, ...labelErrors];
-        const ok = preRestoreErrors.length === 0 && v.ok && labelErrors.length === 0;
+        const labelOnly = preRestoreErrors.length === 0 && v.ok && labelIssues.length > 0;
+        const ok = preRestoreErrors.length === 0 && v.ok && labelIssues.length === 0;
         const docIdx0 = batchDocIndices[bi]?.[i];
         const label =
           docLog && docIdx0 !== undefined
@@ -1529,9 +1572,10 @@ export async function translateSegmentsBatched(
               res.model,
               modelOrder1Based(models, res.model),
               allErrors,
-              nextStart >= models.length,
+              labelOnly ? false : nextStart >= models.length,
               failureFp,
-              origSeg.content
+              origSeg.content,
+              restored
             )
           );
           failedSegments.push({
@@ -1640,6 +1684,7 @@ export async function translateSegmentsBatched(
             startModelIndex: initialModelIndex,
             batchSegIndex: failed.index,
             docIdx0: failed.docIdx0,
+            priorQualityErrors: failed.errors,
           });
           partial.set(failed.segment.hash, translated);
         }
@@ -1875,6 +1920,7 @@ export async function translateMarkdownFile(
   if (
     !opts.force &&
     !opts.forceUpdate &&
+    !opts.recheckGlossaryWarnings &&
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
@@ -1947,7 +1993,8 @@ export async function translateMarkdownFile(
   }
 
   // Batch cache lookup: fetch all cached segments in one query
-  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  let batchCacheHits:
+    Map<string, { text: string; model: string | null; glossaryWarning: boolean }> | undefined;
   if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
     const hashes = translatableSegments.map(({ s }) => s.hash);
     batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
@@ -1961,19 +2008,34 @@ export async function translateMarkdownFile(
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
       const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
+      const checkLockedLabels = !(cached.glossaryWarning && !opts.recheckGlossaryWarnings);
       const glossaryErrors = glossaryCacheMissErrors(
         glossary,
         locale,
         s.content,
         cached.text,
         cached.model,
-        true
+        checkLockedLabels,
+        relPath
       );
+      if (
+        cached.glossaryWarning &&
+        opts.recheckGlossaryWarnings &&
+        glossaryErrors.length === 0 &&
+        quality.ok &&
+        !scriptIssue &&
+        cache
+      ) {
+        await withCacheMutex(opts.cacheMutex, () => cache.clearGlossaryWarning(s.hash, locale));
+      }
       if (quality.ok && !scriptIssue && glossaryErrors.length === 0) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
           ...(modelUsed ? { modelUsed } : {}),
+          ...(cached.glossaryWarning && !opts.recheckGlossaryWarnings
+            ? { glossaryWarning: true }
+            : {}),
         });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
@@ -2061,6 +2123,7 @@ export async function translateMarkdownFile(
       maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
       emphasisPlaceholders: emphasisOn,
       expressionProtection: documentationExpressionProtection(config.doc),
+      onGlossaryWarning: (item) => opts.glossaryWarningCollector?.add(item),
     },
     opts.abortSignal
   );
@@ -2187,7 +2250,8 @@ export async function translateMarkdownFile(
             entry.modelUsed,
             translationFilepathMeta,
             s.startLine ?? null,
-            promptContextHash
+            promptContextHash,
+            entry.glossaryWarning === true
           );
         }
       });
@@ -2275,6 +2339,7 @@ export async function translateAstroFile(
   if (
     !opts.force &&
     !opts.forceUpdate &&
+    !opts.recheckGlossaryWarnings &&
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
@@ -2348,7 +2413,8 @@ export async function translateAstroFile(
     }
   }
 
-  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  let batchCacheHits:
+    Map<string, { text: string; model: string | null; glossaryWarning: boolean }> | undefined;
   if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
     const hashes = translatableSegments.map(({ s }) => s.hash);
     batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
@@ -2361,19 +2427,34 @@ export async function translateAstroFile(
     if (cached) {
       const quality = await validateDocTranslatePair(s, cached.text);
       const scriptIssue = translationScriptIssue(cached.text, locale, s.content);
+      const checkLockedLabels = !(cached.glossaryWarning && !opts.recheckGlossaryWarnings);
       const glossaryErrors = glossaryCacheMissErrors(
         glossary,
         locale,
         s.content,
         cached.text,
         cached.model,
-        true
+        checkLockedLabels,
+        relPath
       );
+      if (
+        cached.glossaryWarning &&
+        opts.recheckGlossaryWarnings &&
+        glossaryErrors.length === 0 &&
+        quality.ok &&
+        !scriptIssue &&
+        cache
+      ) {
+        await withCacheMutex(opts.cacheMutex, () => cache.clearGlossaryWarning(s.hash, locale));
+      }
       if (quality.ok && !scriptIssue && glossaryErrors.length === 0) {
         const modelUsed = cached.model?.trim();
         translations.set(s.hash, {
           text: cached.text,
           ...(modelUsed ? { modelUsed } : {}),
+          ...(cached.glossaryWarning && !opts.recheckGlossaryWarnings
+            ? { glossaryWarning: true }
+            : {}),
         });
         hitKeys.add(`${s.hash}|${locale}`);
         segmentsCached++;
@@ -2460,6 +2541,7 @@ export async function translateAstroFile(
       maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
       emphasisPlaceholders: false,
       expressionProtection,
+      onGlossaryWarning: (item) => opts.glossaryWarningCollector?.add(item),
     },
     opts.abortSignal
   );
@@ -2545,7 +2627,8 @@ export async function translateAstroFile(
             entry.modelUsed,
             translationFilepathMeta,
             s.startLine ?? null,
-            promptContextHash
+            promptContextHash,
+            entry.glossaryWarning === true
           );
         }
       });
@@ -2646,6 +2729,7 @@ export async function translateHtmlFile(
   if (
     !opts.force &&
     !opts.forceUpdate &&
+    !opts.recheckGlossaryWarnings &&
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
@@ -2726,7 +2810,8 @@ export async function translateHtmlFile(
     }
   }
 
-  let batchCacheHits: Map<string, { text: string; model: string | null }> | undefined;
+  let batchCacheHits:
+    Map<string, { text: string; model: string | null; glossaryWarning: boolean }> | undefined;
   if (!opts.force && cache && !opts.noCache && translatableSegments.length > 0) {
     const hashes = translatableSegments.map(({ s }) => s.hash);
     batchCacheHits = await withCacheMutex(opts.cacheMutex, () =>
@@ -2840,6 +2925,7 @@ export async function translateHtmlFile(
       maxQualityRetrySplitDepth: splitCfg.maxQualityRetrySplitDepth,
       emphasisPlaceholders: false,
       expressionProtection,
+      onGlossaryWarning: (item) => opts.glossaryWarningCollector?.add(item),
     },
     opts.abortSignal
   );
@@ -2905,7 +2991,8 @@ export async function translateHtmlFile(
             entry.modelUsed,
             translationFilepathMeta,
             s.startLine ?? null,
-            promptContextHash
+            promptContextHash,
+            entry.glossaryWarning === true
           );
         }
       });
@@ -3030,6 +3117,7 @@ export async function translateJsonFile(
   if (
     !opts.force &&
     !opts.forceUpdate &&
+    !opts.recheckGlossaryWarnings &&
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
@@ -3204,7 +3292,8 @@ export async function translateJsonFile(
             entry.modelUsed,
             relPathFromCwd,
             null,
-            promptContextHash
+            promptContextHash,
+            entry.glossaryWarning === true
           );
         }
       });
@@ -3289,6 +3378,7 @@ export async function translateSvgAssetFile(
   if (
     !opts.force &&
     !opts.forceUpdate &&
+    !opts.recheckGlossaryWarnings &&
     cache &&
     !opts.noCache &&
     canSkipUnchangedTranslatedFile(locale, opts.checkCache) &&
@@ -3498,7 +3588,8 @@ export async function translateSvgAssetFile(
             entry.modelUsed,
             translationSvgFilepathMeta,
             null,
-            promptContextHash
+            promptContextHash,
+            entry.glossaryWarning === true
           );
         }
       });
@@ -3573,21 +3664,57 @@ function accumulateFileTotals(
   mergeTranslateTotals(target, totals, skipped, opts);
 }
 
+function writeGlossaryReviewFile(opts: TranslateRunOptions, cacheDir: string): void {
+  const items = opts.glossaryWarningCollector?.items ?? [];
+  if (items.length === 0 || opts.dryRun) {
+    return;
+  }
+  const dir = path.join(opts.cwd, cacheDir);
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const abs = path.join(dir, `glossary-review-${stamp}.md`);
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(abs, renderGlossaryReviewPrompt(items), "utf8");
+    console.warn(chalk.yellow(t("   Glossary review prompt: {{path}}", { path: abs })));
+  } catch (err) {
+    console.warn(
+      chalk.yellow(
+        t("   Could not write glossary review prompt: {{error}}", {
+          error: err instanceof Error ? err.message : String(err),
+        })
+      )
+    );
+  }
+}
+
 function printTranslateDocsRunSummary(
   opts: TranslateRunOptions,
   sum: TranslateTotals,
   wallElapsedMs: number,
-  outcome: "success" | "failure" | "interrupted"
+  outcome: "success" | "failure" | "interrupted",
+  cacheDir?: string
 ): void {
-  printTranslationRunSummary(opts, sum, wallElapsedMs, outcome, {
-    success: t("✅ Translation complete!"),
-    interrupted: t(
-      "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
-    ),
-    failure: t(
-      "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error)."
-    ),
-  });
+  printTranslationRunSummary(
+    opts,
+    sum,
+    wallElapsedMs,
+    outcome,
+    {
+      success: t("✅ Translation complete!"),
+      interrupted: t(
+        "⚠️  Translation interrupted — partial summary (tokens and cost reflect API work completed before the interrupt)."
+      ),
+      failure: t(
+        "⚠️  Translation failed — partial summary (tokens and cost reflect API work completed before the error)."
+      ),
+    },
+    {
+      extraLines: glossaryWarningSummaryLines(opts.glossaryWarningCollector?.items ?? []),
+    }
+  );
+  if (cacheDir) {
+    writeGlossaryReviewFile(opts, cacheDir);
+  }
 }
 
 /** Run translate for all enabled kinds and locales. */
@@ -3652,7 +3779,23 @@ export async function runTranslate(
   );
 
   const locales = opts.locales.map((l) => normalizeLocale(l));
-  const glossary = new Glossary(glossaryUi, glossaryUser, locales);
+  const glossary = new Glossary(glossaryUi, glossaryUser, locales, {
+    labelCheckSkips: config.glossary?.labelCheckSkips,
+  });
+  opts.glossaryWarningCollector = new GlossaryWarningCollector();
+  const unknownSkipLocales = unknownLabelCheckSkipLocales(config.glossary?.labelCheckSkips, [
+    ...config.targetLocales,
+    ...(config.doc.targetLocales ?? []),
+  ]);
+  if (unknownSkipLocales.length > 0) {
+    console.warn(
+      chalk.yellow(
+        t("⚠️  glossary.labelCheckSkips lists unknown locale(s): {{locales}}", {
+          locales: unknownSkipLocales.join(", "),
+        })
+      )
+    );
+  }
   const translationContext = loadTranslationContextFromConfig(config, opts.cwd);
   if (translationContext.truncated) {
     console.warn(
@@ -4181,7 +4324,7 @@ export async function runTranslate(
           )
         );
       }
-      printTranslateDocsRunSummary(opts, sum, wallElapsedFailure, "failure");
+      printTranslateDocsRunSummary(opts, sum, wallElapsedFailure, "failure", config.cacheDir);
       throw localeFailures[0]!.error;
     }
 
@@ -4216,12 +4359,18 @@ export async function runTranslate(
 
     const wallElapsed = Date.now() - wallStart;
 
-    printTranslateDocsRunSummary(opts, sum, wallElapsed, "success");
+    printTranslateDocsRunSummary(opts, sum, wallElapsed, "success", config.cacheDir);
 
     return sum;
   } catch (e) {
     if (isRunInterruptedError(e) || runOpts.abortSignal?.aborted) {
-      printTranslateDocsRunSummary(opts, liveSum, Date.now() - wallStart, "interrupted");
+      printTranslateDocsRunSummary(
+        opts,
+        liveSum,
+        Date.now() - wallStart,
+        "interrupted",
+        config.cacheDir
+      );
       // Defer the exit until after `finally` has closed the cache. Calling `process.exit()` here
       // would terminate the process before `finally` runs, skipping `cache.close()` (the WAL
       // checkpoint + `db.close()` that unlinks the `-wal` / `-shm` sidecars) and leaving them behind.

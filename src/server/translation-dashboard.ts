@@ -5,7 +5,13 @@ import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { TranslationCache } from "../core/cache.js";
 import { GLOSSARY_USER_HEADERS, parseGlossaryCsv } from "../glossary/parse-glossary-csv.js";
-import type { ApiCallFilters, ApiCallOutcome, CldrPluralForm, I18nConfig } from "../core/types.js";
+import type {
+  ApiCallFilters,
+  ApiCallOutcome,
+  CldrPluralForm,
+  GlossaryLabelCheckSkip,
+  I18nConfig,
+} from "../core/types.js";
 import { isPluralStringsEntry } from "../core/types.js";
 import {
   isKnownCldrPluralFormKey,
@@ -28,6 +34,7 @@ import {
 } from "../core/usage-stats.js";
 import { writeAtomicUtf8 } from "../cli/helpers.js";
 import { replaceProviderTranslationModels } from "../core/apply-translation-models.js";
+import { readLabelCheckSkips, writeLabelCheckSkips } from "../core/glossary-label-skips.js";
 import { benchmarkCachePath, ensureModelsDevPricing } from "../core/model-benchmarks.js";
 import { suggestProviderModels } from "../core/suggest-provider-models.js";
 import { selectSuggestRows } from "../cli/suggest-models.js";
@@ -233,6 +240,8 @@ export interface TranslationDashboardOptions {
     activeProvider: string;
     providerNames: string[];
   };
+  /** Project config file. Used to read and write `glossary.labelCheckSkips`. */
+  configPath?: string;
 }
 
 function parseUsageFiltersFromQuery(query: Record<string, unknown>): ApiCallFilters {
@@ -1035,6 +1044,139 @@ export function createTranslationDashboardApp(
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: String(err) });
+    }
+  });
+
+  const labelSkipConfigPath = opts.configPath ?? opts.suggestion?.configPath;
+
+  function requireLabelSkipConfig(res: express.Response): string | undefined {
+    if (!labelSkipConfigPath) {
+      res.status(503).json({ error: "Config path is not available for this dashboard." });
+      return undefined;
+    }
+    return labelSkipConfigPath;
+  }
+
+  function parseLabelSkipBody(body: unknown): GlossaryLabelCheckSkip | undefined {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return undefined;
+    }
+    const rec = body as Record<string, unknown>;
+    const term = typeof rec.term === "string" ? rec.term.trim() : "";
+    if (!term) {
+      return undefined;
+    }
+    const locales = Array.isArray(rec.locales)
+      ? rec.locales.filter(
+          (locale): locale is string => typeof locale === "string" && locale.trim().length > 0
+        )
+      : typeof rec.locales === "string" && rec.locales.trim()
+        ? rec.locales
+            .split(",")
+            .map((locale) => locale.trim())
+            .filter((locale) => locale.length > 0)
+        : ["*"];
+    const files = Array.isArray(rec.files)
+      ? rec.files.filter(
+          (file): file is string => typeof file === "string" && file.trim().length > 0
+        )
+      : typeof rec.files === "string" && rec.files.trim()
+        ? rec.files
+            .split(",")
+            .map((file) => file.trim())
+            .filter((file) => file.length > 0)
+        : undefined;
+    const note = typeof rec.note === "string" && rec.note.trim() ? rec.note.trim() : undefined;
+    return {
+      term,
+      locales: locales.length > 0 ? locales : ["*"],
+      ...(files && files.length > 0 ? { files } : {}),
+      ...(note ? { note } : {}),
+    };
+  }
+
+  app.get("/api/glossary-label-skips", (_req, res) => {
+    const configPath = requireLabelSkipConfig(res);
+    if (!configPath) {
+      return;
+    }
+    try {
+      res.json({ skips: readLabelCheckSkips(configPath), configPath });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ error: msg });
+    }
+  });
+
+  app.post("/api/glossary-label-skips", (req, res) => {
+    const configPath = requireLabelSkipConfig(res);
+    if (!configPath) {
+      return;
+    }
+    const entry = parseLabelSkipBody(req.body);
+    if (!entry) {
+      res.status(400).json({ error: "term is required" });
+      return;
+    }
+    try {
+      const skips = readLabelCheckSkips(configPath);
+      skips.push(entry);
+      const backupPath = writeLabelCheckSkips(configPath, skips);
+      res.json({ ok: true, skips, backupPath });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ error: msg });
+    }
+  });
+
+  app.patch("/api/glossary-label-skips/:index", (req, res) => {
+    const configPath = requireLabelSkipConfig(res);
+    if (!configPath) {
+      return;
+    }
+    const index = parseInt(req.params.index, 10);
+    const entry = parseLabelSkipBody(req.body);
+    if (!entry || Number.isNaN(index) || index < 0) {
+      res.status(400).json({ error: "Invalid skip index or term" });
+      return;
+    }
+    try {
+      const skips = readLabelCheckSkips(configPath);
+      if (index >= skips.length) {
+        res.status(404).json({ error: "Skip index out of range" });
+        return;
+      }
+      skips[index] = entry;
+      const backupPath = writeLabelCheckSkips(configPath, skips);
+      res.json({ ok: true, skips, backupPath });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ error: msg });
+    }
+  });
+
+  app.delete("/api/glossary-label-skips/:index", (req, res) => {
+    const configPath = requireLabelSkipConfig(res);
+    if (!configPath) {
+      return;
+    }
+    const index = parseInt(req.params.index, 10);
+    if (Number.isNaN(index) || index < 0) {
+      res.status(400).json({ error: "Invalid skip index" });
+      return;
+    }
+    try {
+      const skips = readLabelCheckSkips(configPath);
+      if (index >= skips.length) {
+        res.status(404).json({ error: "Skip index out of range" });
+        return;
+      }
+      skips.splice(index, 1);
+      const backupPath = writeLabelCheckSkips(configPath, skips);
+      res.json({ ok: true, skips, backupPath });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.status(400).json({ error: msg });
     }
   });
 

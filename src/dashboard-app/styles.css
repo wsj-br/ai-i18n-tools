@@ -35,6 +35,9 @@ body {
 }
 
 .top {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border);
   background: #161b22;

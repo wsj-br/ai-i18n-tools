@@ -15,12 +15,12 @@
     "i18n:dashboard": "ai-i18n-tools dashboard"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.13.2",
-    "i18next": "^26.6.0",
-    "next": "^16.4.3",
+    "ai-i18n-tools": "^1.13.3",
+    "i18next": "^27.0.1",
+    "next": "^16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-i18next": "^17.1.10"
+    "react-i18next": "^18.0.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

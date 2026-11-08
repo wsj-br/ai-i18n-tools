@@ -672,6 +672,50 @@
               </div>
             </section>
           </div>
+          <section id="gl-skips" class="gl-skips">
+            <h3 data-i18n>Label check skips</h3>
+            <p class="hint" data-i18n>
+              Skip the locked UI-label check for a term and locale. Saved in the project config
+              under glossary.labelCheckSkips. The next translate-docs run uses the new list.
+            </p>
+            <div id="gl-skips-status" class="status"></div>
+            <div class="row-add" id="gl-skip-add-row">
+              <input type="text" id="gl-skip-term" placeholder="Term" data-i18n-placeholder />
+              <input
+                type="text"
+                id="gl-skip-locales"
+                placeholder="Locales (comma, or *)"
+                data-i18n-placeholder
+              />
+              <input
+                type="text"
+                id="gl-skip-files"
+                placeholder="Files (optional globs)"
+                data-i18n-placeholder
+              />
+              <input
+                type="text"
+                id="gl-skip-note"
+                placeholder="Note (optional)"
+                data-i18n-placeholder
+              />
+              <button type="button" id="gl-skip-add" data-i18n>Add skip</button>
+            </div>
+            <section class="table-wrapper">
+              <table class="grid-inline">
+                <thead>
+                  <tr>
+                    <th data-i18n>Term</th>
+                    <th data-i18n>Locales</th>
+                    <th data-i18n>Files</th>
+                    <th data-i18n>Note</th>
+                    <th data-i18n>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="gl-skips-body"></tbody>
+              </table>
+            </section>
+          </section>
         </section>
 
         <section id="panel-stats" class="panel">

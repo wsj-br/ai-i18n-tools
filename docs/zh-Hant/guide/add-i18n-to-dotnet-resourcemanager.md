@@ -126,8 +126,9 @@ helpers unless the user asked for both outputs.
   itself (`<cacheDir>/` drops `cache.db`). If `cacheDir` is not
   `.translation-cache`, the two cache lines must use that directory
   (`<cacheDir>/*` and `!<cacheDir>/cache.db`). If `doctor` reports a missing
-  pattern, append only that pattern. Keep the negation so `cache.db` stays
-  tracked.
+  pattern, run `ai-i18n-tools doctor --fix-gitignore`. That appends a blank
+  line, `# ai-i18n-tools doctor fix`, and only the missing lines. Keep the
+  negation so `cache.db` stays tracked.
 - Do not run `translate-ui`, `suggest-models`, or `sync`. They call the
   translation API, cost money, and `translate-ui` rewrites the `.resx` files.
   The user runs them after reviewing your work.

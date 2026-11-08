@@ -35,6 +35,13 @@ Die CSV-Datei wird beim ersten Hinzufügen erstellt, falls sie noch nicht existi
 
 Änderungen werden beim nächsten Ausführen von `translate-ui`, `proofread-ui`, `translate-docs` oder `sync` wirksam. Das Bearbeiten einer **Kontext**-Notiz (oder `glossary.contextFiles` in der Konfiguration) aktualisiert automatisch die zwischengespeicherten Übersetzungen für das betroffene Gebietsschema – Sie benötigen `--force` nicht.
 
+<a id="label-check-skips"></a>
+## Ausnahmen bei der Labelprüfung
+
+Unterhalb der CSV-Tabelle bearbeitet **Ausnahmen bei der Labelprüfung** `glossary.labelCheckSkips` in der Projektkonfiguration. Jede Zeile deaktiviert die gesperrte UI-Label-Prüfung für einen englischen Begriff und eine oder mehrere Lokalisierungen. Optionale Dateimuster beschränken die Ausnahme auf übereinstimmende Dokumente. Der Begriff bleibt ein Prompt-Hinweis.
+
+Fügen Sie eine Zeile über dieses Panel hinzu, oder verwenden Sie **Ausnahme hinzufügen** bei einer Fehlerzeile, deren Fehler `Glossary label missing` ist. Speichern schreibt die Konfiguration und hinterlässt daneben einen Zeitstempel-versehenen `.backup.json`. Der nächste `translate-docs`- oder `sync`-Lauf verwendet die Liste. Eine markierte Cache-Zeile wird mit `--recheck-glossary-warnings` erneut versucht.
+
 Halten Sie Kontextdateien als kompakte Markdown- oder Klartext-Kurzbeschreibungen außerhalb übersetzter `docs[]`-Bäume. Der Text wird bei jeder passenden Anfrage an das LLM gesendet; fügen Sie keine Geheimnisse oder personenbezogenen Daten hinzu. Wie diese Dateien und die CSV erstellt werden, wird im [Glossar](/de/guide/glossary) beschrieben.
 
 <a id="filters"></a>

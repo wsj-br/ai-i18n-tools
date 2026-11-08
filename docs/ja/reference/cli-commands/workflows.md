@@ -8,7 +8,7 @@
 
 抽出（有効な場合）、次にUI翻訳、次に`features.translateSVG`と`config.svg`が設定されている場合の`translate-svg`、次にドキュメント翻訳、次に`features.translateJson`と`json[]`が設定されている場合の`translate-json` — ただし`--no-ui`、`--no-svg`、`--no-docs`、または`--no-json`でスキップされた場合を除きます。
 
-**主なオプション:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**主なオプション:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--recheck-glossary-warnings`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
 `--force`は、ドキュメント、JSON、SVGのセグメントキャッシュとファイル追跡をクリアします。これはUI翻訳には転送されません。`strings.json`を再翻訳するには、`translate-ui --force`または`sync-ui --force`を使用してください。`--force-update`はドキュメント、JSON、SVG（UIは除く）に適用されます。`--no-ui`、`--no-svg`、`--no-docs`、`--no-json`は、1回の実行でその手順をスキップします。`--file`は翻訳するファイルを制限し、ドキュメントブロック内のすべてのマークダウンファイルを使用してフラットな兄弟リンクを書き換えます。`--check-cache`はドキュメント、JSON、SVGに転送されます。ファイル追跡がスキップする場合でも、強制ネイティブスクリプトが設定されているロケールに対してキャッシュされたセグメントを再検証します。ドキュメントフェーズでは、`--emphasis-placeholders`も転送されます（`translate-docs`と同じ意味です）。グローバルな`--debug-failed`は、チェーン内のすべてのモデルが失敗した場合だけでなく、破棄された各モデルの試行（SVG/ドキュメントスクリプトのフォールバックを含む）について、`cacheDir`の下に`FAILED-TRANSLATION`ログを書き込みます。`--prompt-format`は`sync`フラグではありません。ドキュメントとJSONの手順は、組み込みのデフォルト（`json-array`）を使用します。
 

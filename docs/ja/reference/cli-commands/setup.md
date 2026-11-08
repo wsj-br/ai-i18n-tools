@@ -65,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 <a id="doctor"></a>
 ### `doctor`
 
-**概要:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+**概要:** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
 プロジェクトが翻訳準備ができているか確認してください。このレポートは、設定構文とスキーマ、ビジネスルール、インストールされているバージョン、ソースと出力パス、UIカタログファイル、それらのカタログ内のプレースホルダーの不一致、キャッシュ統計、設定されたプロバイダー、設定されているサポート対象の環境変数、およびモデルIDを対象としています。名前が変更された、削除された、または書き換えられたプレースホルダーを含むカタログは警告となり、1つの例を示します。
 
@@ -73,15 +73,16 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 APIキーの値は決して出力されません。設定済み変数は、`Configured variables: NAME, ...`としてアルファベット順に一覧表示されます。APIキーではない変数については、その値も表示されます。
 
-入力パスが見つからない場合は失敗します。出力ディレクトリが見つからない場合は注意書きとなります。最初の翻訳実行時に作成されるためです。`doctor` は設定を書き換えたり、ディレクトリを作成したり、ソーステキストをモデルに送信したりしません。
+入力パスが見つからない場合は失敗します。出力ディレクトリが見つからない場合は注意が必要です。最初の翻訳実行時に作成されるためです。`doctor` は、設定を書き換えたり、ディレクトリを作成したり、ソーステキストをモデルに送信したりしません。`--fix-gitignore` は、不足している `.gitignore` 行を追記し、他のすべてのファイルはそのままにします。
 
-`doctor` は、設定ファイルの隣の `.gitignore` に必要なパターンが不足している場合に警告します。2つのキャッシュパターンは設定された `cacheDir` に従うため、`.i18n-cache` はデフォルトの `.translation-cache` 行ではなく、`.i18n-cache/*` と `!.i18n-cache/cache.db` を必要とします。その他のパターンは `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp`、および `*.backup.*` です。`.i18n-cache/` のような、キャッシュディレクトリ自体を無視する行も警告の対象です。なぜなら、Git は無視されたディレクトリ内の `cache.db` を追跡しないためです。この警告は `--strict` を使用した場合にのみコマンドを失敗させます。
+設定の隣にある `.gitignore` に必須のパターンが不足している場合、`doctor` は警告を発します。その警告は、`ai-i18n-tools doctor --fix-gitignore` を実行するよう指示します。`.gitignore` が既に存在する場合、空白行、コメント `# ai-i18n-tools doctor fix`、および不足している行のみが追記されます。既に存在する行は重複させません。不足しているファイルは、`init` が書き込むのと同じブロックで作成されます。2つのキャッシュパターンは設定された `cacheDir` に従うため、`.i18n-cache` はデフォルトの `.translation-cache` 行ではなく、`.i18n-cache/*` と `!.i18n-cache/cache.db` を必要とします。その他のパターンは `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp`、および `*.backup.*` です。`.i18n-cache/` のようにキャッシュディレクトリ自体を無視する行も警告です。Git は無視されたディレクトリ内の `cache.db` を追跡しないためです。`--fix-gitignore` はその行を削除しません。この警告は、`--strict` を使用した場合にのみコマンドを失敗させます。
 
-**主なオプション:** `--local`, `--strict`, `--json`
+**主なオプション:** `--local`、`--strict`、`--json`、`--fix-gitignore`
 
 ```bash
 ai-i18n-tools doctor
 ai-i18n-tools doctor --local
+ai-i18n-tools doctor --fix-gitignore
 ```
 
 ---

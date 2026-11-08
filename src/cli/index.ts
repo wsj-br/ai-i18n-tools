@@ -1675,6 +1675,7 @@ function buildTranslateOpts(
     force?: boolean;
     forceUpdate?: boolean;
     checkCache?: boolean;
+    recheckGlossaryWarnings?: boolean;
     noCache?: boolean;
     type?: string;
     jsonOnly?: boolean;
@@ -1697,6 +1698,7 @@ function buildTranslateOpts(
     force: Boolean(o.force),
     forceUpdate: Boolean(o.forceUpdate),
     checkCache: Boolean(o.checkCache),
+    recheckGlossaryWarnings: Boolean(o.recheckGlossaryWarnings),
     noCache: negatedCliOptionSet(cmd, "cache"),
     verbose: Boolean(g.verbose),
     pathFilter: normalizePathFilterForProjectRoot(projectRoot, pathFilterRaw),
@@ -2010,6 +2012,13 @@ program
     "--check-cache",
     t(
       "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
+    ),
+    false
+  )
+  .option(
+    "--recheck-glossary-warnings",
+    t(
+      "Re-translate markdown segments cached with a glossary label warning. Unflagged segments stay cached"
     ),
     false
   )
@@ -2821,6 +2830,13 @@ program
     "--check-cache",
     t(
       "Re-validate cached segments for locales with an enforced native script (hi, ja, ko, zh-Hans, zh-Hant, …) even when file tracking matches"
+    ),
+    false
+  )
+  .option(
+    "--recheck-glossary-warnings",
+    t(
+      "Re-translate markdown segments cached with a glossary label warning. Unflagged segments stay cached"
     ),
     false
   )
@@ -4058,6 +4074,7 @@ function runDashboardCommand(_opts: { port?: string }, cmd: Command): void {
       bundle: loadUiBundle(uiLocale),
     },
     providerPricing: collectProviderPricing(config.providers),
+    configPath: resolveConfigFileLocation(configFlag, cwd),
     suggestion: {
       config,
       projectRoot,

@@ -1,7 +1,7 @@
 <a id="astro-website"></a>
 # एस्ट्रो वेबसाइट
 
-स्थैतिक एस्ट्रो मार्केटिंग या ऐप साइटों (सादे एस्ट्रो, स्टारलाइट नहीं) के लिए, [एस्ट्रो बिल्ट-इन i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-टूल के साथ संयोजित करें। [एस्ट्रो एकीकरण](/hi/guide/integrations/astro) भी देखें।
+स्थिर एस्ट्रो मार्केटिंग या ऐप साइटों (साधारण एस्ट्रो, स्टारलाइट नहीं) के लिए, [एस्ट्रो की अंतर्निहित i18n रूटिंग](https://docs.astro.build/en/guides/internationalization/) को ai-i18n-tools के साथ संयोजित करें। यह भी देखें [एस्ट्रो इंटीग्रेशन](/hi/guide/integrations/astro)।
 
 संदर्भ कार्यान्वयन [`examples/astro-website`](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/) है (इसका [README](https://github.com/wsj-br/ai-i18n-tools/tree/main/examples/astro-website/README.md) भी देखें): `/` पर अंग्रेजी, `/{locale}/` पर नौ लक्ष्य स्थानीय भाषाएँ (`de`, `fr`, `es`, `ar`, `ja`, `ko`, `zh-cn`, `zh-tw`, `pt-br`)।
 

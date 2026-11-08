@@ -220,15 +220,32 @@ describe.skipIf(process.platform === "win32")("install.sh", () => {
     });
   });
 
-  it("creates .profile when no shell startup file exists", () => {
+  it("does not create a shell startup file when none exists", () => {
     withTempDirs((home, release) => {
       writeRelease(release, releaseAssetName(), versionScript);
       const result = runInstall(home, `file://${release}`);
       expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
-      expect(fs.existsSync(path.join(home, ".profile"))).toBe(true);
-      expect(fs.existsSync(path.join(home, ".bashrc"))).toBe(false);
-      expect(fs.existsSync(path.join(home, ".zshrc"))).toBe(false);
-      expect(countExactLines(path.join(home, ".profile"), defaultPathLine)).toBe(1);
+      expect(result.stdout).toContain("no shell startup files modified");
+      expect(result.stdout).toContain("open a new terminal");
+      for (const name of [".profile", ".bashrc", ".bash_profile", ".zshrc"]) {
+        expect(fs.existsSync(path.join(home, name))).toBe(false);
+      }
+    });
+  });
+
+  it("leaves shell startup files unchanged when the install directory is already in PATH", () => {
+    withTempDirs((home, release) => {
+      writeRelease(release, releaseAssetName(), versionScript);
+      const installDir = path.join(home, "custom-bin");
+      const zshrc = path.join(home, ".zshrc");
+      fs.writeFileSync(zshrc, "# existing\n");
+      const result = runInstall(home, `file://${release}`, {
+        env: { AI_I18N_INSTALL_DIR: installDir, PATH: `${installDir}:${process.env.PATH ?? ""}` },
+      });
+      expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+      expect(result.stdout).toContain("is already in PATH");
+      expect(result.stdout).toContain("command is available in this shell");
+      expect(fs.readFileSync(zshrc, "utf8")).toBe("# existing\n");
     });
   });
 
@@ -250,12 +267,12 @@ describe.skipIf(process.platform === "win32")("install.sh", () => {
       const installDir = path.join(home, "custom-bin");
       fs.writeFileSync(path.join(home, ".zshrc"), "# existing\n");
       const result = runInstall(home, `file://${release}`, {
-        env: { AI_I18N_INSTALL_DIR: installDir, PATH: `${installDir}:${process.env.PATH ?? ""}` },
+        env: { AI_I18N_INSTALL_DIR: installDir },
       });
       expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
       expect(fs.existsSync(path.join(installDir, "ai-i18n-tools"))).toBe(true);
       expect(fs.existsSync(path.join(home, ".local", "bin", "ai-i18n-tools"))).toBe(false);
-      expect(result.stdout).toContain("command is available in this shell");
+      expect(result.stdout).toContain("open a new terminal");
       const zshrc = fs.readFileSync(path.join(home, ".zshrc"), "utf8");
       expect(zshrc).toContain(`export PATH="${installDir}:$PATH"`);
     });

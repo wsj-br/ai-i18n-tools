@@ -65,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 <a id="doctor"></a>
 ### `doctor`
 
-**개요:** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+**개요:** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
 프로젝트가 번역할 준비가 되었는지 확인하십시오. 보고서는 구성 구문 및 스키마, 비즈니스 규칙, 설치된 버전, 소스 및 출력 경로, UI 카탈로그 파일, 해당 카탈로그의 플레이스홀더 불일치, 캐시 통계, 구성된 공급자, 설정된 지원 환경 변수, 그리고 모델 ID를 다룹니다. 이름이 변경되거나, 삭제되거나, 재작성된 플레이스홀더가 있는 카탈로그는 경고이며 한 가지 예를 명시합니다.
 
@@ -73,15 +73,16 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 API 키 값은 절대 출력되지 않습니다. 설정된 변수는 `Configured variables: NAME, ...`와 같이 알파벳 순서로 나열됩니다. API 키가 아닌 변수는 해당 값을 포함합니다.
 
-누락된 입력 경로는 실패합니다. 누락된 출력 디렉터리는 첫 번째 번역 실행 시 생성되기 때문에 참고 사항입니다. `doctor`은(는) 구성을 다시 작성하거나, 디렉터리를 생성하거나, 소스 텍스트를 모델로 보내지 않습니다.
+누락된 입력 경로는 실패합니다. 누락된 출력 디렉터리는 첫 번째 번역 실행 시 생성되므로 참고 사항입니다. `doctor`은(는) 구성을 다시 작성하거나, 디렉터리를 생성하거나, 소스 텍스트를 모델로 보내지 않습니다. `--fix-gitignore`은(는) 누락된 `.gitignore` 줄을 추가하고 다른 모든 파일은 그대로 둡니다.
 
-`doctor`는 구성 옆의 `.gitignore`에 필수 패턴이 누락된 경우 경고합니다. 두 캐시 패턴은 구성된 `cacheDir`를 따르므로, `.i18n-cache`은 기본 `.translation-cache` 줄 대신 `.i18n-cache/*`와 `!.i18n-cache/cache.db`가 필요합니다. 다른 패턴은 `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, `*.backup.*`입니다. `.i18n-cache/`과 같이 캐시 디렉터리 자체를 무시하는 줄도 경고인데, Git은 무시된 디렉터리 아래의 `cache.db`를 추적하지 않기 때문입니다. 이 경고는 `--strict`가 있는 경우에만 명령을 실패시킵니다.
+`doctor`은(는) 구성 옆의 `.gitignore`에 필수 패턴이 누락된 경우 경고합니다. 경고는 `ai-i18n-tools doctor --fix-gitignore`을(를) 실행하도록 안내합니다. `.gitignore`이(가) 이미 존재하는 경우, 빈 줄, 주석 `# ai-i18n-tools doctor fix`, 그리고 누락된 줄만 추가합니다. 이미 존재하는 줄은 중복되지 않습니다. 누락된 파일은 `init`이(가) 작성하는 것과 동일한 블록으로 생성됩니다. 두 캐시 패턴은 구성된 `cacheDir`을(를) 따르므로, `.i18n-cache`은(는) 기본 `.translation-cache` 줄 대신 `.i18n-cache/*` 및 `!.i18n-cache/cache.db`이(가) 필요합니다. 다른 패턴은 `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp`, 및 `*.backup.*`입니다. `.i18n-cache/`과(와) 같이 캐시 디렉터리 자체를 무시하는 줄도 경고입니다. Git은 무시된 디렉터리 아래의 `cache.db`을(를) 추적하지 않기 때문입니다. `--fix-gitignore`은(는) 해당 줄을 제거하지 않습니다. 이 경고는 `--strict`을(를) 통해서만 명령을 실패시킵니다.
 
-**주요 옵션:** `--local`, `--strict`, `--json`
+**주요 옵션:** `--local`, `--strict`, `--json`, `--fix-gitignore`
 
 ```bash
 ai-i18n-tools doctor
 ai-i18n-tools doctor --local
+ai-i18n-tools doctor --fix-gitignore
 ```
 
 ---

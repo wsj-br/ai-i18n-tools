@@ -136,7 +136,7 @@ JS/TS 应用必须首先将其文本包装在 `t()` 中。如果在纯文本上�
 
 MIT — 请参阅 [LICENSE](https://github.com/wsj-br/ai-i18n-tools/blob/main/LICENSE)。
 
-版权所有 © 2026 Waldemar Scudeller Jr.
+Copyright © 2026 Waldemar Scudeller Jr.
 
 <br/>
 

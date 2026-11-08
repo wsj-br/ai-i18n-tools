@@ -102,7 +102,12 @@ export function isPlainStringsEntry(
  * (the model that actually succeeded). Omitted for cache hits so callers do not overwrite a stored model.
  * Plain `string` remains supported for tests and simple pipelines.
  */
-export type DocSegmentTranslation = { text: string; modelUsed?: string };
+export type DocSegmentTranslation = {
+  text: string;
+  modelUsed?: string;
+  /** Cached or accepted despite a locked UI-label warning. */
+  glossaryWarning?: boolean;
+};
 
 /** Values accepted by {@link ContentExtractor.reassemble}. */
 export type SegmentTranslationMapValue = string | DocSegmentTranslation;
@@ -170,10 +175,15 @@ export interface CacheEntry {
   startLine?: number | null;
   /** Fingerprint of glossary/project context used when this segment was translated. */
   promptContextHash?: string;
+  /** When true, the row was accepted with a locked UI-label warning. */
+  glossaryWarning?: boolean;
 }
 
 /** Result type for {@link import("./cache.js").TranslationCache.getSegmentsBatch}. */
-export type BatchCacheResult = Map<string, { text: string; model: string | null }>;
+export type BatchCacheResult = Map<
+  string,
+  { text: string; model: string | null; glossaryWarning: boolean }
+>;
 
 export interface TranslationRow {
   source_hash: string;
@@ -210,6 +220,8 @@ export interface TranslationFailureInsert {
   filepath?: string | null;
   /** Original segment source for UI when the cache row is missing. */
   sourceText?: string | null;
+  /** Model output that failed the check, when the caller stored it. */
+  rejectedText?: string | null;
 }
 
 export interface TranslationFailureListRow {
@@ -227,6 +239,8 @@ export interface TranslationFailureListRow {
   source_text: string | null;
   filepath: string | null;
   start_line: number | null;
+  /** Rejected model output, newline-separated when several attempts are grouped. */
+  rejected_text?: string | null;
 }
 
 export interface TranslationFailureSummary {
@@ -590,10 +604,31 @@ const featuresSchema = z.object({
   translateSVG: z.boolean().default(true),
 });
 
+export const glossaryLabelCheckSkipSchema = z
+  .object({
+    /** English glossary term, matched case-insensitively. */
+    term: z.string().min(1),
+    /** Target locales, or `*` for every locale. Omitted means `*`. */
+    locales: z.array(z.string().min(1)).min(1).default(["*"]),
+    /** Optional cwd-relative globs. When set, the skip applies only to matching files. */
+    files: z.array(z.string().min(1)).optional(),
+    /** Why the check is skipped. Shown in the dashboard and ignored by the checker. */
+    note: z.string().optional(),
+  })
+  .strict();
+
+export type GlossaryLabelCheckSkip = z.infer<typeof glossaryLabelCheckSkipSchema>;
+
 const glossarySchema = z
   .object({
     userGlossary: z.string().optional(),
     autoAddUserEditedToGlossary: z.boolean().default(true),
+    /**
+     * Skip the locked UI-label check for these terms. The term stays a prompt hint.
+     * Use after a review shows the check is a false positive (inflection, or a term
+     * inside a longer bold phrase that the citation rule still flags).
+     */
+    labelCheckSkips: z.array(glossaryLabelCheckSkipSchema).optional(),
     /**
      * Optional cwd-relative Markdown/plain-text files with project or feature context.
      * Loaded at command start and injected into every translation/proofread prompt.

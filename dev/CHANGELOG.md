@@ -9,6 +9,15 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.13.3] - 2026-11-08
+
+- **Fixed**: dependencies — `pnpm audit` ignores `GHSA-gcqx-w48m-w2h4` (`deepmerge`, no patched release; declared by `@svgr/plugin-svgo` but never imported). A `packageExtensions` entry gives `@intlayer/engine` TypeScript 6, so `zod-to-ts` no longer resolves TypeScript 7 and `pnpm peers check` is clean.
+- **Changed**: dashboard — the header (title and tab bar) stays fixed at the top of the page while scrolling.
+- **Changed**: `translate-docs` — the model list for a segment stops after three attempts fail with the same quality error. A locked-label miss still keeps the best candidate. A batch failure counts as the first of the three.
+- **Fixed**: glossary — a bold or inline-code span counts as a UI label only when its text is the glossary term. A longer phrase such as `**Ask for target language**` no longer requires the catalog form of `Target language`. Headings and standalone label lines are unchanged.
+- **Changed**: `translate-docs` — a locked UI-label miss is a warning after every configured model fails that check and no other quality check failed. The segment is written and cached with a glossary-label flag. The run summary lists the warnings and writes `glossary-review-*.md` under `cacheDir` as a prompt for a later review. The exit code stays 0.
+- **Added**: config — `glossary.labelCheckSkips` skips the locked-label check for a term, locale, and optional file globs. The dashboard Glossary tab edits the list, and a Failures row can add a skip. `--recheck-glossary-warnings` retries only flagged segments.
+- **Added**: cache — schema 7 stores `translations.glossary_warning` and `translation_failures.rejected_text`, so a discarded model output can be read from the Failures tab.
 - **Added**: `doctor` — `--fix-gitignore` appends the missing cache, environment, and temporary-file lines to `.gitignore`, under a blank line and `# ai-i18n-tools doctor fix`. The missing-pattern warning names that command.
 
 ## [1.13.2] - 2026-11-02

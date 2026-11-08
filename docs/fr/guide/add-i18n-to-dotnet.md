@@ -127,8 +127,9 @@ template instead. Do not add `I18n.cs` beside that loader.
   itself (`<cacheDir>/` drops `cache.db`). If `cacheDir` is not
   `.translation-cache`, the two cache lines must use that directory
   (`<cacheDir>/*` and `!<cacheDir>/cache.db`). If `doctor` reports a missing
-  pattern, append only that pattern. Keep the negation so `cache.db` stays
-  tracked.
+  pattern, run `ai-i18n-tools doctor --fix-gitignore`. That appends a blank
+  line, `# ai-i18n-tools doctor fix`, and only the missing lines. Keep the
+  negation so `cache.db` stays tracked.
 - Do not run `translate-ui`, `suggest-models`, `sync`, or `glossary-generate`.
   The first three call the translation API and cost money. `glossary-generate`
   only writes an empty CSV and does not call the translator. The user runs

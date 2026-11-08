@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { DatabaseSync } from "node:sqlite";
 import { TranslationCache } from "../../src/core/cache.js";
 import { USER_EDITED_MODEL } from "../../src/core/user-edited-model.js";
 
@@ -993,5 +994,90 @@ describe("TranslationCache", () => {
         fs.rmSync(dir, { recursive: true, force: true });
       }
     });
+  });
+
+  it("stores a glossary warning flag and the rejected model output", () => {
+    const cache = new TranslationCache(":memory:");
+    const hash = TranslationCache.computeHash("See **Other Models** here.");
+    cache.setSegment(
+      hash,
+      "de",
+      "See **Other Models** here.",
+      "Siehe **Hier**.",
+      "model-a",
+      "a.md",
+      4,
+      "",
+      true
+    );
+    const details = cache.getSegmentDetails(hash, "de");
+    expect(details?.glossaryWarning).toBe(true);
+    expect(details?.text).toBe("Siehe **Hier**.");
+    cache.clearGlossaryWarning(hash, "de");
+    expect(cache.getSegmentDetails(hash, "de")?.glossaryWarning).toBe(false);
+    cache.addSegmentFailures([
+      {
+        sourceHash: hash,
+        locale: "de",
+        model: "model-a",
+        modelOrder: 1,
+        qualityError: "glossaryLabel",
+        errorMessage: 'Glossary label missing: "Other Models" should include "Andere Modelle"',
+        fatal: false,
+        filepath: "a.md",
+        sourceText: "See **Other Models** here.",
+        rejectedText: "Siehe **Hier**.",
+      },
+    ]);
+    const listed = cache.listTranslationFailures({ locale: "de" });
+    expect(listed.rows[0]?.quality_error).toBe("glossaryLabel");
+    expect(listed.rows[0]?.rejected_text).toContain("Siehe **Hier**.");
+    expect(listed.rows[0]?.fatal).toBe(0);
+    cache.close();
+  });
+
+  it("migrates a version 6 cache and adds glossary warning columns", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cache-v6-"));
+    const dbFile = path.join(dir, "cache.db");
+    const legacy = new DatabaseSync(dbFile);
+    legacy.exec(`
+      CREATE TABLE translations (
+        source_hash TEXT NOT NULL,
+        locale TEXT NOT NULL,
+        source_text TEXT NOT NULL,
+        translated_text TEXT NOT NULL,
+        model TEXT,
+        filepath TEXT,
+        created_at TEXT,
+        last_hit_at TEXT,
+        start_line INTEGER,
+        prompt_context_hash TEXT NOT NULL DEFAULT '',
+        PRIMARY KEY (source_hash, locale)
+      );
+      CREATE TABLE translation_failures (
+        source_hash TEXT NOT NULL,
+        locale TEXT NOT NULL,
+        model TEXT,
+        model_order INTEGER,
+        quality_error TEXT NOT NULL,
+        error_message TEXT NOT NULL,
+        fatal INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT,
+        filepath TEXT,
+        source_text TEXT
+      );
+      PRAGMA user_version = 6;
+    `);
+    legacy.close();
+    const cache = new TranslationCache(dir);
+    cache.setSegment("h", "uk", "src", "dst", "m", "f.md", 1, "", true);
+    expect(cache.getSegmentDetails("h", "uk")?.glossaryWarning).toBe(true);
+    cache.close();
+    const probe = new DatabaseSync(dbFile, { readOnly: true });
+    const version = (probe.prepare("PRAGMA user_version").get() as { user_version: number })
+      .user_version;
+    probe.close();
+    expect(version).toBe(7);
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

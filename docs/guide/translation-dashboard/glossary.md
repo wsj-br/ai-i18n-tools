@@ -35,6 +35,13 @@ The CSV file is created on first add if it does not exist yet.
 
 Changes take effect on the next `translate-ui`, `proofread-ui`, `translate-docs`, or `sync` run. Editing a **Context** note (or `glossary.contextFiles` in config) automatically refreshes cached translations for the affected locale — you do not need `--force`.
 
+<a id="label-check-skips"></a>
+## Label check skips
+
+Below the CSV table, **Label check skips** edits `glossary.labelCheckSkips` in the project config. Each row turns off the locked UI-label check for one English term and one or more locales. Optional file globs limit the skip to matching documents. The term stays a prompt hint.
+
+Add a row from this panel, or use **Add skip** on a Failures row whose error is `Glossary label missing`. Saving writes the config and leaves a timestamped `.backup.json` beside it. The next `translate-docs` or `sync` run uses the list. A flagged cache row is retried with `--recheck-glossary-warnings`.
+
 Keep context files as concise Markdown or plain-text briefs outside translated `docs[]` trees. The text is sent to the LLM on every matching request; do not include secrets or personal data. How those files and the CSV are built is covered in [Glossary](/guide/glossary).
 
 <a id="filters"></a>

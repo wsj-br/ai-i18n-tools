@@ -35,6 +35,13 @@
 
 更改将在下次运行 `translate-ui`、`proofread-ui`、`translate-docs` 或 `sync` 时生效。编辑 **上下文** 说明（或配置中的 `glossary.contextFiles`）会自动刷新受影响区域设置的缓存翻译——你不需要 `--force`。
 
+<a id="label-check-skips"></a>
+## 标签检查跳过
+
+CSV 表格下方，**标签检查跳过**会编辑项目配置中的 `glossary.labelCheckSkips`。每一行都会针对一个英文术语和一个或多个语言区域禁用锁定的 UI 标签检查。可选的文件通配符将跳过限制为匹配的文档。该术语仍作为提示信息。
+
+从此面板添加一行，或在错误为 `Glossary label missing` 的失败行上使用 **添加跳过**。保存会写入配置，并在其旁边留下一个带时间戳的 `.backup.json`。下一次 `translate-docs` 或 `sync` 运行会使用此列表。标记的缓存行会使用 `--recheck-glossary-warnings` 重试。
+
 将上下文文件保留为简洁的 Markdown 或纯文本摘要，并置于已翻译的 `docs[]` 树之外。该文本会在每次匹配的请求中发送给 LLM；请勿包含机密信息或个人数据。有关如何构建这些文件和 CSV 的说明，请参见[术语表](/zh-Hans/guide/glossary)。
 
 <a id="filters"></a>

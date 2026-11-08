@@ -1340,7 +1340,11 @@ const FIX_GITIGNORE_COMMAND = "ai-i18n-tools doctor --fix-gitignore";
 /** Marker written above lines that `--fix-gitignore` appends. */
 const DOCTOR_GITIGNORE_COMMENT = "# ai-i18n-tools doctor fix";
 
-function missingGitignoreMessage(cacheDir: string, patterns: string[], suggestFix: boolean): string {
+function missingGitignoreMessage(
+  cacheDir: string,
+  patterns: string[],
+  suggestFix: boolean
+): string {
   const listed = patterns.join(", ");
   if (!suggestFix) {
     return t(".gitignore for {{cacheDir}} is missing {{patterns}}", {

@@ -452,13 +452,13 @@ HTML 文件的選擇性語言清單與 hreflang。預設註解為 `<!-- ai-i18n:
 **行為與中繼資料**
 
 - `translateFrontmatterFields`
-與 `docsOutput` 位於同一層級（每個 `docs[]` 區塊）。預設 `true`：翻譯 Starlight/Docusaurus 的使用者介面 YAML 散文（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next` 標籤）。設定 `false` 以保持整個前置內容區塊不變；傳遞字串陣列以限制為特定的點路徑。
+與 `docsOutput` 位於同一層級（依據 `docs[]` 區塊）。預設 `true`：翻譯 Starlight/Docusaurus 的使用者介面 YAML 散文（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next` 標籤）。設定 `false` 以保持整個前言區塊不變；傳遞字串陣列以限制為特定的點路徑。
 - `segmentSplitting`
-與 `docsOutput` 位於同一層級（每個 `docs[]` 區塊）。用於 `translate-docs` 提取的可選更細粒度區段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`。當 `enabled` 為 `true` 時（當省略 `segmentSplitting` 時為預設值），會分割密集段落、GFM 管道表格（第一個區塊包含標頭、分隔符和第一個資料行）和長列表；子部分會以單個換行符重新連接（`tightJoinPrevious`）。設定 `"enabled": false` 以僅使用每個以空白行分隔的主體區塊作為一個區段。當 `qualityRetrySplit` 為 `true` 時（預設值），在所有模型都用盡後，未能通過 AST 驗證的 markdown 區段會逐步分割並從第一個模型重試；`maxQualityRetrySplitDepth`（預設 `3`）限制遞迴分割。
+與 `docsOutput` 位於同一層級（依據 `docs[]` 區塊）。用於 `translate-docs` 提取的選用更細粒度區段：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`。當 `enabled` 為 `true` 時（`segmentSplitting` 省略時的預設值），密集段落、GFM 管道表格（第一個區塊包含標頭、分隔符號和第一個資料列）和長清單會被分割；子部分會以單一換行符號（`tightJoinPrevious`）重新連接。設定 `"enabled": false` 以僅使用每個以空白行分隔的主體區塊的一個區段。當 `qualityRetrySplit` 為 `true` 時（預設值），在模型清單停止後 AST 驗證失敗的 Markdown 區段會逐步分割並從第一個模型重試。當相同的品質錯誤發生三次時，清單會提前停止。`maxQualityRetrySplitDepth`（預設 `3`）限制遞迴分割。
 - `warnMarkdownSourceIssues`
-當 `true` 時（省略時為預設值），每次 `translate-docs` 執行都會重新掃描 markdown 區段以查找危險分隔符/未閉合的行內程式碼，列印終端警告，並替換該檔案快取路徑的 `markdown_source_issues` 行。設定 `false` 以跳過此區塊的警告和 SQLite 更新。
+當 `true` 時（省略時的預設值），每次 `translate-docs` 執行都會重新掃描 Markdown 區段，以查找危險的分隔符號/未閉合的行內程式碼，列印終端警告，並替換該檔案快取檔案路徑的 `markdown_source_issues` 列。設定 `false` 以跳過此區塊的警告和 SQLite 更新。
 - `addFrontmatter`
-當 `true` 時（省略時為預設值），翻譯後的 markdown 檔案包含 YAML 鍵：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，並且當至少一個區段具有模型中繼資料時，`translation_models`（來自活動提供者的模型 ID 排序列表）。設定為 `false` 以跳過。
+當 `true` 時（省略時的預設值），翻譯的 Markdown 檔案會包含 YAML 鍵：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`，並且當至少一個區段具有模型中繼資料時，還會包含 `translation_models`（來自活動提供者的模型 ID 排序清單）。設定為 `false` 以跳過。
 - `emphasisPlaceholders`
 每個 `docs[]` 區塊。當 `true` 時，在翻譯前將 markdown 強調分隔符遮罩為佔位符。對於 CJK 語言環境（`zh`、`ja`、`ko`）和 `rtlLocales` 中列出的語言環境，預設為 `true`；否則預設為 `false`。可透過 CLI `--emphasis-placeholders` / `--no-emphasis-placeholders` 覆寫。
 - `rtlLocales`
@@ -573,10 +573,11 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 | `autoAddUserEditedToGlossary` | 當 `true` 時，對 UI 字串的儀表板編輯可以自動附加到使用者詞彙表中。 |
 | `contextFiles` | 選填的、相對於 cwd 的 Markdown 或純文字檔案（`.md`、`.markdown`、`.txt`），包含產品或功能說明。於指令啟動時載入，並注入至 UI、文件、JSON、SVG 及校對提示詞中。除非您也希望翻譯這些檔案，否則請勿將其置於 `docs[].contentPaths`。URL 會被拒絕。完整文字會傳送至已配置的 LLM 供應商，並可能出現在 `--debug-failed` 日誌中 — 請勿包含機密資訊或個人識別資訊（PII）。 |
 | `contextMaxChars` | 傳送至模型的串接上下文檔案文字之最大字元數（預設 `12000`，上限 `100000`）。超出部分會被截斷並發出警告。 |
+| `labelCheckSkips` | 要跳過的鎖定 UI 標籤檢查的選用清單。每個條目包含 `term`（英文詞彙表術語）、`locales`（目標代碼，或 `*` 代表每個地區設定；預設 `*`）、選用 `files`（cwd 相對 glob 模式），以及選用 `note`。該術語仍作為提示線索。下一次 `translate-docs` 執行時會應用跳過。 |
 
 `translate-docs`、`translate-json` 和 `translate-svg` 也會從 `uiGlossary` 為 `true`（預設值）的每個 UI 區塊取得提示。這會重複使用已儲存在該區塊 `strings.json` 中的翻譯。在區塊上將 `uiGlossary` 設為 `false` 即可將其排除。`translate-ui` 和 `proofread-ui` 不會使用這些目錄作為提示。精簡的 UI 標籤縮寫（例如 `Alm.` 等尾端帶點格式，或 `Size` → `Tam` 等簡短單詞元壓縮格式）會被略過，以免文件提示被引導至虛構的 <code v-pre>{{…}}</code> 詞元。完整的產品詞彙與未縮寫的 UI 翻譯仍會作為提示。
 
-可選的 `Context` CSV 欄位是針對該術語（定義、語法使用、產品含義）的來源語言使用指南，且僅在該術語與目前批次相符時才會包含；變更術語的 `Context` 備註或任何 `contextFiles` 內容，會在下次執行時使相符語系的快取區段和檔案追蹤列失效，進而自動重新整理翻譯；在非強制列上僅變更偏好的 `Translation` 仍會使用現有快取，除非您傳遞 `--force` / `--force-update`；當儲存的文字尚未包含強制翻譯時，`Force` 列只會遺漏來源包含該術語的區段；儀表板使用者編輯的快取列會保留；UI 目錄也會產生一個共用的多詞前綴作為其自身的術語，條件是該前綴是首字母大寫的標籤（至少兩個內容詞），且共用翻譯是一個沒有預留位置的短語；Markdown 翻譯要求一個二到五個詞的 UI 標籤，以便在來源以粗體、行內程式碼、標題或僅為該標籤的行引用它時，保留其目錄翻譯；句子中的標題大小寫是一種提示，因此翻譯可以變形（印地語 `Cursor account` 可能會變成 `कर्सर खाते` 而不是字典形式 `कर्सर खाता`）；只有一個內容詞的標籤，例如 `Sign in`，仍是提示；檢查會忽略翻譯中的大小寫。
+選用 `Context` CSV 欄位是該術語的來源語言使用指南（定義、語法用途、產品含義）。僅當該術語與當前批次匹配時才包含它。更改術語的 `Context` 備註或任何 `contextFiles` 內容會使匹配地區設定的快取區段和檔案追蹤列在下次執行時失效，因此翻譯會自動重新整理。僅更改非強制列上的首選 `Translation` 仍會使用現有快取，除非您傳遞 `--force` / `--force-update`。當儲存的文字尚未包含強制翻譯時，`Force` 列只會遺漏其來源包含該術語的區段。儀表板使用者編輯的快取列會被保留。當共享的多詞前綴是首字母大寫的標籤（至少兩個內容詞）且共享翻譯是沒有佔位符的短語時，UI 目錄也會將其作為自己的術語。當來源將其引用為整個粗體或行內程式碼範圍、標題或僅為該標籤的行時，Markdown 翻譯需要一個二到五個詞的 UI 標籤來保留其目錄翻譯。僅包含該術語的較長粗體短語是一個提示。句子中的標題大小寫是一個提示，因此翻譯可以變形（印地語 `Cursor account` 可能會變成 `कर्सर खाते` 而不是字典形式 `कर्सर खाता`）。帶有單個內容詞的標籤，例如 `Sign in`，仍是一個提示。該檢查會忽略大小寫。它仍然要求目錄措辭作為子字串，因此語法變形可能會失敗。該失敗是一個警告：該區段會被寫入，以詞彙表標籤旗標快取，並在執行結束時列在 `glossary-review-*.md` 的 `cacheDir` 下。審閱後，新增一個 `labelCheckSkips` 條目，或傳遞 `--recheck-glossary-warnings`。`--force` 會重新翻譯帶有旗標的列以及所有其他區段。
 
 範例：
 
@@ -585,7 +586,15 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
   "glossary": {
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
-    "contextMaxChars": 12000
+    "contextMaxChars": 12000,
+    "labelCheckSkips": [
+      {
+        "term": "Target language",
+        "locales": ["uk"],
+        "files": ["website/src/content/docs/docs/transform.md"],
+        "note": "Inflected inside a bold phrase"
+      }
+    ]
   }
 }
 ```

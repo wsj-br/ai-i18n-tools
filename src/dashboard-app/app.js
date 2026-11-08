@@ -802,15 +802,54 @@
         <td class="actions"></td>
       `;
       tr.querySelector(".actions").append(linkBtn);
+      const skipTerm = /Glossary label missing: "([^"]+)" should include/.exec(
+        row.error_message || ""
+      );
+      if (skipTerm && skipTerm[1]) {
+        const skipBtn = document.createElement("button");
+        skipBtn.type = "button";
+        skipBtn.textContent = t("Add skip");
+        skipBtn.title = t("Skip the glossary label check for this term and locale");
+        skipBtn.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+        });
+        skipBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          try {
+            await addGlossaryLabelSkip({
+              term: skipTerm[1],
+              locales: [row.locale],
+              ...(row.filepath ? { files: [row.filepath] } : {}),
+              note: t("Added from the Failures tab"),
+            });
+            setStatus(
+              document.getElementById("fail-summary"),
+              t("Skip saved for {{term}} ({{locale}})", {
+                term: skipTerm[1],
+                locale: row.locale,
+              }),
+              true
+            );
+          } catch (err) {
+            alert(t("Error saving skip: {{message}}", { message: err.message || String(err) }));
+          }
+        });
+        tr.querySelector(".actions").append(skipBtn);
+      }
       tbody.appendChild(tr);
 
       const detailTr = document.createElement("tr");
       detailTr.className = "fail-detail-row hidden-ui";
+      const rejectedBlock =
+        row.rejected_text && String(row.rejected_text).trim()
+          ? `<div class="fail-detail-title">${escapeHtml(t("Rejected translation"))}</div><pre>${escapeHtml(row.rejected_text)}</pre>`
+          : "";
       detailTr.innerHTML = `
         <td colspan="11">
           <div class="fail-detail-content">
             <div class="fail-detail-title">${escapeHtml(t("Full source text"))}</div>
             <pre>${escapeHtml(row.source_text || "")}</pre>
+            ${rejectedBlock}
           </div>
         </td>
       `;
@@ -2467,6 +2506,92 @@
     }
   }
 
+  function splitSkipField(value) {
+    return String(value || "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+  }
+
+  async function loadLabelSkips() {
+    const status = document.getElementById("gl-skips-status");
+    const tbody = document.getElementById("gl-skips-body");
+    if (!status || !tbody) return;
+    setStatus(status, t("Loading\u2026"), false);
+    try {
+      const res = await fetch("/api/glossary-label-skips");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      const skips = data.skips || [];
+      tbody.innerHTML = "";
+      for (let i = 0; i < skips.length; i++) {
+        const skip = skips[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="text" class="gl-skip-term" value="${escapeHtml(skip.term || "")}" /></td>
+          <td><input type="text" class="gl-skip-locales" value="${escapeHtml((skip.locales || []).join(", "))}" /></td>
+          <td><input type="text" class="gl-skip-files" value="${escapeHtml((skip.files || []).join(", "))}" /></td>
+          <td><input type="text" class="gl-skip-note" value="${escapeHtml(skip.note || "")}" /></td>
+          <td class="actions"></td>
+        `;
+        const actions = tr.querySelector(".actions");
+        const saveBtn = document.createElement("button");
+        saveBtn.type = "button";
+        saveBtn.textContent = t("Save");
+        saveBtn.addEventListener("click", async () => {
+          const term = tr.querySelector(".gl-skip-term").value.trim();
+          const locales = splitSkipField(tr.querySelector(".gl-skip-locales").value);
+          const files = splitSkipField(tr.querySelector(".gl-skip-files").value);
+          const note = tr.querySelector(".gl-skip-note").value.trim();
+          if (!term) {
+            setStatus(status, t("Term is required"), false);
+            return;
+          }
+          const pr = await fetch(`/api/glossary-label-skips/${i}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              term,
+              locales: locales.length > 0 ? locales : ["*"],
+              ...(files.length > 0 ? { files } : {}),
+              ...(note ? { note } : {}),
+            }),
+          });
+          const pj = await pr.json();
+          setStatus(status, pr.ok ? t("Saved.") : pj.error || pr.statusText, pr.ok);
+          if (pr.ok) await loadLabelSkips();
+        });
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.textContent = t("Delete");
+        delBtn.addEventListener("click", async () => {
+          const pr = await fetch(`/api/glossary-label-skips/${i}`, { method: "DELETE" });
+          const pj = await pr.json();
+          setStatus(status, pr.ok ? t("Deleted.") : pj.error || pr.statusText, pr.ok);
+          if (pr.ok) await loadLabelSkips();
+        });
+        actions.append(saveBtn, delBtn);
+        tbody.appendChild(tr);
+      }
+      setStatus(status, t("{{count}} skip(s)", { count: skips.length }), true);
+    } catch (err) {
+      tbody.innerHTML = "";
+      setStatus(status, err.message || String(err), false);
+    }
+  }
+
+  async function addGlossaryLabelSkip(entry) {
+    const res = await fetch("/api/glossary-label-skips", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || res.statusText);
+    await loadLabelSkips();
+    return body;
+  }
+
   async function loadGlossary() {
     setStatus(document.getElementById("gl-status"), t("Loading\u2026"), false);
     glSetEditingVisible(false);
@@ -2495,6 +2620,7 @@
         glSetEditingVisible(false);
         setStatus(document.getElementById("gl-status"), t("No glossary path"), false);
         document.getElementById("gl-table-body").innerHTML = "";
+        await loadLabelSkips();
         return;
       }
       glSetEditingVisible(true);
@@ -2507,12 +2633,39 @@
         t("{{count}} row(s)", { count: glState.rows.length }),
         true
       );
+      await loadLabelSkips();
     } catch (e) {
       setStatus(document.getElementById("gl-status"), String(e.message || e), false);
     }
   }
 
   function glInitListeners() {
+    document.getElementById("gl-skip-add").addEventListener("click", async () => {
+      const term = document.getElementById("gl-skip-term").value.trim();
+      const locales = splitSkipField(document.getElementById("gl-skip-locales").value);
+      const files = splitSkipField(document.getElementById("gl-skip-files").value);
+      const note = document.getElementById("gl-skip-note").value.trim();
+      const status = document.getElementById("gl-skips-status");
+      if (!term) {
+        setStatus(status, t("Term is required"), false);
+        return;
+      }
+      try {
+        await addGlossaryLabelSkip({
+          term,
+          locales: locales.length > 0 ? locales : ["*"],
+          ...(files.length > 0 ? { files } : {}),
+          ...(note ? { note } : {}),
+        });
+        document.getElementById("gl-skip-term").value = "";
+        document.getElementById("gl-skip-locales").value = "";
+        document.getElementById("gl-skip-files").value = "";
+        document.getElementById("gl-skip-note").value = "";
+        setStatus(status, t("Added."), true);
+      } catch (err) {
+        setStatus(status, err.message || String(err), false);
+      }
+    });
     document.getElementById("gl-btn-add").addEventListener("click", async () => {
       const original = document.getElementById("gl-new-original").value.trim();
       const locale = document.getElementById("gl-new-locale").value;

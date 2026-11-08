@@ -452,13 +452,13 @@ HTML ドキュメント向けの、任意の言語リストおよび hreflang �
 **動作とメタデータ**
 
 - `translateFrontmatterFields`
-`docsOutput`と同じレベル（`docs[]`ブロックごと）。デフォルトの`true`：Starlight/Docusaurus（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next`ラベル）のユーザー向けYAML散文を翻訳します。フロントマターブロック全体を変更しないようにするには、`false`を設定します。特定のドットパスに制限するには、文字列配列を渡します。
+`docsOutput`と同じレベル（`docs[]`ブロックごと）。デフォルトの`true`：Starlight/Docusaurus向けのユーザー向けYAML散文（`title`、`description`、`sidebar.label`、`sidebar_label`、`keywords`、`hero.title`、`hero.tagline`、`hero.image.alt`、`hero.actions[].text`、`pagination_label`、`prev`/`next`のラベル）を翻訳します。`false`を設定すると、フロントマターブロック全体が変更されずに維持されます。特定のドットパスに制限するには、文字列配列を渡します。
 - `segmentSplitting`
-`docsOutput`と同じレベル（`docs[]`ブロックごと）。`translate-docs`抽出のためのオプションのよりきめ細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`。`enabled`が`true`（`segmentSplitting`が省略された場合のデフォルト）の場合、密な段落、GFMパイプテーブル（最初のチャンクにはヘッダー、セパレーター、最初のデータ行が含まれます）、および長いリストは分割されます。サブパーツは単一の改行（`tightJoinPrevious`）で再結合されます。空白行で区切られたボディブロックごとに1つのセグメントのみを使用するには、`"enabled": false`を設定します。`qualityRetrySplit`が`true`（デフォルト）の場合、すべてのモデルが使い果たされた後にAST検証に失敗したマークダウンセグメントは、段階的に分割され、最初のモデルから再試行されます。`maxQualityRetrySplitDepth`（デフォルトは`3`）は再帰的な分割を制限します。
+`docsOutput`と同じレベル（`docs[]`ブロックごと）。`translate-docs`抽出のためのオプションのよりきめ細かいセグメント：`{ "enabled", "maxCharsPerSegment"?, "splitPipeTables"?, "splitDenseParagraphs"?, "maxLinesPerParagraphChunk"?, "splitLongLists"?, "maxListItemsPerChunk"?, "qualityRetrySplit"?, "maxQualityRetrySplitDepth"? }`。`enabled`が`true`の場合（`segmentSplitting`が省略された場合のデフォルト）、密な段落、GFMパイプテーブル（最初のチャンクにはヘッダー、セパレーター、最初のデータ行が含まれます）、および長いリストは分割されます。サブパーツは単一の改行（`tightJoinPrevious`）で再結合されます。`"enabled": false`を設定すると、空行で区切られたボディブロックごとに1つのセグメントのみを使用します。`qualityRetrySplit`が`true`の場合（デフォルト）、モデルリストが停止した後にAST検証に失敗したMarkdownセグメントは、段階的に分割され、最初のモデルから再試行されます。同じ品質エラーが3回発生すると、リストは早期に停止します。`maxQualityRetrySplitDepth`（デフォルトは`3`）は再帰的な分割に上限を設けます。
 - `warnMarkdownSourceIssues`
-`true`（省略された場合のデフォルト）の場合、各`translate-docs`実行は、危険な区切り文字/閉じられていないインラインコードについてマークダウンセグメントを再スキャンし、端末警告を出力し、そのファイルのキャッシュファイルパスの`markdown_source_issues`行を置き換えます。このブロックの警告とSQLite更新をスキップするには、`false`を設定します。
+`true`の場合（省略された場合のデフォルト）、各`translate-docs`の実行は、危険な区切り文字や閉じられていないインラインコードがないかMarkdownセグメントを再スキャンし、ターミナル警告を出力し、そのファイルのキャッシュファイルパスの`markdown_source_issues`行を置き換えます。このブロックの警告とSQLite更新をスキップするには、`false`を設定します。
 - `addFrontmatter`
-`true`（省略された場合のデフォルト）の場合、翻訳されたマークダウンファイルにはYAMLキーが含まれます：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`、および少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（アクティブなプロバイダーからのモデルIDのソート済みリスト）。スキップするには`false`に設定します。
+`true`の場合（省略された場合のデフォルト）、翻訳されたMarkdownファイルにはYAMLキーが含まれます：`translation_last_updated`、`source_file_mtime`、`source_file_hash`、`translation_language`、`source_file_path`、そして少なくとも1つのセグメントにモデルメタデータがある場合は`translation_models`（アクティブなプロバイダーからのモデルIDのソート済みリスト）。スキップするには`false`に設定します。
 - `emphasisPlaceholders`
 `docs[]`ブロックごと。`true`の場合、翻訳前にマークダウンの強調区切り文字をプレースホルダーとしてマスクします。CJKロケール（`zh`、`ja`、`ko`）および`rtlLocales`にリストされているロケールでは`true`がデフォルトです。それ以外の場合は`false`がデフォルトです。CLI `--emphasis-placeholders` / `--no-emphasis-placeholders`で上書き可能です。
 - `rtlLocales`
@@ -573,10 +573,11 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 | `autoAddUserEditedToGlossary` | `true`の場合、UI文字列に対するダッシュボードの編集は、ユーザー用語集に自動的に追加できます。 |
 | `contextFiles` | 任意のcwd相対Markdownまたはプレーンテキストファイル（`.md`、`.markdown`、`.txt`）。製品や機能の説明を含みます。コマンド開始時にロードされ、UI、ドキュメント、JSON、SVG、および校正プロンプトに注入されます。翻訳対象にも含めたい場合を除き、これらのファイルを`docs[].contentPaths`に配置しないでください。URLは拒否されます。全文が設定されたLLMプロバイダーに送信され、`--debug-failed`ログに表示される可能性があります — 機密情報やPIIを含めないでください。 |
 | `contextMaxChars` | モデルに送信される結合済みコンテキストファイルテキストの最大文字数（デフォルト`12000`、ハード上限`100000`）。超過分のテキストは警告とともに切り詰められます。 |
+| `labelCheckSkips` | スキップするロックされたUIラベルチェックのオプションリスト。各エントリには、`term`（英語の用語集用語）、`locales`（ターゲットコード、またはすべてのロケールに対する`*`；デフォルトは`*`）、オプションの`files`（cwd相対グロブ）、およびオプションの`note`が含まれます。その用語はプロンプトヒントとして残ります。スキップは次回の`translate-docs`実行時に適用されます。 |
 
 `translate-docs`、`translate-json`、および `translate-svg` は、`uiGlossary` が `true` (デフォルト) である各 UI ブロックからもヒントを取得します。これにより、そのブロックの `strings.json` に既に保存されている翻訳が再利用されます。ブロックを除外するには、そのブロックで `uiGlossary` を `false` に設定します。`translate-ui` と `proofread-ui` は、これらのカタログをヒントとして使用しません。短縮形の UI ラベル略語 (`Alm.` のような末尾にドットが付く形式、または `Size` → `Tam` のような短い単一トークンの圧縮形式) は、ドキュメントプロンプトが作り出された <code v-pre>{{…}}</code> トークンに誘導されないようにスキップされます。完全な製品用語と省略されていない UI 翻訳は、引き続きヒントとして利用されます。
 
-オプションの`Context` CSV列は、その用語のソース言語での使用ガイダンス（定義、文法的な使用法、製品の意味）です。これは、その用語が現在のバッチと一致する場合にのみ含まれます。用語の`Context`メモまたは`contextFiles`コンテンツを変更すると、次回の実行時に一致するロケールのキャッシュされたセグメントとファイル追跡行が無効になり、翻訳が自動的に更新されます。強制されていない行で優先される`Translation`のみを変更した場合でも、`--force` / `--force-update`を渡さない限り、既存のキャッシュが使用されます。`Force`行は、ソースにその用語が含まれており、かつ保存されたテキストに強制翻訳がまだ含まれていないセグメントのみを見逃します。ダッシュボードでユーザーが編集したキャッシュ行は保持されます。UIカタログはまた、共有される複数語のプレフィックスが（少なくとも2つの内容語からなる）大文字のラベルであり、共有される翻訳がプレースホルダーのない短いフレーズである場合、そのプレフィックスを独自の用語としてシードします。Markdown翻訳では、ソースが太字、インラインコード、見出し、またはそのラベルのみの行で引用している場合、カタログ翻訳を保持するために2〜5語のUIラベルが必要です。文中のタイトルケースはヒントであり、翻訳は活用できます（ヒンディー語の`Cursor account`は、辞書形式の`कर्सर खाता`ではなく`कर्सर खाते`になる場合があります）。`Sign in`のような単一の内容語を持つラベルは、ヒントのままです。チェックは翻訳における大文字/小文字を無視します。
+オプションの`Context` CSV列は、その用語のソース言語での使用ガイダンス（定義、文法的な使用法、製品の意味）です。これは、用語が現在のバッチと一致する場合にのみ含まれます。用語の`Context`ノートまたは`contextFiles`コンテンツを変更すると、次回の実行時に一致するロケールのキャッシュされたセグメントとファイル追跡行が無効になり、翻訳が自動的に更新されます。強制されていない行で優先される`Translation`のみを変更した場合でも、`--force` / `--force-update`を渡さない限り、既存のキャッシュが使用されます。`Force`行は、保存されたテキストに強制翻訳がまだ含まれていない場合に、その用語を含むソースのセグメントのみを欠落させます。ダッシュボードでユーザーが編集したキャッシュ行は保持されます。UIカタログは、そのプレフィックスが大文字で始まるラベル（少なくとも2つの内容語）であり、共有翻訳がプレースホルダーのない短いフレーズである場合、共有の複数単語プレフィックスを独自の用語としてシードします。Markdown翻訳では、ソースがそれを太字またはインラインコードスパン全体、見出し、またはそのラベルのみの行として引用する場合、カタログ翻訳を保持するために2〜5語のUIラベルが必要です。その用語を単に含む長い太字のフレーズはヒントです。文中のタイトルケースはヒントであり、翻訳は活用できます（ヒンディー語の`Cursor account`は、辞書形式の`कर्सर खाता`ではなく`कर्सर खाते`になる場合があります）。`Sign in`のような単一の内容語を持つラベルはヒントのままです。チェックでは大文字/小文字は無視されます。カタログの文言を部分文字列として依然として要求するため、文法的に活用された形式は失敗する可能性があります。その失敗は警告です。セグメントは書き込まれ、用語集ラベルフラグ付きでキャッシュされ、実行の最後に`glossary-review-*.md`の`cacheDir`の下にリストされます。確認後、`labelCheckSkips`エントリを追加するか、`--recheck-glossary-warnings`を渡してください。`--force`は、フラグが立てられた行を他のすべてのセグメントとともに再翻訳します。
 
 例:
 
@@ -585,7 +586,15 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
   "glossary": {
     "userGlossary": "i18n/glossary.csv",
     "contextFiles": ["i18n/product-context.md", "i18n/billing-feature.md"],
-    "contextMaxChars": 12000
+    "contextMaxChars": 12000,
+    "labelCheckSkips": [
+      {
+        "term": "Target language",
+        "locales": ["uk"],
+        "files": ["website/src/content/docs/docs/transform.md"],
+        "note": "Inflected inside a bold phrase"
+      }
+    ]
   }
 }
 ```

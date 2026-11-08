@@ -11,7 +11,8 @@ import type { TranslationCheckSnapshot } from "../processors/validator.js";
 
 export type { TranslationCheckSnapshot } from "../processors/validator.js";
 
-export type TranslationLogOutcome = "retrying_next_model" | "fatal" | "individual_success";
+export type TranslationLogOutcome =
+  "retrying_next_model" | "fatal" | "individual_success" | "glossary_warning";
 export type TranslationLogMode = "failed" | "debug";
 
 export function translationFailureLogDir(

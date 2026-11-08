@@ -8,7 +8,7 @@
 
 提取（如果已启用），然后进行 UI 翻译，接着在设置了 `features.translateSVG` 和 `config.svg` 时执行 `translate-svg`，然后进行文档翻译，接着在设置了 `features.translateJson` 和 `json[]` 时执行 `translate-json` —— 除非使用 `--no-ui`、`--no-svg`、`--no-docs` 或 `--no-json` 跳过。
 
-**关键选项：** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**主要选项：** `-l`，`-p` / `-f`，`--dry-run`，`-j`，`-b`，`--force`，`--force-update`，`--check-cache`，`--recheck-glossary-warnings`，`--no-ui`，`--no-svg`，`--no-docs`，`--no-json`
 
 `--force` 清除文档、JSON 和 SVG 段缓存以及文件跟踪。它不会转发到 UI 翻译；请使用 `translate-ui --force` 或 `sync-ui --force` 重新翻译 `strings.json`。`--force-update` 适用于文档、JSON 和 SVG（不适用于 UI）。`--no-ui`、`--no-svg`、`--no-docs` 和 `--no-json` 在一次运行中跳过该步骤。`--file` 限制翻译的文件，并且仍然使用文档块中的每个 Markdown 文件重写同级链接。`--check-cache` 会转发到文档、JSON 和 SVG：它会重新验证具有强制本地脚本的区域设置的缓存段，即使文件跟踪会跳过。文档阶段也会转发 `--emphasis-placeholders`（与 `translate-docs` 含义相同）。全局 `--debug-failed` 会在 `cacheDir` 下为每个废弃的模型尝试（包括 SVG/文档脚本回退）写入 `FAILED-TRANSLATION` 日志，而不仅仅是当链中的每个模型都失败时。`--prompt-format` 不是 `sync` 标志；文档和 JSON 步骤使用内置默认值 (`json-array`)。
 

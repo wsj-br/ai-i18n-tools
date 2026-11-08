@@ -8,7 +8,7 @@
 
 निकालें (यदि सक्षम हो), फिर यूआई अनुवाद, फिर `translate-svg` जब `features.translateSVG` और `config.svg` सेट हों, फिर दस्तावेज़ अनुवाद, फिर `translate-json` जब `features.translateJson` और `json[]` सेट हों — जब तक कि `--no-ui`, `--no-svg`, `--no-docs`, या `--no-json` के साथ छोड़ा न जाए।
 
-**मुख्य विकल्प:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
+**मुख्य विकल्प:** `-l`, `-p` / `-f`, `--dry-run`, `-j`, `-b`, `--force`, `--force-update`, `--check-cache`, `--recheck-glossary-warnings`, `--no-ui`, `--no-svg`, `--no-docs`, `--no-json`
 
 `--force` डॉक्स, JSON, और SVG सेगमेंट कैश और फ़ाइल ट्रैकिंग को साफ़ करता है। इसे UI अनुवाद पर अग्रेषित नहीं किया जाता है; `strings.json` को फिर से अनुवादित करने के लिए `translate-ui --force` या `sync-ui --force` का उपयोग करें। `--force-update` डॉक्स, JSON, और SVG पर लागू होता है (UI पर नहीं)। `--no-ui`, `--no-svg`, `--no-docs`, और `--no-json` एक बार चलाने के लिए उस चरण को छोड़ देते हैं। `--file` उन फ़ाइलों को सीमित करता है जिनका अनुवाद किया जाता है और डॉक्स ब्लॉक में हर मार्कडाउन फ़ाइल का उपयोग करके फ़्लैट सिबलिंग लिंक को फिर से लिखता है। `--check-cache` डॉक्स, JSON, और SVG पर अग्रेषित किया जाता है: यह उन लोकेल के लिए कैश्ड सेगमेंट को फिर से मान्य करता है जिनमें एक लागू मूल स्क्रिप्ट है, तब भी जब फ़ाइल ट्रैकिंग छोड़ देती। डॉक्स चरण भी `--emphasis-placeholders` अग्रेषित करता है (`translate-docs` के समान अर्थ)। ग्लोबल `--debug-failed` प्रत्येक छोड़े गए मॉडल प्रयास (SVG/डॉक्स स्क्रिप्ट फ़ॉलबैक सहित) के लिए `cacheDir` के तहत `FAILED-TRANSLATION` लॉग लिखता है, न केवल तब जब चेन में हर मॉडल विफल हो जाता है। `--prompt-format` एक `sync` फ़्लैग नहीं है; डॉक्स और JSON चरण अंतर्निहित डिफ़ॉल्ट (`json-array`) का उपयोग करते हैं।
 

@@ -1655,3 +1655,33 @@ describe("request timeout config", () => {
     expect(c.providers.openrouter?.requestTimeoutMs).toBe(5000);
   });
 });
+
+describe("glossary.labelCheckSkips", () => {
+  it("defaults locales to * and rejects an empty term", () => {
+    const c = parseI18nConfig({
+      sourceLocale: "en",
+      targetLocales: ["uk"],
+      providers: { openrouter: {} },
+      glossary: {
+        labelCheckSkips: [
+          { term: "Target language", files: ["docs/transform.md"], note: "Inflected" },
+        ],
+      },
+    });
+    expect(c.glossary?.labelCheckSkips).toEqual([
+      {
+        term: "Target language",
+        locales: ["*"],
+        files: ["docs/transform.md"],
+        note: "Inflected",
+      },
+    ]);
+    expect(() =>
+      parseI18nConfig({
+        sourceLocale: "en",
+        providers: { openrouter: {} },
+        glossary: { labelCheckSkips: [{ term: "" }] },
+      })
+    ).toThrow(/labelCheckSkips/);
+  });
+});

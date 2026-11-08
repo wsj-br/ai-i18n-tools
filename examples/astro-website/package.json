@@ -16,14 +16,14 @@
     "i18n:sync": "ai-i18n-tools sync"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.4.4",
-    "tailwindcss": "^4.3.3"
+    "@tailwindcss/vite": "^4.3.5",
+    "astro": "^7.4.7",
+    "tailwindcss": "^4.3.5"
   },
   "engines": {
     "node": ">=22.16.0"
   },
   "devDependencies": {
-    "ai-i18n-tools": "^1.13.2"
+    "ai-i18n-tools": "^1.13.3"
   }
 }

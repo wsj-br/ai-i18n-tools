@@ -1,8 +1,41 @@
 import fs from "fs";
-import type { GlossaryTerm, GlossaryTermHint } from "../core/types.js";
+import { minimatch } from "minimatch";
+import type { GlossaryLabelCheckSkip, GlossaryTerm, GlossaryTermHint } from "../core/types.js";
 import { USER_EDITED_MODEL } from "../core/user-edited-model.js";
 import { parseGlossaryCsv } from "./parse-glossary-csv.js";
 import { sanitizePromptSupplementaryText } from "./translation-context.js";
+
+/** One locked UI label whose catalog translation is absent from the segment. */
+export interface LockedUiLabelIssue {
+  term: string;
+  translation: string;
+  locale: string;
+  message: string;
+}
+
+export interface GlossaryLoadOptions {
+  labelCheckSkips?: readonly GlossaryLabelCheckSkip[];
+}
+
+/** Locales named in `labelCheckSkips` that are not configured targets (`*` is always known). */
+export function unknownLabelCheckSkipLocales(
+  skips: readonly GlossaryLabelCheckSkip[] | undefined,
+  knownLocales: readonly string[]
+): string[] {
+  const known = new Set(knownLocales.map((locale) => locale.trim().toLowerCase()));
+  const unknown = new Set<string>();
+  for (const skip of skips ?? []) {
+    for (const locale of skip.locales) {
+      if (locale === "*") {
+        continue;
+      }
+      if (!known.has(locale.trim().toLowerCase())) {
+        unknown.add(locale);
+      }
+    }
+  }
+  return [...unknown];
+}
 
 function looksLikeStringsJson(filepath: string): boolean {
   if (filepath.toLowerCase().endsWith(".json")) {
@@ -307,9 +340,33 @@ function scanMarkdownLabelSpans(source: string): { bold: LabelSpan[]; code: Labe
   return { bold, code };
 }
 
-function spanCovers(spans: readonly LabelSpan[], index: number, length: number): boolean {
-  const end = index + length;
-  return spans.some((span) => span.start <= index && end <= span.end);
+/** Visible span text, without edge whitespace or trailing punctuation (`Target language:`). */
+function labelSpanCore(source: string, span: LabelSpan): string {
+  return source
+    .slice(span.start, span.end)
+    .trim()
+    .replace(/[\p{P}]+$/u, "")
+    .trim();
+}
+
+/**
+ * The glossary term is the whole bold or inline-code span, not a word inside a longer phrase.
+ * `**Ask for target language**` does not cite `Target language`.
+ */
+function spanIsExactLabel(
+  spans: readonly LabelSpan[],
+  source: string,
+  index: number,
+  english: string
+): boolean {
+  const end = index + english.length;
+  const wanted = english.trim().toLowerCase();
+  return spans.some((span) => {
+    if (index < span.start || end > span.end) {
+      return false;
+    }
+    return labelSpanCore(source, span).toLowerCase() === wanted;
+  });
 }
 
 /** The match is the whole segment or the whole line, so it is a label rather than a sentence. */
@@ -346,8 +403,9 @@ function isAtxHeadingSpan(source: string, index: number, length: number): boolea
 }
 
 /**
- * The match cites a UI label: a heading, bold, inline code, or a line that is only the label.
- * Title case inside a sentence is prose. Hindi and similar languages inflect it
+ * The match cites a UI label: a heading, a bold or inline-code span whose text is that
+ * label, or a line that is only the label. A longer bold phrase that contains the term
+ * is prose. Title case inside a sentence is prose. Hindi and similar languages inflect it
  * (`Cursor account` → `कर्सर खाते`), so that occurrence stays a hint.
  * `index` is into `source` only when `source.toLowerCase()` has the same length.
  */
@@ -363,8 +421,8 @@ function isLabelCitation(
   }
   return (
     isAtxHeadingSpan(source, index, english.length) ||
-    spanCovers(spans.bold, index, english.length) ||
-    spanCovers(spans.code, index, english.length) ||
+    spanIsExactLabel(spans.bold, source, index, english) ||
+    spanIsExactLabel(spans.code, source, index, english) ||
     isStandaloneLabel(source, index, english.length)
   );
 }
@@ -396,12 +454,15 @@ export class Glossary {
   private readonly _uiStringsTermCount: number;
   /** Terms whose key was first added when merging the user glossary CSV. */
   private readonly _userGlossaryTermCount: number;
+  private readonly labelCheckSkips: readonly GlossaryLabelCheckSkip[];
 
   constructor(
     glossaryUiPath: string | string[] | undefined,
     glossaryUserPath: string | undefined,
-    targetLocales: string[] = []
+    targetLocales: string[] = [],
+    options?: GlossaryLoadOptions
   ) {
+    this.labelCheckSkips = options?.labelCheckSkips ?? [];
     const uiPaths = (Array.isArray(glossaryUiPath) ? glossaryUiPath : [glossaryUiPath]).filter(
       (item): item is string => typeof item === "string" && item.trim().length > 0
     );
@@ -434,6 +495,41 @@ export class Glossary {
   /** Terms first introduced by the user glossary CSV (new keys not present after UI load). */
   get userGlossaryTermCount(): number {
     return this._userGlossaryTermCount;
+  }
+
+  /**
+   * True when `glossary.labelCheckSkips` turns off the locked-label check for this term.
+   * A skip with `files` applies only when `relPath` matches one of those globs.
+   */
+  labelCheckSkipped(termEnglish: string, locale: string, relPath?: string): boolean {
+    const termKey = termEnglish.trim().toLowerCase();
+    const localeKey = locale.trim().toLowerCase();
+    const normalizedPath = relPath?.replace(/\\/g, "/");
+    for (const skip of this.labelCheckSkips) {
+      if (skip.term.trim().toLowerCase() !== termKey) {
+        continue;
+      }
+      const locales = skip.locales.length > 0 ? skip.locales : ["*"];
+      const localeOk = locales.some(
+        (entry) => entry === "*" || entry.trim().toLowerCase() === localeKey
+      );
+      if (!localeOk) {
+        continue;
+      }
+      if (!skip.files || skip.files.length === 0) {
+        return true;
+      }
+      if (!normalizedPath) {
+        continue;
+      }
+      const fileOk = skip.files.some((pattern) =>
+        minimatch(normalizedPath, pattern.replace(/\\/g, "/"), { dot: true, matchBase: true })
+      );
+      if (fileOk) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private loadFromStringsJson(filepath: string): void {
@@ -776,13 +872,20 @@ export class Glossary {
 
   /**
    * Cited UI labels (catalog or seeded prefix, 2–5 words) whose translation is
-   * absent from `translated`, ignoring capitalization. A citation is bold, inline
-   * code, a heading, or a line that is only that label. Title case inside a sentence
-   * is prose and may inflect. A single-content-word label such as "Sign in" is not locked.
-   * Single-word hints and user-CSV-only rows are not locked.
+   * absent from `translated`, ignoring capitalization. A citation is a heading, a
+   * bold or inline-code span whose text is that label, or a line that is only that
+   * label. A longer bold phrase that contains the term is prose. Title case inside a
+   * sentence is prose and may inflect. A single-content-word label such as "Sign in"
+   * is not locked. Single-word hints and user-CSV-only rows are not locked.
+   * `relPath` selects file-scoped `labelCheckSkips`.
    */
-  missingLockedUiLabels(source: string, translated: string, locale: string): string[] {
-    const errors: string[] = [];
+  missingLockedUiLabels(
+    source: string,
+    translated: string,
+    locale: string,
+    relPath?: string
+  ): LockedUiLabelIssue[] {
+    const errors: LockedUiLabelIssue[] = [];
     const textLower = source.toLowerCase();
     const caseStable = textLower.length === source.length;
     const spans = caseStable ? scanMarkdownLabelSpans(source) : { bold: [], code: [] };
@@ -798,6 +901,9 @@ export class Glossary {
         continue;
       }
       if (!isLockedUiLabel(term, translation)) {
+        continue;
+      }
+      if (this.labelCheckSkipped(term.english, locale, relPath)) {
         continue;
       }
       let cited = false;
@@ -825,7 +931,12 @@ export class Glossary {
         index += needle.length;
       }
       if (cited && !includesFold(translated, translation)) {
-        errors.push(`Glossary label missing: "${term.english}" should include "${translation}"`);
+        errors.push({
+          term: term.english,
+          translation,
+          locale,
+          message: `Glossary label missing: "${term.english}" should include "${translation}"`,
+        });
       }
     }
     return errors;
@@ -899,14 +1010,19 @@ export function glossaryCacheMissErrors(
   source: string,
   cachedText: string,
   model: string | null,
-  checkLockedLabels: boolean
+  checkLockedLabels: boolean,
+  relPath?: string
 ): string[] {
   if (model === USER_EDITED_MODEL) {
     return [];
   }
   const errors = glossary.missingForcedTranslations(source, cachedText, locale);
   if (checkLockedLabels) {
-    errors.push(...glossary.missingLockedUiLabels(source, cachedText, locale));
+    errors.push(
+      ...glossary
+        .missingLockedUiLabels(source, cachedText, locale, relPath)
+        .map((issue) => issue.message)
+    );
   }
   return errors;
 }

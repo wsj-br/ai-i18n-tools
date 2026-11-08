@@ -24,9 +24,10 @@
 2. 阅读**摘要**条带 — 包含任何失败的段落，以及包含**1**、**2**或**3+** 失败记录的段落计数。
 3. 按部分**文件名**、**区域设置**、**模型**、**质量错误**（值来自您的缓存）、**仅致命**以及可选的**源哈希**、**源文本**或**错误消息**子字符串进行筛选 — 然后单击**应用**。
 4. 选择**排序：# 失败**（默认）或**排序：文件路径 + 行号**。
-5. 使用表格顶部或底部的分页。**单击一行**以展开完整的源文本。**模型**列显示失败模型，如果可用，则显示来自稍后成功缓存条目的模型。
-6. 🔗 链接控件将文件/行提示记录到运行 `ai-i18n-tools dashboard` 的**终端**。
-7. 修复项目中的**源文件**，然后再次运行 `translate-docs` 或 `sync`。如果列表在成功运行后看起来**过时**，请运行 `ai-i18n-tools sync --force-update` 并重新加载仪表板。
+5. 在表格顶部或底部使用分页。**点击行**以展开完整源文本。**模型**列显示失败模型，如果可用，还会显示来自后续成功缓存条目的模型。
+6. 🔗 链接控件会将文件/行提示记录到运行 `ai-i18n-tools dashboard` 的**终端**。
+7. 错误为 `Glossary label missing` 的行具有**添加跳过**功能。这会为术语、区域设置和文件写入一个 `glossary.labelCheckSkips` 条目。展开该行以读取运行存储的被拒绝译文。
+8. 修复项目中的**源文件**，然后再次运行 `translate-docs` 或 `sync`。如果成功运行后列表看起来**已过期**，请运行 `ai-i18n-tools sync --force-update` 并重新加载仪表板。术语表标签警告不会停止运行；请使用 `--recheck-glossary-warnings` 重新检查那些缓存的段。
 
 为了与 UI 并行进行基于文件的调试，请在 `translate-docs`、`translate-ui`、`translate-json`、`translate-svg` 或 `sync` 上传入全局 `--debug-failed`，以便在 `cacheDir` 下为每次被丢弃的模型尝试（提示词、原始输出、验证错误）写入一个 `FAILED-TRANSLATION` 文件，包括脚本回退警告——而不仅仅是在所有模型都失败时。参见[缓存行为和 `translate-docs` 标志](/zh-Hans/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags)。
 

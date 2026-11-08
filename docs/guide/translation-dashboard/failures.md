@@ -26,7 +26,8 @@ Dense inline markup (**bold** mixed with `` `code` ``, nested emphasis, long sen
 4. Choose **Sort: # Failures** (default) or **Sort: filepath + line #**.
 5. Use pagination at the top or bottom of the table. **Click a row** to expand full source text. The **Model** column shows the failure model and, when available, the model from a later successful cache entry.
 6. The 🔗 link control logs file/line hints to the **terminal** where `ai-i18n-tools dashboard` is running.
-7. Fix the **source file** in your project, then run `translate-docs` or `sync` again. If the list looks **out of date** after a successful run, run `ai-i18n-tools sync --force-update` and reload the dashboard.
+7. A row whose error is `Glossary label missing` has **Add skip**. That writes a `glossary.labelCheckSkips` entry for the term, locale, and file. Open the expanded row to read the rejected translation when the run stored it.
+8. Fix the **source file** in your project, then run `translate-docs` or `sync` again. If the list looks **out of date** after a successful run, run `ai-i18n-tools sync --force-update` and reload the dashboard. A glossary-label warning does not stop the run; re-check those cached segments with `--recheck-glossary-warnings`.
 
 For file-based debugging alongside the UI, pass global `--debug-failed` on `translate-docs`, `translate-ui`, `translate-json`, `translate-svg`, or `sync` to write a `FAILED-TRANSLATION` file under `cacheDir` for each discarded model attempt (prompt, raw output, validation error), including script-fallback warnings — not only when every model fails. See [Cache behaviour and `translate-docs` flags](/guide/documents/cli-options#cache-behaviour-and-translate-docs-flags).
 

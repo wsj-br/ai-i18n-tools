@@ -132,6 +132,6 @@ ai-i18n-tools status
 
 **如果您遇到此類驗證失敗，請優先簡化來源語言文字** - 分割段落、將範例移至圍欄程式碼區塊中，或使用較少層層堆疊的粗體/程式碼配對來描述相同概念 - 而非期望每個模型和語系都能完美重現密集的行內標記。
 
-當所有設定的模型在同一段落上都因 `AST mismatch` 失敗時，`translate-docs` 可自動將該段落拆分為更小的部分（優先從清單中點拆分，然後是單個清單項目或較短的段落片段），從第一個模型開始重試每一部分，並在原始段落的快取鍵下重新合併結果。此功能預設啟用（`segmentSplitting.qualityRetrySplit`）；設定為 `false` 可在模型全部嘗試失敗後停止。執行摘要會在啟用此備援機制時報告 `Quality split retries`。
+當為某個區段嘗試的模型以 `AST mismatch` 失敗時，`translate-docs` 可以自動將該區段分割成較小的部分（先從列表中間分割，然後是單個列表項目或較短的段落區塊），從第一個模型重試每個部分，並在原始區段快取鍵下重新組合結果。相同的品質錯誤發生三次會提前停止模型列表；不同的錯誤則會繼續。此功能預設為開啟 (`segmentSplitting.qualityRetrySplit`)；將其設定為 `false` 以在模型列表結束後停止。當此備用機制執行時，執行摘要會報告 `Quality split retries`。
 
 若要查看**哪些區段失敗**、失敗頻率以及儲存的**品質/錯誤訊息**，請使用翻譯儀表板的**失敗**分頁 ([翻譯儀表板 → 失敗](/zh-Hant/guide/translation-dashboard/failures#failures-document-translation))。

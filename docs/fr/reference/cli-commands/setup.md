@@ -65,7 +65,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 <a id="doctor"></a>
 ### `doctor`
 
-**Synopsis :** `ai-i18n-tools doctor [--local] [--strict] [--json]`
+**Synopsis :** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
 Vérifiez que le projet est prêt à être traduit. Le rapport couvre la syntaxe et le schéma de configuration, les règles métier, la version installée, les chemins source et de sortie, les fichiers de catalogue d'IU, les incohérences de marqueurs de position dans ces catalogues, les statistiques de cache, les fournisseurs configurés, les variables d'environnement prises en charge qui sont définies, et les ID de modèle. Un catalogue avec un marqueur de position renommé, supprimé ou réécrit est un avertissement et cite un exemple.
 
@@ -73,15 +73,16 @@ Par défaut, `doctor` vérifie également les identifiants de modèle configuré
 
 Les valeurs des clés API ne sont jamais affichées. Les variables définies sont listées par ordre alphabétique comme `Configured variables: NAME, ...`. Une variable qui n'est pas une clé API inclut sa valeur.
 
-Les chemins d'accès d'entrée manquants entraînent un échec. Les répertoires de sortie manquants sont une note, car la première exécution de traduction les crée. `doctor` ne réécrit pas la configuration, ne crée pas de répertoires et n'envoie pas de texte source à un modèle.
+Les chemins d'entrée manquants échouent. Les répertoires de sortie manquants sont une remarque, car la première exécution de la traduction les crée. `doctor` ne réécrit pas la configuration, ne crée pas de répertoires et n'envoie pas le texte source à un modèle. `--fix-gitignore` ajoute les lignes `.gitignore` manquantes et laisse tous les autres fichiers intacts.
 
-`doctor` avertit lorsque `.gitignore` à côté de la configuration manque un motif requis. Les deux motifs de cache suivent le `cacheDir` configuré, donc `.i18n-cache` a besoin de `.i18n-cache/*` et `!.i18n-cache/cache.db` plutôt que des lignes par défaut `.translation-cache`. Les autres motifs sont `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` et `*.backup.*`. Une ligne qui ignore le répertoire de cache lui-même, telle que `.i18n-cache/`, est également un avertissement, car Git ne suivra pas `cache.db` sous un répertoire ignoré. L'avertissement fait échouer la commande uniquement avec `--strict`.
+`doctor` avertit lorsque `.gitignore` à côté de la configuration ne contient pas un modèle requis. L'avertissement vous indique d'exécuter `ai-i18n-tools doctor --fix-gitignore`. Lorsque `.gitignore` existe déjà, cela ajoute une ligne vide, le commentaire `# ai-i18n-tools doctor fix`, et uniquement les lignes manquantes. Cela ne duplique pas les lignes déjà présentes. Un fichier manquant est créé avec le même bloc que `init` écrit. Les deux modèles de cache suivent la `cacheDir` configurée, donc `.i18n-cache` a besoin de `.i18n-cache/*` et `!.i18n-cache/cache.db` plutôt que des lignes `.translation-cache` par défaut. Les autres modèles sont `benchmark-scores.json`, `.env`, `.env.local`, `.env.*.local`, `*.tmp` et `*.backup.*`. Une ligne qui ignore le répertoire de cache lui-même, telle que `.i18n-cache/`, est également un avertissement, car Git ne suivra pas `cache.db` sous un répertoire ignoré. `--fix-gitignore` ne supprime pas cette ligne. L'avertissement fait échouer la commande uniquement avec `--strict`.
 
-**Options clés :** `--local`, `--strict`, `--json`
+**Options clés :** `--local`, `--strict`, `--json`, `--fix-gitignore`
 
 ```bash
 ai-i18n-tools doctor
 ai-i18n-tools doctor --local
+ai-i18n-tools doctor --fix-gitignore
 ```
 
 ---
