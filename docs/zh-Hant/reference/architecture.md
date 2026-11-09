@@ -274,7 +274,7 @@ SQLite 資料庫（透過 `node:sqlite`）儲存列，其金鑰為 `(source_hash
 - **OpenRouter 額外功能** (僅在 `openrouter` 作用中時)：透過 `provider` 請求欄位和 `HTTP-Referer` / `X-Title` 標頭進行吞吐量路由。每個提供者都會報告權杖使用量。OpenRouter 和 Cheaper Inference 也會傳回已計費的美元金額 (`usage.cost`；Cheaper Inference 回退至 `cheaper_inference.billing.billed_cost_usd`)。當提供者省略該金額時，美元成本會從 `providers.<name>.modelPricing` 計算，然後是提供者範圍的 `pricing` 預設值，然後是 models.dev 的輸入和輸出定價，並儲存在 `api_calls` 列上。提供者報告的成本 (包括 `0`) 絕不會被取代。未知成本保持未設定。定價呼叫僅讀取 `<cacheDir>/benchmark-scores.json` 的 models.dev 片段；它不會下載 languagebench 或 Arena 檔案。
 - **偵錯流量日誌**：如果設定了 `debugTrafficFilePath`，則將請求和回應 JSON 附加到檔案 (程式化)。CLI `--debug-failed` 會在 `cacheDir` 下寫入 `FAILED-TRANSLATION` 檔案，其中包含系統/使用者提示、原始助理回覆，以及針對失敗的 UI、文件、JSON 和 SVG 翻譯檢查嘗試的驗證錯誤。提供者 API / 空主體失敗會在控制台列印，而不是傾印僅包含提示的檔案。
 
-`suggest-models` 和儀表板的「模型」分頁不會呼叫 LLM。它們會使用 languagebench ChrF、LMArena Arena Score 和 models.dev 的價格，對作用中提供者的聊天目錄進行排名，然後可選擇性地取代 `providers.<name>.translationModels`。彙總資料存放在 `<cacheDir>/benchmark-scores.json` 中。請參閱 [AI 模型](/zh-Hant/guide/ai-models) 和 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
+`suggest-models` 和儀表板的「模型」分頁不會呼叫 LLM。它們會使用來自 languagebench ChrF 和 LMArena Arena Score 的品質指數，對活躍供應商的聊天目錄進行排名。價格是 3:1 的混合費率，以每百萬個權杖的美元計價（目錄、models.dev，然後是 languagebench）。`--quality` 依指數排序；`--price` 則沿著品質-價格的帕累托前沿移動。它們可以選擇性地取代 `providers.<name>.translationModels`。聚合資料位於 `<cacheDir>/benchmark-scores.json` 中。請參閱 [AI 模型](/zh-Hant/guide/ai-models) 和 [suggest-models](/zh-Hant/reference/cli-commands/models#suggest-models)。
 
 <a id="config-loading"></a>
 ### 設定載入

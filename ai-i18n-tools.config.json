@@ -40,15 +40,15 @@
     "cheaperinference": {
       "translationModels": [
         "gemini-2.5-flash",
-        "deepseek-v4-flash",
         "gemini-2.5-pro",
+        "deepseek-v4-flash",
+        "gpt-5",
+        "gpt-5.2",
         "gpt-5-mini",
+        "gemma-3-27b-it",
         "glm-4.5-air",
         "gpt-oss-120b",
-        "gpt-5-nano",
-        "gpt-5.4",
-        "gpt-5",
-        "gpt-5.2"
+        "qwen3-30b-a3b"
       ],
       "requestTimeout": 150
     }

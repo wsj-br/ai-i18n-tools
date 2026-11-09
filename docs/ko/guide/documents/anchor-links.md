@@ -41,7 +41,7 @@ Docusaurus를 사용하지 않거나, `{#…}` / `{/* #… */}` 접미사 대신
 ## 예시
 
 <a id="docusaurus------suffix"></a>
-### Docusaurus `{#…}` / `{/* #… */}` 접미사
+### Docusaurus `` / `` 접미사
 
 `docs/overview.md`:
 

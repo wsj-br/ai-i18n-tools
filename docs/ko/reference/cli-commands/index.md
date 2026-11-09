@@ -136,7 +136,7 @@ ai-i18n-tools glossary-generate
 | `-c` / `--config <path>`     | 모든 명령어 | 구성 파일 경로(기본값: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | 모든 명령어 | 자세한 로그 기록.                                                                          |
 | `-P` / `--provider <name>`   | 모든 명령 | 이 실행의 활성 LLM 제공자이며, 구성 `provider` 키를 재정의합니다. `providers` 아래에 구성해야 합니다. |
-| `-L` / `--ui-lang <code>`    | 모든 명령어 | 도구 자체 UI(CLI 도움말, 로그/요약, 대시보드)의 언어; 최우선 소스. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하십시오. |
+| `-L` / `--ui-lang <code>` | 모든 명령어 | 도구 자체 UI(CLI 도움말, 로그/요약, 대시보드)용 언어; 최우선 순위 소스. 이 옵션 도움말은 제공되는 코드를 나열합니다. `<code>`를 생략하면 해당 목록을 출력하고 종료합니다. [도구 UI 언어](/ko/guide/tool-ui-language)를 참조하세요. |
 | `-w` / `--write-logs [path]` | 선택한 명령 | 콘솔 출력을 `.log` 파일로 보냅니다(기본 경로: 루트 `cacheDir` 아래). `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync` 및 `cleanup`에만 연결됩니다. |
 | `--debug-failed`             | 번역 명령어 | 모든 모델이 실패하는 경우뿐만 아니라 폴백을 포함하여 폐기된 각 번역 검사(잘못된 스크립트, 파싱 또는 품질)에 대해 루트 `cacheDir` 아래에 `FAILED-TRANSLATION` 로그를 작성합니다. 제공자 API / 빈 본문 오류는 콘솔에 출력되며(모델 및 오류 메시지당 한 번) 해당 파일은 작성하지 않습니다. `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync`, `cleanup`에 적용됩니다. |
 

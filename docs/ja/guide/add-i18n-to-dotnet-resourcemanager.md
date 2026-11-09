@@ -293,7 +293,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply`は`translationModels`のみを置き換えます。同じランキングが`ai-i18n-tools dashboard`の[モデル](/ja/guide/translation-dashboard/models)タブにあります。
+`--apply` は `translationModels` のみを置換します。ブレンド価格が制限を超えるモデルを除外するには、`--max-price` を使用します。GUI をお好みの場合は、`ai-i18n-tools dashboard` を使用して [モデル](/ja/guide/translation-dashboard/models) を選択します。
 
 最初の`translate-ui`の前に用語集を埋めてください。`init`は`glossary.userGlossary`を`glossary-user.csv`にポイントし、ファイルは作成しません。ファイルが見つからない場合は、`ai-i18n-tools glossary-generate`を実行してから、ドメイン用語を追加してください。変更せずにコピーする必要がある名前には、**Force**を使用してください。
 

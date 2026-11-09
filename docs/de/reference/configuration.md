@@ -548,17 +548,17 @@ Pfade und Layout auf oberster Ebene für SVG-Dateien. Die Übersetzung wird nur 
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 
-Gewichtungen für [`suggest-models`](/de/reference/cli-commands/models#suggest-models) und den [Dashboard-Tab „Models“](/de/guide/translation-dashboard/models). Lassen Sie den Block oder ein Profil weg, dann behält dieses Profil die integrierten Gewichtungen bei. Der Block wird nicht durch `--apply` oder **Update config** überschrieben; diese schreiben nur Modell-IDs.
+ChrF- und Arena-Gewichtungen sowie eine optionale Qualitätsuntergrenze für [`suggest-models`](/de/reference/cli-commands/models#suggest-models) und den [Tab „Modelle“ im Dashboard](/de/guide/translation-dashboard/models). Der Index basiert ausschließlich auf Qualität. Wird der Block oder ein Profil weggelassen, behält dieses Profil die integrierten Gewichtungen bei. Der Block wird nicht von `--apply` oder **Konfiguration aktualisieren** überschrieben; diese schreiben nur Modell-IDs. Eine veraltete `price`-Gewichtung in einem Profil wird beim Laden der Konfiguration entfernt.
 
-- `quality` – Standard-ChrF `0.45`, Arena `0.35`, Preis `0.20`, Qualitätsuntergrenze `0.7`
-- `price` – Standard-ChrF `0.35`, Arena `0.20`, Preis `0.45`, Qualitätsuntergrenze `0.6`
+- `quality` – Standard-ChrF `0.55`, Arena `0.45`, Qualitätsuntergrenze `0.7`
+- `price` – Standard-ChrF `0.55`, Arena `0.45`, Qualitätsuntergrenze `0.6`
 
-Jedes Profilobjekt erfordert `chrf`, `arena` und `price`. Jeder Wert ist endlich und mindestens `0`, und mindestens einer ist größer als `0`. Sie werden so normalisiert, dass sie sich zu 1 summieren, sodass `45`, `35` und `20` den Qualitätsstandards entsprechen. `qualityFloor` ist optional, im Bereich `(0, 1]`, und ist der Anteil des besten ChrF im Kandidatenpool. Modelle unterhalb des Schwellenwerts, einschließlich jedes Modells ohne ChrF-Messung, werden nach denen sortiert, die ihn überschreiten.
+Jedes Profilobjekt erfordert `chrf` und `arena`. Jeder Wert ist endlich und mindestens `0`, und mindestens einer ist größer als `0`. Sie werden so normalisiert, dass ihre Summe 1 ergibt, sodass `55` und `45` den Standardwerten entsprechen. `qualityFloor` ist optional, liegt im Bereich `(0, 1]` und ist der Anteil des besten ChrF im Kandidatenpool. Modelle unterhalb der Untergrenze, einschließlich aller Modelle ohne ChrF-Messung, werden nach denen sortiert, die diese überschreiten. Die beiden Profile teilen sich dieselbe Standardmischung; sie unterscheiden sich in der Sortierreihenfolge (`--quality` nach Index, `--price` nach Pareto-Front) und in der Untergrenze.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

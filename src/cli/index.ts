@@ -118,11 +118,14 @@ import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
 import { displayWidth } from "../utils/table.js";
 import {
+  availableUiLanguagesNotice,
+  formatAvailableUiLanguagesInline,
   initUiI18nFromEnvironment,
   t,
   uiLocaleDirection,
   loadUiBundle,
   getUiLocale,
+  withAvailableUiLanguagesOnMissingUiLang,
 } from "../i18n/index.js";
 import {
   createRunInterruptScope,
@@ -526,7 +529,7 @@ Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--
 Provider override (-P / --provider):
   On translation commands, selects the active LLM provider for this run, overriding the config
   "provider" key. The name must be configured under "providers" (e.g. -P openai).
-  On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n`;
+  On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n\n${availableUiLanguagesNotice()}\n`;
 
 // Load `.env` from the current working directory so provider API keys are
 // available in non-interactive shells (e.g. agent-run commands) that do not
@@ -567,9 +570,9 @@ program
   )
   .option(
     "-L, --ui-lang <code>",
-    t(
+    `${t(
       "Language for this tool's own UI/logs (BCP-47, e.g. es, pt-BR). Overrides AI_I18N_LANG and config uiLanguage."
-    )
+    )} ${t("Available languages for -L / --ui-lang:")} ${formatAvailableUiLanguagesInline()}.`
   )
   // Register Commander's built-in help text as a catalog key so it (and every subcommand's -h, plus
   // the `help` command) is localized via the render-time t() in formatCliHelp.
@@ -578,6 +581,14 @@ program
 program.configureHelp({
   showGlobalOptions: true,
   formatHelp: formatCliHelp,
+});
+
+// Registered before subcommands so they inherit the handler. A bare `-L` / `--ui-lang` otherwise
+// stops in Commander with "argument missing" and never lists the codes the flag accepts.
+program.configureOutput({
+  outputError(str, write) {
+    write(withAvailableUiLanguagesOnMissingUiLang(str));
+  },
 });
 
 program
@@ -685,8 +696,16 @@ program
       "Rank the active provider's chat models by translation quality or price and optionally write the top ids to translationModels"
     )
   )
-  .option("--quality", t("Rank for translation quality (default)"), false)
-  .option("--price", t("Rank for lower price, keeping a quality floor"), false)
+  .option(
+    "--quality",
+    t("Rank by translation quality: languagebench ChrF and Arena Score (default)"),
+    false
+  )
+  .option(
+    "--price",
+    t("List the cheapest models on the quality-price frontier first, keeping a quality floor"),
+    false
+  )
   .option("--top <n>", t("How many models to show, print, and apply"), "8")
   .option(
     "--json",
@@ -701,11 +720,15 @@ program
   )
   .option(
     "--max-price <usd>",
-    t("Keep models whose output price per 1M tokens is at most this many USD")
+    t(
+      "Keep models whose blended price, (3 x input + output) / 4 USD per 1M tokens, is at most this many USD"
+    )
   )
   .option(
     "--min-delta <points>",
-    t("Keep a model only when its index is at least this many points below the previous kept model")
+    t(
+      "Keep a model only when its index differs by at least this many points from the previous kept model"
+    )
   )
   .option(
     "--refresh",
@@ -738,7 +761,7 @@ program
         return;
       }
       const top = Number(opts.top);
-      const maxOutputPrice = opts.maxPrice === undefined ? undefined : Number(opts.maxPrice);
+      const maxPrice = opts.maxPrice === undefined ? undefined : Number(opts.maxPrice);
       const minDelta = opts.minDelta === undefined ? undefined : Number(opts.minDelta);
       try {
         const { exitCode } = await runSuggestModels(config, projectRoot, configPath, {
@@ -749,7 +772,7 @@ program
           apply: opts.apply === true,
           refresh: opts.refresh === true,
           list: opts.list === true,
-          ...(maxOutputPrice !== undefined ? { maxOutputPrice } : {}),
+          ...(maxPrice !== undefined ? { maxPrice } : {}),
           ...(minDelta !== undefined ? { minDelta } : {}),
         });
         process.exitCode = exitCode;

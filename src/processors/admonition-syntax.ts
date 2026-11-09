@@ -1,10 +1,9 @@
 import { isCodeFenceClose, matchCodeFenceOpen, type OpenCodeFence } from "./code-fence.js";
 
 /**
- * Shared admonition fence syntax, used by the markdown extractor (segmentation),
- * the placeholder protector (`admonition-placeholders.ts`), and the malformed-admonition
- * diagnostics (`markdown-source-diagnostics.ts`). Keeping these patterns in one place avoids
- * the three consumers drifting apart.
+ * Shared admonition fence syntax for title masking, MkDocs markers, and prose detection.
+ * Open and close ranges for `:::` containers live in `colon-container-parser.ts` so the
+ * extractor, diagnostics, and placeholder protector use one VitePress-compatible match.
  *
  * Docusaurus writes the type flush against the colons (`:::note`, `:::tip[Title]`).
  * VitePress containers put a space before the type (`::: tip`, `::: tip Title`, `::: details`).
@@ -40,22 +39,10 @@ export const ADMONITION_DIRECTIVE_WITH_TAIL_RE = new RegExp(
 export const ADMONITION_FENCED_DIV_RE = /^(\s*)(:{3,}\s*\{[^}]*\})(\s*)([^\n]*)$/;
 
 /**
- * Closing fence used by the placeholder protector: a line of only 3+ colons, indent-tolerant.
- * Group 1 is the colon run (restored verbatim). Leading whitespace is allowed so a restore stays robust.
+ * A closing fence with no list or blockquote marker. The colon container parser masks
+ * `> :::` and other structured closers first; this is the indented fallback.
  */
 export const ADMONITION_CLOSING_RE = /^\s*(:::+)\s*$/;
-
-/**
- * Closing fence used by the line scanner / diagnostics: a line of only 3+ colons with no indent.
- * Group 1 is the colon run (so its length can be compared against the opener).
- */
-export const ADMONITION_CLOSING_NOINDENT_RE = /^(:{3,})\s*$/;
-
-/**
- * Generic opener detector (no indent): group 1 is the leading colon run.
- * Followed by optional space and a word (`::: tip`) or a `{` brace opener (`::: {.note}`, `:::{note}`).
- */
-export const ADMONITION_OPENER_COLONS_RE = /^(:{3,})(?:\s*\w|\s*\{)/;
 
 /**
  * GitHub / Obsidian callout marker. Group 1 is `> [!NOTE]` (optional Obsidian fold `+` / `-`),
@@ -97,31 +84,62 @@ export const MKDOCS_ADMONITION_MISSING_TYPE_RE = /^\s*(?:!!!|\?{3}\+?)[ \t]*$/;
 /** Body lines must be indented at least this many columns past the marker. */
 export const MKDOCS_ADMONITION_BODY_INDENT = 4;
 
+/** Drop leading blockquote markers and one list marker so a fence can be read after them. */
+function stripBlockMarkerPrefix(line: string): string {
+  let rest = line;
+  for (let depth = 0; depth < 8; depth++) {
+    const quote = /^[ \t]{0,3}>[ \t]?/.exec(rest);
+    if (!quote) {
+      break;
+    }
+    rest = rest.slice(quote[0].length);
+  }
+  const list = /^[ \t]{0,3}(?:[-+*]|\d{1,9}[.)])[ \t]+/.exec(rest);
+  if (list) {
+    rest = rest.slice(list[0].length);
+  }
+  return rest;
+}
+
+/**
+ * True when `line` opens a bracketed admonition title that never reaches `]`.
+ * List and blockquote markers are ignored so `> :::note[Title` is included.
+ */
+export function lineOpensUnterminatedAdmonitionTitle(line: string): boolean {
+  if (ADMONITION_UNTERMINATED_TITLE_RE.test(line)) {
+    return true;
+  }
+  const stripped = stripBlockMarkerPrefix(line);
+  return stripped !== line && ADMONITION_UNTERMINATED_TITLE_RE.test(stripped);
+}
+
 /**
  * Title text on a container opener, `""` for a bare opener or closer, or `null` when `line`
  * is ordinary prose. Custom containers (`::: code-group`) count as bare when they have no title.
+ * A closer may be indented up to three spaces, or sit after a list or blockquote marker.
  */
 function containerBoundaryTitle(line: string): string | null {
-  if (ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
+  const rest = stripBlockMarkerPrefix(line);
+  if (/^[ \t]{0,3}:{3,}[ \t]*$/.test(rest)) {
     return "";
   }
-  const bracketed = line.match(ADMONITION_BRACKETED_TITLE_RE);
+  const bracketed = rest.match(ADMONITION_BRACKETED_TITLE_RE);
   if (bracketed) {
     return bracketed[3] ?? "";
   }
-  const fencedDiv = line.match(ADMONITION_FENCED_DIV_RE);
+  const fencedDiv = rest.match(ADMONITION_FENCED_DIV_RE);
   if (fencedDiv) {
     return fencedDiv[4] ?? "";
   }
-  const directive = line.match(ADMONITION_DIRECTIVE_WITH_TAIL_RE);
+  const directive = rest.match(ADMONITION_DIRECTIVE_WITH_TAIL_RE);
   if (directive) {
     return directive[4] ?? "";
   }
-  const mkdocs = line.match(MKDOCS_ADMONITION_OPENER_RE);
+  const mkdocs = rest.match(MKDOCS_ADMONITION_OPENER_RE);
   if (mkdocs) {
     return mkdocs[5] ?? "";
   }
-  const custom = /^:{3,}[ \t]*\S+(?:[ \t]+(.*))?$/.exec(line);
+  const custom = /^[ \t]{0,3}:{3,}[ \t]*\S+(?:[ \t]+(.*))?$/.exec(rest);
   if (custom) {
     return custom[1] ?? "";
   }

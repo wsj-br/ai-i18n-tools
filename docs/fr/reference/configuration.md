@@ -548,17 +548,17 @@ Chemins et structure de niveau supérieur pour les fichiers SVG. La traduction s
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (facultatif)
 
-Pondérations pour [`suggest-models`](/fr/reference/cli-commands/models#suggest-models) et l'[onglet Modèles du tableau de bord](/fr/guide/translation-dashboard/models). Omettez le bloc, ou omettez un profil, et ce profil conservera les pondérations intégrées. Le bloc n'est pas réécrit par `--apply` ou **Mettre à jour la configuration** ; ces derniers écrivent uniquement les identifiants de modèle.
+Poids ChrF et Arena, ainsi qu'un seuil de qualité facultatif, pour [`suggest-models`](/fr/reference/cli-commands/models#suggest-models) et l'[onglet Modèles du tableau de bord](/fr/guide/translation-dashboard/models). L'index est basé uniquement sur la qualité. Omettez le bloc, ou omettez un profil, et ce profil conservera les poids intégrés. Le bloc n'est pas réécrit par `--apply` ou **Mettre à jour la configuration** ; ceux-ci n'écrivent que les identifiants de modèle. Un poids `price` hérité sur un profil est supprimé lors du chargement de la configuration.
 
-- `quality` — ChrF par défaut `0.45`, Arena `0.35`, prix `0.20`, seuil de qualité `0.7`
-- `price` — ChrF par défaut `0.35`, Arena `0.20`, prix `0.45`, seuil de qualité `0.6`
+- `quality` — ChrF par défaut `0.55`, Arena `0.45`, seuil de qualité `0.7`
+- `price` — ChrF par défaut `0.55`, Arena `0.45`, seuil de qualité `0.6`
 
-Chaque objet de profil nécessite `chrf`, `arena` et `price`. Chaque valeur est finie et au moins `0`, et au moins une est supérieure à `0`. Elles sont normalisées pour que leur somme soit égale à 1, afin que `45`, `35` et `20` correspondent aux valeurs par défaut de qualité. `qualityFloor` est facultatif, dans la plage `(0, 1]`, et représente la fraction du meilleur ChrF dans le pool de candidats. Les modèles inférieurs au seuil, y compris tout modèle sans mesure ChrF, sont triés après ceux qui le dépassent.
+Chaque objet de profil requiert `chrf` et `arena`. Chaque valeur est finie et au moins `0`, et au moins une est supérieure à `0`. Elles sont normalisées pour que leur somme soit égale à 1, de sorte que `55` et `45` correspondent aux valeurs par défaut. `qualityFloor` est facultatif, dans la plage `(0, 1]`, et représente la fraction du meilleur ChrF dans le pool de candidats. Les modèles en dessous du seuil, y compris tout modèle sans mesure ChrF, sont triés après ceux qui le dépassent. Les deux profils partagent le même mélange par défaut ; ils diffèrent par l'ordre de tri (`--quality` par index, `--price` par frontière de Pareto) et par le seuil.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

@@ -1190,12 +1190,10 @@ const jsonBlockSchema = z
 
 const suggestionProfileWeightsSchema = z
   .object({
-    /** ChrF weight. Normalized with `arena` and `price` so the three sum to 1. */
+    /** ChrF weight. Normalized with `arena` so the two sum to 1. */
     chrf: z.number().nonnegative(),
-    /** Arena Score weight. Normalized with `chrf` and `price` so the three sum to 1. */
+    /** Arena Score weight. Normalized with `chrf` so the two sum to 1. */
     arena: z.number().nonnegative(),
-    /** Price weight (lower blended USD per 1M tokens scores higher). */
-    price: z.number().nonnegative(),
     /**
      * Fraction of the best ChrF in the candidate pool. Models under this floor sort after
      * those that clear it. Omit for the profile default (`0.7` quality, `0.6` price).
@@ -1204,11 +1202,10 @@ const suggestionProfileWeightsSchema = z
   })
   .strict()
   .superRefine((weights, ctx) => {
-    if (weights.chrf + weights.arena + weights.price <= 0) {
+    if (weights.chrf + weights.arena <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message:
-          "modelSuggestion weights must include at least one positive chrf, arena, or price value",
+        message: "modelSuggestion weights must include at least one positive chrf or arena value",
       });
     }
   });
@@ -1314,8 +1311,8 @@ const i18nConfigSchemaInner = z
      */
     fileConcurrency: z.number().int().positive().optional(),
     /**
-     * Optional weights for `suggest-models`. Omit the block, or one profile, to keep the
-     * built-in quality and price heuristics.
+     * Optional ChrF/Arena weights and quality floor for `suggest-models`. Omit the block,
+     * or one profile, to keep the built-in quality and price heuristics.
      */
     modelSuggestion: modelSuggestionSchema.optional(),
   })

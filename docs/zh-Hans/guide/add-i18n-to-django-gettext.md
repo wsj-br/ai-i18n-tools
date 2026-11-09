@@ -265,7 +265,9 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` 仅替换 `translationModels`。相同的排名位于[模型](/zh-Hans/guide/translation-dashboard/models)选项卡上。然后翻译：
+`--apply` 仅替换 `translationModels`。使用 `--max-price` 可排除混合价格超过限制的模型。如果您更喜欢 GUI，请使用 `ai-i18n-tools dashboard` 来选择[模型](/zh-Hans/guide/translation-dashboard/models)。
+
+然后翻译：
 
 ```bash
 ai-i18n-tools translate-ui

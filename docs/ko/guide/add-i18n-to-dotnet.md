@@ -405,7 +405,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply`는 `translationModels`만 대체합니다. 동일한 순위는 `ai-i18n-tools dashboard`의 [모델](/ko/guide/translation-dashboard/models) 탭에 있습니다.
+`--apply`는 `translationModels`만 대체합니다. 블렌딩된 가격이 제한을 초과하는 모델을 제외하려면 `--max-price`를 사용하십시오. GUI를 선호하는 경우, `ai-i18n-tools dashboard`를 사용하여 [모델](/ko/guide/translation-dashboard/models)을 선택하십시오.
 
 첫 번째 `translate-ui` 전에 용어집을 채우세요. `init`은(는) `glossary.userGlossary`가 `glossary-user.csv`을(를) 가리키도록 하며 파일을 생성하지 않습니다. 파일이 없으면 `ai-i18n-tools glossary-generate`을(를) 실행한 다음 도메인 용어를 추가하세요. 변경되지 않고 복사되어야 하는 이름에는 **Force**를 사용하세요. 변경되지 않은 문자열의 두 번째 `translate-ui`은(는) 다르게 표현되어 돌아올 수 있습니다. 용어집은 두 실행이 일치하도록 하는 것입니다.
 

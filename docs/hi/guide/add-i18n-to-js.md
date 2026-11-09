@@ -309,7 +309,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` केवल `translationModels` को बदलता है। वही रैंकिंग `ai-i18n-tools dashboard` के [मॉडल](/hi/guide/translation-dashboard/models) टैब पर है।
+`--apply` केवल `translationModels` को बदलता है। उन मॉडलों को बाहर करने के लिए `--max-price` का उपयोग करें जिनकी मिश्रित कीमत एक सीमा से अधिक है। यदि आप GUI पसंद करते हैं, तो [मॉडल](/hi/guide/translation-dashboard/models) चुनने के लिए `ai-i18n-tools dashboard` का उपयोग करें।
 
 फिर निकालें और अनुवाद करें:
 

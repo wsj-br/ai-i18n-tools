@@ -8,10 +8,10 @@ Le `ai-i18n-tools` localise sa propre interface utilisateur — le texte d'aide 
 
 Les paramètres régionaux de l'interface utilisateur sont résolus à partir de ces sources, par ordre de priorité décroissant :
 
-1. Indicateur global `-L` / `--ui-lang <code>` (par ex. `-L pt-BR`).
-2. Variable d'environnement `AI_I18N_LANG` (par ex. `export AI_I18N_LANG=es`).
+1. Option globale `-L` / `--ui-lang <code>` (p. ex. `-L pt-BR`). Passer `-L` ou `--ui-lang` sans code affiche les langues fournies et quitte. La même liste est disponible avec l'option dans `--help`, et également à la fin de `ai-i18n-tools --help`.
+2. Variable d'environnement `AI_I18N_LANG` (p. ex. `export AI_I18N_LANG=es`).
 3. La clé de configuration `uiLanguage` dans `ai-i18n-tools.config.json` (chaîne BCP-47).
-4. La locale du système d'exploitation hôte (via `Intl.DateTimeFormat().resolvedOptions().locale`).
+4. Les paramètres régionaux du système d'exploitation hôte (via `Intl.DateTimeFormat().resolvedOptions().locale`).
 
 <a id="matching-and-fallback"></a>
 ## Correspondance et repli

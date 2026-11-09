@@ -47,7 +47,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `JsonExtractor` | Docusaurus JSON लेबल फ़ाइलों (UI कैटलॉग, MDX बॉडी नहीं) से निकालें। |
 | `SvgExtractor` | SVG फ़ाइलों से निकालें। |
 | `LlmClient` | सक्रिय LLM प्रदाता को अनुवाद अनुरोध करें (`OpenRouterClient` एक बहिष्कृत उपनाम है)। |
-| `rankProviderModels` / `resolveSuggestionWeights` | `suggest-models` द्वारा उपयोग की जाने वाली गुणवत्ता या मूल्य प्रोफ़ाइल के साथ रैंक वन प्रदाता के चैट कैटलॉग को रैंक करें। यह कॉन्फ़िगरेशन को प्रिंट या राइट नहीं करता है। |
+| `rankProviderModels` / `resolveSuggestionWeights` | एक प्रोवाइडर के चैट कैटलॉग को रैंक करें। इंडेक्स ChrF और Arena है; क्वालिटी प्रोफ़ाइल उस इंडेक्स के अनुसार सॉर्ट करती है, और प्राइस प्रोफ़ाइल पेरेटो फ्रंटियर पर चलती है। कॉन्फ़िग को प्रिंट या राइट नहीं करती है। |
 | `PlaceholderHandler` | अनुवाद के आसपास मार्कडाउन सिंटैक्स को सुरक्षित/पुनर्स्थापित करें (HTML टैग, एडमॉनिशन्स, एंकर, MDX टिप्पणियाँ/JSX/ब्रेसेस, URL, इनलाइन कोड, एम्फेसिस)। |
 | `protectMdx` / `restoreMdx` | MDX टिप्पणियों, JSX टैग, ब्रेस एक्सप्रेशंस और JSX स्ट्रिंग एट्रिब्यूट्स को सुरक्षित/पुनर्स्थापित करें (`PlaceholderHandler` द्वारा कॉल किया गया; सीधे उपयोग के लिए भी निर्यात किया गया)। |
 | `splitTranslatableIntoBatches` | खंडों को LLM-आकार के बैचों में समूहित करें। |

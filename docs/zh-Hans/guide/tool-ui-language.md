@@ -8,10 +8,10 @@
 
 UI 区域设置从以下来源解析，优先级从高到低：
 
-1. `-L` / `--ui-lang <code>` 全局标志（例如 `-L pt-BR`）。
-2. `AI_I18N_LANG` 环境变量（例如 `export AI_I18N_LANG=es`）。
-3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 配置键（BCP-47 字符串）。
-4. 主机操作系统区域设置（通过 `Intl.DateTimeFormat().resolvedOptions().locale`）。
+1. `-L` / `--ui-lang <code>` 全局标志 (例如 `-L pt-BR`)。不带代码传递 `-L` 或 `--ui-lang` 将打印已提供的语言并退出。相同的列表位于 `--help` 中的选项上，并在 `ai-i18n-tools --help` 的末尾再次出现。
+2. `AI_I18N_LANG` 环境变量 (例如 `export AI_I18N_LANG=es`)。
+3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 配置键 (BCP-47 字符串)。
+4. 主机操作系统区域设置 (通过 `Intl.DateTimeFormat().resolvedOptions().locale`)。
 
 <a id="matching-and-fallback"></a>
 ## 匹配与回退

@@ -8,10 +8,10 @@ La `ai-i18n-tools` localiza su propia interfaz de usuario — texto de ayuda de 
 
 La configuración regional de la interfaz de usuario se resuelve a partir de estas fuentes, de mayor a menor prioridad:
 
-1. Indicador global `-L` / `--ui-lang <code>` (por ejemplo, `-L pt-BR`).
-2. Variable de entorno `AI_I18N_LANG` (por ejemplo, `export AI_I18N_LANG=es`).
+1. Indicador global `-L` / `--ui-lang <code>` (p. ej., `-L pt-BR`). Al pasar `-L` o `--ui-lang` sin código, se imprimen los idiomas incluidos y se sale. La misma lista se encuentra en la opción de `--help`, y de nuevo al final de `ai-i18n-tools --help`.
+2. Variable de entorno `AI_I18N_LANG` (p. ej., `export AI_I18N_LANG=es`).
 3. La clave de configuración `uiLanguage` en `ai-i18n-tools.config.json` (cadena BCP-47).
-4. La locale del sistema operativo anfitrión (a través de `Intl.DateTimeFormat().resolvedOptions().locale`).
+4. La configuración regional del SO anfitrión (a través de `Intl.DateTimeFormat().resolvedOptions().locale`).
 
 <a id="matching-and-fallback"></a>
 ## Coincidencia y reserva

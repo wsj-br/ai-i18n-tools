@@ -136,7 +136,7 @@ ai-i18n-tools glossary-generate
 | `-c` / `--config <path>`     | 每個命令 | 設定檔路徑（預設值：`ai-i18n-tools.config.json`）。                                  |
 | `-v` / `--verbose`           | 每個命令 | 詳細記錄。                                                                          |
 | `-P` / `--provider <name>`   | 每個指令 | 此執行緒的活躍 LLM 提供者；會覆寫組態 `provider` 鍵。必須在 `providers` 下進行組態。 |
-| `-L` / `--ui-lang <code>`    | 每個指令 | 工具自身 UI（CLI 說明、日誌/摘要、儀表板）的語言；最高優先級來源。請參閱[工具 UI 語言](/zh-Hant/guide/tool-ui-language)。 |
+| `-L` / `--ui-lang <code>` | 每個指令 | 工具本身的 UI 語言 (CLI 說明、日誌/摘要、儀表板)；最高優先級的來源。該選項的說明會列出隨附的代碼。省略 `<code>` 會列印該清單並退出。請參閱 [工具 UI 語言](/zh-Hant/guide/tool-ui-language)。 |
 | `-w` / `--write-logs [path]` | 選定的命令 | 將控制台輸出導向至 `.log` 檔案（預設路徑：在根目錄 `cacheDir` 下）。僅適用於 `translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync` 和 `cleanup`。 |
 | `--debug-failed`             | 翻譯指令 | 在根目錄 `cacheDir` 下為每次被捨棄的翻譯檢查（錯誤腳本、解析或品質）撰寫 `FAILED-TRANSLATION` 日誌，包含備用方案——不僅在所有模型失敗時才撰寫。供應商 API / 空請求體錯誤會在控制台印出（每個模型和錯誤訊息各一次），且不會寫入這些檔案。適用於 `translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync-ui`、`sync` 和 `cleanup`。 |
 

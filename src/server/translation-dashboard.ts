@@ -36,8 +36,9 @@ import { writeAtomicUtf8 } from "../cli/helpers.js";
 import { replaceProviderTranslationModels } from "../core/apply-translation-models.js";
 import { readLabelCheckSkips, writeLabelCheckSkips } from "../core/glossary-label-skips.js";
 import { benchmarkCachePath, ensureModelsDevPricing } from "../core/model-benchmarks.js";
+import { translationModelsForProvider } from "../core/llm-providers.js";
 import { suggestProviderModels } from "../core/suggest-provider-models.js";
-import { selectSuggestRows } from "../cli/suggest-models.js";
+import { configuredModelRows, selectSuggestRows } from "../cli/suggest-models.js";
 import { isRunningInSea, readSeaAsset } from "../core/sea-assets.js";
 import { docBlockFileTrackingKeyToRelPath } from "../core/doc-file-tracking.js";
 
@@ -46,6 +47,38 @@ function csvEscapeCell(s: string): string {
     return `"${s.replace(/"/g, '""')}"`;
   }
   return s;
+}
+
+function trimConfiguredModelIds(list: unknown): string[] | undefined {
+  if (!Array.isArray(list)) {
+    return undefined;
+  }
+  return list
+    .filter((id): id is string => typeof id === "string" && id.trim().length > 0)
+    .map((id) => id.trim());
+}
+
+/**
+ * `translationModels` from the config file on disk, so the Models tab reflects
+ * an Update-config write (or an external edit) without restarting the dashboard.
+ */
+function liveTranslationModels(configPath: string, config: I18nConfig, provider: string): string[] {
+  try {
+    const json: unknown = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    if (json && typeof json === "object" && !Array.isArray(json)) {
+      const providers = (json as Record<string, unknown>).providers;
+      if (providers && typeof providers === "object" && !Array.isArray(providers)) {
+        const entry = (providers as Record<string, unknown>)[provider];
+        if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+          const ids = trimConfiguredModelIds((entry as Record<string, unknown>).translationModels);
+          return ids ?? [];
+        }
+      }
+    }
+  } catch {
+    // Fall back to the in-memory config loaded when the dashboard started.
+  }
+  return translationModelsForProvider(config, provider);
 }
 
 function optionalNonNegativeQuery(value: unknown): { ok: true; value?: number } | { ok: false } {
@@ -1218,8 +1251,8 @@ export function createTranslationDashboardApp(
     }
     const priorityRaw = req.query.priority;
     const priority = priorityRaw === "price" ? "price" : "quality";
-    const maxOutputPrice = optionalNonNegativeQuery(req.query.maxOutputPrice);
-    if (!maxOutputPrice.ok) {
+    const maxPrice = optionalNonNegativeQuery(req.query.maxPrice);
+    if (!maxPrice.ok) {
       res.status(400).json({ error: "--max-price must be a number >= 0." });
       return;
     }
@@ -1236,12 +1269,19 @@ export function createTranslationDashboardApp(
         profile: priority,
       });
       const models = selectSuggestRows(result.models, {
-        ...(maxOutputPrice.value !== undefined ? { maxOutputPrice: maxOutputPrice.value } : {}),
+        ...(maxPrice.value !== undefined ? { maxPrice: maxPrice.value } : {}),
         ...(minDelta.value !== undefined ? { minDelta: minDelta.value } : {}),
       });
+      const translationModels = liveTranslationModels(
+        suggestion.configPath,
+        suggestion.config,
+        provider
+      );
       res.json({
         ...result,
         models,
+        translationModels,
+        configuredModels: configuredModelRows(result.models, translationModels),
         providers: suggestion.providerNames,
         activeProvider: suggestion.activeProvider,
       });
@@ -1269,16 +1309,21 @@ export function createTranslationDashboardApp(
       return;
     }
     try {
+      const translationModels = body.models.map((id) => String(id).trim());
       const backupPath = replaceProviderTranslationModels(
         suggestion.configPath,
         provider,
-        body.models
+        translationModels
       );
+      const entry = suggestion.config.providers[provider];
+      if (entry) {
+        entry.translationModels = translationModels;
+      }
       res.json({
         ok: true,
         provider,
         backupPath,
-        translationModels: body.models.map((id) => id.trim()),
+        translationModels,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

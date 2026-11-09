@@ -265,7 +265,9 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply`은(는) `translationModels`만 대체합니다. 동일한 순위는 [모델](/ko/guide/translation-dashboard/models) 탭에 있습니다. 그런 다음 번역하세요.
+`--apply`는 `translationModels`만 대체합니다. 블렌딩된 가격이 제한을 초과하는 모델을 제외하려면 `--max-price`를 사용하십시오. GUI를 선호하는 경우, `ai-i18n-tools dashboard`를 사용하여 [모델](/ko/guide/translation-dashboard/models)을 선택하십시오.
+
+그런 다음 번역합니다:
 
 ```bash
 ai-i18n-tools translate-ui

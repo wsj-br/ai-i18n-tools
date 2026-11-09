@@ -551,17 +551,17 @@ Top-level paths and layout for SVG files. Translation runs only when `features.t
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (optional)
 
-Weights for [`suggest-models`](/reference/cli-commands/models#suggest-models) and the [dashboard Models tab](/guide/translation-dashboard/models). Omit the block, or omit one profile, and that profile keeps the built-in weights. The block is not rewritten by `--apply` or **Update config**; those write model ids only.
+ChrF and Arena weights, plus an optional quality floor, for [`suggest-models`](/reference/cli-commands/models#suggest-models) and the [dashboard Models tab](/guide/translation-dashboard/models). The index is quality only. Omit the block, or omit one profile, and that profile keeps the built-in weights. The block is not rewritten by `--apply` or **Update config**; those write model ids only. A legacy `price` weight on a profile is removed when the config is loaded.
 
-- `quality` — default ChrF `0.45`, Arena `0.35`, price `0.20`, quality floor `0.7`
-- `price` — default ChrF `0.35`, Arena `0.20`, price `0.45`, quality floor `0.6`
+- `quality` — default ChrF `0.55`, Arena `0.45`, quality floor `0.7`
+- `price` — default ChrF `0.55`, Arena `0.45`, quality floor `0.6`
 
-Each profile object requires `chrf`, `arena`, and `price`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalised to sum to 1, so `45`, `35`, and `20` match the quality defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it.
+Each profile object requires `chrf` and `arena`. Each value is finite and at least `0`, and at least one is greater than `0`. They are normalised to sum to 1, so `55` and `45` match the defaults. `qualityFloor` is optional, in the range `(0, 1]`, and is the fraction of the best ChrF in the candidate pool. Models under the floor, including any model with no ChrF measurement, sort after those that clear it. The two profiles share the same default mix; they differ in sort order (`--quality` by index, `--price` by Pareto frontier) and in the floor.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

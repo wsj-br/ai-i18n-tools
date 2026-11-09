@@ -106,7 +106,79 @@
         document.documentElement.setAttribute("lang", I18N.locale);
         document.documentElement.setAttribute("dir", I18N.dir);
         applyStaticI18n();
+        bindModelsHeaderTooltips();
       });
+  }
+
+  /** Browser title tooltips wait about a second and cannot be shortened. */
+  const MODELS_HEADER_TIP_DELAY_MS = 100;
+
+  function bindModelsHeaderTooltips() {
+    if (document.getElementById("models-header-tip")) return;
+    const headers = document.querySelectorAll("#panel-models .models-table thead th[title]");
+    if (headers.length === 0) return;
+    const tip = document.createElement("div");
+    tip.id = "models-header-tip";
+    tip.setAttribute("role", "tooltip");
+    tip.hidden = true;
+    document.body.appendChild(tip);
+    headers.forEach((th) => {
+      const text = th.getAttribute("title");
+      if (!text) return;
+      th.setAttribute("data-models-tip", text);
+      th.removeAttribute("title");
+    });
+    let timer = 0;
+    let current = null;
+
+    function hide() {
+      window.clearTimeout(timer);
+      timer = 0;
+      current = null;
+      tip.hidden = true;
+    }
+
+    function place(th) {
+      tip.hidden = false;
+      tip.textContent = th.getAttribute("data-models-tip") || "";
+      const cell = th.getBoundingClientRect();
+      const box = tip.getBoundingClientRect();
+      const margin = 8;
+      let left = cell.left;
+      let top = cell.bottom + 6;
+      if (left + box.width > window.innerWidth - margin) {
+        left = Math.max(margin, window.innerWidth - box.width - margin);
+      }
+      if (top + box.height > window.innerHeight - margin) {
+        top = Math.max(margin, cell.top - box.height - 6);
+      }
+      tip.style.left = left + "px";
+      tip.style.top = top + "px";
+    }
+
+    function show(th) {
+      if (current === th) return;
+      window.clearTimeout(timer);
+      current = th;
+      timer = window.setTimeout(() => {
+        if (current === th) place(th);
+      }, MODELS_HEADER_TIP_DELAY_MS);
+    }
+
+    document.querySelectorAll("#panel-models .models-table thead").forEach((thead) => {
+      thead.addEventListener("mouseover", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const th = target.closest("th");
+        if (!th || !th.hasAttribute("data-models-tip") || target.closest("input, button")) {
+          hide();
+          return;
+        }
+        show(th);
+      });
+      thead.addEventListener("mouseleave", hide);
+    });
+    window.addEventListener("scroll", hide, true);
   }
 
   function dashboardFetchFailureMeansServerGone(err) {
@@ -3300,6 +3372,7 @@
     providers: [],
     priority: "quality",
     rows: [],
+    configured: [],
     selected: [],
     attribution: "",
   };
@@ -3325,6 +3398,24 @@
 
   function modelsFormatUsd(value) {
     return typeof value === "number" && Number.isFinite(value) ? "$" + value.toFixed(3) : "—";
+  }
+
+  function modelsFormatFrontier(value) {
+    return typeof value === "number" && Number.isFinite(value) ? String(value) : "—";
+  }
+
+  function modelsFrontierCell(row) {
+    const text = modelsFormatFrontier(row.frontierLayer);
+    if (!row.dominatedBy) {
+      return text;
+    }
+    return (
+      '<span title="' +
+      modelsEscapeAttr(t("Dominated by {{model}}", { model: row.dominatedBy })) +
+      '">' +
+      text +
+      "</span>"
+    );
   }
 
   const MODELS_GRIP_SVG =
@@ -3403,6 +3494,61 @@
     return true;
   }
 
+  function modelsConfiguredMissing(row) {
+    return !row || row.rank === 0 || row.rank == null;
+  }
+
+  function modelsRenderConfigured() {
+    const body = document.getElementById("models-config-tbody");
+    const meta = document.getElementById("models-config-meta");
+    if (!body) return;
+    const provider = modelsState.provider || "";
+    if (meta) {
+      meta.textContent = provider
+        ? t("Fallback chain for {{provider}}. First row is tried first.", { provider })
+        : t("Fallback chain for the selected provider. First row is tried first.");
+    }
+    if (modelsState.configured.length === 0) {
+      body.innerHTML =
+        '<tr class="models-config-empty-row"><td colspan="9" class="models-config-empty">' +
+        escapeHtml(t("No translation models are configured for this provider.")) +
+        "</td></tr>";
+      return;
+    }
+    body.innerHTML = modelsState.configured
+      .map((row, index) => {
+        const missing = modelsConfiguredMissing(row);
+        const badge = missing
+          ? '<span class="models-missing-badge">' + escapeHtml(t("Not in catalog")) + "</span>"
+          : "";
+        return (
+          '<tr class="' +
+          (missing ? "models-row-missing" : "") +
+          '"><td><span class="models-order">' +
+          (index + 1) +
+          "</span></td><td>" +
+          escapeHtml(row.id) +
+          badge +
+          "</td><td>" +
+          modelsFormatMeasure(row.index, 1) +
+          "</td><td>" +
+          modelsFormatMeasure(row.chrf, 3) +
+          "</td><td>" +
+          modelsFormatMeasure(row.arenaScore, 1) +
+          "</td><td>" +
+          modelsFormatUsd(row.inputPerMTokens) +
+          "</td><td>" +
+          modelsFormatUsd(row.outputPerMTokens) +
+          "</td><td>" +
+          modelsFormatUsd(row.blendedPerMTokens) +
+          "</td><td>" +
+          modelsFrontierCell(row) +
+          "</td></tr>"
+        );
+      })
+      .join("");
+  }
+
   function modelsRenderTable() {
     const body = document.getElementById("models-tbody");
     if (!body) return;
@@ -3468,6 +3614,10 @@
           modelsFormatUsd(row.inputPerMTokens) +
           "</td><td>" +
           modelsFormatUsd(row.outputPerMTokens) +
+          "</td><td>" +
+          modelsFormatUsd(row.blendedPerMTokens) +
+          "</td><td>" +
+          modelsFrontierCell(row) +
           "</td></tr>"
         );
       })
@@ -3602,15 +3752,15 @@
   async function modelsLoad() {
     const provider = document.getElementById("models-provider").value || modelsState.provider;
     const priority = document.getElementById("models-priority").value || "quality";
-    const maxOutputPrice = modelsOptionalNumber("models-max-output-price");
+    const maxPrice = modelsOptionalNumber("models-max-price");
     const minDelta = modelsOptionalNumber("models-min-delta");
-    if (!maxOutputPrice.ok) {
+    if (!maxPrice.ok) {
       modelsSetStatus(t("--max-price must be a number >= 0."), true);
-      return;
+      return false;
     }
     if (!minDelta.ok) {
       modelsSetStatus(t("--min-delta must be a number >= 0."), true);
-      return;
+      return false;
     }
     const seq = ++modelsLoadSeq;
     modelsState.priority = priority;
@@ -3620,8 +3770,8 @@
     const params = new URLSearchParams();
     if (provider) params.set("provider", provider);
     params.set("priority", priority);
-    if (maxOutputPrice.value !== undefined) {
-      params.set("maxOutputPrice", String(maxOutputPrice.value));
+    if (maxPrice.value !== undefined) {
+      params.set("maxPrice", String(maxPrice.value));
     }
     if (minDelta.value !== undefined) params.set("minDelta", String(minDelta.value));
     try {
@@ -3633,6 +3783,11 @@
       modelsState.providers = Array.isArray(body.providers) ? body.providers : [];
       modelsState.provider = body.provider || provider;
       modelsState.rows = Array.isArray(body.models) ? body.models : [];
+      modelsState.configured = Array.isArray(body.configuredModels)
+        ? body.configuredModels
+        : Array.isArray(body.translationModels)
+          ? body.translationModels.map((id) => ({ id, rank: 0 }))
+          : [];
       const select = document.getElementById("models-provider");
       const providerWrap = document.getElementById("models-provider-wrap");
       if (providerWrap) providerWrap.hidden = modelsState.providers.length < 2;
@@ -3655,7 +3810,7 @@
       const arena = attr.arena || {};
       const md = attr.modelsDev || {};
       document.getElementById("models-attribution").textContent = t(
-        "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: models.dev ({{mdLicense}}, {{mdUrl}}).",
+        "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: provider catalog or models.dev ({{mdLicense}}, {{mdUrl}}).",
         {
           lbLicense: lb.license || "",
           lbUrl: lb.url || "",
@@ -3676,10 +3831,13 @@
         modelsKeepPreviousSelection(previousSelected);
         modelsSetStatus(warnings.join(" "), warnings.length > 0);
       }
+      modelsRenderConfigured();
       modelsRenderTable();
+      return true;
     } catch (e) {
-      if (seq !== modelsLoadSeq) return;
+      if (seq !== modelsLoadSeq) return false;
       modelsSetStatus(e instanceof Error ? e.message : String(e), true);
+      return false;
     }
   }
 
@@ -3730,15 +3888,13 @@
     document.getElementById("models-provider").addEventListener("change", () => {
       void modelsLoad();
     });
-    document.getElementById("models-max-output-price").addEventListener("change", () => {
+    document.getElementById("models-max-price").addEventListener("change", () => {
       void modelsLoad();
     });
     document.getElementById("models-min-delta").addEventListener("change", () => {
       void modelsLoad();
     });
-    document
-      .getElementById("models-max-output-price")
-      .addEventListener("keydown", modelsFilterOnEnter);
+    document.getElementById("models-max-price").addEventListener("keydown", modelsFilterOnEnter);
     document.getElementById("models-min-delta").addEventListener("keydown", modelsFilterOnEnter);
     document.getElementById("models-btn-apply").addEventListener("click", async () => {
       if (modelsState.selected.length === 0) {
@@ -3764,10 +3920,12 @@
         });
         const body = await res.json();
         if (!res.ok) throw new Error(body.error || res.statusText);
-        modelsSetStatus(
-          t("Updated translationModels. Backup → {{path}}.", { path: body.backupPath || "" }),
-          false
-        );
+        const appliedMsg = t("Updated translationModels. Backup → {{path}}.", {
+          path: body.backupPath || "",
+        });
+        modelsSetStatus(appliedMsg, false);
+        const reloaded = await modelsLoad();
+        if (reloaded) modelsSetStatus(appliedMsg, false);
       } catch (e) {
         modelsSetStatus(e instanceof Error ? e.message : String(e), true);
       }

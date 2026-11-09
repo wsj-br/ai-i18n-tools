@@ -3,7 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   UI_LANG_ENV_VAR,
   UI_SOURCE_LOCALE,
+  availableUiLanguageChoices,
+  availableUiLanguagesNotice,
   availableUiLocales,
+  formatAvailableUiLanguagesBlock,
+  formatAvailableUiLanguagesInline,
   getUiLocale,
   initUiI18n,
   initUiI18nFrom,
@@ -14,6 +18,7 @@ import {
   resolveUiI18n,
   t,
   uiLocaleDirection,
+  withAvailableUiLanguagesOnMissingUiLang,
 } from "../../src/i18n/index.js";
 
 describe("self-i18n constants", () => {
@@ -118,6 +123,58 @@ describe("initUiI18n / getUiLocale / t", () => {
   it("keeps spaces around a trimmed catalog entry", () => {
     initUiI18n("de");
     expect(t(" Usage: ")).toBe(" Verwendung: ");
+  });
+});
+
+describe("available UI language list", () => {
+  beforeEach(() => {
+    initUiI18n(UI_SOURCE_LOCALE);
+  });
+
+  it("lists shipped codes with English and native names", () => {
+    const choices = availableUiLanguageChoices();
+    expect(choices.map((choice) => choice.code)).toEqual(availableUiLocales());
+    const german = choices.find((choice) => choice.code === "de");
+    expect(german).toMatchObject({ name: "German", nativeName: "Deutsch" });
+    const source = choices.find((choice) => choice.code === UI_SOURCE_LOCALE);
+    expect(source?.name).toBe("English (United Kingdom)");
+    expect(source?.nativeName).toBe("English (UK)");
+  });
+
+  it("formats a comma-separated help list and an aligned block", () => {
+    expect(formatAvailableUiLanguagesInline()).toContain("de (German)");
+    expect(formatAvailableUiLanguagesInline()).toContain("en-GB (English (United Kingdom))");
+    expect(formatAvailableUiLanguagesInline()).toContain("pt-BR (Portuguese (Brazil))");
+    const block = formatAvailableUiLanguagesBlock();
+    const lines = block.split("\n");
+    expect(lines.find((line) => line.includes("Deutsch"))).toMatch(/^\s+de\s+Deutsch — German$/);
+    expect(lines.find((line) => line.includes("简体中文"))).toMatch(
+      /zh-Hans\s+简体中文 — Chinese \(Simplified\)$/
+    );
+    const nameStarts = lines.map((line) => {
+      const match = /^( +)(\S+)( +)/.exec(line);
+      if (!match) {
+        return -1;
+      }
+      return match[1].length + match[2].length + match[3].length;
+    });
+    expect(new Set(nameStarts)).toEqual(new Set([nameStarts[0]]));
+    expect(availableUiLanguagesNotice()).toContain("Available languages for -L / --ui-lang:");
+    expect(availableUiLanguagesNotice()).toContain(block);
+  });
+
+  it("appends the language list only to a missing -L / --ui-lang argument error", () => {
+    const missing = "error: option '-L, --ui-lang <code>' argument missing\n";
+    const decorated = withAvailableUiLanguagesOnMissingUiLang(missing);
+    expect(decorated.startsWith(missing.trimEnd())).toBe(true);
+    expect(decorated).toContain("Available languages for -L / --ui-lang:");
+    expect(decorated).toContain("pt-BR");
+    expect(decorated.endsWith("\n")).toBe(true);
+    expect(
+      withAvailableUiLanguagesOnMissingUiLang(
+        "error: option '-c, --config <path>' argument missing\n"
+      )
+    ).toBe("error: option '-c, --config <path>' argument missing\n");
   });
 });
 

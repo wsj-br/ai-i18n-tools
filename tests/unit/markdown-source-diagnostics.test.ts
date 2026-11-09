@@ -337,6 +337,47 @@ describe("collectMalformedAdmonitionIssues", () => {
     expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
   });
 
+  it("accepts aligned indentation, lists, and blockquotes, and flags a shifted closer", () => {
+    const aligned = [
+      ["::: info Title", "Body.", ":::"].join("\n"),
+      [" ::: info Title", " Body.", " :::"].join("\n"),
+      ["  ::: info Title", "  Body.", "  :::"].join("\n"),
+      ["   ::: info Title", "   Body.", "   :::"].join("\n"),
+      ["> ::: info Title", "> Body.", "> :::"].join("\n"),
+      ["- item", "", "  ::: info Title", "  Body.", "  :::"].join("\n"),
+      ["- outer", "  - inner", "", "    ::: info Title", "    Body.", "    :::"].join("\n"),
+      ["::: tip T", "Body.", "::::"].join("\n"),
+      ["::: note", "```md", "::: tip", "x", ":::", "```", "Done.", ":::"].join("\n"),
+    ];
+    for (const md of aligned) {
+      expect(collectMalformedAdmonitionIssues(md)).toEqual([]);
+    }
+
+    const shifted = ["::: info External Benchmark Sources", "Scores.", "", "- item", "  :::"].join(
+      "\n"
+    );
+    expect(collectMalformedAdmonitionIssues(shifted)).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+        line1: 1,
+      }),
+    ]);
+
+    const dedented = ["  ::: info Title", "  Body.", ":::"].join("\n");
+    expect(collectMalformedAdmonitionIssues(dedented).map((issue) => issue.code)).toEqual([
+      MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+      MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNEXPECTED_CLOSE,
+    ]);
+
+    const shortClose = [":::: tip T", "Body.", ":::", "After."].join("\n");
+    expect(collectMalformedAdmonitionIssues(shortClose)).toEqual([
+      expect.objectContaining({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
+        line1: 1,
+      }),
+    ]);
+  });
+
   it("passes a well-formed nested admonition block", () => {
     const md = [
       ":::::info[Parent]",

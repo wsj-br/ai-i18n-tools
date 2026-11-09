@@ -47,7 +47,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `JsonExtractor` | 从 Docusaurus JSON 标签文件（UI 目录，非 MDX 正文）中提取。 |
 | `SvgExtractor` | 从 SVG 文件中提取。 |
 | `LlmClient` | 向活动的 LLM 提供程序发出翻译请求（`OpenRouterClient` 是已弃用的别名）。 |
-| `rankProviderModels` / `resolveSuggestionWeights` | 按 `suggest-models` 所使用的质量或价格概况对排名第一的提供商的聊天目录进行排序。不会打印或写入配置。 |
+| `rankProviderModels` / `resolveSuggestionWeights` | 评级单个提供商的聊天目录。评级指标为 ChrF 和 Arena；质量配置文件根据该指标进行排序，价格配置文件遵循帕累托前沿。不打印或写入配置。 |
 | `PlaceholderHandler` | 保护/恢复翻译周围的 Markdown 语法（HTML 标签、警告、锚点、MDX 注释/JSX/花括号、URL、行内代码、强调）。 |
 | `protectMdx` / `restoreMdx` | 保护/恢复 MDX 注释、JSX 标签、花括号表达式和 JSX 字符串属性（由 `PlaceholderHandler` 调用；也导出供直接使用）。 |
 | `splitTranslatableIntoBatches` | 将片段分组为适合 LLM 的批次。 |

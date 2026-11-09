@@ -8,7 +8,7 @@ The `ai-i18n-tools` localises its own user interface — CLI help text, high-tra
 
 The UI locale is resolved from these sources, highest priority first:
 
-1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`).
+1. `-L` / `--ui-lang <code>` global flag (e.g. `-L pt-BR`). Passing `-L` or `--ui-lang` with no code prints the shipped languages and exits. The same list is on the option in `--help`, and again at the end of `ai-i18n-tools --help`.
 2. `AI_I18N_LANG` environment variable (e.g. `export AI_I18N_LANG=es`).
 3. The `uiLanguage` config key in `ai-i18n-tools.config.json` (BCP-47 string).
 4. The host OS locale (via `Intl.DateTimeFormat().resolvedOptions().locale`).

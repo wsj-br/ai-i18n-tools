@@ -136,7 +136,7 @@ ai-i18n-tools glossary-generate
 | `-c` / `--config <path>`     | Every command | Config file path (default: `ai-i18n-tools.config.json`).                                  |
 | `-v` / `--verbose`           | Every command | Verbose logging.                                                                          |
 | `-P` / `--provider <name>`   | Every command | Active LLM provider for this run; overrides the config `provider` key. Must be configured under `providers`. |
-| `-L` / `--ui-lang <code>`    | Every command | Language for the tool's own UI (CLI help, logs/summaries, dashboard); highest-priority source. See [Tool UI language](/guide/tool-ui-language). |
+| `-L` / `--ui-lang <code>`    | Every command | Language for the tool's own UI (CLI help, logs/summaries, dashboard); highest-priority source. The option help lists the shipped codes. Omitting `<code>` prints that list and exits. See [Tool UI language](/guide/tool-ui-language). |
 | `-w` / `--write-logs [path]` | Selected commands | Tee console output to a `.log` file (default path: under root `cacheDir`). Wired for `translate-docs`, `translate-json`, `translate-svg`, `translate-ui`, `sync-ui`, `sync`, and `cleanup` only.                |
 | `--debug-failed`             | Translation commands | Write `FAILED-TRANSLATION` logs under root `cacheDir` for each discarded translation-check (wrong script, parse, or quality), including fallbacks — not only when every model fails. Provider API / empty-body errors print on the console (once per model and error message) and do not write those files. Applies to `translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync-ui`, `sync`, and `cleanup`. |
 

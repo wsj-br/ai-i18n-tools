@@ -56,12 +56,75 @@ export function loadUiManifest(): UiLanguageManifestRow[] {
 
 /** Available UI locale codes (from the manifest); always includes the source locale. */
 export function availableUiLocales(): string[] {
-  const rows = loadUiManifest();
-  const codes = rows.map((r) => r.code).filter((c): c is string => typeof c === "string" && !!c);
-  if (!codes.some((c) => c === UI_SOURCE_LOCALE)) {
-    return [UI_SOURCE_LOCALE, ...codes];
+  return availableUiLanguageChoices().map((choice) => choice.code);
+}
+
+/** One shipped UI language the `-L` / `--ui-lang` flag can select. */
+export interface AvailableUiLanguageChoice {
+  code: string;
+  /** English catalog name, or the native label when no English name is shipped. */
+  name: string;
+  /** Native label when it differs from `name`. */
+  nativeName?: string;
+}
+
+/** Shipped UI languages in manifest order, always including the source locale. */
+export function availableUiLanguageChoices(): AvailableUiLanguageChoice[] {
+  const choices: AvailableUiLanguageChoice[] = [];
+  for (const row of loadUiManifest()) {
+    if (typeof row.code !== "string" || row.code.length === 0) {
+      continue;
+    }
+    const english = row.englishName?.trim() ?? "";
+    const native = row.label?.trim() ?? "";
+    const name = english || native || row.code;
+    const nativeName = native && native !== name ? native : undefined;
+    choices.push({ code: row.code, name, nativeName });
   }
-  return codes;
+  if (!choices.some((choice) => choice.code === UI_SOURCE_LOCALE)) {
+    return [{ code: UI_SOURCE_LOCALE, name: UI_SOURCE_LOCALE }, ...choices];
+  }
+  return choices;
+}
+
+/** Native label, then the English name, when the manifest has both and they differ. */
+export function formatAvailableUiLanguageName(choice: AvailableUiLanguageChoice): string {
+  return choice.nativeName ? `${choice.nativeName} — ${choice.name}` : choice.name;
+}
+
+/** Comma-separated `code (English name)` list for option help. */
+export function formatAvailableUiLanguagesInline(): string {
+  return availableUiLanguageChoices()
+    .map((choice) => `${choice.code} (${choice.name})`)
+    .join(", ");
+}
+
+/** Aligned `code  name` lines for the missing-argument error and root help. */
+export function formatAvailableUiLanguagesBlock(): string {
+  const choices = availableUiLanguageChoices();
+  const width = Math.max(1, ...choices.map((choice) => choice.code.length));
+  return choices
+    .map((choice) => `  ${choice.code.padEnd(width)}  ${formatAvailableUiLanguageName(choice)}`)
+    .join("\n");
+}
+
+/** Heading plus the aligned language list. */
+export function availableUiLanguagesNotice(): string {
+  return `${t("Available languages for -L / --ui-lang:")}\n${formatAvailableUiLanguagesBlock()}`;
+}
+
+const UI_LANG_MISSING_ARGUMENT = "option '-L, --ui-lang <code>' argument missing";
+
+/**
+ * When Commander reports a missing `-L` / `--ui-lang` value, append the shipped UI languages.
+ * Other error text is returned unchanged.
+ */
+export function withAvailableUiLanguagesOnMissingUiLang(message: string): string {
+  if (!message.includes(UI_LANG_MISSING_ARGUMENT)) {
+    return message;
+  }
+  const trimmed = message.endsWith("\n") ? message.slice(0, -1) : message;
+  return `${trimmed}\n${availableUiLanguagesNotice()}\n`;
 }
 
 /** Layout direction for a UI locale (from the manifest); defaults to `ltr`. */

@@ -42,9 +42,10 @@ For the full list of changes, see [`dev/CHANGELOG.md`](https://github.com/wsj-br
 
 ## Documentation
 
+- [Installation](https://wsj-br.github.io/ai-i18n-tools/guide/installation.html) — installation instructions
 - [Documentation](https://wsj-br.github.io/ai-i18n-tools/) — guides, integrations, and reference
 - [Coding-agent skill](https://wsj-br.github.io/ai-i18n-tools/guide/coding-agent-skill.html) — install the consumer skill and workflow slash commands
-- [AI Agent Context](https://github.com/wsj-br/ai-i18n-tools/blob/main/docs/ai-i18n-tools-context.md) — integration guide for assistants in consumer repositories
+- [Add internationalization](https://wsj-br.github.io/ai-i18n-tools/guide/add-i18n-to-your-project.html) — add internationalization to your project (JS/TS, Python, .Net, Documentation, ...)
 
 ---
 

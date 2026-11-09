@@ -8,10 +8,10 @@ Das `ai-i18n-tools` lokalisiert seine eigene Benutzeroberfläche – CLI-Hilfete
 
 Das UI-Gebietsschema wird aus diesen Quellen aufgelöst, wobei die höchste Priorität zuerst gilt:
 
-1. `-L` / `--ui-lang <code>` globale Flagge (z. B. `-L pt-BR`).
+1. `-L` / `--ui-lang <code>` globales Flag (z. B. `-L pt-BR`). Wenn `-L` oder `--ui-lang` ohne Code übergeben wird, werden die mitgelieferten Sprachen ausgegeben und das Programm beendet. Dieselbe Liste ist in der Option unter `--help` und nochmals am Ende von `ai-i18n-tools --help`.
 2. `AI_I18N_LANG` Umgebungsvariable (z. B. `export AI_I18N_LANG=es`).
-3. Der `uiLanguage` Konfigurationsschlüssel in `ai-i18n-tools.config.json` (BCP-47-String).
-4. Das Host-Betriebssystem-Locale (über `Intl.DateTimeFormat().resolvedOptions().locale`).
+3. Der Konfigurationsschlüssel `uiLanguage` in `ai-i18n-tools.config.json` (BCP-47-String).
+4. Die Locale des Host-Betriebssystems (über `Intl.DateTimeFormat().resolvedOptions().locale`).
 
 <a id="matching-and-fallback"></a>
 ## Abgleich und Fallback

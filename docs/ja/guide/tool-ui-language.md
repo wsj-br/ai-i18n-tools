@@ -8,10 +8,10 @@
 
 UIのロケールは、以下のソースから優先度の高い順に解決されます。
 
-1. `-L` / `--ui-lang <code>` グローバルフラグ（例: `-L pt-BR`）。
-2. `AI_I18N_LANG` 環境変数（例: `export AI_I18N_LANG=es`）。
-3. `ai-i18n-tools.config.json` の `uiLanguage` 設定キー（BCP-47文字列）。
-4. ホストOSのロケール（`Intl.DateTimeFormat().resolvedOptions().locale` 経由）。
+1. `-L` / `--ui-lang <code>` グローバルフラグ (例: `-L pt-BR`)。コードなしで `-L` または `--ui-lang` を渡すと、出荷されている言語が表示され、終了します。同じリストは `--help` のオプションにあり、`ai-i18n-tools --help` の最後にもあります。
+2. `AI_I18N_LANG` 環境変数 (例: `export AI_I18N_LANG=es`)。
+3. `ai-i18n-tools.config.json` 内の `uiLanguage` 設定キー (BCP-47文字列)。
+4. ホストOSのロケール (`Intl.DateTimeFormat().resolvedOptions().locale` 経由)。
 
 <a id="matching-and-fallback"></a>
 ## マッチングとフォールバック

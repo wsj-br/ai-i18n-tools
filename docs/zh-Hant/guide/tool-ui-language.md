@@ -8,10 +8,10 @@
 
 UI 語言環境會從以下來源解析，按優先級由高至低排列：
 
-1. `-L` / `--ui-lang <code>` 全域旗標（例如 `-L pt-BR`）。
-2. `AI_I18N_LANG` 環境變數（例如 `export AI_I18N_LANG=es`）。
-3. `ai-i18n-tools.config.json` 中的 `uiLanguage` 設定鍵（BCP-47 字串）。
-4. 主機作業系統地區設定（透過 `Intl.DateTimeFormat().resolvedOptions().locale`）。
+1. `-L` / `--ui-lang <code>` 全域旗標 (例如 `-L pt-BR`)。傳遞 `-L` 或 `--ui-lang` 且不帶任何代碼，會列印隨附的語言並結束。相同的清單位於 `--help` 中的選項，以及 `ai-i18n-tools --help` 的結尾處。
+2. `AI_I18N_LANG` 環境變數 (例如 `export AI_I18N_LANG=es`)。
+3. `uiLanguage` 設定金鑰位於 `ai-i18n-tools.config.json` 中 (BCP-47 字串)。
+4. 主機作業系統地區設定 (透過 `Intl.DateTimeFormat().resolvedOptions().locale`)。
 
 <a id="matching-and-fallback"></a>
 ## 比對與後備

@@ -291,7 +291,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` 僅替換 `translationModels`。相同的排名位於 `ai-i18n-tools dashboard` 的[模型](/zh-Hant/guide/translation-dashboard/models)分頁上。
+`--apply` 僅取代 `translationModels`。使用 `--max-price` 來排除混合價格超出限制的模型。如果您偏好圖形使用者介面 (GUI)，請使用 `ai-i18n-tools dashboard` 來選擇[模型](/zh-Hant/guide/translation-dashboard/models)。
 
 然後翻譯並建置：
 

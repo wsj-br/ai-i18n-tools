@@ -47,7 +47,7 @@ Key exports (commonly used — see `src/index.ts` for the full public surface):
 | `JsonExtractor` | Extract from Docusaurus JSON label files (UI catalogs, not MDX body). |
 | `SvgExtractor` | Extract from SVG files. |
 | `LlmClient` | Make translation requests to the active LLM provider (`OpenRouterClient` is a deprecated alias). |
-| `rankProviderModels` / `resolveSuggestionWeights` | Rank one provider's chat catalog with the quality or price profile used by `suggest-models`. Does not print or write the config. |
+| `rankProviderModels` / `resolveSuggestionWeights` | Rank one provider's chat catalog. The index is ChrF and Arena; the quality profile sorts by that index, and the price profile walks the Pareto frontier. Does not print or write the config. |
 | `PlaceholderHandler` | Protect/restore markdown syntax around translation (HTML tags, admonitions, anchors, MDX comments/JSX/braces, URLs, inline code, emphasis). |
 | `protectMdx` / `restoreMdx` | Protect/restore MDX comments, JSX tags, brace expressions, and JSX string attributes (called by `PlaceholderHandler`; also exported for direct use). |
 | `splitTranslatableIntoBatches` | Group segments into LLM-sized batches. |

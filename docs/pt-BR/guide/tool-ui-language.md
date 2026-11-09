@@ -8,10 +8,10 @@ A `ai-i18n-tools` localiza sua própria interface de usuário — texto de ajuda
 
 A localidade da IU é resolvida a partir destas fontes, da mais alta prioridade para a mais baixa:
 
-1. Flag global `-L` / `--ui-lang <code>` (ex: `-L pt-BR`).
-2. Variável de ambiente `AI_I18N_LANG` (ex: `export AI_I18N_LANG=es`).
+1. Sinalizador global `-L` / `--ui-lang <code>` (por exemplo, `-L pt-BR`). Passar `-L` ou `--ui-lang` sem código imprime os idiomas fornecidos e sai. A mesma lista está na opção em `--help`, e novamente no final de `ai-i18n-tools --help`.
+2. Variável de ambiente `AI_I18N_LANG` (por exemplo, `export AI_I18N_LANG=es`).
 3. A chave de configuração `uiLanguage` em `ai-i18n-tools.config.json` (string BCP-47).
-4. O local do sistema operacional do host (via `Intl.DateTimeFormat().resolvedOptions().locale`).
+4. A localidade do sistema operacional host (via `Intl.DateTimeFormat().resolvedOptions().locale`).
 
 <a id="matching-and-fallback"></a>
 ## Correspondência e fallback

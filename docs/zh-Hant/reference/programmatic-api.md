@@ -47,7 +47,7 @@ writeInitConfigFile('ai-i18n-tools.config.json', 'uiPython', process.cwd(), 'ope
 | `JsonExtractor` | 從 Docusaurus JSON 標籤檔案中提取（UI 目錄，非 MDX 主體）。 |
 | `SvgExtractor` | 從 SVG 檔案中提取。 |
 | `LlmClient` | 向作用中的 LLM 提供者發出翻譯請求（`OpenRouterClient` 是已淘汰的別名）。 |
-| `rankProviderModels` / `resolveSuggestionWeights` | 根據 `suggest-models` 所使用的品質或價格設定檔，對供應商的聊天目錄進行排名。不會列印或寫入設定。 |
+| `rankProviderModels` / `resolveSuggestionWeights` | 評定單一供應商的聊天目錄。索引為 ChrF 和 Arena；品質設定檔會依該索引排序，價格設定檔則會沿著帕累托前沿移動。不會列印或寫入組態。 |
 | `PlaceholderHandler` | 保護/還原翻譯周圍的 markdown 語法（HTML 標籤、警告、錨點、MDX 註解/JSX/大括號、URL、內嵌程式碼、強調）。 |
 | `protectMdx` / `restoreMdx` | 保護/還原 MDX 註解、JSX 標籤、大括號表達式和 JSX 字串屬性（由 `PlaceholderHandler` 呼叫；也匯出供直接使用）。 |
 | `splitTranslatableIntoBatches` | 將區段分組為 LLM 大小的批次。 |

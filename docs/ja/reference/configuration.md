@@ -548,17 +548,17 @@ SVGファイルのトップレベルのパスとレイアウト。`features.tran
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (オプション)
 
-[`suggest-models`](/ja/reference/cli-commands/models#suggest-models) および [ダッシュボードのモデルタブ](/ja/guide/translation-dashboard/models) の重み付けです。このブロックを省略するか、いずれかのプロファイルを省略すると、そのプロファイルは組み込みの重みを維持します。このブロックは `--apply` や **Update config** によって書き換えられることはありません。これらはモデルIDのみを書き込みます。
+[`suggest-models`](/ja/reference/cli-commands/models#suggest-models)と[ダッシュボードの「モデル」タブ](/ja/guide/translation-dashboard/models)用のChrFとArenaの重み、およびオプションの品質下限値。インデックスは品質のみです。ブロックを省略するか、いずれかのプロファイルを省略すると、そのプロファイルは組み込みの重みを維持します。このブロックは`--apply`や**Update config**によって書き換えられません。これらはモデルIDのみを書き込みます。設定が読み込まれると、プロファイル上のレガシーな`price`の重みは削除されます。
 
-- `quality` — デフォルトのChrF `0.45`、アリーナ `0.35`、価格 `0.20`、品質の下限 `0.7`
-- `price` — デフォルトのChrF `0.35`、アリーナ `0.20`、価格 `0.45`、品質の下限 `0.6`
+- `quality` — デフォルトのChrF `0.55`、Arena `0.45`、品質下限値 `0.7`
+- `price` — デフォルトのChrF `0.55`、Arena `0.45`、品質下限値 `0.6`
 
-各プロファイルオブジェクトには、`chrf`、`arena`、および`price`が必要です。各値は有限で、少なくとも`0`であり、少なくとも1つは`0`より大きいです。それらは合計が1になるように正規化されているため、`45`、`35`、および`20`は品質のデフォルトと一致します。`qualityFloor`はオプションで、`(0, 1]`の範囲にあり、候補プール内の最高のChrFの割合です。フロアを下回るモデル（ChrF測定値がないモデルを含む）は、フロアをクリアするモデルの後にソートされます。
+各プロファイルオブジェクトには`chrf`と`arena`が必要です。各値は有限で`0`以上であり、少なくとも1つは`0`より大きくなければなりません。それらは合計が1になるように正規化されるため、`55`と`45`はデフォルトと一致します。`qualityFloor`はオプションで、`(0, 1]`の範囲にあり、候補プール内の最高のChrFの割合です。下限値未満のモデル（ChrF測定値がないモデルを含む）は、下限値をクリアしたモデルの後にソートされます。2つのプロファイルは同じデフォルトの組み合わせを共有しますが、ソート順（インデックスによる`--quality`、パレートフロンティアによる`--price`）と下限値が異なります。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

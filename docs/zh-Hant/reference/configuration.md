@@ -548,17 +548,17 @@ SVG 檔案的頂層路徑和佈局。僅當 `features.translateSVG` 為 true 時
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion`（選用）
 
-用於 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 與 [儀表板模型分頁](/zh-Hant/guide/translation-dashboard/models) 的權重。若省略此區塊或省略其中一個設定檔，該設定檔將保留內建權重。此區塊不會被 `--apply` 或 **更新設定** 所覆寫；這些操作僅會寫入模型 ID。
+ChrF 和 Arena 權重，以及一個可選的品質下限，適用於 [`suggest-models`](/zh-Hant/reference/cli-commands/models#suggest-models) 和 [儀表板的「模型」分頁](/zh-Hant/guide/translation-dashboard/models)。索引僅限於品質。省略此區塊，或省略其中一個設定檔，該設定檔將保留內建權重。此區塊不會被 `--apply` 或 **更新設定** 重寫；這些只會寫入模型 ID。當載入設定時，設定檔上的舊版 `price` 權重將會移除。
 
-- `quality` — 預設 ChrF `0.45`、Arena `0.35`、價格 `0.20`、品質下限 `0.7`
-- `price` — 預設 ChrF `0.35`、Arena `0.20`、價格 `0.45`、品質下限 `0.6`
+- `quality` — 預設 ChrF `0.55`、Arena `0.45`、品質下限 `0.7`
+- `price` — 預設 ChrF `0.55`、Arena `0.45`、品質下限 `0.6`
 
-每個設定檔物件都需要 `chrf`、`arena` 和 `price`。每個值都是有限的，且至少為 `0`，並且至少有一個值大於 `0`。它們被正規化為總和為 1，因此 `45`、`35` 和 `20` 符合品質預設值。`qualityFloor` 是選用的，範圍在 `(0, 1]` 之間，並且是候選池中最佳 ChrF 的分數。低於下限的模型，包括任何沒有 ChrF 測量的模型，將排在清除下限的模型之後。
+每個設定檔物件都需要 `chrf` 和 `arena`。每個值都是有限的，且至少為 `0`，且至少有一個大於 `0`。它們會被正規化，使其總和為 1，因此 `55` 和 `45` 會符合預設值。`qualityFloor` 是可選的，範圍為 `(0, 1]`，並且是候選池中最佳 ChrF 的分數。低於下限的模型，包括任何沒有 ChrF 測量的模型，會排在清除下限的模型之後。這兩個設定檔共用相同的預設組合；它們在排序順序（`--quality` 依索引，`--price` 依帕累托前沿）和下限上有所不同。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

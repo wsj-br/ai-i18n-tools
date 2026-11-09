@@ -548,17 +548,17 @@ SVG 文件的顶级路径和布局。仅当 `features.translateSVG` 为 true（�
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion`（可选）
 
-[`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 和 [仪表板模型选项卡](/zh-Hans/guide/translation-dashboard/models) 的权重。省略该代码块或省略其中一个配置文件，该配置文件将保留内置权重。该代码块不会被 `--apply` 或 **更新配置** 重写；它们仅写入模型 ID。
+ChrF 和 Arena 权重，以及可选的质量下限，适用于 [`suggest-models`](/zh-Hans/reference/cli-commands/models#suggest-models) 和 [仪表板模型选项卡](/zh-Hans/guide/translation-dashboard/models)。索引仅限质量。省略该块，或省略一个配置文件，该配置文件将保留内置权重。该块不会被 `--apply` 或 **更新配置** 重写；它们只写入模型 ID。配置文件上的旧版 `price` 权重在加载配置时会被移除。
 
-- `quality` — 默认 ChrF `0.45`，Arena `0.35`，价格 `0.20`，质量下限 `0.7`
-- `price` — 默认 ChrF `0.35`，Arena `0.20`，价格 `0.45`，质量下限 `0.6`
+- `quality` — 默认 ChrF `0.55`，Arena `0.45`，质量下限 `0.7`
+- `price` — 默认 ChrF `0.55`，Arena `0.45`，质量下限 `0.6`
 
-每个配置文件对象都需要`chrf`、`arena`和`price`。每个值都是有限的且至少为`0`，并且至少有一个大于`0`。它们被归一化，总和为 1，因此`45`、`35`和`20`与质量默认值匹配。`qualityFloor`是可选的，范围在`(0, 1]`内，并且是候选池中最佳 ChrF 的分数。低于下限的模型，包括任何没有 ChrF 测量的模型，排在高于下限的模型之后。
+每个配置文件对象都需要 `chrf` 和 `arena`。每个值都是有限的且至少为 `0`，并且至少有一个值大于 `0`。它们被归一化使其总和为 1，因此 `55` 和 `45` 与默认值匹配。`qualityFloor` 是可选的，在 `(0, 1]` 范围内，表示候选池中最佳 ChrF 的比例。低于下限的模型，包括任何没有 ChrF 测量的模型，将排在超过下限的模型之后。这两个配置文件共享相同的默认组合；它们在排序顺序（`--quality` 按索引，`--price` 按帕累托前沿）和下限方面有所不同。
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

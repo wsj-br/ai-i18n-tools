@@ -5,34 +5,34 @@ Um modelo é um sistema nomeado no seu provedor, como `google/gemini-2.5-flash` 
 
 Escolha a lista para este projeto com `suggest-models` ou com a mesma classificação no Painel de Tradução em **Modelos**. Ambos classificam os modelos de chat do provedor ativo a partir de benchmarks publicados e podem gravar o resultado em `translationModels`. Primeiro, configure o provedor e sua chave de API: [Provedores de LLM](/pt-BR/guide/providers-and-models).
 
-<a id="start-with-a-ranked-shortlist"></a>
-## Comece com uma lista restrita classificada
+<a id="start-with-a-ranked-list"></a>
+## Comece com uma lista classificada
 
 <a id="from-the-command-line"></a>
-### Da linha de comando
+### Pela linha de comando
 
-`suggest-models` classifica os modelos de chat que o provedor ativo oferece no momento e imprime uma tabela curta. A qualidade é o padrão: as medições de tradução e uma pontuação de preferência geral contam mais do que o preço.
+`suggest-models` classifica os modelos de chat que o provedor ativo oferece atualmente e imprime uma tabela curta. Qualidade é o padrão: o índice é languagebench ChrF e Arena Score. Preço é uma coluna separada e uma ordem de classificação, não parte do índice.
 
 ```bash
 ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --top 10 --max-price 6
 ```
 
-As colunas são classificação, ID do modelo, índice, ChrF medido, Arena Score medido e preço de entrada e saída em USD por 1 milhão de tokens. Uma medição ausente é `—`. O índice é a pontuação ponderada multiplicada por 100. Na classificação por qualidade, um índice mais alto indica uma correspondência mais forte para este projeto.
+As colunas são classificação, ID do modelo, índice, ChrF medido, Arena Score medido, preço de entrada, preço de saída, preço combinado em USD por 1M de tokens e nível de fronteira. Uma medição ausente é `—`. O índice é a pontuação de qualidade vezes 100. Um índice mais alto significa uma correspondência mais forte para os idiomas deste projeto. Um ID que repete o ChrF, Arena Score e preços de token de outra linha é omitido desta tabela. `--list` ainda o imprime.
 
-Grave essa lista restrita na configuração quando a tabela parecer correta:
+Grave essa lista na configuração quando a tabela parecer correta:
 
 ```bash
-ai-i18n-tools suggest-models --apply 
-ai-i18n-tools suggest-models --top 10 --max-price 6
+ai-i18n-tools suggest-models --apply
+ai-i18n-tools suggest-models --apply --top 10 --max-price 6
 ```
 
-`--apply` substitui `providers.<active>.translationModels`. Primeiro, ele copia a configuração atual para um arquivo irmão `ai-i18n-tools.config.{timestamp}.backup.json`. `uiModels` e `localeModels` permanecem como estão. `--top` (padrão 8) é quantos IDs a tabela e `--apply` incluem. O primeiro ID é o que a tradução tenta primeiro.
+`--apply` substitui `providers.<active>.translationModels`. Ele copia a configuração atual para um `ai-i18n-tools.config.{timestamp}.backup.json` irmão primeiro. `uiModels` e `localeModels` permanecem como estão. `--top` (padrão 8) é quantos IDs a tabela e `--apply` incluem. O primeiro ID é o que a tradução tenta primeiro. Para essa lista, adicione `--max-price` e `--min-delta`. O limite de preço impede que um fallback custe mais do que o orçamento, e a lacuna de índice descarta um modelo que está apenas um pequeno passo de distância do que foi mantido acima dele.
 
-`--price` prioriza uma taxa mais baixa e ainda mantém um piso de qualidade, de modo que um modelo barato sem medição fica abaixo dos modelos que têm pontuações. `--quality` é o padrão. Passar ambas as flags é um erro.
+`--price` lista os modelos mais baratos na fronteira qualidade-preço primeiro e ainda mantém um piso de qualidade, então um modelo barato sem medição permanece abaixo dos modelos que têm pontuações. `--quality` é o padrão. Passar ambas as flags é um erro.
 
 <a id="from-the-dashboard"></a>
-### Do painel
+### Pelo painel
 
 A guia **Modelos** mostra a mesma classificação, com uma caixa de seleção em cada linha.
 
@@ -42,22 +42,46 @@ ai-i18n-tools dashboard
 
 Abra **Modelos**. Escolha **Qualidade** ou **Preço**. Marque as linhas que você deseja. As linhas marcadas, de cima para baixo, definem a ordem que a tradução tentará. **Atualizar configuração** pede confirmação, grava o mesmo tipo de backup e salva essa ordem em `translationModels`. **Copiar JSON** coloca o fragmento `{ "translationModels": [...] }` na área de transferência quando você preferir colá-lo.
 
-**Preço máximo de saída** e **Delta mínimo do índice** correspondem a `suggest-models --max-price` e `--min-delta`. Controles e colunas: [Aba Modelos](/pt-BR/guide/translation-dashboard/models).
+**Preço combinado máximo** e **Delta mínimo do índice** correspondem a `suggest-models --max-price` e `--min-delta`. Controles e colunas: [guia Modelos](/pt-BR/guide/translation-dashboard/models).
 
 <a id="how-the-ranking-chooses"></a>
 ### Como a classificação escolhe
 
-A lista restrita é um ranking de benchmark do catálogo de chat ao vivo do provedor. A primeira execução baixa três conjuntos de dados públicos e pode levar algum tempo. Execuções posteriores reutilizam o cache de 7 dias em `<cacheDir>/benchmark-scores.json` (geralmente `.translation-cache/benchmark-scores.json`).
+A lista é uma classificação de benchmark do catálogo de chat ao vivo do provedor. A primeira execução baixa três conjuntos de dados públicos e pode demorar um pouco. Execuções posteriores reutilizam o cache de 7 dias.
 
 | Sinal | O que ele contribui | Fonte |
 | --- | --- | --- |
 | ChrF | Qualidade da tradução para os idiomas do seu projeto | [languagebench](https://huggingface.co/spaces/fair-forward/languagebench) (CC BY-SA 4.0) |
 | Arena Score | Preferência geral de comparações diretas | [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) (CC BY 4.0) |
-| USD por 1 milhão de tokens | Preço de entrada e saída | O catálogo do provedor quando ele publica as taxas, caso contrário, [models.dev](https://models.dev/) (MIT) |
+| USD por 1M de tokens | Preço de entrada, saída e combinado `(3 × input + output) / 4` | O catálogo do provedor quando ele publica as taxas, caso contrário [models.dev](https://models.dev/) (MIT) |
+
+A partir desses sinais, o ranking deriva dois valores para cada modelo candidato: o índice de qualidade (combinando ChrF e Arena Score) e o nível da [fronteira de Pareto](https://en.wikipedia.org/wiki/Pareto_frontier) (avaliando a qualidade em relação ao preço combinado do token).
 
 O ChrF usa as pontuações de tradução do languagebench para seus `sourceLocale` e `targetLocales`. As localidades são mapeadas para um código de idioma do languagebench: a subtag primária, com aliases como `pt-BR` para `pt` e `zh-Hant` para `zh`. Um modelo que traduz bem esses idiomas supera um que só tem uma boa pontuação geral. Modelos de embeddings, imagem, fala e outros que não são de chat são ignorados, assim como os IDs que já passaram da data de validade.
 
-Qualidade, o perfil padrão, pondera ChrF e Arena Score acima do preço. Preço inverte essa ênfase e mantém o nível mínimo de qualidade descrito acima. Pesos opcionais são [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
+O índice é ChrF e Arena Score. O preço não faz parte dele. A pontuação pondera ChrF (padrão 55%) e Arena Score (padrão 45%), cada um normalizado em relação à pontuação mais alta no catálogo de chat do provedor, arredondado para uma casa decimal em uma escala de 0 a 100. Valores substitutos (`0.35` para ChrF, `0.45` para Arena) aplicam-se apenas quando uma medição está ausente; a tabela imprime `—`.
+
+O piso de qualidade é um limite mínimo de ChrF (padrão 70% do melhor ChrF do pool de candidatos para qualidade e 60% para preço). Modelos abaixo deste piso, incluindo qualquer modelo sem medição de ChrF, são classificados após os modelos que o superam e mostram `—` na coluna de fronteira. Qualidade, o perfil padrão, classifica pelo índice e desempata índices iguais com o preço combinado mais barato. Preço ordena os modelos por nível de fronteira (nível 1 mais barato primeiro, depois nível 2, e assim por diante). Pesos e piso personalizados opcionais estão em [`modelSuggestion`](/pt-BR/reference/configuration#modelsuggestion-optional).
+
+Dois IDs que compartilham ChrF, Arena Score, preço de entrada e preço de saída são aliases. As sugestões mantêm o ID mais curto e um ID sem data em vez de um que tenha uma data, como `preview-06-05` ou `20241022`. Os outros IDs permanecem no ranking completo, então `--list` ainda pode mostrar um alias configurado, e eles são omitidos da tabela, `--json` e `--apply`.
+
+<a id="reading-the-frontier-column"></a>
+#### Lendo a coluna de fronteira
+
+A coluna de fronteira é um nível, não uma pontuação. Um modelo é dominado quando outro modelo não custa mais (preço combinado) e tem pelo menos o mesmo índice, e é estritamente mais barato ou estritamente mais alto no índice. Um `2` não é duas vezes pior que um `1`, e os números de nível não comparam a qualidade entre as linhas: apenas o índice faz isso. Duas linhas podem mostrar `3` e `4` e ainda estar a um ponto do modelo de nível 1 que as supera.
+
+- `1` significa que nenhum outro modelo é mais barato e tem um índice mais alto. Em `--price`, o nível 1 vai do mais barato ao mais caro, e cada etapa custa mais e tem um índice mais alto. `--min-delta` oculta uma etapa que adiciona apenas um pequeno ganho.
+- `2` significa que o modelo é dominado, mas apenas por modelos de nível 1. A linha abaixo da tabela nomeia o modelo de nível 1 que supera cada linha dominada. Passe o mouse sobre o valor no painel para ver o mesmo modelo.
+- `3` e superiores seguem a mesma regra um passo adiante. Quanto maior o número, mais longa a cadeia, não mais distante o índice está do melhor modelo.
+- `—` significa que o modelo não tem preço, está abaixo do piso de qualidade ou é um alias de outra linha. Ele não é comparado.
+
+O nível 1 é uma verificação de eficiência: nada mais é estritamente mais barato e com pontuação mais alta. Um nível superior ainda pode pertencer à lista. Diversidade de fornecedores, limites de taxa, latência e janela de contexto estão fora do índice, e um fallback de outro fornecedor ainda ajuda quando um modelo de nível 1 atinge o limite de taxa ou rejeita um lote. Outro ID para o mesmo modelo não ajuda nisso.
+
+Um empate exato que não é um alias (o mesmo preço combinado e o mesmo índice, com preços de token diferentes ou pontuações diferentes) compartilha o nível. O índice é comparado conforme mostrado na tabela, arredondado para uma casa decimal.
+
+Os níveis são calculados sobre todo o catálogo, então `--max-price`, `--min-delta` e `--top` ocultam linhas sem renumerá-las. Um modelo que é nível 1 na lista completa permanece nível 1 após um limite de preço. `--max-price` remove modelos acima de um orçamento. Ele não remove todas as linhas dominadas abaixo do limite. A coluna de fronteira e a linha abaixo da tabela mostram isso.
+
+`--price` lista o nível 1 do mais barato ao mais caro, depois o nível 2 da mesma forma, e assim por diante. Qualidade, o padrão, classifica pelo índice e trata a coluna de fronteira como um rótulo.
 
 `suggest-models --refresh` baixa novamente os conjuntos de dados. Recarregue a guia **Modelos** depois.
 
@@ -67,13 +91,13 @@ Todas as flags, incluindo `--json`, `--list` e a fórmula de pontuação: [sugge
 ## Por que a lista tem mais de um modelo
 
 <a id="model-fallback-chain"></a>
-### Cadeia de fallback de modelo
+### Cadeia de fallback do modelo
 
 `translationModels` é uma lista ordenada. A CLI tenta o primeiro modelo. Em caso de falha na solicitação, uma resposta que não consegue analisar ou um texto no sistema de escrita errado, ela tenta o próximo id para aquele lote.
 
 Um ID é um único ponto de falha. Um modelo pode atingir o tempo limite, retornar texto que esta ferramenta rejeita ou traduzir um idioma bem e outro mal. Um caso comum é o hindi romanizado onde `hi` espera Devanagari. A saída romanizada é rejeitada para localidades com script nativo. Uma localidade que deve permanecer romanizada precisa de uma subtag `-Latn` explícita, como `hi-Latn`.
 
-É por isso que a lista de preferência contém vários ids, com os mais fortes primeiro. A ordem na lista é a ordem em que a tradução tenta.
+É por isso que a lista contém vários IDs, os mais fortes primeiro. A ordem na lista é a ordem que a tradução tenta.
 
 **Camadas de resolução** (deduplicadas, ordem preservada):
 
@@ -115,12 +139,12 @@ Exemplo (OpenRouter). Os ids mostram o formato das três listas. Obtenha `transl
 }
 ```
 
-Listas predefinidas de `init` e a referência de campo: [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers).
+Listas predefinidas de `init`, e a referência de campo: [Configuração —](/pt-BR/reference/configuration#provider-and-providers) `provider` [e](/pt-BR/reference/configuration#provider-and-providers) `providers`.
 
 <a id="check-list-and-benchmark"></a>
-## Verifique, liste e faça benchmark
+## Verificar, listar e comparar desempenho
 
-Depois que a lista de preferência estiver na configuração, estes comandos a inspecionam. A tradução pode ser executada antes de você usá-los.
+Depois que a lista estiver na configuração, esses comandos a inspecionam. A tradução pode ser executada antes de você usá-los.
 
 <a id="check-models"></a>
 ### `check-models`
@@ -157,14 +181,20 @@ Cada id exclusivo de `translationModels`, `uiModels` e `localeModels` é executa
 ai-i18n-tools bench-models --text "Hello world" --source en --target de --model openai/gpt-5-mini,google/gemini-2.5-flash
 ```
 
-Com a [retenção zero de dados](/pt-BR/guide/providers-and-models#cheaperinference-zero-data-retention) ativada para o Cheaper Inference, `check-models`, `list-models` e `suggest-models` leem `GET /models?zdr=true`.
-
 Detalhes do comando: [CLI — Modelos e idiomas](/pt-BR/reference/cli-commands/models).
 
 <a id="further-reference"></a>
-## Referências adicionais
+## Referência adicional
 
-- [Provedores de LLM](/pt-BR/guide/providers-and-models) — predefinições, chaves de API e como alternar entre provedores com `-P`.
-- [Aba Modelos](/pt-BR/guide/translation-dashboard/models) — a mesma classificação no dashboard.
-- [Configuração — `provider` e `providers`](/pt-BR/reference/configuration#provider-and-providers) — `translationModels`, `uiModels`, `localeModels`, timeouts e taxas de custo.
-- [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models) — flags, filtros e a fórmula de pontuação.
+- [Provedores de LLM](/pt-BR/guide/providers-and-models) — predefinições, chaves de API e troca de provedores com `-P`.
+- [Guia Modelos](/pt-BR/guide/translation-dashboard/models) — a mesma classificação no painel.
+- [Configuração —](/pt-BR/reference/configuration#provider-and-providers) `provider` [e](/pt-BR/reference/configuration#provider-and-providers) `providers` — `translationModels`, `uiModels`, `localeModels`, tempos limite e taxas de custo.
+- [suggest-models](/pt-BR/reference/cli-commands/models#suggest-models) — sinalizadores, filtros e a fórmula de pontuação.
+
+::: info Fontes de Benchmark Externas
+As pontuações são calculadas a partir de fontes de dados externas:
+
+- [languagebench ChrF](https://huggingface.co/spaces/fair-forward/languagebench) licenciado sob CC-BY-SA-4.0,
+- [LMArena Arena Score](https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset) licenciado sob CC-BY-4.0, e
+- preços [models.dev](https://models.dev/) licenciados sob MIT.
+:::

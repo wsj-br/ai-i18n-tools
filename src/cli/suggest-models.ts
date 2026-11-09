@@ -18,9 +18,9 @@ export interface RunSuggestModelsOptions {
   refresh?: boolean;
   /** Print the configured `translationModels` instead of the top suggestions. */
   list?: boolean;
-  /** Keep models whose output USD per 1M tokens is at most this value. */
-  maxOutputPrice?: number;
-  /** Minimum index drop from the previous kept model. */
+  /** Keep models whose blended USD per 1M tokens is at most this value. */
+  maxPrice?: number;
+  /** Minimum absolute index gap from the previous kept model. */
   minDelta?: number;
 }
 
@@ -42,8 +42,25 @@ function formatUsd(value: number | null): string {
   return `$${value.toFixed(3)}`;
 }
 
+function formatFrontier(value: number | null): string {
+  if (value === null || !Number.isFinite(value)) {
+    return "—";
+  }
+  return String(value);
+}
+
 export function renderSuggestTable(models: readonly RankedModel[]): string {
-  const headers = ["#", "model", "index", "ChrF", "Arena", "input", "output"];
+  const headers = [
+    "#",
+    "model",
+    "index",
+    "ChrF",
+    "Arena",
+    "input",
+    "output",
+    "blended",
+    "frontier",
+  ];
   const rows = models.map((model) => [
     model.rank > 0 ? String(model.rank) : "—",
     model.id,
@@ -52,18 +69,20 @@ export function renderSuggestTable(models: readonly RankedModel[]): string {
     formatMeasure(model.arenaScore, 1),
     formatUsd(model.inputPerMTokens),
     formatUsd(model.outputPerMTokens),
+    formatUsd(model.blendedPerMTokens),
+    formatFrontier(model.frontierLayer),
   ]);
   const widths = headers.map((header, i) =>
     Math.max(header.length, ...rows.map((row) => (row[i] ?? "").length))
   );
   const line = (cols: string[]): string =>
     cols.map((col, i) => col.padEnd(widths[i] ?? 0)).join("  ");
-  return [line(headers), ...rows.map((row) => line(row))].join("\n");
+  return [chalk.bold.cyanBright(line(headers)), ...rows.map((row) => line(row))].join("\n");
 }
 
 function attributionLine(result: SuggestProviderModelsResult): string {
   return t(
-    "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: models.dev ({{mdLicense}}, {{mdUrl}}).",
+    "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: provider catalog or models.dev ({{mdLicense}}, {{mdUrl}}).",
     {
       lbLicense: result.attribution.languagebench.license,
       lbUrl: result.attribution.languagebench.url,
@@ -80,23 +99,77 @@ function translationModelsJson(ids: readonly string[]): string {
 }
 
 export interface SelectSuggestRowsOpts {
-  maxOutputPrice?: number;
+  maxPrice?: number;
   minDelta?: number;
+  /** Keep rows that repeat another model's scores and prices. `--list` sets this. */
+  keepAliases?: boolean;
+}
+
+function uniqueInOrder(ids: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const id of ids) {
+    if (seen.has(id)) {
+      continue;
+    }
+    seen.add(id);
+    unique.push(id);
+  }
+  return unique;
+}
+
+function joinEnglishList(ids: readonly string[]): string {
+  if (ids.length <= 1) {
+    return ids[0] ?? "";
+  }
+  if (ids.length === 2) {
+    return `${ids[0]} and ${ids[1]}`;
+  }
+  return `${ids.slice(0, -1).join(", ")}, and ${ids[ids.length - 1]}`;
 }
 
 /**
- * Drop models above an output-price cap, then keep a model only when its index
- * is at least `minDelta` points below the previous kept model. Rank numbers stay
- * as they were in the full list.
+ * One line naming the layer-1 models that beat dominated rows, or null when
+ * every shown row is undominated.
+ */
+export function dominanceHint(models: readonly RankedModel[]): string | null {
+  const dominated = models.filter(
+    (row) => row.frontierLayer !== null && row.frontierLayer > 1 && row.dominatedBy !== null
+  );
+  if (dominated.length === 0) {
+    return null;
+  }
+  const better = joinEnglishList(
+    uniqueInOrder(dominated.flatMap((row) => (row.dominatedBy === null ? [] : [row.dominatedBy])))
+  );
+  if (dominated.length === 1) {
+    return t("{{model}} is beaten on price and quality by {{better}}.", {
+      model: dominated[0]?.id ?? "",
+      better,
+    });
+  }
+  return t("{{models}} are beaten on price and quality by {{better}}.", {
+    models: joinEnglishList(dominated.map((row) => row.id)),
+    better,
+  });
+}
+
+/**
+ * Drop alias rows, then models above a blended-price cap, then keep a model
+ * only when its index differs from the previous kept model by at least
+ * `minDelta` points. Rank numbers stay as they were in the full list.
  */
 export function selectSuggestRows(
   models: readonly RankedModel[],
   opts: SelectSuggestRowsOpts
 ): RankedModel[] {
   let rows = [...models];
-  if (opts.maxOutputPrice !== undefined) {
-    const cap = opts.maxOutputPrice;
-    rows = rows.filter((row) => row.outputPerMTokens !== null && row.outputPerMTokens <= cap);
+  if (opts.keepAliases !== true) {
+    rows = rows.filter((row) => row.aliasOf === null);
+  }
+  if (opts.maxPrice !== undefined) {
+    const cap = opts.maxPrice;
+    rows = rows.filter((row) => row.blendedPerMTokens !== null && row.blendedPerMTokens <= cap);
   }
   if (opts.minDelta !== undefined && opts.minDelta > 0) {
     const kept: RankedModel[] = [];
@@ -110,8 +183,8 @@ export function selectSuggestRows(
         lastIndex = row.index;
         continue;
       }
-      const ceiling = Math.round((lastIndex - opts.minDelta) * 10) / 10;
-      if (row.index <= ceiling) {
+      const gap = Math.round(Math.abs(row.index - lastIndex) * 10) / 10;
+      if (gap >= opts.minDelta) {
         kept.push(row);
         lastIndex = row.index;
       }
@@ -144,6 +217,10 @@ export function configuredModelRows(
       arenaScore: null,
       inputPerMTokens: null,
       outputPerMTokens: null,
+      blendedPerMTokens: null,
+      frontierLayer: null,
+      dominatedBy: null,
+      aliasOf: null,
       belowFloor: true,
       priceSource: null,
     };
@@ -175,10 +252,7 @@ export async function runSuggestModels(
     console.error(chalk.red(t("--top must be an integer >= 1.")));
     return { exitCode: 1 };
   }
-  if (
-    opts.maxOutputPrice !== undefined &&
-    (!Number.isFinite(opts.maxOutputPrice) || opts.maxOutputPrice < 0)
-  ) {
+  if (opts.maxPrice !== undefined && (!Number.isFinite(opts.maxPrice) || opts.maxPrice < 0)) {
     console.error(chalk.red(t("--max-price must be a number >= 0.")));
     return { exitCode: 1 };
   }
@@ -215,8 +289,9 @@ export async function runSuggestModels(
       ? configuredModelRows(result.models, translationModelsForProvider(config, result.provider))
       : result.models;
   const filtered = selectSuggestRows(pool, {
-    ...(opts.maxOutputPrice !== undefined ? { maxOutputPrice: opts.maxOutputPrice } : {}),
+    ...(opts.maxPrice !== undefined ? { maxPrice: opts.maxPrice } : {}),
     ...(opts.minDelta !== undefined ? { minDelta: opts.minDelta } : {}),
+    ...(opts.list === true ? { keepAliases: true } : {}),
   });
   const chosen = opts.list === true ? filtered : filtered.slice(0, top);
   for (const warning of result.warnings) {
@@ -254,6 +329,11 @@ export async function runSuggestModels(
     );
   } else {
     out(renderSuggestTable(chosen));
+    const hint = dominanceHint(chosen);
+    if (hint !== null) {
+      out("");
+      out(hint);
+    }
   }
   out("");
   out(chalk.gray(attributionLine(result)));

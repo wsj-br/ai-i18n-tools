@@ -136,7 +136,7 @@ ai-i18n-tools glossary-generate
 | `-c` / `--config <path>`     | すべてのコマンド | 設定ファイルのパス（デフォルト: `ai-i18n-tools.config.json`）。                                  |
 | `-v` / `--verbose`           | すべてのコマンド | 詳細ログ出力。                                                                          |
 | `-P` / `--provider <name>`   | すべてのコマンド | この実行のアクティブな LLM プロバイダー。設定の `provider` キーをオーバーライドします。`providers` の下で設定する必要があります。 |
-| `-L` / `--ui-lang <code>`    | すべてのコマンド | ツール独自のUI（CLIヘルプ、ログ/サマリー、ダッシュボード）の言語。最優先ソース。[ツールUI言語](/ja/guide/tool-ui-language)を参照してください。 |
+| `-L` / `--ui-lang <code>` | すべてのコマンド | ツールのUI（CLIヘルプ、ログ/サマリー、ダッシュボード）の言語。最も優先度の高いソースです。このオプションは、提供されているコードを一覧表示します。`<code>`を省略すると、そのリストが表示され、終了します。[ツールのUI言語](/ja/guide/tool-ui-language)を参照してください。 |
 | `-w` / `--write-logs [path]` | 選択されたコマンド | コンソール出力を `.log` ファイルにティーします (デフォルトパス: ルート `cacheDir` の下)。`translate-docs`、`translate-json`、`translate-svg`、`translate-ui`、`sync-ui`、`sync`、および `cleanup` のみで機能します。 |
 | `--debug-failed`             | 翻訳コマンド | 破棄された翻訳チェック（スクリプトの誤り、解析、または品質）ごとに、ルート `cacheDir` 配下に `FAILED-TRANSLATION` ログを書き込みます。これにはフォールバックも含まれます — すべてのモデルが失敗した場合だけでありません。プロバイダー API / 空のボディエラーはコンソールに出力され（モデルおよびエラーメッセージごとに1回）、これらのファイルは書き込まれません。`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync-ui`、`sync`、および `cleanup` に適用されます。 |
 

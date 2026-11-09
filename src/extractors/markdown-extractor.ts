@@ -28,12 +28,11 @@ import {
 } from "./image-markdown.js";
 import { expandSegmentsWithSplitting } from "./markdown-segment-split.js";
 import {
-  ADMONITION_CLOSING_NOINDENT_RE,
-  ADMONITION_OPENER_COLONS_RE,
   containerHasTranslatableProse,
   MKDOCS_ADMONITION_OPENER_RE,
   mkdocsAdmonitionEndIndex,
 } from "../processors/admonition-syntax.js";
+import { parseColonContainers } from "../processors/colon-container-parser.js";
 
 /** Optional extraction behavior for markdown docs (e.g. skip language-list blocks from translation). */
 export type MarkdownExtractOptions = {
@@ -195,51 +194,38 @@ export class MarkdownExtractor extends BaseExtractor {
     let openFence: OpenCodeFence | null = null;
     let codeBlockContent: string[] = [];
     let codeBlockStartLine = 0;
-    let admonitionContent: string[] = [];
-    let admonitionStartLine = 0;
-    /**
-     * Code fence open inside the current container. Its lines stay in `admonitionContent`.
-     * Emitting them as their own segment would place the sample before the container closes.
-     */
-    let admonitionFence: OpenCodeFence | null = null;
-    /** Stack of opener colon counts; nested admonitions push more colons than their parent. */
-    const admonitionDepths: number[] = [];
+    /** Join the next emitted segment to the previous one with a single newline. */
+    let pendingTight = false;
+    const containers = parseColonContainers(lines.join("\n"));
+    const containerAt = new Map(containers.map((container) => [container.startLine, container]));
 
-    const pushAdmonition = (content: string, startLine: number) => {
-      segments.push({
-        type: "admonition",
-        content,
-        translatable: containerHasTranslatableProse(content),
-        startLine,
-      });
-      admonitionContent = [];
-      admonitionFence = null;
+    const pushSegment = (segment: Omit<Segment, "id" | "hash">) => {
+      if (pendingTight) {
+        segment.tightJoinPrevious = true;
+        pendingTight = false;
+      }
+      segments.push(segment);
     };
 
     const flushCurrentSegment = () => {
-      if (currentSegment.length > 0) {
-        const segContent = currentSegment.join("\n").trim();
-        if (segContent) {
-          segments.push(this.classifySegment(segContent, bodyStartLine + currentSegmentStartLine));
-        }
-        currentSegment = [];
+      if (currentSegment.length === 0) {
+        return;
       }
+      const raw = currentSegment.join("\n");
+      // A tight join is a list or blockquote continuation, so its indent is part of the line.
+      const segContent = pendingTight ? raw.trimEnd() : raw.trim();
+      if (segContent.trim()) {
+        pushSegment(this.classifySegment(segContent, bodyStartLine + currentSegmentStartLine));
+      }
+      currentSegment = [];
     };
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex] ?? "";
-      if (admonitionFence) {
-        admonitionContent.push(line);
-        if (isCodeFenceClose(line, admonitionFence)) {
-          admonitionFence = null;
-        }
-        continue;
-      }
-
       if (openFence) {
         codeBlockContent.push(line);
         if (isCodeFenceClose(line, openFence)) {
-          segments.push({
+          pushSegment({
             type: "code",
             content: codeBlockContent.join("\n"),
             translatable: false,
@@ -251,13 +237,30 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
 
+      const container = containerAt.get(lineIndex);
+      if (container) {
+        const joinToPrevious = currentSegment.length > 0;
+        flushCurrentSegment();
+        if (joinToPrevious) {
+          pendingTight = true;
+        }
+        const content = lines.slice(container.startLine, container.endLine + 1).join("\n");
+        pushSegment({
+          type: "admonition",
+          content,
+          translatable: containerHasTranslatableProse(content),
+          startLine: bodyStartLine + container.startLine,
+        });
+        const nextLine = container.endLine + 1;
+        if (nextLine < lines.length && (lines[nextLine] ?? "").trim() !== "") {
+          pendingTight = true;
+        }
+        lineIndex = container.endLine;
+        continue;
+      }
+
       const fenceOpen = matchCodeFenceOpen(line);
       if (fenceOpen) {
-        if (admonitionDepths.length > 0) {
-          admonitionContent.push(line);
-          admonitionFence = fenceOpen;
-          continue;
-        }
         flushCurrentSegment();
         codeBlockContent.push(line);
         codeBlockStartLine = lineIndex;
@@ -265,43 +268,20 @@ export class MarkdownExtractor extends BaseExtractor {
         continue;
       }
 
-      if (langListStart !== -1 && lineIndex === langListStart && admonitionDepths.length === 0) {
+      if (langListStart !== -1 && lineIndex === langListStart) {
         const joinTightToPrevious = currentSegment.length > 0;
         flushCurrentSegment();
+        if (joinTightToPrevious) {
+          pendingTight = true;
+        }
         const blockLines = lines.slice(langListStart, langListEnd + 1);
-        segments.push({
+        pushSegment({
           type: "other",
           content: blockLines.join("\n"),
           translatable: false,
           startLine: bodyStartLine + langListStart,
-          ...(joinTightToPrevious ? { tightJoinPrevious: true as const } : {}),
         });
         lineIndex = langListEnd;
-        continue;
-      }
-
-      const admonitionOpener = line.match(ADMONITION_OPENER_COLONS_RE);
-      if (admonitionOpener) {
-        if (admonitionDepths.length === 0) {
-          flushCurrentSegment();
-          admonitionStartLine = lineIndex;
-        }
-        admonitionDepths.push(admonitionOpener[1]!.length);
-        admonitionContent.push(line);
-        continue;
-      }
-
-      if (admonitionDepths.length > 0 && ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
-        admonitionContent.push(line);
-        admonitionDepths.pop();
-        if (admonitionDepths.length === 0) {
-          pushAdmonition(admonitionContent.join("\n"), bodyStartLine + admonitionStartLine);
-        }
-        continue;
-      }
-
-      if (admonitionDepths.length > 0) {
-        admonitionContent.push(line);
         continue;
       }
 
@@ -309,7 +289,7 @@ export class MarkdownExtractor extends BaseExtractor {
         flushCurrentSegment();
         const endIndex = mkdocsAdmonitionEndIndex(lines, lineIndex);
         const mkdocsContent = lines.slice(lineIndex, endIndex + 1).join("\n");
-        segments.push({
+        pushSegment({
           type: "admonition",
           content: mkdocsContent,
           translatable: containerHasTranslatableProse(mkdocsContent),
@@ -321,6 +301,7 @@ export class MarkdownExtractor extends BaseExtractor {
 
       if (line.trim() === "") {
         flushCurrentSegment();
+        pendingTight = false;
         continue;
       }
 
@@ -333,16 +314,12 @@ export class MarkdownExtractor extends BaseExtractor {
     flushCurrentSegment();
 
     if (codeBlockContent.length > 0) {
-      segments.push({
+      pushSegment({
         type: "code",
         content: codeBlockContent.join("\n"),
         translatable: false,
         startLine: bodyStartLine + codeBlockStartLine,
       });
-    }
-
-    if (admonitionContent.length > 0) {
-      pushAdmonition(admonitionContent.join("\n"), bodyStartLine + admonitionStartLine);
     }
 
     return segments;

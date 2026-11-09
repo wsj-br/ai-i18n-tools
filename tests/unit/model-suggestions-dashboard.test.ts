@@ -46,7 +46,14 @@ describe("dashboard model suggestions", () => {
       targetLocales: ["de"],
       cacheDir: ".translation-cache",
       provider: "openai",
-      providers: { openai: { translationModels: ["old"], uiModels: ["keep-ui"] } },
+      providers: {
+        openai: { translationModels: ["old", "missing-id"], uiModels: ["keep-ui"] },
+        backup: {
+          translationModels: ["backup-only"],
+          baseUrl: "https://api.openai.com/v1",
+          apiKeyEnv: "OPENAI_API_KEY",
+        },
+      },
     } as unknown as I18nConfig;
     fs.mkdirSync(path.join(dir, ".translation-cache"), { recursive: true });
     fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
@@ -79,6 +86,7 @@ describe("dashboard model suggestions", () => {
               data: [
                 { id: "chat-a", pricing: { prompt: "0.000003", completion: "0.000012" } },
                 { id: "chat-b" },
+                { id: "chat-c", pricing: { prompt: "0.000010", completion: "0.0000005" } },
                 { id: "text-embedding-3-small" },
               ],
             }),
@@ -100,7 +108,7 @@ describe("dashboard model suggestions", () => {
           projectRoot: dir,
           configPath,
           activeProvider: "openai",
-          providerNames: ["openai"],
+          providerNames: ["openai", "backup"],
         },
       });
       await withHttpServer(app, async (base) => {
@@ -112,17 +120,37 @@ describe("dashboard model suggestions", () => {
             chrf: number | null;
             arenaScore: number | null;
             index: number;
+            blendedPerMTokens: number | null;
+            frontierLayer: number | null;
+            dominatedBy: string | null;
           }>;
+          translationModels: string[];
+          configuredModels: Array<{ id: string; rank: number }>;
         };
         const ids = body.models.map((row) => row.id);
         expect(ids).toContain("chat-a");
         expect(ids).not.toContain("text-embedding-3-small");
+        expect(body.translationModels).toEqual(["old", "missing-id"]);
+        expect(body.configuredModels.map((row) => row.id)).toEqual(["old", "missing-id"]);
+        expect(body.configuredModels.find((row) => row.id === "missing-id")?.rank).toBe(0);
+
+        const backupListed = await originalFetch(
+          `${base}/api/model-suggestions?provider=backup&priority=quality`
+        );
+        expect(backupListed.status).toBe(200);
+        const backupBody = (await backupListed.json()) as { translationModels: string[] };
+        expect(backupBody.translationModels).toEqual(["backup-only"]);
         const chatB = body.models.find((row) => row.id === "chat-b");
         expect(chatB?.chrf).toBeGreaterThan(0);
         expect(chatB?.arenaScore).toBe(900);
         expect(chatB?.index).toBeGreaterThan(0);
+        expect(chatB?.blendedPerMTokens).toBeCloseTo(0.125);
+        expect(chatB?.frontierLayer).toBe(1);
+        const chatC = body.models.find((row) => row.id === "chat-c");
+        expect(chatC?.blendedPerMTokens).toBeCloseTo(7.625);
+        expect(ids).toContain("chat-c");
 
-        const capped = await originalFetch(`${base}/api/model-suggestions?maxOutputPrice=1`);
+        const capped = await originalFetch(`${base}/api/model-suggestions?maxPrice=1`);
         expect(capped.status).toBe(200);
         const cappedBody = (await capped.json()) as { models: Array<{ id: string }> };
         expect(cappedBody.models.map((row) => row.id)).toEqual(["chat-b"]);
@@ -151,6 +179,11 @@ describe("dashboard model suggestions", () => {
         };
         expect(written.providers.openai.translationModels).toEqual(["chat-b", "chat-a"]);
         expect(written.providers.openai.uiModels).toEqual(["keep-ui"]);
+
+        const afterApply = await originalFetch(`${base}/api/model-suggestions?priority=quality`);
+        expect(afterApply.status).toBe(200);
+        const afterBody = (await afterApply.json()) as { translationModels: string[] };
+        expect(afterBody.translationModels).toEqual(["chat-b", "chat-a"]);
 
         cache.recordApiCall({
           provider: "openai",

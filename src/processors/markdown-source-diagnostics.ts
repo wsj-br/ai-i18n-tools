@@ -6,13 +6,16 @@ import {
   pairMarkdownEmphasisDelimitersFromRuns,
 } from "./emphasis-placeholders.js";
 import {
-  ADMONITION_CLOSING_NOINDENT_RE,
-  ADMONITION_OPENER_COLONS_RE,
-  ADMONITION_UNTERMINATED_TITLE_RE,
+  lineOpensUnterminatedAdmonitionTitle,
   MKDOCS_ADMONITION_MISSING_TYPE_RE,
   MKDOCS_ADMONITION_OPENER_RE,
   MKDOCS_ADMONITION_TITLE_START_RE,
 } from "./admonition-syntax.js";
+import {
+  flattenColonContainers,
+  isColonContainerInterior,
+  parseColonContainers,
+} from "./colon-container-parser.js";
 import { HTML_ID_ANCHOR_RE } from "./anchor-placeholders.js";
 import { isCodeFenceClose, matchCodeFenceOpen, type OpenCodeFence } from "./code-fence.js";
 import { computeSegmentHash } from "../utils/hash.js";
@@ -301,43 +304,83 @@ export function collectMarkdownSourceIssues(
   return issues;
 }
 
-/**
- * Whole-file scan for malformed Docusaurus admonitions. This runs on the entire file (not per
- * segment) because {@link MarkdownExtractor} absorbs malformations: an unclosed opener becomes one
- * giant segment to EOF, a stray closer becomes plain text, and an unterminated `[` title falls back
- * to the generic title path. `line1` values are absolute 1-based file lines.
- */
-export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSourceIssue[] {
-  const issues: MarkdownSourceIssue[] = [];
-  const lines = neutralizeCommentsForMarkdownDiagnostics(fileText).split("\n");
-  const stack: { colonCount: number; openerLine1: number }[] = [];
+/** Inclusive index of the closing `---` line, or the last line when the fence never closes. */
+function frontmatterEndIndex(lines: readonly string[]): number {
+  if ((lines[0] ?? "").trim() !== "---") {
+    return -1;
+  }
+  for (let i = 1; i < lines.length; i++) {
+    if ((lines[i] ?? "").trim() === "---") {
+      return i;
+    }
+  }
+  return lines.length - 1;
+}
+
+/** Lines that belong to a fenced code block, including its opener and closer. */
+function fencedLineSet(lines: readonly string[], startIndex: number): Set<number> {
+  const inside = new Set<number>();
   let openFence: OpenCodeFence | null = null;
-  let inFrontmatter = false;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]!;
-    const line1 = i + 1;
-
-    if (i === 0 && line.trim() === "---") {
-      inFrontmatter = true;
-      continue;
-    }
-    if (inFrontmatter) {
-      if (line.trim() === "---") {
-        inFrontmatter = false;
-      }
-      continue;
-    }
-
+  for (let i = Math.max(0, startIndex); i < lines.length; i++) {
+    const line = lines[i] ?? "";
     if (openFence) {
+      inside.add(i);
       if (isCodeFenceClose(line, openFence)) {
         openFence = null;
       }
       continue;
     }
-    const fenceOpen = matchCodeFenceOpen(line);
-    if (fenceOpen) {
-      openFence = fenceOpen;
+    const opened = matchCodeFenceOpen(line);
+    if (opened) {
+      openFence = opened;
+      inside.add(i);
+    }
+  }
+  return inside;
+}
+
+/**
+ * A closing fence that could end a VitePress container: up to three spaces, optional
+ * blockquote markers, and one list marker. Four-space lines are indented code.
+ */
+function isStrayColonCloser(line: string): boolean {
+  let rest = line;
+  for (let depth = 0; depth < 8; depth++) {
+    const quote = /^[ \t]{0,3}>[ \t]?/.exec(rest);
+    if (!quote) {
+      break;
+    }
+    rest = rest.slice(quote[0].length);
+  }
+  const list = /^[ \t]{0,3}(?:[-+*]|\d{1,9}[.)])[ \t]+/.exec(rest);
+  if (list) {
+    rest = rest.slice(list[0].length);
+  }
+  return /^[ \t]{0,3}:{3,}[ \t]*$/.test(rest);
+}
+
+/**
+ * Whole-file scan for malformed admonitions. This runs on the entire file (not per segment)
+ * because {@link MarkdownExtractor} absorbs malformations: an unclosed opener becomes one segment
+ * to the auto-close point, a stray closer becomes plain text, and an unterminated `[` title falls
+ * back to the generic title path. Colon fences use the same open and close rules as VitePress
+ * containers. `line1` values are absolute 1-based file lines.
+ */
+export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSourceIssue[] {
+  const issues: MarkdownSourceIssue[] = [];
+  const lines = neutralizeCommentsForMarkdownDiagnostics(fileText).split("\n");
+  const frontmatterEnd = frontmatterEndIndex(lines);
+  const parsedLines = lines.slice();
+  for (let i = 0; i <= frontmatterEnd; i++) {
+    parsedLines[i] = "";
+  }
+  const containers = parseColonContainers(parsedLines.join("\n"));
+  const fenced = fencedLineSet(lines, frontmatterEnd + 1);
+
+  for (let i = frontmatterEnd + 1; i < lines.length; i++) {
+    const line = lines[i]!;
+    const line1 = i + 1;
+    if (fenced.has(i)) {
       continue;
     }
 
@@ -365,38 +408,32 @@ export function collectMalformedAdmonitionIssues(fileText: string): MarkdownSour
       continue;
     }
 
-    const opener = line.match(ADMONITION_OPENER_COLONS_RE);
-    if (opener) {
-      if (ADMONITION_UNTERMINATED_TITLE_RE.test(line)) {
-        issues.push({
-          code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE,
-          message:
-            "Admonition title bracket `[` is never closed on this line. Add a matching `]` (e.g. `:::note[Title]`).",
-          line1,
-        });
-      }
-      stack.push({ colonCount: opener[1]!.length, openerLine1: line1 });
-      continue;
+    if (lineOpensUnterminatedAdmonitionTitle(line)) {
+      issues.push({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNTERMINATED_TITLE,
+        message:
+          "Admonition title bracket `[` is never closed on this line. Add a matching `]` (e.g. `:::note[Title]`).",
+        line1,
+      });
     }
 
-    if (ADMONITION_CLOSING_NOINDENT_RE.test(line)) {
-      if (stack.length > 0) {
-        stack.pop();
-      } else {
-        issues.push({
-          code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNEXPECTED_CLOSE,
-          message: "Admonition closing fence `:::` has no matching opener.",
-          line1,
-        });
-      }
+    if (isStrayColonCloser(line) && !isColonContainerInterior(containers, i)) {
+      issues.push({
+        code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNEXPECTED_CLOSE,
+        message: "Admonition closing fence `:::` has no matching opener.",
+        line1,
+      });
     }
   }
 
-  for (const open of stack) {
+  for (const container of flattenColonContainers(containers)) {
+    if (container.closerLine !== null) {
+      continue;
+    }
     issues.push({
       code: MARKDOWN_SOURCE_ISSUE_CODES.ADMONITION_UNCLOSED,
       message: "Admonition is never closed. Add a matching `:::` closing fence.",
-      line1: open.openerLine1,
+      line1: container.startLine + 1,
     });
   }
 

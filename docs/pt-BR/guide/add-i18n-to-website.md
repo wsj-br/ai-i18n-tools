@@ -291,7 +291,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` substitui apenas `translationModels`. O mesmo ranking está na aba [Modelos](/pt-BR/guide/translation-dashboard/models) de `ai-i18n-tools dashboard`.
+`--apply` substitui apenas `translationModels`. Use `--max-price` para excluir modelos cujo preço combinado excede um limite. Se você preferir uma GUI, use `ai-i18n-tools dashboard` para selecionar os [modelos](/pt-BR/guide/translation-dashboard/models).
 
 Em seguida, traduza e compile:
 

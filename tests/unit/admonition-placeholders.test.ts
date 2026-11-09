@@ -208,4 +208,20 @@ describe("admonition-placeholders", () => {
     expect(p.endMap.length).toBeGreaterThan(0);
     expect(restoreAdmonitionSyntax(p.protected, p.openMap, p.endMap)).toBe(src);
   });
+
+  it("round-trips indented, quoted, and list containers with their fence prefixes", () => {
+    const samples = [
+      "  ::: info Title\n  Body.\n  :::",
+      "> ::: info Title\n> Body.\n> :::",
+      "- ::: info Title\n  Body.\n  :::",
+      "::: tip T\nBody\n::::",
+    ];
+    for (const src of samples) {
+      const p = protectAdmonitionSyntax(src);
+      expect(restoreAdmonitionSyntax(p.protected, p.openMap, p.endMap, p.titleCloseMap)).toBe(src);
+    }
+    const indented = protectAdmonitionSyntax("  ::: info Title\n  Body.\n  :::");
+    expect(indented.endMap).toEqual(["  :::"]);
+    expect(indented.protected).toBe("  {{ADM_OPEN_0}}Title\n  Body.\n{{ADM_END_0}}");
+  });
 });

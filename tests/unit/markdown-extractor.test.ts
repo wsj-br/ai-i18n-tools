@@ -121,6 +121,38 @@ Paragraph.
     expect(segs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
   });
 
+  it("keeps an aligned indented container together and leaves a dedented closer outside", () => {
+    const aligned = ["  ::: info Title", "  Body.", "  :::"].join("\n");
+    const alignedSegs = ex.extract(`${aligned}\n\nAfter.`, "doc.md");
+    expect(alignedSegs.filter((s) => s.type === "admonition").map((s) => s.content)).toEqual([
+      aligned,
+    ]);
+    expect(alignedSegs.some((s) => s.type === "paragraph" && s.content === "After.")).toBe(true);
+
+    const mismatched = ["  ::: info Title", "  Body.", ":::"].join("\n");
+    const mismatchedSegs = ex.extract(mismatched, "doc.md");
+    expect(mismatchedSegs.filter((s) => s.type === "admonition").map((s) => s.content)).toEqual([
+      "  ::: info Title\n  Body.",
+    ]);
+    expect(mismatchedSegs.some((s) => s.content === ":::")).toBe(true);
+
+    const indentedCode = ["    ::: info Title", "    Body.", "    :::"].join("\n");
+    expect(ex.extract(indentedCode, "doc.md").some((s) => s.type === "admonition")).toBe(false);
+  });
+
+  it("preserves list, blockquote, and adjacent-paragraph container boundaries", () => {
+    const samples = [
+      ["- item", "  ::: info Title", "  Body.", "  :::", "  more"].join("\n"),
+      ["> ::: info Title", "> Body.", "> :::"].join("\n"),
+      ["::: note", "Body.", ":::", "Next."].join("\n"),
+      ["::: note", "Body.", ":::", "", "Next."].join("\n"),
+      ["- item", "", "  ::: info Title", "  Body.", "  :::"].join("\n"),
+    ];
+    for (const md of samples) {
+      expect(ex.reassemble(ex.extract(md, "doc.md"), new Map())).toBe(`${md}\n`);
+    }
+  });
+
   it("extracts fenced code and admonition segments", () => {
     const md = "```ts\nconst x = 1;\n```\n\n:::note\nN\n:::\n\nPara.";
     const segs = ex.extract(md, "doc.md");

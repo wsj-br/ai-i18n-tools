@@ -162,6 +162,8 @@ export function preprocessLegacyConfigInput(raw: unknown): unknown {
 
   throwIfLegacyGlossaryUiPath(o);
 
+  migrateModelSuggestion(o);
+
   return o;
 }
 
@@ -233,6 +235,57 @@ function throwIfLegacyGlossaryUiPath(raw: Record<string, unknown>): void {
   );
 }
 
+const SUGGESTION_PROFILES = ["quality", "price"] as const;
+
+function modelSuggestionHasLegacyPrice(json: unknown): boolean {
+  if (!json || typeof json !== "object" || Array.isArray(json)) {
+    return false;
+  }
+  const block = (json as Record<string, unknown>).modelSuggestion;
+  if (!block || typeof block !== "object" || Array.isArray(block)) {
+    return false;
+  }
+  const rec = block as Record<string, unknown>;
+  for (const profile of SUGGESTION_PROFILES) {
+    const weights = rec[profile];
+    if (
+      weights &&
+      typeof weights === "object" &&
+      !Array.isArray(weights) &&
+      Object.prototype.hasOwnProperty.call(weights, "price")
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function migrateModelSuggestion(o: Record<string, unknown>): void {
+  const block = o.modelSuggestion;
+  if (!block || typeof block !== "object" || Array.isArray(block)) {
+    return;
+  }
+  const rec = { ...(block as Record<string, unknown>) };
+  o.modelSuggestion = rec;
+  for (const profile of SUGGESTION_PROFILES) {
+    const weights = rec[profile];
+    if (!weights || typeof weights !== "object" || Array.isArray(weights)) {
+      continue;
+    }
+    const w = { ...(weights as Record<string, unknown>) };
+    rec[profile] = w;
+    delete w.price;
+    const chrf = typeof w.chrf === "number" && Number.isFinite(w.chrf) ? w.chrf : 0;
+    const arena = typeof w.arena === "number" && Number.isFinite(w.arena) ? w.arena : 0;
+    if (chrf + arena <= 0) {
+      delete rec[profile];
+    }
+  }
+  if (Object.keys(rec).length === 0) {
+    delete o.modelSuggestion;
+  }
+}
+
 const LEGACY_FEATURE_KEYS = new Set(["translateMarkdown", "translateJSON", "extractUIStrings"]);
 const LEGACY_BLOCK_KEYS = new Set(["jsonSource", "markdownOutput"]);
 
@@ -249,6 +302,9 @@ export function rawConfigHasLegacyKeys(json: unknown): boolean {
     return true;
   }
   if (Object.prototype.hasOwnProperty.call(o, "uiLanguagesPath")) {
+    return true;
+  }
+  if (modelSuggestionHasLegacyPrice(o)) {
     return true;
   }
   const f = o.features;
@@ -294,6 +350,7 @@ export function maybeRewriteConfigFile(configPath: string, rawJson: unknown): Co
   if (!rawConfigHasLegacyKeys(rawJson)) {
     return { rewritten: false };
   }
+  const hadSuggestionPrice = modelSuggestionHasLegacyPrice(rawJson);
   const canonical = canonicalizeConfigForWrite(rawJson);
   const messages: string[] = [];
   const o = rawJson as Record<string, unknown>;
@@ -305,6 +362,9 @@ export function maybeRewriteConfigFile(configPath: string, rawJson: unknown): Co
   }
   if (o.uiLanguagesPath !== undefined) {
     messages.push("uiLanguagesPath → languagesManifestPath");
+  }
+  if (hadSuggestionPrice) {
+    messages.push("modelSuggestion.<profile>.price removed (the index is quality only)");
   }
   const f = o.features as Record<string, unknown> | undefined;
   if (f?.translateMarkdown !== undefined) {

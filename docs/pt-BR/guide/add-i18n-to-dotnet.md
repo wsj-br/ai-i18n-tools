@@ -405,7 +405,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` substitui apenas `translationModels`. O mesmo ranking está na aba [Modelos](/pt-BR/guide/translation-dashboard/models) de `ai-i18n-tools dashboard`.
+`--apply` substitui apenas `translationModels`. Use `--max-price` para excluir modelos cujo preço combinado excede um limite. Se você preferir uma GUI, use `ai-i18n-tools dashboard` para selecionar os [modelos](/pt-BR/guide/translation-dashboard/models).
 
 Preencha o glossário antes do primeiro `translate-ui`. `init` aponta `glossary.userGlossary` para `glossary-user.csv` e não cria o arquivo. Se o arquivo estiver faltando, execute `ai-i18n-tools glossary-generate`, então adicione termos de domínio. Use **Forçar** para nomes que devem ser copiados sem alterações. Uma segunda `translate-ui` de uma string inalterada pode retornar com uma redação diferente. O glossário é o que faz as duas execuções concordarem.
 

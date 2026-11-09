@@ -548,17 +548,17 @@ SVG 파일의 최상위 경로 및 레이아웃입니다. `features.translateSVG
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (선택 사항)
 
-[`suggest-models`](/ko/reference/cli-commands/models#suggest-models) 및 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에 대한 가중치입니다. 이 블록을 생략하거나 하나의 프로필을 생략하면 해당 프로필은 기본 제공 가중치를 유지합니다. 이 블록은 `--apply` 또는 **구성 업데이트**에 의해 다시 작성되지 않습니다. 해당 작업은 모델 ID만 작성합니다.
+[`suggest-models`](/ko/reference/cli-commands/models#suggest-models) 및 [대시보드 모델 탭](/ko/guide/translation-dashboard/models)에 적용되는 ChrF 및 Arena 가중치와 선택적 품질 하한선입니다. 인덱스는 품질만을 기준으로 합니다. 해당 블록을 생략하거나 프로필 하나를 생략하면, 해당 프로필은 내장된 가중치를 유지합니다. 해당 블록은 `--apply` 또는 **구성 업데이트**에 의해 다시 작성되지 않습니다. 이들은 모델 ID만 작성합니다. 구성이 로드될 때 프로필에 있는 레거시 `price` 가중치는 제거됩니다.
 
-- `quality` — 기본 ChrF `0.45`, 아레나 `0.35`, 가격 `0.20`, 품질 하한선 `0.7`
-- `price` — 기본 ChrF `0.35`, 아레나 `0.20`, 가격 `0.45`, 품질 하한선 `0.6`
+- `quality` — 기본 ChrF `0.55`, Arena `0.45`, 품질 하한선 `0.7`
+- `price` — 기본 ChrF `0.55`, Arena `0.45`, 품질 하한선 `0.6`
 
-각 프로필 객체는 `chrf`, `arena`, `price`를 필요로 합니다. 각 값은 유한하며 최소 `0`이고, 적어도 하나는 `0`보다 큽니다. 이 값들은 합계가 1이 되도록 정규화되므로, `45`, `35`, `20`은 품질 기본값과 일치합니다. `qualityFloor`은 선택 사항이며, `(0, 1]` 범위에 있고, 후보 풀에서 최고의 ChrF의 비율입니다. 하한선 미만의 모델(ChrF 측정값이 없는 모든 모델 포함)은 하한선을 넘는 모델 뒤에 정렬됩니다.
+각 프로필 객체에는 `chrf` 및 `arena`이 필요합니다. 각 값은 유한하며 최소 `0` 이상이어야 하고, 최소 하나는 `0`보다 커야 합니다. 이 값들은 합계가 1이 되도록 정규화되므로, `55` 및 `45`는 기본값과 일치합니다. `qualityFloor`은 선택 사항이며, `(0, 1]` 범위 내에 있고, 후보 풀에서 가장 좋은 ChrF의 비율을 나타냅니다. 하한선 미만의 모델(ChrF 측정값이 없는 모델 포함)은 하한선을 통과한 모델 뒤에 정렬됩니다. 두 프로필은 동일한 기본 혼합을 공유하지만, 정렬 순서(인덱스 기준 `--quality`, 파레토 프론티어 기준 `--price`)와 하한선에서 차이가 있습니다.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

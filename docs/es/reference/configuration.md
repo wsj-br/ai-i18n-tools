@@ -548,17 +548,17 @@ Rutas y estructura de nivel superior para archivos SVG. La traducción solo se e
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (opcional)
 
-Pesos para [`suggest-models`](/es/reference/cli-commands/models#suggest-models) y la [pestaña Modelos del panel](/es/guide/translation-dashboard/models). Omita el bloque, o bien omita un perfil, y dicho perfil conservará los pesos integrados. El bloque no se sobrescribe mediante `--apply` o **Actualizar configuración**; estos solo escriben los ID de modelo.
+Pesos de ChrF y Arena, más un umbral de calidad opcional, para [`suggest-models`](/es/reference/cli-commands/models#suggest-models) y la [pestaña Modelos del panel de control](/es/guide/translation-dashboard/models). El índice es solo de calidad. Omita el bloque, u omita un perfil, y ese perfil conservará los pesos integrados. El bloque no es reescrito por `--apply` ni por **Actualizar configuración**; estos solo escriben los ID de modelo. Un peso `price` heredado en un perfil se elimina cuando se carga la configuración.
 
-- `quality` — ChrF predeterminado `0.45`, Arena `0.35`, precio `0.20`, umbral de calidad `0.7`
-- `price` — ChrF predeterminado `0.35`, Arena `0.20`, precio `0.45`, umbral de calidad `0.6`
+- `quality` — ChrF predeterminado `0.55`, Arena `0.45`, umbral de calidad `0.7`
+- `price` — ChrF predeterminado `0.55`, Arena `0.45`, umbral de calidad `0.6`
 
-Cada objeto de perfil requiere `chrf`, `arena` y `price`. Cada valor es finito y al menos `0`, y al menos uno es mayor que `0`. Se normalizan para que sumen 1, por lo que `45`, `35` y `20` coinciden con los valores predeterminados de calidad. `qualityFloor` es opcional, en el rango `(0, 1]`, y es la fracción del mejor ChrF en el grupo de candidatos. Los modelos por debajo del umbral, incluyendo cualquier modelo sin medición de ChrF, se ordenan después de aquellos que lo superan.
+Cada objeto de perfil requiere `chrf` y `arena`. Cada valor es finito y al menos `0`, y al menos uno es mayor que `0`. Se normalizan para que su suma sea 1, por lo que `55` y `45` coinciden con los valores predeterminados. `qualityFloor` es opcional, en el rango `(0, 1]`, y es la fracción del mejor ChrF en el conjunto de candidatos. Los modelos por debajo del umbral, incluidos los modelos sin medición de ChrF, se ordenan después de los que lo superan. Los dos perfiles comparten la misma mezcla predeterminada; difieren en el orden de clasificación (`--quality` por índice, `--price` por frontera de Pareto) y en el umbral.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

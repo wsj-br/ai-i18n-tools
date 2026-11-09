@@ -265,7 +265,9 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` は `translationModels` のみを置き換えます。同じランキングは [モデル](/ja/guide/translation-dashboard/models) タブにあります。次に翻訳します。
+`--apply` は `translationModels` のみを置換します。ブレンド価格が制限を超えるモデルを除外するには、`--max-price` を使用します。GUI をお好みの場合は、`ai-i18n-tools dashboard` を使用して [モデル](/ja/guide/translation-dashboard/models) を選択します。
+
+次に翻訳します：
 
 ```bash
 ai-i18n-tools translate-ui

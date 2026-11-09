@@ -796,15 +796,16 @@
 
         <section id="panel-models" class="panel">
           <p class="hint" data-i18n>
-            Rank the active provider's chat models. Check the rows you want. The number in the table
-            header is how many rows the header checkbox selects; clearing that checkbox clears the
-            selection. Move a row with its arrows or by dragging its handle. Checked rows, from top
-            to bottom, are the fallback order. Update config asks for confirmation, saves a
-            timestamped backup of the config file, then writes that order to translationModels. Copy
-            JSON copies the same list. Max output price is USD per 1M output tokens. Min index delta
-            keeps a later model only when its index is at least that far below the previous kept
-            model. Leave either box empty to skip that filter. Press Enter in a field to refresh the
-            table.
+            Rank the active provider's chat models. The left pane is the current translationModels
+            fallback chain for the selected provider. Check the rows you want on the right. The
+            number in the table header is how many rows the header checkbox selects; clearing that
+            checkbox clears the selection. Move a row with its arrows or by dragging its handle.
+            Checked rows, from top to bottom, are the fallback order. Update config asks for
+            confirmation, saves a timestamped backup of the config file, then writes that order to
+            translationModels. Copy JSON copies the same list. Max blended price is USD per 1M
+            tokens, (3 × input + output) / 4. Min index delta keeps a later model only when its
+            index differs from the previous kept model by at least that many points. Leave either
+            box empty to skip that filter. Press Enter in a field to refresh the table.
           </p>
           <div class="models-toolbar">
             <section class="models-card" aria-labelledby="models-card-ranking">
@@ -820,12 +821,12 @@
             <section class="models-card" aria-labelledby="models-card-filters">
               <h3 id="models-card-filters" data-i18n>Filters</h3>
               <input
-                id="models-max-output-price"
+                id="models-max-price"
                 type="number"
                 min="0"
                 step="any"
-                placeholder="Max output price"
-                title="Max output price (USD per 1M output tokens). Leave empty to skip."
+                placeholder="Max blended price"
+                title="Max blended price (USD per 1M tokens, 3 input : 1 output). Leave empty to skip."
                 data-i18n-placeholder
                 data-i18n-title
               />
@@ -848,47 +849,174 @@
             </section>
           </div>
           <div id="models-status" class="status"></div>
-          <div id="models-table">
-            <table class="models-table">
-              <thead>
-                <tr>
-                  <th class="models-col-reorder">
-                    <span class="visually-hidden" data-i18n>Reorder</span>
-                  </th>
-                  <th class="models-col-select">
-                    <span class="models-select-head">
-                      <input
-                        id="models-top"
-                        type="number"
-                        min="1"
-                        value="8"
-                        inputmode="numeric"
-                        aria-label="Use top"
-                        title="Use top"
-                        data-i18n-aria-label
+          <div class="models-split">
+            <section class="models-pane models-pane-config" aria-labelledby="models-config-heading">
+              <div class="models-pane-head">
+                <h3 id="models-config-heading" data-i18n>Current configuration</h3>
+                <p id="models-config-meta" class="models-pane-meta"></p>
+              </div>
+              <div id="models-config-table">
+                <table class="models-table models-config-table">
+                  <thead>
+                    <tr>
+                      <th
+                        data-i18n
+                        title="Fallback priority order. Translation starts with model 1 and falls back to subsequent models on failure or timeout."
                         data-i18n-title
-                      />
-                      <input
-                        id="models-select-top"
-                        type="checkbox"
-                        aria-label="Select top"
-                        title="Select the first N rows. Clear to deselect all."
-                        data-i18n-aria-label
+                      >
+                        Order
+                      </th>
+                      <th data-i18n title="Model identifier for the selected provider." data-i18n-title>
+                        Model
+                      </th>
+                      <th
+                        data-i18n
+                        title="Composite quality score (0–100) combining benchmarked translation accuracy (ChrF) and Chatbot Arena preference. Higher is better."
                         data-i18n-title
-                      />
-                    </span>
-                  </th>
-                  <th data-i18n>Rank</th>
-                  <th data-i18n>Model</th>
-                  <th data-i18n>Index</th>
-                  <th>ChrF</th>
-                  <th>Arena</th>
-                  <th data-i18n>Input</th>
-                  <th data-i18n>Output</th>
-                </tr>
-              </thead>
-              <tbody id="models-tbody"></tbody>
-            </table>
+                      >
+                        Index
+                      </th>
+                      <th
+                        title="Translation quality score from languagebench for your project's configured target languages (0 to 1). Higher is better."
+                        data-i18n-title
+                      >
+                        ChrF
+                      </th>
+                      <th
+                        title="Human preference score from LMSYS Chatbot Arena. Higher is better."
+                        data-i18n-title
+                      >
+                        Arena
+                      </th>
+                      <th data-i18n title="Input token price in USD per 1M tokens." data-i18n-title>
+                        Input
+                      </th>
+                      <th data-i18n title="Output token price in USD per 1M tokens." data-i18n-title>
+                        Output
+                      </th>
+                      <th
+                        data-i18n
+                        title="Blended price in USD per 1M tokens, calculated as (3 × input + output) / 4 based on typical 3:1 input-to-output ratios."
+                        data-i18n-title
+                      >
+                        Blended
+                      </th>
+                      <th
+                        data-i18n
+                        title="Pareto quality-price frontier tier. Tier 1 models offer the best balance of price and quality—no competitor is both cheaper and higher quality. Higher tiers are beaten by alternatives that offer more quality, lower cost, or both."
+                        data-i18n-title
+                      >
+                        Frontier
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="models-config-tbody"></tbody>
+                </table>
+              </div>
+            </section>
+            <section
+              class="models-pane models-pane-suggest"
+              aria-labelledby="models-suggest-heading"
+            >
+              <div class="models-pane-head">
+                <h3 id="models-suggest-heading" data-i18n>Suggestions</h3>
+                <p class="models-pane-meta" data-i18n>
+                  Ranked catalog. Check rows, then update config to replace the chain on the left.
+                </p>
+              </div>
+              <div id="models-table">
+                <table class="models-table">
+                  <thead>
+                    <tr>
+                      <th
+                        class="models-col-reorder"
+                        title="Reorder fallback chain. Drag the handle or use up and down buttons to change model priority."
+                        data-i18n-title
+                      >
+                        <span class="visually-hidden" data-i18n>Reorder</span>
+                      </th>
+                      <th
+                        class="models-col-select"
+                        title="Select models to include in your configuration."
+                        data-i18n-title
+                      >
+                        <span class="models-select-head">
+                          <input
+                            id="models-top"
+                            type="number"
+                            min="1"
+                            value="8"
+                            inputmode="numeric"
+                            aria-label="Use top"
+                            title="Use top"
+                            data-i18n-aria-label
+                            data-i18n-title
+                          />
+                          <input
+                            id="models-select-top"
+                            type="checkbox"
+                            aria-label="Select top"
+                            title="Select the first N rows. Clear to deselect all."
+                            data-i18n-aria-label
+                            data-i18n-title
+                          />
+                        </span>
+                      </th>
+                      <th
+                        data-i18n
+                        title="Catalog ranking position for the active provider under the chosen priority (Quality or Price) before filters are applied."
+                        data-i18n-title
+                      >
+                        Rank
+                      </th>
+                      <th data-i18n title="Model identifier for the selected provider." data-i18n-title>
+                        Model
+                      </th>
+                      <th
+                        data-i18n
+                        title="Composite quality score (0–100) combining benchmarked translation accuracy (ChrF) and Chatbot Arena preference. Higher is better."
+                        data-i18n-title
+                      >
+                        Index
+                      </th>
+                      <th
+                        title="Translation quality score from languagebench for your project's configured target languages (0 to 1). Higher is better."
+                        data-i18n-title
+                      >
+                        ChrF
+                      </th>
+                      <th
+                        title="Human preference score from LMSYS Chatbot Arena. Higher is better."
+                        data-i18n-title
+                      >
+                        Arena
+                      </th>
+                      <th data-i18n title="Input token price in USD per 1M tokens." data-i18n-title>
+                        Input
+                      </th>
+                      <th data-i18n title="Output token price in USD per 1M tokens." data-i18n-title>
+                        Output
+                      </th>
+                      <th
+                        data-i18n
+                        title="Blended price in USD per 1M tokens, calculated as (3 × input + output) / 4 based on typical 3:1 input-to-output ratios."
+                        data-i18n-title
+                      >
+                        Blended
+                      </th>
+                      <th
+                        data-i18n
+                        title="Pareto quality-price frontier tier. Tier 1 models offer the best balance of price and quality—no competitor is both cheaper and higher quality. Higher tiers are beaten by alternatives that offer more quality, lower cost, or both."
+                        data-i18n-title
+                      >
+                        Frontier
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="models-tbody"></tbody>
+                </table>
+              </div>
+            </section>
           </div>
           <p id="models-attribution" class="hint"></p>
         </section>

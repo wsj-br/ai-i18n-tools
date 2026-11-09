@@ -21,6 +21,7 @@ import {
   renderSuggestTable,
   runSuggestModels,
   configuredModelRows,
+  dominanceHint,
   selectSuggestRows,
 } from "../../src/cli/suggest-models.js";
 import { mergeWithDefaults, parseI18nConfig } from "../../src/core/config.js";
@@ -88,7 +89,7 @@ describe("rankProviderModels", () => {
     expect(gamma).toBeGreaterThan(beta);
   });
 
-  it("lets a cheaper model that clears the floor win on the price profile", () => {
+  it("lists cheapest Pareto-frontier models first on the price profile", () => {
     const ranked = rankProviderModels({
       provider: "openai",
       catalog,
@@ -98,7 +99,263 @@ describe("rankProviderModels", () => {
       locales: ["en"],
     });
     expect(ranked[0]?.id).toBe("beta");
-    expect(ranked.find((row) => row.id === "alpha")?.index).toBeLessThan(ranked[0]?.index ?? 0);
+    const alpha = ranked.find((row) => row.id === "alpha");
+    const beta = ranked.find((row) => row.id === "beta");
+    expect(alpha?.index).toBeGreaterThan(beta?.index ?? 0);
+    expect(ranked.findIndex((row) => row.id === "alpha")).toBeGreaterThan(
+      ranked.findIndex((row) => row.id === "beta")
+    );
+  });
+
+  it("gives the same index on both profiles and breaks quality ties by blended price", () => {
+    const twins: ProviderModelEntry[] = [
+      { id: "cheap", pricing: { prompt: "0.000001", completion: "0.000001" } },
+      { id: "dear", pricing: { prompt: "0.000010", completion: "0.000010" } },
+    ];
+    const twinCache = emptyBenchmarkCache();
+    twinCache.languagebench.models = {
+      cheap: { chrfByBcp47: { en: { sum: 0.8, n: 1 } }, cost: null },
+      dear: { chrfByBcp47: { en: { sum: 0.8, n: 1 } }, cost: null },
+    };
+    twinCache.arena.models = [
+      { model: "cheap", vendor: "test", score: 1200, publishDate: null },
+      { model: "dear", vendor: "test", score: 1200, publishDate: null },
+    ];
+    const quality = rankProviderModels({
+      provider: "openai",
+      catalog: twins,
+      benchmarks: twinCache,
+      profile: "quality",
+      weights: DEFAULT_QUALITY_WEIGHTS,
+      locales: ["en"],
+    });
+    const priced = rankProviderModels({
+      provider: "openai",
+      catalog: twins,
+      benchmarks: twinCache,
+      profile: "price",
+      weights: DEFAULT_PRICE_WEIGHTS,
+      locales: ["en"],
+    });
+    expect(quality[0]?.id).toBe("cheap");
+    expect(quality[1]?.id).toBe("dear");
+    expect(quality[0]?.index).toBe(quality[1]?.index);
+    expect(priced[0]?.index).toBe(quality[0]?.index);
+    expect(priced[1]?.index).toBe(quality[1]?.index);
+    expect(quality[0]?.blendedPerMTokens).toBeCloseTo(1);
+    expect(quality[1]?.blendedPerMTokens).toBeCloseTo(10);
+  });
+
+  it("assigns Pareto layers and dominatedBy on a known staircase", () => {
+    const stair: ProviderModelEntry[] = [
+      { id: "cheap-ok", pricing: { prompt: "0.0000001", completion: "0.0000001" } },
+      { id: "dominated", pricing: { prompt: "0.0000005", completion: "0.0000005" } },
+      { id: "mid", pricing: { prompt: "0.000001", completion: "0.000001" } },
+      { id: "best", pricing: { prompt: "0.000010", completion: "0.000010" } },
+      { id: "unpriced" },
+      { id: "weak", pricing: { prompt: "0.00000005", completion: "0.00000005" } },
+    ];
+    const stairCache = emptyBenchmarkCache();
+    stairCache.languagebench.models = {
+      "cheap-ok": { chrfByBcp47: { en: { sum: 0.7, n: 1 } }, cost: null },
+      dominated: { chrfByBcp47: { en: { sum: 0.7, n: 1 } }, cost: null },
+      mid: { chrfByBcp47: { en: { sum: 0.85, n: 1 } }, cost: null },
+      best: { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+      unpriced: { chrfByBcp47: { en: { sum: 0.88, n: 1 } }, cost: null },
+      weak: { chrfByBcp47: { en: { sum: 0.4, n: 1 } }, cost: null },
+    };
+    stairCache.arena.models = [
+      { model: "cheap-ok", vendor: "test", score: 1000, publishDate: null },
+      { model: "dominated", vendor: "test", score: 1000, publishDate: null },
+      { model: "mid", vendor: "test", score: 1200, publishDate: null },
+      { model: "best", vendor: "test", score: 1400, publishDate: null },
+      { model: "unpriced", vendor: "test", score: 1100, publishDate: null },
+      { model: "weak", vendor: "test", score: 800, publishDate: null },
+    ];
+    const priced = rankProviderModels({
+      provider: "openai",
+      catalog: stair,
+      benchmarks: stairCache,
+      profile: "price",
+      weights: DEFAULT_PRICE_WEIGHTS,
+      locales: ["en"],
+    });
+    expect(priced.map((row) => row.id)).toEqual([
+      "cheap-ok",
+      "mid",
+      "best",
+      "dominated",
+      "unpriced",
+      "weak",
+    ]);
+    expect(priced.find((row) => row.id === "cheap-ok")?.frontierLayer).toBe(1);
+    expect(priced.find((row) => row.id === "mid")?.frontierLayer).toBe(1);
+    expect(priced.find((row) => row.id === "best")?.frontierLayer).toBe(1);
+    const dominated = priced.find((row) => row.id === "dominated");
+    expect(dominated?.frontierLayer).toBe(2);
+    expect(dominated?.dominatedBy).toBe("cheap-ok");
+    expect(priced.find((row) => row.id === "unpriced")?.frontierLayer).toBeNull();
+    expect(priced.find((row) => row.id === "weak")?.belowFloor).toBe(true);
+    expect(priced.find((row) => row.id === "weak")?.frontierLayer).toBeNull();
+    expect(dominated?.aliasOf).toBeNull();
+    const beater = priced.find((row) => row.id === dominated?.dominatedBy);
+    expect(beater?.frontierLayer).toBe(1);
+  });
+
+  it("treats a dated twin as an alias and does not push the next model down a layer", () => {
+    const twins: ProviderModelEntry[] = [
+      { id: "gemini-2.5-pro", pricing: { prompt: "0.000003", completion: "0.000003" } },
+      {
+        id: "gemini-2.5-pro-preview-06-05",
+        pricing: { prompt: "0.000003", completion: "0.000003" },
+      },
+      { id: "opus", pricing: { prompt: "0.000010", completion: "0.000010" } },
+    ];
+    const twinCache = emptyBenchmarkCache();
+    twinCache.languagebench.models = {
+      "gemini-2.5-pro": { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+      "gemini-2.5-pro-preview-06-05": {
+        chrfByBcp47: { en: { sum: 0.9, n: 1 } },
+        cost: null,
+      },
+      opus: { chrfByBcp47: { en: { sum: 0.8, n: 1 } }, cost: null },
+    };
+    twinCache.arena.models = [
+      { model: "gemini-2.5-pro", vendor: "test", score: 1400, publishDate: null },
+      { model: "gemini-2.5-pro-preview-06-05", vendor: "test", score: 1400, publishDate: null },
+      { model: "opus", vendor: "test", score: 1300, publishDate: null },
+    ];
+    const ranked = rankProviderModels({
+      provider: "openai",
+      catalog: twins,
+      benchmarks: twinCache,
+      profile: "quality",
+      weights: DEFAULT_QUALITY_WEIGHTS,
+      locales: ["en"],
+    });
+    const canonical = ranked.find((row) => row.id === "gemini-2.5-pro");
+    const alias = ranked.find((row) => row.id === "gemini-2.5-pro-preview-06-05");
+    const opus = ranked.find((row) => row.id === "opus");
+    expect(canonical?.aliasOf).toBeNull();
+    expect(canonical?.frontierLayer).toBe(1);
+    expect(alias?.aliasOf).toBe("gemini-2.5-pro");
+    expect(alias?.frontierLayer).toBeNull();
+    expect(opus?.frontierLayer).toBe(2);
+    expect(opus?.dominatedBy).toBe("gemini-2.5-pro");
+    expect(selectSuggestRows(ranked, {}).map((row) => row.id)).toEqual(["gemini-2.5-pro", "opus"]);
+    expect(selectSuggestRows(ranked, { keepAliases: true }).map((row) => row.id)).toEqual([
+      "gemini-2.5-pro",
+      "gemini-2.5-pro-preview-06-05",
+      "opus",
+    ]);
+  });
+
+  it("keeps an exact blended-price and index tie on layer 1", () => {
+    const twins: ProviderModelEntry[] = [
+      { id: "blend-a", pricing: { prompt: "0.000001", completion: "0.000001" } },
+      { id: "blend-b", pricing: { prompt: "0.0000005", completion: "0.0000025" } },
+      { id: "dearer", pricing: { prompt: "0.000002", completion: "0.000002" } },
+    ];
+    const twinCache = emptyBenchmarkCache();
+    twinCache.languagebench.models = {
+      "blend-a": { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+      "blend-b": { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+      dearer: { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+    };
+    twinCache.arena.models = [
+      { model: "blend-a", vendor: "test", score: 1400, publishDate: null },
+      { model: "blend-b", vendor: "test", score: 1400, publishDate: null },
+      { model: "dearer", vendor: "test", score: 1400, publishDate: null },
+    ];
+    const ranked = rankProviderModels({
+      provider: "openai",
+      catalog: twins,
+      benchmarks: twinCache,
+      profile: "quality",
+      weights: DEFAULT_QUALITY_WEIGHTS,
+      locales: ["en"],
+    });
+    const blendA = ranked.find((row) => row.id === "blend-a");
+    const blendB = ranked.find((row) => row.id === "blend-b");
+    const dearer = ranked.find((row) => row.id === "dearer");
+    expect(blendA?.index).toBe(blendB?.index);
+    expect(blendA?.blendedPerMTokens).toBeCloseTo(blendB?.blendedPerMTokens ?? 0);
+    expect(blendA?.aliasOf).toBeNull();
+    expect(blendB?.aliasOf).toBeNull();
+    expect(blendA?.frontierLayer).toBe(1);
+    expect(blendB?.frontierLayer).toBe(1);
+    expect(blendA?.dominatedBy).toBeNull();
+    expect(blendB?.dominatedBy).toBeNull();
+    expect(dearer?.frontierLayer).toBe(2);
+    expect(dearer?.dominatedBy).toBe("blend-a");
+  });
+
+  it("picks the undated id, then the shorter id, then the alphabetical id", () => {
+    const twins: ProviderModelEntry[] = [
+      { id: "m-06-05", pricing: { prompt: "0.000001", completion: "0.000001" } },
+      { id: "undated-model", pricing: { prompt: "0.000001", completion: "0.000001" } },
+      { id: "bb", pricing: { prompt: "0.000002", completion: "0.000002" } },
+      { id: "aa", pricing: { prompt: "0.000002", completion: "0.000002" } },
+      { id: "long-name", pricing: { prompt: "0.000004", completion: "0.000004" } },
+      { id: "short", pricing: { prompt: "0.000004", completion: "0.000004" } },
+    ];
+    const twinCache = emptyBenchmarkCache();
+    const scores: Array<[string, number]> = [
+      ["m-06-05", 0.9],
+      ["undated-model", 0.9],
+      ["bb", 0.85],
+      ["aa", 0.85],
+      ["long-name", 0.8],
+      ["short", 0.8],
+    ];
+    twinCache.languagebench.models = Object.fromEntries(
+      scores.map(([id, chrf]) => [id, { chrfByBcp47: { en: { sum: chrf, n: 1 } }, cost: null }])
+    );
+    twinCache.arena.models = scores.map(([id, chrf]) => ({
+      model: id,
+      vendor: "test",
+      score: chrf * 1000,
+      publishDate: null,
+    }));
+    const ranked = rankProviderModels({
+      provider: "openai",
+      catalog: twins,
+      benchmarks: twinCache,
+      profile: "quality",
+      weights: DEFAULT_QUALITY_WEIGHTS,
+      locales: ["en"],
+    });
+    expect(ranked.find((row) => row.id === "m-06-05")?.aliasOf).toBe("undated-model");
+    expect(ranked.find((row) => row.id === "undated-model")?.aliasOf).toBeNull();
+    expect(ranked.find((row) => row.id === "undated-model")?.frontierLayer).toBe(1);
+    expect(ranked.find((row) => row.id === "bb")?.aliasOf).toBe("aa");
+    expect(ranked.find((row) => row.id === "bb")?.frontierLayer).toBeNull();
+    expect(ranked.find((row) => row.id === "long-name")?.aliasOf).toBe("short");
+    expect(ranked.find((row) => row.id === "short")?.aliasOf).toBeNull();
+  });
+
+  it("does not alias models that are missing a score or a token price", () => {
+    const bare: ProviderModelEntry[] = [{ id: "a" }, { id: "b" }];
+    const bareCache = emptyBenchmarkCache();
+    bareCache.languagebench.models = {
+      a: { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+      b: { chrfByBcp47: { en: { sum: 0.9, n: 1 } }, cost: null },
+    };
+    bareCache.arena.models = [
+      { model: "a", vendor: "test", score: 1400, publishDate: null },
+      { model: "b", vendor: "test", score: 1400, publishDate: null },
+    ];
+    const ranked = rankProviderModels({
+      provider: "openai",
+      catalog: bare,
+      benchmarks: bareCache,
+      profile: "quality",
+      weights: DEFAULT_QUALITY_WEIGHTS,
+      locales: ["en"],
+    });
+    expect(ranked.find((row) => row.id === "a")?.aliasOf).toBeNull();
+    expect(ranked.find((row) => row.id === "b")?.aliasOf).toBeNull();
+    expect(selectSuggestRows(ranked, {}).map((row) => row.id)).toEqual(["a", "b"]);
   });
 
   it("uses models.dev when the catalog price is zero and languagebench cost when both are missing", () => {
@@ -110,13 +367,17 @@ describe("rankProviderModels", () => {
       weights: DEFAULT_QUALITY_WEIGHTS,
       locales: ["en"],
     });
+    const alpha = ranked.find((row) => row.id === "alpha");
+    expect(alpha?.blendedPerMTokens).toBeCloseTo(6);
     const delta = ranked.find((row) => row.id === "delta");
     expect(delta?.priceSource).toBe("models.dev");
     expect(delta?.inputPerMTokens).toBeCloseTo(0.2);
     expect(delta?.outputPerMTokens).toBeCloseTo(0.8);
+    expect(delta?.blendedPerMTokens).toBeCloseTo(0.35);
     const epsilon = ranked.find((row) => row.id === "epsilon");
     expect(epsilon?.priceSource).toBe("languagebench");
     expect(epsilon?.inputPerMTokens).toBeNull();
+    expect(epsilon?.blendedPerMTokens).toBe(4);
     expect(epsilon?.chrf).toBeCloseTo(0.85);
   });
 
@@ -163,22 +424,34 @@ describe("rankProviderModels", () => {
 describe("resolveSuggestionWeights", () => {
   it("uses built-in weights when a profile is omitted and normalizes overrides", () => {
     expect(resolveSuggestionWeights(undefined, "price")).toEqual(DEFAULT_PRICE_WEIGHTS);
+    expect(DEFAULT_QUALITY_WEIGHTS.chrf).toBeCloseTo(DEFAULT_PRICE_WEIGHTS.chrf);
+    expect(DEFAULT_QUALITY_WEIGHTS.arena).toBeCloseTo(DEFAULT_PRICE_WEIGHTS.arena);
     const weights = resolveSuggestionWeights(
-      { modelSuggestion: { quality: { chrf: 45, arena: 35, price: 20 } } },
+      { modelSuggestion: { quality: { chrf: 55, arena: 45 } } },
       "quality"
     );
     expect(weights.chrf).toBeCloseTo(DEFAULT_QUALITY_WEIGHTS.chrf);
     expect(weights.arena).toBeCloseTo(DEFAULT_QUALITY_WEIGHTS.arena);
-    expect(weights.price).toBeCloseTo(DEFAULT_QUALITY_WEIGHTS.price);
     expect(weights.qualityFloor).toBe(0.7);
   });
 
-  it("rejects a weight triple that sums to zero", () => {
-    const parsed = i18nConfigSchema.safeParse({
+  it("strips a legacy price weight and drops a profile with no remaining score weight", () => {
+    const kept = i18nConfigSchema.safeParse({
       sourceLocale: "en",
-      modelSuggestion: { price: { chrf: 0, arena: 0, price: 0 } },
+      modelSuggestion: { quality: { chrf: 0.55, arena: 0.45, price: 0.2 } },
     });
-    expect(parsed.success).toBe(false);
+    expect(kept.success).toBe(true);
+    if (kept.success) {
+      expect(kept.data.modelSuggestion?.quality).toEqual({ chrf: 0.55, arena: 0.45 });
+    }
+    const dropped = i18nConfigSchema.safeParse({
+      sourceLocale: "en",
+      modelSuggestion: { price: { chrf: 0, arena: 0, price: 1 } },
+    });
+    expect(dropped.success).toBe(true);
+    if (dropped.success) {
+      expect(dropped.data.modelSuggestion).toBeUndefined();
+    }
   });
 });
 
@@ -336,8 +609,7 @@ describe("runSuggestModels flags", () => {
 
   it("rejects a negative --max-price and a negative --min-delta", async () => {
     expect(
-      (await runSuggestModels(config, process.cwd(), "unused.json", { maxOutputPrice: -1 }))
-        .exitCode
+      (await runSuggestModels(config, process.cwd(), "unused.json", { maxPrice: -1 })).exitCode
     ).toBe(1);
     expect(
       (await runSuggestModels(config, process.cwd(), "unused.json", { minDelta: Number.NaN }))
@@ -347,18 +619,27 @@ describe("runSuggestModels flags", () => {
 });
 
 describe("selectSuggestRows", () => {
-  function row(rank: number, index: number, output: number | null): RankedModel {
+  function row(
+    rank: number,
+    index: number,
+    blended: number | null,
+    extra?: Partial<RankedModel>
+  ): RankedModel {
     return {
-      id: `m${rank}`,
-      name: `m${rank}`,
+      id: extra?.id ?? `m${rank}`,
+      name: extra?.name ?? extra?.id ?? `m${rank}`,
       rank,
       index,
       chrf: null,
       arenaScore: null,
-      inputPerMTokens: null,
-      outputPerMTokens: output,
+      inputPerMTokens: extra?.inputPerMTokens ?? null,
+      outputPerMTokens: extra?.outputPerMTokens ?? null,
+      blendedPerMTokens: blended,
+      frontierLayer: extra?.frontierLayer ?? null,
+      dominatedBy: extra?.dominatedBy ?? null,
+      aliasOf: extra?.aliasOf ?? null,
       belowFloor: false,
-      priceSource: output === null ? null : "catalog",
+      priceSource: blended === null ? null : (extra?.priceSource ?? "catalog"),
     };
   }
 
@@ -373,16 +654,96 @@ describe("selectSuggestRows", () => {
     ]);
   });
 
-  it("drops models above the output price cap, including an unknown price", () => {
+  it("keeps a later model on a rising index when the gap is at least min-delta", () => {
+    const rising = [row(1, 70, 0.2), row(2, 71, 1), row(3, 80, 5)];
+    expect(selectSuggestRows(rising, { minDelta: 2 }).map((item) => item.rank)).toEqual([1, 3]);
+  });
+
+  it("drops models above the blended price cap, including an unknown price", () => {
     const rows = [row(1, 90, 2), row(2, 80, 2.5), row(3, 70, null), row(4, 60, 1)];
-    expect(selectSuggestRows(rows, { maxOutputPrice: 2 }).map((item) => item.rank)).toEqual([1, 4]);
+    expect(selectSuggestRows(rows, { maxPrice: 2 }).map((item) => item.rank)).toEqual([1, 4]);
+  });
+
+  it("drops a model whose blended price is above the cap even when output is cheap", () => {
+    const rows = [
+      row(1, 90, (3 * 10 + 0.5) / 4, { inputPerMTokens: 10, outputPerMTokens: 0.5 }),
+      row(2, 80, 0.2, { inputPerMTokens: 0.1, outputPerMTokens: 0.5 }),
+    ];
+    expect(selectSuggestRows(rows, { maxPrice: 1 }).map((item) => item.rank)).toEqual([2]);
+  });
+
+  it("keeps a languagebench-only blended price that is at or under the cap", () => {
+    const rows = [
+      row(1, 90, 4, { priceSource: "languagebench" }),
+      row(2, 80, 6, { priceSource: "languagebench" }),
+    ];
+    expect(selectSuggestRows(rows, { maxPrice: 5 }).map((item) => item.rank)).toEqual([1]);
   });
 
   it("applies the price cap before the index gap", () => {
     const rows = [row(1, 98.5, 12), row(2, 96.2, 30), row(3, 94, 0.95)];
+    expect(selectSuggestRows(rows, { maxPrice: 1, minDelta: 2 }).map((item) => item.rank)).toEqual([
+      3,
+    ]);
+  });
+
+  it("drops alias rows before the price cap, and keeps them when asked", () => {
+    const rows = [
+      row(1, 97, 2),
+      row(2, 97, 2, { aliasOf: "m1" }),
+      row(3, 90, 4, { aliasOf: "m1" }),
+    ];
+    expect(selectSuggestRows(rows, { maxPrice: 3 }).map((item) => item.rank)).toEqual([1]);
+    expect(selectSuggestRows(rows, { keepAliases: true }).map((item) => item.rank)).toEqual([
+      1, 2, 3,
+    ]);
+  });
+});
+
+describe("dominanceHint", () => {
+  function hintRow(id: string, layer: number | null, dominatedBy: string | null): RankedModel {
+    return {
+      id,
+      name: id,
+      rank: 1,
+      index: 90,
+      chrf: null,
+      arenaScore: null,
+      inputPerMTokens: null,
+      outputPerMTokens: null,
+      blendedPerMTokens: 1,
+      frontierLayer: layer,
+      dominatedBy,
+      aliasOf: null,
+      belowFloor: false,
+      priceSource: "catalog",
+    };
+  }
+
+  it("names the layer-1 models that beat dominated rows, and stays quiet otherwise", () => {
+    expect(dominanceHint([hintRow("gemini-2.5-pro", 1, null)])).toBeNull();
+    expect(dominanceHint([hintRow("unpriced", null, null)])).toBeNull();
+    expect(dominanceHint([hintRow("orphan", 2, null)])).toBeNull();
     expect(
-      selectSuggestRows(rows, { maxOutputPrice: 1, minDelta: 2 }).map((item) => item.rank)
-    ).toEqual([3]);
+      dominanceHint([hintRow("gemini-2.5-pro", 1, null), hintRow("gpt-5", 3, "gemini-2.5-pro")])
+    ).toBe("gpt-5 is beaten on price and quality by gemini-2.5-pro.");
+    expect(
+      dominanceHint([
+        hintRow("gpt-5", 3, "gemini-2.5-pro"),
+        hintRow("gpt-5-mini", 2, "deepseek-v4-flash"),
+      ])
+    ).toBe(
+      "gpt-5 and gpt-5-mini are beaten on price and quality by gemini-2.5-pro and deepseek-v4-flash."
+    );
+    expect(
+      dominanceHint([
+        hintRow("gpt-5", 3, "gemini-2.5-pro"),
+        hintRow("gpt-5-mini", 2, "deepseek-v4-flash"),
+        hintRow("glm-4.5-air", 2, "deepseek-v4-flash"),
+      ])
+    ).toBe(
+      "gpt-5, gpt-5-mini, and glm-4.5-air are beaten on price and quality by gemini-2.5-pro and deepseek-v4-flash."
+    );
   });
 });
 

@@ -332,7 +332,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply`僅取代`translationModels`。使用`--max-price`來排除輸出價格超過限制的模型。如果您偏好圖形使用者介面，請使用`ai-i18n-tools dashboard`來選取[模型](/zh-Hant/guide/translation-dashboard/models)。
+`--apply` 僅取代 `translationModels`。使用 `--max-price` 來排除混合價格超出限制的模型。如果您偏好圖形使用者介面 (GUI)，請使用 `ai-i18n-tools dashboard` 來選擇[模型](/zh-Hant/guide/translation-dashboard/models)。
 
 在第一次 `translate-ui` 之前填寫詞彙表。`init` 將 `glossary.userGlossary` 指向 `glossary-user.csv`，並且不建立檔案。`translate-ui` 只讀取該 CSV。如果檔案遺失，請執行 `ai-i18n-tools glossary-generate`，然後新增領域術語。對於必須保持不變的名稱（`Focus`、`CDI`、`Selic`），請使用 **強制**。對於應保持一致的單字（`portfolio` → `carteira`），請使用首選翻譯。未變更字串的第二次 `translate-ui` 可能會以不同的措辭返回。詞彙表是使兩次執行一致的原因。檢查每個鍵是否都有目標值並不是審查。
 

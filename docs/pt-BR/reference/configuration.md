@@ -548,17 +548,17 @@ Caminhos e estrutura de nível superior para arquivos SVG. A tradução é execu
 <a id="modelsuggestion-optional"></a>
 ### `modelSuggestion` (opcional)
 
-Pesos para [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models) e a [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models). Omita o bloco, ou omita um perfil, e esse perfil manterá os pesos integrados. O bloco não é reescrito por `--apply` ou **Update config**; eles gravam apenas IDs de modelo.
+Pesos ChrF e Arena, além de um piso de qualidade opcional, para [`suggest-models`](/pt-BR/reference/cli-commands/models#suggest-models) e a [aba Modelos do painel](/pt-BR/guide/translation-dashboard/models). O índice é apenas de qualidade. Omita o bloco, ou omita um perfil, e esse perfil manterá os pesos integrados. O bloco não é reescrito por `--apply` ou **Atualizar configuração**; esses escrevem apenas IDs de modelo. Um peso `price` herdado em um perfil é removido quando a configuração é carregada.
 
-- `quality` — ChrF padrão `0.45`, Arena `0.35`, preço `0.20`, piso de qualidade `0.7`
-- `price` — ChrF padrão `0.35`, Arena `0.20`, preço `0.45`, piso de qualidade `0.6`
+- `quality` — ChrF padrão `0.55`, Arena `0.45`, piso de qualidade `0.7`
+- `price` — ChrF padrão `0.55`, Arena `0.45`, piso de qualidade `0.6`
 
-Cada objeto de perfil requer `chrf`, `arena` e `price`. Cada valor é finito e pelo menos `0`, e pelo menos um é maior que `0`. Eles são normalizados para somar 1, para que `45`, `35` e `20` correspondam aos padrões de qualidade. `qualityFloor` é opcional, no intervalo `(0, 1]`, e é a fração do melhor ChrF no pool de candidatos. Modelos abaixo do limite, incluindo qualquer modelo sem medição de ChrF, são classificados após aqueles que o superam.
+Cada objeto de perfil requer `chrf` e `arena`. Cada valor é finito e pelo menos `0`, e pelo menos um é maior que `0`. Eles são normalizados para somar 1, então `55` e `45` correspondem aos padrões. `qualityFloor` é opcional, no intervalo `(0, 1]`, e é a fração do melhor ChrF no pool de candidatos. Modelos abaixo do piso, incluindo qualquer modelo sem medição de ChrF, são classificados depois daqueles que o superam. Os dois perfis compartilham a mesma mistura padrão; eles diferem na ordem de classificação (`--quality` por índice, `--price` por fronteira de Pareto) e no piso.
 
 ```json
 "modelSuggestion": {
-  "quality": { "chrf": 0.45, "arena": 0.35, "price": 0.20, "qualityFloor": 0.7 },
-  "price": { "chrf": 0.35, "arena": 0.20, "price": 0.45, "qualityFloor": 0.6 }
+  "quality": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.7 },
+  "price": { "chrf": 0.55, "arena": 0.45, "qualityFloor": 0.6 }
 }
 ```
 

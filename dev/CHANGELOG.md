@@ -9,6 +9,21 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-11-09
+
+- **Added**: dashboard — the Models tab column headers explain Order, Rank, scores, prices, and the frontier layer in a tooltip.
+- **Changed**: dashboard — those column-header tooltips use the normal arrow cursor and appear after 100ms instead of the browser title delay.
+- **Fixed**: suggest-models — an exact blended-price and index tie shares a frontier layer, and a dated or longer id with the same ChrF, Arena Score, and token prices is an alias that does not take a layer.
+- **Changed**: suggest-models — suggestions, `--json`, `--apply`, and the Models tab skip alias rows (`--list` still shows them), and the table is followed by a line naming the layer 1 model that beats each dominated row.
+- **Changed**: suggest-models — the table header row is printed in bold bright cyan so it stands out from the rows.
+- **Fixed**: markdown — colon-fence admonitions follow VitePress container rules. A closer lines up with its opener, including inside lists and blockquotes, may use a longer colon run, and is indented at most three spaces. A `:::` inside a fenced code sample still does not end the container.
+- **Changed**: dashboard — the Models tab sizes the current-configuration table to its columns so that pane does not scroll sideways on a wide screen. Suggestions uses the remaining width.
+- **Changed**: suggest-models — the index is quality only (ChrF and Arena); `--quality` breaks equal indices by blended price, and `--price` lists Pareto-frontier models cheapest first, then later frontier layers.
+- **Changed**: cli, dashboard — `--max-price` and the Models tab price filter compare the 3:1 blended price instead of the output price; `--min-delta` compares the absolute index difference; tables show blended and frontier columns.
+- **Removed**: config — `modelSuggestion.<profile>.price`; existing configs are migrated on load.
+- **Changed**: CLI — `-L` / `--ui-lang` without a code lists the shipped UI languages in the error, in that option's help, and at the end of the root help.
+- **Changed**: dashboard — the Models tab shows the selected provider's current `translationModels` fallback chain beside the ranked suggestions. The page uses the full content width, and the suggestions table keeps model ids on one line.
+
 ## [1.13.3] - 2026-11-08
 
 - **Fixed**: dependencies — `pnpm audit` ignores `GHSA-gcqx-w48m-w2h4` (`deepmerge`, no patched release; declared by `@svgr/plugin-svgo` but never imported). A `packageExtensions` entry gives `@intlayer/engine` TypeScript 6, so `zod-to-ts` no longer resolves TypeScript 7 and `pnpm peers check` is clean.

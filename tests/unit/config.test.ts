@@ -1607,6 +1607,65 @@ describe("languagesManifestPath migration", () => {
   });
 });
 
+describe("modelSuggestion.price migration", () => {
+  it("preprocessLegacyConfigInput strips a profile price weight", () => {
+    const out = preprocessLegacyConfigInput({
+      sourceLocale: "en",
+      modelSuggestion: { quality: { chrf: 0.55, arena: 0.45, price: 0.2, qualityFloor: 0.7 } },
+    }) as Record<string, unknown>;
+    const suggestion = out.modelSuggestion as { quality?: Record<string, unknown> };
+    expect(suggestion.quality).toEqual({ chrf: 0.55, arena: 0.45, qualityFloor: 0.7 });
+  });
+
+  it("drops a profile that only had a price weight and the empty block", () => {
+    const out = preprocessLegacyConfigInput({
+      sourceLocale: "en",
+      modelSuggestion: { quality: { chrf: 0, arena: 0, price: 1 } },
+    }) as Record<string, unknown>;
+    expect(out.modelSuggestion).toBeUndefined();
+  });
+
+  it("rawConfigHasLegacyKeys detects modelSuggestion.<profile>.price", () => {
+    expect(
+      rawConfigHasLegacyKeys({
+        modelSuggestion: { quality: { chrf: 0.55, arena: 0.45, price: 0.2 } },
+      })
+    ).toBe(true);
+    expect(
+      rawConfigHasLegacyKeys({
+        modelSuggestion: { quality: { chrf: 0.55, arena: 0.45 } },
+      })
+    ).toBe(false);
+  });
+
+  it("maybeRewriteConfigFile removes modelSuggestion.<profile>.price on disk", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "i18n-cfg-"));
+    const cfgPath = path.join(dir, "ai-i18n-tools.config.json");
+    fs.writeFileSync(
+      cfgPath,
+      JSON.stringify({
+        sourceLocale: "en",
+        targetLocales: ["de"],
+        modelSuggestion: { quality: { chrf: 0.55, arena: 0.45, price: 0.2 } },
+        ui: { flatOutputDir: "locales" },
+      }),
+      "utf8"
+    );
+    const result = maybeRewriteConfigFile(cfgPath, JSON.parse(fs.readFileSync(cfgPath, "utf8")));
+    expect(result.rewritten).toBe(true);
+    if (result.rewritten) {
+      expect(result.messages).toContain(
+        "modelSuggestion.<profile>.price removed (the index is quality only)"
+      );
+    }
+    const onDisk = JSON.parse(fs.readFileSync(cfgPath, "utf8")) as {
+      modelSuggestion?: { quality?: Record<string, unknown> };
+    };
+    expect(onDisk.modelSuggestion?.quality).toEqual({ chrf: 0.55, arena: 0.45 });
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
 describe("request timeout config", () => {
   it("accepts a top-level requestTimeout in seconds", () => {
     const c = parseI18nConfig({

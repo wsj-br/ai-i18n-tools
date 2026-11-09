@@ -26,7 +26,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 823
+        "line": 895
       }
     ]
   },
@@ -59,7 +59,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 927
+        "line": 1055
       }
     ]
   },
@@ -92,7 +92,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4189
+        "line": 4212
       }
     ]
   },
@@ -156,7 +156,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3267
+        "line": 3290
       }
     ]
   },
@@ -189,7 +189,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 832
+        "line": 855
       }
     ]
   },
@@ -315,7 +315,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 812
+        "line": 884
       }
     ]
   },
@@ -350,7 +350,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3177
+        "line": 3249
       }
     ]
   },
@@ -542,7 +542,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3724
+        "line": 3747
       }
     ]
   },
@@ -637,7 +637,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1138
+        "line": 1161
       }
     ]
   },
@@ -732,11 +732,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3201
+        "line": 3224
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3269
+        "line": 3292
       }
     ]
   },
@@ -768,6 +768,41 @@
       {
         "file": "src/cli/doc-translate.ts",
         "line": 3704
+      }
+    ]
+  },
+  "96078757": {
+    "source": "Input token price in USD per 1M tokens.",
+    "translated": {
+      "fr": "Prix des jetons d'entrée en USD par million de jetons.",
+      "es": "Precio del token de entrada en USD por 1M de tokens.",
+      "de": "Preis für Eingabetoken in USD pro 1 Mio. Token.",
+      "hi": "प्रति 1M टोकन के लिए USD में इनपुट टोकन की कीमत।",
+      "pt-BR": "Preço do token de entrada em USD por 1M de tokens.",
+      "ko": "100만 토큰당 입력 토큰 가격(USD).",
+      "ja": "100万トークンあたりの入力トークン価格（米ドル）。",
+      "zh-Hans": "每 100 万令牌的美元输入令牌价格。",
+      "zh-Hant": "每百萬個輸入權杖的美元價格。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 891
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 994
       }
     ]
   },
@@ -804,7 +839,7 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3117
+        "line": 3140
       }
     ]
   },
@@ -1313,19 +1348,19 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3487
+        "line": 3510
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3550
+        "line": 3573
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3611
+        "line": 3634
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3672
+        "line": 3695
       },
       {
         "file": "src/cli/usage.ts",
@@ -1333,19 +1368,19 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2785
+        "line": 2857
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2871
+        "line": 2943
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2953
+        "line": 3025
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3154
+        "line": 3226
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -1365,7 +1400,11 @@
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 882
+        "line": 869
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 972
       }
     ]
   },
@@ -1402,7 +1441,11 @@
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 886
+        "line": 891
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 994
       }
     ]
   },
@@ -1439,7 +1482,11 @@
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 887
+        "line": 894
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 997
       }
     ]
   },
@@ -4187,11 +4234,11 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3153
+        "line": 3225
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 813
+        "line": 814
       }
     ]
   },
@@ -7078,7 +7125,7 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1065
+        "line": 1088
       }
     ]
   },
@@ -7113,7 +7160,7 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1067
+        "line": 1090
       }
     ]
   },
@@ -7556,7 +7603,7 @@
       },
       {
         "file": "src/cli/index.ts",
-        "line": 322
+        "line": 325
       }
     ]
   },
@@ -8460,7 +8507,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 157
+        "line": 160
       }
     ]
   },
@@ -8493,7 +8540,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 200
+        "line": 203
       }
     ]
   },
@@ -8526,7 +8573,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 376
+        "line": 379
       }
     ]
   },
@@ -8559,7 +8606,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 406
+        "line": 409
       }
     ]
   },
@@ -8592,7 +8639,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 433
+        "line": 436
       }
     ]
   },
@@ -8625,7 +8672,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 453
+        "line": 456
       }
     ]
   },
@@ -8658,7 +8705,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 464
+        "line": 467
       }
     ]
   },
@@ -8691,7 +8738,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 472
+        "line": 475
       }
     ]
   },
@@ -8724,7 +8771,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 473
+        "line": 476
       }
     ]
   },
@@ -8755,7 +8802,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 513
+        "line": 516
       }
     ]
   },
@@ -8788,7 +8835,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 541
+        "line": 544
       }
     ]
   },
@@ -8821,7 +8868,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 548
+        "line": 551
       }
     ]
   },
@@ -8854,11 +8901,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 549
+        "line": 552
       },
       {
         "file": "src/cli/index.ts",
-        "line": 850
+        "line": 873
       }
     ]
   },
@@ -8891,7 +8938,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 550
+        "line": 553
       }
     ]
   },
@@ -8924,7 +8971,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 553
+        "line": 556
       }
     ]
   },
@@ -8957,7 +9004,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 559
+        "line": 562
       }
     ]
   },
@@ -8988,7 +9035,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 563
+        "line": 566
       }
     ]
   },
@@ -9021,7 +9068,38 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 570
+        "line": 573
+      }
+    ]
+  },
+  "d1874c5b": {
+    "source": "Available languages for -L / --ui-lang:",
+    "translated": {
+      "fr": "Langues disponibles pour -L / --ui-lang :",
+      "es": "Idiomas disponibles para -L / --ui-lang:",
+      "hi": "-L / --ui-lang: के लिए उपलब्ध भाषाएँ:",
+      "de": "Verfügbare Sprachen für -L / --ui-lang:",
+      "pt-BR": "Idiomas disponíveis para -L / --ui-lang:",
+      "zh-Hans": "-L / --ui-lang: 可用语言：",
+      "ja": "-L / --ui-lang: の利用可能言語:",
+      "ko": "-L / --ui-lang: 사용 가능한 언어",
+      "zh-Hant": "針對 -L / --ui-lang: 可用的語言版本"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/cli/index.ts",
+        "line": 575
       }
     ]
   },
@@ -9054,7 +9132,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 576
+        "line": 579
       }
     ]
   },
@@ -9087,7 +9165,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 585
+        "line": 596
       }
     ]
   },
@@ -9118,7 +9196,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 593
+        "line": 604
       }
     ]
   },
@@ -9149,7 +9227,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 595
+        "line": 606
       }
     ]
   },
@@ -9180,7 +9258,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 596
+        "line": 607
       }
     ]
   },
@@ -9211,7 +9289,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 597
+        "line": 608
       }
     ]
   },
@@ -9242,7 +9320,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 600
+        "line": 611
       }
     ]
   },
@@ -9273,7 +9351,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 631
+        "line": 642
       }
     ]
   },
@@ -9306,7 +9384,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 642
+        "line": 653
       }
     ]
   },
@@ -9339,7 +9417,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 660
+        "line": 671
       }
     ]
   },
@@ -9372,7 +9450,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 676
+        "line": 687
       }
     ]
   },
@@ -9403,69 +9481,69 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 684
+        "line": 695
       }
     ]
   },
-  "afdccd2a": {
-    "source": "Rank for translation quality (default)",
+  "c281c181": {
+    "source": "Rank by translation quality: languagebench ChrF and Arena Score (default)",
     "translated": {
-      "fr": "Classer par qualité de traduction (par défaut)",
-      "es": "Clasificar por calidad de traducción (predeterminado)",
-      "de": "Nach Übersetzungsqualität ordnen (Standard)",
-      "hi": "अनुवाद गुणवत्ता के अनुसार रैंक करें (डिफ़ॉल्ट)",
-      "ja": "翻訳品質でランク付け（デフォルト）",
-      "pt-BR": "Classificar por qualidade de tradução (padrão)",
-      "ko": "번역 품질 기준 순위 (기본값)",
-      "zh-Hans": "按翻译质量排名（默认）",
-      "zh-Hant": "依翻譯品質排名（預設）"
+      "es": "Clasificar por calidad de traducción: languagebench ChrF y Arena Score (predeterminado)",
+      "de": "Nach Übersetzungsqualität ordnen: languagebench ChrF und Arena Score (Standard)",
+      "fr": "Classer par qualité de traduction : languagebench ChrF et Arena Score (par défaut)",
+      "hi": "अनुवाद गुणवत्ता के आधार पर रैंक करें: लैंग्वेजबेंच ChrF और एरेना स्कोर (डिफ़ॉल्ट)",
+      "pt-BR": "Classificar por qualidade de tradução: languagebench ChrF e Arena Score (padrão)",
+      "ja": "翻訳品質でランク付け: languagebench ChrFとArenaスコア (デフォルト)",
+      "ko": "번역 품질 순위: languagebench ChrF 및 Arena 점수 (기본값)",
+      "zh-Hans": "按翻译质量排序：languagebench ChrF 和 Arena Score（默认）",
+      "zh-Hant": "依翻譯品質排名：languagebench ChrF 和 Arena Score (預設)"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 688
+        "line": 701
       }
     ]
   },
-  "57d1ab93": {
-    "source": "Rank for lower price, keeping a quality floor",
+  "bacb9285": {
+    "source": "List the cheapest models on the quality-price frontier first, keeping a quality floor",
     "translated": {
-      "fr": "Classer par prix le plus bas, avec un niveau de qualité minimal",
-      "es": "Clasificar por menor precio, manteniendo un nivel mínimo de calidad",
-      "de": "Nach niedrigerem Preis ordnen, mit Mindestqualität",
-      "hi": "गुणवत्ता का न्यूनतम स्तर बनाए रखते हुए कम कीमत के अनुसार रैंक करें",
-      "ja": "品質の下限を維持しつつ低価格でランク付け",
-      "pt-BR": "Classificar por menor preço, mantendo um nível mínimo de qualidade",
-      "ko": "낮은 가격 기준 순위, 최소 품질 기준 유지",
-      "zh-Hans": "按更低价格排名，同时保证质量下限",
-      "zh-Hant": "依較低價格排名，並維持品質下限"
+      "es": "Listar primero los modelos más baratos en la frontera calidad-precio, manteniendo un umbral de calidad",
+      "de": "Die günstigsten Modelle an der Qualitäts-Preis-Grenze zuerst auflisten, unter Beibehaltung einer Qualitätsuntergrenze",
+      "fr": "Lister les modèles les moins chers sur la frontière qualité-prix en premier, en maintenant un seuil de qualité",
+      "hi": "गुणवत्ता-मूल्य सीमा पर सबसे सस्ते मॉडल पहले सूचीबद्ध करें, गुणवत्ता की न्यूनतम सीमा बनाए रखते हुए",
+      "pt-BR": "Listar os modelos mais baratos na fronteira qualidade-preço primeiro, mantendo um nível mínimo de qualidade",
+      "ja": "品質の下限を維持しつつ、品質と価格のフロンティア上で最も安価なモデルを最初にリスト",
+      "ko": "품질 하한선을 유지하면서 품질-가격 경계선에서 가장 저렴한 모델을 먼저 나열",
+      "zh-Hans": "优先列出质量-价格前沿上最便宜的模型，并保持最低质量要求",
+      "zh-Hant": "優先列出品質-價格邊界上最便宜的模型，並維持最低品質"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 689
+        "line": 706
       }
     ]
   },
@@ -9496,7 +9574,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 690
+        "line": 709
       }
     ]
   },
@@ -9527,7 +9605,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 693
+        "line": 712
       }
     ]
   },
@@ -9558,7 +9636,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 696
+        "line": 715
       }
     ]
   },
@@ -9589,69 +9667,69 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 699
+        "line": 718
       }
     ]
   },
-  "7a4dd868": {
-    "source": "Keep models whose output price per 1M tokens is at most this many USD",
+  "2a697d89": {
+    "source": "Keep models whose blended price, (3 x input + output) / 4 USD per 1M tokens, is at most this many USD",
     "translated": {
-      "pt-BR": "Manter modelos cujo preço de saída por 1 milhão de tokens seja de no máximo este valor em USD",
-      "de": "Modelle beibehalten, deren Ausgabepreis pro 1 Mio. Token höchstens so viele USD beträgt",
-      "es": "Mantener los modelos cuyo precio de salida por 1 M de tokens sea como máximo esta cantidad en USD",
-      "hi": "ऐसे मॉडल रखें जिनका प्रति 1M टोकन आउटपुट मूल्य अधिकतम इतने USD हो",
-      "fr": "Conserver les modèles dont le prix de sortie par million de jetons est inférieur ou égal à ce nombre de USD",
-      "ko": "100만 토큰당 출력 가격이 이 USD 금액 이하인 모델만 유지",
-      "ja": "100万トークンあたりの出力価格が この USD 額以下のモデルのみを残す",
-      "zh-Hans": "保留每百万 token 输出价格不超过此美元数值的模型",
-      "zh-Hant": "保留每 100 萬個 token 輸出價格不超過此美元金額的模型"
+      "es": "Mantener modelos cuyo precio combinado, (3 x entrada + salida) / 4 USD por 1M de tokens, sea como máximo esta cantidad de USD",
+      "de": "Modelle beibehalten, deren Mischpreis (3 x Eingabe + Ausgabe) / 4 USD pro 1 Mio. Tokens höchstens so viele USD beträgt",
+      "fr": "Conserver les modèles dont le prix combiné, (3 x entrée + sortie) / 4 USD par 1M de jetons, est au maximum de ce montant en USD",
+      "hi": "उन मॉडलों को रखें जिनकी मिश्रित कीमत, (3 x इनपुट + आउटपुट) / 4 USD प्रति 1M टोकन, अधिकतम इतने USD है",
+      "pt-BR": "Manter modelos cujo preço combinado, (3 x entrada + saída) / 4 USD por 1M de tokens, é no máximo este valor em USD",
+      "ja": "統合価格 (100万トークンあたり(入力3 + 出力1) / 4 USD) が最大でこのUSDであるモデルを保持",
+      "ko": "통합 가격(100만 토큰당 (입력 3 + 출력) / 4 USD)이 최대 이 USD 금액인 모델 유지",
+      "zh-Hans": "保留混合价格（每百万 token (3 × 输入 + 输出) / 4 美元）不超过此美元金额的模型",
+      "zh-Hant": "保留綜合價格（每百萬個權杖 (3 x 輸入 + 輸出) / 4 美元）最多為此美元金額的模型"
     },
     "models": {
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest"
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 704
+        "line": 723
       }
     ]
   },
-  "291544a1": {
-    "source": "Keep a model only when its index is at least this many points below the previous kept model",
+  "b73d6f72": {
+    "source": "Keep a model only when its index differs by at least this many points from the previous kept model",
     "translated": {
-      "pt-BR": "Manter um modelo somente quando seu índice estiver pelo menos este número de pontos abaixo do modelo mantido anterior",
-      "de": "Ein Modell nur beibehalten, wenn sein Index mindestens so viele Punkte unter dem zuvor beibehaltenen Modell liegt",
-      "es": "Mantener un modelo solo cuando su índice esté al menos este número de puntos por debajo del modelo anterior mantenido",
-      "hi": "किसी मॉडल को तभी रखें जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम इतने अंक कम हो",
-      "fr": "Conserver un modèle uniquement si son indice est inférieur d'au moins ce nombre de points à celui du modèle précédent conservé",
-      "ko": "인덱스가 직전에 유지된 모델보다 이 점수 이상 낮은 경우에만 모델 유지",
-      "ja": "インデックスが直前に残したモデルより この ポイント数以上低い場合にのみ、モデルを残す",
-      "zh-Hans": "仅当某模型的指数比上一个保留的模型至少低出此分数时才保留该模型",
-      "zh-Hant": "只有當模型的指數比上一個保留的模型至少低出此分數時，才保留該模型"
+      "es": "Mantener un modelo solo cuando su índice difiera al menos en esta cantidad de puntos del modelo previamente conservado",
+      "de": "Ein Modell nur beibehalten, wenn sein Index um mindestens so viele Punkte vom zuvor beibehaltenen Modell abweicht",
+      "fr": "Conserver un modèle uniquement si son indice diffère d'au moins ce nombre de points du modèle précédemment conservé",
+      "hi": "किसी मॉडल को तभी रखें जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम इतने अंकों से भिन्न हो",
+      "pt-BR": "Manter um modelo apenas quando seu índice difere por pelo menos esta quantidade de pontos do modelo anterior mantido",
+      "ja": "以前に保持されたモデルからインデックスが少なくともこれだけのポイント異なる場合にのみ、モデルを保持",
+      "ko": "해당 인덱스가 이전에 유지된 모델과 최소 이만큼의 포인트 차이가 날 때만 모델 유지",
+      "zh-Hans": "仅当模型的索引与上一个保留模型至少相差此点数时才保留该模型",
+      "zh-Hant": "僅在模型的索引與上一個保留的模型至少相差此點數時才保留"
     },
     "models": {
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "es": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest"
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 708
+        "line": 729
       }
     ]
   },
@@ -9682,7 +9760,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 712
+        "line": 735
       }
     ]
   },
@@ -9713,7 +9791,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 764
+        "line": 787
       }
     ]
   },
@@ -9746,7 +9824,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 776
+        "line": 799
       }
     ]
   },
@@ -9777,7 +9855,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 782
+        "line": 805
       }
     ]
   },
@@ -9810,7 +9888,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 786
+        "line": 809
       }
     ]
   },
@@ -9843,7 +9921,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 787
+        "line": 810
       }
     ]
   },
@@ -9876,7 +9954,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 788
+        "line": 811
       }
     ]
   },
@@ -9909,7 +9987,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 791
+        "line": 814
       }
     ]
   },
@@ -9942,7 +10020,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 818
+        "line": 841
       }
     ]
   },
@@ -9975,7 +10053,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 828
+        "line": 851
       }
     ]
   },
@@ -10008,7 +10086,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 839
+        "line": 862
       }
     ]
   },
@@ -10041,7 +10119,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 848
+        "line": 871
       }
     ]
   },
@@ -10072,7 +10150,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 853
+        "line": 876
       }
     ]
   },
@@ -10105,7 +10183,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 858
+        "line": 881
       }
     ]
   },
@@ -10136,7 +10214,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 861
+        "line": 884
       }
     ]
   },
@@ -10167,7 +10245,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 866
+        "line": 889
       }
     ]
   },
@@ -10198,7 +10276,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 870
+        "line": 893
       }
     ]
   },
@@ -10229,7 +10307,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 899
+        "line": 922
       }
     ]
   },
@@ -10260,7 +10338,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 937
+        "line": 960
       }
     ]
   },
@@ -10293,7 +10371,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 948
+        "line": 971
       }
     ]
   },
@@ -10324,7 +10402,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 955
+        "line": 978
       }
     ]
   },
@@ -10355,7 +10433,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 958
+        "line": 981
       }
     ]
   },
@@ -10386,7 +10464,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 962
+        "line": 985
       }
     ]
   },
@@ -10417,7 +10495,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 993
+        "line": 1016
       }
     ]
   },
@@ -10448,7 +10526,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 995
+        "line": 1018
       }
     ]
   },
@@ -10479,7 +10557,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1019
+        "line": 1042
       }
     ]
   },
@@ -10510,7 +10588,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1021
+        "line": 1044
       }
     ]
   },
@@ -10541,7 +10619,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1034
+        "line": 1057
       }
     ]
   },
@@ -10574,7 +10652,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1060
+        "line": 1083
       }
     ]
   },
@@ -10605,7 +10683,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1075
+        "line": 1098
       }
     ]
   },
@@ -10638,7 +10716,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1081
+        "line": 1104
       }
     ]
   },
@@ -10671,27 +10749,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1083
+        "line": 1106
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1995
+        "line": 2018
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2290
+        "line": 2313
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2362
+        "line": 2385
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2703
+        "line": 2726
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2817
+        "line": 2840
       }
     ]
   },
@@ -10724,7 +10802,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1089
+        "line": 1112
       }
     ]
   },
@@ -10757,7 +10835,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1090
+        "line": 1113
       }
     ]
   },
@@ -10790,7 +10868,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1091
+        "line": 1114
       }
     ]
   },
@@ -10823,7 +10901,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1092
+        "line": 1115
       }
     ]
   },
@@ -10854,7 +10932,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1095
+        "line": 1118
       }
     ]
   },
@@ -10887,7 +10965,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1098
+        "line": 1121
       }
     ]
   },
@@ -10920,31 +10998,31 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1122
+        "line": 1145
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1166
+        "line": 1189
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1953
+        "line": 1976
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2132
+        "line": 2155
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2326
+        "line": 2349
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2420
+        "line": 2443
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2920
+        "line": 2943
       }
     ]
   },
@@ -10975,7 +11053,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1137
+        "line": 1160
       }
     ]
   },
@@ -11008,7 +11086,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1147
+        "line": 1170
       }
     ]
   },
@@ -11041,7 +11119,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1172
+        "line": 1195
       }
     ]
   },
@@ -11074,7 +11152,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1197
+        "line": 1220
       }
     ]
   },
@@ -11105,7 +11183,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1206
+        "line": 1229
       }
     ]
   },
@@ -11138,7 +11216,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1216
+        "line": 1239
       }
     ]
   },
@@ -11171,7 +11249,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1230
+        "line": 1253
       }
     ]
   },
@@ -11202,27 +11280,27 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1236
+        "line": 1259
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2467
+        "line": 2490
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2546
+        "line": 2569
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2646
+        "line": 2669
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2759
+        "line": 2782
       },
       {
         "file": "src/cli/index.ts",
-        "line": 4193
+        "line": 4216
       }
     ]
   },
@@ -11255,15 +11333,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1248
+        "line": 1271
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1805
+        "line": 1828
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2577
+        "line": 2600
       }
     ]
   },
@@ -11296,7 +11374,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1259
+        "line": 1282
       }
     ]
   },
@@ -11329,7 +11407,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1269
+        "line": 1292
       }
     ]
   },
@@ -11362,7 +11440,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1273
+        "line": 1296
       }
     ]
   },
@@ -11395,7 +11473,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1274
+        "line": 1297
       }
     ]
   },
@@ -11428,7 +11506,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1288
+        "line": 1311
       }
     ]
   },
@@ -11461,7 +11539,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1293
+        "line": 1316
       }
     ]
   },
@@ -11494,7 +11572,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1301
+        "line": 1324
       }
     ]
   },
@@ -11525,7 +11603,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1311
+        "line": 1334
       }
     ]
   },
@@ -11556,11 +11634,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1315
+        "line": 1338
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1403
+        "line": 1426
       }
     ]
   },
@@ -11591,7 +11669,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1316
+        "line": 1339
       }
     ]
   },
@@ -11622,7 +11700,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1319
+        "line": 1342
       }
     ]
   },
@@ -11653,7 +11731,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1323
+        "line": 1346
       }
     ]
   },
@@ -11684,7 +11762,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1328
+        "line": 1351
       }
     ]
   },
@@ -11715,7 +11793,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1332
+        "line": 1355
       }
     ]
   },
@@ -11746,7 +11824,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1362
+        "line": 1385
       }
     ]
   },
@@ -11777,7 +11855,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1372
+        "line": 1395
       }
     ]
   },
@@ -11808,7 +11886,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1386
+        "line": 1409
       }
     ]
   },
@@ -11839,7 +11917,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1399
+        "line": 1422
       }
     ]
   },
@@ -11870,7 +11948,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1406
+        "line": 1429
       }
     ]
   },
@@ -11901,7 +11979,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1410
+        "line": 1433
       }
     ]
   },
@@ -11932,7 +12010,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1412
+        "line": 1435
       }
     ]
   },
@@ -11963,7 +12041,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1415
+        "line": 1438
       }
     ]
   },
@@ -11994,7 +12072,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1451
+        "line": 1474
       }
     ]
   },
@@ -12025,7 +12103,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1461
+        "line": 1484
       }
     ]
   },
@@ -12056,7 +12134,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1474
+        "line": 1497
       }
     ]
   },
@@ -12087,7 +12165,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1485
+        "line": 1508
       }
     ]
   },
@@ -12118,7 +12196,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1494
+        "line": 1517
       }
     ]
   },
@@ -12149,11 +12227,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1498
+        "line": 1521
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1564
+        "line": 1587
       }
     ]
   },
@@ -12184,7 +12262,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1501
+        "line": 1524
       }
     ]
   },
@@ -12215,11 +12293,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1505
+        "line": 1528
       },
       {
         "file": "src/cli/index.ts",
-        "line": 1578
+        "line": 1601
       }
     ]
   },
@@ -12250,7 +12328,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1523
+        "line": 1546
       }
     ]
   },
@@ -12281,7 +12359,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1533
+        "line": 1556
       }
     ]
   },
@@ -12312,7 +12390,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1548
+        "line": 1571
       }
     ]
   },
@@ -12343,7 +12421,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1560
+        "line": 1583
       }
     ]
   },
@@ -12374,7 +12452,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1567
+        "line": 1590
       }
     ]
   },
@@ -12405,7 +12483,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1574
+        "line": 1597
       }
     ]
   },
@@ -12436,7 +12514,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1601
+        "line": 1624
       }
     ]
   },
@@ -12467,7 +12545,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1612
+        "line": 1635
       }
     ]
   },
@@ -12498,7 +12576,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1628
+        "line": 1651
       }
     ]
   },
@@ -12531,7 +12609,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1642
+        "line": 1665
       }
     ]
   },
@@ -12564,7 +12642,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1731
+        "line": 1754
       }
     ]
   },
@@ -12597,7 +12675,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1816
+        "line": 1839
       }
     ]
   },
@@ -12630,7 +12708,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1843
+        "line": 1866
       }
     ]
   },
@@ -12663,7 +12741,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1862
+        "line": 1885
       }
     ]
   },
@@ -12696,7 +12774,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1967
+        "line": 1990
       }
     ]
   },
@@ -12729,7 +12807,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1981
+        "line": 2004
       }
     ]
   },
@@ -12762,7 +12840,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1987
+        "line": 2010
       }
     ]
   },
@@ -12795,11 +12873,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1993
+        "line": 2016
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2360
+        "line": 2383
       }
     ]
   },
@@ -12832,19 +12910,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1996
+        "line": 2019
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2291
+        "line": 2314
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2363
+        "line": 2386
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2462
+        "line": 2485
       }
     ]
   },
@@ -12877,11 +12955,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 1999
+        "line": 2022
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2366
+        "line": 2389
       }
     ]
   },
@@ -12914,11 +12992,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2006
+        "line": 2029
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2373
+        "line": 2396
       }
     ]
   },
@@ -12949,19 +13027,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2013
+        "line": 2036
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2300
+        "line": 2323
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2380
+        "line": 2403
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2831
+        "line": 2854
       }
     ]
   },
@@ -12992,11 +13070,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2020
+        "line": 2043
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2838
+        "line": 2861
       }
     ]
   },
@@ -13029,7 +13107,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2025
+        "line": 2048
       }
     ]
   },
@@ -13062,7 +13140,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2026
+        "line": 2049
       }
     ]
   },
@@ -13093,7 +13171,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2027
+        "line": 2050
       }
     ]
   },
@@ -13126,7 +13204,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2028
+        "line": 2051
       }
     ]
   },
@@ -13159,7 +13237,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2029
+        "line": 2052
       }
     ]
   },
@@ -13192,11 +13270,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2030
+        "line": 2053
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2386
+        "line": 2409
       }
     ]
   },
@@ -13229,15 +13307,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2033
+        "line": 2056
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2308
+        "line": 2331
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2389
+        "line": 2412
       }
     ]
   },
@@ -13270,7 +13348,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2037
+        "line": 2060
       }
     ]
   },
@@ -13303,7 +13381,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2042
+        "line": 2065
       }
     ]
   },
@@ -13336,7 +13414,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2049
+        "line": 2072
       }
     ]
   },
@@ -13369,15 +13447,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2069
+        "line": 2092
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2401
+        "line": 2424
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2896
+        "line": 2919
       }
     ]
   },
@@ -13408,11 +13486,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2071
+        "line": 2094
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2403
+        "line": 2426
       }
     ]
   },
@@ -13443,11 +13521,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2073
+        "line": 2096
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2405
+        "line": 2428
       }
     ]
   },
@@ -13480,7 +13558,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2085
+        "line": 2108
       }
     ]
   },
@@ -13513,7 +13591,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2086
+        "line": 2109
       }
     ]
   },
@@ -13546,7 +13624,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2087
+        "line": 2110
       }
     ]
   },
@@ -13579,7 +13657,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2088
+        "line": 2111
       }
     ]
   },
@@ -13612,7 +13690,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2107
+        "line": 2130
       }
     ]
   },
@@ -13643,7 +13721,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2109
+        "line": 2132
       }
     ]
   },
@@ -13676,7 +13754,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2120
+        "line": 2143
       }
     ]
   },
@@ -13709,7 +13787,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2120
+        "line": 2143
       }
     ]
   },
@@ -13740,7 +13818,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2212
+        "line": 2235
       }
     ]
   },
@@ -13771,7 +13849,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2245
+        "line": 2268
       }
     ]
   },
@@ -13804,7 +13882,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2257
+        "line": 2280
       }
     ]
   },
@@ -13837,7 +13915,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2265
+        "line": 2288
       }
     ]
   },
@@ -13870,7 +13948,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2274
+        "line": 2297
       }
     ]
   },
@@ -13903,7 +13981,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2280
+        "line": 2303
       }
     ]
   },
@@ -13936,7 +14014,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2286
+        "line": 2309
       }
     ]
   },
@@ -13969,7 +14047,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2292
+        "line": 2315
       }
     ]
   },
@@ -14002,7 +14080,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2295
+        "line": 2318
       }
     ]
   },
@@ -14035,7 +14113,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2305
+        "line": 2328
       }
     ]
   },
@@ -14068,7 +14146,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2312
+        "line": 2335
       }
     ]
   },
@@ -14101,7 +14179,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2338
+        "line": 2361
       }
     ]
   },
@@ -14134,7 +14212,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2348
+        "line": 2371
       }
     ]
   },
@@ -14167,7 +14245,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2354
+        "line": 2377
       }
     ]
   },
@@ -14200,7 +14278,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2385
+        "line": 2408
       }
     ]
   },
@@ -14233,7 +14311,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2427
+        "line": 2450
       }
     ]
   },
@@ -14266,7 +14344,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2438
+        "line": 2461
       }
     ]
   },
@@ -14299,7 +14377,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2446
+        "line": 2469
       }
     ]
   },
@@ -14332,7 +14410,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2454
+        "line": 2477
       }
     ]
   },
@@ -14365,15 +14443,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2460
+        "line": 2483
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2539
+        "line": 2562
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2745
+        "line": 2768
       }
     ]
   },
@@ -14406,7 +14484,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2463
+        "line": 2486
       }
     ]
   },
@@ -14439,7 +14517,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2464
+        "line": 2487
       }
     ]
   },
@@ -14472,7 +14550,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2489
+        "line": 2512
       }
     ]
   },
@@ -14505,7 +14583,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2517
+        "line": 2540
       }
     ]
   },
@@ -14538,7 +14616,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2525
+        "line": 2548
       }
     ]
   },
@@ -14571,7 +14649,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2533
+        "line": 2556
       }
     ]
   },
@@ -14604,11 +14682,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2541
+        "line": 2564
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2818
+        "line": 2841
       }
     ]
   },
@@ -14641,7 +14719,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2542
+        "line": 2565
       }
     ]
   },
@@ -14674,7 +14752,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2543
+        "line": 2566
       }
     ]
   },
@@ -14707,7 +14785,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2569
+        "line": 2592
       }
     ]
   },
@@ -14740,7 +14818,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2588
+        "line": 2611
       }
     ]
   },
@@ -14773,7 +14851,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2619
+        "line": 2642
       }
     ]
   },
@@ -14806,7 +14884,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2627
+        "line": 2650
       }
     ]
   },
@@ -14839,7 +14917,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2635
+        "line": 2658
       }
     ]
   },
@@ -14872,7 +14950,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2639
+        "line": 2662
       }
     ]
   },
@@ -14905,7 +14983,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2640
+        "line": 2663
       }
     ]
   },
@@ -14938,7 +15016,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2641
+        "line": 2664
       }
     ]
   },
@@ -14971,7 +15049,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2642
+        "line": 2665
       }
     ]
   },
@@ -15004,7 +15082,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2643
+        "line": 2666
       }
     ]
   },
@@ -15037,11 +15115,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2677
+        "line": 2700
       },
       {
         "file": "src/cli/index.ts",
-        "line": 2683
+        "line": 2706
       }
     ]
   },
@@ -15074,7 +15152,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2693
+        "line": 2716
       }
     ]
   },
@@ -15107,7 +15185,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2699
+        "line": 2722
       }
     ]
   },
@@ -15140,7 +15218,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2704
+        "line": 2727
       }
     ]
   },
@@ -15173,7 +15251,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2705
+        "line": 2728
       }
     ]
   },
@@ -15206,7 +15284,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2729
+        "line": 2752
       }
     ]
   },
@@ -15239,7 +15317,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2739
+        "line": 2762
       }
     ]
   },
@@ -15272,7 +15350,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2749
+        "line": 2772
       }
     ]
   },
@@ -15305,7 +15383,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2753
+        "line": 2776
       }
     ]
   },
@@ -15338,7 +15416,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2756
+        "line": 2779
       }
     ]
   },
@@ -15371,7 +15449,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2785
+        "line": 2808
       }
     ]
   },
@@ -15404,7 +15482,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2795
+        "line": 2818
       }
     ]
   },
@@ -15437,7 +15515,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2803
+        "line": 2826
       }
     ]
   },
@@ -15468,7 +15546,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2809
+        "line": 2832
       }
     ]
   },
@@ -15501,7 +15579,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2815
+        "line": 2838
       }
     ]
   },
@@ -15534,7 +15612,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2821
+        "line": 2844
       }
     ]
   },
@@ -15567,7 +15645,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2826
+        "line": 2849
       }
     ]
   },
@@ -15600,7 +15678,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2843
+        "line": 2866
       }
     ]
   },
@@ -15631,7 +15709,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2846
+        "line": 2869
       }
     ]
   },
@@ -15664,7 +15742,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2852
+        "line": 2875
       }
     ]
   },
@@ -15697,7 +15775,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2857
+        "line": 2880
       }
     ]
   },
@@ -15730,7 +15808,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2860
+        "line": 2883
       }
     ]
   },
@@ -15763,7 +15841,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2863
+        "line": 2886
       }
     ]
   },
@@ -15796,7 +15874,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2867
+        "line": 2890
       }
     ]
   },
@@ -15829,7 +15907,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2871
+        "line": 2894
       }
     ]
   },
@@ -15862,7 +15940,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2878
+        "line": 2901
       }
     ]
   },
@@ -15893,7 +15971,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2898
+        "line": 2921
       }
     ]
   },
@@ -15924,7 +16002,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2900
+        "line": 2923
       }
     ]
   },
@@ -15957,7 +16035,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2949
+        "line": 2972
       }
     ]
   },
@@ -15990,7 +16068,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2962
+        "line": 2985
       }
     ]
   },
@@ -16023,7 +16101,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2965
+        "line": 2988
       }
     ]
   },
@@ -16056,11 +16134,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2969
+        "line": 2992
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3370
+        "line": 3393
       }
     ]
   },
@@ -16093,7 +16171,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 2988
+        "line": 3011
       }
     ]
   },
@@ -16126,15 +16204,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3037
+        "line": 3060
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3340
+        "line": 3363
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3415
+        "line": 3438
       }
     ]
   },
@@ -16167,23 +16245,23 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3078
+        "line": 3101
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2854
+        "line": 2926
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2915
+        "line": 2987
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2934
+        "line": 3006
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3157
+        "line": 3229
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -16236,11 +16314,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3079
+        "line": 3102
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2917
+        "line": 2989
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -16277,11 +16355,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3080
+        "line": 3103
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2919
+        "line": 2991
       }
     ]
   },
@@ -16312,7 +16390,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3081
+        "line": 3104
       }
     ]
   },
@@ -16345,23 +16423,23 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3082
+        "line": 3105
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3534
+        "line": 3557
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3658
+        "line": 3681
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2882
+        "line": 2954
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2964
+        "line": 3036
       }
     ]
   },
@@ -16394,7 +16472,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3191
+        "line": 3214
       }
     ]
   },
@@ -16427,7 +16505,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3194
+        "line": 3217
       }
     ]
   },
@@ -16460,7 +16538,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3195
+        "line": 3218
       }
     ]
   },
@@ -16493,7 +16571,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3199
+        "line": 3222
       }
     ]
   },
@@ -16524,11 +16602,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3203
+        "line": 3226
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3271
+        "line": 3294
       }
     ]
   },
@@ -16559,11 +16637,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3205
+        "line": 3228
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3273
+        "line": 3296
       }
     ]
   },
@@ -16594,11 +16672,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3207
+        "line": 3230
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3275
+        "line": 3298
       }
     ]
   },
@@ -16629,11 +16707,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3209
+        "line": 3232
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3277
+        "line": 3300
       }
     ]
   },
@@ -16666,7 +16744,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3360
+        "line": 3383
       }
     ]
   },
@@ -16699,7 +16777,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3366
+        "line": 3389
       }
     ]
   },
@@ -16732,7 +16810,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3458
+        "line": 3481
       }
     ]
   },
@@ -16765,11 +16843,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3464
+        "line": 3487
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2897
+        "line": 2969
       }
     ]
   },
@@ -16802,11 +16880,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3468
+        "line": 3491
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2901
+        "line": 2973
       }
     ]
   },
@@ -16839,11 +16917,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3477
+        "line": 3500
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2908
+        "line": 2980
       }
     ]
   },
@@ -16876,11 +16954,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3478
+        "line": 3501
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2909
+        "line": 2981
       }
     ]
   },
@@ -16913,11 +16991,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3488
+        "line": 3511
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2955
+        "line": 3027
       }
     ]
   },
@@ -16950,19 +17028,19 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3489
+        "line": 3512
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3613
+        "line": 3636
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2875
+        "line": 2947
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2957
+        "line": 3029
       }
     ]
   },
@@ -16995,11 +17073,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3512
+        "line": 3535
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3636
+        "line": 3659
       },
       {
         "file": "src/cli/usage.ts",
@@ -17007,15 +17085,15 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2869
+        "line": 2941
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2951
+        "line": 3023
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3154
+        "line": 3226
       }
     ]
   },
@@ -17048,23 +17126,23 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3583
+        "line": 3606
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3586
+        "line": 3609
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3705
+        "line": 3728
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3708
+        "line": 3731
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2782
+        "line": 2854
       }
     ]
   },
@@ -17097,11 +17175,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3584
+        "line": 3607
       },
       {
         "file": "src/cli/index.ts",
-        "line": 3706
+        "line": 3729
       }
     ]
   },
@@ -17134,7 +17212,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3592
+        "line": 3615
       }
     ]
   },
@@ -17167,11 +17245,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3597
+        "line": 3620
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2843
+        "line": 2915
       }
     ]
   },
@@ -17204,15 +17282,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3598
+        "line": 3621
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2844
+        "line": 2916
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2858
+        "line": 2930
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -17249,15 +17327,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3599
+        "line": 3622
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2845
+        "line": 2917
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2860
+        "line": 2932
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -17294,11 +17372,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3600
+        "line": 3623
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2846
+        "line": 2918
       }
     ]
   },
@@ -17331,11 +17409,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3601
+        "line": 3624
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2847
+        "line": 2919
       }
     ]
   },
@@ -17368,11 +17446,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3602
+        "line": 3625
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2848
+        "line": 2920
       }
     ]
   },
@@ -17405,11 +17483,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3603
+        "line": 3626
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2849
+        "line": 2921
       }
     ]
   },
@@ -17442,15 +17520,15 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3612
+        "line": 3635
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2856
+        "line": 2928
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2873
+        "line": 2945
       }
     ]
   },
@@ -17481,7 +17559,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3718
+        "line": 3741
       }
     ]
   },
@@ -17512,7 +17590,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3728
+        "line": 3751
       }
     ]
   },
@@ -17543,7 +17621,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3729
+        "line": 3752
       }
     ]
   },
@@ -17574,7 +17652,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3730
+        "line": 3753
       }
     ]
   },
@@ -17607,7 +17685,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3731
+        "line": 3754
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -17642,7 +17720,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3732
+        "line": 3755
       }
     ]
   },
@@ -17673,7 +17751,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3733
+        "line": 3756
       }
     ]
   },
@@ -17704,7 +17782,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3736
+        "line": 3759
       }
     ]
   },
@@ -17735,7 +17813,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3738
+        "line": 3761
       }
     ]
   },
@@ -17766,7 +17844,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3758
+        "line": 3781
       }
     ]
   },
@@ -17797,7 +17875,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3762
+        "line": 3785
       }
     ]
   },
@@ -17828,7 +17906,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3782
+        "line": 3805
       }
     ]
   },
@@ -17861,7 +17939,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3786
+        "line": 3809
       }
     ]
   },
@@ -17894,7 +17972,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3789
+        "line": 3812
       }
     ]
   },
@@ -17925,7 +18003,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3795
+        "line": 3818
       },
       {
         "file": "src/cli/purge-locale.ts",
@@ -17966,7 +18044,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3821
+        "line": 3844
       }
     ]
   },
@@ -17999,7 +18077,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3831
+        "line": 3854
       }
     ]
   },
@@ -18032,7 +18110,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3857
+        "line": 3880
       }
     ]
   },
@@ -18065,7 +18143,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3861
+        "line": 3884
       }
     ]
   },
@@ -18098,7 +18176,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3876
+        "line": 3899
       }
     ]
   },
@@ -18131,7 +18209,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3893
+        "line": 3916
       }
     ]
   },
@@ -18164,7 +18242,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3903
+        "line": 3926
       }
     ]
   },
@@ -18195,7 +18273,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3909
+        "line": 3932
       }
     ]
   },
@@ -18228,7 +18306,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3931
+        "line": 3954
       }
     ]
   },
@@ -18261,7 +18339,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3935
+        "line": 3958
       }
     ]
   },
@@ -18294,7 +18372,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3936
+        "line": 3959
       }
     ]
   },
@@ -18327,7 +18405,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3937
+        "line": 3960
       }
     ]
   },
@@ -18360,7 +18438,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3950
+        "line": 3973
       }
     ]
   },
@@ -18393,7 +18471,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3956
+        "line": 3979
       }
     ]
   },
@@ -18426,7 +18504,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3960
+        "line": 3983
       }
     ]
   },
@@ -18459,7 +18537,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3961
+        "line": 3984
       }
     ]
   },
@@ -18492,7 +18570,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3962
+        "line": 3985
       }
     ]
   },
@@ -18525,7 +18603,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3965
+        "line": 3988
       }
     ]
   },
@@ -18556,7 +18634,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3970
+        "line": 3993
       }
     ]
   },
@@ -18589,7 +18667,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3976
+        "line": 3999
       }
     ]
   },
@@ -18622,7 +18700,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 3997
+        "line": 4020
       }
     ]
   },
@@ -18653,7 +18731,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4055
+        "line": 4078
       }
     ]
   },
@@ -18686,7 +18764,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4091
+        "line": 4114
       }
     ]
   },
@@ -18719,7 +18797,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4116
+        "line": 4139
       }
     ]
   },
@@ -18752,7 +18830,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4134
+        "line": 4157
       }
     ]
   },
@@ -18785,7 +18863,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4138
+        "line": 4161
       }
     ]
   },
@@ -18818,7 +18896,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4150
+        "line": 4173
       }
     ]
   },
@@ -18851,7 +18929,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4152
+        "line": 4175
       }
     ]
   },
@@ -18882,7 +18960,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4164
+        "line": 4187
       }
     ]
   },
@@ -18915,11 +18993,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4168
+        "line": 4191
       },
       {
         "file": "src/cli/index.ts",
-        "line": 4175
+        "line": 4198
       }
     ]
   },
@@ -18952,11 +19030,11 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4169
+        "line": 4192
       },
       {
         "file": "src/cli/index.ts",
-        "line": 4176
+        "line": 4199
       }
     ]
   },
@@ -18989,7 +19067,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4174
+        "line": 4197
       }
     ]
   },
@@ -19022,7 +19100,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4179
+        "line": 4202
       }
     ]
   },
@@ -19055,7 +19133,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4187
+        "line": 4210
       }
     ]
   },
@@ -19088,7 +19166,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4190
+        "line": 4213
       }
     ]
   },
@@ -19121,7 +19199,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4204
+        "line": 4227
       }
     ]
   },
@@ -19152,7 +19230,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4211
+        "line": 4234
       }
     ]
   },
@@ -19185,7 +19263,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4236
+        "line": 4259
       }
     ]
   },
@@ -19218,7 +19296,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4240
+        "line": 4263
       }
     ]
   },
@@ -19251,7 +19329,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4251
+        "line": 4274
       }
     ]
   },
@@ -19284,7 +19362,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4262
+        "line": 4285
       }
     ]
   },
@@ -19317,7 +19395,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4265
+        "line": 4288
       }
     ]
   },
@@ -19350,7 +19428,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4275
+        "line": 4298
       }
     ]
   },
@@ -19383,7 +19461,7 @@
     "locations": [
       {
         "file": "src/cli/index.ts",
-        "line": 4279
+        "line": 4302
       }
     ]
   },
@@ -21404,38 +21482,100 @@
       }
     ]
   },
-  "d2416498": {
-    "source": "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: models.dev ({{mdLicense}}, {{mdUrl}}).",
+  "5c47aba8": {
+    "source": "Scores: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); prices: provider catalog or models.dev ({{mdLicense}}, {{mdUrl}}).",
     "translated": {
-      "fr": "Scores : languagebench ChrF ({{lbLicense}}, {{lbUrl}}) ; Arena Score ({{arenaLicense}}, {{arenaUrl}}) ; prix : models.dev ({{mdLicense}}, {{mdUrl}}).",
-      "es": "Puntuaciones: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); precios: models.dev ({{mdLicense}}, {{mdUrl}}).",
-      "de": "Werte: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); Preise: models.dev ({{mdLicense}}, {{mdUrl}}).",
-      "hi": "स्कोर: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena स्कोर ({{arenaLicense}}, {{arenaUrl}}); कीमतें: models.dev ({{mdLicense}}, {{mdUrl}})।",
-      "ja": "スコア：languagebench ChrF（{{lbLicense}}、{{lbUrl}}）；Arenaスコア（{{arenaLicense}}、{{arenaUrl}}）；価格：models.dev（{{mdLicense}}、{{mdUrl}}）。",
-      "pt-BR": "Pontuações: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); preços: models.dev ({{mdLicense}}, {{mdUrl}}).",
-      "ko": "점수: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena 점수 ({{arenaLicense}}, {{arenaUrl}}); 가격: models.dev ({{mdLicense}}, {{mdUrl}}).",
-      "zh-Hans": "评分来源：languagebench ChrF（{{lbLicense}}，{{lbUrl}}）；Arena Score（{{arenaLicense}}，{{arenaUrl}}）；价格：models.dev（{{mdLicense}}，{{mdUrl}}）。",
-      "zh-Hant": "分數來源：languagebench ChrF（{{lbLicense}}，{{lbUrl}}）；Arena 分數（{{arenaLicense}}，{{arenaUrl}}）；價格：models.dev（{{mdLicense}}，{{mdUrl}}）。"
+      "fr": "Scores : languagebench ChrF ({{lbLicense}}, {{lbUrl}}) ; Arena Score ({{arenaLicense}}, {{arenaUrl}}) ; prix : catalogue du fournisseur ou models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "hi": "स्कोर: लैंग्वेजबेंच ChrF ({{lbLicense}}, {{lbUrl}}); अरीना स्कोर ({{arenaLicense}}, {{arenaUrl}}); कीमतें: प्रदाता कैटलॉग या models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "de": "Ergebnisse: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); Preise: Anbieterkatalog oder models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "es": "Puntuaciones: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); precios: catálogo del proveedor o models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "pt-BR": "Pontuações: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena Score ({{arenaLicense}}, {{arenaUrl}}); preços: catálogo do provedor ou models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "zh-Hans": "分数：languagebench ChrF ({{lbLicense}}, {{lbUrl}})；竞技场得分 ({{arenaLicense}}, {{arenaUrl}})；价格：提供商目录或 models.dev ({{mdLicense}}, {{mdUrl}})。",
+      "ko": "점수: languagebench ChrF ({{lbLicense}}, {{lbUrl}}); Arena 점수 ({{arenaLicense}}, {{arenaUrl}}); 가격: 제공자 카탈로그 또는 models.dev ({{mdLicense}}, {{mdUrl}}).",
+      "ja": "スコア: languagebench ChrF ({{lbLicense}}、{{lbUrl}}); Arena Score ({{arenaLicense}}、{{arenaUrl}}); 価格: プロバイダーカタログまたはmodels.dev ({{mdLicense}}、{{mdUrl}})。",
+      "zh-Hant": "分數：languagebench ChrF ({{lbLicense}}、{{lbUrl}})；Arena Score ({{arenaLicense}}、{{arenaUrl}})；價格：供應商目錄或 models.dev ({{mdLicense}}、{{mdUrl}})。"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 65
+        "line": 84
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3657
+        "line": 3812
+      }
+    ]
+  },
+  "3d1807d7": {
+    "source": "{{model}} is beaten on price and quality by {{better}}.",
+    "translated": {
+      "hi": "{{model}} कीमत और गुणवत्ता में {{better}} से मात खाता है।",
+      "fr": "{{model}} est surpassé en prix et qualité par {{better}}.",
+      "de": "{{model}} wird von {{better}} in Preis und Qualität übertroffen.",
+      "es": "{{model}} es superado en precio y calidad por {{better}}.",
+      "zh-Hans": "{{model}} 在价格和质量上都比不上 {{better}}。",
+      "pt-BR": "{{model}} é superado em preço e qualidade por {{better}}.",
+      "ja": "{{model}} は価格と品質で {{better}} に劣っています。",
+      "ko": "{{model}}은(는) 가격과 품질 면에서 {{better}}에 밀립니다.",
+      "zh-Hant": "{{model}} 在價格和品質上被 {{better}} 超越。"
+    },
+    "models": {
+      "hi": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/cli/suggest-models.ts",
+        "line": 146
+      }
+    ]
+  },
+  "418d4ba1": {
+    "source": "{{models}} are beaten on price and quality by {{better}}.",
+    "translated": {
+      "hi": "{{models}} कीमत और गुणवत्ता में {{better}} से मात खाते हैं।",
+      "fr": "{{models}} sont surpassés en prix et qualité par {{better}}.",
+      "de": "{{models}} werden von {{better}} in Preis und Qualität übertroffen.",
+      "es": "{{models}} son superados en precio y calidad por {{better}}.",
+      "zh-Hans": "{{models}} 在价格和质量上都比不上 {{better}}。",
+      "pt-BR": "{{models}} são superados em preço e qualidade por {{better}}.",
+      "ja": "{{models}} は価格と品質で {{better}} に劣っています。",
+      "ko": "{{models}}은(는) 가격과 품질 면에서 {{better}}에 밀립니다.",
+      "zh-Hant": "{{models}} 在價格和品質上被 {{better}} 超越。"
+    },
+    "models": {
+      "hi": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/cli/suggest-models.ts",
+        "line": 151
       }
     ]
   },
@@ -21466,7 +21606,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 164
+        "line": 241
       }
     ]
   },
@@ -21497,7 +21637,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 169
+        "line": 246
       }
     ]
   },
@@ -21528,11 +21668,11 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 175
+        "line": 252
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3388
+        "line": 3479
       }
     ]
   },
@@ -21563,11 +21703,11 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 182
+        "line": 256
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3608
+        "line": 3758
       }
     ]
   },
@@ -21598,11 +21738,11 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 186
+        "line": 260
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3612
+        "line": 3762
       }
     ]
   },
@@ -21633,7 +21773,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 228
+        "line": 303
       }
     ]
   },
@@ -21664,7 +21804,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 236
+        "line": 311
       }
     ]
   },
@@ -21695,7 +21835,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 249
+        "line": 324
       }
     ]
   },
@@ -21726,7 +21866,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 252
+        "line": 327
       }
     ]
   },
@@ -21757,7 +21897,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 272
+        "line": 352
       }
     ]
   },
@@ -21788,7 +21928,7 @@
     "locations": [
       {
         "file": "src/cli/suggest-models.ts",
-        "line": 278
+        "line": 358
       }
     ]
   },
@@ -24418,11 +24558,11 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3077
+        "line": 3149
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3179
+        "line": 3251
       }
     ]
   },
@@ -24465,11 +24605,11 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3146
+        "line": 3218
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3181
+        "line": 3253
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -24512,11 +24652,11 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3147
+        "line": 3219
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3183
+        "line": 3255
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -24559,11 +24699,11 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3079
+        "line": 3151
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3185
+        "line": 3257
       }
     ]
   },
@@ -24606,15 +24746,15 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3081
+        "line": 3153
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3149
+        "line": 3221
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3187
+        "line": 3259
       }
     ]
   },
@@ -24680,7 +24820,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3145
+        "line": 3217
       }
     ]
   },
@@ -24746,7 +24886,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3148
+        "line": 3220
       }
     ]
   },
@@ -24843,7 +24983,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3153
+        "line": 3225
       }
     ]
   },
@@ -24886,7 +25026,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3067
+        "line": 3139
       }
     ]
   },
@@ -24952,7 +25092,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3156
+        "line": 3228
       }
     ]
   },
@@ -24987,7 +25127,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3156
+        "line": 3228
       }
     ]
   },
@@ -25022,7 +25162,7 @@
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3175
+        "line": 3247
       }
     ]
   },
@@ -25587,11 +25727,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 270
+        "line": 342
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1473
+        "line": 1545
       }
     ]
   },
@@ -25624,7 +25764,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 277
+        "line": 349
       }
     ]
   },
@@ -25657,15 +25797,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 284
+        "line": 356
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1485
+        "line": 1557
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2566
+        "line": 2638
       }
     ]
   },
@@ -25698,27 +25838,27 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 310
+        "line": 382
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 893
+        "line": 965
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1168
+        "line": 1240
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1437
+        "line": 1509
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2098
+        "line": 2170
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2386
+        "line": 2458
       }
     ]
   },
@@ -25751,27 +25891,27 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 318
+        "line": 390
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 900
+        "line": 972
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1175
+        "line": 1247
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1444
+        "line": 1516
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2105
+        "line": 2177
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2393
+        "line": 2465
       }
     ]
   },
@@ -25804,7 +25944,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 334
+        "line": 406
       }
     ]
   },
@@ -25837,7 +25977,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 338
+        "line": 410
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -25886,15 +26026,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 351
+        "line": 423
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1651
+        "line": 1723
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2009
+        "line": 2081
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -25941,7 +26081,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 402
+        "line": 474
       }
     ]
   },
@@ -25972,7 +26112,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 429
+        "line": 501
       }
     ]
   },
@@ -26005,19 +26145,19 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 458
+        "line": 530
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1545
+        "line": 1617
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2227
+        "line": 2299
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2493
+        "line": 2565
       }
     ]
   },
@@ -26050,11 +26190,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 477
+        "line": 549
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1118
+        "line": 1190
       }
     ]
   },
@@ -26087,15 +26227,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 483
+        "line": 555
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1124
+        "line": 1196
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1609
+        "line": 1681
       }
     ]
   },
@@ -26128,11 +26268,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 488
+        "line": 560
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1550
+        "line": 1622
       }
     ]
   },
@@ -26165,35 +26305,35 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 499
+        "line": 571
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 532
+        "line": 604
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 555
+        "line": 627
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1561
+        "line": 1633
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1585
+        "line": 1657
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2243
+        "line": 2315
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2267
+        "line": 2339
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2505
+        "line": 2577
       }
     ]
   },
@@ -26226,7 +26366,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 506
+        "line": 578
       }
     ]
   },
@@ -26259,7 +26399,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 509
+        "line": 581
       }
     ]
   },
@@ -26292,15 +26432,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 526
+        "line": 598
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 549
+        "line": 621
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1582
+        "line": 1654
       }
     ]
   },
@@ -26333,7 +26473,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 539
+        "line": 611
       }
     ]
   },
@@ -26366,7 +26506,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 565
+        "line": 637
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -26407,23 +26547,23 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 569
+        "line": 641
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 948
+        "line": 1020
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1634
+        "line": 1706
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1993
+        "line": 2065
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3124
+        "line": 3196
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -26468,23 +26608,23 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 587
+        "line": 659
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 961
+        "line": 1033
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1654
+        "line": 1726
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2011
+        "line": 2083
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3112
+        "line": 3184
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -26537,23 +26677,23 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 613
+        "line": 685
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1614
+        "line": 1686
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1973
+        "line": 2045
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2520
+        "line": 2592
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2596
+        "line": 2668
       }
     ]
   },
@@ -26586,11 +26726,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 763
+        "line": 835
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1136
+        "line": 1208
       }
     ]
   },
@@ -26623,7 +26763,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 779
+        "line": 851
       }
     ]
   },
@@ -26656,7 +26796,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 796
+        "line": 868
       }
     ]
   },
@@ -26689,7 +26829,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 801
+        "line": 873
       }
     ]
   },
@@ -26722,7 +26862,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 801
+        "line": 873
       }
     ]
   },
@@ -26753,7 +26893,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 811
+        "line": 883
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -26788,7 +26928,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 827
+        "line": 899
       }
     ]
   },
@@ -26819,7 +26959,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 834
+        "line": 906
       }
     ]
   },
@@ -26850,7 +26990,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 845
+        "line": 917
       }
     ]
   },
@@ -26883,7 +27023,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 850
+        "line": 922
       }
     ]
   },
@@ -26916,7 +27056,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 913
+        "line": 985
       }
     ]
   },
@@ -26949,7 +27089,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 933
+        "line": 1005
       }
     ]
   },
@@ -26982,7 +27122,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 973
+        "line": 1045
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -27019,7 +27159,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1167
+        "line": 1239
       }
     ]
   },
@@ -27052,7 +27192,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1187
+        "line": 1259
       }
     ]
   },
@@ -27085,7 +27225,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1203
+        "line": 1275
       }
     ]
   },
@@ -27118,7 +27258,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1212
+        "line": 1284
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -27155,11 +27295,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1479
+        "line": 1551
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2144
+        "line": 2216
       }
     ]
   },
@@ -27192,7 +27332,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1500
+        "line": 1572
       }
     ]
   },
@@ -27225,11 +27365,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1510
+        "line": 1582
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 963
+        "line": 1091
       }
     ]
   },
@@ -27262,11 +27402,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1568
+        "line": 1640
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2250
+        "line": 2322
       }
     ]
   },
@@ -27299,7 +27439,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1571
+        "line": 1643
       }
     ]
   },
@@ -27332,7 +27472,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1603
+        "line": 1675
       }
     ]
   },
@@ -27365,7 +27505,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1620
+        "line": 1692
       }
     ]
   },
@@ -27398,11 +27538,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1621
+        "line": 1693
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1980
+        "line": 2052
       }
     ]
   },
@@ -27435,11 +27575,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1624
+        "line": 1696
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1983
+        "line": 2055
       }
     ]
   },
@@ -27472,11 +27612,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1626
+        "line": 1698
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1985
+        "line": 2057
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -27517,11 +27657,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1646
+        "line": 1718
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2005
+        "line": 2077
       }
     ]
   },
@@ -27554,11 +27694,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1659
+        "line": 1731
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2015
+        "line": 2087
       }
     ]
   },
@@ -27591,15 +27731,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1676
+        "line": 1748
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1699
+        "line": 1771
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1712
+        "line": 1784
       }
     ]
   },
@@ -27632,7 +27772,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 1979
+        "line": 2051
       }
     ]
   },
@@ -27665,15 +27805,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2036
+        "line": 2108
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2060
+        "line": 2132
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2073
+        "line": 2145
       }
     ]
   },
@@ -27706,7 +27846,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2123
+        "line": 2195
       }
     ]
   },
@@ -27739,7 +27879,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2138
+        "line": 2210
       }
     ]
   },
@@ -27772,7 +27912,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2150
+        "line": 2222
       }
     ]
   },
@@ -27805,7 +27945,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2177
+        "line": 2249
       }
     ]
   },
@@ -27838,7 +27978,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2182
+        "line": 2254
       }
     ]
   },
@@ -27871,11 +28011,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2206
+        "line": 2278
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 976
+        "line": 1104
       }
     ]
   },
@@ -27908,7 +28048,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2232
+        "line": 2304
       }
     ]
   },
@@ -27941,7 +28081,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2253
+        "line": 2325
       }
     ]
   },
@@ -27974,7 +28114,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2264
+        "line": 2336
       }
     ]
   },
@@ -28007,7 +28147,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2348
+        "line": 2420
       }
     ]
   },
@@ -28040,7 +28180,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2457
+        "line": 2529
       }
     ]
   },
@@ -28073,7 +28213,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2462
+        "line": 2534
       }
     ]
   },
@@ -28106,7 +28246,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2498
+        "line": 2570
       }
     ]
   },
@@ -28139,19 +28279,19 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2540
+        "line": 2612
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 956
+        "line": 1084
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 969
+        "line": 1097
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 982
+        "line": 1110
       }
     ]
   },
@@ -28182,11 +28322,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2547
+        "line": 2619
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2650
+        "line": 2722
       }
     ]
   },
@@ -28217,7 +28357,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2561
+        "line": 2633
       }
     ]
   },
@@ -28248,7 +28388,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2570
+        "line": 2642
       }
     ]
   },
@@ -28279,7 +28419,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2576
+        "line": 2648
       }
     ]
   },
@@ -28312,7 +28452,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2602
+        "line": 2674
       }
     ]
   },
@@ -28345,7 +28485,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2603
+        "line": 2675
       }
     ]
   },
@@ -28378,7 +28518,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2606
+        "line": 2678
       }
     ]
   },
@@ -28411,7 +28551,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2608
+        "line": 2680
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -28448,7 +28588,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2621
+        "line": 2693
       }
     ]
   },
@@ -28481,7 +28621,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2633
+        "line": 2705
       }
     ]
   },
@@ -28514,11 +28654,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2664
+        "line": 2736
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2685
+        "line": 2757
       }
     ]
   },
@@ -28551,7 +28691,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2676
+        "line": 2748
       }
     ]
   },
@@ -28584,11 +28724,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2703
+        "line": 2775
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2716
+        "line": 2788
       }
     ]
   },
@@ -28619,7 +28759,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2758
+        "line": 2830
       }
     ]
   },
@@ -28652,7 +28792,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2830
+        "line": 2902
       }
     ]
   },
@@ -28685,7 +28825,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2840
+        "line": 2912
       }
     ]
   },
@@ -28718,7 +28858,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2892
+        "line": 2964
       }
     ]
   },
@@ -28751,7 +28891,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2912
+        "line": 2984
       }
     ]
   },
@@ -28784,11 +28924,11 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2921
+        "line": 2993
       },
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2940
+        "line": 3012
       }
     ]
   },
@@ -28821,7 +28961,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2930
+        "line": 3002
       }
     ]
   },
@@ -28854,7 +28994,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2936
+        "line": 3008
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -28891,7 +29031,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2938
+        "line": 3010
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -28928,7 +29068,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2986
+        "line": 3058
       }
     ]
   },
@@ -28961,7 +29101,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 2994
+        "line": 3066
       }
     ]
   },
@@ -28992,7 +29132,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3106
+        "line": 3178
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -29027,7 +29167,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3118
+        "line": 3190
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -29062,7 +29202,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3157
+        "line": 3229
       }
     ]
   },
@@ -29093,7 +29233,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3196
+        "line": 3268
       }
     ]
   },
@@ -29124,7 +29264,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3201
+        "line": 3273
       }
     ]
   },
@@ -29155,7 +29295,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3244
+        "line": 3316
       }
     ]
   },
@@ -29186,7 +29326,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3248
+        "line": 3320
       }
     ]
   },
@@ -29217,7 +29357,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3264
+        "line": 3336
       }
     ]
   },
@@ -29248,7 +29388,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3317
+        "line": 3390
       }
     ]
   },
@@ -29279,7 +29419,162 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3318
+        "line": 3391
+      }
+    ]
+  },
+  "932c1d50": {
+    "source": "Dominated by {{model}}",
+    "translated": {
+      "es": "Dominado por {{model}}",
+      "de": "Dominiert von {{model}}",
+      "fr": "Dominé par {{model}}",
+      "hi": "{{model}} द्वारा प्रभुत्व",
+      "pt-BR": "Dominado por {{model}}",
+      "ja": "{{model}}が優勢",
+      "ko": "{{model}}에 의해 지배됨",
+      "zh-Hans": "被 {{model}} 支配",
+      "zh-Hant": "由 {{model}} 主導"
+    },
+    "models": {
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3414
+      }
+    ]
+  },
+  "2b459717": {
+    "source": "Fallback chain for {{provider}}. First row is tried first.",
+    "translated": {
+      "fr": "Chaîne de repli pour {{provider}}. La première ligne est essayée en premier.",
+      "es": "Cadena de reserva para {{provider}}. La primera fila se prueba primero.",
+      "hi": "{{provider}} के लिए फ़ॉलबैक चेन। पहली पंक्ति को पहले आज़माया जाता है।",
+      "de": "Fallback-Kette für {{provider}}. Die erste Zeile wird zuerst versucht.",
+      "ko": "{{provider}}의 폴백 체인. 첫 번째 행이 먼저 시도됩니다.",
+      "pt-BR": "Cadeia de fallback para {{provider}}. A primeira linha é tentada primeiro.",
+      "ja": "{{provider}}のフォールバックチェーン。最初の行が最初に試行されます。",
+      "zh-Hans": "{{provider}} 的回退链。优先尝试第一行。",
+      "zh-Hant": "適用於 {{provider}} 的備援鏈。第一列會優先嘗試。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3508
+      }
+    ]
+  },
+  "def32d82": {
+    "source": "Fallback chain for the selected provider. First row is tried first.",
+    "translated": {
+      "fr": "Chaîne de repli pour le fournisseur sélectionné. La première ligne est essayée en premier.",
+      "es": "Cadena de reserva para el proveedor seleccionado. La primera fila se prueba primero.",
+      "hi": "चुने गए प्रोवाइडर के लिए फ़ॉलबैक चेन। पहली पंक्ति को पहले आज़माया जाता है।",
+      "de": "Fallback-Kette für den ausgewählten Anbieter. Die erste Zeile wird zuerst versucht.",
+      "ko": "선택한 공급자의 폴백 체인. 첫 번째 행이 먼저 시도됩니다.",
+      "pt-BR": "Cadeia de fallback para o provedor selecionado. A primeira linha é tentada primeiro.",
+      "ja": "選択されたプロバイダーのフォールバックチェーン。最初の行が最初に試行されます。",
+      "zh-Hans": "所选提供商的回退链。优先尝试第一行。",
+      "zh-Hant": "適用於所選供應商的備援鏈。第一列會優先嘗試。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3509
+      }
+    ]
+  },
+  "4edfc21d": {
+    "source": "No translation models are configured for this provider.",
+    "translated": {
+      "fr": "Aucun modèle de traduction n'est configuré pour ce fournisseur.",
+      "es": "No hay modelos de traducción configurados para este proveedor.",
+      "hi": "इस प्रोवाइडर के लिए कोई अनुवाद मॉडल कॉन्फ़िगर नहीं किए गए हैं।",
+      "de": "Für diesen Anbieter sind keine Übersetzungsmodelle konfiguriert.",
+      "ko": "이 공급자에 대해 구성된 번역 모델이 없습니다.",
+      "pt-BR": "Nenhum modelo de tradução está configurado para este provedor.",
+      "ja": "このプロバイダーには翻訳モデルが設定されていません。",
+      "zh-Hans": "此提供商未配置翻译模型。",
+      "zh-Hant": "此供應商未設定任何翻譯模型。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3514
+      }
+    ]
+  },
+  "16c0ffb0": {
+    "source": "Not in catalog",
+    "translated": {
+      "fr": "Non répertorié",
+      "es": "No en el catálogo",
+      "hi": "कैटलॉग में नहीं",
+      "de": "Nicht im Katalog",
+      "ko": "카탈로그에 없음",
+      "pt-BR": "Não no catálogo",
+      "ja": "カタログ外",
+      "zh-Hans": "不在目录中",
+      "zh-Hant": "不在目錄中"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/app.js",
+        "line": 3522
       }
     ]
   },
@@ -29310,7 +29605,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3430
+        "line": 3576
       }
     ]
   },
@@ -29341,7 +29636,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3441
+        "line": 3587
       }
     ]
   },
@@ -29372,7 +29667,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3450
+        "line": 3596
       }
     ]
   },
@@ -29403,7 +29698,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3456
+        "line": 3602
       }
     ]
   },
@@ -29434,7 +29729,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3619
+        "line": 3769
       }
     ]
   },
@@ -29465,7 +29760,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3745
+        "line": 3901
       }
     ]
   },
@@ -29496,7 +29791,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3749
+        "line": 3905
       }
     ]
   },
@@ -29527,7 +29822,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3755
+        "line": 3911
       }
     ]
   },
@@ -29558,7 +29853,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3768
+        "line": 3923
       }
     ]
   },
@@ -29589,7 +29884,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/app.js",
-        "line": 3779
+        "line": 3937
       }
     ]
   },
@@ -31059,7 +31354,7 @@
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 845
+        "line": 846
       }
     ]
   },
@@ -33388,28 +33683,28 @@
       }
     ]
   },
-  "a399e48a": {
-    "source": "Rank the active provider's chat models. Check the rows you want. The number in the table header is how many rows the header checkbox selects; clearing that checkbox clears the selection. Move a row with its arrows or by dragging its handle. Checked rows, from top to bottom, are the fallback order. Update config asks for confirmation, saves a timestamped backup of the config file, then writes that order to translationModels. Copy JSON copies the same list. Max output price is USD per 1M output tokens. Min index delta keeps a later model only when its index is at least that far below the previous kept model. Leave either box empty to skip that filter. Press Enter in a field to refresh the table.",
+  "e9cbed4c": {
+    "source": "Rank the active provider's chat models. The left pane is the current translationModels fallback chain for the selected provider. Check the rows you want on the right. The number in the table header is how many rows the header checkbox selects; clearing that checkbox clears the selection. Move a row with its arrows or by dragging its handle. Checked rows, from top to bottom, are the fallback order. Update config asks for confirmation, saves a timestamped backup of the config file, then writes that order to translationModels. Copy JSON copies the same list. Max blended price is USD per 1M tokens, (3 × input + output) / 4. Min index delta keeps a later model only when its index differs from the previous kept model by at least that many points. Leave either box empty to skip that filter. Press Enter in a field to refresh the table.",
     "translated": {
-      "es": "Clasifique los modelos de chat del proveedor activo. Marque las filas que desee. El número en el encabezado de la tabla indica cuántas filas selecciona la casilla de verificación del encabezado; al desmarcarla, se borra la selección. Mueva una fila con sus flechas o arrastrando su controlador. Las filas marcadas, de arriba a abajo, son el orden de respaldo. Actualizar configuración solicita confirmación, guarda una copia de seguridad con marca de tiempo del archivo de configuración y luego escribe ese orden en translationModels. Copiar JSON copia la misma lista. El precio máximo de salida es USD por 1M de tokens de salida. El delta de índice mínimo mantiene un modelo posterior solo cuando su índice está al menos esa diferencia por debajo del modelo anterior mantenido. Deje cualquiera de los cuadros vacíos para omitir ese filtro. Presione Enter en un campo para actualizar la tabla.",
-      "fr": "Classer les modèles de chat du fournisseur actif. Cochez les lignes que vous souhaitez. Le nombre dans l'en-tête du tableau indique combien de lignes la case à cocher de l'en-tête sélectionne ; décocher cette case annule la sélection. Déplacez une ligne avec ses flèches ou en faisant glisser sa poignée. Les lignes cochées, de haut en bas, représentent l'ordre de repli. Mettre à jour la configuration demande une confirmation, enregistre une sauvegarde horodatée du fichier de configuration, puis écrit cet ordre dans translationModels. Copier le JSON copie la même liste. Le prix de sortie max. est en USD par million de jetons de sortie. Le delta d'index min. ne conserve un modèle ultérieur que si son index est au moins aussi éloigné en dessous du modèle précédent conservé. Laissez l'une ou l'autre case vide pour ignorer ce filtre. Appuyez sur Entrée dans un champ pour actualiser le tableau.",
-      "hi": "सक्रिय प्रदाता के चैट मॉडल को रैंक करें। अपनी इच्छित पंक्तियों को चुनें। तालिका हेडर में संख्या यह दर्शाती है कि हेडर चेकबॉक्स कितनी पंक्तियों का चयन करता है; उस चेकबॉक्स को हटाने से चयन हट जाएगा। किसी पंक्ति को उसके तीरों से या उसके हैंडल को खींचकर ले जाएँ। ऊपर से नीचे तक, चयनित पंक्तियाँ फ़ॉलबैक क्रम हैं। कॉन्फ़िग अपडेट करने पर पुष्टि माँगी जाएगी, कॉन्फ़िग फ़ाइल का एक टाइमस्टैंप वाला बैकअप सहेजा जाएगा, और फिर उस क्रम को translationModels में लिखा जाएगा। JSON कॉपी करें वही सूची कॉपी करता है। अधिकतम आउटपुट मूल्य 1M आउटपुट टोकन के लिए USD में है। न्यूनतम इंडेक्स डेल्टा बाद के मॉडल को तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतना नीचे हो। उस फ़िल्टर को छोड़ने के लिए किसी भी बॉक्स को खाली छोड़ दें। तालिका को रीफ़्रेश करने के लिए किसी फ़ील्ड में एंटर दबाएँ।",
-      "de": "Ordnen Sie die Chat-Modelle des aktiven Anbieters. Markieren Sie die gewünschten Zeilen. Die Zahl im Tabellenkopf gibt an, wie viele Zeilen das Kontrollkästchen der Kopfzeile auswählt; das Deaktivieren dieses Kontrollkästchens hebt die Auswahl auf. Verschieben Sie eine Zeile mit den Pfeilen oder durch Ziehen des Ziehpunkts. Markierte Zeilen, von oben nach unten, definieren die Fallback-Reihenfolge. „Konfiguration aktualisieren“ fragt nach Bestätigung, speichert ein Backup der Konfigurationsdatei mit Zeitstempel und schreibt dann diese Reihenfolge in translationModels. „JSON kopieren“ kopiert dieselbe Liste. Der maximale Ausgabepreis ist USD pro 1 Mio. Ausgabetoken. Das minimale Index-Delta behält ein späteres Modell nur bei, wenn dessen Index mindestens so weit unter dem Index des zuvor beibehaltenen Modells liegt. Lassen Sie eines der Felder leer, um diesen Filter zu überspringen. Drücken Sie die Eingabetaste in einem Feld, um die Tabelle zu aktualisieren.",
-      "zh-Hans": "对当前提供商的聊天模型进行排序。勾选您想要的行。表格标题中的数字表示标题复选框选中的行数；取消勾选该复选框将清除选择。使用箭头或拖动其句柄来移动行。从上到下勾选的行是备用顺序。更新配置会要求确认，保存配置文件的带时间戳备份，然后将该顺序写入翻译模型。复制 JSON 会复制相同的列表。最大输出价格为每 100 万输出令牌的美元价格。最小索引增量仅在后续模型的索引至少低于前一个保留模型时才保留该模型。将任一框留空以跳过该筛选器。在字段中按 Enter 键以刷新表格。",
-      "pt-BR": "Classifique os modelos de chat do provedor ativo. Marque as linhas desejadas. O número no cabeçalho da tabela indica quantas linhas a caixa de seleção do cabeçalho seleciona; desmarcar essa caixa de seleção limpa a seleção. Mova uma linha com suas setas ou arrastando sua alça. As linhas marcadas, de cima para baixo, são a ordem de fallback. Atualizar configuração pede confirmação, salva um backup com carimbo de data/hora do arquivo de configuração e, em seguida, escreve essa ordem em translationModels. Copiar JSON copia a mesma lista. Preço máximo de saída é USD por 1M de tokens de saída. O delta mínimo do índice mantém um modelo posterior apenas quando seu índice está pelo menos tão abaixo do modelo anterior mantido. Deixe qualquer caixa vazia para pular esse filtro. Pressione Enter em um campo para atualizar a tabela.",
-      "ja": "アクティブなプロバイダーのチャットモデルをランク付けします。必要な行をチェックしてください。テーブルヘッダーの数字は、ヘッダーのチェックボックスが選択する行数を示します。そのチェックボックスをオフにすると、選択が解除されます。行は矢印またはハンドルをドラッグして移動できます。チェックされた行は、上から下へフォールバック順序になります。設定の更新では確認が求められ、設定ファイルのタイムスタンプ付きバックアップが保存された後、その順序がtranslationModelsに書き込まれます。JSONをコピーすると、同じリストがコピーされます。最大出力価格は100万出力トークンあたりの米ドルです。最小インデックス差分は、後のモデルのインデックスが前の保持されたモデルのインデックスより指定された差分以上低い場合にのみ、そのモデルを保持します。いずれかのボックスを空にすると、そのフィルターはスキップされます。フィールドでEnterキーを押すと、テーブルが更新されます。",
-      "ko": "활성 제공자의 채팅 모델 순위를 지정하세요. 원하는 행을 선택하세요. 테이블 헤더의 숫자는 헤더 확인란이 선택하는 행의 수입니다. 해당 확인란을 해제하면 선택이 취소됩니다. 화살표를 사용하거나 핸들을 드래그하여 행을 이동하세요. 선택된 행은 위에서 아래로 대체 순서입니다. 구성 업데이트는 확인을 요청하고, 구성 파일의 타임스탬프가 찍힌 백업을 저장한 다음, 해당 순서를 translationModels에 기록합니다. JSON 복사는 동일한 목록을 복사합니다. 최대 출력 가격은 100만 출력 토큰당 USD입니다. 최소 인덱스 델타는 이전 유지된 모델보다 인덱스가 최소한 그만큼 낮은 경우에만 이후 모델을 유지합니다. 해당 필터를 건너뛰려면 두 상자 중 하나를 비워두세요. 필드에서 Enter 키를 눌러 테이블을 새로 고치세요.",
-      "zh-Hant": "為啟用中的提供者聊天模型排序。勾選您想要的列。表格標頭中的數字表示標頭核取方塊選取了多少列；取消勾選該核取方塊會清除選取。使用箭頭或拖曳其控點來移動列。從上到下，已勾選的列是備用順序。更新設定會要求確認，儲存設定檔的時間戳記備份，然後將該順序寫入 translationModels。複製 JSON 會複製相同的清單。最大輸出價格為每 100 萬輸出權杖的美元價格。最小索引差異表示只有當後續模型的索引至少比前一個保留模型低這麼多時，才會保留該模型。將任一欄位留空以跳過該篩選。在欄位中按下 Enter 鍵以重新整理表格。"
+      "es": "Clasificar los modelos de chat del proveedor activo. El panel izquierdo es la cadena de reserva actual de translationModels para el proveedor seleccionado. Marca las filas que quieras a la derecha. El número en el encabezado de la tabla indica cuántas filas selecciona la casilla de verificación del encabezado; al desmarcarla, se borra la selección. Mueve una fila con sus flechas o arrastrando su controlador. Las filas marcadas, de arriba a abajo, son el orden de reserva. Actualizar configuración pide confirmación, guarda una copia de seguridad con marca de tiempo del archivo de configuración y luego escribe ese orden en translationModels. Copiar JSON copia la misma lista. El precio combinado máximo es USD por 1M de tokens, (3 × entrada + salida) / 4. La delta de índice mínima mantiene un modelo posterior solo cuando su índice difiere del modelo previamente conservado en al menos esa cantidad de puntos. Deja cualquiera de las casillas vacías para omitir ese filtro. Pulsa Intro en un campo para actualizar la tabla.",
+      "de": "Ordnen Sie die Chat-Modelle des aktiven Anbieters. Der linke Bereich zeigt die aktuelle Fallback-Kette der translationModels für den ausgewählten Anbieter. Aktivieren Sie die gewünschten Zeilen auf der rechten Seite. Die Zahl in der Tabellenüberschrift gibt an, wie viele Zeilen das Kontrollkästchen der Überschrift auswählt; das Deaktivieren dieses Kontrollkästchens löscht die Auswahl. Verschieben Sie eine Zeile mit ihren Pfeilen oder indem Sie ihren Ziehpunkt ziehen. Aktivierte Zeilen, von oben nach unten, stellen die Fallback-Reihenfolge dar. 'Konfiguration aktualisieren' fragt nach Bestätigung, speichert eine zeitgestempelte Sicherung der Konfigurationsdatei und schreibt dann diese Reihenfolge in translationModels. 'JSON kopieren' kopiert dieselbe Liste. Der maximale Mischpreis ist USD pro 1 Mio. Tokens, (3 × Eingabe + Ausgabe) / 4. Die minimale Indexdifferenz behält ein späteres Modell nur bei, wenn sein Index um mindestens so viele Punkte vom zuvor beibehaltenen Modell abweicht. Lassen Sie eines der Felder leer, um diesen Filter zu überspringen. Drücken Sie Enter in einem Feld, um die Tabelle zu aktualisieren.",
+      "fr": "Classer les modèles de chat du fournisseur actif. Le volet de gauche est la chaîne de secours translationModels actuelle pour le fournisseur sélectionné. Cochez les lignes souhaitées à droite. Le nombre dans l'en-tête du tableau indique combien de lignes la case à cocher de l'en-tête sélectionne ; décocher cette case annule la sélection. Déplacez une ligne avec ses flèches ou en faisant glisser sa poignée. Les lignes cochées, de haut en bas, représentent l'ordre de secours. Mettre à jour la configuration demande confirmation, enregistre une sauvegarde horodatée du fichier de configuration, puis écrit cet ordre dans translationModels. Copier JSON copie la même liste. Le prix combiné max est en USD par 1M de jetons, (3 × entrée + sortie) / 4. L'écart d'indice min ne conserve un modèle ultérieur que si son indice diffère d'au moins ce nombre de points du modèle précédemment conservé. Laissez l'une ou l'autre case vide pour ignorer ce filtre. Appuyez sur Entrée dans un champ pour actualiser le tableau.",
+      "hi": "सक्रिय प्रदाता के चैट मॉडलों को रैंक करें। बायाँ फलक चयनित प्रदाता के लिए वर्तमान translationModels फ़ॉलबैक श्रृंखला है। दाईं ओर अपनी इच्छित पंक्तियों को चुनें। तालिका शीर्षलेख में संख्या यह दर्शाती है कि शीर्षलेख चेकबॉक्स कितनी पंक्तियों का चयन करता है; उस चेकबॉक्स को साफ़ करने से चयन साफ़ हो जाता है। किसी पंक्ति को उसके तीरों से या उसके हैंडल को खींचकर ले जाएँ। जाँची गई पंक्तियाँ, ऊपर से नीचे तक, फ़ॉलबैक क्रम हैं। कॉन्फ़िग अपडेट करें पुष्टि के लिए पूछता है, कॉन्फ़िग फ़ाइल का एक टाइमस्टैंप वाला बैकअप सहेजता है, फिर उस क्रम को translationModels में लिखता है। JSON कॉपी करें वही सूची कॉपी करता है। अधिकतम मिश्रित कीमत USD प्रति 1M टोकन है, (3 × इनपुट + आउटपुट) / 4। न्यूनतम इंडेक्स डेल्टा बाद के मॉडल को तभी रखता है जब उसका इंडेक्स पिछले रखे गए मॉडल से कम से कम उतने अंकों से भिन्न हो। उस फ़िल्टर को छोड़ने के लिए किसी भी बॉक्स को खाली छोड़ दें। तालिका को रीफ़्रेश करने के लिए किसी फ़ील्ड में एंटर दबाएँ।",
+      "pt-BR": "Classifique os modelos de chat do provedor ativo. O painel esquerdo é a cadeia de fallback translationModels atual para o provedor selecionado. Marque as linhas desejadas à direita. O número no cabeçalho da tabela indica quantas linhas a caixa de seleção do cabeçalho seleciona; desmarcar essa caixa de seleção limpa a seleção. Mova uma linha com suas setas ou arrastando sua alça. As linhas marcadas, de cima para baixo, são a ordem de fallback. Atualizar configuração pede confirmação, salva um backup com carimbo de data/hora do arquivo de configuração e então escreve essa ordem para translationModels. Copiar JSON copia a mesma lista. Preço combinado máximo é USD por 1M de tokens, (3 × entrada + saída) / 4. O delta de índice mínimo mantém um modelo posterior apenas quando seu índice difere do modelo anterior mantido por pelo menos essa quantidade de pontos. Deixe qualquer uma das caixas vazia para pular esse filtro. Pressione Enter em um campo para atualizar a tabela.",
+      "ja": "アクティブなプロバイダーのチャットモデルをランク付けします。左ペインは、選択されたプロバイダーの現在のtranslationModelsフォールバックチェーンです。右側で必要な行をチェックしてください。テーブルヘッダーの数字は、ヘッダーのチェックボックスが選択する行数を示します。そのチェックボックスをオフにすると、選択が解除されます。行を矢印で移動するか、ハンドルをドラッグして移動します。チェックされた行は、上から下へフォールバック順序になります。設定を更新すると確認が求められ、設定ファイルのタイムスタンプ付きバックアップが保存され、その順序がtranslationModelsに書き込まれます。JSONをコピーすると、同じリストがコピーされます。最大統合価格は、100万トークンあたり(入力3 + 出力1) / 4 USDです。最小インデックス差分は、後のモデルを、そのインデックスが以前に保持されたモデルから少なくともそのポイント数だけ異なる場合にのみ保持します。いずれかのボックスを空のままにすると、そのフィルターはスキップされます。フィールドでEnterキーを押すと、テーブルが更新されます。",
+      "ko": "활성 공급자의 채팅 모델 순위를 지정합니다. 왼쪽 창은 선택한 공급자의 현재 translationModels 대체 체인입니다. 오른쪽에서 원하는 행을 선택하세요. 테이블 헤더의 숫자는 헤더 확인란이 선택하는 행의 수입니다. 해당 확인란을 선택 해제하면 선택이 취소됩니다. 화살표를 사용하거나 핸들을 드래그하여 행을 이동하세요. 위에서 아래로 선택된 행이 대체 순서입니다. 구성 업데이트는 확인을 요청하고, 구성 파일의 타임스탬프가 지정된 백업을 저장한 다음, 해당 순서를 translationModels에 기록합니다. JSON 복사는 동일한 목록을 복사합니다. 최대 통합 가격은 100만 토큰당 (입력 3 + 출력) / 4 USD입니다. 최소 인덱스 차이는 나중 모델이 이전 유지 모델과 최소 해당 포인트만큼 인덱스가 다를 때만 유지합니다. 해당 필터를 건너뛰려면 두 상자 중 하나를 비워 두세요. 필드에서 Enter 키를 눌러 테이블을 새로 고치세요.",
+      "zh-Hans": "对当前提供商的聊天模型进行排序。左侧窗格显示所选提供商当前的 translationModels 备用链。在右侧勾选您想要的行。表头中的数字表示表头复选框选中的行数；取消勾选该复选框将清除选择。使用行旁的箭头或拖动其手柄来移动行。勾选的行从上到下即为备用顺序。更新配置会要求确认，保存配置文件的带时间戳备份，然后将该顺序写入 translationModels。复制 JSON 会复制相同的列表。最大混合价格为每百万 token (3 × 输入 + 输出) / 4 美元。最小索引差值表示仅当后续模型的索引与上一个保留模型至少相差该点数时才保留该模型。将任一框留空以跳过该筛选器。在字段中按 Enter 键以刷新表格。",
+      "zh-Hant": "排名目前供應商的聊天模型。左側窗格是所選供應商目前 translationModels 的備用鏈。在右側勾選您想要的列。表格標頭中的數字表示標頭核取方塊選取了多少列；取消勾選該核取方塊會清除選取。使用箭頭或拖曳其控點來移動列。從上到下勾選的列是備用順序。更新設定會要求確認，儲存設定檔的時間戳記備份，然後將該順序寫入 translationModels。複製 JSON 會複製相同的清單。最大綜合價格是每百萬個權杖 (3 × 輸入 + 輸出) / 4 美元。最小索引差異僅在後續模型的索引與上一個保留的模型至少相差該點數時才保留。將任一欄位留空以跳過該篩選。在欄位中按 Enter 鍵以重新整理表格。"
     },
     "models": {
       "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
       "fr": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
-      "de": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
@@ -33446,7 +33741,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 811
+        "line": 812
       }
     ]
   },
@@ -33477,7 +33772,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 815
+        "line": 816
       }
     ]
   },
@@ -33508,7 +33803,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 816
+        "line": 817
       }
     ]
   },
@@ -33539,7 +33834,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 817
+        "line": 818
       }
     ]
   },
@@ -33570,69 +33865,69 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 821
+        "line": 822
       }
     ]
   },
-  "20e3f795": {
-    "source": "Max output price (USD per 1M output tokens). Leave empty to skip.",
+  "092811bd": {
+    "source": "Max blended price (USD per 1M tokens, 3 input : 1 output). Leave empty to skip.",
     "translated": {
-      "es": "Precio máximo de salida (USD por 1M de tokens de salida). Dejar vacío para omitir.",
-      "fr": "Prix de sortie max. (USD par million de jetons de sortie). Laisser vide pour ignorer.",
-      "hi": "अधिकतम आउटपुट मूल्य (1M आउटपुट टोकन के लिए USD)। छोड़ने के लिए खाली छोड़ दें।",
-      "de": "Max. Ausgabepreis (USD pro 1 Mio. Ausgabetoken). Leer lassen zum Überspringen.",
-      "zh-Hans": "最大输出价格（每 100 万输出令牌的美元价格）。留空以跳过。",
-      "pt-BR": "Preço máximo de saída (USD por 1M de tokens de saída). Deixe vazio para pular.",
-      "ja": "最大出力価格（100万出力トークンあたりの米ドル）。空欄にするとスキップします。",
-      "ko": "최대 출력 가격 (100만 출력 토큰당 USD). 건너뛰려면 비워두세요.",
-      "zh-Hant": "最大輸出價格 (每 100 萬輸出權杖的美元價格)。留空以跳過。"
+      "es": "Precio combinado máximo (USD por 1M de tokens, 3 entrada : 1 salida). Deja vacío para omitir.",
+      "de": "Maximaler Mischpreis (USD pro 1 Mio. Tokens, 3 Eingabe : 1 Ausgabe). Leer lassen zum Überspringen.",
+      "fr": "Prix combiné max (USD par 1M de jetons, 3 entrées : 1 sortie). Laisser vide pour ignorer.",
+      "hi": "अधिकतम मिश्रित कीमत (USD प्रति 1M टोकन, 3 इनपुट : 1 आउटपुट)। छोड़ने के लिए खाली छोड़ दें।",
+      "pt-BR": "Preço combinado máximo (USD por 1M de tokens, 3 entrada : 1 saída). Deixe vazio para pular.",
+      "ja": "最大統合価格 (100万トークンあたりUSD、入力3 : 出力1)。空白にするとスキップします。",
+      "ko": "최대 통합 가격 (100만 토큰당 USD, 입력 3 : 출력 1). 건너뛰려면 비워 두세요.",
+      "zh-Hans": "最大混合价格（每百万 token 美元，3 输入 : 1 输出）。留空以跳过。",
+      "zh-Hant": "最大綜合價格 (每百萬個權杖美元，3 輸入 : 1 輸出)。留空以跳過。"
     },
     "models": {
       "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
       "fr": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
-      "de": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "ja": "gemini-2.5-flash",
       "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 822
+        "line": 823
       }
     ]
   },
-  "bff93f35": {
-    "source": "Max output price",
+  "bb84222b": {
+    "source": "Max blended price",
     "translated": {
-      "es": "Precio máximo de salida",
-      "fr": "Prix de sortie maximal",
-      "hi": "अधिकतम आउटपुट मूल्य",
-      "de": "Max. Ausgabepreis",
-      "ja": "最大出力価格",
-      "pt-BR": "Preço máximo de saída",
-      "zh-Hans": "最高输出价格",
-      "ko": "최대 출력 가격",
-      "zh-Hant": "最高輸出價格"
+      "es": "Precio combinado máximo",
+      "de": "Maximaler Mischpreis",
+      "fr": "Prix combiné max",
+      "hi": "अधिकतम मिश्रित कीमत",
+      "pt-BR": "Preço combinado máximo",
+      "ja": "最大統合価格",
+      "ko": "최대 통합 가격",
+      "zh-Hans": "最大混合价格",
+      "zh-Hant": "最大綜合價格"
     },
     "models": {
-      "es": "~anthropic/claude-sonnet-latest",
-      "fr": "~anthropic/claude-sonnet-latest",
-      "hi": "~anthropic/claude-sonnet-latest",
-      "de": "~anthropic/claude-sonnet-latest",
-      "ja": "~anthropic/claude-sonnet-latest",
-      "pt-BR": "~anthropic/claude-sonnet-latest",
-      "zh-Hans": "~anthropic/claude-sonnet-latest",
-      "ko": "~anthropic/claude-sonnet-latest",
-      "zh-Hant": "~anthropic/claude-sonnet-latest"
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 822
+        "line": 823
       }
     ]
   },
@@ -33663,7 +33958,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 832
+        "line": 833
       }
     ]
   },
@@ -33694,7 +33989,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 832
+        "line": 833
       }
     ]
   },
@@ -33725,7 +34020,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 842
+        "line": 843
       }
     ]
   },
@@ -33756,7 +34051,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 846
+        "line": 847
       }
     ]
   },
@@ -33787,162 +34082,135 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 847
+        "line": 848
       }
     ]
   },
-  "332c80b1": {
-    "source": "Reorder",
+  "8ab378b3": {
+    "source": "Current configuration",
     "translated": {
-      "es": "Reordenar",
-      "fr": "Réorganiser",
-      "hi": "पुनर्व्यवस्थित करें",
-      "de": "Neu anordnen",
-      "zh-Hans": "重新排序",
-      "pt-BR": "Reordenar",
-      "ja": "並べ替え",
-      "ko": "순서 변경",
-      "zh-Hant": "重新排序"
+      "fr": "Configuration actuelle",
+      "es": "Configuración actual",
+      "hi": "वर्तमान कॉन्फ़िगरेशन",
+      "de": "Aktuelle Konfiguration",
+      "ko": "현재 구성",
+      "pt-BR": "Configuração atual",
+      "ja": "現在の設定",
+      "zh-Hans": "当前配置",
+      "zh-Hant": "目前設定"
     },
     "models": {
-      "es": "gemini-2.5-flash",
       "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
       "de": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "ja": "gemini-2.5-flash",
-      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 856
+        "line": 855
       }
     ]
   },
-  "90d1849e": {
-    "source": "Use top",
+  "a240fa27": {
+    "source": "Order",
     "translated": {
-      "fr": "Utiliser le top",
-      "es": "Usar los mejores",
-      "de": "Top verwenden",
-      "hi": "शीर्ष का उपयोग करें",
-      "ja": "上位を使用",
-      "pt-BR": "Usar top",
-      "ko": "상위 사용",
-      "zh-Hans": "使用前",
-      "zh-Hant": "採用前幾名"
+      "fr": "Ordre",
+      "es": "Orden",
+      "hi": "क्रम",
+      "de": "Reihenfolge",
+      "ko": "순서",
+      "pt-BR": "Ordem",
+      "ja": "順序",
+      "zh-Hans": "顺序",
+      "zh-Hant": "順序"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
-    },
-    "locations": [
-      {
-        "file": "src/dashboard-app/index.html",
-        "line": 860
-      }
-    ]
-  },
-  "0649d919": {
-    "source": "Select the first N rows. Clear to deselect all.",
-    "translated": {
-      "es": "Seleccionar las primeras N filas. Borrar para deseleccionar todo.",
-      "fr": "Sélectionner les N premières lignes. Effacer pour tout désélectionner.",
-      "hi": "पहली N पंक्तियों का चयन करें। सभी का चयन रद्द करने के लिए साफ़ करें।",
-      "de": "Die ersten N Zeilen auswählen. Auswahl aufheben, um alle abzuwählen.",
-      "zh-Hans": "选择前 N 行。清除以取消全选。",
-      "pt-BR": "Selecionar as primeiras N linhas. Limpar para desmarcar tudo.",
-      "ja": "最初のN行を選択します。クリアするとすべて選択解除されます。",
-      "ko": "첫 N개 행을 선택합니다. 모두 선택 해제하려면 지우세요.",
-      "zh-Hant": "選取前 N 列。清除以取消選取所有項目。"
-    },
-    "models": {
-      "es": "gemini-2.5-flash",
       "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
       "hi": "gemini-2.5-flash",
       "de": "gemini-2.5-flash",
-      "zh-Hans": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
       "pt-BR": "gemini-2.5-flash",
       "ja": "gemini-2.5-flash",
-      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
       "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 871
+        "line": 862
       }
     ]
   },
-  "28caa645": {
-    "source": "Select top",
+  "e5780571": {
+    "source": "Fallback priority order. Translation starts with model 1 and falls back to subsequent models on failure or timeout.",
     "translated": {
-      "fr": "Sélectionner le top",
-      "es": "Seleccionar los mejores",
-      "de": "Top auswählen",
-      "hi": "शीर्ष चुनें",
-      "ja": "上位を選択",
-      "pt-BR": "Selecionar top",
-      "ko": "상위 선택",
-      "zh-Hans": "选择前",
-      "zh-Hant": "選取前幾名"
+      "fr": "Ordre de priorité de secours. La traduction commence avec le modèle 1 et se replie sur les modèles suivants en cas d'échec ou de délai d'attente.",
+      "es": "Orden de prioridad de reserva. La traducción comienza con el modelo 1 y recurre a modelos posteriores en caso de fallo o tiempo de espera agotado.",
+      "de": "Prioritätsreihenfolge für Fallback. Die Übersetzung beginnt mit Modell 1 und greift bei Fehler oder Zeitüberschreitung auf nachfolgende Modelle zurück.",
+      "hi": "फ़ॉलबैक प्राथमिकता क्रम। अनुवाद मॉडल 1 से शुरू होता है और विफलता या टाइमआउट होने पर बाद के मॉडल पर फ़ॉलबैक होता है।",
+      "pt-BR": "Ordem de prioridade de fallback. A tradução começa com o modelo 1 e recorre a modelos subsequentes em caso de falha ou tempo limite.",
+      "ko": "대체 우선순위. 번역은 모델 1부터 시작하며, 실패하거나 시간 초과 시 다음 모델로 대체됩니다.",
+      "ja": "フォールバック優先順位。翻訳はモデル1から開始され、失敗またはタイムアウトの場合に後続のモデルにフォールバックします。",
+      "zh-Hans": "回退优先级顺序。翻译从模型 1 开始，并在失败或超时时回退到后续模型。",
+      "zh-Hant": "備用優先順序。翻譯從模型 1 開始，並在失敗或逾時時備用至後續模型。"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 871
+        "line": 862
       }
     ]
   },
-  "021da1b2": {
-    "source": "Rank",
+  "8ea1383b": {
+    "source": "Model identifier for the selected provider.",
     "translated": {
-      "fr": "Rang",
-      "es": "Puesto",
-      "de": "Rang",
-      "hi": "रैंक",
-      "ja": "順位",
-      "pt-BR": "Classificação",
-      "ko": "순위",
-      "zh-Hans": "排名",
-      "zh-Hant": "排名"
+      "fr": "Identifiant du modèle pour le fournisseur sélectionné.",
+      "es": "Identificador del modelo para el proveedor seleccionado.",
+      "de": "Modell-ID für den ausgewählten Anbieter.",
+      "hi": "चुने गए प्रदाता के लिए मॉडल पहचानकर्ता।",
+      "pt-BR": "Identificador do modelo para o provedor selecionado.",
+      "ko": "선택한 공급자의 모델 식별자.",
+      "ja": "選択されたプロバイダーのモデル識別子。",
+      "zh-Hans": "所选提供商的模型标识符。",
+      "zh-Hant": "所選供應商的模型識別碼。"
     },
     "models": {
-      "fr": "glm-5.3-flash",
-      "es": "glm-5.3-flash",
-      "de": "glm-5.3-flash",
-      "hi": "gpt-6-luna",
-      "ja": "glm-5.3-flash",
-      "pt-BR": "glm-5.3-flash",
-      "ko": "glm-5.3-flash",
-      "zh-Hans": "glm-5.3-flash",
-      "zh-Hant": "glm-5.3-flash"
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
     },
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 881
+        "line": 869
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 972
       }
     ]
   },
@@ -33973,7 +34241,601 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 883
+        "line": 872
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 975
+      }
+    ]
+  },
+  "fd43b7c9": {
+    "source": "Composite quality score (0–100) combining benchmarked translation accuracy (ChrF) and Chatbot Arena preference. Higher is better.",
+    "translated": {
+      "fr": "Score de qualité composite (0–100) combinant la précision de traduction mesurée (ChrF) et la préférence de Chatbot Arena. Plus le score est élevé, mieux c'est.",
+      "es": "Puntuación de calidad compuesta (0–100) que combina la precisión de traducción de referencia (ChrF) y la preferencia de Chatbot Arena. Cuanto mayor, mejor.",
+      "de": "Zusammengesetzter Qualitätswert (0–100), der die benchmarkierte Übersetzungsgenauigkeit (ChrF) und die Präferenz der Chatbot Arena kombiniert. Höher ist besser.",
+      "hi": "बेंचमार्क की गई अनुवाद सटीकता (ChrF) और चैटबॉट एरेना प्राथमिकता को मिलाकर समग्र गुणवत्ता स्कोर (0–100)। जितना अधिक, उतना बेहतर।",
+      "pt-BR": "Pontuação de qualidade composta (0–100) combinando a precisão de tradução (ChrF) avaliada por benchmark e a preferência do Chatbot Arena. Maior é melhor.",
+      "ko": "벤치마크 번역 정확도(ChrF)와 챗봇 아레나 선호도를 결합한 복합 품질 점수(0-100). 높을수록 좋습니다.",
+      "ja": "ベンチマークされた翻訳精度 (ChrF) とChatbot Arenaの評価を組み合わせた複合品質スコア (0～100)。高いほど良い。",
+      "zh-Hans": "综合质量分数 (0-100)，结合了基准翻译准确性 (ChrF) 和 Chatbot Arena 偏好。越高越好。",
+      "zh-Hant": "綜合品質分數 (0–100)，結合基準測試的翻譯準確度 (ChrF) 和 Chatbot Arena 偏好。越高越好。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 872
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 975
+      }
+    ]
+  },
+  "d783b6d5": {
+    "source": "Translation quality score from languagebench for your project's configured target languages (0 to 1). Higher is better.",
+    "translated": {
+      "fr": "Score de qualité de traduction de languagebench pour les langues cibles configurées de votre projet (0 à 1). Plus le score est élevé, mieux c'est.",
+      "es": "Puntuación de calidad de traducción de languagebench para los idiomas de destino configurados de tu proyecto (0 a 1). Cuanto mayor, mejor.",
+      "de": "Übersetzungsqualitätswert von languagebench für die konfigurierten Zielsprachen Ihres Projekts (0 bis 1). Höher ist besser.",
+      "hi": "आपके प्रोजेक्ट की कॉन्फ़िगर की गई लक्ष्य भाषाओं के लिए लैंग्वेजबेंच से अनुवाद गुणवत्ता स्कोर (0 से 1 तक)। जितना अधिक, उतना बेहतर।",
+      "pt-BR": "Pontuação de qualidade de tradução do languagebench para os idiomas de destino configurados do seu projeto (0 a 1). Maior é melhor.",
+      "ko": "프로젝트에 구성된 대상 언어에 대한 languagebench 번역 품질 점수(0-1). 높을수록 좋습니다.",
+      "ja": "プロジェクトで設定されたターゲット言語に対するlanguagebenchからの翻訳品質スコア (0～1)。高いほど良い。",
+      "zh-Hans": "来自 languagebench 的翻译质量分数，适用于您项目配置的目标语言 (0 到 1)。越高越好。",
+      "zh-Hant": "來自 languagebench 的翻譯品質分數，適用於您專案已設定的目標語言 (0 至 1)。越高越好。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 879
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 982
+      }
+    ]
+  },
+  "aa056472": {
+    "source": "Human preference score from LMSYS Chatbot Arena. Higher is better.",
+    "translated": {
+      "fr": "Score de préférence humaine de LMSYS Chatbot Arena. Plus le score est élevé, mieux c'est.",
+      "es": "Puntuación de preferencia humana de LMSYS Chatbot Arena. Cuanto mayor, mejor.",
+      "de": "Menschlicher Präferenzwert von LMSYS Chatbot Arena. Höher ist besser.",
+      "hi": "LMSYS चैटबॉट एरेना से मानव प्राथमिकता स्कोर। जितना अधिक, उतना बेहतर।",
+      "pt-BR": "Pontuação de preferência humana do LMSYS Chatbot Arena. Maior é melhor.",
+      "ko": "LMSYS 챗봇 아레나에서 제공하는 사람 선호도 점수. 높을수록 좋습니다.",
+      "ja": "LMSYS Chatbot Arenaからの人間による評価スコア。高いほど良い。",
+      "zh-Hans": "来自 LMSYS Chatbot Arena 的人工偏好分数。越高越好。",
+      "zh-Hant": "來自 LMSYS Chatbot Arena 的人類偏好分數。越高越好。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 885
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 988
+      }
+    ]
+  },
+  "4291bee6": {
+    "source": "Output token price in USD per 1M tokens.",
+    "translated": {
+      "fr": "Prix des jetons de sortie en USD par million de jetons.",
+      "es": "Precio del token de salida en USD por 1M de tokens.",
+      "de": "Preis für Ausgabetoken in USD pro 1 Mio. Token.",
+      "hi": "प्रति 1M टोकन के लिए USD में आउटपुट टोकन की कीमत।",
+      "pt-BR": "Preço do token de saída em USD por 1M de tokens.",
+      "ko": "100만 토큰당 출력 토큰 가격(USD).",
+      "ja": "100万トークンあたりの出力トークン価格（米ドル）。",
+      "zh-Hans": "每 100 万令牌的美元输出令牌价格。",
+      "zh-Hant": "每百萬個輸出權杖的美元價格。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 894
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 997
+      }
+    ]
+  },
+  "3452c82c": {
+    "source": "Blended",
+    "translated": {
+      "es": "Combinado",
+      "de": "Misch-",
+      "fr": "Combiné",
+      "hi": "मिश्रित",
+      "pt-BR": "Combinado",
+      "ja": "統合",
+      "ko": "통합",
+      "zh-Hans": "混合",
+      "zh-Hant": "綜合"
+    },
+    "models": {
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 897
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 1000
+      }
+    ]
+  },
+  "1940919f": {
+    "source": "Blended price in USD per 1M tokens, calculated as (3 × input + output) / 4 based on typical 3:1 input-to-output ratios.",
+    "translated": {
+      "fr": "Prix combiné en USD par million de jetons, calculé comme (3 × entrée + sortie) / 4 basé sur des ratios entrée-sortie typiques de 3:1.",
+      "es": "Precio combinado en USD por 1M de tokens, calculado como (3 × entrada + salida) / 4 basado en proporciones típicas de entrada a salida de 3:1.",
+      "de": "Mischpreis in USD pro 1 Mio. Token, berechnet als (3 × Eingabe + Ausgabe) / 4 basierend auf typischen 3:1 Eingabe-zu-Ausgabe-Verhältnissen.",
+      "hi": "विशिष्ट 3:1 इनपुट-से-आउटपुट अनुपात के आधार पर (3 × इनपुट + आउटपुट) / 4 के रूप में गणना की गई, USD में प्रति 1M टोकन मिश्रित कीमत।",
+      "pt-BR": "Preço combinado em USD por 1M de tokens, calculado como (3 × entrada + saída) / 4 com base em proporções típicas de entrada-saída de 3:1.",
+      "ko": "일반적인 3:1 입력-출력 비율을 기준으로 (3 × 입력 + 출력) / 4로 계산된 100만 토큰당 혼합 가격(USD).",
+      "ja": "100万トークンあたりの混合価格（米ドル）。標準的な入力対出力比3:1に基づき、(入力 × 3 + 出力) / 4 として計算されます。",
+      "zh-Hans": "每 100 万令牌的美元混合价格，根据典型的 3:1 输入输出比，计算方式为 (3 × 输入 + 输出) / 4。",
+      "zh-Hant": "每百萬個權杖的混合美元價格，根據典型的 3:1 輸入輸出比例，計算方式為 (3 × 輸入 + 輸出) / 4。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 897
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 1000
+      }
+    ]
+  },
+  "14a16b1b": {
+    "source": "Frontier",
+    "translated": {
+      "es": "Frontera",
+      "de": "Grenze",
+      "fr": "Frontière",
+      "hi": "सीमा",
+      "pt-BR": "Fronteira",
+      "ja": "フロンティア",
+      "ko": "경계선",
+      "zh-Hans": "前沿",
+      "zh-Hant": "邊界"
+    },
+    "models": {
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 904
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 1007
+      }
+    ]
+  },
+  "c2c328d9": {
+    "source": "Pareto quality-price frontier tier. Tier 1 models offer the best balance of price and quality—no competitor is both cheaper and higher quality. Higher tiers are beaten by alternatives that offer more quality, lower cost, or both.",
+    "translated": {
+      "fr": "Niveau de la frontière qualité-prix de Pareto. Les modèles de niveau 1 offrent le meilleur équilibre entre prix et qualité — aucun concurrent n'est à la fois moins cher et de meilleure qualité. Les niveaux supérieurs sont surpassés par des alternatives qui offrent une meilleure qualité, un coût inférieur, ou les deux.",
+      "hi": "पारेटो गुणवत्ता-मूल्य सीमा स्तर। टियर 1 मॉडल मूल्य और गुणवत्ता का सबसे अच्छा संतुलन प्रदान करते हैं—कोई भी प्रतिस्पर्धी सस्ता और उच्च गुणवत्ता वाला दोनों नहीं है। उच्च टियर उन विकल्पों से कमतर होते हैं जो अधिक गुणवत्ता, कम लागत, या दोनों प्रदान करते हैं।",
+      "es": "Nivel de la frontera de calidad-precio de Pareto. Los modelos del Nivel 1 ofrecen la mejor relación calidad-precio; ningún competidor es a la vez más barato y de mayor calidad. Los niveles superiores son superados por alternativas que ofrecen más calidad, menor coste o ambas cosas.",
+      "de": "Pareto-Qualität-Preis-Grenze-Stufe. Modelle der Stufe 1 bieten das beste Gleichgewicht zwischen Preis und Qualität – kein Konkurrent ist sowohl günstiger als auch qualitativ hochwertiger. Höhere Stufen werden von Alternativen übertroffen, die mehr Qualität, geringere Kosten oder beides bieten.",
+      "pt-BR": "Nível da fronteira de qualidade-preço de Pareto. Os modelos do Nível 1 oferecem o melhor equilíbrio entre preço e qualidade — nenhum concorrente é simultaneamente mais barato e de maior qualidade. Níveis superiores são superados por alternativas que oferecem maior qualidade, menor custo ou ambos.",
+      "zh-Hans": "帕累托质量-价格前沿等级。1级模型在价格和质量之间提供最佳平衡——没有竞争对手能做到更便宜且质量更高。更高的等级会被提供更高质量、更低成本或两者兼具的替代方案超越。",
+      "ko": "파레토 품질-가격 최적선 계층. 1단계 모델은 가격과 품질의 최적 균형을 제공하며, 이보다 저렴하면서 품질이 더 좋은 경쟁사는 없습니다. 상위 단계는 더 높은 품질, 더 낮은 비용 또는 이 둘 모두를 제공하는 대안보다 못합니다.",
+      "ja": "パレート最適の品質-価格フロンティア。ティア1モデルは、価格と品質のバランスが最も優れており、これより安価で高品質な競合製品は存在しません。より高いティアのモデルは、より高品質、より低コスト、またはその両方を提供する代替品に劣ります。",
+      "zh-Hant": "帕累托品質價格邊界等級。第 1 等級模型在價格與品質之間提供最佳平衡——沒有任何競爭者能同時做到價格更低且品質更高。更高等級的模型則遜於其他替代方案，這些替代方案提供更高的品質、更低的成本，或兩者兼具。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 904
+      },
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 1007
+      }
+    ]
+  },
+  "41ecca72": {
+    "source": "Suggestions",
+    "translated": {
+      "fr": "Suggestions",
+      "es": "Sugerencias",
+      "hi": "सुझाव",
+      "de": "Vorschläge",
+      "ko": "제안",
+      "pt-BR": "Sugestões",
+      "ja": "候補",
+      "zh-Hans": "建议",
+      "zh-Hant": "建議"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 922
+      }
+    ]
+  },
+  "a0c4e55b": {
+    "source": "Ranked catalog. Check rows, then update config to replace the chain on the left.",
+    "translated": {
+      "fr": "Catalogue classé. Cochez les lignes, puis mettez à jour la configuration pour remplacer la chaîne à gauche.",
+      "es": "Catálogo clasificado. Marque las filas, luego actualice la configuración para reemplazar la cadena de la izquierda.",
+      "hi": "रैंक किया गया कैटलॉग। पंक्तियों को चुनें, फिर बाईं ओर की चेन को बदलने के लिए कॉन्फ़िग अपडेट करें।",
+      "de": "Sortierter Katalog. Markieren Sie Zeilen und aktualisieren Sie dann die Konfiguration, um die Kette auf der linken Seite zu ersetzen.",
+      "ko": "순위가 지정된 카탈로그. 행을 선택한 다음 구성을 업데이트하여 왼쪽의 체인을 교체하세요.",
+      "pt-BR": "Catálogo classificado. Marque as linhas e, em seguida, atualize a configuração para substituir a cadeia à esquerda.",
+      "ja": "ランク付けされたカタログ。行をチェックし、その後設定を更新して左側のチェーンを置き換えます。",
+      "zh-Hans": "已排序目录。勾选行，然后更新配置以替换左侧的回退链。",
+      "zh-Hant": "已排序的目錄。勾選列，然後更新設定以取代左側的鏈。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 923
+      }
+    ]
+  },
+  "5f15f303": {
+    "source": "Reorder fallback chain. Drag the handle or use up and down buttons to change model priority.",
+    "translated": {
+      "fr": "Réorganiser la chaîne de secours. Faites glisser la poignée ou utilisez les boutons haut et bas pour modifier la priorité du modèle.",
+      "es": "Reordenar la cadena de reserva. Arrastra el controlador o usa los botones de subir y bajar para cambiar la prioridad del modelo.",
+      "de": "Fallback-Kette neu anordnen. Ziehen Sie den Ziehpunkt oder verwenden Sie die Auf- und Ab-Schaltflächen, um die Modellpriorität zu ändern.",
+      "hi": "फ़ॉलबैक चेन को फिर से व्यवस्थित करें। मॉडल प्राथमिकता बदलने के लिए हैंडल को खींचें या ऊपर और नीचे बटन का उपयोग करें।",
+      "pt-BR": "Reordenar cadeia de fallback. Arraste a alça ou use os botões para cima e para baixo para alterar a prioridade do modelo.",
+      "ko": "대체 체인 재정렬. 핸들을 드래그하거나 위/아래 버튼을 사용하여 모델 우선순위를 변경하세요.",
+      "ja": "フォールバックチェーンの並べ替え。ハンドルをドラッグするか、上下ボタンを使用してモデルの優先順位を変更します。",
+      "zh-Hans": "重新排序回退链。拖动手柄或使用上下按钮更改模型优先级。",
+      "zh-Hant": "重新排序備用鏈。拖曳控點或使用向上和向下按鈕來變更模型優先順序。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 931
+      }
+    ]
+  },
+  "332c80b1": {
+    "source": "Reorder",
+    "translated": {
+      "es": "Reordenar",
+      "fr": "Réorganiser",
+      "hi": "पुनर्व्यवस्थित करें",
+      "de": "Neu anordnen",
+      "zh-Hans": "重新排序",
+      "pt-BR": "Reordenar",
+      "ja": "並べ替え",
+      "ko": "순서 변경",
+      "zh-Hant": "重新排序"
+    },
+    "models": {
+      "es": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 936
+      }
+    ]
+  },
+  "f23b0ac2": {
+    "source": "Select models to include in your configuration.",
+    "translated": {
+      "fr": "Sélectionner les modèles à inclure dans votre configuration.",
+      "es": "Selecciona modelos para incluir en tu configuración.",
+      "de": "Modelle auswählen, die in Ihre Konfiguration aufgenommen werden sollen.",
+      "hi": "अपनी कॉन्फ़िगरेशन में शामिल करने के लिए मॉडल चुनें।",
+      "pt-BR": "Selecione os modelos para incluir em sua configuração.",
+      "ko": "구성(에) 포함할 모델을 선택하세요.",
+      "ja": "設定に含めるモデルを選択します。",
+      "zh-Hans": "选择要包含在配置中的模型。",
+      "zh-Hant": "選取要納入您設定中的模型。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 938
+      }
+    ]
+  },
+  "90d1849e": {
+    "source": "Use top",
+    "translated": {
+      "fr": "Utiliser le top",
+      "es": "Usar los mejores",
+      "de": "Top verwenden",
+      "hi": "शीर्ष का उपयोग करें",
+      "ja": "上位を使用",
+      "pt-BR": "Usar top",
+      "ko": "상위 사용",
+      "zh-Hans": "使用前",
+      "zh-Hant": "採用前幾名"
+    },
+    "models": {
+      "fr": "glm-5.3-flash",
+      "es": "glm-5.3-flash",
+      "de": "glm-5.3-flash",
+      "hi": "gpt-6-luna",
+      "ja": "glm-5.3-flash",
+      "pt-BR": "glm-5.3-flash",
+      "ko": "glm-5.3-flash",
+      "zh-Hans": "glm-5.3-flash",
+      "zh-Hant": "glm-5.3-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 944
+      }
+    ]
+  },
+  "0649d919": {
+    "source": "Select the first N rows. Clear to deselect all.",
+    "translated": {
+      "es": "Seleccionar las primeras N filas. Borrar para deseleccionar todo.",
+      "fr": "Sélectionner les N premières lignes. Effacer pour tout désélectionner.",
+      "hi": "पहली N पंक्तियों का चयन करें। सभी का चयन रद्द करने के लिए साफ़ करें।",
+      "de": "Die ersten N Zeilen auswählen. Auswahl aufheben, um alle abzuwählen.",
+      "zh-Hans": "选择前 N 行。清除以取消全选。",
+      "pt-BR": "Selecionar as primeiras N linhas. Limpar para desmarcar tudo.",
+      "ja": "最初のN行を選択します。クリアするとすべて選択解除されます。",
+      "ko": "첫 N개 행을 선택합니다. 모두 선택 해제하려면 지우세요.",
+      "zh-Hant": "選取前 N 列。清除以取消選取所有項目。"
+    },
+    "models": {
+      "es": "gemini-2.5-flash",
+      "fr": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 955
+      }
+    ]
+  },
+  "28caa645": {
+    "source": "Select top",
+    "translated": {
+      "fr": "Sélectionner le top",
+      "es": "Seleccionar los mejores",
+      "de": "Top auswählen",
+      "hi": "शीर्ष चुनें",
+      "ja": "上位を選択",
+      "pt-BR": "Selecionar top",
+      "ko": "상위 선택",
+      "zh-Hans": "选择前",
+      "zh-Hant": "選取前幾名"
+    },
+    "models": {
+      "fr": "glm-5.3-flash",
+      "es": "glm-5.3-flash",
+      "de": "glm-5.3-flash",
+      "hi": "gpt-6-luna",
+      "ja": "glm-5.3-flash",
+      "pt-BR": "glm-5.3-flash",
+      "ko": "glm-5.3-flash",
+      "zh-Hans": "glm-5.3-flash",
+      "zh-Hant": "glm-5.3-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 955
+      }
+    ]
+  },
+  "021da1b2": {
+    "source": "Rank",
+    "translated": {
+      "fr": "Rang",
+      "es": "Puesto",
+      "de": "Rang",
+      "hi": "रैंक",
+      "ja": "順位",
+      "pt-BR": "Classificação",
+      "ko": "순위",
+      "zh-Hans": "排名",
+      "zh-Hant": "排名"
+    },
+    "models": {
+      "fr": "glm-5.3-flash",
+      "es": "glm-5.3-flash",
+      "de": "glm-5.3-flash",
+      "hi": "gpt-6-luna",
+      "ja": "glm-5.3-flash",
+      "pt-BR": "glm-5.3-flash",
+      "ko": "glm-5.3-flash",
+      "zh-Hans": "glm-5.3-flash",
+      "zh-Hant": "glm-5.3-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 965
+      }
+    ]
+  },
+  "40937a06": {
+    "source": "Catalog ranking position for the active provider under the chosen priority (Quality or Price) before filters are applied.",
+    "translated": {
+      "fr": "Position de classement du catalogue pour le fournisseur actif selon la priorité choisie (Qualité ou Prix) avant l'application des filtres.",
+      "es": "Posición en el ranking del catálogo para el proveedor activo bajo la prioridad elegida (Calidad o Precio) antes de aplicar los filtros.",
+      "de": "Rang im Katalog für den aktiven Anbieter unter der gewählten Priorität (Qualität oder Preis), bevor Filter angewendet werden.",
+      "hi": "फ़िल्टर लागू होने से पहले, चुनी गई प्राथमिकता (गुणवत्ता या कीमत) के तहत सक्रिय प्रदाता के लिए कैटलॉग रैंकिंग स्थिति।",
+      "pt-BR": "Posição no ranking do catálogo para o provedor ativo sob a prioridade escolhida (Qualidade ou Preço) antes que os filtros sejam aplicados.",
+      "ko": "필터 적용 전, 선택한 우선순위(품질 또는 가격)에 따른 활성 공급자의 카탈로그 순위.",
+      "ja": "フィルター適用前の、選択された優先順位（品質または価格）におけるアクティブなプロバイダーのカタログランキング順位。",
+      "zh-Hans": "在应用筛选器之前，活动提供商在所选优先级（质量或价格）下的目录排名位置。",
+      "zh-Hant": "在套用篩選器之前，作用中供應商在所選優先順序 (品質或價格) 下的目錄排名位置。"
+    },
+    "models": {
+      "fr": "gemini-2.5-flash",
+      "es": "gemini-2.5-flash",
+      "de": "gemini-2.5-flash",
+      "hi": "gemini-2.5-flash",
+      "pt-BR": "gemini-2.5-flash",
+      "ko": "gemini-2.5-flash",
+      "ja": "gemini-2.5-flash",
+      "zh-Hans": "gemini-2.5-flash",
+      "zh-Hant": "gemini-2.5-flash"
+    },
+    "locations": [
+      {
+        "file": "src/dashboard-app/index.html",
+        "line": 965
       }
     ]
   },
@@ -34006,7 +34868,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 921
+        "line": 1049
       }
     ]
   },
@@ -34039,7 +34901,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 922
+        "line": 1050
       }
     ]
   },
@@ -34072,7 +34934,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 929
+        "line": 1057
       }
     ]
   },
@@ -34105,7 +34967,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 934
+        "line": 1062
       }
     ]
   },
@@ -34138,7 +35000,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 934
+        "line": 1062
       }
     ]
   },
@@ -34171,7 +35033,7 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 950
+        "line": 1078
       }
     ]
   },
@@ -34204,15 +35066,15 @@
     "locations": [
       {
         "file": "src/dashboard-app/index.html",
-        "line": 953
+        "line": 1081
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 966
+        "line": 1094
       },
       {
         "file": "src/dashboard-app/index.html",
-        "line": 979
+        "line": 1107
       }
     ]
   }

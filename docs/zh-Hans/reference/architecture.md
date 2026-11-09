@@ -274,7 +274,7 @@ SQLite 数据库（通过 `node:sqlite`）存储行，键由 `(source_hash, loca
 - **OpenRouter附加功能**（仅当`openrouter`处于活动状态时）：通过`provider`请求字段和`HTTP-Referer` / `X-Title`标头进行吞吐量路由。每个提供商都会报告令牌使用情况。OpenRouter和Cheaper Inference还会返回已计费的美元金额（`usage.cost`；Cheaper Inference回退到`cheaper_inference.billing.billed_cost_usd`）。当提供商省略该金额时，美元成本将根据`providers.<name>.modelPricing`、然后是提供商范围的`pricing`默认值、然后是models.dev的输入和输出标价计算，并存储在`api_calls`行中。提供商报告的成本（包括`0`）永远不会被替换。未知成本保持未设置状态。对调用进行定价时，仅读取`<cacheDir>/benchmark-scores.json`的models.dev切片；它不会下载languagebench或Arena文件。
 - **调试流量日志**：如果设置了`debugTrafficFilePath`，则将请求和响应JSON附加到文件中（编程方式）。CLI `--debug-failed`会在`cacheDir`下写入`FAILED-TRANSLATION`文件，其中包含系统/用户提示、原始助手回复以及失败的UI、文档、JSON和SVG翻译检查尝试的验证错误。提供商API/空正文失败会在控制台打印，而不是转储仅包含提示的文件。
 
-`suggest-models` 和仪表板的“模型”选项卡不会调用 LLM。它们使用 languagebench ChrF、LMArena Arena Score 和 models.dev 价格对活动提供商的聊天目录进行排名，然后选择性地替换 `providers.<name>.translationModels`。聚合数据位于 `<cacheDir>/benchmark-scores.json` 中。请参阅 [AI 模型](/zh-Hans/guide/ai-models) 和 [suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
+`suggest-models`和仪表盘中的“模型”选项卡不会调用LLM。它们根据语言基准ChrF和LMArena Arena评分，为活跃提供商的聊天目录生成质量指数。价格采用3:1混合的每百万令牌美元费率（依次为目录、models.dev、语言基准）。`--quality`按指数排序；`--price`遍历质量-价格帕累托前沿。它们可选择替换`providers.<name>.translationModels`。聚合数据位于`<cacheDir>/benchmark-scores.json`中。请参阅[AI模型](/zh-Hans/guide/ai-models)和[suggest-models](/zh-Hans/reference/cli-commands/models#suggest-models)。
 
 <a id="config-loading"></a>
 ### 加载配置

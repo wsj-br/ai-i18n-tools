@@ -29,6 +29,44 @@ describe("bin/ai-i18n-tools.mjs", () => {
     expect(out).toMatch(/Usage:/i);
     expect(out).toMatch(/ai-i18n-tools/i);
     expect(out).toMatch(/dashboard\|dash/);
+    expect(out).toContain("Available languages for -L / --ui-lang:");
+    expect(out).toContain("pt-BR (Portuguese (Brazil))");
+    expect(out).toContain("Deutsch — German");
+  });
+
+  it("lists shipped UI languages when -L has no code", () => {
+    expect(fs.existsSync(cliEntry)).toBe(true);
+    let stderr = "";
+    let status = 0;
+    try {
+      execFileSync(process.execPath, [binShim, "-L"], {
+        encoding: "utf8",
+        cwd: repoRoot,
+        env: { ...process.env, AI_I18N_LANG: "en-GB" },
+      });
+    } catch (error) {
+      const failed = error as { stderr?: string; status?: number };
+      stderr = failed.stderr ?? "";
+      status = failed.status ?? 0;
+    }
+    expect(status).toBe(1);
+    expect(stderr).toContain("option '-L, --ui-lang <code>' argument missing");
+    expect(stderr).toContain("Available languages for -L / --ui-lang:");
+    expect(stderr).toContain("pt-BR");
+    expect(stderr).toContain("简体中文 — Chinese (Simplified)");
+
+    let subcommandStderr = "";
+    try {
+      execFileSync(process.execPath, [binShim, "version", "-L"], {
+        encoding: "utf8",
+        cwd: repoRoot,
+        env: { ...process.env, AI_I18N_LANG: "en-GB" },
+      });
+    } catch (error) {
+      subcommandStderr = (error as { stderr?: string }).stderr ?? "";
+    }
+    expect(subcommandStderr).toContain("Available languages for -L / --ui-lang:");
+    expect(subcommandStderr).toContain("fr");
   });
 
   it("accepts dash as an alias for dashboard", () => {
@@ -69,5 +107,6 @@ describe("bin/ai-i18n-tools", () => {
     });
     expect(out).toMatch(/Usage:/i);
     expect(out).toMatch(/ai-i18n-tools/i);
+    expect(out).toContain("zh-Hant (Chinese (Traditional))");
   });
 });

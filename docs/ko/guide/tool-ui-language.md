@@ -8,10 +8,10 @@
 
 UI 로케일은 다음 소스에서 결정되며, 우선순위가 높은 순서입니다:
 
-1. `-L` / `--ui-lang <code>` 전역 플래그(예: `-L pt-BR`).
+1. `-L` / `--ui-lang <code>` 전역 플래그(예: `-L pt-BR`). 코드를 지정하지 않고 `-L` 또는 `--ui-lang`를 전달하면 제공되는 언어를 출력하고 종료합니다. 동일한 목록은 `--help`의 옵션에 있으며, `ai-i18n-tools --help`의 끝에도 있습니다.
 2. `AI_I18N_LANG` 환경 변수(예: `export AI_I18N_LANG=es`).
-3. `ai-i18n-tools.config.json`의 `uiLanguage` 구성 키(BCP-47 문자열).
-4. 호스트 OS 로캘(`Intl.DateTimeFormat().resolvedOptions().locale` 경유).
+3. `ai-i18n-tools.config.json`에 있는 `uiLanguage` 구성 키(BCP-47 문자열).
+4. 호스트 OS 로케일(`Intl.DateTimeFormat().resolvedOptions().locale`를 통해).
 
 <a id="matching-and-fallback"></a>
 ## 매칭 및 폴백

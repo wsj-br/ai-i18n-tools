@@ -332,7 +332,7 @@ ai-i18n-tools suggest-models
 ai-i18n-tools suggest-models --apply
 ```
 
-`--apply` केवल `translationModels` को बदलता है। उन मॉडल को बाहर करने के लिए `--max-price` का उपयोग करें जिनकी आउटपुट कीमत एक सीमा से अधिक है। यदि आप GUI पसंद करते हैं, तो [मॉडल](/hi/guide/translation-dashboard/models) चुनने के लिए `ai-i18n-tools dashboard` का उपयोग करें।
+`--apply` केवल `translationModels` को बदलता है। उन मॉडलों को बाहर करने के लिए `--max-price` का उपयोग करें जिनकी मिश्रित कीमत एक सीमा से अधिक है। यदि आप GUI पसंद करते हैं, तो [मॉडल](/hi/guide/translation-dashboard/models) चुनने के लिए `ai-i18n-tools dashboard` का उपयोग करें।
 
 पहले `translate-ui` से पहले शब्दावली भरें। `init`, `glossary.userGlossary` को `glossary-user.csv` पर इंगित करता है और फ़ाइल नहीं बनाता है। `translate-ui` केवल उस CSV को पढ़ता है। यदि फ़ाइल गुम है, तो `ai-i18n-tools glossary-generate` चलाएँ, फिर डोमेन शब्द जोड़ें। उन नामों के लिए **फ़ोर्स** का उपयोग करें जिन्हें अपरिवर्तित कॉपी किया जाना चाहिए (`Focus`, `CDI`, `Selic`)। उन शब्दों के लिए एक पसंदीदा अनुवाद का उपयोग करें जो सुसंगत रहने चाहिए (`portfolio` → `carteira`)। एक अपरिवर्तित स्ट्रिंग का दूसरा `translate-ui` अलग शब्दों में वापस आ सकता है। शब्दावली ही वह है जो दोनों रन को सहमत कराती है। यह जाँच करना कि प्रत्येक कुंजी का एक लक्ष्य मान है, समीक्षा नहीं है।
 
