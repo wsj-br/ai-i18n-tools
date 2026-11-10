@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import { resolveUiLocale, type ResolveUiLocaleResult } from "../core/ui-locale.js";
 import { readUiLocaleAsset } from "../core/sea-assets.js";
+import { displayWidth } from "../utils/table.js";
 
 /** Source locale for the tool's own UI (matches this repo's `ai-i18n-tools.config.json`). */
 export const UI_SOURCE_LOCALE = "en-GB";
@@ -99,7 +100,7 @@ export function formatAvailableUiLanguagesInline(): string {
     .join(", ");
 }
 
-/** Aligned `code  name` lines for the missing-argument error and root help. */
+/** Aligned `code  name` lines for a bare `-L` / `--ui-lang` (no code). */
 export function formatAvailableUiLanguagesBlock(): string {
   const choices = availableUiLanguageChoices();
   const width = Math.max(1, ...choices.map((choice) => choice.code.length));
@@ -108,9 +109,66 @@ export function formatAvailableUiLanguagesBlock(): string {
     .join("\n");
 }
 
-/** Heading plus the aligned language list. */
+/** Native label when the manifest has one, otherwise the English catalog name. */
+function availableUiLanguageShortName(choice: AvailableUiLanguageChoice): string {
+  return choice.nativeName ?? choice.name;
+}
+
+const UI_LANGUAGE_LIST_WIDTH = 80;
+const UI_LANGUAGE_LIST_INDENT = "  ";
+
+/**
+ * Wrap comma-separated items so each line, including its indent, stays within `maxWidth`
+ * terminal columns. A single item wider than that limit is left intact on its own line.
+ */
+function wrapIndentedCommaList(items: string[], maxWidth: number, indent: string): string {
+  const first = items[0];
+  if (first === undefined) {
+    return "";
+  }
+  const indentWidth = displayWidth(indent);
+  const lines: string[] = [];
+  let line = first;
+  let width = indentWidth + displayWidth(first);
+  for (const item of items.slice(1)) {
+    const addition = `, ${item}`;
+    const additionWidth = displayWidth(addition);
+    if (width + additionWidth > maxWidth) {
+      lines.push(`${indent}${line}`);
+      line = item;
+      width = indentWidth + displayWidth(item);
+      continue;
+    }
+    line += addition;
+    width += additionWidth;
+  }
+  lines.push(`${indent}${line}`);
+  return lines.join("\n");
+}
+
+/**
+ * Comma-separated `code - native name` list for root help, wrapped at 80 columns.
+ * Every line, including the first, is indented by two spaces.
+ */
+export function formatAvailableUiLanguagesWrapped(): string {
+  const items = availableUiLanguageChoices().map(
+    (choice) => `${choice.code} - ${availableUiLanguageShortName(choice)}`
+  );
+  return wrapIndentedCommaList(items, UI_LANGUAGE_LIST_WIDTH, UI_LANGUAGE_LIST_INDENT);
+}
+
+function availableUiLanguagesHeading(): string {
+  return t("Available languages for -L / --ui-lang:");
+}
+
+/** Heading plus the aligned language table (bare `-L` / `--ui-lang`). */
 export function availableUiLanguagesNotice(): string {
-  return `${t("Available languages for -L / --ui-lang:")}\n${formatAvailableUiLanguagesBlock()}`;
+  return `${availableUiLanguagesHeading()}\n${formatAvailableUiLanguagesBlock()}`;
+}
+
+/** Heading plus the wrapped language list for root help. */
+export function availableUiLanguagesHelpNotice(): string {
+  return `${availableUiLanguagesHeading()}\n${formatAvailableUiLanguagesWrapped()}`;
 }
 
 const UI_LANG_MISSING_ARGUMENT = "option '-L, --ui-lang <code>' argument missing";

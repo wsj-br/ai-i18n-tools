@@ -12,6 +12,7 @@
 | 命令 | 摘要 |
 |---------|---------|
 | [`version`](setup#version) | 打印 CLI 版本和构建时间戳。 |
+| [`upgrade`](setup#upgrade) | 将运行中的安装升级到最新发布版本。 |
 | [`init`](setup#init) | 编写初始配置；`-t` 选择脚手架模板。 |
 | [`doctor`](setup#doctor) | 检查配置、路径、提供程序和环境是否已准备好进行翻译。 |
 | [`help`](setup#help) | 显示子命令的帮助信息。 |
@@ -91,6 +92,7 @@
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]

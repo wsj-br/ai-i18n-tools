@@ -1,6 +1,6 @@
 {
   "name": "ai-i18n-tools",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.",
   "author": {
     "name": "Waldemar Scudeller Jr."

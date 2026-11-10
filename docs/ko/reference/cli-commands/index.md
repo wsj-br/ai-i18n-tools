@@ -12,6 +12,7 @@
 | 명령 | 요약 |
 |---------|---------|
 | [`version`](setup#version) | CLI 버전과 빌드 타임스탬프를 출력합니다. |
+| [`upgrade`](setup#upgrade) | 실행 중인 설치를 최신 게시 버전으로 업그레이드합니다. |
 | [`init`](setup#init) | 시작 구성을 작성합니다; `-t`은 스캐폴드 템플릿을 선택합니다. |
 | [`doctor`](setup#doctor) | 구성, 경로, 공급자 및 환경이 번역할 준비가 되었는지 확인합니다. |
 | [`help`](setup#help) | 하위 명령에 대한 도움말을 표시합니다. |
@@ -91,6 +92,7 @@
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]

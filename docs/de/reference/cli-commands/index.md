@@ -12,6 +12,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 | Befehl | Zusammenfassung |
 |---------|---------|
 | [`version`](setup#version) | Druckt die CLI-Version und den Build-Timestamp. |
+| [`upgrade`](setup#upgrade) | Aktualisiert die laufende Installation auf die neueste veröffentlichte Version. |
 | [`init`](setup#init) | Erstellt eine Starter-Konfiguration; `-t` wählt eine Scaffold-Vorlage aus. |
 | [`doctor`](setup#doctor) | Stellen Sie sicher, dass Konfiguration, Pfade, Provider und die Umgebung zur Übersetzung bereit sind. |
 | [`help`](setup#help) | Hilfe für einen Unterbefehl anzeigen. |
@@ -91,6 +92,7 @@ Führen Sie `ai-i18n-tools <command> --help` für jede Flagge in einem Befehl au
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]

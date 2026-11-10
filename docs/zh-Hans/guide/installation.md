@@ -168,6 +168,8 @@ pnpm add -g ai-i18n-tools
 
 使用 pnpm 时，如果缺少全局命令，请在每台机器上运行一次 `pnpm setup`（并打开一个新的 shell）— pnpm 需要将其全局 bin 目录放在 `PATH` 上。全局安装会使用全局固定的版本。对于按项目固定版本，建议使用 direnv 或手动 PATH，以便 `node_modules/.bin` 解析到项目的依赖项。
 
+使用 `ai-i18n-tools upgrade` 升级现有安装。该命令会打印新版本并等待 `y`。`--yes` 会跳过提示。项目依赖项会在 `package.json` 中更新，并通过 npm、pnpm、yarn 或 bun 进行安装。全局 Node.js 安装会使用该包管理器的全局安装。独立可执行文件会在 SHA256 校验和匹配后，被替换为适用于当前操作系统和架构的 GitHub Release 版本。请参阅 [升级](/zh-Hans/reference/cli-commands/setup#upgrade)。
+
 package.json 脚本 — 当 npm 或 pnpm 运行脚本时，它会将 `node_modules/.bin` 添加到 `PATH` 的开头，因此，无需更改 shell PATH，基本命令名称即可在脚本中正常工作：
 
 ```json

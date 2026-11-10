@@ -168,6 +168,8 @@ pnpm add -g ai-i18n-tools
 
 pnpm을 사용할 때 전역 명령이 누락된 경우 머신당 한 번씩 `pnpm setup`을(를) 실행하고 새 셸을 여세요. pnpm은 자신의 전역 bin 디렉터리가 `PATH`에 있어야 하기 때문입니다. 전역 설치는 전역으로 고정된 버전을 사용합니다. 프로젝트별 버전 고정을 위해서는 direnv 또는 수동 PATH를 사용하여 `node_modules/.bin`가 프로젝트의 의존성을 가리키도록 하는 것을 권장합니다.
 
+`ai-i18n-tools upgrade`를 사용하여 기존 설치를 업그레이드합니다. 이 명령어는 새 버전을 출력하고 `y`을(를) 기다립니다. `--yes`는 프롬프트를 건너뜁니다. 프로젝트 종속성은 `package.json`에서 업데이트되며 npm, pnpm, yarn 또는 bun을(를) 사용하여 설치됩니다. 전역 Node.js 설치는 해당 패키지 관리자의 전역 설치를 사용합니다. 독립 실행 파일은 SHA256 체크섬이 일치한 후 현재 운영 체제 및 아키텍처에 맞는 GitHub 릴리스 빌드로 교체됩니다. 자세한 내용은 [업그레이드](/ko/reference/cli-commands/setup#upgrade)를 참조하세요.
+
 package.json 스크립트 — npm 또는 pnpm이 스크립트를 실행할 때 `node_modules/.bin`을 `PATH` 앞에 추가하므로, 셸 경로를 변경하지 않아도 스크립트 안에서 기본 명령 이름이 작동합니다:
 
 ```json

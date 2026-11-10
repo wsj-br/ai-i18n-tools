@@ -12,6 +12,7 @@ Run `ai-i18n-tools <command> --help` for every flag on a command. Group pages be
 | Command | Summary |
 |---------|---------|
 | [`version`](setup#version) | Print CLI version and build timestamp. |
+| [`upgrade`](setup#upgrade) | Upgrade the running install to the latest published version. |
 | [`init`](setup#init) | Write a starter config; `-t` selects a scaffold template. |
 | [`doctor`](setup#doctor) | Check that configuration, paths, providers, and the environment are ready to translate. |
 | [`help`](setup#help) | Display help for a subcommand. |
@@ -91,6 +92,7 @@ Run `ai-i18n-tools <command> --help` for every flag on a command. Group pages be
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]

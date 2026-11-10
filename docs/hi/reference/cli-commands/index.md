@@ -12,6 +12,7 @@
 | कमांड | सारांश |
 |---------|---------|
 | [`version`](setup#version) | सीएलआई संस्करण और बिल्ड टाइमस्टैम्प प्रिंट करें। |
+| [`upgrade`](setup#upgrade) | चल रही इंस्टॉलेशन को नवीनतम प्रकाशित संस्करण में अपग्रेड करें। |
 | [`init`](setup#init) | एक स्टार्टर कॉन्फ़िग लिखें; `-t` एक स्कैफ़ोल्ड टेम्पलेट का चयन करता है। |
 | [`doctor`](setup#doctor) | जाँचें कि कॉन्फ़िगरेशन, पाथ, प्रोवाइडर और परिवेश अनुवाद के लिए तैयार हैं। |
 | [`help`](setup#help) | किसी उप-कमांड के लिए सहायता प्रदर्शित करें। |
@@ -91,6 +92,7 @@
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]

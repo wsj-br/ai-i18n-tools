@@ -118,7 +118,7 @@ import { setupLogOutput } from "./log-output.js";
 import { stripAnsi } from "../utils/logger.js";
 import { displayWidth } from "../utils/table.js";
 import {
-  availableUiLanguagesNotice,
+  availableUiLanguagesHelpNotice,
   formatAvailableUiLanguagesInline,
   initUiI18nFromEnvironment,
   t,
@@ -145,6 +145,7 @@ import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
 import { runDoctor } from "./doctor.js";
+import { runUpgrade } from "./upgrade.js";
 import { ensureProjectGitignore } from "./project-gitignore.js";
 import { runListModels } from "./list-models.js";
 import { runSuggestModels } from "./suggest-models.js";
@@ -529,7 +530,7 @@ Related globals (every command): -c/--config, -v/--verbose, -P/--provider, -w/--
 Provider override (-P / --provider):
   On translation commands, selects the active LLM provider for this run, overriding the config
   "provider" key. The name must be configured under "providers" (e.g. -P openai).
-  On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n\n${availableUiLanguagesNotice()}\n`;
+  On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n\n${availableUiLanguagesHelpNotice()}\n`;
 
 // Load `.env` from the current working directory so provider API keys are
 // available in non-interactive shells (e.g. agent-run commands) that do not
@@ -542,7 +543,7 @@ program
   .name("ai-i18n-tools")
   .description(
     t(
-      "Unified i18n toolkit for Node.js apps and documentation with AI translation (v{{version}})",
+      "AI internationalization for JS/TS, Python, and .NET apps, websites, docs, READMEs, JSON, and SVG (v{{version}})",
       {
         version,
       }
@@ -597,6 +598,38 @@ program
   .action(() => {
     console.log(formatVersionOutput());
   });
+
+program
+  .command("upgrade")
+  .description(t("Upgrade this install to the latest published version"))
+  .option("-y, --yes", t("Skip the confirmation prompt"), false)
+  .action(async (opts: { yes?: boolean }) => {
+    try {
+      process.exitCode = await runUpgrade({
+        cwd: process.cwd(),
+        scriptPath: process.argv[1] ?? process.execPath,
+        sea: isRunningInSea(),
+        execPath: process.execPath,
+        platform: process.platform,
+        arch: process.arch,
+        installedVersion: PACKAGE_VERSION || "0.0.0",
+        yes: opts.yes === true,
+        stdinIsTTY: process.stdin.isTTY === true,
+        ...(process.env.npm_config_user_agent !== undefined
+          ? { userAgent: process.env.npm_config_user_agent }
+          : {}),
+      });
+    } catch (e) {
+      console.error(chalk.red(e instanceof Error ? e.message : String(e)));
+      process.exitCode = 1;
+    }
+  })
+  .addHelpText(
+    "after",
+    `\n${t(`Examples:
+  ai-i18n-tools upgrade
+  ai-i18n-tools upgrade --yes`)}\n`
+  );
 
 program
   .command("doctor")

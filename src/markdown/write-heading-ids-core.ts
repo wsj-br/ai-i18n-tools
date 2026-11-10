@@ -408,18 +408,80 @@ function collectHtmlAnchorIds(lines: string[]): Set<string> {
   return ids;
 }
 
+function readTickRun(text: string, start: number): number {
+  let i = start;
+  while (i < text.length && text[i] === "`") {
+    i += 1;
+  }
+  return i - start;
+}
+
+function findMatchingCodeSpanEnd(text: string, tickStart: number, tickCount: number): number {
+  let i = tickStart + tickCount;
+  while (i < text.length) {
+    if (text[i] !== "`") {
+      i += 1;
+      continue;
+    }
+    const run = readTickRun(text, i);
+    if (run === tickCount) {
+      return i + tickCount;
+    }
+    i += run;
+  }
+  return -1;
+}
+
+/**
+ * Replace inline code spans with placeholders so a heading-id scan cannot see
+ * samples of heading-id syntax that are documentation, not ids.
+ */
+function maskInlineCodeSpans(text: string): { masked: string; spans: string[] } {
+  const spans: string[] = [];
+  let masked = "";
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] !== "`") {
+      masked += text[i];
+      i += 1;
+      continue;
+    }
+    const tickCount = readTickRun(text, i);
+    const end = findMatchingCodeSpanEnd(text, i, tickCount);
+    if (end === -1) {
+      masked += text.slice(i, i + tickCount);
+      i += tickCount;
+      continue;
+    }
+    spans.push(text.slice(i, end));
+    masked += `@@CODE_SPAN_${spans.length - 1}@@`;
+    i = end;
+  }
+  return { masked, spans };
+}
+
+function unmaskInlineCodeSpans(masked: string, spans: string[]): string {
+  let out = masked;
+  for (let i = 0; i < spans.length; i += 1) {
+    out = out.split(`@@CODE_SPAN_${i}@@`).join(spans[i] ?? "");
+  }
+  return out;
+}
+
 /**
  * Remove classic `{#id}` / MDX heading-id comment tokens anywhere in a heading title
- * (trailing suffix or mid-line after translation reordering).
+ * (trailing suffix or mid-line after translation reordering). Tokens inside inline
+ * code stay, so a heading that documents the syntax is not emptied.
  */
 function stripEmbeddedHeadingIdTokens(titlePart: string): string {
-  const next = titlePart
+  const { masked, spans } = maskInlineCodeSpans(titlePart);
+  const next = masked
     .replace(MDX_COMMENT_HEADING_ID_ANYWHERE_RE, "")
     .replace(CLASSIC_HEADING_ID_ANYWHERE_RE, "");
-  if (next === titlePart) {
+  if (next === masked) {
     return titlePart;
   }
-  return next.trim();
+  return unmaskInlineCodeSpans(next, spans).trim();
 }
 
 /**

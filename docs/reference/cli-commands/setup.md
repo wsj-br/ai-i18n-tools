@@ -10,6 +10,24 @@ Print CLI version and build timestamp (same information as `-V` / `--version` on
 
 ---
 
+<a id="upgrade"></a>
+### `upgrade`
+
+**Synopsis:** `ai-i18n-tools upgrade [--yes]`
+
+Upgrade the running install to the latest published version. The command prints the installed version and the new version, then waits for `y`. `--yes` answers the prompt, including when stdin is not a terminal. Any other answer leaves the install unchanged. A non-interactive stdin without `--yes` exits with an error and changes nothing. When the install is already current, or newer than the published version, the command prints that and does not prompt.
+
+A Node.js install reads the `latest` dist-tag from the npm registry. A project dependency is updated in `package.json` (the existing `^`, `~`, or exact operator is kept) and installed with npm, pnpm, yarn, or bun, chosen from the `packageManager` field or the lockfile. A global Node.js install runs that package manager's global install and does not edit a `package.json` in the current directory. `workspace:`, `file:`, `link:`, and git specifiers are left unchanged and the command stops. A source checkout of this repository is refused.
+
+A standalone executable reads the latest GitHub release, downloads the gzip archive for the current operating system and architecture, checks `SHA256SUMS.txt`, and replaces the running file. The published archives are Linux x64, Linux arm64, macOS arm64, macOS x64, and Windows x64.
+
+```bash
+ai-i18n-tools upgrade
+ai-i18n-tools upgrade --yes
+```
+
+---
+
 <a id="init"></a>
 ### `init`
 

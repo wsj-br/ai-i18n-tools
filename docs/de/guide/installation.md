@@ -168,6 +168,8 @@ pnpm add -g ai-i18n-tools
 
 Führen Sie bei pnpm `pnpm setup` einmal pro Maschine aus (und öffnen Sie eine neue Shell), wenn globale Befehle fehlen – pnpm benötigt sein globales Bin-Verzeichnis auf `PATH`. Eine globale Installation verwendet die global festgelegte Version. Für die projektbezogene Versionsfestlegung bevorzugen Sie direnv oder den manuellen PATH, damit `node_modules/.bin` auf die Abhängigkeit des Projekts verweist.
 
+Aktualisieren Sie eine bestehende Installation mit `ai-i18n-tools upgrade`. Der Befehl gibt die neue Version aus und wartet auf `y`. `--yes` überspringt die Eingabeaufforderung. Eine Projekt-Abhängigkeit wird in `package.json` aktualisiert und mit npm, pnpm, yarn oder bun installiert. Eine globale Node.js-Installation verwendet die globale Installation des jeweiligen Paketmanagers. Eine eigenständige ausführbare Datei wird durch den GitHub Release Build für das aktuelle Betriebssystem und die Architektur ersetzt, nachdem die SHA256-Prüfsumme übereinstimmt. Siehe [Upgrade](/de/reference/cli-commands/setup#upgrade).
+
 package.json-Skripte — wenn npm oder pnpm ein Skript ausführt, stellt es `node_modules/.bin` vor `PATH`, sodass der reine Befehlsname innerhalb von Skripten ohne Änderungen am Shell-PATH funktioniert:
 
 ```json

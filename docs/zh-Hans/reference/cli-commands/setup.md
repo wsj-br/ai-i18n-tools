@@ -10,6 +10,24 @@
 
 ---
 
+<a id="upgrade"></a>
+### `upgrade`
+
+**概要：** `ai-i18n-tools upgrade [--yes]`
+
+将正在运行的安装升级到最新发布版本。该命令会打印已安装版本和新版本，然后等待 `y`。`--yes` 会响应提示，即使标准输入不是终端。任何其他回答都不会更改安装。非交互式标准输入在没有 `--yes` 的情况下会因错误而退出，并且不进行任何更改。如果安装已是最新版本，或比发布版本更新，该命令会打印此信息并且不进行提示。
+
+Node.js 安装会从 npm 注册表读取 `latest` dist-tag。项目依赖项会在 `package.json` 中更新（保留现有的 `^`、`~` 或精确运算符），并使用 npm、pnpm、yarn 或 bun 进行安装，这些包管理器会从 `packageManager` 字段或 lockfile 中选择。全局 Node.js 安装会运行该包管理器的全局安装，并且不会编辑当前目录中的 `package.json`。`workspace:`、`file:`、`link:` 和 git 指定符保持不变，命令停止。拒绝此仓库的源代码检出。
+
+独立可执行文件会读取最新的 GitHub 发布版本，下载适用于当前操作系统和架构的 gzip 归档文件，检查 `SHA256SUMS.txt`，并替换正在运行的文件。已发布的归档文件包括 Linux x64、Linux arm64、macOS arm64、macOS x64 和 Windows x64。
+
+```bash
+ai-i18n-tools upgrade
+ai-i18n-tools upgrade --yes
+```
+
+---
+
 <a id="init"></a>
 ### `init`
 

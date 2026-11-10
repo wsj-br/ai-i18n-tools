@@ -9,6 +9,13 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-11-10
+
+- **Fixed**: `write-heading-ids` — `{#id}` and `{/* #id */}` inside inline code in a heading stay put. A heading that documents that syntax is no longer rewritten to empty backticks, and `sync --force-update` no longer has to put the code spans back from the translation cache.
+- **Added**: cli — `upgrade` prints the latest npm or GitHub release and, after confirmation or `--yes`, updates a project or global Node install, or replaces the standalone executable for the current platform.
+- **Changed**: CLI — root help lists shipped `-L` / `--ui-lang` languages as `code - name`, wrapped at 80 columns with a two-space indent. A bare `-L` / `--ui-lang` still prints the aligned table.
+- **Changed**: package, CLI — the npm description, keywords, and root help cover JS/TS, Python, and .NET apps, websites, docs, READMEs, JSON, and SVG. Keywords also name Next.js, i18next, Django, Flask, Streamlit, FastAPI, gettext, Intlayer, resx, Avalonia, WPF, MAUI, ASP.NET, Blazor, VitePress, Starlight, Docusaurus, Nextra, Fumadocs, Astro, and HTML.
+
 ## [1.14.0] - 2026-11-09
 
 - **Added**: dashboard — the Models tab column headers explain Order, Rank, scores, prices, and the frontier layer in a tooltip.

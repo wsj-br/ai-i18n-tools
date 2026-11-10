@@ -10,6 +10,24 @@ Imprime la versión de la CLI y la marca de tiempo de compilación (la misma inf
 
 ---
 
+<a id="upgrade"></a>
+### `upgrade`
+
+**Sinopsis:** `ai-i18n-tools upgrade [--yes]`
+
+Actualiza la instalación en ejecución a la última versión publicada. El comando imprime la versión instalada y la nueva versión, luego espera `y`. `--yes` responde a la solicitud, incluso cuando la entrada estándar no es una terminal. Cualquier otra respuesta deja la instalación sin cambios. Una entrada estándar no interactiva sin `--yes` sale con un error y no cambia nada. Cuando la instalación ya está actualizada, o es más reciente que la versión publicada, el comando lo imprime y no solicita confirmación.
+
+Una instalación de Node.js lee la etiqueta de distribución `latest` del registro de npm. Una dependencia de proyecto se actualiza en `package.json` (se mantiene el operador existente `^`, `~` o exacto) y se instala con npm, pnpm, yarn o bun, elegido del campo `packageManager` o del archivo de bloqueo. Una instalación global de Node.js ejecuta la instalación global de ese gestor de paquetes y no edita un `package.json` en el directorio actual. Los especificadores `workspace:`, `file:`, `link:` y git se dejan sin cambios y el comando se detiene. Se rechaza una copia de trabajo (checkout) del código fuente de este repositorio.
+
+Un ejecutable autónomo lee la última versión de GitHub, descarga el archivo gzip para el sistema operativo y la arquitectura actuales, verifica `SHA256SUMS.txt` y reemplaza el archivo en ejecución. Los archivos publicados son Linux x64, Linux arm64, macOS arm64, macOS x64 y Windows x64.
+
+```bash
+ai-i18n-tools upgrade
+ai-i18n-tools upgrade --yes
+```
+
+---
+
 <a id="init"></a>
 ### `init`
 

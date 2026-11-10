@@ -31,7 +31,16 @@ describe("bin/ai-i18n-tools.mjs", () => {
     expect(out).toMatch(/dashboard\|dash/);
     expect(out).toContain("Available languages for -L / --ui-lang:");
     expect(out).toContain("pt-BR (Portuguese (Brazil))");
-    expect(out).toContain("Deutsch — German");
+    expect(out).toContain("en-GB - English (UK)");
+    expect(out).toContain("de - Deutsch");
+    expect(out).not.toContain("Deutsch — German");
+    const footer = out.slice(out.lastIndexOf("Available languages for -L / --ui-lang:"));
+    const listLines = footer
+      .split("\n")
+      .slice(1)
+      .filter((line) => line.length > 0);
+    expect(listLines.length).toBeGreaterThan(1);
+    expect(listLines.every((line) => line.startsWith("  ") && line.length <= 80)).toBe(true);
   });
 
   it("lists shipped UI languages when -L has no code", () => {

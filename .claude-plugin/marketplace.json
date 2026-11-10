@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Internationalization workflow for application UI, documentation, JSON, and SVG.",
-    "version": "1.14.0"
+    "version": "1.15.0"
   },
   "plugins": [
     {
       "name": "ai-i18n-tools",
       "source": "./",
       "description": "Install and maintain ai-i18n-tools internationalization for application UI, documentation, JSON, and SVG.",
-      "version": "1.14.0",
+      "version": "1.15.0",
       "author": {
         "name": "Waldemar Scudeller Jr."
       },

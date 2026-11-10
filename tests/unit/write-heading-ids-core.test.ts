@@ -391,6 +391,24 @@ describe("applyKnownHeadingIds", () => {
     expect(out).toContain("## Not {#inside}");
     expect(out).toContain("## Real {/* #real */}");
   });
+
+  it("keeps heading-id syntax that is only an inline-code example", () => {
+    const input =
+      '<a id="docusaurus------suffix"></a>\n### Docusaurus `{#…}` / `{/* #… */}` Suffix\n';
+    const out = applyKnownHeadingIds(input, ["docusaurus------suffix"], "github");
+    expect(out).toBe(input);
+  });
+
+  it("strips a misplaced id and keeps an inline-code example on the same heading", () => {
+    const input = "### Foo `{#…}` {/* #real */} bar\n";
+    const out = applyKnownHeadingIds(input, ["real"], "github");
+    expect(out).toBe('<a id="real"></a>\n### Foo `{#…}` bar\n');
+  });
+
+  it("keeps a heading-id sample wrapped in a double-backtick code span", () => {
+    const input = "### See ``{#id}`` later\n";
+    expect(stripHeadingIdsAnywhere(input)).toBe(input);
+  });
 });
 
 describe("heading fragment redirects", () => {

@@ -168,6 +168,8 @@ pnpm add -g ai-i18n-tools
 
 使用 pnpm 時，如果遺漏全域指令，請在每台機器上執行一次 `pnpm setup`（並開啟新的 shell）— pnpm 需要將其全域 bin 目錄放在 `PATH` 上。全域安裝會使用全域鎖定的版本。若要針對個別專案鎖定版本，建議使用 direnv 或手動 PATH，讓 `node_modules/.bin` 解析至專案的依賴項目。
 
+使用 `ai-i18n-tools upgrade` 升級現有安裝。此命令會印出新版本並等待 `y`。`--yes` 會跳過提示。專案依賴項會在 `package.json` 中更新，並使用 npm、pnpm、yarn 或 bun 進行安裝。全域 Node.js 安裝會使用該套件管理器的全域安裝。獨立可執行檔會在 SHA256 總和檢查碼相符後，替換為適用於目前作業系統和架構的 GitHub Release 版本。請參閱 [升級](/zh-Hant/reference/cli-commands/setup#upgrade)。
+
 package.json 指令碼 — 當 npm 或 pnpm 執行指令碼時，它會將 `node_modules/.bin` 加到 `PATH` 的開頭，因此，不需變更 shell 的 PATH，基本的指令名稱就能在指令碼中運作：
 
 ```json

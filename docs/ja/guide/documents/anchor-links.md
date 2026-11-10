@@ -41,7 +41,7 @@ Docusaurus を使用していない場合、または `{#…}` / `{/* #… */}` 
 ## 例
 
 <a id="docusaurus------suffix"></a>
-### ドクサウルス `` / `` 接尾辞
+### Docusaurus `{#…}` / `{/* #… */}` サフィックス
 
 `docs/overview.md`:
 

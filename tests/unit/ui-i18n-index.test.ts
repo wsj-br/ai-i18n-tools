@@ -4,10 +4,12 @@ import {
   UI_LANG_ENV_VAR,
   UI_SOURCE_LOCALE,
   availableUiLanguageChoices,
+  availableUiLanguagesHelpNotice,
   availableUiLanguagesNotice,
   availableUiLocales,
   formatAvailableUiLanguagesBlock,
   formatAvailableUiLanguagesInline,
+  formatAvailableUiLanguagesWrapped,
   getUiLocale,
   initUiI18n,
   initUiI18nFrom,
@@ -20,6 +22,7 @@ import {
   uiLocaleDirection,
   withAvailableUiLanguagesOnMissingUiLang,
 } from "../../src/i18n/index.js";
+import { displayWidth } from "../../src/utils/table.js";
 
 describe("self-i18n constants", () => {
   it("exposes the en-GB source locale and AI_I18N_LANG env var", () => {
@@ -161,6 +164,30 @@ describe("available UI language list", () => {
     expect(new Set(nameStarts)).toEqual(new Set([nameStarts[0]]));
     expect(availableUiLanguagesNotice()).toContain("Available languages for -L / --ui-lang:");
     expect(availableUiLanguagesNotice()).toContain(block);
+  });
+
+  it("wraps the help list at 80 columns as code - native name", () => {
+    const wrapped = formatAvailableUiLanguagesWrapped();
+    const lines = wrapped.split("\n");
+    expect(lines.length).toBeGreaterThan(1);
+    expect(lines.every((line) => line.startsWith("  "))).toBe(true);
+    expect(lines.every((line) => displayWidth(line) <= 80)).toBe(true);
+    expect(wrapped).toContain("en-GB - English (UK)");
+    expect(wrapped).toContain("de - Deutsch");
+    expect(wrapped).toContain("pt-BR - Português (Brasil)");
+    expect(wrapped).toContain("zh-Hans - 简体中文");
+    expect(wrapped).not.toContain("—");
+    const items = lines
+      .map((line) => line.slice(2))
+      .join(", ")
+      .split(", ");
+    expect(items[0]).toBe("en-GB - English (UK)");
+    expect(items).toContain("de - Deutsch");
+    expect(new Set(items).size).toBe(items.length);
+    const notice = availableUiLanguagesHelpNotice();
+    expect(notice.startsWith("Available languages for -L / --ui-lang:\n")).toBe(true);
+    expect(notice).toContain(wrapped);
+    expect(notice).not.toContain("Deutsch — German");
   });
 
   it("appends the language list only to a missing -L / --ui-lang argument error", () => {

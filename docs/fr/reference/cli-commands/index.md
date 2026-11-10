@@ -12,6 +12,7 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 | Commande | Résumé |
 |---------|---------|
 | [`version`](setup#version) | Affiche la version et l'horodatage de construction de la CLI. |
+| [`upgrade`](setup#upgrade) | Mettre à niveau l'installation en cours vers la dernière version publiée. |
 | [`init`](setup#init) | Écrivez une configuration de démarrage ; `-t` sélectionne un modèle d'armature. |
 | [`doctor`](setup#doctor) | Vérifiez que la configuration, les chemins, les fournisseurs et l'environnement sont prêts à traduire. |
 | [`help`](setup#help) | Afficher l'aide pour une sous-commande. |
@@ -91,6 +92,7 @@ Exécutez `ai-i18n-tools <command> --help` pour chaque indicateur de commande. L
 
 ```bash
 ai-i18n-tools version
+ai-i18n-tools upgrade [--yes]
 ai-i18n-tools init [-t ui-markdown|ui-docusaurus|ui-starlight|ui-vitepress|ui-nextra|ui-fumadocs|ui-astro-website|ui-plain-html|docs-plain-html|docs-markdown|ui-json-bundles|ui-python|ui-python-gettext|ui-python-django|ui-python-flask|ui-dotnet|ui-dotnet-resx] [-o path] [-P <provider>] [--namespace <name>] [--with-readme] [--with-translate-ignore]
 ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]
 ai-i18n-tools migrate-python-i18n [--write] [--report <path>]
