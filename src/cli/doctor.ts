@@ -84,14 +84,29 @@ const GITHUB_RELEASES_PAGE = "https://github.com/wsj-br/ai-i18n-tools/releases";
 
 export type DoctorStatus = "pass" | "warn" | "fail";
 
+/** No error. A warning uses this status unless `--strict` is set. */
+export const DOCTOR_EXIT_OK = 0;
+/** `--strict` found at least one warning and no error. */
+export const DOCTOR_EXIT_WARNING = 1;
+/** At least one error. */
+export const DOCTOR_EXIT_ERROR = 2;
+
+export function doctorExitCode(errors: number, warnings: number, strict: boolean): number {
+  if (errors > 0) {
+    return DOCTOR_EXIT_ERROR;
+  }
+  if (strict && warnings > 0) {
+    return DOCTOR_EXIT_WARNING;
+  }
+  return DOCTOR_EXIT_OK;
+}
+
 export interface DoctorCheck {
   section: string;
   status: DoctorStatus;
   message: string;
   /** Informational pass. Printed with a dot instead of a check mark. */
   note?: boolean;
-  /** Yellow notice. Printed with ■ and not counted as a warning, so `--strict` stays successful. */
-  caution?: boolean;
   /**
    * Environment entries printed as one wrapped list. The report breaks on these
    * items; `message` is the same list on one line for `--json`.
@@ -360,15 +375,11 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
   const fail = (name: string, message: string): void => {
     checks.push({ section: name, status: "fail", message });
   };
-  const dotenvCaution = (name: string, message: string): void => {
-    checks.push({ section: name, status: "pass", caution: true, message });
-  };
-
   const finish = (): RunDoctorResult => {
     const passed = checks.filter((check) => check.status === "pass").length;
     const warnings = checks.filter((check) => check.status === "warn").length;
     const errors = checks.filter((check) => check.status === "fail").length;
-    const exitCode = errors > 0 || (options.strict === true && warnings > 0) ? 1 : 0;
+    const exitCode = doctorExitCode(errors, warnings, options.strict === true);
     const summary = t("Summary: {{passed}} passed, {{warnings}} warnings, {{errors}} errors", {
       passed,
       warnings,
@@ -382,7 +393,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
             errorCount: errors,
             warningCount: warnings,
             checks: checks.map((check) => {
-              const { inlineItems: _inlineItems, caution: _caution, ...reportCheck } = check;
+              const { inlineItems: _inlineItems, ...reportCheck } = check;
               return reportCheck;
             }),
           },
@@ -505,7 +516,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     section.provider
   );
   checkGitignore(config, projectRoot, options.fixGitignore === true, pass, warn, section.git);
-  checkEnvironment(config, pass, dotenvCaution, section.environment, dotenvLoaded);
+  checkEnvironment(config, pass, warn, section.environment, dotenvLoaded);
 
   return finish();
 }
@@ -1479,17 +1490,17 @@ function checkGitignore(
 function checkEnvironment(
   config: I18nConfig,
   pass: (section: string, message: string, note?: boolean, inlineItems?: string[]) => void,
-  caution: (section: string, message: string) => void,
+  warn: (section: string, message: string) => void,
   section: string,
   dotenvLoaded: LoadDotenvResult
 ): void {
   const fromEnv = dotenvLoaded.loaded.find((entry) => entry.file === ".env")?.names ?? [];
   const fromLocal = dotenvLoaded.loaded.find((entry) => entry.file === ".env.local")?.names ?? [];
   if (fromEnv.length > 0) {
-    caution(section, t("Environment variables were not set, reading them from .env"));
+    warn(section, t("Environment variables were not set, reading them from .env"));
   }
   if (fromLocal.length > 0) {
-    caution(section, t("Environment variables were not set, reading them from .env.local"));
+    warn(section, t("Environment variables were not set, reading them from .env.local"));
   }
 
   const secrets = secretEnvNames(config);
@@ -1554,11 +1565,6 @@ function printReport(checks: DoctorCheck[], summary: string): void {
     if (check.section !== current) {
       current = check.section;
       console.log(chalk.bold(`\n${current}`));
-    }
-    if (check.caution === true) {
-      console.log(chalk.yellow(`  ■  ${check.message}`));
-      index += 1;
-      continue;
     }
     if (check.inlineItems !== undefined && check.inlineItems.length > 0) {
       const [first, ...rest] = wrapLabeledItems(

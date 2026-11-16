@@ -87,13 +87,13 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 检查项目是否已准备好进行翻译。报告涵盖配置语法和架构、业务规则、已安装版本、源路径和输出路径、UI 目录文件、这些目录中的占位符不匹配项、缓存统计信息、已配置的提供商、已设置的受支持环境变量以及模型 ID。包含已重命名、已删除或已重写占位符的目录会发出警告，并列举一个示例。提供商部分仅列出配置文件中命名的提供商（包括一个旧版顶级 `openrouter` 块）。仅当文件未命名提供商时，才会列出内置的 OpenRouter 默认值。
 
-默认情况下，`doctor` 还会根据活动提供商的目录检查已配置的模型 ID，并将已安装版本与最新的 GitHub 版本进行比较。`--local` 会跳过这两个网络调用。如果有新版本，或者 GitHub 请求失败，则会发出警告。缺少或过期的模型 ID 会导致命令失败。在任何检查发出警告时，`--strict` 都会以错误退出。
+默认情况下，`doctor` 还会检查配置的模型 ID 是否与活动提供商的目录匹配，并将已安装版本与最新的 GitHub 发布版本进行比较。`--local` 会跳过这两个网络调用。如果有新版本，或 GitHub 请求失败，则会发出警告。缺少或过期的模型 ID 则为错误。没有错误时（包括检查发出警告时），退出状态为 0。出现错误时，退出状态为 2。当任何检查发出警告时，`--strict` 会以状态 1 退出。
 
-API 密钥值永不打印。已设置的变量按字母顺序排列，作为 `Configured variables: NAME, ...`。非 API 密钥的变量会包含其值。
+API 密钥值绝不会被打印。已设置的变量按字母顺序以 `Configured variables: NAME, ...` 的形式列出。非 API 密钥的变量会显示其值。当变量从 `.env` 或 `.env.local` 读取时，每个文件在摘要中都会显示为警告。
 
 输入路径缺失会导致失败。输出目录缺失会显示一条提示，因为首次翻译运行时会创建它们。`doctor` 不会重写配置、创建目录或将源文本发送到模型。`--fix-gitignore` 会追加缺失的 `.gitignore` 行，并保留其他所有文件不变。
 
-`doctor` 会在配置旁边的 `.gitignore` 缺少所需模式时发出警告。该警告会提示您运行 `ai-i18n-tools doctor --fix-gitignore`。如果 `.gitignore` 已存在，它会追加一个空行、注释 `# ai-i18n-tools doctor fix` 以及仅缺失的行。它不会重复已存在的行。缺失的文件会使用 `init` 写入的相同块创建。这两个缓存模式遵循配置的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是默认的 `.translation-cache` 行。其他模式包括 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略缓存目录本身的行（例如 `.i18n-cache/`）也会发出警告，因为 Git 不会跟踪被忽略目录下的 `cache.db`。`--fix-gitignore` 不会删除该行。该警告仅在 `--strict` 的情况下才会使命令失败。
+`doctor` 会在配置旁边的 `.gitignore` 缺少所需模式时发出警告。警告会提示您运行 `ai-i18n-tools doctor --fix-gitignore`。当 `.gitignore` 已存在时，它会追加一个空行、注释 `# ai-i18n-tools doctor fix` 以及仅缺少的行。它不会重复已存在的行。缺少的文件会创建包含 `init` 写入的相同块。这两个缓存模式遵循配置的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db` 而不是默认的 `.translation-cache` 行。其他模式是 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略缓存目录本身的行（例如 `.i18n-cache/`）也会发出警告，因为 Git 不会跟踪被忽略目录下的 `cache.db`。`--fix-gitignore` 不会删除该行。除非设置了 `--strict`（此时退出状态为 1），否则警告退出状态为 0。
 
 **关键选项：** `--local`、`--strict`、`--json`、`--fix-gitignore`
 

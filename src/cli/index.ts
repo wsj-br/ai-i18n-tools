@@ -146,7 +146,7 @@ import { BUILD_TIMESTAMP_ISO, PACKAGE_VERSION } from "../build-info.generated.js
 import { computeProjectStats } from "../core/project-stats.js";
 import { parseSlugStyle, resolvePymdownOptions, runWriteHeadingIds } from "./write-heading-ids.js";
 import { runCheckModels } from "./check-models.js";
-import { runDoctor } from "./doctor.js";
+import { DOCTOR_EXIT_ERROR, runDoctor } from "./doctor.js";
 import { runUpgrade } from "./upgrade.js";
 import { ensureProjectGitignore } from "./project-gitignore.js";
 import { runListModels } from "./list-models.js";
@@ -673,7 +673,7 @@ program
         process.exitCode = exitCode;
       } catch (e) {
         console.error(chalk.red(e instanceof Error ? e.message : String(e)));
-        process.exitCode = 1;
+        process.exitCode = DOCTOR_EXIT_ERROR;
       }
     }
   )

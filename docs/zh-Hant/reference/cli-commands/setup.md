@@ -87,13 +87,13 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 檢查專案是否已準備好進行翻譯。報告涵蓋配置語法和結構描述、業務規則、已安裝版本、來源和輸出路徑、UI 目錄檔案、這些目錄中的預留位置不符、快取統計資料、已配置的提供者、已設定的支援環境變數以及模型 ID。包含已重新命名、已移除或已重寫預留位置的目錄會發出警告，並列出一個範例。提供者區段僅列出配置檔案中命名的提供者（包括一個舊版頂層 `openrouter` 區塊）。內建的 OpenRouter 預設值僅在檔案未命名提供者時列出。
 
-依預設，`doctor` 也會根據作用中提供者的目錄檢查已配置的模型 ID，並將已安裝的版本與最新的 GitHub 版本進行比較。`--local` 會跳過這兩個網路呼叫。較新的版本，或失敗的 GitHub 請求，會產生警告。遺失或過期的模型 ID 會導致命令失敗。當任何檢查發出警告時，`--strict` 會以錯誤結束。
+依預設，`doctor` 也會根據作用中提供者的目錄檢查已設定的模型 ID，並將已安裝的版本與最新的 GitHub 版本進行比較。`--local` 會跳過這兩個網路呼叫。較新的版本或失敗的 GitHub 請求會發出警告。遺失或過期的模型 ID 會導致錯誤。當沒有錯誤時，包括檢查發出警告時，結束狀態為 0。錯誤會以狀態 2 結束。當任何檢查發出警告時，`--strict` 會以狀態 1 結束。
 
-API 金鑰值絕不列印。已設定的變數會依字母順序列出，如 `Configured variables: NAME, ...` 所示。非 API 金鑰的變數會包含其值。
+API 金鑰值永遠不會列印。已設定的變數會依字母順序排列為 `Configured variables: NAME, ...`。不是 API 金鑰的變數會包含其值。當變數是從 `.env` 或 `.env.local` 讀取時，每個檔案都會在摘要中發出警告。
 
 遺失的輸入路徑會導致失敗。遺失的輸出目錄僅為備註，因為首次翻譯執行會建立它們。`doctor` 不會重寫組態、建立目錄或將原始文字傳送至模型。`--fix-gitignore` 會附加遺失的 `.gitignore` 行，並保留所有其他檔案不變。
 
-當組態旁的 `.gitignore` 遺失必要的模式時，`doctor` 會發出警告。該警告會指示您執行 `ai-i18n-tools doctor --fix-gitignore`。當 `.gitignore` 已存在時，它會附加一個空白行、註解 `# ai-i18n-tools doctor fix`，以及僅限遺失的行。它不會重複已存在的行。遺失的檔案會以 `init` 寫入的相同區塊建立。這兩個快取模式遵循已設定的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是預設的 `.translation-cache` 行。其他模式為 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略快取目錄本身的行，例如 `.i18n-cache/`，也是一個警告，因為 Git 不會在被忽略的目錄下追蹤 `cache.db`。`--fix-gitignore` 不會移除該行。該警告僅在搭配 `--strict` 時才會使命令失敗。
+當設定檔旁邊的 `.gitignore` 缺少必要的模式時，`doctor` 會發出警告。該警告會指示您執行 `ai-i18n-tools doctor --fix-gitignore`。當 `.gitignore` 已存在時，會附加一個空白行、註解 `# ai-i18n-tools doctor fix`，以及僅缺少的行。它不會重複已存在的行。會建立一個遺失的檔案，其中包含 `init` 寫入的相同區塊。這兩個快取模式遵循已設定的 `cacheDir`，因此 `.i18n-cache` 需要 `.i18n-cache/*` 和 `!.i18n-cache/cache.db`，而不是預設的 `.translation-cache` 行。其他模式為 `benchmark-scores.json`、`.env`、`.env.local`、`.env.*.local`、`*.tmp` 和 `*.backup.*`。忽略快取目錄本身的行，例如 `.i18n-cache/`，也會發出警告，因為 Git 不會追蹤被忽略目錄下的 `cache.db`。`--fix-gitignore` 不會移除該行。該警告會以 0 結束，除非設定了 `--strict`，否則會以 1 結束。
 
 **主要選項：** `--local`、`--strict`、`--json`、`--fix-gitignore`
 

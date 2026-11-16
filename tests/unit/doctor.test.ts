@@ -4,7 +4,7 @@ import path from "path";
 import chalk from "chalk";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { describeRuntime, runDoctor } from "../../src/cli/doctor.js";
+import { describeRuntime, doctorExitCode, runDoctor } from "../../src/cli/doctor.js";
 import { DEFAULT_GITIGNORE_BLOCK } from "../../src/cli/project-gitignore.js";
 import { UI_SOURCE_LOCALE, initUiI18n } from "../../src/i18n/index.js";
 import { stripAnsi } from "../../src/utils/logger.js";
@@ -100,7 +100,10 @@ describe("runDoctor", () => {
 
   it("passes a local UI project without creating a cache database", async () => {
     process.env.OPENROUTER_API_KEY = "doctor-secret-token";
-    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+    });
     const result = await runDoctor({
       cwd: root,
       local: true,
@@ -128,7 +131,10 @@ describe("runDoctor", () => {
     writeProject(
       root,
       uiConfig({ provider: "apikeyfan", providers: { apikeyfan: { translationModels: ["m1"] } } }),
-      { "src/main.ts": "export const label = t('Hello');\n" }
+      {
+        "src/main.ts": "export const label = t('Hello');\n",
+        ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+      }
     );
     let catalogAuth: string | undefined;
     const fetchImpl = (async (url: string | URL, init?: RequestInit) => {
@@ -159,7 +165,10 @@ describe("runDoctor", () => {
 
   it("fails when a configured model is missing from the catalog and skips the network with --local", async () => {
     process.env.OPENROUTER_API_KEY = "doctor-secret-token";
-    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+    });
     const calls: string[] = [];
     const fetchImpl = (async (url: string | URL) => {
       calls.push(String(url));
@@ -185,7 +194,7 @@ describe("runDoctor", () => {
       execPath: "/usr/bin/node",
       argv1: "cli",
     });
-    expect(online.exitCode).toBe(1);
+    expect(online.exitCode).toBe(2);
     expect(messages(online)).toContain("1 translationModels configured for openrouter");
     expect(messages(online)).toContain(
       "the configured model is missing from openrouter's catalog: m1"
@@ -230,7 +239,10 @@ describe("runDoctor", () => {
       uiConfig({
         providers: { openrouter: { translationModels: ["keep", "also"] } },
       }),
-      { "src/main.ts": "export const label = t('Hello');\n" }
+      {
+        "src/main.ts": "export const label = t('Hello');\n",
+        ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+      }
     );
     const valid = await runDoctor({
       cwd: root,
@@ -250,7 +262,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(oneMissing.exitCode).toBe(1);
+    expect(oneMissing.exitCode).toBe(2);
     expect(messages(oneMissing)).toContain(
       "1 of 2 configured models is missing from openrouter's catalog: also"
     );
@@ -269,7 +281,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(someMissing.exitCode).toBe(1);
+    expect(someMissing.exitCode).toBe(2);
     expect(messages(someMissing)).toContain(
       "2 of 3 configured models are missing from openrouter's catalog: gone-a, gone-b"
     );
@@ -281,7 +293,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(allMissing.exitCode).toBe(1);
+    expect(allMissing.exitCode).toBe(2);
     expect(messages(allMissing)).toContain(
       "all 3 configured models are missing from openrouter's catalog: keep, gone-a, gone-b"
     );
@@ -300,7 +312,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(expiredOnly.exitCode).toBe(1);
+    expect(expiredOnly.exitCode).toBe(2);
     expect(messages(expiredOnly)).toContain(
       "the configured model is past its expiration date in openrouter's catalog: old (1999-06-01)"
     );
@@ -323,7 +335,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(expiredSome.exitCode).toBe(1);
+    expect(expiredSome.exitCode).toBe(2);
     expect(messages(expiredSome)).toContain(
       "2 of 3 configured models are past their expiration date in openrouter's catalog: old-a (1999-01-01), old-b (1999-06-01)"
     );
@@ -345,7 +357,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(expiredAll.exitCode).toBe(1);
+    expect(expiredAll.exitCode).toBe(2);
     expect(messages(expiredAll)).toContain(
       "all 2 configured models are past their expiration date in openrouter's catalog: old-a (1999-01-01), old-b (1999-06-01)"
     );
@@ -366,7 +378,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(mixed.exitCode).toBe(1);
+    expect(mixed.exitCode).toBe(2);
     expect(messages(mixed)).toContain("2 translationModels configured for openrouter");
     expect(messages(mixed)).toContain(
       "1 of 3 configured models is missing from openrouter's catalog: gone"
@@ -379,7 +391,10 @@ describe("runDoctor", () => {
 
   it("warns when GitHub has a newer release and does not request it with --local", async () => {
     process.env.OPENROUTER_API_KEY = "k";
-    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+    });
     const fetchImpl = (async (url: string | URL) => {
       const address = String(url);
       if (address.includes("api.github.com")) {
@@ -414,7 +429,7 @@ describe("runDoctor", () => {
     expect(messages(local)).toContain("GitHub release was not checked");
   });
 
-  it("warns when the GitHub request fails without failing the command", async () => {
+  it("warns when the GitHub request fails and stays successful without --strict", async () => {
     process.env.OPENROUTER_API_KEY = "k";
     writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
     const fetchImpl = (async (url: string | URL) => {
@@ -445,7 +460,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(2);
     expect(messages(result)).toContain("Invalid JSON");
     expect(messages(result)).not.toContain("sourceRoots");
   });
@@ -462,7 +477,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(2);
     expect(messages(result)).toContain("batchSize");
     expect(messages(result)).not.toContain("missing-root-should-not-be-checked");
   });
@@ -517,7 +532,7 @@ describe("runDoctor", () => {
       argv1: "cli",
     });
     const text = messages(result);
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(2);
     expect(text).toContain("missing-src");
     expect(text).toContain("docs/**/*.md");
     expect(text).toContain("i18n");
@@ -534,7 +549,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(result.exitCode).toBe(1);
+    expect(result.exitCode).toBe(2);
     expect(messages(result)).toContain("OPENROUTER_API_KEY is not set");
     expect(log.mock.calls.join("\n")).not.toContain("doctor-secret-token");
   });
@@ -580,7 +595,7 @@ describe("runDoctor", () => {
         provider: "ollama",
         providers: { ollama: { translationModels: ["llama3.1"] } },
       }),
-      { "src/main.ts": "export const label = t('Hello');\n" }
+      { "src/main.ts": "export const label = t('Hello');\n", ".gitignore": DEFAULT_GITIGNORE_BLOCK }
     );
     const result = await runDoctor({
       cwd: root,
@@ -604,7 +619,7 @@ describe("runDoctor", () => {
         provider: "cheaperinference",
         providers: { cheaperinference: { translationModels: ["gemini-2.5-flash"] } },
       }),
-      { "src/main.ts": "export const label = t('Hello');\n" }
+      { "src/main.ts": "export const label = t('Hello');\n", ".gitignore": DEFAULT_GITIGNORE_BLOCK }
     );
     const result = await runDoctor({
       cwd: root,
@@ -660,6 +675,7 @@ describe("runDoctor", () => {
     process.env.OPENROUTER_API_KEY = "k";
     writeProject(root, uiConfig(), {
       "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
       "strings.json": JSON.stringify({ a: { source: "A" }, b: { source: "B" } }),
       "locales/ui-languages.json": JSON.stringify([
         { code: "de", label: "Deutsch", englishName: "German", direction: "ltr" },
@@ -829,7 +845,7 @@ describe("runDoctor", () => {
       execPath: "node",
       argv1: "cli",
     });
-    expect(warned.exitCode).toBe(1);
+    expect(warned.exitCode).toBe(2);
     expect(messages(warned)).toContain("glossary.contextFiles");
     expect(messages(warned)).toContain("glossary-user.csv is missing");
 
@@ -941,6 +957,7 @@ describe("runDoctor", () => {
   it("loads .env and .env.local beside the config when no API key is set", async () => {
     writeProject(root, uiConfig(), {
       "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
       ".env": "OPENROUTER_API_KEY=from-base\nI18N_LOG_LEVEL=debug\nI18N_TARGET_LOCALES=fr\n",
       ".env.local": "OPENROUTER_API_KEY=from-local\nAI_I18N_LANG=pt-BR\n",
     });
@@ -966,29 +983,39 @@ describe("runDoctor", () => {
       "Read I18N_LOG_LEVEL, I18N_TARGET_LOCALES from .env and AI_I18N_LANG, OPENROUTER_API_KEY from .env.local"
     );
     expect(warning).not.toContain("from-local");
-    expect(text).toContain("pass:Environment variables were not set, reading them from .env");
-    expect(text).toContain("pass:Environment variables were not set, reading them from .env.local");
+    expect(text).toContain("warn:Environment variables were not set, reading them from .env");
+    expect(text).toContain("warn:Environment variables were not set, reading them from .env.local");
     expect(text).not.toContain("reading them from .env: I18N_LOG_LEVEL");
-    expect(result.checks.some((check) => check.status === "warn" && check.caution === true)).toBe(
-      false
+    expect(result.exitCode).toBe(0);
+    const envFileWarnings = result.checks.filter(
+      (check) =>
+        check.status === "warn" &&
+        check.message.startsWith("Environment variables were not set, reading them from")
     );
+    expect(envFileWarnings).toHaveLength(2);
     const printed = log.mock.calls.map((call) => call.join(" "));
     const plain = printed.map((line) => stripAnsi(line));
-    expect(plain).toContain("  ■  Environment variables were not set, reading them from .env");
+    expect(plain).toContain("  ⚠  Environment variables were not set, reading them from .env");
     expect(plain).toContain(
-      "  ■  Environment variables were not set, reading them from .env.local"
+      "  ⚠  Environment variables were not set, reading them from .env.local"
     );
-    expect(printed).toContain(
-      chalk.yellow("  ■  Environment variables were not set, reading them from .env")
+    const envLine = chalk.yellow("Environment variables were not set, reading them from .env");
+    const localLine = chalk.yellow(
+      "Environment variables were not set, reading them from .env.local"
     );
-    expect(printed).toContain(
-      chalk.yellow("  ■  Environment variables were not set, reading them from .env.local")
+    expect(printed).toContain(`  ${chalk.yellow("⚠")}  ${envLine}`);
+    expect(printed).toContain(`  ${chalk.yellow("⚠")}  ${localLine}`);
+    expect(plain.some((line) => line.includes("Summary:") && line.includes("2 warnings"))).toBe(
+      true
     );
   });
 
   it("keeps the Environment notice when startup already loaded the env file", async () => {
     process.env.OPENROUTER_API_KEY = "from-startup";
-    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".gitignore": DEFAULT_GITIGNORE_BLOCK,
+    });
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const result = await runDoctor({
       cwd: root,
@@ -1004,15 +1031,19 @@ describe("runDoctor", () => {
     expect(warn).not.toHaveBeenCalled();
     expect(result.exitCode).toBe(0);
     expect(messages(result)).toContain(
-      "pass:Environment variables were not set, reading them from .env"
+      "warn:Environment variables were not set, reading them from .env"
     );
     expect(messages(result)).not.toContain("OPENROUTER_API_KEY, I18N_LOG_LEVEL");
     expect(
       result.checks.filter((check) => check.status === "warn").map((check) => check.message)
-    ).not.toContain("Environment variables were not set, reading them from .env");
+    ).toContain("Environment variables were not set, reading them from .env");
     const printed = log.mock.calls.map((call) => call.join(" "));
+    const plain = printed.map((line) => stripAnsi(line));
     expect(printed).toContain(
-      chalk.yellow("  ■  Environment variables were not set, reading them from .env")
+      `  ${chalk.yellow("⚠")}  ${chalk.yellow("Environment variables were not set, reading them from .env")}`
+    );
+    expect(plain.some((line) => line.includes("Summary:") && line.includes("1 warnings"))).toBe(
+      true
     );
   });
 
@@ -1277,5 +1308,17 @@ describe("runDoctor", () => {
         argv1: "ignored",
       })
     ).toBe("standalone executable /home/user/.local/bin/ai-i18n-tools");
+  });
+});
+
+describe("doctorExitCode", () => {
+  it("uses 0 for a clean run, 1 for warnings, and 2 for errors", () => {
+    expect(doctorExitCode(0, 0, false)).toBe(0);
+    expect(doctorExitCode(0, 2, false)).toBe(0);
+    expect(doctorExitCode(3, 0, false)).toBe(2);
+    expect(doctorExitCode(1, 4, false)).toBe(2);
+    expect(doctorExitCode(0, 1, true)).toBe(1);
+    expect(doctorExitCode(1, 1, true)).toBe(2);
+    expect(doctorExitCode(0, 0, true)).toBe(0);
   });
 });

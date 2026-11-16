@@ -414,7 +414,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1412
+        "line": 1423
       }
     ]
   },
@@ -573,7 +573,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1148
+        "line": 1159
       }
     ]
   },
@@ -835,7 +835,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 614
+        "line": 625
       },
       {
         "file": "src/cli/index.ts",
@@ -3970,7 +3970,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 129
+        "line": 144
       }
     ]
   },
@@ -4001,7 +4001,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 131
+        "line": 146
       }
     ]
   },
@@ -4032,7 +4032,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 142
+        "line": 157
       }
     ]
   },
@@ -4063,7 +4063,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 144
+        "line": 159
       }
     ]
   },
@@ -4094,7 +4094,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 339
+        "line": 354
       }
     ]
   },
@@ -4125,7 +4125,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 340
+        "line": 355
       },
       {
         "file": "src/dashboard-app/index.html",
@@ -4160,7 +4160,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 341
+        "line": 356
       }
     ]
   },
@@ -4191,7 +4191,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 342
+        "line": 357
       }
     ]
   },
@@ -4222,7 +4222,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 343
+        "line": 358
       },
       {
         "file": "src/cli/usage.ts",
@@ -4269,7 +4269,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 344
+        "line": 359
       }
     ]
   },
@@ -4300,7 +4300,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 345
+        "line": 360
       }
     ]
   },
@@ -4331,7 +4331,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 372
+        "line": 383
       }
     ]
   },
@@ -4362,7 +4362,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 414
+        "line": 425
       }
     ]
   },
@@ -4393,7 +4393,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 417
+        "line": 428
       }
     ]
   },
@@ -4424,7 +4424,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 457
+        "line": 468
       }
     ]
   },
@@ -4455,7 +4455,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 469
+        "line": 480
       }
     ]
   },
@@ -4486,7 +4486,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 527
+        "line": 538
       }
     ]
   },
@@ -4517,7 +4517,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 544
+        "line": 555
       },
       {
         "file": "src/cli/upgrade.ts",
@@ -4552,7 +4552,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 554
+        "line": 565
       },
       {
         "file": "src/cli/upgrade.ts",
@@ -4587,7 +4587,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 564
+        "line": 575
       },
       {
         "file": "src/cli/upgrade.ts",
@@ -4622,7 +4622,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 578
+        "line": 589
       },
       {
         "file": "src/cli/upgrade.ts",
@@ -4657,7 +4657,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 588
+        "line": 599
       }
     ]
   },
@@ -4688,7 +4688,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 598
+        "line": 609
       },
       {
         "file": "src/cli/upgrade.ts",
@@ -4723,7 +4723,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 612
+        "line": 623
       }
     ]
   },
@@ -4754,7 +4754,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 614
+        "line": 625
       }
     ]
   },
@@ -4785,7 +4785,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 635
+        "line": 646
       }
     ]
   },
@@ -4816,7 +4816,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 641
+        "line": 652
       }
     ]
   },
@@ -4847,7 +4847,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 658
+        "line": 669
       }
     ]
   },
@@ -4878,7 +4878,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 690
+        "line": 701
       }
     ]
   },
@@ -4909,7 +4909,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 697
+        "line": 708
       }
     ]
   },
@@ -4940,7 +4940,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 701
+        "line": 712
       }
     ]
   },
@@ -4971,7 +4971,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 707
+        "line": 718
       }
     ]
   },
@@ -5002,7 +5002,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 726
+        "line": 737
       }
     ]
   },
@@ -5033,7 +5033,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 731
+        "line": 742
       }
     ]
   },
@@ -5064,7 +5064,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 745
+        "line": 756
       }
     ]
   },
@@ -5095,7 +5095,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 754
+        "line": 765
       }
     ]
   },
@@ -5126,7 +5126,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 764
+        "line": 775
       }
     ]
   },
@@ -5157,7 +5157,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 774
+        "line": 785
       }
     ]
   },
@@ -5188,7 +5188,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 784
+        "line": 795
       }
     ]
   },
@@ -5219,7 +5219,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 793
+        "line": 804
       }
     ]
   },
@@ -5250,7 +5250,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 807
+        "line": 818
       }
     ]
   },
@@ -5281,7 +5281,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 819
+        "line": 830
       }
     ]
   },
@@ -5312,7 +5312,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 838
+        "line": 849
       }
     ]
   },
@@ -5343,7 +5343,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 847
+        "line": 858
       }
     ]
   },
@@ -5374,7 +5374,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 856
+        "line": 867
       }
     ]
   },
@@ -5405,7 +5405,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 866
+        "line": 877
       }
     ]
   },
@@ -5436,7 +5436,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 877
+        "line": 888
       }
     ]
   },
@@ -5467,7 +5467,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 888
+        "line": 899
       }
     ]
   },
@@ -5498,7 +5498,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 904
+        "line": 915
       }
     ]
   },
@@ -5529,7 +5529,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 915
+        "line": 926
       }
     ]
   },
@@ -5560,7 +5560,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 929
+        "line": 940
       }
     ]
   },
@@ -5591,7 +5591,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 935
+        "line": 946
       }
     ]
   },
@@ -5622,7 +5622,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 938
+        "line": 949
       }
     ]
   },
@@ -5653,7 +5653,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 948
+        "line": 959
       }
     ]
   },
@@ -5684,7 +5684,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 957
+        "line": 968
       }
     ]
   },
@@ -5715,7 +5715,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 961
+        "line": 972
       }
     ]
   },
@@ -5746,7 +5746,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 989
+        "line": 1000
       }
     ]
   },
@@ -5777,7 +5777,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1003
+        "line": 1014
       }
     ]
   },
@@ -5808,7 +5808,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1006
+        "line": 1017
       }
     ]
   },
@@ -5839,7 +5839,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1019
+        "line": 1030
       }
     ]
   },
@@ -5870,7 +5870,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1028
+        "line": 1039
       }
     ]
   },
@@ -5901,7 +5901,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1037
+        "line": 1048
       }
     ]
   },
@@ -5932,7 +5932,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1043
+        "line": 1054
       }
     ]
   },
@@ -5963,7 +5963,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1046
+        "line": 1057
       }
     ]
   },
@@ -5994,7 +5994,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1059
+        "line": 1070
       }
     ]
   },
@@ -6025,7 +6025,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1070
+        "line": 1081
       }
     ]
   },
@@ -6056,7 +6056,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1076
+        "line": 1087
       }
     ]
   },
@@ -6087,7 +6087,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1077
+        "line": 1088
       }
     ]
   },
@@ -6118,7 +6118,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1082
+        "line": 1093
       }
     ]
   },
@@ -6149,7 +6149,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1097
+        "line": 1108
       }
     ]
   },
@@ -6180,7 +6180,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1109
+        "line": 1120
       }
     ]
   },
@@ -6211,7 +6211,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1113
+        "line": 1124
       }
     ]
   },
@@ -6242,7 +6242,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1117
+        "line": 1128
       }
     ]
   },
@@ -6273,7 +6273,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1123
+        "line": 1134
       }
     ]
   },
@@ -6304,7 +6304,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1124
+        "line": 1135
       }
     ]
   },
@@ -6335,7 +6335,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1129
+        "line": 1140
       }
     ]
   },
@@ -6366,7 +6366,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1136
+        "line": 1147
       }
     ]
   },
@@ -6397,7 +6397,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1142
+        "line": 1153
       }
     ]
   },
@@ -6428,7 +6428,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1160
+        "line": 1171
       }
     ]
   },
@@ -6459,7 +6459,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1166
+        "line": 1177
       }
     ]
   },
@@ -6490,7 +6490,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1180
+        "line": 1191
       }
     ]
   },
@@ -6521,7 +6521,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1185
+        "line": 1196
       }
     ]
   },
@@ -6552,7 +6552,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1188
+        "line": 1199
       }
     ]
   },
@@ -6583,11 +6583,11 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1192
+        "line": 1203
       },
       {
         "file": "src/cli/doctor.ts",
-        "line": 1241
+        "line": 1252
       }
     ]
   },
@@ -6618,7 +6618,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1231
+        "line": 1242
       }
     ]
   },
@@ -6649,7 +6649,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1234
+        "line": 1245
       }
     ]
   },
@@ -6680,7 +6680,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1236
+        "line": 1247
       }
     ]
   },
@@ -6711,7 +6711,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1245
+        "line": 1256
       }
     ]
   },
@@ -6742,7 +6742,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1247
+        "line": 1258
       }
     ]
   },
@@ -6773,7 +6773,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1261
+        "line": 1272
       }
     ]
   },
@@ -6804,7 +6804,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1269
+        "line": 1280
       }
     ]
   },
@@ -6835,7 +6835,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1304
+        "line": 1315
       }
     ]
   },
@@ -6866,7 +6866,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1309
+        "line": 1320
       }
     ]
   },
@@ -6897,7 +6897,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1311
+        "line": 1322
       }
     ]
   },
@@ -6928,7 +6928,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1320
+        "line": 1331
       }
     ]
   },
@@ -6959,7 +6959,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1326
+        "line": 1337
       }
     ]
   },
@@ -6990,7 +6990,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1334
+        "line": 1345
       }
     ]
   },
@@ -7021,7 +7021,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1340
+        "line": 1351
       }
     ]
   },
@@ -7052,7 +7052,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1365
+        "line": 1376
       }
     ]
   },
@@ -7083,7 +7083,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1376
+        "line": 1387
       }
     ]
   },
@@ -7114,7 +7114,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1390
+        "line": 1401
       }
     ]
   },
@@ -7145,7 +7145,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1395
+        "line": 1406
       }
     ]
   },
@@ -7176,7 +7176,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1417
+        "line": 1428
       }
     ]
   },
@@ -7207,7 +7207,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1438
+        "line": 1449
       },
       {
         "file": "src/cli/index.ts",
@@ -7242,7 +7242,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1440
+        "line": 1451
       },
       {
         "file": "src/cli/index.ts",
@@ -7277,7 +7277,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1462
+        "line": 1473
       }
     ]
   },
@@ -7308,7 +7308,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1471
+        "line": 1482
       }
     ]
   },
@@ -7339,7 +7339,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1489
+        "line": 1500
       }
     ]
   },
@@ -7370,7 +7370,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1492
+        "line": 1503
       }
     ]
   },
@@ -7401,7 +7401,7 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1512
+        "line": 1523
       }
     ]
   },
@@ -7432,11 +7432,11 @@
     "locations": [
       {
         "file": "src/cli/doctor.ts",
-        "line": 1515
+        "line": 1526
       },
       {
         "file": "src/cli/doctor.ts",
-        "line": 1565
+        "line": 1571
       }
     ]
   },

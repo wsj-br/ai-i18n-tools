@@ -9,6 +9,9 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+- **Changed**: `doctor` — reading variables from `.env` or `.env.local` is a warning in the summary.
+- **Changed**: `doctor` — exit status is 0 when there is no error, including when a check warns. `--strict` exits 1 for a warning and leaves an error at 2.
+
 ## [1.15.1] - 2026-11-16
 
 - **Changed**: scripts — `pnpm pre-release` builds the standalone executable (`pnpm build:binary`) and runs its smoke tests (`--version`, `list-languages`, `init`, `status`).
