@@ -66,7 +66,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json` पढ़ता है, प्रत्येक लक्ष्य लोकेल के लिए सक्रिय LLM प्रदाता पर मॉडल को बैच भेजता है, `ui.flatOutputDir` में फ्लैट JSON फ़ाइलें (`de.json`, `fr.json`, आदि) लिखता है। मॉडल चयन UI श्रृंखला का उपयोग करता है: `localeModels(locale)` → `uiModels` → `translationModels` ([AI मॉडल](/hi/guide/ai-models#model-fallback-chain) देखें)। एक लोकेल के भीतर, एक साथ `uiBatchConcurrency` बैच तक चलते हैं (डिफ़ॉल्ट **2**; [कॉन्फ़िगरेशन — uiBatchConcurrency](/hi/reference/configuration#uibatchconcurrency-optional) देखें)। `-j` अभी भी केवल लक्ष्य लोकेल को समानांतर करता है।
+`strings.json` को पढ़ता है, प्रत्येक लक्ष्य लोकले के लिए सक्रिय LLM प्रदाता पर मॉडलों को बैच भेजता है, और फ़्लैट JSON फ़ाइलें (`de.json`, `fr.json`, आदि) `ui.flatOutputDir` में लिखता है। मॉडल चयन UI श्रृंखला का उपयोग करता है: `localeModels(locale)` → `uiModels` → `translationModels` ([AI मॉडल्स](/hi/guide/ai-models#model-fallback-chain) देखें)। एक लोकले के भीतर, एक साथ `uiBatchConcurrency` तक बैच चलते हैं (डिफ़ॉल्ट **2**; [कॉन्फ़िगरेशन — uiBatchConcurrency](/hi/reference/configuration#uibatchconcurrency-optional) देखें)। `-j` अभी भी केवल लक्ष्य लोकले को समानांतर करता है। प्रत्येक सफल बैच को `strings.json` और फ़्लैट लोकले फ़ाइल में अगले बैच के शुरू होने से पहले लिखा जाता है, इसलिए रन को रोकने या बाद में किसी API त्रुटि से पहले से समाप्त हो चुके बैच बने रहते हैं।
 
 <a id="translations-database-stringsjson"></a>
 ### अनुवाद डेटाबेस (`strings.json`)

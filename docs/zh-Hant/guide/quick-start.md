@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 每個呼叫 LLM 的指令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 和 `sync`）都需要以下兩者：
 
-1. 在 `ai-i18n-tools.config.json` 中至少有一個提供者：一個帶有 `translationModels` 的 `providers.<name>` 區塊，以及在設定多個提供者時，一個頂層的 `provider` 金鑰。`init -P <provider>` 會建立該預設設定的骨架。若要新增提供者，請參閱 [LLM 提供者](/zh-Hant/guide/providers-and-models)。若要選擇模型清單，請參閱 [AI 模型](/zh-Hant/guide/ai-models)。
-2. 在您的環境或專案根目錄的 `.env` 檔案中，有相符的 API 金鑰。每個內建的預設設定都會從 [預設設定表格](/zh-Hant/guide/providers-and-models#built-in-providers) 讀取一個具名變數，例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter` 或 `OPENAI_API_KEY` 搭配 `-P openai`。Ollama 使用本機端點，不需要金鑰。
+1. 在 `ai-i18n-tools.config.json` 中至少有一個提供者：一個帶有 `translationModels` 的 `providers.<name>` 區塊，以及當設定了多個提供者時的一個頂層 `provider` 鍵。`init -P <provider>` 會建立該預設設定的骨架。若要新增提供者，請參閱 [LLM 提供者](/zh-Hant/guide/providers-and-models)。若要選擇模型清單，請參閱 [AI 模型](/zh-Hant/guide/ai-models)。
+2. 您環境中相符的 API 金鑰，或當尚未設定任何提供者 API 金鑰時，在 `ai-i18n-tools.config.json` 旁的 `.env` / `.env.local` 中。每個內建的預設設定都會從 [預設設定表](/zh-Hant/guide/providers-and-models#built-in-providers) 讀取一個具名變數，例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter` 或 `OPENAI_API_KEY` 搭配 `-P openai`。Ollama 使用本機端點，且不需要金鑰。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

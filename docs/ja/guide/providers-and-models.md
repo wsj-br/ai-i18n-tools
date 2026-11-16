@@ -35,7 +35,7 @@ CLI は、トップレベルの `provider` キー (または、1 つだけ設定
 
 **プリセット以外**のキーについては、`baseUrl` と `apiKeyEnv` を設定で明示的に設定します。
 
-アクティブなプロバイダーの API キーを環境または `.env` ファイルに設定します。CLI は、シェルですでに設定されている変数を上書きすることなく、作業ディレクトリから `.env` を自動的にロードします。[環境変数](/ja/reference/environment-variables) を参照してください。
+アクティブなプロバイダーのAPIキーを環境変数に設定するか、またはプロバイダーのAPIキーがまだ設定されていない場合は、`ai-i18n-tools.config.json` と同じディレクトリにある `.env` / `.env.local` に設定します。CLIは、それらのファイルから読み取った変数名を表示します。[環境変数](/ja/reference/environment-variables) を参照してください。
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### ゼロデータ保持 (より安価な推論)

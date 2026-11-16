@@ -66,7 +66,7 @@ The scanner is configurable: add custom function names via `ui.uiExtractor.funcN
 ai-i18n-tools translate-ui
 ```
 
-Reads `strings.json`, sends batches to the models on the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [AI Models](/guide/ai-models#model-fallback-chain)). Within a locale, up to `uiBatchConcurrency` batches run at once (default **2**; see [Configuration — uiBatchConcurrency](/reference/configuration#uibatchconcurrency-optional)). `-j` still only parallelises target locales.
+Reads `strings.json`, sends batches to the models on the active LLM provider for each target locale, writes flat JSON files (`de.json`, `fr.json`, etc.) to `ui.flatOutputDir`. Model selection uses the UI chain: `localeModels(locale)` → `uiModels` → `translationModels` (see [AI Models](/guide/ai-models#model-fallback-chain)). Within a locale, up to `uiBatchConcurrency` batches run at once (default **2**; see [Configuration — uiBatchConcurrency](/reference/configuration#uibatchconcurrency-optional)). `-j` still only parallelises target locales. Each successful batch is written to `strings.json` and the flat locale file before the next batch starts, so stopping the run or a later API error keeps the batches already finished.
 
 <a id="translations-database-stringsjson"></a>
 ### Translations database (`strings.json`)

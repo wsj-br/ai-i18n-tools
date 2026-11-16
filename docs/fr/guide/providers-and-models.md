@@ -35,7 +35,7 @@ Les clés de fournisseur prédéfinies n'ont besoin que de `translationModels` �
 
 Pour toute clé **non prédéfinie**, définissez explicitement `baseUrl` et `apiKeyEnv` dans la configuration.
 
-Définissez la clé API du fournisseur actif dans votre environnement ou votre fichier `.env`. La CLI charge automatiquement `.env` depuis le répertoire de travail sans écraser les variables déjà définies dans le shell. Voir [Variables d'environnement](/fr/reference/environment-variables).
+Définissez la clé API du fournisseur actif dans votre environnement, ou dans `.env` / `.env.local` à côté de `ai-i18n-tools.config.json` lorsqu'aucune clé API de fournisseur n'est déjà définie. La CLI affiche les noms de variables qu'elle a lus dans ces fichiers. Consultez [Variables d'environnement](/fr/reference/environment-variables).
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### Aucune conservation des données (inférence moins chère)

@@ -468,7 +468,7 @@ src/
     ├── logger.ts                   Leveled logger with ANSI support
     ├── hash.ts                     Segment hash (SHA-256 first 16 hex)
     ├── table.ts                    Display-width aware table rendering (CJK/emoji column alignment)
-    ├── load-dotenv.ts              Auto-load `.env` from the cwd at CLI startup (never overrides existing env)
+    ├── load-dotenv.ts              Load `.env` / `.env.local` beside the config when no API key is set
     └── ignore-parser.ts            .translate-ignore file parser
 ```
 

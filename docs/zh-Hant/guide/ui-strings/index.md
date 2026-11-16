@@ -66,7 +66,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-讀取 `strings.json`，將批次傳送至每個目標地區設定的活動 LLM 提供者上的模型，將平面 JSON 檔案（例如 `de.json`、`fr.json` 等）寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels`（請參閱[AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。在一個地區設定中，最多同時執行 `uiBatchConcurrency` 個批次（預設為 **2**；請參閱[組態 — uiBatchConcurrency](/zh-Hant/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然只平行處理目標地區設定。
+讀取 `strings.json`，將批次傳送至每個目標語言環境中作用中的 LLM 提供者上的模型，並將平面 JSON 檔案 (`de.json`、`fr.json` 等) 寫入 `ui.flatOutputDir`。模型選擇使用 UI 鏈：`localeModels(locale)` → `uiModels` → `translationModels` (請參閱 [AI 模型](/zh-Hant/guide/ai-models#model-fallback-chain))。在一個語言環境中，最多可同時執行 `uiBatchConcurrency` 個批次 (預設值為 **2**；請參閱 [組態 — uiBatchConcurrency](/zh-Hant/reference/configuration#uibatchconcurrency-optional))。`-j` 仍然只會平行處理目標語言環境。每個成功的批次都會在下一個批次開始之前寫入 `strings.json` 和平面語言環境檔案，因此停止執行或稍後的 API 錯誤會保留已完成的批次。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻譯資料庫 (`strings.json`)

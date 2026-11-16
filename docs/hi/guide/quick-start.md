@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 प्रत्येक कमांड जो एक LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, और `sync`) को कॉल करती है, उसे इन दोनों की आवश्यकता होती है:
 
-1. `ai-i18n-tools.config.json` में कम से कम एक प्रोवाइडर: `translationModels` के साथ एक `providers.<name>` ब्लॉक, और जब एक से ज़्यादा प्रोवाइडर कॉन्फ़िगर किए गए हों, तो एक टॉप-लेवल `provider` की। `init -P <provider>` उस प्रीसेट को स्कैफ़ोल्ड करता है। प्रोवाइडर जोड़ने के लिए, [LLM प्रोवाइडर](/hi/guide/providers-and-models) देखें। मॉडल सूची चुनने के लिए, [AI मॉडल](/hi/guide/ai-models) देखें।
-2. आपके एनवायरमेंट में या प्रोजेक्ट-रूट `.env` फ़ाइल में मैचिंग API की। हर बिल्ट-इन प्रीसेट [प्रीसेट टेबल](/hi/guide/providers-and-models#built-in-providers) से एक नामित वैरिएबल पढ़ता है, उदाहरण के लिए `-P openrouter` के साथ `OPENROUTER_API_KEY` या `-P openai` के साथ `OPENAI_API_KEY`। Ollama एक लोकल एंडपॉइंट का इस्तेमाल करता है और उसे किसी की की ज़रूरत नहीं होती।
+1. `ai-i18n-tools.config.json` में कम से कम एक प्रोवाइडर: `translationModels` के साथ एक `providers.<name>` ब्लॉक, और जब एक से ज़्यादा प्रोवाइडर कॉन्फ़िगर किए गए हों, तो एक टॉप-लेवल `provider` की. `init -P <provider>` उस प्रीसेट को स्कैफ़ोल्ड करता है. प्रोवाइडर जोड़ने के लिए, [LLM प्रोवाइडर](/hi/guide/providers-and-models) देखें. मॉडल की सूची चुनने के लिए, [AI मॉडल](/hi/guide/ai-models) देखें.
+2. आपके एनवायरमेंट में मैचिंग API की, या जब कोई प्रोवाइडर API की पहले से सेट नहीं है, तो `ai-i18n-tools.config.json` के बगल में `.env` / `.env.local` में. हर बिल्ट-इन प्रीसेट [प्रीसेट टेबल](/hi/guide/providers-and-models#built-in-providers) से एक नामित वैरिएबल पढ़ता है, उदाहरण के लिए, `-P openrouter` के साथ `OPENROUTER_API_KEY` या `-P openai` के साथ `OPENAI_API_KEY`. Ollama एक लोकल एंडपॉइंट का इस्तेमाल करता है और उसे किसी की की ज़रूरत नहीं होती.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

@@ -38,7 +38,7 @@ pnpm add -D ai-i18n-tools
 Every command that calls an LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, and `sync`) needs both of these:
 
 1. At least one provider in `ai-i18n-tools.config.json`: a `providers.<name>` block with `translationModels`, and a top-level `provider` key when more than one provider is configured. `init -P <provider>` scaffolds that preset. To add providers, see [LLM providers](/guide/providers-and-models). To choose the model list, see [AI Models](/guide/ai-models).
-2. The matching API key in your environment or a project-root `.env` file. Each built-in preset reads a named variable from the [preset table](/guide/providers-and-models#built-in-providers), for example `OPENROUTER_API_KEY` with `-P openrouter` or `OPENAI_API_KEY` with `-P openai`. Ollama uses a local endpoint and needs no key.
+2. The matching API key in your environment, or in `.env` / `.env.local` next to `ai-i18n-tools.config.json` when no provider API key is already set. Each built-in preset reads a named variable from the [preset table](/guide/providers-and-models#built-in-providers), for example `OPENROUTER_API_KEY` with `-P openrouter` or `OPENAI_API_KEY` with `-P openai`. Ollama uses a local endpoint and needs no key.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

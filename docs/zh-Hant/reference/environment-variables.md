@@ -46,4 +46,4 @@
 | `NO_COLOR`             | 當 `1` 時，停用日誌輸出中的 ANSI 顏色。              |
 | `I18N_LOG_SESSION_MAX` | 每個日誌會話保留的最大行數（預設值 `5000`）。           |
 
-啟動時，CLI 也會從目前工作目錄自動載入一個 `.env` 檔案（透過 Node 的 `process.loadEnvFile`），以便在不透過 `direnv` 載入 `.envrc` 的非互動式 shell 中載入供應商 API 金鑰。環境中已存在的變數永不被覆寫，因此實際的 CI/生產值會優先。
+當未設定提供者 API 金鑰時，CLI 和 `doctor` 會從包含 `ai-i18n-tools.config.json` 的目錄中讀取 `.env` 和 `.env.local`。僅會複製上方表格中的變數 (以及自訂的 `providers.*.apiKeyEnv`)，且僅在該變數未設定時才會複製。當兩個檔案設定相同名稱時，`.env.local` 優先。會發出警告，指出已讀取的檔案和變數。`doctor` 會在「環境」區段中重複此警告。如果任何提供者 API 金鑰已具有值，則不會讀取任何檔案。

@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 Jeder Befehl, der ein LLM aufruft (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg` und `sync`), benötigt beides:
 
-1. Mindestens ein Anbieter in `ai-i18n-tools.config.json`: ein `providers.<name>`-Block mit `translationModels` und ein `provider`-Schlüssel der obersten Ebene, wenn mehr als ein Anbieter konfiguriert ist. `init -P <provider>` erstellt diese Voreinstellung. Informationen zum Hinzufügen von Anbietern finden Sie unter [LLM-Anbieter](/de/guide/providers-and-models). Informationen zur Auswahl der Modellliste finden Sie unter [KI-Modelle](/de/guide/ai-models).
-2. Der passende API-Schlüssel in Ihrer Umgebung oder in einer `.env`-Datei im Projektstammverzeichnis. Jede integrierte Voreinstellung liest eine benannte Variable aus der [Voreinstellungstabelle](/de/guide/providers-and-models#built-in-providers), zum Beispiel `OPENROUTER_API_KEY` mit `-P openrouter` oder `OPENAI_API_KEY` mit `-P openai`. Ollama verwendet einen lokalen Endpunkt und benötigt keinen Schlüssel.
+1. Mindestens ein Anbieter in `ai-i18n-tools.config.json`: ein `providers.<name>`-Block mit `translationModels` und ein Top-Level-`provider`-Schlüssel, wenn mehr als ein Anbieter konfiguriert ist. `init -P <provider>` erstellt dieses Preset. Um Anbieter hinzuzufügen, siehe [LLM-Anbieter](/de/guide/providers-and-models). Um die Modellliste auszuwählen, siehe [KI-Modelle](/de/guide/ai-models).
+2. Der passende API-Schlüssel in Ihrer Umgebung oder in `.env` / `.env.local` neben `ai-i18n-tools.config.json`, wenn noch kein Anbieter-API-Schlüssel festgelegt ist. Jedes integrierte Preset liest eine benannte Variable aus der [Preset-Tabelle](/de/guide/providers-and-models#built-in-providers), zum Beispiel `OPENROUTER_API_KEY` mit `-P openrouter` oder `OPENAI_API_KEY` mit `-P openai`. Ollama verwendet einen lokalen Endpunkt und benötigt keinen Schlüssel.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

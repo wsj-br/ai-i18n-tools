@@ -576,10 +576,11 @@ pnpm pre-release
 1. Sync every example `"ai-i18n-tools"` range to `^<root version>`, and set `version` in `plugin.json` and `.claude-plugin/` to that same version (`scripts/sync-example-ai-i18n-tools-version.mjs`)
 2. `pnpm build` and `pnpm i18n:self` — compile and verify UI strings are translated
 3. `pnpm format`, `pnpm lint`, `pnpm clean`, `pnpm build`, `pnpm test`
-4. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
-5. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
-6. `pnpm docs:build`
-7. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/docusaurus-docs`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/nextra-docs`, and `examples/vitepress-docs`
+4. `pnpm build:binary` — build the standalone executable for this platform and smoke-test `--version`, `list-languages`, `init`, and `status`
+5. `pnpm i18n:sync` — translate `docs/index.md` and refresh docs landing locale copies
+6. `pnpm i18n:update-headings` and `pnpm i18n:translate:sync` — refresh heading anchors and run the full `sync` pipeline
+7. `pnpm docs:build`
+8. Production checks for buildable examples: `examples/astro-docs`, `examples/astro-website`, `examples/console-app` (`start`), `examples/fumadocs-docs`, `examples/multi-provider`, `examples/docusaurus-docs`, `examples/nextjs-app`, `examples/nextjs-app/docs-site`, `examples/nextra-docs`, and `examples/vitepress-docs`
 
 It does **not** run `examples/test-markdown` (build invokes live translation and needs API keys). Resolve any failures locally; CI applies the same checks before npm publish.
 

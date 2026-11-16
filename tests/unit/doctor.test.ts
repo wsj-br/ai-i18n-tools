@@ -1,6 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import chalk from "chalk";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { describeRuntime, runDoctor } from "../../src/cli/doctor.js";
@@ -592,6 +593,67 @@ describe("runDoctor", () => {
     expect(messages(result)).toContain(
       "ollama (active, API key is not required, baseUrl http://localhost:11434/v1)"
     );
+    expect(messages(result)).not.toContain("openrouter");
+  });
+
+  it("does not list the default openrouter provider when the config names another", async () => {
+    process.env.CHEAPERINFERENCE_API_KEY = "ci-secret-token";
+    writeProject(
+      root,
+      uiConfig({
+        provider: "cheaperinference",
+        providers: { cheaperinference: { translationModels: ["gemini-2.5-flash"] } },
+      }),
+      { "src/main.ts": "export const label = t('Hello');\n" }
+    );
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const text = messages(result);
+    expect(result.exitCode).toBe(0);
+    expect(text).toContain(
+      "cheaperinference (active, CHEAPERINFERENCE_API_KEY is set, baseUrl https://api.cheaperinference.com/v1)"
+    );
+    expect(text).toContain("1 translationModels configured for cheaperinference");
+    expect(text).not.toContain("openrouter");
+    expect(text).not.toContain("OPENROUTER_API_KEY");
+    expect(log.mock.calls.join("\n")).not.toContain("ci-secret-token");
+  });
+
+  it("lists a legacy openrouter block and the default when the file names no provider", async () => {
+    const legacy = uiConfig();
+    delete legacy.provider;
+    delete legacy.providers;
+    legacy.openrouter = { translationModels: ["m1"] };
+    writeProject(root, legacy, { "src/main.ts": "export const label = t('Hello');\n" });
+    const fromLegacy = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(messages(fromLegacy)).toContain(
+      "openrouter (active, OPENROUTER_API_KEY is not set, baseUrl https://openrouter.ai/api/v1)"
+    );
+
+    const defaultsOnly = uiConfig();
+    delete defaultsOnly.provider;
+    delete defaultsOnly.providers;
+    writeProject(root, defaultsOnly, { "src/main.ts": "export const label = t('Hello');\n" });
+    const fromDefaults = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(messages(fromDefaults)).toContain("openrouter (active, OPENROUTER_API_KEY is not set");
+    expect(messages(fromDefaults)).toContain("translationModels configured for openrouter");
   });
 
   it("counts UI catalog files and notes when they are absent", async () => {
@@ -874,6 +936,141 @@ describe("runDoctor", () => {
     ).toBe(true);
     expect(raw).not.toContain("inlineItems");
     expect(raw).not.toContain("doctor-secret-token");
+  });
+
+  it("loads .env and .env.local beside the config when no API key is set", async () => {
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".env": "OPENROUTER_API_KEY=from-base\nI18N_LOG_LEVEL=debug\nI18N_TARGET_LOCALES=fr\n",
+      ".env.local": "OPENROUTER_API_KEY=from-local\nAI_I18N_LANG=pt-BR\n",
+    });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const text = messages(result);
+    expect(process.env.OPENROUTER_API_KEY).toBe("from-local");
+    expect(process.env.I18N_LOG_LEVEL).toBe("debug");
+    expect(text).toContain("openrouter (active, OPENROUTER_API_KEY is set");
+    expect(text).toContain("targetLocales fr");
+    expect(text).toContain("AI_I18N_LANG=pt-BR");
+    expect(text).toContain("I18N_LOG_LEVEL=debug");
+    expect(text).not.toContain("from-local");
+    expect(warn).toHaveBeenCalledOnce();
+    const warning = stripAnsi(String(warn.mock.calls[0]?.[0]));
+    expect(warning).toContain(
+      "Read I18N_LOG_LEVEL, I18N_TARGET_LOCALES from .env and AI_I18N_LANG, OPENROUTER_API_KEY from .env.local"
+    );
+    expect(warning).not.toContain("from-local");
+    expect(text).toContain("pass:Environment variables were not set, reading them from .env");
+    expect(text).toContain("pass:Environment variables were not set, reading them from .env.local");
+    expect(text).not.toContain("reading them from .env: I18N_LOG_LEVEL");
+    expect(result.checks.some((check) => check.status === "warn" && check.caution === true)).toBe(
+      false
+    );
+    const printed = log.mock.calls.map((call) => call.join(" "));
+    const plain = printed.map((line) => stripAnsi(line));
+    expect(plain).toContain("  ■  Environment variables were not set, reading them from .env");
+    expect(plain).toContain(
+      "  ■  Environment variables were not set, reading them from .env.local"
+    );
+    expect(printed).toContain(
+      chalk.yellow("  ■  Environment variables were not set, reading them from .env")
+    );
+    expect(printed).toContain(
+      chalk.yellow("  ■  Environment variables were not set, reading them from .env.local")
+    );
+  });
+
+  it("keeps the Environment notice when startup already loaded the env file", async () => {
+    process.env.OPENROUTER_API_KEY = "from-startup";
+    writeProject(root, uiConfig(), { "src/main.ts": "export const label = t('Hello');\n" });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+      dotenvLoaded: {
+        loaded: [{ file: ".env", names: ["OPENROUTER_API_KEY", "I18N_LOG_LEVEL"] }],
+        errors: [],
+      },
+    });
+    expect(warn).not.toHaveBeenCalled();
+    expect(result.exitCode).toBe(0);
+    expect(messages(result)).toContain(
+      "pass:Environment variables were not set, reading them from .env"
+    );
+    expect(messages(result)).not.toContain("OPENROUTER_API_KEY, I18N_LOG_LEVEL");
+    expect(
+      result.checks.filter((check) => check.status === "warn").map((check) => check.message)
+    ).not.toContain("Environment variables were not set, reading them from .env");
+    const printed = log.mock.calls.map((call) => call.join(" "));
+    expect(printed).toContain(
+      chalk.yellow("  ■  Environment variables were not set, reading them from .env")
+    );
+  });
+
+  it("does not read env files beside the config when an API key is already set", async () => {
+    process.env.OPENAI_API_KEY = "from-env";
+    writeProject(root, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".env": "OPENROUTER_API_KEY=from-file\nI18N_LOG_LEVEL=debug\n",
+      ".env.local": "AI_I18N_LANG=pt-BR\n",
+    });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await runDoctor({
+      cwd: root,
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    const text = messages(result);
+    expect(process.env.OPENROUTER_API_KEY).toBeUndefined();
+    expect(process.env.I18N_LOG_LEVEL).toBeUndefined();
+    expect(process.env.AI_I18N_LANG).toBeUndefined();
+    expect(text).toContain(
+      "OPENROUTER_API_KEY is not set (.env and .env.local are present but the variable is unset)"
+    );
+    expect(text).not.toContain("I18N_LOG_LEVEL=");
+    expect(text).not.toContain("reading them from");
+    expect(text).not.toContain("from-file");
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("ignores a .env in the working directory when the config lives elsewhere", async () => {
+    const project = path.join(root, "app");
+    fs.mkdirSync(project);
+    writeProject(project, uiConfig(), {
+      "src/main.ts": "export const label = t('Hello');\n",
+      ".env.local": "OPENROUTER_API_KEY=from-config\n",
+    });
+    fs.writeFileSync(
+      path.join(root, ".env"),
+      "OPENROUTER_API_KEY=from-cwd\nI18N_LOG_LEVEL=debug\n"
+    );
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await runDoctor({
+      cwd: root,
+      configFlag: path.join(project, "ai-i18n-tools.config.json"),
+      local: true,
+      sea: false,
+      execPath: "node",
+      argv1: "cli",
+    });
+    expect(process.env.OPENROUTER_API_KEY).toBe("from-config");
+    expect(process.env.I18N_LOG_LEVEL).toBeUndefined();
+    expect(messages(result)).toContain("OPENROUTER_API_KEY is set");
+    expect(messages(result)).not.toContain("from-config");
+    expect(stripAnsi(String(warn.mock.calls[0]?.[0]))).toContain(
+      "Read OPENROUTER_API_KEY from .env.local"
+    );
   });
 
   it("warns when .gitignore is missing and stays successful without --strict", async () => {

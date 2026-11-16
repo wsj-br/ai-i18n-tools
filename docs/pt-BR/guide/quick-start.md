@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 Todo comando que chama um LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg` e `sync`) precisa de ambos:
 
-1. Pelo menos um provedor em `ai-i18n-tools.config.json`: um bloco `providers.<name>` com `translationModels` e uma chave `provider` de nível superior quando mais de um provedor estiver configurado. `init -P <provider>` estrutura essa predefinição. Para adicionar provedores, consulte [Provedores de LLM](/pt-BR/guide/providers-and-models). Para escolher a lista de modelos, consulte [Modelos de IA](/pt-BR/guide/ai-models).
-2. A chave de API correspondente no seu ambiente ou em um arquivo `.env` na raiz do projeto. Cada predefinição integrada lê uma variável nomeada da [tabela de predefinições](/pt-BR/guide/providers-and-models#built-in-providers), por exemplo, `OPENROUTER_API_KEY` com `-P openrouter` ou `OPENAI_API_KEY` com `-P openai`. O Ollama usa um endpoint local e não precisa de chave.
+1. Pelo menos um provedor em `ai-i18n-tools.config.json`: um bloco `providers.<name>` com `translationModels`, e uma chave `provider` de nível superior quando mais de um provedor é configurado. `init -P <provider>` estrutura essa predefinição. Para adicionar provedores, consulte [Provedores de LLM](/pt-BR/guide/providers-and-models). Para escolher a lista de modelos, consulte [Modelos de IA](/pt-BR/guide/ai-models).
+2. A chave de API correspondente em seu ambiente, ou em `.env` / `.env.local` ao lado de `ai-i18n-tools.config.json` quando nenhuma chave de API do provedor já está definida. Cada predefinição integrada lê uma variável nomeada da [tabela de predefinições](/pt-BR/guide/providers-and-models#built-in-providers), por exemplo, `OPENROUTER_API_KEY` com `-P openrouter` ou `OPENAI_API_KEY` com `-P openai`. Ollama usa um endpoint local e não precisa de chave.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

@@ -66,7 +66,7 @@ Der Scanner ist konfigurierbar: Fügen Sie benutzerdefinierte Funktionsnamen üb
 ai-i18n-tools translate-ui
 ```
 
-Liest `strings.json`, sendet Batches an die Modelle des aktiven LLM-Anbieters für jede Ziellokalisierung, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)). Innerhalb einer Lokalisierung laufen bis zu `uiBatchConcurrency` Batches gleichzeitig (Standard **2**; siehe [Konfiguration — uiBatchConcurrency](/de/reference/configuration#uibatchconcurrency-optional)). `-j` parallelisiert weiterhin nur Ziellokalisierungen.
+Liest `strings.json`, sendet Batches an die Modelle des aktiven LLM-Anbieters für jedes Ziellokal, schreibt flache JSON-Dateien (`de.json`, `fr.json` usw.) nach `ui.flatOutputDir`. Die Modellauswahl verwendet die UI-Kette: `localeModels(locale)` → `uiModels` → `translationModels` (siehe [KI-Modelle](/de/guide/ai-models#model-fallback-chain)). Innerhalb eines Lokals laufen bis zu `uiBatchConcurrency` Batches gleichzeitig (Standard **2**; siehe [Konfiguration — uiBatchConcurrency](/de/reference/configuration#uibatchconcurrency-optional)). `-j` parallelisiert weiterhin nur Ziellokale. Jeder erfolgreiche Batch wird in `strings.json` und die flache Lokaldaten-Datei geschrieben, bevor der nächste Batch startet, sodass das Beenden des Laufs oder ein späterer API-Fehler die bereits abgeschlossenen Batches beibehält.
 
 <a id="translations-database-stringsjson"></a>
 ### Übersetzungsdatenbank (`strings.json`)

@@ -66,7 +66,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json`を読み取り、アクティブなLLMプロバイダー上のモデルに各ターゲットロケールごとにバッチを送信し、フラットなJSONファイル（`de.json`、`fr.json`など）を`ui.flatOutputDir`に書き込みます。モデルの選択には、UIチェーン: `localeModels(locale)` → `uiModels` → `translationModels`が使用されます（[AIモデル](/ja/guide/ai-models#model-fallback-chain)を参照）。1つのロケール内で、最大`uiBatchConcurrency`個のバッチが同時に実行されます（デフォルトは**2**。 [設定 — uiBatchConcurrency](/ja/reference/configuration#uibatchconcurrency-optional)を参照）。`-j`は依然としてターゲットロケールのみを並列化します。
+`strings.json`を読み込み、各ターゲットロケールに対し、アクティブなLLMプロバイダー上のモデルにバッチを送信し、`ui.flatOutputDir`にフラットなJSONファイル（`de.json`、`fr.json`など）を書き込みます。モデルの選択には、UIチェーン：`localeModels(locale)` → `uiModels` → `translationModels`を使用します（[AIモデル](/ja/guide/ai-models#model-fallback-chain)を参照）。1つのロケール内では、最大`uiBatchConcurrency`個のバッチが同時に実行されます（デフォルトは**2**、[設定 — uiBatchConcurrency](/ja/reference/configuration#uibatchconcurrency-optional)を参照）。`-j`は、依然としてターゲットロケールのみを並列化します。成功した各バッチは、次のバッチが開始する前に`strings.json`とフラットなロケールファイルに書き込まれるため、実行を停止したり、後でAPIエラーが発生したりしても、既に完了したバッチは保持されます。
 
 <a id="translations-database-stringsjson"></a>
 ### 翻訳データベース (`strings.json`)

@@ -9,6 +9,13 @@ Add new entries in the `## [Unreleased]` section. When releasing a new version, 
 
 ## [Unreleased]
 
+## [1.15.1] - 2026-11-16
+
+- **Changed**: scripts — `pnpm pre-release` builds the standalone executable (`pnpm build:binary`) and runs its smoke tests (`--version`, `list-languages`, `init`, `status`).
+- **Changed**: cli — when no provider API key is set, `.env` and `.env.local` next to `ai-i18n-tools.config.json` supply this tool's variables. A warning names the file and the variables that were read. An API key already in the environment skips those files. `doctor` repeats that warning in the Environment section.
+- **Fixed**: cli — `doctor` no longer lists the default `openrouter` provider when the config names other providers. That default is reported only when the file does not name a provider.
+- **Fixed**: `translate-ui` — each successful plain batch, plural group, and Step 0 group is written to `strings.json` and the flat locale file immediately, so stopping the process or a later API error does not drop batches already completed in that phase.
+
 ## [1.15.0] - 2026-11-10
 
 - **Fixed**: `write-heading-ids` — `{#id}` and `{/* #id */}` inside inline code in a heading stay put. A heading that documents that syntax is no longer rewritten to empty backticks, and `sync --force-update` no longer has to put the code spans back from the translation cache.

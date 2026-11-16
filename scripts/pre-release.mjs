@@ -2,8 +2,8 @@
 /**
  * Full release gate: sync example `ai-i18n-tools` pins and plugin manifest
  * versions, i18n:self, format,
- * lint, clean, build, test, docs build, and production builds for every
- * workspace example with a site build.
+ * lint, clean, build, test, the standalone executable, docs build, and
+ * production builds for every workspace example with a site build.
  *
  * Usage:
  *   node scripts/pre-release.mjs
@@ -104,6 +104,11 @@ runPnpm(["run", "lint"]);
 runPnpm(["run", "clean"]);
 runPnpm(["run", "build"]);
 runPnpm(["test"]);
+
+// Build the current-platform executable. build:binary smoke-tests --version,
+// list-languages, init, and status.
+banner("Building the standalone executable");
+runPnpm(["run", "build:binary"]);
 
 // Translate docs landing (docs/index.md) and theme JSON
 banner("Translating docs landing (docs/index.md)");

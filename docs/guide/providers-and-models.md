@@ -35,7 +35,7 @@ Preset provider keys need only `translationModels` — base URL and API-key env 
 
 For any **non-preset** key, set `baseUrl` and `apiKeyEnv` explicitly in config.
 
-Set the active provider's API key in your environment or `.env` file. The CLI auto-loads `.env` from the working directory without overriding variables already set in the shell. See [Environment variables](/reference/environment-variables).
+Set the active provider's API key in your environment, or in `.env` / `.env.local` next to `ai-i18n-tools.config.json` when no provider API key is already set. The CLI prints the variable names it read from those files. See [Environment variables](/reference/environment-variables).
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### Zero data retention (Cheaper Inference)

@@ -46,4 +46,4 @@ These two variables override `baseUrl` for a configured provider. Every other pr
 | `NO_COLOR` | When `1`, disable ANSI colours in log output. |
 | `I18N_LOG_SESSION_MAX` | Max lines kept per log session (default `5000`). |
 
-At startup the CLI also auto-loads a `.env` file from the current working directory (via Node's `process.loadEnvFile`), so provider API keys are loaded in non-interactive shells that do not load `.envrc` via `direnv`. Variables already present in the environment are never overridden, so real CI/production values take precedence.
+When no provider API key is set, the CLI and `doctor` read `.env` and `.env.local` from the directory that contains `ai-i18n-tools.config.json`. Only the variables in the tables above (plus a custom `providers.*.apiKeyEnv`) are copied, and only when that variable is unset. `.env.local` wins when both files set the same name. A warning names the file and the variables that were read. `doctor` repeats it in the Environment section. If any provider API key already has a value, neither file is read.

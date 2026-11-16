@@ -68,6 +68,9 @@ import { resolveContentPathEntries } from "../core/resolve-content-paths.js";
 import { expandJsonBlockOutputPath, runTranslateJson } from "./translate-json-run.js";
 import {
   loadConfigOrExit,
+  loadDotenvForConfig,
+  readConfigFlagFromArgv,
+  warnDotenvLoaded,
   resolveConfigFileLocation,
   resolveStringsJsonPath,
   hashFileContent,
@@ -79,7 +82,6 @@ import { resolveActiveProvider } from "../core/llm-providers.js";
 import { collectFilesByExtension, collectFilesRelativeToRoot } from "./file-utils.js";
 import { filterFumadocsDotMarkdownSources } from "../core/fumadocs-dot-source-filter.js";
 import { loadTranslateIgnore, isIgnored } from "../utils/ignore-parser.js";
-import { loadDotenv } from "../utils/load-dotenv.js";
 import { runExtract } from "./extract-strings.js";
 import { runMarkHtml } from "./mark-html.js";
 import { runMigrateIntlayer } from "./migrate-intlayer.js";
@@ -225,11 +227,20 @@ function formatVersionOutput(): string {
   return `${version} - ${build}`;
 }
 
+// When no provider API key is set, read `.env` / `.env.local` beside the config before the UI
+// locale is chosen, so `AI_I18N_LANG` from those files can localize help text. A key already in
+// the environment skips the files. The warning is printed after locale init.
+const dotenvLoaded = loadDotenvForConfig(
+  readConfigFlagFromArgv(process.argv.slice(2)),
+  process.cwd()
+);
+
 // Resolve the tool's own UI locale before building the program, so that command/option help text
 // (constructed at module load) and all subsequent output are localized. Config `uiLanguage` is
 // applied later, once a command loads its config (see loadConfigOrExit), without disturbing the
 // higher-priority --ui-lang flag / AI_I18N_LANG env var.
 initUiI18nFromEnvironment();
+warnDotenvLoaded(dotenvLoaded);
 
 /** Plain entries store `translated[locale]` as a string; plural entries store per-CLDR-form maps. */
 function uiStringsEntryTranslatedForLocale(entry: unknown, locale: string): boolean {
@@ -532,11 +543,6 @@ Provider override (-P / --provider):
   "provider" key. The name must be configured under "providers" (e.g. -P openai).
   On init, -P / --provider is required and selects which built-in preset to scaffold.`)}\n\n${availableUiLanguagesHelpNotice()}\n`;
 
-// Load `.env` from the current working directory so provider API keys are
-// available in non-interactive shells (e.g. agent-run commands) that do not
-// source `.envrc`/`direnv`. Existing environment variables are not overridden.
-loadDotenv();
-
 const program = new Command();
 
 program
@@ -659,6 +665,7 @@ program
           strict: opts.strict === true,
           json: opts.json === true,
           fixGitignore: opts.fixGitignore === true,
+          dotenvLoaded,
           sea: isRunningInSea(),
           execPath: process.execPath,
           argv1: process.argv[1] ?? process.execPath,

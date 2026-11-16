@@ -695,6 +695,65 @@ describe("runTranslateUI", () => {
     expect(written.k50?.translated?.de).toBe("DE:String 50");
   });
 
+  it("writes a plain batch to disk before the next batch starts", async () => {
+    writePlainCatalog(51);
+
+    let chatCalls = 0;
+    let catalogAtSecondBatch: ReturnType<typeof readPlainTranslations> | undefined;
+    let flatAtSecondBatch: Record<string, string> | undefined;
+    const fetchMock = vi
+      .fn()
+      .mockImplementation((reqUrl: string | URL | Request, init?: RequestInit) => {
+        const u = requestUrl(reqUrl);
+        if (u.includes("/models")) {
+          return Promise.resolve(
+            mockJsonResponse({
+              data: [{ id: "model-a", pricing: { prompt: "0", completion: "0" } }],
+            })
+          );
+        }
+        chatCalls += 1;
+        if (chatCalls === 1) {
+          const sources = chatUserSources(init);
+          const translations = sources.map((source) => `DE:${source}`);
+          return Promise.resolve(
+            mockJsonResponse({
+              id: "r1",
+              choices: [
+                { message: { content: JSON.stringify(translations) }, finish_reason: "stop" },
+              ],
+              usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+            })
+          );
+        }
+        catalogAtSecondBatch = readPlainTranslations();
+        flatAtSecondBatch = JSON.parse(
+          fs.readFileSync(path.join(tmp, "locales", "de.json"), "utf8")
+        ) as Record<string, string>;
+        throw new Error("out of credits");
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      runTranslateUI(buildConfig(), {
+        cwd: tmp,
+        locales: ["de"],
+        force: false,
+        dryRun: false,
+        verbose: false,
+        uiBatchConcurrency: 1,
+      })
+    ).rejects.toThrow(/out of credits/);
+
+    expect(chatCalls).toBe(2);
+    expect(catalogAtSecondBatch?.k0?.translated?.de).toBe("DE:String 0");
+    expect(catalogAtSecondBatch?.k49?.translated?.de).toBe("DE:String 49");
+    expect(catalogAtSecondBatch?.k50?.translated?.de).toBeUndefined();
+    expect(flatAtSecondBatch?.["String 0"]).toBe("DE:String 0");
+    expect(flatAtSecondBatch?.["String 49"]).toBe("DE:String 49");
+    expect(flatAtSecondBatch?.["String 50"]).toBeUndefined();
+  });
+
   it("re-translates a renamed placeholder and copies a placeholder-only string", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     fs.writeFileSync(

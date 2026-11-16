@@ -35,7 +35,7 @@ Las claves de proveedor preestablecidas solo necesitan `translationModels`: la U
 
 Para cualquier clave **no preestablecida**, configure `baseUrl` y `apiKeyEnv` explícitamente en la configuración.
 
-Establezca la clave de API del proveedor activo en su entorno o en el archivo `.env`. La CLI carga automáticamente `.env` desde el directorio de trabajo sin anular las variables ya establecidas en el shell. Consulte [Variables de entorno](/es/reference/environment-variables).
+Establezca la clave de API del proveedor activo en su entorno, o en `.env` / `.env.local` junto a `ai-i18n-tools.config.json` cuando no se haya configurado ya ninguna clave de API del proveedor. La CLI imprime los nombres de las variables que leyó de esos archivos. Consulte [Variables de entorno](/es/reference/environment-variables).
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### Sin retención de datos (inferencia más económica)

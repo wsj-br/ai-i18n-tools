@@ -123,7 +123,7 @@ export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 # export OPENAI_API_KEY=sk-your-key-here
 ```
 
-或在项目根目录中创建一个 `.env` 文件：
+或者在 `ai-i18n-tools.config.json` 旁边创建一个 `.env` 或 `.env.local` 文件。这些文件仅在尚未设置提供商 API 密钥时才会被读取：
 
 ```env
 OPENROUTER_API_KEY=sk-or-v1-your-key-here

@@ -3,7 +3,7 @@ import path from "path";
 import { createRequire } from "node:module";
 import chalk from "chalk";
 import { loadConfiguredModelCatalogStatus } from "./check-models.js";
-import { resolveConfigFileLocation } from "./helpers.js";
+import { resolveConfigFileLocation, warnDotenvLoaded } from "./helpers.js";
 import {
   cacheDirectoryIgnorePatterns,
   cacheGitignorePatterns,
@@ -27,7 +27,6 @@ import {
   normalizeI18nConfigDocsOutput,
 } from "../core/docs-output-normalize.js";
 import {
-  PROVIDER_PRESETS,
   findApiKeyEnvName,
   resolveActiveProvider,
   resolveProviderSettings,
@@ -63,6 +62,13 @@ import {
 import { loadTranslationContext } from "../glossary/translation-context.js";
 import { catalogPlaceholderHits } from "../core/ui-placeholder-audit.js";
 import { t } from "../i18n/index.js";
+import {
+  TOOL_ENV_NAMES,
+  apiKeyEnvNamesFromRawConfig,
+  loadDotenv,
+  providerApiKeyEnvNames,
+  type LoadDotenvResult,
+} from "../utils/load-dotenv.js";
 import { displayWidth } from "../utils/table.js";
 
 const require = createRequire(import.meta.url);
@@ -76,20 +82,6 @@ const REPORT_LINE_WIDTH = 80;
 const PASSING_CHECK_PREFIX = "  ✓  ";
 const GITHUB_RELEASES_PAGE = "https://github.com/wsj-br/ai-i18n-tools/releases";
 
-/** Tool and provider variables `doctor` may print when they are set. Keys come from {@link PROVIDER_PRESETS}. */
-const TOOL_ENV_NAMES = [
-  "OPENROUTER_BASE_URL",
-  "OLLAMA_BASE_URL",
-  "AI_I18N_LANG",
-  "I18N_SOURCE_LOCALE",
-  "I18N_TARGET_LOCALES",
-  "I18N_LOG_LEVEL",
-  "NO_COLOR",
-  "I18N_LOG_SESSION_MAX",
-  "BROWSER",
-  "SOURCE_DATE_EPOCH",
-] as const;
-
 export type DoctorStatus = "pass" | "warn" | "fail";
 
 export interface DoctorCheck {
@@ -98,6 +90,8 @@ export interface DoctorCheck {
   message: string;
   /** Informational pass. Printed with a dot instead of a check mark. */
   note?: boolean;
+  /** Yellow notice. Printed with ■ and not counted as a warning, so `--strict` stays successful. */
+  caution?: boolean;
   /**
    * Environment entries printed as one wrapped list. The report breaks on these
    * items; `message` is the same list on one line for `--json`.
@@ -118,6 +112,11 @@ export interface RunDoctorOptions {
   execPath?: string;
   argv1?: string;
   fetchImpl?: typeof fetch;
+  /**
+   * Variables already read at CLI startup. `doctor` does not read the files again once an API key
+   * is set, so the Environment section uses this result.
+   */
+  dotenvLoaded?: LoadDotenvResult;
 }
 
 export interface RunDoctorResult {
@@ -181,19 +180,52 @@ export function compareRelease(installed: string, remote: string): -1 | 0 | 1 | 
   return 0;
 }
 
-function presetApiKeyNames(): string[] {
-  const names: string[] = [];
-  for (const preset of Object.values(PROVIDER_PRESETS)) {
-    if (preset.apiKeyEnv) {
-      names.push(preset.apiKeyEnv);
-    }
-    names.push(...(preset.apiKeyEnvAliases ?? []));
+/**
+ * Provider keys the config file names. `undefined` when it leaves both `providers` and the legacy
+ * `openrouter` block unset, so the built-in OpenRouter default is the configured provider.
+ */
+function providerNamesWrittenInConfig(raw: unknown): ReadonlySet<string> | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return undefined;
   }
-  return names;
+  const record = raw as Record<string, unknown>;
+  const names = new Set<string>();
+  let declared = false;
+  const providers = record.providers;
+  if (providers && typeof providers === "object" && !Array.isArray(providers)) {
+    declared = true;
+    for (const name of Object.keys(providers)) {
+      names.add(name);
+    }
+  }
+  if (record.openrouter !== undefined) {
+    declared = true;
+    names.add("openrouter");
+  }
+  return declared ? names : undefined;
+}
+
+/**
+ * `mergeWithDefaults` deep-merges `providers`, so the default `openrouter` entry stays beside any
+ * provider the file actually names. Drop those extras before doctor reports the provider list.
+ */
+function removeProvidersNotWrittenInConfig(
+  merged: { providers?: unknown },
+  declared: ReadonlySet<string>
+): void {
+  const providers = merged.providers;
+  if (!providers || typeof providers !== "object" || Array.isArray(providers)) {
+    return;
+  }
+  for (const name of Object.keys(providers)) {
+    if (!declared.has(name)) {
+      delete (providers as Record<string, unknown>)[name];
+    }
+  }
 }
 
 function supportedEnvNames(config: I18nConfig | null): string[] {
-  const names = [...presetApiKeyNames(), ...TOOL_ENV_NAMES];
+  const names = [...providerApiKeyEnvNames(), ...TOOL_ENV_NAMES];
   if (config) {
     for (const entry of Object.values(config.providers)) {
       const custom = entry.apiKeyEnv?.trim();
@@ -206,7 +238,7 @@ function supportedEnvNames(config: I18nConfig | null): string[] {
 }
 
 function secretEnvNames(config: I18nConfig | null): Set<string> {
-  const names = new Set(presetApiKeyNames());
+  const names = new Set(providerApiKeyEnvNames());
   if (config) {
     for (const entry of Object.values(config.providers)) {
       const custom = entry.apiKeyEnv?.trim();
@@ -328,6 +360,9 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
   const fail = (name: string, message: string): void => {
     checks.push({ section: name, status: "fail", message });
   };
+  const dotenvCaution = (name: string, message: string): void => {
+    checks.push({ section: name, status: "pass", caution: true, message });
+  };
 
   const finish = (): RunDoctorResult => {
     const passed = checks.filter((check) => check.status === "pass").length;
@@ -347,7 +382,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
             errorCount: errors,
             warningCount: warnings,
             checks: checks.map((check) => {
-              const { inlineItems: _inlineItems, ...reportCheck } = check;
+              const { inlineItems: _inlineItems, caution: _caution, ...reportCheck } = check;
               return reportCheck;
             }),
           },
@@ -380,8 +415,18 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     return finish();
   }
   pass(section.config, t("JSON syntax"));
+  const loadedNow = loadDotenv(projectRoot, { extraNames: apiKeyEnvNamesFromRawConfig(json) });
+  warnDotenvLoaded(loadedNow);
+  const dotenvLoaded =
+    loadedNow.loaded.length > 0 || loadedNow.errors.length > 0
+      ? loadedNow
+      : (options.dotenvLoaded ?? loadedNow);
 
   const merged = mergeWithDefaults(json);
+  const declaredProviders = providerNamesWrittenInConfig(json);
+  if (declaredProviders) {
+    removeProvidersNotWrittenInConfig(merged, declaredProviders);
+  }
   if (options.providerOverride) {
     try {
       applyProviderOverrideToRawInput(merged, options.providerOverride);
@@ -460,7 +505,7 @@ export async function runDoctor(options: RunDoctorOptions): Promise<RunDoctorRes
     section.provider
   );
   checkGitignore(config, projectRoot, options.fixGitignore === true, pass, warn, section.git);
-  checkEnvironment(config, pass, section.environment);
+  checkEnvironment(config, pass, dotenvCaution, section.environment, dotenvLoaded);
 
   return finish();
 }
@@ -1128,6 +1173,25 @@ function checkCache(
   }
 }
 
+function missingApiKeyDetail(projectRoot: string, keyName: string): string {
+  const envFile = fs.existsSync(path.join(projectRoot, ".env"));
+  const envLocalFile = fs.existsSync(path.join(projectRoot, ".env.local"));
+  if (envFile && envLocalFile) {
+    return t("{{key}} is not set (.env and .env.local are present but the variable is unset)", {
+      key: keyName,
+    });
+  }
+  if (envFile) {
+    return t("{{key}} is not set (.env is present but the variable is unset)", { key: keyName });
+  }
+  if (envLocalFile) {
+    return t("{{key}} is not set (.env.local is present but the variable is unset)", {
+      key: keyName,
+    });
+  }
+  return t("{{key}} is not set", { key: keyName });
+}
+
 async function checkProviders(
   config: I18nConfig,
   projectRoot: string,
@@ -1171,11 +1235,9 @@ async function checkProviders(
     } else if (keySet) {
       details.push(t("{{key}} is set", { key: keyName }));
     } else {
-      const envBesideConfig = fs.existsSync(path.join(projectRoot, ".env"));
-      const envInCwd = fs.existsSync(path.join(options.cwd, ".env"));
       details.push(
-        isActive && (envBesideConfig || envInCwd)
-          ? t("{{key}} is not set (.env is present but the variable is unset)", { key: keyName })
+        isActive
+          ? missingApiKeyDetail(projectRoot, keyName)
           : t("{{key}} is not set", { key: keyName })
       );
     }
@@ -1417,8 +1479,19 @@ function checkGitignore(
 function checkEnvironment(
   config: I18nConfig,
   pass: (section: string, message: string, note?: boolean, inlineItems?: string[]) => void,
-  section: string
+  caution: (section: string, message: string) => void,
+  section: string,
+  dotenvLoaded: LoadDotenvResult
 ): void {
+  const fromEnv = dotenvLoaded.loaded.find((entry) => entry.file === ".env")?.names ?? [];
+  const fromLocal = dotenvLoaded.loaded.find((entry) => entry.file === ".env.local")?.names ?? [];
+  if (fromEnv.length > 0) {
+    caution(section, t("Environment variables were not set, reading them from .env"));
+  }
+  if (fromLocal.length > 0) {
+    caution(section, t("Environment variables were not set, reading them from .env.local"));
+  }
+
   const secrets = secretEnvNames(config);
   const listed: string[] = [];
   for (const name of supportedEnvNames(config)) {
@@ -1481,6 +1554,11 @@ function printReport(checks: DoctorCheck[], summary: string): void {
     if (check.section !== current) {
       current = check.section;
       console.log(chalk.bold(`\n${current}`));
+    }
+    if (check.caution === true) {
+      console.log(chalk.yellow(`  ■  ${check.message}`));
+      index += 1;
+      continue;
     }
     if (check.inlineItems !== undefined && check.inlineItems.length > 0) {
       const [first, ...rest] = wrapLabeledItems(

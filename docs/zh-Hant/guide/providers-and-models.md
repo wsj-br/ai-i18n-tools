@@ -35,7 +35,7 @@ CLI 從頂層 `provider` 鍵（或當只設定一個時，`providers` 中的唯�
 
 對於任何**非預設**鍵，請在設定中明確設定 `baseUrl` 和 `apiKeyEnv`。
 
-在您的環境或 `.env` 檔案中設定活動供應商的 API 鍵。CLI 會自動從工作目錄載入 `.env`，而不會覆寫 shell 中已設定的變數。請參閱[環境變數](/zh-Hant/reference/environment-variables)。
+在您的環境中設定作用中提供者的 API 金鑰，或者在尚未設定任何提供者 API 金鑰時，於與 `ai-i18n-tools.config.json` 相關的 `.env` / `.env.local` 中設定。CLI 會列印它從這些檔案讀取的變數名稱。請參閱[環境變數](/zh-Hant/reference/environment-variables)。
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### 零資料保留 (較便宜的推論)

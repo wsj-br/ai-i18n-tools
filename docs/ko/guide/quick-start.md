@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 LLM을 호출하는 모든 명령어(`translate-ui`, `translate-docs`, `translate-json`, `translate-svg`, `sync`)에는 다음 두 가지가 모두 필요합니다.
 
-1. ``ai-i18n-tools.config.json``에 하나 이상의 공급자: ``translationModels``가 있는 ``providers.<name>`` 블록 및 둘 이상의 공급자가 구성된 경우 최상위 ``provider`` 키가 있어야 합니다. ``init -P <provider>``는 해당 사전 설정을 스캐폴드합니다. 공급자를 추가하려면 [LLM 공급자](/ko/guide/providers-and-models)를 참조하세요. 모델 목록을 선택하려면 [AI 모델](/ko/guide/ai-models)을 참조하세요.
-2. 환경 또는 프로젝트 루트 ``.env`` 파일에 일치하는 API 키가 있어야 합니다. 각 내장 사전 설정은 [사전 설정 테이블](/ko/guide/providers-and-models#built-in-providers)에서 명명된 변수를 읽습니다. 예를 들어 ``OPENROUTER_API_KEY``은 ``-P openrouter``을, ``OPENAI_API_KEY``은 ``-P openai``를 읽습니다. Ollama는 로컬 엔드포인트를 사용하며 키가 필요하지 않습니다.
+1. `ai-i18n-tools.config.json`에 하나 이상의 공급자: `translationModels`가 포함된 `providers.<name>` 블록, 그리고 둘 이상의 공급자가 구성된 경우 최상위 `provider` 키가 필요합니다. `init -P <provider>`는 해당 사전 설정을 구성합니다. 공급자를 추가하려면 [LLM 공급자](/ko/guide/providers-and-models)를 참조하세요. 모델 목록을 선택하려면 [AI 모델](/ko/guide/ai-models)을 참조하세요.
+2. 환경에 있는 일치하는 API 키, 또는 공급자 API 키가 아직 설정되지 않은 경우 `ai-i18n-tools.config.json` 옆의 `.env` / `.env.local`에 있는 API 키가 필요합니다. 각 내장 사전 설정은 [사전 설정 표](/ko/guide/providers-and-models#built-in-providers)에서 명명된 변수를 읽습니다. 예를 들어 `OPENROUTER_API_KEY`은 `-P openrouter`를, `OPENAI_API_KEY`은 `-P openai`을 읽습니다. Ollama는 로컬 엔드포인트를 사용하므로 키가 필요하지 않습니다.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

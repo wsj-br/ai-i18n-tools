@@ -50,7 +50,7 @@ minimumReleaseAgeExclude:
   - "@img/sharp-win32-ia32@0.35.4"
   - "@img/sharp-win32-x64@0.35.4"
   - sharp@0.35.4
-  - i18next@26.3.6 || 26.4.2 || 26.5.5 || 26.6.0
+  - i18next@26.3.6 || 26.4.2 || 26.5.5 || 26.6.0 || 27.1.2
   - "@ai-sdk/gateway@4.0.74"
   - ai@7.0.92
   - ignore@7.0.8

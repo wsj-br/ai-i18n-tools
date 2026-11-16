@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 Cada comando que llama a un LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg` y `sync`) necesita ambas cosas:
 
-1. Al menos un proveedor en `ai-i18n-tools.config.json`: un bloque `providers.<name>` con `translationModels` y una clave `provider` de nivel superior cuando se configura más de un proveedor. `init -P <provider>` genera la estructura de ese preajuste. Para añadir proveedores, consulta [Proveedores de LLM](/es/guide/providers-and-models). Para elegir la lista de modelos, consulta [Modelos de IA](/es/guide/ai-models).
-2. La clave de API correspondiente en tu entorno o en un archivo `.env` en la raíz del proyecto. Cada preajuste integrado lee una variable con nombre de la [tabla de preajustes](/es/guide/providers-and-models#built-in-providers), por ejemplo, `OPENROUTER_API_KEY` con `-P openrouter` o `OPENAI_API_KEY` con `-P openai`. Ollama utiliza un punto de conexión local y no necesita ninguna clave.
+1. Al menos un proveedor en `ai-i18n-tools.config.json`: un bloque `providers.<name>` con `translationModels`, y una clave `provider` de nivel superior cuando se configura más de un proveedor. `init -P <provider>` genera ese preajuste. Para añadir proveedores, consulta [Proveedores de LLM](/es/guide/providers-and-models). Para elegir la lista de modelos, consulta [Modelos de IA](/es/guide/ai-models).
+2. La clave API correspondiente en tu entorno, o en `.env` / `.env.local` junto a `ai-i18n-tools.config.json` cuando no hay una clave API de proveedor ya configurada. Cada preajuste integrado lee una variable con nombre de la [tabla de preajustes](/es/guide/providers-and-models#built-in-providers), por ejemplo, `OPENROUTER_API_KEY` con `-P openrouter` o `OPENAI_API_KEY` con `-P openai`. Ollama utiliza un punto final local y no necesita clave.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

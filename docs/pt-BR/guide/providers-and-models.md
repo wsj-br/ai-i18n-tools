@@ -35,7 +35,7 @@ As chaves de provedor predefinidas precisam apenas de `translationModels` — UR
 
 Para qualquer chave **não predefinida**, defina `baseUrl` e `apiKeyEnv` explicitamente na configuração.
 
-Defina a chave de API do provedor ativo em seu ambiente ou arquivo `.env`. A CLI carrega automaticamente `.env` do diretório de trabalho sem substituir variáveis já definidas no shell. Consulte [Variáveis de ambiente](/pt-BR/reference/environment-variables).
+Defina a chave de API do provedor ativo no seu ambiente, ou em `.env` / `.env.local` ao lado de `ai-i18n-tools.config.json` quando nenhuma chave de API do provedor já estiver definida. A CLI exibe os nomes das variáveis que ela leu desses arquivos. Consulte [Variáveis de ambiente](/pt-BR/reference/environment-variables).
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### Retenção zero de dados (inferência mais barata)

@@ -85,7 +85,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 **Sinopse:** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
-Verifique se o projeto está pronto para traduzir. O relatório abrange sintaxe e esquema de configuração, regras de negócio, a versão instalada, caminhos de origem e saída, arquivos de catálogo da UI, incompatibilidades de placeholder nesses catálogos, estatísticas de cache, provedores configurados, variáveis de ambiente suportadas que estão definidas e IDs de modelo. Um catálogo com um placeholder renomeado, descartado ou reescrito é um aviso e nomeia um exemplo.
+Verifique se o projeto está pronto para traduzir. O relatório abrange sintaxe e esquema de configuração, regras de negócio, a versão instalada, caminhos de origem e saída, arquivos de catálogo da UI, incompatibilidades de placeholder nesses catálogos, estatísticas de cache, provedores configurados, variáveis de ambiente suportadas que estão definidas e IDs de modelo. Um catálogo com um placeholder renomeado, descartado ou reescrito é um aviso e lista um exemplo. A seção de provedores lista apenas os provedores nomeados no arquivo de configuração (incluindo um bloco `openrouter` de nível superior legado). O padrão OpenRouter integrado é listado apenas quando o arquivo não nomeia um provedor.
 
 Por padrão, `doctor` também verifica os IDs de modelo configurados em relação ao catálogo do provedor ativo e compara a versão instalada com a última versão do GitHub. `--local` ignora ambas as chamadas de rede. Uma versão mais recente, ou uma solicitação do GitHub que falha, é um aviso. Um ID de modelo ausente ou expirado faz com que o comando falhe. `--strict` sai com um erro quando qualquer verificação emite um aviso.
 

@@ -35,7 +35,7 @@ CLI从顶级`provider`键（或`providers`中唯一配置的条目）解析活�
 
 对于任何**非预设**键，请在配置中明确设置`baseUrl`和`apiKeyEnv`。
 
-在您的环境或`.env`文件中设置活动提供商的API密钥。CLI会自动从工作目录加载`.env`，而不会覆盖shell中已设置的变量。请参阅[环境变量](/zh-Hans/reference/environment-variables)。
+在您的环境中设置活动提供商的 API 密钥，或者在尚未设置提供商 API 密钥时，在 `.env` / `.env.local` 中（在 `ai-i18n-tools.config.json` 旁边）设置。CLI 会打印它从这些文件中读取的变量名称。请参阅[环境变量](/zh-Hans/reference/environment-variables)。
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### 零数据保留（更便宜的推理）

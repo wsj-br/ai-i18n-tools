@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 每个调用 LLM 的命令（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg` 和 `sync`）都需要以下两项：
 
-1. 在 `ai-i18n-tools.config.json` 中至少有一个提供商：一个带有 `translationModels` 的 `providers.<name>` 块，以及在配置了多个提供商时的顶层 `provider` 键。`init -P <provider>` 会搭建该预设。要添加提供商，请参阅 [LLM 提供商](/zh-Hans/guide/providers-and-models)。要选择模型列表，请参阅 [AI 模型](/zh-Hans/guide/ai-models)。
-2. 在您的环境中或项目根目录下的 `.env` 文件中提供匹配的 API 密钥。每个内置预设都会从 [预设表](/zh-Hans/guide/providers-and-models#built-in-providers) 中读取一个命名变量，例如 `OPENROUTER_API_KEY` 与 `-P openrouter` 或 `OPENAI_API_KEY` 与 `-P openai`。Ollama 使用本地端点，不需要密钥。
+1. 至少一个提供程序在 `ai-i18n-tools.config.json` 中：一个带有 `translationModels` 的 `providers.<name>` 块，以及当配置了多个提供程序时，一个顶层 `provider` 键。`init -P <provider>` 会搭建该预设。要添加提供程序，请参阅 [LLM 提供程序](/zh-Hans/guide/providers-and-models)。要选择模型列表，请参阅 [AI 模型](/zh-Hans/guide/ai-models)。
+2. 您的环境中匹配的 API 密钥，或者当未设置提供程序 API 密钥时，在 `ai-i18n-tools.config.json` 旁边的 `.env` / `.env.local` 中。每个内置预设都会从 [预设表](/zh-Hans/guide/providers-and-models#built-in-providers) 中读取一个命名变量，例如 `OPENROUTER_API_KEY` 搭配 `-P openrouter`，或 `OPENAI_API_KEY` 搭配 `-P openai`。Ollama 使用本地端点，无需密钥。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

@@ -671,6 +671,41 @@ async function runTranslateUIBody(
 
   const langProgress = { completed: 0, total: targets.length };
 
+  // Batch workers must not await between applying a translation and these writes.
+  // The snapshot and rename then stay in one turn, so a concurrent batch cannot
+  // replace a newer catalog with an older one.
+  const persistStringsJson = (): void => {
+    if (opts.dryRun) {
+      return;
+    }
+    writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
+  };
+
+  const persistTargetLocaleFiles = (locale: string): void => {
+    persistStringsJson();
+    if (opts.dryRun || !writeFlat) {
+      return;
+    }
+    writeAtomicUtf8(
+      path.join(outDir, `${locale}.json`),
+      `${JSON.stringify(buildFlatJsonForLocale(strings, locale), null, 2)}\n`
+    );
+  };
+
+  const persistStep0Files = (): void => {
+    persistStringsJson();
+    if (opts.dryRun || !writeFlat) {
+      return;
+    }
+    const srcFlat = buildPluralOnlyFlatForSourceLocale(strings, srcNorm);
+    if (Object.keys(srcFlat).length > 0) {
+      writeAtomicUtf8(
+        path.join(outDir, `${srcNorm}.json`),
+        `${JSON.stringify(srcFlat, null, 2)}\n`
+      );
+    }
+  };
+
   const usageCache = opts.dryRun
     ? null
     : new TranslationCache(path.join(opts.cwd, config.cacheDir));
@@ -749,6 +784,7 @@ async function runTranslateUIBody(
                   )
                 )
               );
+              persistStep0Files();
             }
             continue;
           }
@@ -815,22 +851,14 @@ async function runTranslateUIBody(
           stringsUpdated++;
           stringsTranslated++;
           step0Count++;
+          persistStep0Files();
         }
       } catch (e) {
         step0Error = e instanceof Error ? e : new Error(String(e));
       } finally {
         if (step0Count > 0) {
           console.log(chalk.blue(t("💾 Writing strings.json")));
-          writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
-          if (writeFlat) {
-            const srcFlat = buildPluralOnlyFlatForSourceLocale(strings, srcNorm);
-            if (Object.keys(srcFlat).length > 0) {
-              writeAtomicUtf8(
-                path.join(outDir, `${srcNorm}.json`),
-                `${JSON.stringify(srcFlat, null, 2)}\n`
-              );
-            }
-          }
+          persistStep0Files();
           if (step0Error === undefined) {
             console.log(
               chalk.green(
@@ -886,13 +914,7 @@ async function runTranslateUIBody(
           return;
         }
         console.log(chalk.blue(t("💾 Writing strings.json")));
-        writeAtomicUtf8(stringsPath, `${JSON.stringify(strings, null, 2)}\n`);
-        if (writeFlat) {
-          writeAtomicUtf8(
-            path.join(outDir, `${locale}.json`),
-            `${JSON.stringify(buildFlatJsonForLocale(strings, locale), null, 2)}\n`
-          );
-        }
+        persistTargetLocaleFiles(locale);
       };
 
       // Pass A — plain (non-plural) rows
@@ -1048,8 +1070,12 @@ async function runTranslateUIBody(
                   )
                 );
               }
+              const copiedBefore = stringsUpdated;
               for (const index of copyIndexes) {
                 writeCopied(index);
+              }
+              if (stringsUpdated !== copiedBefore) {
+                persistTargetLocaleFiles(locale);
               }
 
               const translateIndexes = sources
@@ -1108,6 +1134,7 @@ async function runTranslateUIBody(
                     );
               console.log(chalk.green(batchMsg));
 
+              const batchUpdatedBefore = stringsUpdated;
               translateIndexes.forEach((chunkIndex, batchIndex) => {
                 const [hash] = chunk[chunkIndex]!;
                 let tr = uiBatch.translations[batchIndex];
@@ -1130,6 +1157,9 @@ async function runTranslateUIBody(
                   stringsTranslated++;
                 }
               });
+              if (stringsUpdated !== batchUpdatedBefore) {
+                persistTargetLocaleFiles(locale);
+              }
             },
             opts.abortSignal
           );
@@ -1342,6 +1372,7 @@ async function runTranslateUIBody(
               costUsd += batch.cost ?? 0;
               stringsUpdated++;
               stringsTranslated++;
+              persistTargetLocaleFiles(locale);
             },
             opts.abortSignal
           );

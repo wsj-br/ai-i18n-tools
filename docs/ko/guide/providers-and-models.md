@@ -35,7 +35,7 @@ CLI는 최상위 `provider` 키(또는 하나만 구성된 경우 `providers`의
 
 **사전 설정이 아닌** 키의 경우, 구성에서 `baseUrl` 및 `apiKeyEnv`을 명시적으로 설정합니다.
 
-활성 공급자의 API 키를 환경 또는 `.env` 파일에 설정합니다. CLI는 셸에 이미 설정된 변수를 재정의하지 않고 작업 디렉터리에서 `.env`을 자동으로 로드합니다. [환경 변수](/ko/reference/environment-variables)를 참조하세요.
+활성 공급자의 API 키가 아직 설정되지 않은 경우, 환경 변수에 또는 `ai-i18n-tools.config.json` 옆에 있는 `.env` / `.env.local` 파일에 API 키를 설정합니다. CLI는 해당 파일에서 읽은 변수 이름을 출력합니다. [환경 변수](/ko/reference/environment-variables)를 참조하십시오.
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### 제로 데이터 보존(더 저렴한 추론)

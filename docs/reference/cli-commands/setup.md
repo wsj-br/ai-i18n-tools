@@ -85,7 +85,7 @@ ai-i18n-tools init -t ui-python -P openrouter --with-readme
 
 **Synopsis:** `ai-i18n-tools doctor [--local] [--strict] [--json] [--fix-gitignore]`
 
-Check that the project is ready to translate. The report covers config syntax and schema, business rules, the installed version, source and output paths, UI catalog files, placeholder mismatches in those catalogs, cache statistics, configured providers, supported environment variables that are set, and model ids. A catalog with a renamed, dropped, or rewritten placeholder is a warning and names one example.
+Check that the project is ready to translate. The report covers config syntax and schema, business rules, the installed version, source and output paths, UI catalog files, placeholder mismatches in those catalogs, cache statistics, configured providers, supported environment variables that are set, and model ids. A catalog with a renamed, dropped, or rewritten placeholder is a warning and names one example. The provider section lists only providers named in the config file (including a legacy top-level `openrouter` block). The built-in OpenRouter default is listed only when the file does not name a provider.
 
 By default, `doctor` also checks configured model ids against the active provider's catalog and compares the installed version with the latest GitHub release. `--local` skips both network calls. A newer release, or a GitHub request that fails, is a warning. A missing or expired model id fails the command. `--strict` exits with an error when any check warns.
 

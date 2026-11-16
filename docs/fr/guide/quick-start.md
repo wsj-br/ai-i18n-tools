@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 Chaque commande qui appelle un LLM (`translate-ui`, `translate-docs`, `translate-json`, `translate-svg` et `sync`) nécessite ces deux éléments :
 
-1. Au moins un fournisseur dans `ai-i18n-tools.config.json` : un bloc `providers.<name>` avec `translationModels`, et une clé `provider` de premier niveau lorsque plusieurs fournisseurs sont configurés. `init -P <provider>` génère ce préréglage. Pour ajouter des fournisseurs, consultez [Fournisseurs de LLM](/fr/guide/providers-and-models). Pour choisir la liste de modèles, consultez [Modèles d'IA](/fr/guide/ai-models).
-2. La clé d'API correspondante dans votre environnement ou dans un fichier `.env` à la racine du projet. Chaque préréglage intégré lit une variable nommée depuis le [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers), par exemple `OPENROUTER_API_KEY` avec `-P openrouter` ou `OPENAI_API_KEY` avec `-P openai`. Ollama utilise un point de terminaison local et ne nécessite aucune clé.
+1. Au moins un fournisseur dans `ai-i18n-tools.config.json` : un bloc `providers.<name>` avec `translationModels`, et une clé `provider` de niveau supérieur lorsque plusieurs fournisseurs sont configurés. `init -P <provider>` génère ce préréglage. Pour ajouter des fournisseurs, consultez [Fournisseurs de LLM](/fr/guide/providers-and-models). Pour choisir la liste des modèles, consultez [Modèles d'IA](/fr/guide/ai-models).
+2. La clé API correspondante dans votre environnement, ou dans `.env` / `.env.local` à côté de `ai-i18n-tools.config.json` lorsqu'aucune clé API de fournisseur n'est déjà définie. Chaque préréglage intégré lit une variable nommée à partir du [tableau des préréglages](/fr/guide/providers-and-models#built-in-providers), par exemple `OPENROUTER_API_KEY` avec `-P openrouter` ou `OPENAI_API_KEY` avec `-P openai`. Ollama utilise un point de terminaison local et n'a pas besoin de clé.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

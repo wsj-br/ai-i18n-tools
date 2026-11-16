@@ -1,9 +1,16 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
+import chalk from "chalk";
 import { loadI18nConfigFromFile, DEFAULT_CONFIG_FILENAME } from "../core/config.js";
 import { ConfigValidationError } from "../core/errors.js";
-import { initUiI18nFromEnvironment } from "../i18n/index.js";
+import { initUiI18nFromEnvironment, t } from "../i18n/index.js";
+import {
+  apiKeyEnvNamesFromConfigFile,
+  loadDotenv,
+  type LoadDotenvOptions,
+  type LoadDotenvResult,
+} from "../utils/load-dotenv.js";
 import type { DocArtifactKind } from "../core/output-paths.js";
 import { resolveDocumentationOutputPath } from "../core/output-paths.js";
 import type { I18nConfig, I18nDocTranslateConfig } from "../core/types.js";
@@ -62,6 +69,90 @@ export function resolveConfigFileLocation(
   throw new ConfigValidationError(`Config file not found: ${inCwd}`);
 }
 
+/** `-c` / `--config` from argv, before Commander has parsed the command line. */
+export function readConfigFlagFromArgv(argv: string[]): string | undefined {
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]!;
+    if (arg === "--config" || arg === "-c") {
+      const next = argv[i + 1];
+      if (next !== undefined && !next.startsWith("-")) {
+        return next;
+      }
+      return undefined;
+    }
+    if (arg.startsWith("--config=")) {
+      return arg.slice("--config=".length);
+    }
+  }
+  return undefined;
+}
+
+/** Print env-file read errors and the variables copied from `.env` / `.env.local`. */
+export function warnDotenvLoaded(result: LoadDotenvResult): void {
+  for (const error of result.errors) {
+    console.warn(
+      chalk.yellow(
+        `[ai-i18n-tools] ${t("Could not load {{file}}: {{message}}", {
+          file: error.file,
+          message: error.message,
+        })}`
+      )
+    );
+  }
+  const fromEnv = result.loaded.find((entry) => entry.file === ".env")?.names ?? [];
+  const fromLocal = result.loaded.find((entry) => entry.file === ".env.local")?.names ?? [];
+  if (fromEnv.length > 0 && fromLocal.length > 0) {
+    console.warn(
+      chalk.yellow(
+        `[ai-i18n-tools] ${t("Read {{envNames}} from .env and {{localNames}} from .env.local", {
+          envNames: fromEnv.join(", "),
+          localNames: fromLocal.join(", "),
+        })}`
+      )
+    );
+    return;
+  }
+  if (fromEnv.length > 0) {
+    console.warn(
+      chalk.yellow(
+        `[ai-i18n-tools] ${t("Read {{names}} from .env", { names: fromEnv.join(", ") })}`
+      )
+    );
+    return;
+  }
+  if (fromLocal.length > 0) {
+    console.warn(
+      chalk.yellow(
+        `[ai-i18n-tools] ${t("Read {{names}} from .env.local", { names: fromLocal.join(", ") })}`
+      )
+    );
+  }
+}
+
+/**
+ * Load `.env` / `.env.local` from the config file's directory when the environment has no provider
+ * API key. A missing config (for example `init`) falls back to `searchCwd`.
+ */
+export function loadDotenvForConfig(
+  configFlag: string | undefined,
+  searchCwd: string,
+  options?: LoadDotenvOptions
+): LoadDotenvResult {
+  try {
+    const configPath = resolveConfigFileLocation(configFlag, searchCwd);
+    const fromFile = apiKeyEnvNamesFromConfigFile(configPath);
+    return loadDotenv(path.dirname(configPath), {
+      ...options,
+      extraNames: [...(options?.extraNames ?? []), ...fromFile],
+    });
+  } catch (e) {
+    if (!(e instanceof ConfigValidationError)) {
+      throw e;
+    }
+    return loadDotenv(searchCwd, options);
+  }
+}
+
 /**
  * Load config; `projectRoot` is the directory containing the config file (used for all paths in config).
  */
@@ -73,10 +164,14 @@ export function loadConfigOrExit(
   try {
     const resolvedAbs = resolveConfigFileLocation(configFlag, searchCwd);
     const projectRoot = path.dirname(resolvedAbs);
+    const dotenvLoaded = loadDotenv(projectRoot, {
+      extraNames: apiKeyEnvNamesFromConfigFile(resolvedAbs),
+    });
     const config = loadI18nConfigFromFile(resolvedAbs, projectRoot, providerOverride);
     // Re-resolve the tool's UI locale now that config is known. `--ui-lang` / `AI_I18N_LANG` still
     // win over config `uiLanguage` (precedence handled inside the resolver).
     initUiI18nFromEnvironment(config.uiLanguage ?? null);
+    warnDotenvLoaded(dotenvLoaded);
     return { config, projectRoot };
   } catch (e) {
     console.error(

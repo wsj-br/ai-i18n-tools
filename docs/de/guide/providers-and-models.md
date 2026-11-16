@@ -35,7 +35,7 @@ Voreingestellte Anbieterschlüssel benötigen nur `translationModels` – Basis-
 
 Für jeden **nicht voreingestellten** Schlüssel legen Sie `baseUrl` und `apiKeyEnv` explizit in der Konfiguration fest.
 
-Legen Sie den API-Schlüssel des aktiven Anbieters in Ihrer Umgebung oder in der Datei `.env` fest. Die CLI lädt `.env` automatisch aus dem Arbeitsverzeichnis, ohne bereits in der Shell festgelegte Variablen zu überschreiben. Siehe [Umgebungsvariablen](/de/reference/environment-variables).
+Legen Sie den API-Schlüssel des aktiven Providers in Ihrer Umgebung fest oder in `.env` / `.env.local` neben `ai-i18n-tools.config.json`, wenn noch kein Provider-API-Schlüssel festgelegt ist. Die CLI gibt die Variablennamen aus, die sie aus diesen Dateien gelesen hat. Siehe [Umgebungsvariablen](/de/reference/environment-variables).
 
 <a id="zero-data-retention-cheaper-inference"></a>
 ### Keine Datenspeicherung (günstigere Inferenz)

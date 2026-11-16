@@ -17,17 +17,17 @@
     "i18n:locales": "ai-i18n-tools generate-ui-languages"
   },
   "dependencies": {
-    "ai-i18n-tools": "^1.15.0",
-    "i18next": "^27.0.1",
+    "ai-i18n-tools": "^1.15.1",
+    "i18next": "^27.1.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.2.1",
+    "@vitejs/plugin-react": "^6.3.0",
     "typescript": "^7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.8"
   },
   "engines": {
     "node": ">=22.16.0"

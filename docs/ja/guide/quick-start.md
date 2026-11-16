@@ -37,8 +37,8 @@ pnpm add -D ai-i18n-tools
 
 LLMを呼び出す全てのコマンド（`translate-ui`、`translate-docs`、`translate-json`、`translate-svg`、`sync`）には、以下の両方が必要です。
 
-1. `ai-i18n-tools.config.json` に少なくとも 1 つのプロバイダー: `translationModels` を持つ `providers.<name>` ブロック、および複数のプロバイダーが設定されている場合はトップレベルの `provider` キー。`init -P <provider>` はそのプリセットをスキャフォールドします。プロバイダーを追加するには、[LLM プロバイダー](/ja/guide/providers-and-models) を参照してください。モデルリストを選択するには、[AI モデル](/ja/guide/ai-models) を参照してください。
-2. 環境またはプロジェクトルートの `.env` ファイル内の一致する API キー。各組み込みプリセットは、[プリセットテーブル](/ja/guide/providers-and-models#built-in-providers) から名前付き変数を読み取ります。たとえば、`OPENROUTER_API_KEY` と `-P openrouter`、または `OPENAI_API_KEY` と `-P openai` です。Ollama はローカルエンドポイントを使用し、キーは必要ありません。
+1. `ai-i18n-tools.config.json` に少なくとも 1 つのプロバイダーが必要です。これには `translationModels` を持つ `providers.<name>` ブロックが含まれ、複数のプロバイダーが設定されている場合はトップレベルの `provider` キーも必要です。`init -P <provider>` はそのプリセットをスキャフォールドします。プロバイダーを追加するには、[LLM プロバイダー](/ja/guide/providers-and-models) を参照してください。モデルリストを選択するには、[AI モデル](/ja/guide/ai-models) を参照してください。
+2. 対応する API キーを環境変数に設定するか、プロバイダーの API キーがまだ設定されていない場合は `ai-i18n-tools.config.json` と同じ階層にある `.env` / `.env.local` に設定する必要があります。各組み込みプリセットは、[プリセットテーブル](/ja/guide/providers-and-models#built-in-providers) から名前付き変数を読み取ります。たとえば、`OPENROUTER_API_KEY` は `-P openrouter` を、`OPENAI_API_KEY` は `-P openai` を読み取ります。Ollama はローカルエンドポイントを使用するため、キーは不要です。
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here

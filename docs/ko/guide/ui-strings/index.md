@@ -66,7 +66,7 @@ ai-i18n-tools extract
 ai-i18n-tools translate-ui
 ```
 
-`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 제공자의 모델로 배치를 보내고, 플랫 JSON 파일(`de.json`, `fr.json` 등)을 `ui.flatOutputDir`에 씁니다. 모델 선택은 UI 체인: `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조). 로케일 내에서 최대 `uiBatchConcurrency`개의 배치가 동시에 실행됩니다(기본값 **2**; [구성 — uiBatchConcurrency](/ko/reference/configuration#uibatchconcurrency-optional) 참조). `-j`는 여전히 대상 로케일만 병렬화합니다.
+`strings.json`을(를) 읽고, 각 대상 로케일에 대해 활성 LLM 공급자의 모델로 배치를 전송하며, `ui.flatOutputDir`에 플랫 JSON 파일(`de.json`, `fr.json` 등)을 씁니다. 모델 선택은 UI 체인: `localeModels(locale)` → `uiModels` → `translationModels`을(를) 사용합니다([AI 모델](/ko/guide/ai-models#model-fallback-chain) 참조). 한 로케일 내에서 최대 `uiBatchConcurrency`개의 배치가 동시에 실행됩니다(기본값 **2**; [구성 — uiBatchConcurrency](/ko/reference/configuration#uibatchconcurrency-optional) 참조). `-j`는 여전히 대상 로케일만 병렬 처리합니다. 각 성공적인 배치는 다음 배치가 시작되기 전에 `strings.json`와 플랫 로케일 파일에 기록되므로, 실행을 중지하거나 나중에 API 오류가 발생해도 이미 완료된 배치는 유지됩니다.
 
 <a id="translations-database-stringsjson"></a>
 ### 번역 데이터베이스 (`strings.json`)

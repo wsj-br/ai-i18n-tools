@@ -66,7 +66,7 @@ Le scanner est configurable : ajoutez des noms de fonctions personnalisés via `
 ai-i18n-tools translate-ui
 ```
 
-Lit `strings.json`, envoie des lots aux modèles sur le fournisseur LLM actif pour chaque locale cible, écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) dans `ui.flatOutputDir`. La sélection du modèle utilise la chaîne d'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)). Au sein d'une locale, jusqu'à `uiBatchConcurrency` lots s'exécutent simultanément (par défaut **2** ; voir [Configuration — uiBatchConcurrency](/fr/reference/configuration#uibatchconcurrency-optional)). `-j` ne parallélise toujours que les locales cibles.
+Lit `strings.json`, envoie des lots aux modèles sur le fournisseur LLM actif pour chaque locale cible, écrit des fichiers JSON plats (`de.json`, `fr.json`, etc.) vers `ui.flatOutputDir`. La sélection du modèle utilise la chaîne d'interface utilisateur : `localeModels(locale)` → `uiModels` → `translationModels` (voir [Modèles d'IA](/fr/guide/ai-models#model-fallback-chain)). Dans une locale, jusqu'à `uiBatchConcurrency` lots s'exécutent simultanément (par défaut **2** ; voir [Configuration — uiBatchConcurrency](/fr/reference/configuration#uibatchconcurrency-optional)). `-j` ne parallélise toujours que les locales cibles. Chaque lot réussi est écrit dans `strings.json` et le fichier de locale plat avant le démarrage du lot suivant, ainsi, l'arrêt de l'exécution ou une erreur d'API ultérieure conserve les lots déjà terminés.
 
 <a id="translations-database-stringsjson"></a>
 ### Base de données des traductions (`strings.json`)
